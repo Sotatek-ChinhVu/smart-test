@@ -7,7 +7,7 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.User.Create
 {
-    internal interface ICreateUserOutputPort : IOutputPort<CreateUserOutputData>
+    public interface ICreateUserOutputPort : IOutputPort<CreateUserOutputData>
     {
     }
 }

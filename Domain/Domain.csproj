@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constant\" />
-    <Folder Include="Types\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Domain.Core">
       <HintPath>..\..\..\AstroWeb\astro-web-renewal\lib\Domain.Core.dll</HintPath>
     </Reference>

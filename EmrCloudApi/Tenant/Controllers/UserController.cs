@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Requests.User;
+﻿using EmrCloudApi.Tenant.Presenters;
+using EmrCloudApi.Tenant.Requests.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -17,12 +18,14 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost("Save")]
-        public ActionResult<String> Save([FromBody] SaveUserRequest saveUserRequest)
+        public ActionResult<String> Save([FromBody] CreateUserRequest saveUserRequest)
         {
             var input = new CreateUserInputData(saveUserRequest.UserName);
             var output = _bus.Handle(input);
+            var presenter = new CreateUserPresenter();
+            presenter.Complete(output);
 
-            return Ok("");
+            return presenter.Result;
         }
     }
 }

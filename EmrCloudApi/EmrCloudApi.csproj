@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Folder Include="Admin\Presenters\" />
-    <Folder Include="Tenant\Presenters\" />
   </ItemGroup>
 
   <ItemGroup>

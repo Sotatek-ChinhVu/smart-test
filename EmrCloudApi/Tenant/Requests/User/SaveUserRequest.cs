@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.User
 {
-    public class SaveUserRequest
+    public class CreateUserRequest
     {
         public string UserName { get; set; }
     }
