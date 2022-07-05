@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "yOWrSFtJtg5upEAtNdy32PYKjiQGHmGUEJThAjH+/X6Plelg2n6QeutLueZYcM0its8WheQFdLpcu6zbOfCbTQ==",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\EmrCloud\\emr-cloud-be\\Entity\\Entity.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.6\\microsoft.entityframeworkcore.abstractions.6.0.6.nupkg.sha512"
+  ],
+  "logs": []
+}

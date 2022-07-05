@@ -1,0 +1,500 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C09A3097-5747-4038-9160-E5873935912A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Emr.DatabaseEntity</RootNamespace>
+    <AssemblyName>Emr.DatabaseEntity</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\OutputDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;PostgreSQL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\OutputRelease\</OutputPath>
+    <DefineConstants>TRACE;PostgreSQL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.14\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Emr.Shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AccountingFormMst.cs" />
+    <Compile Include="ApprovalInf.cs" />
+    <Compile Include="AuditTrailLog.cs" />
+    <Compile Include="AuditTrailLogDetail.cs" />
+    <Compile Include="AutoSanteiMst.cs" />
+    <Compile Include="BackupReq.cs" />
+    <Compile Include="BuiOdrByomeiMst.cs" />
+    <Compile Include="BuiOdrItemByomeiMst.cs" />
+    <Compile Include="BuiOdrItemMst.cs" />
+    <Compile Include="BuiOdrMst.cs" />
+    <Compile Include="ByomeiSetGenerationMst.cs" />
+    <Compile Include="ByomeiSetMst.cs" />
+    <Compile Include="CalcLog.cs" />
+    <Compile Include="CmtCheckMst.cs" />
+    <Compile Include="CmtKbnMst.cs" />
+    <Compile Include="ContainerMst.cs" />
+    <Compile Include="ConversionItemInf.cs" />
+    <Compile Include="DocCategoryMst.cs" />
+    <Compile Include="DocComment.cs" />
+    <Compile Include="DocCommentDetail.cs" />
+    <Compile Include="DocInf.cs" />
+    <Compile Include="DosageDosage.cs" />
+    <Compile Include="DosageDrug.cs" />
+    <Compile Include="DosageMst.cs" />
+    <Compile Include="DrugDayLimit.cs" />
+    <Compile Include="DrugInf.cs" />
+    <Compile Include="DrugUnitConv.cs" />
+    <Compile Include="EventMst.cs" />
+    <Compile Include="ExceptHokensya.cs" />
+    <Compile Include="FilingAutoImp.cs" />
+    <Compile Include="FilingCategoryMst.cs" />
+    <Compile Include="FilingInf.cs" />
+    <Compile Include="FunctionMst.cs" />
+    <Compile Include="GcStdMst.cs" />
+    <Compile Include="IpnKasanExclude.cs" />
+    <Compile Include="IpnKasanExcludeItem.cs" />
+    <Compile Include="IpnKasanMst.cs" />
+    <Compile Include="IpnMinYakkaMst.cs" />
+    <Compile Include="IpnNameMst.cs" />
+    <Compile Include="ItemGrpMst.cs" />
+    <Compile Include="JihiSbtMst.cs" />
+    <Compile Include="KacodeMst.cs" />
+    <Compile Include="KaikeiDetail.cs" />
+    <Compile Include="KarteFilterDetail.cs" />
+    <Compile Include="KarteFilterMst.cs" />
+    <Compile Include="KarteImgInf.cs" />
+    <Compile Include="KarteInf.cs" />
+    <Compile Include="KarteKbnMst.cs" />
+    <Compile Include="KensaCenterMst.cs" />
+    <Compile Include="KensaInf.cs" />
+    <Compile Include="KensaInfDetail.cs" />
+    <Compile Include="KensaIraiLog.cs" />
+    <Compile Include="KensaMst.cs" />
+    <Compile Include="KensaStdMst.cs" />
+    <Compile Include="KinkiMst.cs" />
+    <Compile Include="KogakuLimit.cs" />
+    <Compile Include="CalcStatus.cs" />
+    <Compile Include="DensiHaihanCustom.cs" />
+    <Compile Include="DensiHaihanDay.cs" />
+    <Compile Include="DensiHaihanKarte.cs" />
+    <Compile Include="DensiHaihanMonth.cs" />
+    <Compile Include="DensiHaihanWeek.cs" />
+    <Compile Include="DensiHojyo.cs" />
+    <Compile Include="DensiHoukatu.cs" />
+    <Compile Include="DensiHoukatuGrp.cs" />
+    <Compile Include="DensiSanteiKaisu.cs" />
+    <Compile Include="EmrCloneable.cs" />
+    <Compile Include="ByomeiMst.cs" />
+    <Compile Include="ByomeiMstAftercare.cs" />
+    <Compile Include="CustomAttribute.cs" />
+    <Compile Include="DefHokenNo.cs" />
+    <Compile Include="HokensyaMst.cs" />
+    <Compile Include="KaikeiInf.cs" />
+    <Compile Include="HolidayMst.cs" />
+    <Compile Include="KohiPriority.cs" />
+    <Compile Include="JobMst.cs" />
+    <Compile Include="KouiKbnMst.cs" />
+    <Compile Include="LimitCntListInf.cs" />
+    <Compile Include="LimitListInf.cs" />
+    <Compile Include="ListSetGenerationMst.cs" />
+    <Compile Include="ListSetMst.cs" />
+    <Compile Include="LockInf.cs" />
+    <Compile Include="LockMst.cs" />
+    <Compile Include="M01KijyoCmt.cs" />
+    <Compile Include="M01Kinki.cs" />
+    <Compile Include="M01KinkiCmt.cs" />
+    <Compile Include="M10DayLimit.cs" />
+    <Compile Include="M12FoodAlrgy.cs" />
+    <Compile Include="M12FoodAlrgyKbn.cs" />
+    <Compile Include="M14AgeCheck.cs" />
+    <Compile Include="M14CmtCode.cs" />
+    <Compile Include="M28DrugMst.cs" />
+    <Compile Include="M34ArCode.cs" />
+    <Compile Include="M34ArDiscon.cs" />
+    <Compile Include="M34ArDisconCode.cs" />
+    <Compile Include="M34DrugInfoMain.cs" />
+    <Compile Include="M34FormCode.cs" />
+    <Compile Include="M34IndicationCode.cs" />
+    <Compile Include="M34InteractionPat.cs" />
+    <Compile Include="M34InteractionPatCode.cs" />
+    <Compile Include="M34Precaution.cs" />
+    <Compile Include="M34PrecautionCode.cs" />
+    <Compile Include="M34PropertyCode.cs" />
+    <Compile Include="M34SarSymptomCode.cs" />
+    <Compile Include="M38ClassCode.cs" />
+    <Compile Include="M38IngCode.cs" />
+    <Compile Include="M38Ingredients.cs" />
+    <Compile Include="M38MajorDivCode.cs" />
+    <Compile Include="M38OtcFormCode.cs" />
+    <Compile Include="M38OtcMain.cs" />
+    <Compile Include="M38OtcMakerCode.cs" />
+    <Compile Include="M41SuppleIndexcode.cs" />
+    <Compile Include="M41SuppleIndexdef.cs" />
+    <Compile Include="M41SuppleIngre.cs" />
+    <Compile Include="M42ContraCmt.cs" />
+    <Compile Include="M42ContraindiDisBc.cs" />
+    <Compile Include="M42ContraindiDisClass.cs" />
+    <Compile Include="M42ContraindiDisCon.cs" />
+    <Compile Include="M42ContraindiDrugMainEx.cs" />
+    <Compile Include="M56AlrgyDerivatives.cs" />
+    <Compile Include="M56AnalogueCd.cs" />
+    <Compile Include="M56DrugClass.cs" />
+    <Compile Include="M56DrvalrgyCode.cs" />
+    <Compile Include="M56ExAnalogue.cs" />
+    <Compile Include="M56ExEdIngredients.cs" />
+    <Compile Include="M56ExIngCode.cs" />
+    <Compile Include="M56ExIngrdtMain.cs" />
+    <Compile Include="M56ProdrugCd.cs" />
+    <Compile Include="M56UsageCode.cs" />
+    <Compile Include="M56YjDrugClass.cs" />
+    <Compile Include="MallMessageInf.cs" />
+    <Compile Include="MallRenkeiInf.cs" />
+    <Compile Include="MaterialMst.cs" />
+    <Compile Include="MonshinInfo.cs" />
+    <Compile Include="MsSqlEntity\MsUser.cs" />
+    <Compile Include="OdrDateDetail.cs" />
+    <Compile Include="OdrDateInf.cs" />
+    <Compile Include="OnlineConfirmation.cs" />
+    <Compile Include="OnlineConfirmationHistory.cs" />
+    <Compile Include="PtJibkar.cs" />
+    <Compile Include="ReceInfJd.cs" />
+    <Compile Include="RsvRenkeiInfTk.cs" />
+    <Compile Include="TagGrpMst.cs" />
+    <Compile Include="TenMstMother.cs" />
+    <Compile Include="YohoInfMst.cs" />
+    <Compile Include="ZDocInf.cs" />
+    <Compile Include="ZFilingInf.cs" />
+    <Compile Include="ZKensaInf.cs" />
+    <Compile Include="ZKensaInfDetail.cs" />
+    <Compile Include="ZLimitCntListInf.cs" />
+    <Compile Include="ZLimitListInf.cs" />
+    <Compile Include="ZMonshinInf.cs" />
+    <Compile Include="ZPtAlrgyDrug.cs" />
+    <Compile Include="ZPtAlrgyElse.cs" />
+    <Compile Include="ZPtAlrgyFood.cs" />
+    <Compile Include="ZPtCmtInf.cs" />
+    <Compile Include="ZPtFamily.cs" />
+    <Compile Include="ZPtFamilyReki.cs" />
+    <Compile Include="ZPtGrpInf.cs" />
+    <Compile Include="ZPtHokenCheck.cs" />
+    <Compile Include="ZPtHokenInf.cs" />
+    <Compile Include="ZPtHokenPattern.cs" />
+    <Compile Include="ZPtHokenScan.cs" />
+    <Compile Include="ZPtInf.cs" />
+    <Compile Include="OdrInf.cs" />
+    <Compile Include="OdrInfCmt.cs" />
+    <Compile Include="OdrInfDetail.cs" />
+    <Compile Include="PathConf.cs" />
+    <Compile Include="PaymentMethodMst.cs" />
+    <Compile Include="PermissionMst.cs" />
+    <Compile Include="PhysicalAverage.cs" />
+    <Compile Include="PiImage.cs" />
+    <Compile Include="PiInf.cs" />
+    <Compile Include="PiInfDetail.cs" />
+    <Compile Include="PiProductInf.cs" />
+    <Compile Include="PriorityHaihanMst.cs" />
+    <Compile Include="PtAlrgyDrug.cs" />
+    <Compile Include="PtAlrgyElse.cs" />
+    <Compile Include="PtAlrgyFood.cs" />
+    <Compile Include="PtByomei.cs" />
+    <Compile Include="PtCmtInf.cs" />
+    <Compile Include="PtFamily.cs" />
+    <Compile Include="PtFamilyReki.cs" />
+    <Compile Include="PtInfection.cs" />
+    <Compile Include="PtJibaiDoc.cs" />
+    <Compile Include="PtKioReki.cs" />
+    <Compile Include="PtOtcDrug.cs" />
+    <Compile Include="PtOtherDrug.cs" />
+    <Compile Include="PtSupple.cs" />
+    <Compile Include="PtTag.cs" />
+    <Compile Include="PtGrpItem.cs" />
+    <Compile Include="PtGrpNameMst.cs" />
+    <Compile Include="HpInf.cs" />
+    <Compile Include="KaMst.cs" />
+    <Compile Include="KantokuMst.cs" />
+    <Compile Include="PtGrpInf.cs" />
+    <Compile Include="PostCodeMst.cs" />
+    <Compile Include="PtHokenScan.cs" />
+    <Compile Include="PtLastVisitDate.cs" />
+    <Compile Include="PtPregnancy.cs" />
+    <Compile Include="PtKyuseiHistory.cs" />
+    <Compile Include="PtRousaiTenki.cs" />
+    <Compile Include="PtSanteiConf.cs" />
+    <Compile Include="HokenMst.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="PtHokenCheck.cs" />
+    <Compile Include="PtHokenInf.cs" />
+    <Compile Include="PtHokenPattern.cs" />
+    <Compile Include="PtInf.cs" />
+    <Compile Include="PtKohi.cs" />
+    <Compile Include="PtKyusei.cs" />
+    <Compile Include="PtMemo.cs" />
+    <Compile Include="PtSanteiConfHistory.cs" />
+    <Compile Include="RaiinCmtInf.cs" />
+    <Compile Include="RaiinFilterKbn.cs" />
+    <Compile Include="RaiinFilterMst.cs" />
+    <Compile Include="RaiinFilterMstHistory.cs" />
+    <Compile Include="RaiinFilterSort.cs" />
+    <Compile Include="RaiinFilterState.cs" />
+    <Compile Include="RaiinKbItem.cs" />
+    <Compile Include="RaiinKbnDetail.cs" />
+    <Compile Include="RaiinKbnInf.cs" />
+    <Compile Include="RaiinKbnKoui.cs" />
+    <Compile Include="RaiinKbnMst.cs" />
+    <Compile Include="RaiinInf.cs" />
+    <Compile Include="RaiinKbnyaYoku.cs" />
+    <Compile Include="RaiinListCmt.cs" />
+    <Compile Include="RaiinListDetail.cs" />
+    <Compile Include="RaiinListDoc.cs" />
+    <Compile Include="RaiinListFile.cs" />
+    <Compile Include="RaiinListInf.cs" />
+    <Compile Include="RaiinListItem.cs" />
+    <Compile Include="RaiinListKoui.cs" />
+    <Compile Include="RaiinListMst.cs" />
+    <Compile Include="RaiinListTag.cs" />
+    <Compile Include="ReceCheckCmt.cs" />
+    <Compile Include="ReceCheckErr.cs" />
+    <Compile Include="ReceCheckOpt.cs" />
+    <Compile Include="ReceCmt.cs" />
+    <Compile Include="RecedenHenJiyuu.cs" />
+    <Compile Include="RecedenRirekiInf.cs" />
+    <Compile Include="RecedenCmtSelect.cs" />
+    <Compile Include="ReceFutanKbn.cs" />
+    <Compile Include="ReceInf.cs" />
+    <Compile Include="ReceInfEdit.cs" />
+    <Compile Include="ReceInfPreEdit.cs" />
+    <Compile Include="ReceSeikyu.cs" />
+    <Compile Include="ReceStatus.cs" />
+    <Compile Include="ReleasenoteRead.cs" />
+    <Compile Include="RenkeiConf.cs" />
+    <Compile Include="RenkeiMst.cs" />
+    <Compile Include="RenkeiPathConf.cs" />
+    <Compile Include="RenkeiReq.cs" />
+    <Compile Include="RenkeiTemplateMst.cs" />
+    <Compile Include="RenkeiTimingConf.cs" />
+    <Compile Include="RenkeiTimingMst.cs" />
+    <Compile Include="RoudouMst.cs" />
+    <Compile Include="RousaiGoseiMst.cs" />
+    <Compile Include="RsvDayComment.cs" />
+    <Compile Include="RsvFrameDayPtn.cs" />
+    <Compile Include="RsvFrameInf.cs" />
+    <Compile Include="RsvFrameMst.cs" />
+    <Compile Include="RsvFrameWeekPtn.cs" />
+    <Compile Include="RsvFrameWith.cs" />
+    <Compile Include="RsvGrpMst.cs" />
+    <Compile Include="RsvInf.cs" />
+    <Compile Include="RsvkrtKarteImgInf.cs" />
+    <Compile Include="RsvkrtKarteInf.cs" />
+    <Compile Include="RsvkrtMst.cs" />
+    <Compile Include="RsvkrtOdrInf.cs" />
+    <Compile Include="RsvkrtOdrInfCmt.cs" />
+    <Compile Include="RsvkrtOdrInfDetail.cs" />
+    <Compile Include="RsvRenkeiInf.cs" />
+    <Compile Include="SanteiAutoOrder.cs" />
+    <Compile Include="SanteiAutoOrderDetail.cs" />
+    <Compile Include="SanteiCntCheck.cs" />
+    <Compile Include="SanteiGrpDetail.cs" />
+    <Compile Include="SanteiGrpMst.cs" />
+    <Compile Include="SanteiInf.cs" />
+    <Compile Include="SanteiInfDetail.cs" />
+    <Compile Include="SchemaCmtMst.cs" />
+    <Compile Include="SeikaturekiInf.cs" />
+    <Compile Include="SentenceList.cs" />
+    <Compile Include="SessionInf.cs" />
+    <Compile Include="SetByomei.cs" />
+    <Compile Include="SetGenerationMst.cs" />
+    <Compile Include="SetKarteImgInf.cs" />
+    <Compile Include="SetKarteInf.cs" />
+    <Compile Include="SetKbnMst.cs" />
+    <Compile Include="SetMst.cs" />
+    <Compile Include="SetOdrInf.cs" />
+    <Compile Include="SetOdrInfCmt.cs" />
+    <Compile Include="SetOdrInfDetail.cs" />
+    <Compile Include="SingleDoseMst.cs" />
+    <Compile Include="SinKoui.cs" />
+    <Compile Include="SinKouiCount.cs" />
+    <Compile Include="SinKouiDetail.cs" />
+    <Compile Include="SinrekiFilterMst.cs" />
+    <Compile Include="SinrekiFilterMstDetail.cs" />
+    <Compile Include="SinRpInf.cs" />
+    <Compile Include="SinRpNoInf.cs" />
+    <Compile Include="SokatuMst.cs" />
+    <Compile Include="StaConf.cs" />
+    <Compile Include="StaCsv.cs" />
+    <Compile Include="StaGrp.cs" />
+    <Compile Include="StaMenu.cs" />
+    <Compile Include="StaMst.cs" />
+    <Compile Include="SummaryInf.cs" />
+    <Compile Include="SyobyoKeika.cs" />
+    <Compile Include="SyoukiInf.cs" />
+    <Compile Include="SyoukiKbnMst.cs" />
+    <Compile Include="SystemChangeLog.cs" />
+    <Compile Include="SystemConf.cs" />
+    <Compile Include="SystemConfItem.cs" />
+    <Compile Include="SystemConfMenu.cs" />
+    <Compile Include="SystemGenerationConf.cs" />
+    <Compile Include="SyunoNyukin.cs" />
+    <Compile Include="SyunoSeikyu.cs" />
+    <Compile Include="TekiouByomeiMstExcluded.cs" />
+    <Compile Include="TekiouByomeiMst.cs" />
+    <Compile Include="TemplateDetail.cs" />
+    <Compile Include="TemplateDspConfig.cs" />
+    <Compile Include="TemplateMenuDetail.cs" />
+    <Compile Include="TemplateMenuMst.cs" />
+    <Compile Include="TemplateMst.cs" />
+    <Compile Include="TenMst.cs" />
+    <Compile Include="TimeZoneConf.cs" />
+    <Compile Include="TimeZoneDayInf.cs" />
+    <Compile Include="TodoGrpMstHistory.cs" />
+    <Compile Include="TodoGrpMst.cs" />
+    <Compile Include="TodoInfHistory.cs" />
+    <Compile Include="TodoInf.cs" />
+    <Compile Include="TodoKbnMstHistory.cs" />
+    <Compile Include="TodoKbnMst.cs" />
+    <Compile Include="TokkiMst.cs" />
+    <Compile Include="UketukeSbtDayInf.cs" />
+    <Compile Include="UketukeSbtMst.cs" />
+    <Compile Include="UnitMst.cs" />
+    <Compile Include="UserConf.cs" />
+    <Compile Include="UserMst.cs" />
+    <Compile Include="UserPermission.cs" />
+    <Compile Include="WrkSinKoui.cs" />
+    <Compile Include="WrkSinKouiDetail.cs" />
+    <Compile Include="WrkSinKouiDetailDel.cs" />
+    <Compile Include="WrkSinRpInf.cs" />
+    <Compile Include="YakkaSyusaiMst.cs" />
+    <Compile Include="YohoSetMst.cs" />
+    <Compile Include="YoyakuOdrInf.cs" />
+    <Compile Include="YoyakuOdrInfDetail.cs" />
+    <Compile Include="YoyakuSbtMst.cs" />
+    <Compile Include="ZPtInfection.cs" />
+    <Compile Include="ZPtJibkar.cs" />
+    <Compile Include="ZPtKioReki.cs" />
+    <Compile Include="ZPtKohi.cs" />
+    <Compile Include="ZPtKyusei.cs" />
+    <Compile Include="ZPtMemo.cs" />
+    <Compile Include="ZPtOtcDrug.cs" />
+    <Compile Include="ZPtOtherDrug.cs" />
+    <Compile Include="ZPtPregnancy.cs" />
+    <Compile Include="ZPtRousaiTenki.cs" />
+    <Compile Include="ZPtSanteiConf.cs" />
+    <Compile Include="ZPtSupple.cs" />
+    <Compile Include="ZPtTag.cs" />
+    <Compile Include="ZRaiinCmtInf.cs" />
+    <Compile Include="ZRaiinInf.cs" />
+    <Compile Include="ZRaiinKbnInf.cs" />
+    <Compile Include="ZRaiinListCmt.cs" />
+    <Compile Include="ZRaiinListTag.cs" />
+    <Compile Include="ZReceCheckCmt.cs" />
+    <Compile Include="ZReceCmt.cs" />
+    <Compile Include="ZReceInfEdit.cs" />
+    <Compile Include="ZReceSeikyu.cs" />
+    <Compile Include="ZRsvDayComment.cs" />
+    <Compile Include="ZRsvInf.cs" />
+    <Compile Include="ZSanteiInfDetail.cs" />
+    <Compile Include="ZSeikaturekiInf.cs" />
+    <Compile Include="ZSummaryInf.cs" />
+    <Compile Include="ZSyobyoKeika.cs" />
+    <Compile Include="ZSyoukiInf.cs" />
+    <Compile Include="ZSyunoNyukin.cs" />
+    <Compile Include="ZTodoInf.cs" />
+    <Compile Include="ZUketukeSbtDayInf.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Emr.Core\Emr.Core.csproj">
+      <Project>{8F8E8442-8306-481A-A7C4-35B1953E9BE2}</Project>
+      <Name>Emr.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.4.0\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.4.0\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.4.0\build\EntityFramework.targets')" />
+</Project>

@@ -1,0 +1,15 @@
+D:\Projects\EmrCloud\emr-cloud-be\Domain\bin\Debug\net6.0\Domain.deps.json
+D:\Projects\EmrCloud\emr-cloud-be\Domain\bin\Debug\net6.0\Domain.dll
+D:\Projects\EmrCloud\emr-cloud-be\Domain\bin\Debug\net6.0\Domain.pdb
+D:\Projects\EmrCloud\emr-cloud-be\Domain\bin\Debug\net6.0\Domain.Core.dll
+D:\Projects\EmrCloud\emr-cloud-be\Domain\bin\Debug\net6.0\Ulid.dll
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.csproj.AssemblyReference.cache
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.AssemblyInfoInputs.cache
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.AssemblyInfo.cs
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.csproj.CoreCompileInputs.cache
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.csproj.CopyComplete
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.dll
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\refint\Domain.dll
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\Domain.pdb
+D:\Projects\EmrCloud\emr-cloud-be\Domain\obj\Debug\net6.0\ref\Domain.dll
