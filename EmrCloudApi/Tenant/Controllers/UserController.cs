@@ -22,8 +22,13 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             var input = new CreateUserInputData(saveUserRequest.UserName);
             var output = _bus.Handle(input);
+
+
+
             var presenter = new CreateUserPresenter();
             presenter.Complete(output);
+
+            var test = this.Request;
 
             return presenter.Result;
         }

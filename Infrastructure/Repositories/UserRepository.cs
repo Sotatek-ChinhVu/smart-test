@@ -1,4 +1,5 @@
 ﻿using Domain.Models.User;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,14 @@ namespace Infrastructure.Repositories
     public class UserRepository : IUserRepository
     {
         private TenantDataContext _tenantDataContext;
+        public UserRepository(ITenantProvider tenantProvider)
+        {
+            _tenantDataContext = tenantProvider.GetDataContext();
+        }
 
         public void Create(User user)
         {
-            _tenantDataContext = new TenantDataContext();
+            //_tenantDataContext = new TenantDataContext();
         }
 
         public void Delete(UserId userId)
@@ -24,7 +29,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            var users = _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0).Select(u => u.Name).ToList();
+            //var users = _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0).Select(u => u.Name).ToList();
 
             var allUser = _tenantDataContext.UserMsts.ToList();
 

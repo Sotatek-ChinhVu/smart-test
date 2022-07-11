@@ -5,8 +5,21 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
+        private readonly string _connectionString;
+        public TenantDataContext(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
+        public TenantDataContext(DbContextOptions<TenantDataContext> options)    
+        : base(options)
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("host=localhost;port=5432;database=Emr;user id=postgres;password=Emr!23");
+        {
+            optionsBuilder.UseNpgsql(_connectionString);
+        }
 
         //protected override void OnModelCreating(DbModelBuilder modelBuilder)
         //{

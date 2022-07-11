@@ -2,9 +2,13 @@ D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Infrastructure
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Infrastructure.dll
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Infrastructure.pdb
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Domain.dll
+D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Entity.dll
+D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\PostgreDataContext.dll
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Domain.Core.dll
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Ulid.dll
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Domain.pdb
+D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\PostgreDataContext.pdb
+D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Entity.pdb
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\Infrastructure.csproj.AssemblyReference.cache
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\Infrastructure.AssemblyInfoInputs.cache
@@ -15,7 +19,3 @@ D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\Infrastructure
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\refint\Infrastructure.dll
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\Infrastructure.pdb
 D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\obj\Debug\net6.0\ref\Infrastructure.dll
-D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Entity.dll
-D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\PostgreDataContext.dll
-D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\PostgreDataContext.pdb
-D:\Projects\EmrCloud\emr-cloud-be\Infrastructure\bin\Debug\net6.0\Entity.pdb

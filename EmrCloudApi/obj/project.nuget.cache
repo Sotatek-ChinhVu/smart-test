@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "AtcNORVGIA9R2rCvaYLAKUMvSHtIcjBg16Lr2jmoXhMqhSEFcxcSj1U5FDlsfAHhe3lBTZa2G/wwKd0PTBIApA==",
+  "dgSpecHash": "cQ2/5Qa+57cdLZgq85TbhVousFBdJjR+TGs9PUZQRJ6JxliVqEMCbuiYiwvMc8yDIHw37sqsXogeLMEkFan6JQ==",
   "success": true,
   "projectFilePath": "D:\\Projects\\EmrCloud\\emr-cloud-be\\EmrCloudApi\\EmrCloudApi.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.6\\microsoft.entityframeworkcore.6.0.6.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.6\\microsoft.entityframeworkcore.abstractions.6.0.6.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\6.0.6\\microsoft.entityframeworkcore.analyzers.6.0.6.nupkg.sha512",
@@ -27,7 +29,8 @@
     "C:\\Users\\Admin\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.2.3\\swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.collections.immutable\\6.0.0\\system.collections.immutable.6.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.0\\system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
-    "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.text.encodings.web\\4.5.0\\system.text.encodings.web.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }

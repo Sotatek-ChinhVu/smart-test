@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "yGMjky6SIvSNUp060NmcavOpzIsoibHjRK1byarrD7rfedl80XkuJ2WZpuC8rd7MkL6qiVotCaGDSciAi/JO5w==",
+  "dgSpecHash": "muWupM+T6vAdlGxgm1AbL2cy63zK4rMDW4+Qo0wgZ42SbYeDXFbl5xp6rEmbpu4vTQ6OLVCc7b3akmID1WHZbQ==",
   "success": true,
   "projectFilePath": "D:\\Projects\\EmrCloud\\emr-cloud-be\\Infrastructure\\Infrastructure.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.abstractions\\2.2.0\\microsoft.aspnetcore.http.abstractions.2.2.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\microsoft.aspnetcore.http.features\\2.2.0\\microsoft.aspnetcore.http.features.2.2.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.6\\microsoft.entityframeworkcore.6.0.6.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.6\\microsoft.entityframeworkcore.abstractions.6.0.6.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\6.0.6\\microsoft.entityframeworkcore.analyzers.6.0.6.nupkg.sha512",
@@ -21,7 +23,8 @@
     "C:\\Users\\Admin\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\6.0.5\\npgsql.entityframeworkcore.postgresql.6.0.5.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.collections.immutable\\6.0.0\\system.collections.immutable.6.0.0.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.0\\system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",
-    "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    "C:\\Users\\Admin\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
+    "C:\\Users\\Admin\\.nuget\\packages\\system.text.encodings.web\\4.5.0\\system.text.encodings.web.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }
