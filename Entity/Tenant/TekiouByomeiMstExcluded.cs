@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("SEQ_NO", Order = 3)]
         public int SeqNo { get; set; }

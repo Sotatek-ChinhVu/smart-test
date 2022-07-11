@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 2)]
         //[Index("SYUNO_NYUKIN_IDX01", 4)]
         public long RaiinNo { get; set; }
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

@@ -10,10 +10,10 @@ namespace Entity.Tenant
 	[Table(name: "KANTOKU_MST")]
     public class KantokuMst : EmrCloneable<KantokuMst>
     {
-		/// <summary>
-		/// 労働局コード	
-		/// </summary>
-		[Key]
+        /// <summary>
+        /// 労働局コード	
+        /// </summary>
+        [Key]
         [Column(name: "ROUDOU_CD", Order = 1)]
 		[MaxLength(2)]
         public string RoudouCd { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 監督署コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "KANTOKU_CD", Order = 2)]
 		[MaxLength(2)]
         public string KantokuCd { get; set; }

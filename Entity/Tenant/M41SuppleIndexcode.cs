@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 索引語コード
         /// Iで始まり、6桁の数字が続く
         /// </summary>
-        [Key]
+        //[Key]
         [Column("INDEX_CD", Order = 2)]
         [MaxLength(7)]
         public string IndexCd { get; set; }

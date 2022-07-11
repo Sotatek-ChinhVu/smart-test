@@ -21,21 +21,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// セットコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_CD", Order = 2)]
         public int SetCd { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         public long SeqNo { get; set; }
 

@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 選択肢区分
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("MENU_KBN", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 2)]
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 3)]

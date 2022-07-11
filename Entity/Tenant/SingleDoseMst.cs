@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

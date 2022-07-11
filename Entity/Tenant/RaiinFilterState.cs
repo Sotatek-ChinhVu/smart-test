@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// フィルターID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("FILTER_ID", Order = 2)]
         public int FilterId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }

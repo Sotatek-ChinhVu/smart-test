@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// テンプレートコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("TEMPLATE_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MST_PKEY", 2)]
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MST_PKEY", 3)]

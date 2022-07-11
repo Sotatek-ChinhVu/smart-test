@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// BUI_ODR_ITEM_MST.ITEM_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 病名部位
         /// 病名に登録された部位
         /// </summary>
-        [Key]
+        //[Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
         public string ByomeiBui { get; set; }

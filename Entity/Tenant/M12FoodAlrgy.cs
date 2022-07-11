@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// アレルギー区分
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("FOOD_KBN", Order = 2)]
         [MaxLength(2)]
         public string FoodKbn { get; set; }
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 添付文書レベル
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("TENPU_LEVEL", Order = 3)]
         [MaxLength(2)]
         public string TenpuLevel { get; set; }

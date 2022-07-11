@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 系統コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CLASS_CD", Order = 2)]
         [MaxLength(8)]
         public string ClassCd { get; set; }

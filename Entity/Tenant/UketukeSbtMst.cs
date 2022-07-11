@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 区分ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KBN_ID", Order = 2)]
         //[Index("UKETUKE_SBT_MST_IDX01", 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

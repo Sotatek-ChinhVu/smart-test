@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 英数字7桁
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEIBUN_CD", Order = 2)]
         [MaxLength(7)]
         public string SeibunCd { get; set; }
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 種別
         /// 1:成分　2:添加物
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SBT", Order = 3)]
         public int Sbt { get; set; }
     }

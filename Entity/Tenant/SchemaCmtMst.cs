@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// コメントコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("COMMENT_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CommentCd { get; set; }

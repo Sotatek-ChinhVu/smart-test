@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EDA_NO", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }

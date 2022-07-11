@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 部位ID
         /// BUI_ODR_MST.BUI_ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("BUI_ID", Order = 2)]
         public int BuiId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 病名部位
         /// 病名に登録された部位
         /// </summary>
-        [Key]
+        //[Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
         public string ByomeiBui { get; set; }

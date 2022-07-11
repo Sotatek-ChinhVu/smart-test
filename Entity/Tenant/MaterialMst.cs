@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 材料コード
         /// KENSA_MST.MATERIAL_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("MATERIAL_CD", Order = 2)]
         public long MaterialCd { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// メニューID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("MENU_ID", Order = 2)]
         public int MenuId { get; set; }
 

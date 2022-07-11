@@ -23,7 +23,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "HP_ID", Order = 2)]
         public int HpId { get; set; }
 

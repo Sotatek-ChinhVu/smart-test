@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO区分番号 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("TODO_KBN_NO", Order = 2)]
         public int TodoKbnNo { get; set; }
 

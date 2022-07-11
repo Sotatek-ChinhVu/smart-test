@@ -24,14 +24,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 年齢区分
         /// </summary>
-        [Key]
+        //[Key]
         [Column("AGE_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int AgeKbn { get; set; }
         /// <summary>
         /// 高額療養費区分
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KOGAKU_KBN", Order = 3)]
         public int KogakuKbn { get; set; }
         /// <summary>
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 開始日
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }

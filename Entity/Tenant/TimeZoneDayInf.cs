@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療日
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "SIN_DATE", Order = 3)]
         public int SinDate { get; set; }
 

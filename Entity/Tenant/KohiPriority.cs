@@ -23,14 +23,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 法別番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOUBETU", Order = 2)]
         [MaxLength(3)]
         public string Houbetu { get; set; }
         /// <summary>
         /// 優先順位
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PRIORITY_NO", Order = 3)]
         [MaxLength(5)]
         public string PriorityNo { get; set; }

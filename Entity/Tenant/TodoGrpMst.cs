@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO分類番号
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("TODO_GRP_NO", Order = 2)]
         public int TodoGrpNo { get; set; }

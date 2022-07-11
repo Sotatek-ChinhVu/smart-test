@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GrpId { get; set; }

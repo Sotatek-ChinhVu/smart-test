@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// 予約枠ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RSV_FRAME_ID", Order = 3)]
         public int RsvFrameId { get; set; }
 

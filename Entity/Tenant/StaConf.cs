@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// メニューID
         /// STA_MENU.MENU_ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("MENU_ID", Order = 2)]
         public int MenuId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 設定ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CONF_ID", Order = 3)]
         public int ConfId { get; set; }
 

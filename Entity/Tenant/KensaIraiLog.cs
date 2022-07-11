@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// センターコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CENTER_CD", Order = 2)]
         [MaxLength(10)]
         public string CenterCd { get; set; }
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CREATE_DATE", Order = 3)]
         public DateTime CreateDate { get; set; }
 

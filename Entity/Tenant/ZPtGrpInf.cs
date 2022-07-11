@@ -10,8 +10,8 @@ namespace Entity.Tenant
 	[Table(name: "Z_PT_GRP_INF")]
 	public class ZPtGrpInf : EmrCloneable<ZPtGrpInf>
 	{
-		[Key]
-		[Column("OP_ID", Order = 1)]
+        [Key]
+        [Column("OP_ID", Order = 1)]
 		public long OpId { get; set; }
 
 		[Column("OP_TYPE")]

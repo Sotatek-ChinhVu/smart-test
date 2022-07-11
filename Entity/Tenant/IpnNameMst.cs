@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 一般名コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("IPN_NAME_CD", Order = 2)]
         [MaxLength(12)]
         public string IpnNameCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一一般名コード、開始日内の連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

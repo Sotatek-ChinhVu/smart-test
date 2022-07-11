@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 適用開始年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_YM", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int StartYm { get; set; }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 機能コード
         /// FUNCTION_MST.FUNCTION_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("FUNCTION_CD", Order = 3)]
         [MaxLength(8)]
         public string FunctionCd { get; set; }

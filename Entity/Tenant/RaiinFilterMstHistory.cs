@@ -25,20 +25,20 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
         /// <summary>
         /// フィルターID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("FILTER_ID", Order = 3)]
         public int FilterId { get; set; }
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

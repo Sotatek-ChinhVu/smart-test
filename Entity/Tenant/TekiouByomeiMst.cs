@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 病名コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("BYOMEI_CD", Order = 3)]
         [MaxLength(7)]
         public string ByomeiCd { get; set; }
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// システム管理データ
         /// 1:配信したマスタ
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SYSTEM_DATA", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SystemData { get; set; }

@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 検査項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KENSA_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string KensaItemCd { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KENSA_ITEM_SEQ_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int KensaItemSeqNo { get; set; }

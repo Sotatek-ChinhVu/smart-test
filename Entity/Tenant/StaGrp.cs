@@ -23,14 +23,14 @@ namespace Entity.Tenant
         /// グループID
         /// 1:日報 2:月報 3:その他
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 帳票ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("REPORT_ID", Order = 3)]
         public int ReportId { get; set; }
 

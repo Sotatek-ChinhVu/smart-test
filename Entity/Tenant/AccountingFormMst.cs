@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Entity.Tenant
 {
     [Table(name: "ACCOUNTING_FORM_MST")]
-    internal class AccountingFormMst : EmrCloneable<AccountingFormMst>
+    public class AccountingFormMst : EmrCloneable<AccountingFormMst>
     {
         /// <summary>
         /// 医療機関識別ID
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 帳票番号
         /// 連番[0..zzzz]
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("FORM_NO", Order = 2)]
         public int FormNo { get; set; }

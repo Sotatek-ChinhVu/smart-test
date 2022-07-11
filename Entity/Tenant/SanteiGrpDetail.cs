@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// グループコード
         /// SANTEI_GRP_MST.SANTEI_GRP_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SANTEI_GRP_CD", Order = 2)]
         public int SanteiGrpCd { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 3)]
         public string ItemCd { get; set; }
 

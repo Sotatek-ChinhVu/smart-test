@@ -18,14 +18,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療日 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_DATE", Order = 2)]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 連番 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         public int SeqNo { get; set; }
 

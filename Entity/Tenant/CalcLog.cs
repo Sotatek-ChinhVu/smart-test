@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 3)]
         public long RaiinNo { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 包装剤形区分
         /// 0:剤形 1:包装
         /// </summary>
-        [Key]
+        //[Key]
         [Column("IMAGE_TYPE", Order = 2)]
         public int ImageType { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; }

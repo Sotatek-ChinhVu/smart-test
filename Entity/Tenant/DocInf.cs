@@ -21,14 +21,14 @@ namespace Entity.Tenant
         /// 患者ID
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDate { get; set; }
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// グループコード
         /// CALC_GRP.SANTEI_GRP_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SANTEI_GRP_CD", Order = 2)]
         public int SanteiGrpCd { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一グループコード内のチェック順番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         public int SeqNo { get; set; }
 

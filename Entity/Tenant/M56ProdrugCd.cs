@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 2)]
         [MaxLength(2)]
         public string SeqNo { get; set; }

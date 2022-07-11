@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 予約枠ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RSV_FRAME_ID", Order = 3)]
         public int RsvFrameId { get; set; }
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 曜日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("WEEK", Order = 5)]
         public int Week { get; set; }
 
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("SEQ_NO", Order = 6)]
         public int SeqNo { get; set; }

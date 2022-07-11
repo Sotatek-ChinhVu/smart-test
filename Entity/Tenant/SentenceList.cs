@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// <summary>
         /// セットコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SENTENCE_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetCd { get; set; }

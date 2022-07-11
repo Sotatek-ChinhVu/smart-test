@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 2)]
 		public long RaiinNo { get; set; }
 
@@ -45,14 +45,14 @@ namespace Entity.Tenant
 		///		1:来院コメント 
 		///		9:備考			
 		/// </summary>
-		[Key]
+		//[Key]
         [Column("CMT_KBN", Order = 3)]
 		public int CmtKbn { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long SeqNo { get; set; }

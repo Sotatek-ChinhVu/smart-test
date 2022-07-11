@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// 情報区分
         /// 0:薬剤情報 1:薬の作用 2:注意事項
         /// </summary>
-        [Key]
+        //[Key]
         [Column("INF_KBN", Order = 3)]
         public int InfKbn { get; set; }
 
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 行為区分ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KOUI_KBN_ID", Order = 2)]
         public int KouiKbnId { get; set; }
 

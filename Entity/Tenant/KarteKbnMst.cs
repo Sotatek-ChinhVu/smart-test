@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// カルテ区分
         /// >100は、ユーザー任意設定
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KARTE_KBN", Order = 2)]
         public int KarteKbn { get; set; }
 

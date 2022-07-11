@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 容器コード
         /// KENSA_MST.CONTAINDER_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CONTAINER_CD", Order = 2)]
         public long ContainerCd { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 予約分類ID
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("RSV_GRP_ID", Order = 2)]
         public int RsvGrpId { get; set; }

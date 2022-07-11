@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 都道府県番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PREF_NO", Order = 2)]
         public int PrefNo { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 開始年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_YM", Order = 3)]
         public int StartYm { get; set; }
 
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         ///                     105:福祉請求書          
         ///                     106:福祉電子媒体請求          
         /// </summary>
-        [Key]
+        //[Key]
         [Column("REPORT_ID", Order = 4)]
         public int ReportId { get; set; }
 
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// 帳票枝番
         /// 帳票ID枝番(都道府県ごとに異なる)
         /// </summary>
-        [Key]
+        //[Key]
         [Column("REPORT_EDA_NO", Order = 5)]
         public int ReportEdaNo { get; set; }
 

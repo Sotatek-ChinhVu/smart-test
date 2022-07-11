@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// セットコード
         ///     SET_MST.SET_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_CD", Order = 2)]
         public int SetCd { get; set; }
 
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 剤番号
         ///     ODR_INF.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// 剤枝番
         ///     ODR_INF.RP_EDA_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_EDA_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpEdaNo { get; set; }
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 行番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ROW_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int RowNo { get; set; }

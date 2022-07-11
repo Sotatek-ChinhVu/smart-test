@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// グループコード
         /// SANTEI_GRP_MST.SANTEI_GRP_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SANTEI_GRP_CD", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SanteiGrpCd { get; set; }
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SeqNo { get; set; }

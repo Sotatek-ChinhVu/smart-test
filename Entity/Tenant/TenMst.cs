@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         //[Index("TEN_MST_IDX01", 2)]
         //[Index("TEN_MST_IDX05", 1)]
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 有効開始年月日
         ///     yyyymmdd
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 3)]
         //[Index("TEN_MST_IDX01", 3)]
         //[Index("TEN_MST_IDX03", 2)]

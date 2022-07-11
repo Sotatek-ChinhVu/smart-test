@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// Aコード
         /// TEN_MST.ITEM_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("A_CD", Order = 3)]
         [MaxLength(10)]
         public string ACd { get; set; }
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 予約枠ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RSV_FRAME_ID", Order = 2)]
         public int RsvFrameId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_DATE", Order = 3)]
         public int SinDate { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }

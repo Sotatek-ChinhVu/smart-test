@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 請求年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEIKYU_YM", Order = 3)]
         public int SeikyuYm { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOKEN_ID", Order = 4)]
         public int HokenId { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_YM", Order = 5)]
         public int SinYm { get; set; }
 

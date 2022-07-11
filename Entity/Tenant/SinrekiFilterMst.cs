@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 分類コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_CD", Order = 2)]
         public int GrpCd { get; set; }
 

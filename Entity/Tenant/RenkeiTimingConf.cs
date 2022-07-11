@@ -35,12 +35,12 @@ namespace Entity.Tenant
         /// イベントコード
         /// EVENT_MST.EVENT_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EVENT_CD", Order = 4)]
         [MaxLength(11)]
         public string EventCd { get; set; }
 
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 5)]
         public long Id { get; set; }

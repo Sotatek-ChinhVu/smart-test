@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 保険区分
         /// 0:健保 1:労災 2:アフターケア 3:自賠 4:自費
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOKEN_KBN", Order = 3)]
         public int HokenKbn { get; set; }
 
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// WRK_SIN_KOUI_DETAIL.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 4)]
         public int RpNo { get; set; }
 
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// 連番
         /// WRK_SIN_KOUI_DETAIL.SEQ_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         public int SeqNo { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 行番号
         /// WRK_SIN_KOUI_DETAIL.ROW_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ROW_NO", Order = 6)]
         public int RowNo { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// 項目連番
         /// 同一WRK_CALC_NO,RP_NO,ROW_NO内の連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_SEQ_NO", Order = 7)]
         [CustomAttribute.DefaultValue(1)]
         public int ItemSeqNo { get; set; }

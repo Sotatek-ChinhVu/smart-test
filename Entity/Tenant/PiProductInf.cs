@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// 添付文書
         /// N ○ 枝番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "BRANCH", Order = 2)]
         public string Branch { get; set; }
 
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// JPN
         /// N ○ ＪＰＮコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "JPN", Order = 3)]
         public string Jpn { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 区分コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

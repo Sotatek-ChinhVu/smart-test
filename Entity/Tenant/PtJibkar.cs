@@ -13,7 +13,7 @@ namespace Entity.Tenant
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
-        [Key]
+        //[Key]
         [Column("WEB_ID", Order = 2)]
         [MaxLength(16)]
         public string WebId { get; set; }

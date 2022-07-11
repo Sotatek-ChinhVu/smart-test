@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GENERATION_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         /// セットID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_ID", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetId { get; set; }

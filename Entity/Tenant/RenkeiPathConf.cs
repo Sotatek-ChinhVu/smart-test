@@ -35,12 +35,12 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EDA_NO", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
 
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 5)]
         public long Id { get; set; }

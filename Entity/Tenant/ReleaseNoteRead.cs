@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// バージョン
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("VERSION", Order = 3)]
         [MaxLength(10)]
         public string Version { get; set; }

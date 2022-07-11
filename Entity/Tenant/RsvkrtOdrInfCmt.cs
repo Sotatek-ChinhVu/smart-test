@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 予約カルテ番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RSVKRT_NO", Order = 3)]
         public long RsvkrtNo { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// ODR_INF_DETAIL.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 剤枝番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_EDA_NO", Order = 5)]
         public long RpEdaNo { get; set; }
 
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 行番号
         /// ODR_INF_DETAIL.ROW_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ROW_NO", Order = 6)]
         [CustomAttribute.DefaultValue(1)]
         public int RowNo { get; set; }
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// 枝番
         /// ※2018/11/29現在、1項目につき、最大3つまで
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EDA_NO", Order = 7)]
         [CustomAttribute.DefaultValue(1)]
         public int EdaNo { get; set; }

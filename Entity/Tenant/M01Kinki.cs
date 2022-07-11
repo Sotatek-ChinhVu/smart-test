@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// Bコード
         /// YJコードの上位4,7,8,9,12桁 or H or Zで始まり、4桁の数字が続く
         /// </summary>
-        [Key]
+        //[Key]
         [Column("B_CD", Order = 2)]
         [MaxLength(12)]
         public string BCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// コメントコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CMT_CD", Order = 3)]
         [MaxLength(6)]
         public string CmtCd { get; set; }
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// 作用機序コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SAYOKIJYO_CD", Order = 4)]
         [MaxLength(6)]
         public string SayokijyoCd { get; set; }

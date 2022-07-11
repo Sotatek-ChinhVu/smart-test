@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 部位ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("BUI_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int BuiId { get; set; }

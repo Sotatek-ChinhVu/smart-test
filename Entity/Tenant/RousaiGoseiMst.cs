@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 合成グループ
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GOSEI_GRP", Order = 2)]
         public int GoseiGrp { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 合成項目コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GOSEI_ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string GoseiItemCd { get; set; }
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 4)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 四肢加算区分
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SISI_KBN", Order = 5)]
         public int SisiKbn { get; set; }
 
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 使用開始日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 6)]
         public int StartDate { get; set; }
 

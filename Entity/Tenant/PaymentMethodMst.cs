@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// "1:現金 2:クレジット 3:振込 
         /// 4:電子マネー 5:デビット"
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PAYMENT_METHOD_CD", Order = 2)]
         public int PaymentMethodCd { get; set; }
 

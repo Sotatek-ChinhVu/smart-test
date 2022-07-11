@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// アレルギー関連系統コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("DRVALRGY_CD", Order = 2)]
         [MaxLength(8)]
         public string DrvalrgyCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEIBUN_CD", Order = 3)]
         [MaxLength(9)]
         public string SeibunCd { get; set; }

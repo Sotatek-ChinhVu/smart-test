@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 予約枠ID
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("RSV_FRAME_ID", Order = 2)]
         public int RsvFrameId { get; set; }

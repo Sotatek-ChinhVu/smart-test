@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// セット区分
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbn { get; set; }
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// セット区分枝番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_KBN_EDA_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbnEdaNo { get; set; }
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GENERATION_ID", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }

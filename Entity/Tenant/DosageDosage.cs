@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("DOEI_SEQ_NO", Order = 2)]
         public int DoeiSeqNo { get; set; }
 

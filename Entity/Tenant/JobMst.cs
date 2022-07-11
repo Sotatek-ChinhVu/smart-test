@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 職種コード
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("JOB_CD", Order = 2)]
         public int JobCd { get; set; }

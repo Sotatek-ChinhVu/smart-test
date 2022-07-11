@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 特記事項コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "TOKKI_CD", Order = 2)]
         //[Index("TOKKI_MST_IDX01", 2)]
         [MaxLength(2)]

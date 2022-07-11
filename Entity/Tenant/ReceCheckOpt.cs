@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// エラーコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ERR_CD", Order = 2)]
         [MaxLength(5)]
         public string ErrCd { get; set; }

@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long RaiinNo { get; set; }

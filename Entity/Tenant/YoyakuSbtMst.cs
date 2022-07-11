@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 予約種別
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("YOYAKU_SBT", Order = 2)]
         public int YoyakuSbt { get; set; }

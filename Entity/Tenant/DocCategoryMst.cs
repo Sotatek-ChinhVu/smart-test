@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// カテゴリコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("CATEGORY_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryCd { get; set; }

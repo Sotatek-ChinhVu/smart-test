@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GENERATION_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GenerationId { get; set; }

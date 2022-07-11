@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 機能コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("FUNCTION_CD", Order = 3)]
         [MaxLength(8)]
         public string FunctionCd { get; set; }
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public long SinDate { get; set; }
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// 親来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("OYA_RAIIN_NO", Order = 6)]
         public long OyaRaiinNo { get; set; }
 

@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 拡張コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EXTEND_CD", Order = 2)]
         public string ExtendCd { get; set; }
 

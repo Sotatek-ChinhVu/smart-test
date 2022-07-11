@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOKEN_ID", Order = 3)]
         public int HokenId { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_YM", Order = 4)]
         public int SinYm { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// エラーコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ERR_CD", Order = 5)]
         [MaxLength(5)]
         public string ErrCd { get; set; }
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_DATE", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDate { get; set; }
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// Aコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("A_CD", Order = 7)]
         [MaxLength(100)]
         public string ACd { get; set; }
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// Bコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("B_CD", Order = 8)]
         [MaxLength(100)]
         public string BCd { get; set; }

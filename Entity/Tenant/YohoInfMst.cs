@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// TEN_MST.ITEM_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }

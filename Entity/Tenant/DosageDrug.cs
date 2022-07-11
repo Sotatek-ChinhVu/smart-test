@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "DOEI_CD", Order = 2)]
         [MaxLength(8)]
         public string DoeiCd { get; set; }

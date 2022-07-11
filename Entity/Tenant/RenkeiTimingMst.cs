@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 連携ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RENKEI_ID", Order = 2)]
         public int RenkeiId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// イベントコード
         /// EVENT_MST.EVENT_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EVENT_CD", Order = 3)]
         [MaxLength(11)]
         public string EventCd { get; set; }

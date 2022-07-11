@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// ODR_DATE_INF.GRP_ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         public int SeqNo { get; set; }
 

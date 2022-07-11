@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 注意コメントコード
         /// TNC で始まり4桁の数字が続く
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ATTENTION_CMT_CD", Order = 2)]
         [MaxLength(7)]
         public string AttentionCmtCd { get; set; }

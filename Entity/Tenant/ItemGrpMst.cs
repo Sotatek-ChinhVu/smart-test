@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// グループ種別
         /// 1: DENSI_SANTEI_KAISU
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_SBT", Order = 2)]
         public long GrpSbt { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 項目グループコード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_GRP_CD", Order = 3)]
         public long ItemGrpCd { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一グループ種別、項目グループコード、開始日内の連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }

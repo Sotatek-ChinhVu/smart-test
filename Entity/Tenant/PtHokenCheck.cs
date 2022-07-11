@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 患者ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtID { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         ///     1:主保険・労災・自賠
         ///     2:公費
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOKEN_GRP", Order = 3)]
         public int HokenGrp { get; set; }
 
@@ -35,14 +35,14 @@ namespace Entity.Tenant
         /// 保険ID
         /// 患者別に保険情報を識別するための固有の番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HOKEN_ID", Order = 4)]
         public int HokenId { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

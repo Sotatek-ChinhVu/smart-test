@@ -10,18 +10,18 @@ namespace Entity.Tenant
 	[Table(name: "HP_INF")]
 	public class HpInf : EmrCloneable<HpInf>
     {
-		/// <summary>
-		/// 医療機関識別ID
-		/// </summary>
-		[Key]
-		[Column(name: "HP_ID", Order = 1)]
+        /// <summary>
+        /// 医療機関識別ID
+        /// </summary>
+        [Key]
+        [Column(name: "HP_ID", Order = 1)]
 		public int HpId { get; set; }
 
 		/// <summary>
 		/// 開始日
 		///     yyyymmdd
 		/// </summary>
-		[Key]
+		//[Key]
 		[Column(name: "START_DATE", Order = 2)]
 		public int StartDate { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// テンプレートID
         /// 1以上の値
         /// </summary>
-        [Key]
+        //[Key]
         [Column("TEMPLATE_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int TemplateId { get; set; }

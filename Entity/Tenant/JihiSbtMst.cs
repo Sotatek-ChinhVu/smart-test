@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 自費種別
         /// TEN_MST.自費種別
         /// </summary>
-        [Key]
+        //[Key]
         [Column("JIHI_SBT", Order = 2)]
         public int JihiSbt { get; set; }
 

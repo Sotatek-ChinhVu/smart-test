@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// USER_MST.USER_ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// フィルタID
         /// USER_ID内で連番
         /// </summary>
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("FILTER_ID", Order = 3)]
         public long FilterId { get; set; }

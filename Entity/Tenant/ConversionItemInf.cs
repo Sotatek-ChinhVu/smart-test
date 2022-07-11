@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 変換元診療行為コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SOURCE_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string SourceItemCd { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 変換先診療行為コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("DEST_ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string DestItemCd { get; set; }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 連携ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RENKEI_ID", Order = 2)]
         public int RenkeiId { get; set; }
 

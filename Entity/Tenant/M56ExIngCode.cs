@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 成分索引コード
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEIBUN_INDEX_CD", Order = 2)]
         [MaxLength(3)]
         public string SeibunIndexCd { get; set; }

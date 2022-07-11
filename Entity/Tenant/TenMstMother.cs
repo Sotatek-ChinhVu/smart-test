@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// 有効開始年月日
         ///     yyyymmdd
         /// </summary>
-        [Key]
+        //[Key]
         [Column("START_DATE", Order = 3)]
         public int StartDate { get; set; }
 

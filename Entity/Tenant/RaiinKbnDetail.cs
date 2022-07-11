@@ -22,14 +22,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 分類ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpCd { get; set; }
 
         /// <summary>
         /// 区分コード
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 

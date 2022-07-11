@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// グループコード
         /// 警告メッセージに表示する名称
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SANTEI_GRP_CD", Order = 2)]
         public int SanteiGrpCd { get; set; }
 

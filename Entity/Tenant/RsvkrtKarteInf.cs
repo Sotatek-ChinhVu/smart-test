@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 予約カルテ番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RSVKRT_NO", Order = 3)]
         public long RsvkrtNo { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// カルテ区分
         /// KARTE_KBN_MST.KARTE_KBN
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KARTE_KBN", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKbn { get; set; }
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }

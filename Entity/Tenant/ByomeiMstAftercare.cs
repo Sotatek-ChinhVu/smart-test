@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 病名
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "BYOMEI", Order = 2)]
         [MaxLength(200)]
         public string Byomei { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 適用開始日
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }

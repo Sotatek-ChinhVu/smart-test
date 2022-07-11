@@ -10,8 +10,8 @@ namespace Entity.Tenant
 	[Table("Z_RAIIN_KBN_INF")]
 	public class ZRaiinKbnInf : EmrCloneable<ZRaiinKbnInf>
 	{
-		[Key]
-		[Column("OP_ID", Order = 1)]
+        [Key]
+        [Column("OP_ID", Order = 1)]
 		public long OpId { get; set; }
 
 		[Column("OP_TYPE")]

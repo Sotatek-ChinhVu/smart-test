@@ -26,21 +26,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 分類ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 分類ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

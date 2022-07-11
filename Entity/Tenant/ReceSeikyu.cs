@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_YM", Order = 2)]
         public int SinYm { get; set; }
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }

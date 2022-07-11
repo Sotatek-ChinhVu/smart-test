@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// セットコード
         ///    SET_ODR_INF_DETAIL.SET_CD
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SET_CD", Order = 2)]
         public int SetCd { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 剤番号
         ///    ODR_INF_DETAIL.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 剤枝番
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_EDA_NO", Order = 4)]
         public long RpEdaNo { get; set; }
 
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 行番号
         ///    ODR_INF_DETAIL.ROW_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ROW_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int RowNo { get; set; }
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// 枝番
         ///    ※2018/11/29現在、1項目につき、最大3つまで
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EDA_NO", Order = 6)]
         [CustomAttribute.DefaultValue(1)]
         public int EdaNo { get; set; }

@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PT_ID", Order = 2)]
         //[Index("SIN_KOUI_IDX01", 2)]
         //[Index("SIN_KOUI_IDX02", 2)]
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SIN_YM", Order = 3)]
         //[Index("SIN_KOUI_IDX01", 3)]
         //[Index("SIN_KOUI_IDX02", 3)]
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// SIN_RP_INF.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 4)]
         //[Index("SIN_KOUI_IDX02", 4)]
         public int RpNo { get; set; }
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("SEQ_NO", Order = 5)]
         public int SeqNo { get; set; }
 

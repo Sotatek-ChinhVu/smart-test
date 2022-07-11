@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 1: 参照権限
         /// 99:使用不可"
         /// </summary>
-        [Key]
+        //[Key]
         [Column("PERMISSION", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int Permission { get; set; }

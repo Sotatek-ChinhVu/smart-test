@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// ODR_INF_DETAIL.RP_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_NO", Order = 3)]
         public long RpNo { get; set; }
 
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// 剤枝番
         /// ODR_INF_DETAIL.RP_EDA_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("RP_EDA_NO", Order = 4)]
         public long RpEdaNo { get; set; }
 
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         /// 行番号
         /// ODR_INF_DETAIL.ROW_NO
         /// </summary>
-        [Key]
+        //[Key]
         [Column("ROW_NO", Order = 5)]
         public int RowNo { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 枝番
         /// ※2018/11/29現在、1項目につき、最大3つまで
         /// </summary>
-        [Key]
+        //[Key]
         [Column("EDA_NO", Order = 6)]
         public int EdaNo { get; set; }
 

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 端末名
         /// 
         /// </summary>
-        [Key]
+        //[Key]
         [Column("MACHINE", Order = 2)]
         public string Machine { get; set; }
 

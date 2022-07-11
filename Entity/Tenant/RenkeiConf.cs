@@ -31,7 +31,7 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int SeqNo { get; set; }
 
-        [Key]
+        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 4)]
         public long Id { get; set; }

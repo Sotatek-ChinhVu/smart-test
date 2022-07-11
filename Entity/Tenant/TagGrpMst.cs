@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 付箋分類番号
         /// 0-分類なし、99-"チームカルテ"
         /// </summary>
-        [Key]
+        //[Key]
         [Column("TAG_GRP_NO", Order = 2)]
         public int TagGrpNo { get; set; }
 
