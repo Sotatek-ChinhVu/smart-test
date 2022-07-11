@@ -90,3 +90,14 @@ D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\obj\Debug\net6.0\refint\EmrCloudAp
 D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\obj\Debug\net6.0\EmrCloudApi.pdb
 D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\obj\Debug\net6.0\EmrCloudApi.genruntimeconfig.cache
 D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\obj\Debug\net6.0\ref\EmrCloudApi.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\env.json
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Microsoft.Extensions.Caching.Memory.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Npgsql.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Entity.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\PostgreDataContext.dll
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\Entity.pdb
+D:\Projects\EmrCloud\emr-cloud-be\EmrCloudApi\bin\Debug\net6.0\PostgreDataContext.pdb

@@ -1,4 +1,5 @@
 ﻿using Domain.Models.User;
+using PostgreDataContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,11 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
+        private TenantDataContext _tenantDataContext;
+
         public void Create(User user)
         {
-
+            _tenantDataContext = new TenantDataContext();
         }
 
         public void Delete(UserId userId)
@@ -21,7 +24,9 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            throw new NotImplementedException();
+            var users = _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0).Select(u => u.Name).ToList();
+
+            return new List<User>();
         }
 
         public int MaxUserId()
