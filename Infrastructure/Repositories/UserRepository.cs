@@ -26,6 +26,8 @@ namespace Infrastructure.Repositories
         {
             var users = _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0).Select(u => u.Name).ToList();
 
+            var allUser = _tenantDataContext.UserMsts.ToList();
+
             return new List<User>();
         }
 

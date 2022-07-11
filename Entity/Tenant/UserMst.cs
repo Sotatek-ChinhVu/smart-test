@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "KANA_NAME")]
         [MaxLength(40)]
-        public string KanaName { get; set; }
+        public string? KanaName { get; set; }
 
         /// <summary>
         /// 氏名
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         [Column(name: "NAME")]
         [MaxLength(40)]
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// 略氏名
@@ -70,14 +70,14 @@ namespace Entity.Tenant
         [Column(name: "SNAME")]
         [MaxLength(20)]
         [Required]
-        public string Sname { get; set; }
+        public string? Sname { get; set; }
 
         /// <summary>
         /// 保険医氏名
         /// </summary>
         [Column(name: "DR_NAME")]
         [MaxLength(40)]
-        public string DrName { get; set; }
+        public string? DrName { get; set; }
 
         /// <summary>
         /// ログインID
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         [Column(name: "LOGIN_ID")]
         [MaxLength(20)]
         [Required]
-        public string LoginId { get; set; }
+        public string? LoginId { get; set; }
 
         /// <summary>
         /// パスワード
@@ -93,14 +93,14 @@ namespace Entity.Tenant
         [Column(name: "LOGIN_PASS")]
         [MaxLength(20)]
         [Required]
-        public string LoginPass { get; set; }
+        public string? LoginPass { get; set; }
 
         /// <summary>
         /// 麻薬使用者免許No.
         /// </summary>
         [Column(name: "MAYAKU_LICENSE_NO")]
         [MaxLength(20)]
-        public string MayakuLicenseNo { get; set; }
+        public string? MayakuLicenseNo { get; set; }
 
         /// <summary>
         /// 在籍開始日
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "RENKEI_CD1")]
         [MaxLength(14)]
-        public string RenkeiCd1 { get; set; }
+        public string? RenkeiCd1 { get; set; }
 
         /// <summary>
         /// 削除区分
@@ -160,7 +160,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string? CreateMachine { get; set; }
 
         /// <summary>
         /// 更新日時			
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string? UpdateMachine { get; set; }
 
         /// <summary>
         /// 連番

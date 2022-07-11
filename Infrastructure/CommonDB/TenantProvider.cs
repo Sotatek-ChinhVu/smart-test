@@ -1,4 +1,4 @@
-﻿using PostgreDataContext;
+﻿using PostgreDataContext.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
