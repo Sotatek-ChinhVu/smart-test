@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM")]
         [MaxLength(1000)]
-        public string Param { get; set; }
+        public string Param { get; set; } = string.Empty;
 
         /// <summary>
         /// 患者番号桁数
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(300)]
-        public string Biko { get; set; }
+        public string Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -128,7 +128,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

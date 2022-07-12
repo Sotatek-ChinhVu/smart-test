@@ -44,21 +44,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NAME")]
         [MaxLength(20)]
-        public string KbnName { get; set; }
+        public string KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 配色
         /// </summary>
         [Column("COLOR_CD")]
         [MaxLength(8)]
-        public string ColorCd { get; set; }
+        public string ColorCd { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 変更確認
-		///		0:なし 
-		///		1:あり			
-		/// </summary>
-		[Column("IS_CONFIRMED")]
+        /// <summary>
+        /// 変更確認
+        ///		0:なし 
+        ///		1:あり			
+        /// </summary>
+        [Column("IS_CONFIRMED")]
         public int IsConfirmed { get; set; }
 
 		/// <summary>
@@ -106,12 +106,12 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 更新日時			
-		/// </summary>
-		[Column("UPDATE_DATE")]
+        /// <summary>
+        /// 更新日時			
+        /// </summary>
+        [Column("UPDATE_DATE")]
 		public DateTime UpdateDate { get; set; }
 
 		/// <summary>
@@ -126,6 +126,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
-	}
+		public string UpdateMachine { get; set; }  = string.Empty;
+    }
 }

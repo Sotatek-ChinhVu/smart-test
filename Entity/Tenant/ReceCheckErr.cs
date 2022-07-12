@@ -47,7 +47,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ERR_CD", Order = 5)]
         [MaxLength(5)]
-        public string ErrCd { get; set; }
+        public string ErrCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療日
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("A_CD", Order = 7)]
         [MaxLength(100)]
-        public string ACd { get; set; }
+        public string ACd { get; set; } = string.Empty;
 
         /// <summary>
         /// Bコード
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("B_CD", Order = 8)]
         [MaxLength(100)]
-        public string BCd { get; set; }
+        public string BCd { get; set; } = string.Empty;
 
         /// <summary>
         /// メッセージ１
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_1")]
         [MaxLength(100)]
-        public string Message1 { get; set; }
+        public string Message1 { get; set; } = string.Empty;
 
         /// <summary>
         /// メッセージ２
@@ -90,7 +90,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_2")]
         [MaxLength(100)]
-        public string Message2 { get; set; }
+        public string Message2 { get; set; } = string.Empty;
 
         /// <summary>
         /// チェックフラグ
@@ -121,7 +121,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -144,7 +144,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

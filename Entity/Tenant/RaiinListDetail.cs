@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NAME")]
         [MaxLength(20)]
-        public string KbnName { get; set; }
+        public string KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 配色
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("COLOR_CD")]
         [MaxLength(8)]
-        public string ColorCd { get; set; }
+        public string ColorCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -109,7 +109,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

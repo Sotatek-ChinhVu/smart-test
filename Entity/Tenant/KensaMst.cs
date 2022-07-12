@@ -24,7 +24,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("KENSA_ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_CD")]
         [MaxLength(10)]
-        public string CenterCd { get; set; }
+        public string CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 漢字名称
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_NAME")]
         [MaxLength(120)]
-        public string KensaName { get; set; }
+        public string KensaName { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_KANA")]
         [MaxLength(20)]
-        public string KensaKana { get; set; }
+        public string KensaKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT")]
         [MaxLength(20)]
-        public string Unit { get; set; }
+        public string Unit { get; set; } = string.Empty;
 
         /// <summary>
         /// 材料コード
@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD")]
         [MaxLength(60)]
-        public string MaleStd { get; set; }
+        public string MaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値下限
@@ -95,7 +95,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_LOW")]
         [MaxLength(60)]
-        public string MaleStdLow { get; set; }
+        public string MaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値上限
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_HIGH")]
         [MaxLength(60)]
-        public string MaleStdHigh { get; set; }
+        public string MaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD")]
         [MaxLength(60)]
-        public string FemaleStd { get; set; }
+        public string FemaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値下限
@@ -119,7 +119,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_LOW")]
         [MaxLength(60)]
-        public string FemaleStdLow { get; set; }
+        public string FemaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値上限
@@ -127,7 +127,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_HIGH")]
         [MaxLength(60)]
-        public string FemaleStdHigh { get; set; }
+        public string FemaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 式
@@ -135,7 +135,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORMULA")]
         [MaxLength(100)]
-        public string Formula { get; set; }
+        public string Formula { get; set; } = string.Empty;
 
         /// <summary>
         /// 小数桁
@@ -151,7 +151,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("OYA_ITEM_CD")]
         [MaxLength(10)]
-        public string OyaItemCd { get; set; }
+        public string OyaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 親検査項目連番
@@ -175,7 +175,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_ITEM_CD1")]
         [MaxLength(10)]
-        public string CenterItemCd1 { get; set; }
+        public string CenterItemCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注コード２
@@ -183,7 +183,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_ITEM_CD2")]
         [MaxLength(10)]
-        public string CenterItemCd2 { get; set; }
+        public string CenterItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -213,7 +213,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -235,7 +235,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

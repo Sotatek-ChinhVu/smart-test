@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("CMT_CD", Order = 1)]
         [MaxLength(6)]
-        public string CmtCd { get; set; }
+        public string CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(200)]
-        public string Cmt { get; set; }
+        public string Cmt { get; set; } = string.Empty;
 
     }
 }

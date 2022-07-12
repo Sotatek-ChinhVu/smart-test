@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("KENSA_ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用開始日
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD")]
         [MaxLength(60)]
-        public string MaleStd { get; set; }
+        public string MaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値下限
@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_LOW")]
         [MaxLength(60)]
-        public string MaleStdLow { get; set; }
+        public string MaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値上限
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_HIGH")]
         [MaxLength(60)]
-        public string MaleStdHigh { get; set; }
+        public string MaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD")]
         [MaxLength(60)]
-        public string FemaleStd { get; set; }
+        public string FemaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値下限
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_LOW")]
         [MaxLength(60)]
-        public string FemaleStdLow { get; set; }
+        public string FemaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値上限
@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_HIGH")]
         [MaxLength(60)]
-        public string FemaleStdHigh { get; set; }
+        public string FemaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EVENT_CD")]
         [MaxLength(11)]
-        public string EventCd { get; set; }
+        public string EventCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 患者番号
@@ -72,7 +72,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MACHINE")]
         [MaxLength(60)]
-        public string Machine { get; set; }
+        public string Machine { get; set; } = string.Empty;
 
     }
 }

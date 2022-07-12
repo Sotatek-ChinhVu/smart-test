@@ -31,7 +31,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("GOSEI_ITEM_CD", Order = 3)]
         [MaxLength(10)]
-        public string GoseiItemCd { get; set; }
+        public string GoseiItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為コード
@@ -40,7 +40,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 4)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 四肢加算区分
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -107,7 +107,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

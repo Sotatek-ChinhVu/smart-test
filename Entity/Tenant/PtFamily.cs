@@ -47,7 +47,7 @@ namespace Entity.Tenant
         [Column("ZOKUGARA_CD")]
         [Required]
         [MaxLength(10)]
-        public string ZokugaraCd { get; set; }
+        public string ZokugaraCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -76,14 +76,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; }
+        public string KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
         /// </summary>
         [Column("NAME")]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 性別
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(120)]
-        public string Biko { get; set; }
+        public string Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -154,7 +154,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -174,6 +174,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名部位
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
-        public string ByomeiBui { get; set; }
+        public string ByomeiBui { get; set; } = string.Empty;
 
         /// <summary>
         /// 左右区分
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

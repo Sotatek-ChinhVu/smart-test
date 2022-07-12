@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目連番
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEL_ITEM_CD")]
         [MaxLength(10)]
-        public string DelItemCd { get; set; }
+        public string DelItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除項目算定日

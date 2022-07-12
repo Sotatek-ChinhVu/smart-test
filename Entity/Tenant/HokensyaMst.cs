@@ -22,28 +22,28 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "NAME")]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称
         /// </summary>
         [Column(name: "KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; }
+        public string KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別区分
         /// </summary>
         [Column(name: "HOUBETU_KBN")]
         [MaxLength(2)]
-        public string HoubetuKbn { get; set; }
+        public string HoubetuKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別番号
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; }
+        public string Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 保険区分
@@ -69,21 +69,21 @@ namespace Entity.Tenant
         //[Key]
         [Column(name: "HOKENSYA_NO", Order = 2)]
         [MaxLength(8)]
-        public string HokensyaNo { get; set; }
+        public string HokensyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 記号
         /// </summary>
         [Column(name: "KIGO")]
         [MaxLength(80)]
-        public string Kigo { get; set; }
+        public string Kigo { get; set; } = string.Empty;
 
         /// <summary>
         /// 番号
         /// </summary>
         [Column(name: "BANGO")]
         [MaxLength(80)]
-        public string Bango { get; set; }
+        public string Bango { get; set; } = string.Empty;
 
         /// <summary>
         /// 1:保険登録時に記号なしで登録可
@@ -109,28 +109,28 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "POST_CODE")]
         [MaxLength(7)]
-        public string PostCode { get; set; }
+        public string PostCode { get; set; } = string.Empty;
 
         /// <summary>
         /// 住所１
         /// </summary>
         [Column(name: "ADDRESS1")]
         [MaxLength(200)]
-        public string Address1 { get; set; }
+        public string Address1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 住所２
         /// </summary>
         [Column(name: "ADDRESS2")]
         [MaxLength(200)]
-        public string Address2 { get; set; }
+        public string Address2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 電話番号
         /// </summary>
         [Column(name: "TEL1")]
         [MaxLength(15)]
-        public string Tel1 { get; set; }
+        public string Tel1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除日
@@ -165,7 +165,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -185,6 +185,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

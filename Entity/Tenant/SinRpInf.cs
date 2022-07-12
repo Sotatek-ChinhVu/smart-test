@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_NO")]
         [MaxLength(15)]
-        public string CdNo { get; set; }
+        public string CdNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -99,7 +99,7 @@ namespace Entity.Tenant
         /// RP_NOに属するSIN_KOUI.DETAIL_DATAを結合したもの　※
         /// </summary>
         [Column("KOUI_DATA")]
-        public string KouiData { get; set; }
+        public string KouiData { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -153,7 +153,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

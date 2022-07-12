@@ -35,14 +35,14 @@ namespace Entity.Tenant
         [Required]
         [Column("SBT_NAME")]
         [MaxLength(120)]
-        public string SbtName { get; set; }
+        public string SbtName { get; set; } = string.Empty;
 
         /// <summary>
         /// 初期コメント
         /// </summary>
         [Column("DEFAULT_CMT")]
         [MaxLength(120)]
-        public string DefaultCmt { get; set; }
+        public string DefaultCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
@@ -98,6 +98,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

@@ -32,13 +32,13 @@ namespace Entity.Tenant
         //[Key]
         [Column(name: "GRP_CODE", Order = 3)]
         [MaxLength(2)]
-        public string GrpCode { get; set; }
+        public string GrpCode { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 連番
-        /// </summary>
-        //[Key]
-        [Column(name: "SEQ_NO", Order = 4)]
+		/// <summary>
+		/// 連番
+		/// </summary>
+		//[Key]
+		[Column(name: "SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
@@ -47,12 +47,12 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "GRP_CODE_NAME")]
         [MaxLength(30)]
-        public string GrpCodeName{ get; set; }
+        public string GrpCodeName{ get; set; } = string.Empty;
 
-        /// <summary>
-        /// 並び順
-        /// </summary>
-        [Column(name: "SORT_NO")]
+		/// <summary>
+		/// 並び順
+		/// </summary>
+		[Column(name: "SORT_NO")]
         [CustomAttribute.DefaultValue(1)]
 		public int SortNo { get; set; }
 
@@ -83,7 +83,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -103,6 +103,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD")]
         [MaxLength(10)]
-        public string CmtCd { get; set; }
+        public string CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント名称
@@ -95,7 +95,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(32)]
-        public string CmtName { get; set; }
+        public string CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; }
+        public string CmtOpt { get; set; } = string.Empty;
 
     }
 }

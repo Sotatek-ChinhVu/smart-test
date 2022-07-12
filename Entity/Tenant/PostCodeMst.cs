@@ -32,35 +32,35 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "POST_CD")]
         [MaxLength(7)]
-        public string PostCd { get; set; }
+        public string PostCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 都道府県名カナ
         /// </summary>
         [Column(name: "PREF_KANA")]
         [MaxLength(60)]
-        public string PrefKana { get; set; }
+        public string PrefKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 市区町村名カナ
         /// </summary>
         [Column(name: "CITY_KANA")]
         [MaxLength(60)]
-        public string CityKana { get; set; }
+        public string CityKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 町域名カナ
         /// </summary>
         [Column(name: "POSTAL_TERM_KANA")]
         [MaxLength(150)]
-        public string PostalTermKana { get; set; }
+        public string PostalTermKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 都道府県名
         /// </summary>
         [Column(name: "PREF_NAME")]
         [MaxLength(40)]
-        public string PrefName { get; set; }
+        public string PrefName { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -68,14 +68,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CITY_NAME")]
         [MaxLength(40)]
-        public string CityName { get; set; }
+        public string CityName { get; set; } = string.Empty;
 
         /// <summary>
         /// 町域名
         /// </summary>
         [Column(name: "BANTI")]
         [MaxLength(100)]
-        public string Banti { get; set; }
+        public string Banti { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -124,6 +124,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

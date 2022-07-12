@@ -25,7 +25,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 4)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用開始日
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("COMMENT_CD", Order = 6)]
         [MaxLength(10)]
-        public string CommentCd { get; set; }
+        public string CommentCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 有効区分
@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -110,7 +110,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
         /// <summary>
         /// 項番
@@ -127,7 +127,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NO")]
         [MaxLength(64)]
-        public string KbnNo { get; set; }
+        public string KbnNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 枝番

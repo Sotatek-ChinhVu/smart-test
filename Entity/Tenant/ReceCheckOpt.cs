@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ERR_CD", Order = 2)]
         [MaxLength(5)]
-        public string ErrCd { get; set; }
+        public string ErrCd { get; set; } = string.Empty;
 
         /// <summary>
         /// チェックオプション
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(100)]
-        public string Biko { get; set; }
+        public string Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 無効区分
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -92,7 +92,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

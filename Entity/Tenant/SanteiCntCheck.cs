@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(10)]
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 上限超動作
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TARGET_CD")]
         [MaxLength(10)]
-        public string TargetCd { get; set; }
+        public string TargetCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 特殊条件
@@ -136,7 +136,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -159,6 +159,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("RECEPTION_NO")]
-        public string ReceptionNo { get; set; }
+        public string ReceptionNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 受付日時
@@ -35,14 +35,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEGMENT_OF_RESULT")]
         [MaxLength(1)]
-        public string SegmentOfResult { get; set; }
+        public string SegmentOfResult { get; set; } = string.Empty;
 
         /// <summary>
         /// エラーメッセージ			
         /// </summary>
         [Column("ERROR_MESSAGE")]
         [MaxLength(60)]
-        public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -83,6 +83,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

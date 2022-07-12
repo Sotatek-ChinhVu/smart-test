@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTAN_KBN_CD")]
         [MaxLength(1)]
-        public string FutanKbnCd { get; set; }
+        public string FutanKbnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
     }
 }

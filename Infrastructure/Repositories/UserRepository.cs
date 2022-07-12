@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private TenantDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContext;
         public UserRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 
         public void Create(User user)
         {
-            //_tenantDataContext = new TenantDataContext();
+            throw new NotImplementedException();
         }
 
         public void Delete(UserId userId)
@@ -29,11 +29,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<User> GetAll()
         {
-            //var users = _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0).Select(u => u.Name).ToList();
-
-            var allUser = _tenantDataContext.UserMsts.ToList();
-
-            return new List<User>();
+            return _tenantDataContext.UserMsts.Select(u => new User(u.Id, u.Name)).ToList();
         }
 
         public int MaxUserId()

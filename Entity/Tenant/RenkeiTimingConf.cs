@@ -38,7 +38,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("EVENT_CD", Order = 4)]
         [MaxLength(11)]
-        public string EventCd { get; set; }
+        public string EventCd { get; set; } = string.Empty;
 
         //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -74,7 +74,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -97,7 +97,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

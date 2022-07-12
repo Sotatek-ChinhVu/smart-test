@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; }
+        public string KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         [Column(name: "NAME")]
         [MaxLength(100)]
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 終了日
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
         /// <summary>
         /// Update type: 
@@ -123,6 +123,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; }
+        public string UpdateType { get; set; } = string.Empty;
     }
 }

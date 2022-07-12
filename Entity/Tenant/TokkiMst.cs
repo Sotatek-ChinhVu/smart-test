@@ -25,20 +25,20 @@ namespace Entity.Tenant
         [Column(name: "TOKKI_CD", Order = 2)]
         //[Index("TOKKI_MST_IDX01", 2)]
         [MaxLength(2)]
-        public string TokkiCd { get; set; }
+        public string TokkiCd { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 特記事項名
-        /// </summary>
-        [Column(name: "TOKKI_NAME")]
+		/// <summary>
+		/// 特記事項名
+		/// </summary>
+		[Column(name: "TOKKI_NAME")]
         [MaxLength(20)]
         [Required]
-        public string TokkiName { get; set; }
+        public string TokkiName { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 使用開始日
-        /// </summary>
-        [Column(name: "START_DATE")]
+		/// <summary>
+		/// 使用開始日
+		/// </summary>
+		[Column(name: "START_DATE")]
         //[Index("TOKKI_MST_IDX01", 3)]
         public int StartDate { get; set; }
 
@@ -68,7 +68,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -88,6 +88,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

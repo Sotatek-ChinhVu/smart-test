@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("DRVALRGY_CD", Order = 1)]
         [MaxLength(8)]
-        public string DrvalrgyCd { get; set; }
+        public string DrvalrgyCd { get; set; } = string.Empty;
 
         /// <summary>
         /// アレルギー関連系統名
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRVALRGY_NAME")]
         [MaxLength(200)]
-        public string DrvalrgyName { get; set; }
+        public string DrvalrgyName { get; set; } = string.Empty;
 
         /// <summary>
         /// アレルギー関連系統グループ
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRVALRGY_GRP")]
         [MaxLength(4)]
-        public string DrvalrgyGrp { get; set; }
+        public string DrvalrgyGrp { get; set; } = string.Empty;
 
         /// <summary>
         /// 優先順位

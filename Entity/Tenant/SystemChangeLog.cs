@@ -25,13 +25,13 @@ namespace Entity.Tenant
         /// File name
         /// </summary>
         [Column(name: "FILE_NAME")]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// Version
         /// </summary>
         [Column(name: "VERSION")]
-        public string Version { get; set; }
+        public string Version { get; set; } = string.Empty;
 
         /// <summary>
         /// IS_PG
@@ -80,7 +80,7 @@ namespace Entity.Tenant
         /// ERR MESSAGE
         /// </summary>
         [Column(name: "ERR_MESSAGE")]
-        public string ErrMessage { get; set; }
+        public string ErrMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

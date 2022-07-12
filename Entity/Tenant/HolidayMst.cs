@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOLIDAY_NAME")]
         [MaxLength(20)]
-        public string HolidayName { get; set; }
+        public string HolidayName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -83,7 +83,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
@@ -103,6 +103,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

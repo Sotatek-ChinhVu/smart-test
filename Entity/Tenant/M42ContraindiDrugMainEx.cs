@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 添付文書レベル
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("BYOTAI_CD", Order = 3)]
         [MaxLength(7)]
-        public string ByotaiCd { get; set; }
+        public string ByotaiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 重篤度グレード
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIO_CD")]
         [MaxLength(1)]
-        public string KioCd { get; set; }
+        public string KioCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 家族歴コード
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FAMILY_CD")]
         [MaxLength(1)]
-        public string FamilyCd { get; set; }
+        public string FamilyCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注意コメントコード
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("CMT_CD", Order = 4)]
         [MaxLength(7)]
-        public string CmtCd { get; set; }
+        public string CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 機序コード
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIJYO_CD")]
         [MaxLength(7)]
-        public string KijyoCd { get; set; }
+        public string KijyoCd { get; set; } = string.Empty;
 
     }
 }

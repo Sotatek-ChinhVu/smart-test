@@ -28,7 +28,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("A_CD", Order = 3)]
         [MaxLength(10)]
-        public string ACd { get; set; }
+        public string ACd { get; set; } = string.Empty;
 
         /// <summary>
         /// Bコード
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("B_CD")]
         [MaxLength(10)]
-        public string BCd { get; set; }
+        public string BCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

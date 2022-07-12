@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("ANALOGUE_CD", Order = 1)]
         [MaxLength(9)]
-        public string AnalogueCd { get; set; }
+        public string AnalogueCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 類似成分名
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ANALOGUE_NAME")]
         [MaxLength(200)]
-        public string AnalogueName { get; set; }
+        public string AnalogueName { get; set; } = string.Empty;
 
     }
 }

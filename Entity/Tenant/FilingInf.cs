@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(300)]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 表示ファイル名
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DSP_FILE_NAME")]
         [MaxLength(1024)]
-        public string DspFileName { get; set; }
+        public string DspFileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -118,6 +118,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

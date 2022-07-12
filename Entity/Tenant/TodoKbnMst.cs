@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TODO_KBN_NAME")]
         [MaxLength(20)]
-        public string TodoKbnName { get; set; }
+        public string TodoKbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 動作コード 
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時 
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

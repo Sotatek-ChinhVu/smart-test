@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("ATTENTION_CMT_CD", Order = 1)]
         [MaxLength(7)]
-        public string AttentionCmtCd { get; set; }
+        public string AttentionCmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注意コメント
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ATTENTION_CMT")]
         [MaxLength(500)]
-        public string AttentionCmt { get; set; }
+        public string AttentionCmt { get; set; } = string.Empty;
 
     }
 }

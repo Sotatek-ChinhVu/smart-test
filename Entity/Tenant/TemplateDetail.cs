@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TITLE")]
         [MaxLength(200)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         /// <summary>
         /// タイプ
@@ -93,7 +93,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEFAULT_VAL")]
         [MaxLength(200)]
-        public string DefaultVal { get; set; }
+        public string DefaultVal { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位名称
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT")]
         [MaxLength(20)]
-        public string Unit { get; set; }
+        public string Unit { get; set; } = string.Empty;
 
         /// <summary>
         /// 改行フラグ
@@ -173,7 +173,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORMULA")]
         [MaxLength(200)]
-        public string Formula { get; set; }
+        public string Formula { get; set; } = string.Empty;
 
         /// <summary>
         /// 小数桁
@@ -208,7 +208,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RENKEI_CD")]
         [MaxLength(20)]
-        public string RenkeiCd { get; set; }
+        public string RenkeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 背景色
@@ -216,7 +216,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BACKGROUND_COLOR")]
         [MaxLength(8)]
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色
@@ -224,7 +224,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FONT_COLOR")]
         [MaxLength(8)]
-        public string FontColor { get; set; }
+        public string FontColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 太字
@@ -271,7 +271,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -294,7 +294,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

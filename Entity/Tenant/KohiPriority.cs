@@ -26,14 +26,14 @@ namespace Entity.Tenant
         //[Key]
         [Column("HOUBETU", Order = 2)]
         [MaxLength(3)]
-        public string Houbetu { get; set; }
+        public string Houbetu { get; set; } = string.Empty;
         /// <summary>
         /// 優先順位
         /// </summary>
         //[Key]
         [Column("PRIORITY_NO", Order = 3)]
         [MaxLength(5)]
-        public string PriorityNo { get; set; }
+        public string PriorityNo { get; set; } = string.Empty;
         /// <summary>
         /// 作成日時
         /// </summary>
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
         /// <summary>
         /// 更新日時
         /// </summary>
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

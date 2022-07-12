@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("HOSOKU")]
-        public string Hosoku { get; set; }
+        public string Hosoku { get; set; } = string.Empty;
 
-}
+    }
 }

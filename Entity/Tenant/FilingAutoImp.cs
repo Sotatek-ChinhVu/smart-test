@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MACHINE")]
         [MaxLength(60)]
-        public string Machine { get; set; }
+        public string Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// 取り込みパス
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IMP_PATH")]
         [MaxLength(300)]
-        public string ImpPath { get; set; }
+        public string ImpPath { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

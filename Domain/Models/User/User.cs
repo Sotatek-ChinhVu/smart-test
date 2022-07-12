@@ -18,5 +18,11 @@ namespace Domain.Models.User
             Id = id;
             Name = name;
         }
+
+        public User(long id, string name)
+        {
+            Id = UserId.From(id);
+            Name = Name.From(name);
+        }
     }
 }

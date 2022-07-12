@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 包括単位１
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         [Column("HOUKATU_GRP_NO1")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
-        public string HoukatuGrpNo1 { get; set; }
+        public string HoukatuGrpNo1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 包括単位２
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         [Column("HOUKATU_GRP_NO2")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
-        public string HoukatuGrpNo2 { get; set; }
+        public string HoukatuGrpNo2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 包括単位３
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         [Column("HOUKATU_GRP_NO3")]
         [CustomAttribute.DefaultValue(0)]
         [MaxLength(7)]
-        public string HoukatuGrpNo3 { get; set; }
+        public string HoukatuGrpNo3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 背反識別（1日につき）
@@ -187,7 +187,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -211,7 +211,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

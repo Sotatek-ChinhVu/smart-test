@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 系統コード
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("CLASS_CD", Order = 2)]
         [MaxLength(8)]
-        public string ClassCd { get; set; }
+        public string ClassCd { get; set; } = string.Empty;
 
     }
 }

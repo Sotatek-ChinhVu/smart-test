@@ -31,7 +31,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("EVENT_CD", Order = 3)]
         [MaxLength(11)]
-        public string EventCd { get; set; }
+        public string EventCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 無効区分

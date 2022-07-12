@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("INTERACTION_PAT_CD", Order = 1)]
-        public string InteractionPatCd { get; set; }
+        public string InteractionPatCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 相互作用コメント
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INTERACTION_PAT_CMT")]
         [MaxLength(200)]
-        public string InteractionPatCmt { get; set; }
+        public string InteractionPatCmt { get; set; } = string.Empty;
 
     }
 }

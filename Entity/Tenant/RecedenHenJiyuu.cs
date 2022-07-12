@@ -55,21 +55,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HENREI_JIYUU_CD")]
         [MaxLength(9)]
-        public string HenreiJiyuuCd { get; set; }
+        public string HenreiJiyuuCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 返戻事由
         /// 
         /// </summary>
         [Column("HENREI_JIYUU")]
-        public string HenreiJiyuu { get; set; }
+        public string HenreiJiyuu { get; set; } = string.Empty;
 
         /// <summary>
         /// 補足情報
         /// 
         /// </summary>
         [Column("HOSOKU")]
-        public string Hosoku { get; set; }
+        public string Hosoku { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -123,7 +123,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

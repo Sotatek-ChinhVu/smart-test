@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PROPERTY")]
         [MaxLength(100)]
-        public string Property { get; set; }
+        public string Property { get; set; } = string.Empty;
 
     }
 }

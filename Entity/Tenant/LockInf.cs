@@ -30,7 +30,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("FUNCTION_CD", Order = 3)]
         [MaxLength(8)]
-        public string FunctionCd { get; set; }
+        public string FunctionCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療日
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("MACHINE")]
-        public string Machine { get; set; }
+        public string Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザーID

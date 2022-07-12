@@ -76,12 +76,12 @@ namespace Entity.Tenant
 		[Column("YOYAKU_TIME")]
 		[MaxLength(6)]
 		[CustomAttribute.DefaultValue("0")]
-		public string YoyakuTime { get; set; }
+		public string YoyakuTime { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 予約者ID
-		/// </summary>
-		[Column("YOYAKU_ID")]
+        /// <summary>
+        /// 予約者ID
+        /// </summary>
+        [Column("YOYAKU_ID")]
 		[CustomAttribute.DefaultValue(0)]
 		public int YoyakuId { get; set; }
        
@@ -99,7 +99,7 @@ namespace Entity.Tenant
         [Column("UKETUKE_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string UketukeTime { get; set; }
+        public string UketukeTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 受付者ID
@@ -122,16 +122,16 @@ namespace Entity.Tenant
         [Column("SIN_START_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string SinStartTime { get; set; }
+        public string SinStartTime { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 診察終了時間
-		///		HH24MISS　※状態が計算以上になった時間								
-		/// </summary>
-		[Column("SIN_END_TIME")]
+        /// <summary>
+        /// 診察終了時間
+        ///		HH24MISS　※状態が計算以上になった時間								
+        /// </summary>
+        [Column("SIN_END_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string SinEndTime { get; set; }
+        public string SinEndTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算時間
@@ -140,7 +140,7 @@ namespace Entity.Tenant
         [Column("KAIKEI_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string KaikeiTime { get; set; }
+        public string KaikeiTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算者ID
@@ -200,7 +200,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CONFIRMATION_RESULT")]
         [MaxLength(120)]
-        public string ConfirmationResult { get; set; }
+        public string ConfirmationResult { get; set; } = string.Empty;
 
         /// <summary>
         /// CONFIRMATION_STATE
@@ -236,12 +236,12 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 更新日時			
-		/// </summary>
-		[Column("UPDATE_DATE")]
+        /// <summary>
+        /// 更新日時			
+        /// </summary>
+        [Column("UPDATE_DATE")]
 		public DateTime UpdateDate { get; set; }
 
 		/// <summary>
@@ -256,6 +256,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
-	}
+		public string UpdateMachine { get; set; }  = string.Empty;
+    }
 }

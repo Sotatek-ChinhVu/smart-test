@@ -28,14 +28,14 @@ namespace Entity.Tenant
         //[Key]
         [Column(name: "BYOMEI_CD", Order = 2)]
         [MaxLength(7)]
-        public string ByomeiCd { get; set; }
+        public string ByomeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名
         /// </summary>
         [Column(name: "BYOMEI")]
         [MaxLength(200)]
-        public string Byomei { get; set; }
+        public string Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 省略病名    
@@ -43,56 +43,56 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SBYOMEI")]
         [MaxLength(200)]
-        public string Sbyomei { get; set; }
+        public string Sbyomei { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称１
         /// </summary>
         [Column("KANA_NAME1")]
         [MaxLength(200)]
-        public string KanaName1 { get; set; }
+        public string KanaName1 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称２
         /// </summary>
         [Column("KANA_NAME2")]
         [MaxLength(200)]
-        public string KanaName2 { get; set; }
+        public string KanaName2 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称３
         /// </summary>
         [Column("KANA_NAME3")]
         [MaxLength(200)]
-        public string KanaName3 { get; set; }
-        
+        public string KanaName3 { get; set; } = string.Empty;
+
         /// <summary>
         /// カナ名称４
         /// </summary>
         [Column("KANA_NAME4")]
         [MaxLength(200)]
-        public string KanaName4 { get; set; }
+        public string KanaName4 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称５
         /// </summary>
         [Column("KANA_NAME5")]
         [MaxLength(200)]
-        public string KanaName5 { get; set; }
+        public string KanaName5 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称６
         /// </summary>
         [Column("KANA_NAME6")]
         [MaxLength(200)]
-        public string KanaName6 { get; set; }
+        public string KanaName6 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称７
         /// </summary>
         [Column("KANA_NAME7")]
         [MaxLength(200)]
-        public string KanaName7 { get; set; }
+        public string KanaName7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 移行先コード
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IKO_CD")]
         [MaxLength(7)]
-        public string IkoCd { get; set; }
+        public string IkoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 特定疾患コード
@@ -142,7 +142,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI_KANRI")]
         [MaxLength(8)]
-        public string ByomeiKanri { get; set; }
+        public string ByomeiKanri { get; set; } = string.Empty;
 
         /// <summary>
         /// 採択区分
@@ -150,7 +150,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SAITAKU_KBN")]
         [MaxLength(1)]
-        public string SaitakuKbn { get; set; }
+        public string SaitakuKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名交換用コード
@@ -158,7 +158,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOUKAN_CD")]
         [MaxLength(4)]
-        public string KoukanCd { get; set; }
+        public string KoukanCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 収載年月日
@@ -196,28 +196,28 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ICD10_1")]
         [MaxLength(5)]
-        public string Icd101 { get; set; }
+        public string Icd101 { get; set; } = string.Empty;
 
         /// <summary>
         /// ＩＣＤ１０－２
         /// </summary>
         [Column("ICD10_2")]
         [MaxLength(5)]
-        public string Icd102 { get; set; }
+        public string Icd102 { get; set; } = string.Empty;
 
         /// <summary>
         /// ＩＣＤ１０－１（２０１３）
         /// </summary>
         [Column("ICD10_1_2013")]
         [MaxLength(5)]
-        public string Icd1012013 { get; set; }
+        public string Icd1012013 { get; set; } = string.Empty;
 
         /// <summary>
         /// ＩＣＤ１０－２（２０１３）
         /// </summary>
         [Column("ICD10_2_2013")]
         [MaxLength(5)]
-        public string Icd1022013 { get; set; }
+        public string Icd1022013 { get; set; } = string.Empty;
 
         /// <summary>
         /// 採用区分
@@ -244,7 +244,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SYUSYOKU_KBN")]
         [MaxLength(8)]
-        public string SyusyokuKbn { get; set; }
+        public string SyusyokuKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	
@@ -265,7 +265,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -285,6 +285,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

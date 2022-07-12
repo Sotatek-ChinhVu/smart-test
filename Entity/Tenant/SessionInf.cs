@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         //[Key]
         [Column("MACHINE", Order = 2)]
-        public string Machine { get; set; }
+        public string Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザーID

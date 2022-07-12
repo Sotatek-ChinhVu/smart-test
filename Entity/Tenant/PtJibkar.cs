@@ -16,7 +16,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("WEB_ID", Order = 2)]
         [MaxLength(16)]
-        public string WebId { get; set; }
+        public string WebId { get; set; } = string.Empty;
 
         [Column("PT_ID")]
         public long PtId { get; set; }
@@ -59,7 +59,7 @@ namespace Entity.Tenant
 
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
@@ -70,6 +70,6 @@ namespace Entity.Tenant
 
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

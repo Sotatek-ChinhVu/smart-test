@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RP_NAME")]
         [MaxLength(240)]
-        public string RpName { get; set; }
+        public string RpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 院内院外区分
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -203,6 +203,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

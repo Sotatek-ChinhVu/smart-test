@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 索引語コード
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("INDEX_CD", Order = 2)]
         [MaxLength(7)]
-        public string IndexCd { get; set; }
+        public string IndexCd { get; set; } = string.Empty;
     }
 }
 

@@ -16,14 +16,14 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column(name: "FORM_CD", Order = 1)]
-        public string FormCd { get; set; }
+        public string FormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形
         /// </summary>
         [Column(name: "FORM")]
         [MaxLength(80)]
-        public string Form { get; set; }
+        public string Form { get; set; } = string.Empty;
     }
 
 }

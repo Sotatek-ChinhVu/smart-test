@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("A_CD", Order = 1)]
         [MaxLength(12)]
-        public string ACd { get; set; }
+        public string ACd { get; set; } = string.Empty;
 
         /// <summary>
         /// Bコード
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("B_CD", Order = 2)]
         [MaxLength(12)]
-        public string BCd { get; set; }
+        public string BCd { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("CMT_CD", Order = 3)]
         [MaxLength(6)]
-        public string CmtCd { get; set; }
+        public string CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 作用機序コード
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("SAYOKIJYO_CD", Order = 4)]
         [MaxLength(6)]
-        public string SayokijyoCd { get; set; }
+        public string SayokijyoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 強度コード
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KYODO_CD")]
         [MaxLength(3)]
-        public string KyodoCd { get; set; }
+        public string KyodoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 強度
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KYODO")]
         [MaxLength(2)]
-        public string Kyodo { get; set; }
+        public string Kyodo { get; set; } = string.Empty;
 
         /// <summary>
         /// データ区分
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DATA_KBN")]
         [MaxLength(1)]
-        public string DataKbn { get; set; }
+        public string DataKbn { get; set; } = string.Empty;
 
     }
 }

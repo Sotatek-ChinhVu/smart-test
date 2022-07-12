@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEMPLATE_NAME")]
         [MaxLength(255)]
-        public string TemplateName { get; set; }
+        public string TemplateName { get; set; } = string.Empty;
 
         /// <summary>
         /// パラメーター
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM")]
         [MaxLength(1000)]
-        public string Param { get; set; }
+        public string Param { get; set; } = string.Empty;
 
         /// <summary>
         /// ファイル名
@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE")]
         [MaxLength(300)]
-        public string File { get; set; }
+        public string File { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

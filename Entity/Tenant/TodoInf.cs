@@ -78,13 +78,13 @@ namespace Entity.Tenant
         /// コメント１ 
         /// </summary>
         [Column("CMT1")]
-        public string Cmt1 { get; set; }
+        public string Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
         [Column("CMT2")]
-        public string Cmt2 { get; set; }
+        public string Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済
@@ -120,7 +120,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時 
@@ -140,7 +140,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

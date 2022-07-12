@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("CLASS_CD", Order = 1)]
         [MaxLength(8)]
-        public string ClassCd { get; set; }
+        public string ClassCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 系統名
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_NAME")]
         [MaxLength(200)]
-        public string ClassName { get; set; }
+        public string ClassName { get; set; } = string.Empty;
 
         /// <summary>
         /// 系統重複チェック対象フラグ
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_DUPLICATION")]
         [MaxLength(1)]
-        public string ClassDuplication { get; set; }
+        public string ClassDuplication { get; set; } = string.Empty;
 
     }
 }

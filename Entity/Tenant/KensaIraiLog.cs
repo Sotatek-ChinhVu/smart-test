@@ -30,7 +30,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("CENTER_CD", Order = 2)]
         [MaxLength(10)]
-        public string CenterCd { get; set; }
+        public string CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成対象日FROM
@@ -51,14 +51,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("IRAI_FILE")]
-        public string IraiFile { get; set; }
+        public string IraiFile { get; set; } = string.Empty;
 
         ///<summary>
         ///依頼リスト		
         /// 
         /// </summary>
         [Column("IRAI_LIST")]
-        public byte[] IraiList { get; set; }
+        public byte[] IraiList { get; set; } = default!;
 
         /// <summary>
         /// 作成日時
@@ -81,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }
