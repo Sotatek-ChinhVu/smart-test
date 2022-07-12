@@ -20,7 +20,7 @@ namespace Infrastructure.CommonDB
         public string GetConnectionString()
         {
             var host = _httpContextAccessor.HttpContext.Request.Host.Value;
-            return "host=localhost;port=5432;database=Emr;user id=postgres;password=Emr!23";
+            return "host=192.168.1.70;port=5432;database=EmrYamamoto;user id=postgres;password=Emr!23";
         }
 
         public TenantDataContext GetDataContext()

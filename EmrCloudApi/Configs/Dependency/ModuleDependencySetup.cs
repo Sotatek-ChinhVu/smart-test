@@ -17,7 +17,6 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
-            SetupDatabase(services);
         }
 
         private void SetupInterfaces(IServiceCollection services)
@@ -41,11 +40,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             var bus = busBuilder.Build(); ;
             services.AddSingleton(bus);
-        }
-
-        private void SetupDatabase(IServiceCollection services)
-        {
-            services.AddDbContextPool<TenantDataContext>(o => o.UseNpgsql("host=localhost;port=5432;database=Emr;user id=postgres;password=Emr!23"));
-        }
+        } 
     }
 }
