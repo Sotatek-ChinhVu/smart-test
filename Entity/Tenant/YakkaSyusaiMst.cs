@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("YAKKA_CD", Order = 2)]
         [MaxLength(12)]
-        public string YakkaCd { get; set; }
+        public string YakkaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 開始日
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN")]
         [MaxLength(255)]
-        public string Seibun { get; set; }
+        public string Seibun { get; set; } = string.Empty;
 
         /// <summary>
         /// 品目名
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HINMOKU")]
         [MaxLength(255)]
-        public string Hinmoku { get; set; }
+        public string Hinmoku { get; set; } = string.Empty;
 
         /// <summary>
         /// 区分
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN")]
         [MaxLength(2)]
-        public string Kbn { get; set; }
+        public string Kbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 収載日
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KEIKA")]
         [MaxLength(255)]
-        public string Keika { get; set; }
+        public string Keika { get; set; } = string.Empty;
 
         /// <summary>
         /// 備考
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(255)]
-        public string Biko { get; set; }
+        public string Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 準先発
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(100)]
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価
@@ -157,7 +157,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

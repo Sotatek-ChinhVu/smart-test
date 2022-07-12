@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RSV_NAME")]
         [MaxLength(120)]
-        public string RsvName { get; set; }
+        public string RsvName { get; set; } = string.Empty;
 
         [Column("SORT_NO")]
         [CustomAttribute.DefaultValue(0)]
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

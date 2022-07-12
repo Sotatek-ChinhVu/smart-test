@@ -31,7 +31,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
-        public string ByomeiBui { get; set; }
+        public string ByomeiBui { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -51,6 +51,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_CD")]
         [MaxLength(10)]
-        public string CenterCd { get; set; }
+        public string CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 乳び
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NYUBI")]
         [MaxLength(3)]
-        public string Nyubi { get; set; }
+        public string Nyubi { get; set; } = string.Empty;
 
         /// <summary>
         /// 溶血
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOKETU")]
         [MaxLength(3)]
-        public string Yoketu { get; set; }
+        public string Yoketu { get; set; } = string.Empty;
 
         /// <summary>
         /// ビリルビン
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BILIRUBIN")]
         [MaxLength(3)]
-        public string Bilirubin { get; set; }
+        public string Bilirubin { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -154,7 +154,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -176,7 +176,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

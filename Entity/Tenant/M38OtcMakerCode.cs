@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("MAKER_CD", Order = 1)]
-        public string MakerCd { get; set; }
+        public string MakerCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 会社名
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAKER_NAME")]
         [MaxLength(200)]
-        public string MakerName { get; set; }
+        public string MakerName { get; set; } = string.Empty;
 
         /// <summary>
         /// 会社名読み
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAKER_KANA")]
         [MaxLength(400)]
-        public string MakerKana { get; set; }
+        public string MakerKana { get; set; } = string.Empty;
 
     }
 }

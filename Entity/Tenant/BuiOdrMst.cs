@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ODR_BUI")]
         [MaxLength(100)]
-        public string OdrBui { get; set; }
+        public string OdrBui { get; set; } = string.Empty;
 
         /// <summary>
         /// 左右区分
@@ -125,6 +125,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

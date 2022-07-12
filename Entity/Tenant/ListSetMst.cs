@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 名称
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SET_NAME")]
         [MaxLength(240)]
-        public string SetName { get; set; }
+        public string SetName { get; set; } = string.Empty;
 
         /// <summary>
         /// タイトル
@@ -141,7 +141,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(240)]
-        public string CmtName { get; set; }
+        public string CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -149,7 +149,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; }
+        public string CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -180,7 +180,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -203,7 +203,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

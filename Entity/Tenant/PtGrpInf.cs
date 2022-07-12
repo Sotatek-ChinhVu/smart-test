@@ -54,12 +54,12 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "GRP_CODE")]
         [MaxLength(4)]
-        public string GroupCode { get; set; }
+        public string GroupCode { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 削除区分
-        /// </summary>
-        [Column(name: "IS_DELETED")]
+		/// <summary>
+		/// 削除区分
+		/// </summary>
+		[Column(name: "IS_DELETED")]
         [CustomAttribute.DefaultValue(0)]
 		public int IsDeleted { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -102,6 +102,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOUI_GRP_NAME")]
         [MaxLength(20)]
-        public string KouiGrpName { get; set; }
+        public string KouiGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 行為グループ名
@@ -58,7 +58,7 @@ namespace Entity.Tenant
         [Required]
         [Column("KOUI_NAME")]
         [MaxLength(20)]
-        public string KouiName { get; set; }
+        public string KouiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	
@@ -79,6 +79,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
     }
 }

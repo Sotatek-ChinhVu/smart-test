@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("FUKUSAYO_CD", Order = 1)]
-        public string FukusayoCd { get; set; }
+        public string FukusayoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 副作用コメント
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUKUSAYO_CMT")]
         [MaxLength(200)]
-        public string FukusayoCmt { get; set; }
+        public string FukusayoCmt { get; set; } = string.Empty;
 
     }
 }

@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("PRECAUTION_CD", Order = 1)]
-        public string PrecautionCd { get; set; }
+        public string PrecautionCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 拡張コード
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         //[Key]
         [Column("EXTEND_CD", Order = 2)]
-        public string ExtendCd { get; set; }
+        public string ExtendCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注意事項コメント
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PRECAUTION_CMT")]
         [MaxLength(200)]
-        public string PrecautionCmt { get; set; }
+        public string PrecautionCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 属性コード
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 1:男性 2:女性
         /// </summary>
         [Column("SEX_CD")]
-        public string SexCd { get; set; }
+        public string SexCd { get; set; } = string.Empty;
 
     }
 }

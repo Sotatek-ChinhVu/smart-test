@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("FOOD_KBN", Order = 1)]
         [MaxLength(2)]
-        public string FoodKbn { get; set; }
+        public string FoodKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 名称
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         [Column("FOOD_NAME")]
         [Required]
         [MaxLength(60)]
-        public string FoodName { get; set; }
+        public string FoodName { get; set; } = string.Empty;
 
     }
 }

@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 有効開始年月日
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MASTER_SBT")]
         [MaxLength(1)]
-        public string MasterSbt { get; set; }
+        public string MasterSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為区分
@@ -68,56 +68,56 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NAME")]
         [MaxLength(240)]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称１
         /// </summary>
         [Column("KANA_NAME1")]
         [MaxLength(120)]
-        public string KanaName1 { get; set; }
+        public string KanaName1 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称２
         /// </summary>
         [Column("KANA_NAME2")]
         [MaxLength(120)]
-        public string KanaName2 { get; set; }
+        public string KanaName2 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称３
         /// </summary>
         [Column("KANA_NAME3")]
         [MaxLength(120)]
-        public string KanaName3 { get; set; }
+        public string KanaName3 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称４
         /// </summary>
         [Column("KANA_NAME4")]
         [MaxLength(120)]
-        public string KanaName4 { get; set; }
+        public string KanaName4 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称５
         /// </summary>
         [Column("KANA_NAME5")]
         [MaxLength(120)]
-        public string KanaName5 { get; set; }
+        public string KanaName5 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称６
         /// </summary>
         [Column("KANA_NAME6")]
         [MaxLength(120)]
-        public string KanaName6 { get; set; }
+        public string KanaName6 { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称７
         /// </summary>
         [Column("KANA_NAME7")]
         [MaxLength(120)]
-        public string KanaName7 { get; set; }
+        public string KanaName7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 領収証用名称
@@ -125,7 +125,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RYOSYU_NAME")]
         [MaxLength(240)]
-        public string RyosyuName { get; set; }
+        public string RyosyuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 請求用名称
@@ -133,7 +133,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_NAME")]
         [MaxLength(240)]
-        public string ReceName { get; set; }
+        public string ReceName { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数識別
@@ -166,14 +166,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_UNIT_CD")]
         [MaxLength(3)]
-        public string ReceUnitCd { get; set; }
+        public string ReceUnitCd { get; set; } = string.Empty;
 
         /// <summary>
         /// レセ単位名称
         /// </summary>
         [Column("RECE_UNIT_NAME")]
         [MaxLength(24)]
-        public string ReceUnitName { get; set; }
+        public string ReceUnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// オーダー単位名称
@@ -181,7 +181,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ODR_UNIT_NAME")]
         [MaxLength(24)]
-        public string OdrUnitName { get; set; }
+        public string OdrUnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量換算単位名称
@@ -189,7 +189,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CNV_UNIT_NAME")]
         [MaxLength(24)]
-        public string CnvUnitName { get; set; }
+        public string CnvUnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// オーダー単位換算値
@@ -399,7 +399,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TYU_CD")]
         [MaxLength(4)]
-        public string TyuCd { get; set; }
+        public string TyuCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注加算通番
@@ -410,7 +410,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TYU_SEQ")]
         [MaxLength(1)]
-        public string TyuSeq { get; set; }
+        public string TyuSeq { get; set; } = string.Empty;
 
         /// <summary>
         /// 通則年齢
@@ -441,7 +441,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MIN_AGE")]
         [MaxLength(2)]
-        public string MinAge { get; set; }
+        public string MinAge { get; set; } = string.Empty;
 
         /// <summary>
         /// 上下限年齢上限年齢
@@ -458,7 +458,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAX_AGE")]
         [MaxLength(2)]
-        public string MaxAge { get; set; }
+        public string MaxAge { get; set; } = string.Empty;
 
         /// <summary>
         /// 上下限年齢チェック
@@ -841,7 +841,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEN_KBN_NO")]
         [MaxLength(30)]
-        public string TenKbnNo { get; set; }
+        public string TenKbnNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 短期滞在手術
@@ -973,7 +973,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MIN1")]
         [MaxLength(2)]
-        public string AgekasanMin1 { get; set; }
+        public string AgekasanMin1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算上限年齢１
@@ -981,7 +981,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MAX1")]
         [MaxLength(2)]
-        public string AgekasanMax1 { get; set; }
+        public string AgekasanMax1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算注加算診療行為コード１
@@ -989,7 +989,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_CD1")]
         [MaxLength(10)]
-        public string AgekasanCd1 { get; set; }
+        public string AgekasanCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算下限年齢２
@@ -997,7 +997,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MIN2")]
         [MaxLength(2)]
-        public string AgekasanMin2 { get; set; }
+        public string AgekasanMin2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算上限年齢２
@@ -1005,7 +1005,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MAX2")]
         [MaxLength(2)]
-        public string AgekasanMax2 { get; set; }
+        public string AgekasanMax2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算注加算診療行為コード２
@@ -1013,7 +1013,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_CD2")]
         [MaxLength(10)]
-        public string AgekasanCd2 { get; set; }
+        public string AgekasanCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算下限年齢３
@@ -1021,7 +1021,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MIN3")]
         [MaxLength(2)]
-        public string AgekasanMin3 { get; set; }
+        public string AgekasanMin3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算上限年齢３
@@ -1029,7 +1029,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MAX3")]
         [MaxLength(2)]
-        public string AgekasanMax3 { get; set; }
+        public string AgekasanMax3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算注加算診療行為コード３
@@ -1037,7 +1037,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_CD3")]
         [MaxLength(10)]
-        public string AgekasanCd3 { get; set; }
+        public string AgekasanCd3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算下限年齢４
@@ -1045,7 +1045,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MIN4")]
         [MaxLength(2)]
-        public string AgekasanMin4 { get; set; }
+        public string AgekasanMin4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算上限年齢４
@@ -1053,7 +1053,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_MAX4")]
         [MaxLength(2)]
-        public string AgekasanMax4 { get; set; }
+        public string AgekasanMax4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢加算注加算診療行為コード４
@@ -1061,7 +1061,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGEKASAN_CD4")]
         [MaxLength(10)]
-        public string AgekasanCd4 { get; set; }
+        public string AgekasanCd4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 検体検査コメント
@@ -1240,7 +1240,7 @@ namespace Entity.Tenant
         [Column("SYUKEI_SAKI")]
         [MaxLength(3)]
         [CustomAttribute.DefaultValue(0)]
-        public string SyukeiSaki { get; set; }
+        public string SyukeiSaki { get; set; } = string.Empty;
 
         /// <summary>
         /// コード表用区分－区分
@@ -1257,7 +1257,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_KBN")]
         [MaxLength(1)]
-        public string CdKbn { get; set; }
+        public string CdKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// コード表用区分－章
@@ -1312,7 +1312,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOKUJI_KBN")]
         [MaxLength(1)]
-        public string KokujiKbn { get; set; }
+        public string KokujiKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 告知・通知関連番号－章
@@ -1368,7 +1368,7 @@ namespace Entity.Tenant
         [Column("KOKUJI1")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
-        public string Kokuji1 { get; set; }
+        public string Kokuji1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 告示等識別区分（２）
@@ -1383,7 +1383,7 @@ namespace Entity.Tenant
         [Column("KOKUJI2")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(1)]
-        public string Kokuji2 { get; set; }
+        public string Kokuji2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 公表順序番号
@@ -1401,7 +1401,7 @@ namespace Entity.Tenant
         [Column("YJ_CD")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(12)]
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価基準収載医薬品コード
@@ -1410,7 +1410,7 @@ namespace Entity.Tenant
         [Column("YAKKA_CD")]
         [CustomAttribute.DefaultValue("0")]
         [MaxLength(12)]
-        public string YakkaCd { get; set; }
+        public string YakkaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 収載方式等識別
@@ -1434,7 +1434,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SYOHIN_KANREN")]
         [MaxLength(9)]
-        public string SyohinKanren { get; set; }
+        public string SyohinKanren { get; set; } = string.Empty;
 
         /// <summary>
         /// 変更年月日
@@ -1576,7 +1576,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME_CD")]
         [MaxLength(12)]
-        public string IpnNameCd { get; set; }
+        public string IpnNameCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 服用時設定-起床時
@@ -1671,7 +1671,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SANTEI_ITEM_CD")]
         [MaxLength(10)]
-        public string SanteiItemCd { get; set; }
+        public string SanteiItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定外区分
@@ -1687,7 +1687,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_ITEM_CD")]
         [MaxLength(20)]
-        public string KensaItemCd { get; set; }
+        public string KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査項目コード連番
@@ -1703,7 +1703,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RENKEI_CD1")]
         [MaxLength(20)]
-        public string RenkeiCd1 { get; set; }
+        public string RenkeiCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 連携コード２
@@ -1711,7 +1711,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RENKEI_CD2")]
         [MaxLength(20)]
-        public string RenkeiCd2 { get; set; }
+        public string RenkeiCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 採血料区分
@@ -1836,7 +1836,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
@@ -1856,6 +1856,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

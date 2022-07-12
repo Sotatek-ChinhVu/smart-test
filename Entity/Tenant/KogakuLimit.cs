@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INCOME_KBN")]
         [MaxLength(20)]
-        public string IncomeKbn { get; set; }
+        public string IncomeKbn { get; set; } = string.Empty;
         /// <summary>
         /// 開始日
         /// </summary>
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
         /// <summary>
         /// 更新日時
         /// </summary>
@@ -103,6 +103,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

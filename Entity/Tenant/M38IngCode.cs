@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分
@@ -22,6 +22,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN")]
         [MaxLength(200)]
-        public string Seibun { get; set; }
+        public string Seibun { get; set; } = string.Empty;
     }
 }

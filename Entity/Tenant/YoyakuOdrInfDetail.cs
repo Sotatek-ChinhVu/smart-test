@@ -82,14 +82,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
         /// </summary>
         [Column("ITEM_NAME")]
         [MaxLength(120)]
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(24)]
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位種別
@@ -209,14 +209,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_CD")]
         [MaxLength(12)]
-        public string IpnCd { get; set; }
+        public string IpnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(120)]
-        public string IpnName { get; set; }
+        public string IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分割調剤
@@ -224,7 +224,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BUNKATU")]
         [MaxLength(10)]
-        public string Bunkatu { get; set; }
+        public string Bunkatu { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント名称
@@ -233,7 +233,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(32)]
-        public string CmtName { get; set; }
+        public string CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -242,7 +242,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; }
+        public string CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色

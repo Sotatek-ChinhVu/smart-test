@@ -14,14 +14,14 @@ namespace Entity.Tenant
         [Key]
         [Column("FUKUSAYO_INIT_CD", Order = 1)]
         [MaxLength(6)]
-        public string FukusayoInitCd { get; set; }
+        public string FukusayoInitCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 重大な副作用の初期症状コメント
         /// 
         /// </summary>
         [Column("FUKUSAYO_INIT_CMT")]
-        public string FukusayoInitCmt { get; set; }
+        public string FukusayoInitCmt { get; set; } = string.Empty;
 
     }
 }

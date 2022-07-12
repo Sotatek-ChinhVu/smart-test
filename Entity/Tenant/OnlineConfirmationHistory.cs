@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 資格確認結果
         /// </summary>
         [Column("CONFIRMATION_RESULT")]
-        public string ConfirmationResult { get; set; }
+        public string ConfirmationResult { get; set; } = string.Empty;
 
         /// <summary>
         /// 登録日時
@@ -64,6 +64,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
     }
 }

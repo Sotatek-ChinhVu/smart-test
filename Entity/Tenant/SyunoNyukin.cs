@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NYUKIN_CMT")]
         [MaxLength(100)]
-        public string NyukinCmt { get; set; }
+        public string NyukinCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 入金時請求点数
@@ -128,7 +128,7 @@ namespace Entity.Tenant
         /// 入金時の診療明細
         /// </summary>
         [Column("NYUKINJI_DETAIL")]
-        public string NyukinjiDetail { get; set; }
+        public string NyukinjiDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -160,7 +160,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -183,7 +183,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

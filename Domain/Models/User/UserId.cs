@@ -9,16 +9,16 @@ namespace Domain.Models.User
 {
     public class UserId : ValueObject
     {
-        private readonly int _value;
+        private readonly long _value;
 
-        public int Value => _value;
+        public long Value => _value;
 
-        private UserId(int value)
+        private UserId(long value)
         {
             _value = value;
         }
 
-        public static UserId From(int value)
+        public static UserId From(long value)
         {
             return new UserId(value);
         }

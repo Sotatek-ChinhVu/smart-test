@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(9)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("SEQ_NO", Order = 2)]
         [MaxLength(2)]
-        public string SeqNo { get; set; }
+        public string SeqNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 活性体成分コード
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KASSEITAI_CD")]
         [MaxLength(9)]
-        public string KasseitaiCd { get; set; }
+        public string KasseitaiCd { get; set; } = string.Empty;
 
     }
 }

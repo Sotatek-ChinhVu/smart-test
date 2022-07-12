@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("PI_ID", Order = 1)]
         [MaxLength(6)]
-        public string PiId { get; set; }
+        public string PiId { get; set; } = string.Empty;
 
         /// <summary>
         /// 枝番
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("BRANCH", Order = 2)]
         [MaxLength(3)]
-        public string Branch { get; set; }
+        public string Branch { get; set; } = string.Empty;
 
         /// <summary>
         /// JPNコード
@@ -33,7 +33,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("JPN", Order = 3)]
         [MaxLength(6)]
-        public string Jpn { get; set; }
+        public string Jpn { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("TEXT")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
     }
 }

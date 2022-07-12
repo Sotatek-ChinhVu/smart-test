@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("EVENT_CD", Order = 1)]
         [MaxLength(11)]
-        public string EventCd { get; set; }
+        public string EventCd { get; set; } = string.Empty;
 
         /// <summary>
         /// イベント名
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EVENT_NAME")]
         [MaxLength(100)]
-        public string EventName { get; set; }
+        public string EventName { get; set; } = string.Empty;
 
         /// <summary>
         /// 監査証跡

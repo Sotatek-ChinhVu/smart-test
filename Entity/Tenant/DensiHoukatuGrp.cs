@@ -25,7 +25,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("HOUKATU_GRP_NO", Order = 2)]
         [MaxLength(7)]
-        public string HoukatuGrpNo { get; set; }
+        public string HoukatuGrpNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 特例条件
@@ -124,7 +124,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -148,7 +148,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

@@ -5,18 +5,9 @@ namespace EmrCloudApi.Tenant.Presenters
 {
     public class CreateUserPresenter : ICreateUserOutputPort
     {
-        public ActionResult<String> Result { get; private set; }
-
         public void Complete(CreateUserOutputData outputData)
         {
-            if (outputData.Status == CreateUserStatus.Success)
-            {
-
-            }
-            else
-            {
-
-            }
+            throw new NotImplementedException();
         }
     }
 }

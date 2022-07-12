@@ -85,14 +85,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
         /// </summary>
         [Column("ITEM_NAME")]
         [MaxLength(240)]
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
@@ -106,7 +106,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(24)]
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位種別
@@ -196,7 +196,7 @@ namespace Entity.Tenant
         ///          0: 診療行為以外（薬剤、特材等）
         /// </summary>
         [Column("KOKUJI1")]
-        public string Kokuji1 { get; set; }
+        public string Kokuji1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 告示等識別区分（２）
@@ -209,7 +209,7 @@ namespace Entity.Tenant
         ///           0: 診療行為以外（薬剤、特材等）
         /// </summary>
         [Column("KOKUJI2")]
-        public string Kokiji2 { get; set; }
+        public string Kokiji2 { get; set; } = string.Empty;
 
         /// <summary>
         /// レセ非表示区分
@@ -225,14 +225,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_CD")]
         [MaxLength(12)]
-        public string IpnCd { get; set; }
+        public string IpnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(120)]
-        public string IpnName { get; set; }
+        public string IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 実施区分
@@ -260,14 +260,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("JISSI_MACHINE")]
         [MaxLength(60)]
-        public string JissiMachine { get; set; }
+        public string JissiMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査依頼コード
         /// </summary>
         [Column("REQ_CD")]
         [MaxLength(10)]
-        public string ReqCd { get; set; }
+        public string ReqCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 分割調剤
@@ -275,7 +275,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BUNKATU")]
         [MaxLength(10)]
-        public string Bunkatu { get; set; }
+        public string Bunkatu { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントマスターの名称
@@ -283,7 +283,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(240)]
-        public string CmtName { get; set; }
+        public string CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -292,14 +292,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; }
+        public string CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色
         /// </summary>
         [Column("FONT_COLOR")]
         [MaxLength(8)]
-        public string FontColor { get; set; }
+        public string FontColor { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント改行区分

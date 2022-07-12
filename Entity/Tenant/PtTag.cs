@@ -39,14 +39,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column(name: "MEMO")]
-        public string Memo { get; set; }
+        public string Memo { get; set; } = string.Empty;
 
         /// <summary>
         /// メモデータ
         /// 
         /// </summary>
         [Column(name: "MEMO_DATA")]
-        public byte[] MemoData { get; set; }
+        public byte[] MemoData { get; set; } = default!;
 
         /// <summary>
         /// 適用開始日
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "BACKGROUND_COLOR")]
         [MaxLength(8)]
-        public string BackgroundColor { get; set; }
+        public string BackgroundColor { get; set; } = string.Empty;
 
 
         [Column(name: "TAG_GRP_CD")]
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -199,7 +199,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

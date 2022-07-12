@@ -13,25 +13,25 @@ namespace Entity.Tenant
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; }
+        public string OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; }
+        public string OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; }
+        public string OpHostName { get; set; } = string.Empty;
 
         [Column("HP_ID")]
         public int HpId { get; set; }
 
         [Column("WEB_ID")]
         [MaxLength(16)]
-        public string WebId { get; set; }
+        public string WebId { get; set; } = string.Empty;
 
         [Column("PT_ID")]
         public long PtId { get; set; }
@@ -74,7 +74,7 @@ namespace Entity.Tenant
 
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
@@ -85,6 +85,6 @@ namespace Entity.Tenant
 
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

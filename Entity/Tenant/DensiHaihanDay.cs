@@ -30,7 +30,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ITEM_CD1", Order = 3)]
         [MaxLength(10)]
-        public string ItemCd1 { get; set; }
+        public string ItemCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード２
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD2")]
         [MaxLength(10)]
-        public string ItemCd2 { get; set; }
+        public string ItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 背反区分
@@ -136,7 +136,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -160,7 +160,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

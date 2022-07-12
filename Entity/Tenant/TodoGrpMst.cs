@@ -28,14 +28,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TODO_GRP_NAME")]
         [MaxLength(20)]
-        public string TodoGrpName { get; set; }
+        public string TodoGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類色 
         /// </summary>
         [Column("GRP_COLOR")]
         [MaxLength(8)]
-        public string GrpColor { get; set; }
+        public string GrpColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 順番 
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

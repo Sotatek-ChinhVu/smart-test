@@ -22,7 +22,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("SEIBUN_CD", Order = 2)]
         [MaxLength(7)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 種別

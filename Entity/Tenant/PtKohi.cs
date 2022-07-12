@@ -67,24 +67,24 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTANSYA_NO")]
         [MaxLength(8)]
-        public string FutansyaNo { get; set; }
+        public string FutansyaNo { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 受給者番号
-        /// </summary>
-        [Column("JYUKYUSYA_NO")]
+		/// <summary>
+		/// 受給者番号
+		/// </summary>
+		[Column("JYUKYUSYA_NO")]
         [MaxLength(7)]
-        public string JyukyusyaNo { get; set; }
+        public string JyukyusyaNo { get; set; } = string.Empty;
 
 
-        /// <summary>
-        /// 保険種別区分
-        ///		2:マル長
-        ///		5:生活保護 
-        ///		6:分点公費
-        ///		7:一般公費  
-        /// </summary>
-        [Column(name: "HOKEN_SBT_KBN")]
+		/// <summary>
+		/// 保険種別区分
+		///		2:マル長
+		///		5:生活保護 
+		///		6:分点公費
+		///		7:一般公費  
+		/// </summary>
+		[Column(name: "HOKEN_SBT_KBN")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenSbtKbn { get; set; }
 
@@ -94,14 +94,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; }
+        public string Houbetu { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 特殊受給者番号
-        /// </summary>
-        [Column("TOKUSYU_NO")]
+		/// <summary>
+		/// 特殊受給者番号
+		/// </summary>
+		[Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string TokusyuNo { get; set; }
+        public string TokusyuNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 資格取得日
@@ -178,7 +178,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -198,6 +198,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

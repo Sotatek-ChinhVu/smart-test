@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("RECE_KA_CD", Order = 1)]
         [MaxLength(2)]
-        public string ReceKaCd { get; set; }
+        public string ReceKaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KA_NAME")]
         [MaxLength(40)]
-        public string KaName { get; set; }
+        public string KaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -76,7 +76,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

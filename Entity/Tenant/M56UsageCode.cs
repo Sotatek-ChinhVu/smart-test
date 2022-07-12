@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("YOHO_CD", Order = 1)]
-        public string YohoCd { get; set; }
+        public string YohoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法
@@ -21,6 +21,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO")]
         [MaxLength(200)]
-        public string Yoho { get; set; }
+        public string Yoho { get; set; } = string.Empty;
     }
 }

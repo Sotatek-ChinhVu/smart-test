@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("CLASS_CD", Order = 1)]
-        public string ClassCd { get; set; }
+        public string ClassCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類名
@@ -21,13 +21,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_NAME")]
         [MaxLength(100)]
-        public string ClassName { get; set; }
+        public string ClassName { get; set; } = string.Empty;
 
         /// <summary>
         /// 大分類コード
         /// 数字1桁
         /// </summary>
         [Column("MAJOR_DIV_CD")]
-        public string MajorDivCd { get; set; }
+        public string MajorDivCd { get; set; } = string.Empty;
     }
 }

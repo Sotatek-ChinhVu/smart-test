@@ -81,7 +81,7 @@ namespace Entity.Tenant
         /// 診療明細（SIN_KOUI.DETAIL_DATA）
         /// </summary>
         [Column("SEIKYU_DETAIL")]
-        public string SeikyuDetail { get; set; }
+        public string SeikyuDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 新請求点数
@@ -112,7 +112,7 @@ namespace Entity.Tenant
         ///     SIN_KOUI.DETAIL_DATA
         /// </summary>
         [Column("NEW_SEIKYU_DETAIL")]
-        public string NewSeikyuDetail { get; set; }
+        public string NewSeikyuDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -136,7 +136,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -160,7 +160,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 

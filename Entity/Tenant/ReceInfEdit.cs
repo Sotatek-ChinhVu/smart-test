@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_SBT")]
         [MaxLength(4)]
-        public string ReceSbt { get; set; }
+        public string ReceSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 法別番号
@@ -81,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; }
+        public string Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公１法別
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI1_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi1Houbetu { get; set; }
+        public string Kohi1Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公２法別
@@ -97,7 +97,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI2_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi2Houbetu { get; set; }
+        public string Kohi2Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公３法別
@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi3Houbetu { get; set; }
+        public string Kohi3Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公４法別
@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI4_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi4Houbetu { get; set; }
+        public string Kohi4Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 保険レセ点数
@@ -254,7 +254,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI")]
         [MaxLength(10)]
-        public string Tokki { get; set; }
+        public string Tokki { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項１
@@ -262,7 +262,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI1")]
         [MaxLength(10)]
-        public string Tokki1 { get; set; }
+        public string Tokki1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項２
@@ -270,7 +270,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI2")]
         [MaxLength(10)]
-        public string Tokki2 { get; set; }
+        public string Tokki2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項３
@@ -278,7 +278,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI3")]
         [MaxLength(10)]
-        public string Tokki3 { get; set; }
+        public string Tokki3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項４
@@ -286,7 +286,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI4")]
         [MaxLength(10)]
-        public string Tokki4 { get; set; }
+        public string Tokki4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項５
@@ -294,7 +294,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI5")]
         [MaxLength(10)]
-        public string Tokki5 { get; set; }
+        public string Tokki5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -326,7 +326,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -350,7 +350,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

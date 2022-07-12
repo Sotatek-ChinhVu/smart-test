@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("YJ_CD", Order = 1)]
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("PRECAUTION_CD")]
-        public string PrecautionCd { get; set; }
+        public string PrecautionCd { get; set; } = string.Empty;
 
     }
 }

@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RENKEI_NAME")]
         [MaxLength(255)]
-        public string RenkeiName { get; set; }
+        public string RenkeiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連携種別

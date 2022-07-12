@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "GRP_NAME")]
         [MaxLength(20)]
-        public string GrpName { get; set; }
+        public string GrpName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 削除区分
@@ -67,7 +67,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -87,6 +87,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

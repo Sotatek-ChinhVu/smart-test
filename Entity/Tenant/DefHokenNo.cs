@@ -29,7 +29,7 @@ namespace Entity.Tenant
         //[Key]
         [Column(name: "DIGIT_1", Order = 2)]
         [MaxLength(1)]
-        public string Digit1 { get; set; }
+        public string Digit1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 2桁目
@@ -37,49 +37,49 @@ namespace Entity.Tenant
         //[Key]
         [Column(name: "DIGIT_2", Order = 3)]
         [MaxLength(1)]
-        public string Digit2 { get; set; }
+        public string Digit2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 3桁目
         /// </summary>
         [Column(name: "DIGIT_3")]
         [MaxLength(1)]
-        public string Digit3 { get; set; }
+        public string Digit3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 4桁目
         /// </summary>
         [Column(name: "DIGIT_4")]
         [MaxLength(1)]
-        public string Digit4 { get; set; }
+        public string Digit4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 5桁目
         /// </summary>
         [Column(name: "DIGIT_5")]
         [MaxLength(1)]
-        public string Digit5 { get; set; }
+        public string Digit5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 6桁目
         /// </summary>
         [Column(name: "DIGIT_6")]
         [MaxLength(1)]
-        public string Digit6 { get; set; }
+        public string Digit6 { get; set; } = string.Empty;
 
         /// <summary>
         /// 7桁目
         /// </summary>
         [Column(name: "DIGIT_7")]
         [MaxLength(1)]
-        public string Digit7 { get; set; }
+        public string Digit7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 8桁目
         /// </summary>
         [Column(name: "DIGIT_8")]
         [MaxLength(1)]
-        public string Digit8 { get; set; }
+        public string Digit8 { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -137,7 +137,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -157,6 +157,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

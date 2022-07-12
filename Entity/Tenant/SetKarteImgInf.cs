@@ -58,6 +58,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(100)]
-        public string FileName { get; set; }
+        public string FileName { get; set; } = string.Empty;
     }
 }

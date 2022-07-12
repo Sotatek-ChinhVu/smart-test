@@ -16,7 +16,7 @@ namespace Entity.Tenant
         [Key]
         [Column(name: "ROUDOU_CD", Order = 1)]
         [MaxLength(2)]
-        public string RoudouCd { get; set; }
+        public string RoudouCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 労働局名
@@ -24,12 +24,12 @@ namespace Entity.Tenant
         [Column(name: "ROUDOU_NAME")]
         [MaxLength(60)]
         [Required]
-        public string RoudouName { get; set; }
+        public string RoudouName { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 登録日時
-		/// </summary>
-		[Column("CREATE_DATE")]
+        /// <summary>
+        /// 登録日時
+        /// </summary>
+        [Column("CREATE_DATE")]
 		[CustomAttribute.DefaultValueSql("current_timestamp")]
 		public DateTime CreateDate { get; set; }
 

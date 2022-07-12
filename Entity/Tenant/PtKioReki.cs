@@ -46,14 +46,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI_CD")]
         [MaxLength(7)]
-        public string ByomeiCd { get; set; }
+        public string ByomeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病態コード
         /// 
         /// </summary>
         [Column("BYOTAI_CD")]
-        public string ByotaiCd { get; set; }
+        public string ByotaiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(400)]
-        public string Byomei { get; set; }
+        public string Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 発症時期
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; }
+        public string Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -108,7 +108,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -131,6 +131,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

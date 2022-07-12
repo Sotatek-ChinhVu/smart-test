@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TRADE_NAME")]
         [MaxLength(200)]
-        public string TradeName { get; set; }
+        public string TradeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 開始日
@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; }
+        public string Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -124,6 +124,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

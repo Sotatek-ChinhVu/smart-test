@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REC_ID")]
         [MaxLength(2)]
-        public string RecId { get; set; }
+        public string RecId { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目種別
@@ -95,7 +95,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// オーダー項目コード
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ODR_ITEM_CD")]
         [MaxLength(10)]
-        public string OdrItemCd { get; set; }
+        public string OdrItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_NAME")]
         [MaxLength(1000)]
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
@@ -151,7 +151,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(20)]
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数識別
@@ -195,7 +195,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_KBN")]
         [MaxLength(1)]
-        public string CdKbn { get; set; }
+        public string CdKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// コード表用区分－区分番号
@@ -227,7 +227,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOKUJI1")]
         [MaxLength(1)]
-        public string Kokuji1 { get; set; }
+        public string Kokuji1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 告示等識別区分２
@@ -235,7 +235,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOKUJI2")]
         [MaxLength(1)]
-        public string Kokuji2 { get; set; }
+        public string Kokuji2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 注加算コード
@@ -243,7 +243,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TYU_CD")]
         [MaxLength(4)]
-        public string TyuCd { get; set; }
+        public string TyuCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注加算通番
@@ -251,7 +251,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TYU_SEQ")]
         [MaxLength(1)]
-        public string TyuSeq { get; set; }
+        public string TyuSeq { get; set; } = string.Empty;
 
         /// <summary>
         /// 通則年齢加算
@@ -315,7 +315,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(160)]
-        public string CmtOpt { get; set; }
+        public string CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント１
@@ -323,7 +323,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT1")]
         [MaxLength(1000)]
-        public string Cmt1 { get; set; }
+        public string Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード１
@@ -331,7 +331,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD1")]
         [MaxLength(10)]
-        public string CmtCd1 { get; set; }
+        public string CmtCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文１
@@ -339,7 +339,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT1")]
         [MaxLength(160)]
-        public string CmtOpt1 { get; set; }
+        public string CmtOpt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２
@@ -347,7 +347,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT2")]
         [MaxLength(1000)]
-        public string Cmt2 { get; set; }
+        public string Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード２
@@ -355,7 +355,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD2")]
         [MaxLength(10)]
-        public string CmtCd2 { get; set; }
+        public string CmtCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文２
@@ -363,7 +363,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT2")]
         [MaxLength(160)]
-        public string CmtOpt2 { get; set; }
+        public string CmtOpt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント３
@@ -371,7 +371,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT3")]
         [MaxLength(1000)]
-        public string Cmt3 { get; set; }
+        public string Cmt3 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード３
@@ -379,7 +379,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD3")]
         [MaxLength(10)]
-        public string CmtCd3 { get; set; }
+        public string CmtCd3 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文３
@@ -387,7 +387,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT3")]
         [MaxLength(160)]
-        public string CmtOpt3 { get; set; }
+        public string CmtOpt3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ

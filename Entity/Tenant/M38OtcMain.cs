@@ -21,21 +21,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("OTC_CD")]
         [MaxLength(12)]
-        public string OtcCd { get; set; }
+        public string OtcCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品名
         /// </summary>
         [Column("TRADE_NAME")]
         [MaxLength(200)]
-        public string TradeName { get; set; }
+        public string TradeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品名読み
         /// </summary>
         [Column("TRADE_KANA")]
         [MaxLength(400)]
-        public string TradeKana { get; set; }
+        public string TradeKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類コード
@@ -43,21 +43,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_CD")]
         [MaxLength(2)]
-        public string ClassCd { get; set; }
+        public string ClassCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 会社コード
         /// </summary>
         [Column("COMPANY_CD")]
         [MaxLength(4)]
-        public string CompanyCd { get; set; }
+        public string CompanyCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品コード
         /// </summary>
         [Column("TRADE_CD")]
         [MaxLength(3)]
-        public string TradeCd { get; set; }
+        public string TradeCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形コード
@@ -65,13 +65,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_FORM_CD")]
         [MaxLength(6)]
-        public string DrugFormCd { get; set; }
+        public string DrugFormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法コード
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(6)]
-        public string YohoCd { get; set; }
+        public string YohoCd { get; set; } = string.Empty;
     }
 }

@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("KONO_CD", Order = 1)]
-        public string KonoCd { get; set; }
+        public string KonoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 効能効果（詳しい説明）
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KONO_DETAIL_CMT")]
         [MaxLength(200)]
-        public string KonoDetailCmt { get; set; }
+        public string KonoDetailCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 効能効果（簡単な説明）
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KONO_SIMPLE_CMT")]
         [MaxLength(200)]
-        public string KonoSimpleCmt { get; set; }
+        public string KonoSimpleCmt { get; set; } = string.Empty;
 
     }
 }

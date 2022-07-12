@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("FUNCTION_CD_A", Order = 1)]
         [MaxLength(8)]
-        public string FunctionCdA { get; set; }
+        public string FunctionCdA { get; set; } = string.Empty;
 
         /// <summary>
         /// 機能コードB
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("FUNCTION_CD_B", Order = 2)]
         [MaxLength(8)]
-        public string FunctionCdB { get; set; }
+        public string FunctionCdB { get; set; } = string.Empty;
 
         /// <summary>
         /// ロック範囲
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -93,6 +93,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

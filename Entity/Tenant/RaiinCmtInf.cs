@@ -62,13 +62,13 @@ namespace Entity.Tenant
         /// </summary>
         [MaxLength(200)]
         [Column("TEXT")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
-        /// <summary>
-        /// 削除区分
-        ///		1:削除
-        /// </summary>
-        [Column("IS_DELETE")]
+		/// <summary>
+		/// 削除区分
+		///		1:削除
+		/// </summary>
+		[Column("IS_DELETE")]
         [CustomAttribute.DefaultValue(0)]
 		public int IsDelete { get; set; }
 
@@ -91,7 +91,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 更新日時			
@@ -111,6 +111,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }
+		public string UpdateMachine { get; set; }  = string.Empty;
 	}
 }

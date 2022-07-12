@@ -46,21 +46,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "RECE_KA_CD")]
         [MaxLength(2)]
-        public string ReceKaCd { get; set; }
+        public string ReceKaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療科略称
         /// </summary>
         [Column(name: "KA_SNAME")]
         [MaxLength(20)]
-        public string KaSname { get; set; }
+        public string KaSname { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療科名称
         /// </summary>
         [Column(name: "KA_NAME")]
         [MaxLength(40)]
-        public string KaName { get; set; }
+        public string KaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -89,12 +89,12 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; }
+		public string CreateMachine { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 更新日時			
-		/// </summary>
-		[Column("UPDATE_DATE")]
+        /// <summary>
+        /// 更新日時			
+        /// </summary>
+        [Column("UPDATE_DATE")]
 		public DateTime UpdateDate { get; set; }
 
 		/// <summary>
@@ -109,6 +109,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }        
+		public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

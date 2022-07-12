@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("FORM_CD", Order = 1)]
         [MaxLength(4)]
-        public string FormCd { get; set; }
+        public string FormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM")]
         [MaxLength(80)]
-        public string Form { get; set; }
+        public string Form { get; set; } = string.Empty;
 
     }
 }

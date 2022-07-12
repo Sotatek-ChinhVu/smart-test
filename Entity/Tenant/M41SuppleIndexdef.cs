@@ -13,7 +13,7 @@ namespace Entity.Tenant
         [Key]
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 索引語
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INDEX_WORD")]
         [MaxLength(200)]
-        public string IndexWord { get; set; }
+        public string IndexWord { get; set; } = string.Empty;
 
         /// <summary>
         /// 特保フラグ
@@ -29,6 +29,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKUHO_FLG")]
         [MaxLength(1)]
-        public string TokuhoFlg { get; set; }
+        public string TokuhoFlg { get; set; } = string.Empty;
     }
 }

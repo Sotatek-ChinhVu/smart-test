@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// フィルター名称
         /// </summary>
         [Column("FILTER_NAME")]
-        public string FilterName { get; set; }
+        public string FilterName { get; set; } = string.Empty;
 
         /// <summary>
         /// 選択区分
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SHORTCUT")]
         [MaxLength(10)]
-        public string Shortcut { get; set; }
+        public string Shortcut { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -81,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -101,6 +101,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

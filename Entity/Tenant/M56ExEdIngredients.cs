@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("SEQ_NO", Order = 2)]
         [MaxLength(3)]
-        public string SeqNo { get; set; }
+        public string SeqNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分コード
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_CD")]
         [MaxLength(9)]
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分索引コード
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_INDEX_CD")]
         [MaxLength(3)]
-        public string SeibunIndexCd { get; set; }
+        public string SeibunIndexCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 種別
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PRODRUG_CHECK")]
         [MaxLength(1)]
-        public string ProdrugCheck { get; set; }
+        public string ProdrugCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 類似成分チェック対象フラグ
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ANALOGUE_CHECK")]
         [MaxLength(1)]
-        public string AnalogueCheck { get; set; }
+        public string AnalogueCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 溶解液チェック対象フラグ
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOKAIEKI_CHECK")]
         [MaxLength(1)]
-        public string YokaiekiCheck { get; set; }
+        public string YokaiekiCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 添加物チェック対象フラグ
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TENKABUTU_CHECK")]
         [MaxLength(1)]
-        public string TenkabutuCheck { get; set; }
+        public string TenkabutuCheck { get; set; } = string.Empty;
 
     }
 }

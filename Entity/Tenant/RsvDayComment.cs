@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("COMMENT")]
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
@@ -68,7 +68,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -91,6 +91,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

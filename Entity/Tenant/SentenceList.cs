@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SENTENCE")]
         [MaxLength(400)]
-        public string Sentence { get; set; }
+        public string Sentence { get; set; } = string.Empty;
 
         /// <summary>
         /// 選択種別
@@ -116,7 +116,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -136,6 +136,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

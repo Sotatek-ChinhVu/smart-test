@@ -31,7 +31,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("VERSION", Order = 3)]
         [MaxLength(10)]
-        public string Version { get; set; }
+        public string Version { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -46,6 +46,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
     }
 }

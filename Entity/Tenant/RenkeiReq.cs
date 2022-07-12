@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REQ_TYPE")]
         [MaxLength(2)]
-        public string ReqType { get; set; }
+        public string ReqType { get; set; } = string.Empty;
 
         /// <summary>
         /// ステータス
@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ERR_MST")]
         [MaxLength(120)]
-        public string ErrMst { get; set; }
+        public string ErrMst { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

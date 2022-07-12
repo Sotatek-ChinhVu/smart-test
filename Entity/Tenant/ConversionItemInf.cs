@@ -25,7 +25,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("SOURCE_ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string SourceItemCd { get; set; }
+        public string SourceItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 変換先診療行為コード
@@ -33,7 +33,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("DEST_ITEM_CD", Order = 3)]
         [MaxLength(10)]
-        public string DestItemCd { get; set; }
+        public string DestItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; }
+        public string CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -79,6 +79,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }
+        public string UpdateMachine { get; set; }  = string.Empty;
     }
 }

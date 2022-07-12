@@ -14,7 +14,7 @@ namespace Entity.Tenant
         [Key]
         [Column("BYOTAI_CLASS_CD", Order = 1)]
         [MaxLength(4)]
-        public string ByotaiClassCd { get; set; }
+        public string ByotaiClassCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病態分類
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOTAI")]
         [MaxLength(50)]
-        public string Byotai { get; set; }
+        public string Byotai { get; set; } = string.Empty;
 
     }
 }
