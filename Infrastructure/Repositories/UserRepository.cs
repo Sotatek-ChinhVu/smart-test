@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 
         public void Create(UserMst user)
         {
-            throw new NotImplementedException();
+
         }
 
         public void Delete(UserId userId)
@@ -29,12 +29,12 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMst> GetAll()
         {
-            return _tenantDataContext.UserMsts.Select(u => new UserMst(u.Id, u.Name)).ToList();
+            return _tenantDataContext.UserMsts.Select(u => new UserMst(u.UserId, u.Name)).ToList();
         }
 
         public int MaxUserId()
         {
-            return 100;
+            return _tenantDataContext.UserMsts.Max(u => u.UserId);
         }
 
         public UserMst Read(UserId userId)

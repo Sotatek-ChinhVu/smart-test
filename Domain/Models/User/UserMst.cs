@@ -19,7 +19,7 @@ namespace Domain.Models.User
             Name = name;
         }
 
-        public UserMst(long id, string name)
+        public UserMst(int id, string name)
         {
             Id = UserId.From(id);
             Name = Name.From(name);

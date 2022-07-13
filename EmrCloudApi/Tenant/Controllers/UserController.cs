@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost("Save")]
-        public ActionResult<String> Save([FromBody] CreateUserRequest saveUserRequest)
+        public ActionResult<Response<CreateUserResponse>> Save([FromBody] CreateUserRequest saveUserRequest)
         {
             var input = new CreateUserInputData(saveUserRequest.UserName);
             var output = _bus.Handle(input);
@@ -30,7 +30,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new CreateUserPresenter();
             presenter.Complete(output);
 
-            return null;
+            return new ActionResult<Response<CreateUserResponse>>(presenter.Result);
         }
 
         [HttpGet("GetList")]
