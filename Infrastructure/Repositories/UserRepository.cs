@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public void Create(User user)
+        public void Create(UserMst user)
         {
             throw new NotImplementedException();
         }
@@ -27,9 +27,9 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserMst> GetAll()
         {
-            return _tenantDataContext.UserMsts.Select(u => new User(u.Id, u.Name)).ToList();
+            return _tenantDataContext.UserMsts.Select(u => new UserMst(u.Id, u.Name)).ToList();
         }
 
         public int MaxUserId()
@@ -37,12 +37,12 @@ namespace Infrastructure.Repositories
             return 100;
         }
 
-        public User Read(UserId userId)
+        public UserMst Read(UserId userId)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(User user)
+        public void Update(UserMst user)
         {
             throw new NotImplementedException();
         }

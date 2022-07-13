@@ -17,9 +17,9 @@ namespace UseCase.User.Create
             Name = Name.From(name);
         }
 
-        public Domain.Models.User.User GenerateUserModel(int id)
+        public UserMst GenerateUserModel(int id)
         {
-            return new Domain.Models.User.User(UserId.From(id), Name);
+            return new UserMst(UserId.From(id), Name);
         }
     }
 }
