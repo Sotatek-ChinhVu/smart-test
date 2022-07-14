@@ -17,8 +17,4 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="PatientInfor\" />
-  </ItemGroup>
-
 </Project>

@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class PatientInforRepository 
+    public class PatientInforRepository: IPatientInforRepository
     {
-        private TenantDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContext;
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
