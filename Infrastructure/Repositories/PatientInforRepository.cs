@@ -21,13 +21,8 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<PatientInfor> GetAll()
         {
-            return _tenantDataContext.PtInfs.Select(x => ConvertToModel(x)).ToList();
+            return _tenantDataContext.PtInfs.Select(x => new PatientInfor(x.HpId, x.HpId, x.ReferenceNo, x.SeqNo, x.PtNum, x.KanaName, x.KanaName)).Take(5);
         }
 
-        private PatientInfor ConvertToModel(PtInf item)
-        {
-            PatientInfor PatientInfor = new PatientInfor(item.HpId, item.HpId, item.ReferenceNo, item.SeqNo, item.PtNum, item.KanaName, item.KanaName);
-            return PatientInfor;
-        }
     }
 }

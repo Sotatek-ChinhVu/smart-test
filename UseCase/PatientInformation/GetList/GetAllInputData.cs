@@ -7,7 +7,7 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInformation.GetList
 {
-    public class GetAllInputData: IInputData<GetAllOutputData>
+    public class GetAllInputData : IInputData<GetAllOutputData>
     {
     }
 }

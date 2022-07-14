@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 
         public void Create(UserMst user)
         {
-
+            throw new NotImplementedException();
         }
 
         public void Delete(UserId userId)

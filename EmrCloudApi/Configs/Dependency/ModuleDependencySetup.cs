@@ -3,6 +3,7 @@ using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.PatientInfor;
 using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;

@@ -2,7 +2,7 @@
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Async;
+using UseCase.Core.Sync;
 using UseCase.PatientInformation.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers
