@@ -10,7 +10,7 @@ namespace Interactor.User
 {
     public class CreateUserInteractor : ICreateUserInputPort
     {
-        private IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         
         public CreateUserInteractor(IUserRepository userRepository)
         {
@@ -26,8 +26,8 @@ namespace Interactor.User
 
             int userId = _userRepository.MaxUserId();
             var user = inputData.GenerateUserModel(userId);
+
             _userRepository.Create(user);
-            _userRepository.GetAll();
 
             return new CreateUserOutputData(userId, CreateUserStatus.Success);
         }

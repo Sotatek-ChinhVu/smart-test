@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
 using UseCase.User.Create;
+using UseCase.User.GetList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -37,8 +38,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //User
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
+            busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
-            var bus = busBuilder.Build(); ;
+            var bus = busBuilder.Build();   
             services.AddSingleton(bus);
         } 
     }
