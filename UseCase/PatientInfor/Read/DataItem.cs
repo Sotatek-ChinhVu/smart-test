@@ -11,8 +11,6 @@ namespace UseCase.PatientInfor.Read
     {
         public string Keyword { get; set; }
 
-        public List<PatientInfor> listData { get; set; }
-
         public GetAllOuputData(string keyword)
         {
             Keyword = keyword;

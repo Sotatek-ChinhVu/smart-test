@@ -1,5 +1,6 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -20,8 +21,13 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<PatientInfor> GetAll()
         {
-            var allData = _tenantDataContext.PtInfs.ToList();
-            return (IEnumerable<PatientInfor>)allData;
+            return _tenantDataContext.PtInfs.Select(x => ConvertToModel(x)).ToList();
+        }
+
+        private PatientInfor ConvertToModel(PtInf item)
+        {
+            PatientInfor PatientInfor = new PatientInfor(item.HpId, item.HpId, item.ReferenceNo, item.SeqNo, item.PtNum, item.KanaName, item.KanaName);
+            return PatientInfor;
         }
     }
 }

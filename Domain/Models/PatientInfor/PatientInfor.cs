@@ -25,5 +25,16 @@ namespace Domain.Models.PatientInfor
             KanaName = kanaName;
             KanjiName = kanjiName;
         }
+
+        public PatientInfor(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string kanjiName)
+        {
+            HpId = HpId.From(hpId);
+            PtId = PtId.From(ptId);
+            ReferenceNo = ReferenceNo.From(referenceNo);
+            SeqNo = SeqNo.From(seqNo);
+            PtNum = PtNum.From(ptNum);
+            KanaName = KanaName.From(kanaName);
+            KanjiName = KanjiName.From(kanjiName);
+        }
     }
 }
