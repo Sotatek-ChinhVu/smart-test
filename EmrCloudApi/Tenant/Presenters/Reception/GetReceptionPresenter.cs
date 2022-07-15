@@ -13,22 +13,22 @@ namespace EmrCloudApi.Tenant.Presenters.Reception
         {
             Result = new Response<GetReceptionResponse>()
             {
-                Data = new GetReceptionResponse()
-                {
-                    ReceptionModel = outputData.ReceptionModel
-                },
+                Data = new GetReceptionResponse(),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
             {
                 case GetReceptionStatus.InvalidRaiinNo:
                     Result.Message = ResponseMessage.GetReceptionInvalidRaiinNo;
+                    Result.Data.Reception = null;
                     break;
                 case GetReceptionStatus.ReceptionNotExisted:
                     Result.Message = ResponseMessage.GetReceptionNotExisted;
+                    Result.Data.Reception = null;
                     break;
                 case GetReceptionStatus.Successed:
                     Result.Message = ResponseMessage.GetReceptionSuccessed;
+                    Result.Data.Reception = outputData.ReceptionModel!.ToDto();
                     break;
             }
         }
