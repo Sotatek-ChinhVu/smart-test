@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Domain.Core">
+      <HintPath>lib\Domain.Core.dll</HintPath>
+    </Reference>
     <Reference Include="UseCase.Core">
       <HintPath>lib\UseCase.Core.dll</HintPath>
     </Reference>

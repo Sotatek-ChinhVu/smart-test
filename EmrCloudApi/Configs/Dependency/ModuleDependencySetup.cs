@@ -1,14 +1,17 @@
 ﻿using Domain.Models.Reception;
+using Domain.Models.SpecialNote;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Interactor.Reception;
+using Interactor.SpecialNote;
 using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
 using UseCase.Reception.Get;
+using UseCase.SpecialNote.Read;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 
@@ -33,6 +36,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
+            services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -47,6 +51,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+
+
+            //SpecialNote
+            busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
 
             var bus = busBuilder.Build();   
             services.AddSingleton(bus);

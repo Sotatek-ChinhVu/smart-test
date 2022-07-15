@@ -17,6 +17,17 @@ namespace PostgreDataContext
         {
             optionsBuilder.UseNpgsql(_connectionString);
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<RsvInf>().HasKey(table => new
+            {
+                table.HpId,
+                table.RsvFrameId,
+                table.SinDate,
+                table.StartTime,
+                table.RaiinNo
+            });
+        }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
 

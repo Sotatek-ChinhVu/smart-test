@@ -48,14 +48,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; } = string.Empty;
+        public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
         /// </summary>
         [Column("NAME")]
         [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 性別
@@ -98,147 +98,147 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOME_POST")]
         [MaxLength(7)]
-        public string HomePost { get; set; } = string.Empty;
+        public string? HomePost { get; set; } = string.Empty;
 
         /// <summary>
         /// 自宅住所１
         /// </summary>
         [Column("HOME_ADDRESS1")]
         [MaxLength(100)]
-        public string HomeAddress1 { get; set; } = string.Empty;
+        public string? HomeAddress1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 自宅住所２
         /// </summary>
         [Column("HOME_ADDRESS2")]
         [MaxLength(100)]
-        public string HomeAddress2 { get; set; } = string.Empty;
+        public string? HomeAddress2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 電話番号１
         /// </summary>
         [Column("TEL1")]
         [MaxLength(15)]
-        public string Tel1 { get; set; } = string.Empty;
+        public string? Tel1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 電話番号２
         /// </summary>
         [Column("TEL2")]
         [MaxLength(15)]
-        public string Tel2 { get; set; } = string.Empty;
+        public string? Tel2 { get; set; } = string.Empty;
 
         /// <summary>
         /// E-Mailアドレス
         /// </summary>
         [Column("MAIL")]
         [MaxLength(100)]
-        public string Mail { get; set; } = string.Empty;
+        public string? Mail { get; set; } = string.Empty;
 
         /// <summary>
         /// 世帯主名
         /// </summary>
         [Column("SETAINUSI")]
         [MaxLength(100)]
-        public string Setanusi { get; set; } = string.Empty;
+        public string? Setanusi { get; set; } = string.Empty;
 
         /// <summary>
         /// 続柄
         /// </summary>
         [Column("ZOKUGARA")]
         [MaxLength(20)]
-        public string Zokugara { get; set; } = string.Empty;
+        public string? Zokugara { get; set; } = string.Empty;
 
         /// <summary>
         /// 職業
         /// </summary>
         [Column("JOB")]
         [MaxLength(40)]
-        public string Job { get; set; } = string.Empty;
+        public string? Job { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先名称
         /// </summary>
         [Column("RENRAKU_NAME")]
         [MaxLength(100)]
-        public string RenrakuName { get; set; } = string.Empty;
+        public string? RenrakuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先郵便番号
         /// </summary>
         [Column("RENRAKU_POST")]
         [MaxLength(7)]
-        public string RenrakuPost { get; set; } = string.Empty;
+        public string? RenrakuPost { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先住所１
         /// </summary>
         [Column("RENRAKU_ADDRESS1")]
         [MaxLength(100)]
-        public string RenrakuAddress1 { get; set; } = string.Empty;
+        public string? RenrakuAddress1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先住所２
         /// </summary>
         [Column("RENRAKU_ADDRESS2")]
         [MaxLength(100)]
-        public string RenrakuAddress2 { get; set; } = string.Empty;
+        public string? RenrakuAddress2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先電話番号
         /// </summary>
         [Column("RENRAKU_TEL")]
         [MaxLength(15)]
-        public string RenrakuTel { get; set; } = string.Empty;
+        public string? RenrakuTel { get; set; } = string.Empty;
 
         /// <summary>
         /// 連絡先電話番号
         /// </summary>
         [Column("RENRAKU_MEMO")]
         [MaxLength(100)]
-        public string RenrakuMemo { get; set; } = string.Empty;
+        public string? RenrakuMemo { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先名称
         /// </summary>
         [Column("OFFICE_NAME")]
         [MaxLength(100)]
-        public string OfficeName { get; set; } = string.Empty;
+        public string? OfficeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先郵便番号
         /// </summary>
         [Column("OFFICE_POST")]
         [MaxLength(7)]
-        public string OfficePost { get; set; } = string.Empty;
+        public string? OfficePost { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先住所１
         /// </summary>
         [Column("OFFICE_ADDRESS1")]
         [MaxLength(100)]
-        public string OfficeAddress1 { get; set; } = string.Empty;
+        public string? OfficeAddress1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先住所２
         /// </summary>
         [Column("OFFICE_ADDRESS2")]
         [MaxLength(100)]
-        public string OfficeAddress2 { get; set; } = string.Empty;
+        public string? OfficeAddress2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先電話番号
         /// </summary>
         [Column("OFFICE_TEL")]
         [MaxLength(15)]
-        public string OfficeTel { get; set; } = string.Empty;
+        public string? OfficeTel { get; set; } = string.Empty;
 
         /// <summary>
         /// 勤務先備考
         /// </summary>
         [Column("OFFICE_MEMO")]
         [MaxLength(100)]
-        public string OfficeMemo { get; set; } = string.Empty;
+        public string? OfficeMemo { get; set; } = string.Empty;
 
         /// <summary>
         /// 領収証明細発行区分
@@ -311,7 +311,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -331,6 +331,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }

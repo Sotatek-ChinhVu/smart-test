@@ -12,5 +12,7 @@
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";
         public static readonly string GetReceptionSuccessed = "Successed";
+
+        public static readonly string GetSpecialNoteSuccessed = "Get Special Note successed!!!";
     }
 }
