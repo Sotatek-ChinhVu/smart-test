@@ -112,14 +112,11 @@ namespace Interactor.OrdInfs
 
             var dem = 1;
 
-
-
             if (hokenOdrInfs?.Count > 0)
             {
                 var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
                 foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
                 {
-
                     var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title " + dem);
                     // Find By Group
                     var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
@@ -187,8 +184,8 @@ namespace Interactor.OrdInfs
                 }
 
                 return tree;
-
             }
+
             return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.NoData);
         }
     }
