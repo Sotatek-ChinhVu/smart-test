@@ -29,7 +29,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return "";
             }
         }
-        public int HokenPid { get; private set; }
+        public int? HokenPid { get; private set; }
         public int InOutKbn
         {
             get
@@ -160,7 +160,7 @@ namespace UseCase.OrdInfs.GetListTrees
         public string SinkyuName { get; private set; }
         public List<OdrInfItem> OdrInfs { get; private set; }
 
-        public GroupOdrItem(string sinkyuName, List<OdrInfItem> odrInfs, int hokenPid)
+        public GroupOdrItem(string sinkyuName, List<OdrInfItem> odrInfs, int? hokenPid)
         {
             SinkyuName = sinkyuName;
             OdrInfs = odrInfs;

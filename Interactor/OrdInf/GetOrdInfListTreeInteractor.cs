@@ -30,7 +30,7 @@ namespace Interactor.OrdInfs
             }
             if (inputData.SinDate.Value <= 0)
             {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidPtId);
+                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
 
             var allOdrInfDetails = _ordInfDetailRepository
@@ -117,12 +117,12 @@ namespace Interactor.OrdInfs
             if (hokenOdrInfs?.Count > 0)
             {
                 var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
-                foreach (OdrInfItem hokenOdrInf in hokenOdrInfs)
+                foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
                 {
 
-                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenOdrInf.HokenPid, "Hoken title " + dem);
+                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title " + dem);
                     // Find By Group
-                    var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenOdrInf.HokenPid)
+                    var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
                         .GroupBy(odr => new
                         {
                             odr.HokenPid,
@@ -137,17 +137,17 @@ namespace Interactor.OrdInfs
                         .ToList();
                     if (groupOdrInfs?.Count > 0)
                     {
-                        foreach (OdrInfItem groupOdrInf in groupOdrInfs)
+                        foreach (var groupOdrInf in groupOdrInfs)
                         {
-                            var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenOdrInf.HokenPid
-                                                    && odrInf.GroupOdrKouiKbn == groupOdrInf.GroupOdrKouiKbn
-                                                    && odrInf.InoutKbn == groupOdrInf.InoutKbn
-                                                    && odrInf.SyohoSbt == groupOdrInf.SyohoSbt
-                                                    && odrInf.SikyuKbn == groupOdrInf.SikyuKbn
-                                                    && odrInf.TosekiKbn == groupOdrInf.TosekiKbn
-                                                    && odrInf.SanteiKbn == groupOdrInf.SanteiKbn)
+                            var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
+                                                    && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
+                                                    && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                    && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                    && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                    && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                    && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
                                                 .ToList();
-                            var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenOdrInf.HokenPid);
+                            var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
 
 
                             foreach (OdrInfItem rpOdrInf in rpOdrInfs)
