@@ -11,9 +11,11 @@ namespace UseCase.PatientInformation.GetById
     public class GetPatientInforByIdOutputData : IOutputData
     {
         public PatientInfor? PatientInfor { get; private set; }
-        public GetPatientInforByIdOutputData(PatientInfor? data)
+        public GetPatientInforByIdStatus Status { get; private set; }
+        public GetPatientInforByIdOutputData(PatientInfor? data, GetPatientInforByIdStatus getPatientInforByIdStatus)
         {
             PatientInfor = data;
+            Status = getPatientInforByIdStatus;
         }
     }
 }

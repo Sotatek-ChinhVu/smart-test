@@ -31,10 +31,10 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetAllPatientInforResponse>>(present.Result);
         }
 
-        [HttpGet("GetById")]
-        public ActionResult<Response<GetPatientInforByIdResponse>> GetById(int ptId = 0)
+        [HttpPost("GetById")]
+        public ActionResult<Response<GetPatientInforByIdResponse>> GetById([FromBody] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(ptId);
+            var input = new GetPatientInforByIdInputData(request.PtId);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();

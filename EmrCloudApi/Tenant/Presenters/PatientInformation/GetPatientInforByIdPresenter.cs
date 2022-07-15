@@ -18,9 +18,24 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInformation
                 {
                     Data = outputData.PatientInfor
                 },
-                Status = outputData.PatientInfor == null ? 404 : 1,
-                Message = outputData.PatientInfor == null ? ResponseMessage.NotFoundData : ResponseMessage.GetPatientByIdSuccessed
+                Status = (byte)outputData.Status
             };
+
+            switch (outputData.Status)
+            {
+                case GetPatientInforByIdStatus.Successed:
+                    Result.Message = ResponseMessage.GetPatientByIdSuccessed;
+                    break;
+                case GetPatientInforByIdStatus.DataNotExist:
+                    Result.Message = ResponseMessage.DataNotExist;
+                    break;
+                case GetPatientInforByIdStatus.InvalidId:
+                    Result.Message = ResponseMessage.GetPatientByIdInvalidId;
+                    break;
+                default:
+                    break;
+            }
+
         }
     }
 }

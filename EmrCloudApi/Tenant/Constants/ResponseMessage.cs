@@ -6,10 +6,16 @@
         public static readonly string CreateUserSuccessed = "User created!!!";
 
         public static readonly string GetUserListSuccessed = "Get userList successed!!!";
-        public static readonly string GetPatientInforListSuccessed = "Get PatientInfor List successed!!!";
-        public static readonly string GetPatientByIdSuccessed = "Get Patient By Id successed!!!";
-        public static readonly string NotFoundData = "Not Found Data !";
 
+        public static readonly string DataNotExist = "Data Not Exist !";
+        //Patient Infor
+        public static readonly string GetPatientInforListSuccessed = "Get PatientInfor List Successed";
+        public static readonly string GetPatientByIdSuccessed = "Successed";
+        public static readonly string GetPatientByIdInvalidId = "Invalid PtId";
+
+        //Insurance List
+        public static readonly string GetInsuranceListByPtIdInvalidId = "Invalid PtId !";
+        public static readonly string GetInsuranceListByPtIdSuccessed = "Successed!!!";
 
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";

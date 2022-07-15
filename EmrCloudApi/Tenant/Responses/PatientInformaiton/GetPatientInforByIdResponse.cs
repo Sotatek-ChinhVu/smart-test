@@ -4,6 +4,6 @@ namespace EmrCloudApi.Tenant.Responses.PatientInformaiton
 {
     public class GetPatientInforByIdResponse
     {
-        public PatientInfor? Data { get; set; } = null;
+        public PatientInfor? Data { get; set; }
     }
 }
