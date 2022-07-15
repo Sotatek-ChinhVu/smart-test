@@ -21,4 +21,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Domain.Core">
+      <HintPath>..\EmrCloudApi\lib\Domain.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

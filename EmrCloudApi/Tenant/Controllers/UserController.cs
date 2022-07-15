@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters;
 using EmrCloudApi.Tenant.Presenters.User;
 using EmrCloudApi.Tenant.Requests.User;
 using EmrCloudApi.Tenant.Responses;
@@ -21,8 +22,8 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpPost("Save")]
-        public ActionResult<String> Save([FromBody] CreateUserRequest saveUserRequest)
+        [HttpPost(ApiPath.Update)]
+        public ActionResult<Response<CreateUserResponse>> Save([FromBody] CreateUserRequest saveUserRequest)
         {
             var input = new CreateUserInputData(saveUserRequest.UserName);
             var output = _bus.Handle(input);
@@ -30,10 +31,10 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new CreateUserPresenter();
             presenter.Complete(output);
 
-            return null;
+            return new ActionResult<Response<CreateUserResponse>>(presenter.Result);
         }
 
-        [HttpGet("GetList")]
+        [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetUserListResponse>> GetList()
         {
             var input = new GetUserListInputData();

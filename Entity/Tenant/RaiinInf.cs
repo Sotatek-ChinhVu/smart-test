@@ -76,7 +76,7 @@ namespace Entity.Tenant
 		[Column("YOYAKU_TIME")]
 		[MaxLength(6)]
 		[CustomAttribute.DefaultValue("0")]
-		public string YoyakuTime { get; set; } = string.Empty;
+		public string? YoyakuTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 予約者ID
@@ -200,7 +200,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CONFIRMATION_RESULT")]
         [MaxLength(120)]
-        public string ConfirmationResult { get; set; } = string.Empty;
+        public string? ConfirmationResult { get; set; } = string.Empty;
 
         /// <summary>
         /// CONFIRMATION_STATE
@@ -236,7 +236,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; } = string.Empty;
+		public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -256,6 +256,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }  = string.Empty;
+		public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }
