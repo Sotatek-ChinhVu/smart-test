@@ -8,6 +8,7 @@ using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
+using UseCase.PatientInformation.GetById;
 using UseCase.PatientInformation.GetList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
@@ -46,6 +47,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetAllInputData, GetListPatientInforInteractor>();
+            busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
 
 
             var bus = busBuilder.Build();   

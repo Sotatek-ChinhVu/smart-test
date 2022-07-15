@@ -18,7 +18,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInformation
                     ListData = outputData.ListPatientInfor
                 },
                 Status = 1,
-                Message = ResponseMessage.GetPrientInforListSuccessed
+                Message = ResponseMessage.GetPatientInforListSuccessed
             };
         }
     }
