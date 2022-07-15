@@ -1,11 +1,15 @@
-﻿using Domain.Models.User;
+﻿using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
+using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.OrdInfs;
 using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
+using UseCase.OrdInfs.GetListTrees;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 
@@ -29,6 +33,8 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IOrdInfRepository, OrdInfRepository>();
+            services.AddTransient<IOrdInfDetailRepository, OrdInfDetailRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -39,6 +45,7 @@ namespace EmrCloudApi.Configs.Dependency
             //User
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
+            busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
 
             var bus = busBuilder.Build();   
             services.AddSingleton(bus);
