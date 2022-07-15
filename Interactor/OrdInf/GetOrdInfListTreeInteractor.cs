@@ -16,6 +16,23 @@ namespace Interactor.OrdInfs
 
         public GetOrdInfListTreeOutputData Handle(GetOrdInfListTreeInputData inputData)
         {
+            if (inputData.RaiinNo.Value <= 0)
+            {
+                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidRaiinNo);
+            }
+            if (inputData.HpId.Value <= 0)
+            {
+                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidHpId);
+            }
+            if (inputData.PtId.Value <= 0)
+            {
+                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidPtId);
+            }
+            if (inputData.SinDate.Value <= 0)
+            {
+                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidPtId);
+            }
+
             var allOdrInfDetails = _ordInfDetailRepository
                 .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate)
                 .Select(od => new OdrInfDetailItem(
@@ -94,12 +111,12 @@ namespace Interactor.OrdInfs
                 .ToList();
 
             var dem = 1;
-        
-            var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>());
+
 
 
             if (hokenOdrInfs?.Count > 0)
             {
+                var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
                 foreach (OdrInfItem hokenOdrInf in hokenOdrInfs)
                 {
 
@@ -168,8 +185,11 @@ namespace Interactor.OrdInfs
                     tree.GroupHokens.Add(groupHoken);
                     dem++;
                 }
+
+                return tree;
+
             }
-            return tree;
+            return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.NoData);
         }
     }
 }

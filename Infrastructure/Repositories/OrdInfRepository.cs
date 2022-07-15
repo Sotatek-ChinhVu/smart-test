@@ -1,13 +1,7 @@
-﻿using Domain.Models.User;
+﻿using Domain.CommonObject;
+using Domain.Models.OrdInfs;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models.OrdInfs;
-using Domain.CommonObject;
 
 namespace Infrastructure.Repositories
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UseCase.Extendsions
+﻿namespace UseCase.Extendsions
 {
     public static class ObjectExtendsion
     {

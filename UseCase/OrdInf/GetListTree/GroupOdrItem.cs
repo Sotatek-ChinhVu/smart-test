@@ -1,13 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.OrdInfs;
-using Domain.Models.User;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Common;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Common;
 
 namespace UseCase.OrdInfs.GetListTrees
 {
@@ -24,7 +15,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 }
                 return 0;
             }
-            
+
         }
         public string GroupName
         {

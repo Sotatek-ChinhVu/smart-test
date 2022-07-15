@@ -8,8 +8,6 @@ using Infrastructure.Repositories;
 using Interactor.OrdInfs;
 using Interactor.Reception;
 using Interactor.User;
-using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using UseCase.Core.Builder;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.Reception.Get;
@@ -55,8 +53,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
-            var bus = busBuilder.Build();   
+            var bus = busBuilder.Build();
             services.AddSingleton(bus);
-        } 
+        }
     }
 }

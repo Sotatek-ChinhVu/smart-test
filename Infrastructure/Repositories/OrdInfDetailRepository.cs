@@ -1,14 +1,7 @@
-﻿using Domain.Models.User;
+﻿using Domain.CommonObject;
+using Domain.Models.OrdInfDetails;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models.OrdInfs;
-using Domain.CommonObject;
-using Domain.Models.OrdInfDetails;
 
 namespace Infrastructure.Repositories
 {
@@ -35,10 +28,10 @@ namespace Infrastructure.Repositories
             var result = _tenantDataContext.OdrInfDetails.AsQueryable().Select(o => new OrdInfDetailMst(
                 o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo, o.PtId, o.SinDate, o.SinKouiKbn, o.ItemCd, o.ItemName, o.Suryo, o.UnitName, o.UnitSBT, o.TermVal, o.KohatuKbn, o.SyohoKbn, o.SyohoLimitKbn, o.DrugKbn, o.YohoKbn, o.Kokuji1, o.Kokiji2, o.IsNodspRece, o.IpnCd, o.IpnName, o.JissiKbn, o.JissiDate, o.JissiId, o.JissiMachine, o.ReqCd, o.Bunkatu, o.CmtName, o.CmtOpt, o.FontColor, o.CommentNewline));
             return result;
-        }   
+        }
         public IEnumerable<OrdInfDetailMst> GetList(PtId ptId, RaiinNo raiinNo, SinDate sinDate)
         {
-            var result = _tenantDataContext.OdrInfDetails.Where(o=>o.PtId == ptId.Value && o.RaiinNo == raiinNo.Value && o.SinDate == sinDate.Value).Select(o => new OrdInfDetailMst(
+            var result = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId.Value && o.RaiinNo == raiinNo.Value && o.SinDate == sinDate.Value).Select(o => new OrdInfDetailMst(
                 o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo, o.PtId, o.SinDate, o.SinKouiKbn, o.ItemCd, o.ItemName, o.Suryo, o.UnitName, o.UnitSBT, o.TermVal, o.KohatuKbn, o.SyohoKbn, o.SyohoLimitKbn, o.DrugKbn, o.YohoKbn, o.Kokuji1, o.Kokiji2, o.IsNodspRece, o.IpnCd, o.IpnName, o.JissiKbn, o.JissiDate, o.JissiId, o.JissiMachine, o.ReqCd, o.Bunkatu, o.CmtName, o.CmtOpt, o.FontColor, o.CommentNewline));
             return result;
         }
