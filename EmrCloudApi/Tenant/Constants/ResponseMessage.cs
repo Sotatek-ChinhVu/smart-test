@@ -17,6 +17,11 @@
         public static readonly string GetInsuranceListByPtIdInvalidId = "Invalid PtId !";
         public static readonly string GetInsuranceListByPtIdSuccessed = "Successed!!!";
 
+        //Insurance Infor
+        public static readonly string GetInsuranceInforInvalidPtId = "Invalid PtId !";
+        public static readonly string GetInsuranceInforInvalidHokenId = "Invalid HokenId !";
+        public static readonly string GetInsuranceInforSuccessed = "Successed!!!";
+
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";

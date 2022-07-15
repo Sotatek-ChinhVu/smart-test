@@ -1,3 +1,4 @@
+using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceList;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
@@ -12,6 +13,7 @@ using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
+using UseCase.InsuranceInfor.Get;
 using UseCase.InsuranceList.GetInsuranceListById;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientInformation.GetList;
@@ -42,6 +44,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IInsuranceListResponsitory, InsuranceListReponsitory>();
+            services.AddTransient<IInsuranceInforResponsitory, InsuranceInforRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -60,6 +63,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Insurance List
             busBuilder.RegisterUseCase<GetInsuranceListByIdInputData, GetInsuranceListByIdInteractor>();
 
+            //Insurance Infor
+            busBuilder.RegisterUseCase<GetInsuranceInforInputData, GetInsuranceInfoInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();

@@ -18,8 +18,16 @@ namespace Interactor.InsuranceList
 
         public GetInsuranceListByIdOutputData Handle(GetInsuranceListByIdInputData inputData)
         {
+            if(inputData.PtId.Value < 0)
+            {
+                return new GetInsuranceListByIdOutputData(null, GetInsuranceListByIdStatus.InvalidId);
+            }
+
             var data = _insuranceListResponsitory.GetInsuranceListById(inputData.PtId);
-            return new GetInsuranceListByIdOutputData(data.ToList());
-        }
+            if (data == null)
+                return new GetInsuranceListByIdOutputData(null, GetInsuranceListByIdStatus.DataNotExist);
+
+            return new GetInsuranceListByIdOutputData(data.ToList(), GetInsuranceListByIdStatus.Successed);
+        }    
     }
 }
