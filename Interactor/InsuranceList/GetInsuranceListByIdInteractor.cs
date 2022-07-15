@@ -20,12 +20,12 @@ namespace Interactor.InsuranceList
         {
             if(inputData.PtId.Value < 0)
             {
-                return new GetInsuranceListByIdOutputData(null, GetInsuranceListByIdStatus.InvalidId);
+                return new GetInsuranceListByIdOutputData(new List<InsuranceListModel>(), GetInsuranceListByIdStatus.InvalidId);
             }
 
             var data = _insuranceListResponsitory.GetInsuranceListById(inputData.PtId);
             if (data == null)
-                return new GetInsuranceListByIdOutputData(null, GetInsuranceListByIdStatus.DataNotExist);
+                return new GetInsuranceListByIdOutputData(new List<InsuranceListModel>(), GetInsuranceListByIdStatus.DataNotExist);
 
             return new GetInsuranceListByIdOutputData(data.ToList(), GetInsuranceListByIdStatus.Successed);
         }    
