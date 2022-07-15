@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Reception
 {
-    public class ReceptionModel
+    public class ReceptionDto
     {
-        public HpId HpId { get; private set; }
+        public int HpId { get; private set; }
 
-        public PtId PtId { get; private set; }
+        public long PtId { get; private set; }
 
-        public SinDate SinDate { get; private set; }
+        public int SinDate { get; private set; }
 
-        public RaiinNo RaiinNo { get; private set; }
+        public long RaiinNo { get; private set; }
 
-        public OyaRaiinNo OyaRaiinNo { get; private set; }
+        public long OyaRaiinNo { get; private set; }
 
-        public HokenPid HokenPid { get; private set; }
+        public int HokenPid { get; private set; }
 
         public int SanteiKbn { get; private set; }
 
@@ -55,7 +54,7 @@ namespace Domain.Models.Reception
 
         public int JikanKbn { get; private set; }
 
-        public ReceptionModel(HpId hpId, PtId ptId, SinDate sinDate, RaiinNo raiinNo, OyaRaiinNo oyaRaiinNo, HokenPid hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn)
+        public ReceptionDto(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn)
         {
             HpId = hpId;
             PtId = ptId;
@@ -80,36 +79,6 @@ namespace Domain.Models.Reception
             TantoId = tantoId;
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
-        }
-
-        public ReceptionDto ToDto()
-        {
-            return new ReceptionDto
-                (
-                    HpId.Value,
-                    PtId.Value,
-                    SinDate.Value,
-                    RaiinNo.Value,
-                    OyaRaiinNo.Value,
-                    HokenPid.Value,
-                    SanteiKbn,
-                    Status,
-                    IsYoyaku,
-                    YoyakuTime,
-                    YoyakuId,
-                    UketukeSbt,
-                    UketukeTime,
-                    UketukeId,
-                    UketukeNo,
-                    SinStartTime,
-                    SinEndTime,
-                    KaikeiTime,
-                    KaikeiId,
-                    KaId,
-                    TantoId,
-                    SyosaisinKbn,
-                    JikanKbn
-                );
         }
     }
 }

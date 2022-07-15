@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
                     receptionEntity.SanteiKbn,
                     receptionEntity.Status,
                     receptionEntity.IsYoyaku,
-                    receptionEntity.YoyakuTime,
+                    receptionEntity.YoyakuTime ?? string.Empty,
                     receptionEntity.YoyakuId,
                     receptionEntity.UketukeSbt,
                     receptionEntity.UketukeTime,
