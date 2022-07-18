@@ -12,5 +12,9 @@
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";
         public static readonly string GetReceptionSuccessed = "Successed";
+
+        //Insurance
+        public static readonly string GetInsuranceListInvalidId = "Invalid PtId !";
+        public static readonly string GetInsuranceListSuccessed = "Successed!!!";
     }
 }
