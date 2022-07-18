@@ -15,14 +15,12 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 変換元診療行為コード
         /// </summary>
-        //[Key]
         [Column("SOURCE_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string SourceItemCd { get; set; } = string.Empty;
@@ -30,7 +28,6 @@ namespace Entity.Tenant
         /// <summary>
         /// 変換先診療行為コード
         /// </summary>
-        //[Key]
         [Column("DEST_ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string DestItemCd { get; set; } = string.Empty;
