@@ -15,14 +15,14 @@
             RichText = richText;
         }
 
-        public int HpId { get; set; }
-        public long RaiinNo { get; set; }
-        public int KarteKbn { get; set; }
-        public long SeqNo { get; set; }
-        public long PtId { get; set; }
-        public int SinDate { get; set; }
-        public string Text { get; set; }
-        public int IsDeleted { get; set; }
-        public byte[] RichText { get; set; }
+        public int HpId { get; private set; }
+        public long RaiinNo { get; private set; }
+        public int KarteKbn { get; private set; }
+        public long SeqNo { get; private set; }
+        public long PtId { get; private set; }
+        public int SinDate { get; private set; }
+        public string Text { get; private set; }
+        public int IsDeleted { get; private set; }
+        public byte[] RichText { get; private set; }
     }
 }
