@@ -20,7 +20,6 @@ namespace Entity.Tenant
         /// 世代ID
         /// BYOMEI_SET_GENERATION_MST.GENERATION_ID
         /// </summary>
-        //[Key]
         [Column("GENERATION_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
@@ -29,7 +28,6 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
