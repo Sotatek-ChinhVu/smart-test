@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceInforModel
     {
-        public InsuranceInforModel(HpId hpId, PtId ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, string hokensyaName, string hokensyaPost, string hokensyaAddress, string hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate)
+        public InsuranceInforModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, string hokensyaName, string hokensyaPost, string hokensyaAddress, string hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -67,8 +67,8 @@ namespace Domain.Models.InsuranceInfor
             JibaiJyusyouDate = jibaiJyusyouDate;
         }
 
-        public HpId HpId { get; set; }
-        public PtId PtId { get; set; }
+        public int HpId { get; set; }
+        public long PtId { get; set; }
         public int HokenId { get; set; }
         public long SeqNo { get; set; }
         public int HokenNo { get; set; }

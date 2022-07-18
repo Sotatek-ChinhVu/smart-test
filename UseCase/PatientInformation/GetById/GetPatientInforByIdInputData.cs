@@ -10,11 +10,11 @@ namespace UseCase.PatientInformation.GetById
 {
     public class GetPatientInforByIdInputData : IInputData<GetPatientInforByIdOutputData>
     {
-        public PtId PtId { get; private set; }
+        public long PtId { get; private set; }
 
-        public GetPatientInforByIdInputData(int ptId)
+        public GetPatientInforByIdInputData(long ptId)
         {
-            PtId = PtId.From(ptId);
+            PtId = ptId;
         }
     }
 }

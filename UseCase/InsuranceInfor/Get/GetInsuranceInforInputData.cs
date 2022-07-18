@@ -10,12 +10,12 @@ namespace UseCase.InsuranceInfor.Get
 {
     public class GetInsuranceInforInputData: IInputData<GetInsuranceInforOutputData>
     {
-        public PtId PtId { get; private set; }
+        public long PtId { get; private set; }
         public int HokenId { get; private set; }
 
         public GetInsuranceInforInputData(long ptId, int hokenId)
         {
-            PtId = PtId.From(ptId);
+            PtId = ptId;
             HokenId = hokenId;
         }
     }

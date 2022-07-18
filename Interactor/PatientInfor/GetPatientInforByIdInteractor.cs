@@ -21,7 +21,7 @@ namespace Interactor.PatientInfor
         public GetPatientInforByIdOutputData Handle(GetPatientInforByIdInputData inputData)
         {
 
-            if (inputData.PtId.Value < 0)
+            if (inputData.PtId < 0)
             {
                 return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidId);
             }

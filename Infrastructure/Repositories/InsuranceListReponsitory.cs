@@ -18,12 +18,12 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public IEnumerable<InsuranceListModel> GetInsuranceListById(PtId ptId){
-            return _tenantDataContext.PtHokenPatterns.Where(x => x.PtId == ptId.Value).Select(
+        public IEnumerable<InsuranceListModel> GetInsuranceListById(long ptId){
+            return _tenantDataContext.PtHokenPatterns.Where(x => x.PtId == ptId).Select(
                 x => new InsuranceListModel(
-                    HpId.From(x.HpId),
-                    PtId.From(x.PtId),
-                    HokenPid.From(x.HokenPid),
+                    x.HpId,
+                    x.PtId,
+                    x.HokenPid,
                     x.SeqNo,
                     x.HokenKbn,
                     x.HokenSbtCd,

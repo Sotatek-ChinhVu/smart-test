@@ -9,6 +9,6 @@ namespace Domain.Models.InsuranceInfor
 {
     public interface IInsuranceInforResponsitory
     {
-        InsuranceInforModel? GetInsuranceInfor(PtId ptId, int HokenId);
+        InsuranceInforModel? GetInsuranceInfor(long ptId, int HokenId);
     }
 }

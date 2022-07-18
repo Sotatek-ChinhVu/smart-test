@@ -10,10 +10,10 @@ namespace UseCase.InsuranceList.GetInsuranceListById
 {
     public class GetInsuranceListByIdInputData: IInputData<GetInsuranceListByIdOutputData>
     {
-        public PtId PtId { get; private set; }
-        public GetInsuranceListByIdInputData(int ptId)
+        public long PtId { get; private set; }
+        public GetInsuranceListByIdInputData(long ptId)
         {
-            PtId = PtId.From(ptId);
+            PtId = ptId;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceList
 {
     public class InsuranceListModel
     {
-        public InsuranceListModel(HpId hpId, PtId ptId, HokenPid hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int endDate)
+        public InsuranceListModel(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int endDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -26,9 +26,9 @@ namespace Domain.Models.InsuranceList
             EndDate = endDate;
         }
 
-        public HpId HpId { get; private set; }
-        public PtId PtId { get; private set; }
-        public HokenPid HokenPid { get; private set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public int HokenPid { get; private set; }
         public long SeqNo { get; private set; }
         public int HokenKbn { get; private set; }
         public int HokenSbtCd { get; private set; }

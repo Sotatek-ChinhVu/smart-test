@@ -18,7 +18,7 @@ namespace Interactor.InsuranceList
 
         public GetInsuranceListByIdOutputData Handle(GetInsuranceListByIdInputData inputData)
         {
-            if(inputData.PtId.Value < 0)
+            if(inputData.PtId < 0)
             {
                 return new GetInsuranceListByIdOutputData(new List<InsuranceListModel>(), GetInsuranceListByIdStatus.InvalidId);
             }

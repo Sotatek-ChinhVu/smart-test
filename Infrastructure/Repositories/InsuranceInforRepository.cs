@@ -18,14 +18,14 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public InsuranceInforModel? GetInsuranceInfor(PtId ptId, int hokenId)
+        public InsuranceInforModel? GetInsuranceInfor(long ptId, int hokenId)
         {
-            var data = _tenantDataContext.PtHokenInfs.Where(x => x.PtId == ptId.Value && x.HokenId == hokenId).SingleOrDefault();
+            var data = _tenantDataContext.PtHokenInfs.Where(x => x.PtId == ptId && x.HokenId == hokenId).SingleOrDefault();
             if(data == null)
                 return null;
             return new InsuranceInforModel(
-                HpId.From(data.HpId),
-                PtId.From(data.PtId),
+                data.HpId,
+                data.PtId,
                 data.HokenId,
                 data.SeqNo,
                 data.HokenNo,

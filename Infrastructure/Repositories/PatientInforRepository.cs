@@ -23,11 +23,11 @@ namespace Infrastructure.Repositories
         public IEnumerable<PatientInfor> GetAll()
         {
             return _tenantDataContext.PtInfs.Select(x => new PatientInfor(
-                HpId.From(x.HpId),
-                PtId.From(x.PtId),
-                ReferenceNo.From(x.ReferenceNo),
-                SeqNo.From(x.SeqNo),
-                PtNum.From(x.PtNum),
+                x.HpId,
+                x.PtId,
+                x.ReferenceNo,
+                x.SeqNo,
+                x.PtNum,
                 x.KanaName,
                 x.Name,
                 x.Sex,
@@ -64,18 +64,18 @@ namespace Infrastructure.Repositories
                 .Take(100);
         }
 
-        public PatientInfor? GetById(PtId ptId)
+        public PatientInfor? GetById(long ptId)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId.Value).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).FirstOrDefault();
             if (itemData == null)
                 return null;
             else
                 return new PatientInfor(
-                HpId.From(itemData.HpId),
-                PtId.From(itemData.PtId),
-                ReferenceNo.From(itemData.ReferenceNo),
-                SeqNo.From(itemData.SeqNo),
-                PtNum.From(itemData.PtNum),
+                itemData.HpId,
+                itemData.PtId,
+                itemData.ReferenceNo,
+                itemData.SeqNo,
+                itemData.PtNum,
                 itemData.KanaName,
                 itemData.Name,
                 itemData.Sex,
