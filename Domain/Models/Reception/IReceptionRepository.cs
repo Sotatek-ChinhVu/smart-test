@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,6 @@ namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
-        ReceptionModel? Get(RaiinNo raiinNo);
+        ReceptionModel? Get(long raiinNo);
     }
 }

@@ -76,7 +76,7 @@ namespace Entity.Tenant
 		[Column("YOYAKU_TIME")]
 		[MaxLength(6)]
 		[CustomAttribute.DefaultValue("0")]
-		public string YoyakuTime { get; set; } = string.Empty;
+		public string? YoyakuTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 予約者ID
