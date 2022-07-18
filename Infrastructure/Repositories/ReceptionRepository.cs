@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.Reception;
+﻿using Domain.Models.Reception;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -18,9 +17,9 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public ReceptionModel? Get(RaiinNo raiinNo)
+        public ReceptionModel? Get(long raiinNo)
         {
-            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo.Value);
+            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
 
             if (receptionEntity == null)
             {
@@ -29,12 +28,12 @@ namespace Infrastructure.Repositories
 
             return new ReceptionModel
                 (
-                    HpId.From(receptionEntity.HpId),
-                    PtId.From(receptionEntity.PtId),
-                    SinDate.From(receptionEntity.SinDate),
-                    RaiinNo.From(receptionEntity.RaiinNo),
-                    OyaRaiinNo.From(receptionEntity.OyaRaiinNo),
-                    HokenPid.From(receptionEntity.HokenPid),
+                    receptionEntity.HpId,
+                    receptionEntity.PtId,
+                    receptionEntity.SinDate,
+                    receptionEntity.RaiinNo,
+                    receptionEntity.OyaRaiinNo,
+                    receptionEntity.HokenPid,
                     receptionEntity.SanteiKbn,
                     receptionEntity.Status,
                     receptionEntity.IsYoyaku,
