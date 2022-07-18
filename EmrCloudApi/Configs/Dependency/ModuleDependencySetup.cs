@@ -1,13 +1,14 @@
-﻿using Domain.Models.Reception;
+﻿using Domain.Models.KarteInfs;
+using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.KarteInfs;
 using Interactor.Reception;
 using Interactor.User;
-using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using UseCase.Core.Builder;
+using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.User.Create;
 using UseCase.User.GetList;
@@ -33,6 +34,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
+            services.AddTransient<IKarteInfRepository, KarteInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -48,8 +50,11 @@ namespace EmrCloudApi.Configs.Dependency
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
-            var bus = busBuilder.Build();   
+            //Karte
+            busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
+
+            var bus = busBuilder.Build();
             services.AddSingleton(bus);
-        } 
+        }
     }
 }
