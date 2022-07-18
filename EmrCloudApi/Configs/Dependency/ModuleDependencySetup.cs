@@ -1,13 +1,16 @@
-﻿using Domain.Models.Reception;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.PatientInfor;
 using Interactor.Reception;
 using Interactor.User;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using UseCase.Core.Builder;
+using UseCase.PatientInformation.GetById;
 using UseCase.Reception.Get;
 using UseCase.User.Create;
 using UseCase.User.GetList;
@@ -33,6 +36,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
+            services.AddTransient<IPatientInforRepository, PatientInforRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -47,6 +51,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+
+            // PatientInfor
+            busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
 
             var bus = busBuilder.Build();   
             services.AddSingleton(bus);

@@ -7,21 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="User\Delete\" />
-    <Folder Include="User\Update\" />
-    <Folder Include="User\Read\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Domain.Core">
       <HintPath>..\EmrCloudApi\lib\Domain.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="UseCase.Core">
-      <HintPath>..\EmrCloudApi\lib\UseCase.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 
