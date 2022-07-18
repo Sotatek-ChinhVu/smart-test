@@ -16,19 +16,19 @@ namespace Interactor.OrdInfs
 
         public GetOrdInfListTreeOutputData Handle(GetOrdInfListTreeInputData inputData)
         {
-            if (inputData.RaiinNo.Value <= 0)
+            if (inputData.RaiinNo <= 0)
             {
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidRaiinNo);
             }
-            if (inputData.HpId.Value <= 0)
+            if (inputData.HpId <= 0)
             {
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidHpId);
             }
-            if (inputData.PtId.Value <= 0)
+            if (inputData.PtId <= 0)
             {
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidPtId);
             }
-            if (inputData.SinDate.Value <= 0)
+            if (inputData.SinDate <= 0)
             {
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
@@ -36,38 +36,38 @@ namespace Interactor.OrdInfs
             var allOdrInfDetails = _ordInfDetailRepository
                 .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate)
                 .Select(od => new OdrInfDetailItem(
-                    od.HpId.Value,
-                    od.RaiinNo.Value,
-                    od.RpNo.Value,
-                    od.RpEdaNo.Value,
-                    od.RowNo.Value,
-                    od.PtId.Value,
-                    od.SinDate.Value,
-                    od.SinKouiKbn.Value,
-                    od.ItemCd.Value,
-                    od.ItemName.Value,
+                    od.HpId,
+                    od.RaiinNo,
+                    od.RpNo,
+                    od.RpEdaNo,
+                    od.RowNo,
+                    od.PtId,
+                    od.SinDate,
+                    od.SinKouiKbn,
+                    od.ItemCd,
+                    od.ItemName,
                     od.Suryo,
-                    od.UnitName.Value,
-                    od.UnitSbt.Value,
+                    od.UnitName,
+                    od.UnitSbt,
                     od.TermVal,
-                    od.KohatuKbn.Value,
+                    od.KohatuKbn,
                     od.SyohoKbn,
                     od.SyohoLimitKbn,
                     od.DrugKbn,
                     od.YohoKbn,
-                    od.Kokuji1.Value,
-                    od.Kokuji2.Value,
+                    od.Kokuji1,
+                    od.Kokuji2,
                     od.IsNodspRece,
-                    od.IpnCd.Value,
-                    od.IpnName.Value,
+                    od.IpnCd,
+                    od.IpnName,
                     od.JissiKbn,
                     od.JissiDate,
                     od.JissiId,
                     od.JissiMachine,
-                    od.ReqCd.Value,
-                    od.Bunkatu.Value,
-                    od.CmtName.Value,
-                    od.CmtName.Value,
+                    od.ReqCd,
+                    od.Bunkatu,
+                    od.CmtName,
+                    od.CmtName,
                     od.FontColor,
                     od.CommentNewline
                 ))
@@ -79,23 +79,23 @@ namespace Interactor.OrdInfs
             var allOdrInfs = _ordInfRepository
                     .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate)
                     .Select(o => new OdrInfItem(
-                        o.HpId.Value,
-                        o.RaiinNo.Value,
-                        o.RpNo.Value,
-                        o.RpEdaNo.Value,
-                        o.PtId.Value,
-                        o.SinDate.Value,
-                        o.HokenPid.Value,
-                        o.OdrKouiKbn.Value,
-                        o.RpName.Value,
-                        o.InoutKbn.Value,
-                        o.SikyuKbn.Value,
-                        o.SyohoSbt.Value,
-                        o.SanteiKbn.Value,
-                        o.TosekiKbn.Value,
+                        o.HpId,
+                        o.RaiinNo,
+                        o.RpNo,
+                        o.RpEdaNo,
+                        o.PtId,
+                        o.SinDate,
+                        o.HokenPid,
+                        o.OdrKouiKbn,
+                        o.RpName,
+                        o.InoutKbn,
+                        o.SikyuKbn,
+                        o.SyohoSbt,
+                        o.SanteiKbn,
+                        o.TosekiKbn,
                         o.DaysCnt,
                         o.SortNo,
-                        o.Id.Value,
+                        o.Id,
                         o.GroupKoui.Value,
                         allOdrInfDetails
                      ))
@@ -110,14 +110,12 @@ namespace Interactor.OrdInfs
                 .Select(grp => grp.FirstOrDefault())
                 .ToList();
 
-            var dem = 1;
-
             if (hokenOdrInfs?.Count > 0)
             {
                 var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
                 foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
                 {
-                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title " + dem);
+                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title ");
                     // Find By Group
                     var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
                         .GroupBy(odr => new
@@ -180,7 +178,6 @@ namespace Interactor.OrdInfs
                         }
                     }
                     tree.GroupHokens.Add(groupHoken);
-                    dem++;
                 }
 
                 return tree;

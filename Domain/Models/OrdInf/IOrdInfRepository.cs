@@ -1,19 +1,17 @@
-﻿using Domain.CommonObject;
-
-namespace Domain.Models.OrdInfs
+﻿namespace Domain.Models.OrdInfs
 {
     public interface IOrdInfRepository
     {
-        void Create(OrdInfMst user);
+        void Create(OrdInfMst ord);
 
-        OrdInfMst Read(OrderId ordId);
+        OrdInfMst Read(int ordId);
 
         void Update(OrdInfMst ord);
 
-        void Delete(OrderId ordId);
+        void Delete(int ordId);
 
         IEnumerable<OrdInfMst> GetAll();
-        IEnumerable<OrdInfMst> GetList(PtId ptId, RaiinNo raiinNo, SinDate sinDate);
+        IEnumerable<OrdInfMst> GetList(long ptId, long raiinNo, int sinDate);
         int MaxUserId();
     }
 }

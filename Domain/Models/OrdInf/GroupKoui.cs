@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Core;
+﻿using Domain.Core;
 
 namespace Domain.Models.OrdInfs
 {
@@ -9,42 +8,42 @@ namespace Domain.Models.OrdInfs
 
         public int Value => _value;
 
-        private GroupKoui(OdrKouiKbn value)
+        private GroupKoui(int value)
         {
             _value = GetGroupKoui(value);
         }
 
-        public static GroupKoui From(OdrKouiKbn value)
+        public static GroupKoui From(int value)
         {
             return new GroupKoui(value);
         }
 
         private int GetGroupKoui(
-       OdrKouiKbn odrKouiKbn)
+       int odrKouiKbn)
         {
-            var result = odrKouiKbn.Value / 10 * 10;
+            var result = odrKouiKbn / 10 * 10;
 
-            if (11 <= odrKouiKbn.Value && odrKouiKbn.Value <= 13)
+            if (11 <= odrKouiKbn && odrKouiKbn <= 13)
             {
                 // NuiTran recommend handle this case
                 result = 11;
             }
-            else if (odrKouiKbn.Value == 14)
+            else if (odrKouiKbn == 14)
             {
                 // 在宅
-                result = odrKouiKbn.Value;
+                result = odrKouiKbn;
             }
-            else if (odrKouiKbn.Value >= 68 && odrKouiKbn.Value < 70)
+            else if (odrKouiKbn >= 68 && odrKouiKbn < 70)
             {
                 // 画像
-                result = odrKouiKbn.Value;
+                result = odrKouiKbn;
             }
-            else if (odrKouiKbn.Value >= 95 && odrKouiKbn.Value < 99)
+            else if (odrKouiKbn >= 95 && odrKouiKbn < 99)
             {
                 // コメント以外
-                result = odrKouiKbn.Value;
+                result = odrKouiKbn;
             }
-            else if (odrKouiKbn.Value == 100 || odrKouiKbn.Value == 101)
+            else if (odrKouiKbn == 100 || odrKouiKbn == 101)
             {
                 // コメント（処方箋）
                 // コメント（処方箋備考）

@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.OrdInfs;
+﻿using Domain.Models.OrdInfs;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -18,7 +17,7 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(OrderId ordId)
+        public void Delete(int ordId)
         {
             throw new NotImplementedException();
         }
@@ -29,9 +28,9 @@ namespace Infrastructure.Repositories
                 o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.CreateDate, o.CreateId, o.CreateMachine, o.UpdateDate, o.UpdateId, o.UpdateMachine, o.Id));
             return result;
         }
-        public IEnumerable<OrdInfMst> GetList(PtId ptId, RaiinNo raiinNo, SinDate sinDate)
+        public IEnumerable<OrdInfMst> GetList(long ptId, long raiinNo, int sinDate)
         {
-            var result = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId.Value && odr.RaiinNo == raiinNo.Value && odr.SinDate == sinDate.Value && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0).Select(o => new OrdInfMst(
+            var result = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0).Select(o => new OrdInfMst(
                 o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.CreateDate, o.CreateId, o.CreateMachine, o.UpdateDate, o.UpdateId, o.UpdateMachine, o.Id));
             return result;
         }
@@ -41,7 +40,7 @@ namespace Infrastructure.Repositories
             return 100;
         }
 
-        public OrdInfMst Read(OrderId ordId)
+        public OrdInfMst Read(int ordId)
         {
             throw new NotImplementedException();
         }
