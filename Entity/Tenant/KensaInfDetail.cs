@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 検査依頼コード
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("IRAI_CD", Order = 3)]
         public long IraiCd { get; set; }
 
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_ITEM_CD")]
         [MaxLength(10)]
-        public string KensaItemCd { get; set; } = string.Empty;
+        public string? KensaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 結果値
@@ -69,7 +69,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RESULT_VAL")]
         [MaxLength(10)]
-        public string ResultVal { get; set; } = string.Empty;
+        public string? ResultVal { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査値形態
@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RESULT_TYPE")]
         [MaxLength(1)]
-        public string ResultType { get; set; } = string.Empty;
+        public string? ResultType { get; set; } = string.Empty;
 
         /// <summary>
         /// 異常値区分
@@ -88,7 +88,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ABNORMAL_KBN")]
         [MaxLength(1)]
-        public string AbnormalKbn { get; set; } = string.Empty;
+        public string? AbnormalKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD1")]
         [MaxLength(3)]
-        public string CmtCd1 { get; set; } = string.Empty;
+        public string? CmtCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査結果コメント２
@@ -112,7 +112,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD2")]
         [MaxLength(3)]
-        public string CmtCd2 { get; set; } = string.Empty;
+        public string? CmtCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -134,7 +134,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -156,7 +156,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

@@ -20,5 +20,7 @@ namespace Domain.Models.SpecialNote
         public string? FamilyHistory { get; set; }
 
         public string? Address { get; set; }
+
+        public string? BodyIndex { get; set; }
     }
 }

@@ -27,6 +27,13 @@ namespace PostgreDataContext
                 table.StartTime,
                 table.RaiinNo
             });
+            builder.Entity<KensaInfDetail>().HasKey(table => new
+            {
+                table.HpId,
+                table.PtId,
+                table.IraiCd,
+                table.SeqNo
+            });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
