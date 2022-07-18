@@ -18,7 +18,7 @@ namespace Interactor.Reception
 
         public GetReceptionOutputData Handle(GetReceptionInputData inputData)
         {
-            if (inputData.RaiinNo.Value <= 0)
+            if (inputData.RaiinNo <= 0)
             {
                 return new GetReceptionOutputData(null, GetReceptionStatus.InvalidRaiinNo);
             }

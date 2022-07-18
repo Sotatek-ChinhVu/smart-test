@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,11 +9,11 @@ namespace UseCase.Reception.Get
 {
     public class GetReceptionInputData : IInputData<GetReceptionOutputData>
     {
-        public RaiinNo RaiinNo { get; private set; }
+        public long RaiinNo { get; private set; }
 
         public GetReceptionInputData(long raiinNo)
         {
-            RaiinNo = RaiinNo.From(raiinNo);
+            RaiinNo = raiinNo;
         }
     }
 }
