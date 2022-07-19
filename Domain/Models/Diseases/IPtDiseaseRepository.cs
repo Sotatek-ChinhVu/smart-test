@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.Diseases
 {
-    public interface IDiseaseRepository
+    public interface IPtDiseaseRepository
     {
-        IEnumerable<Disease> GetAll(HpId hpId, PtId ptId, SinDate sinDate, DiseaseViewType openFrom);
+        IEnumerable<PtDisease> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom);
     }
 }

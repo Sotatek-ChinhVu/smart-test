@@ -35,7 +35,7 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IDiseaseRepository, DiseaseRepository>();
+            services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
         }
 
@@ -49,7 +49,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
             //PtByomeis
-            busBuilder.RegisterUseCase<GetDiseaseListInputData, GetDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
 
 
             //Reception

@@ -1,7 +1,7 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.Diseases
 
 {
-    public class GetDiseaseListRequest
+    public class GetPtDiseaseListRequest
     {
         public int HpId { get; set; }
         public long PtId { get; set; }

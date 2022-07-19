@@ -17,16 +17,16 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet("get-disease-list")]
-        public ActionResult<Response<GetDiseaseListResponse>> GetDiseaseListMedicalExamination(int hpId, long ptId, int sinDate)
+        [HttpGet("get-pt-disease-list")]
+        public ActionResult<Response<GetPtDiseaseListResponse>> GetDiseaseListMedicalExamination(int hpId, long ptId, int sinDate, int hokenId , int diseaseViewModel)
         {
-            var input = new GetDiseaseListInputData(hpId, ptId, sinDate);
+            var input = new GetPtDiseaseListInputData(hpId, ptId, sinDate, hokenId, diseaseViewModel);
             var output = _bus.Handle(input);
 
-            var presenter = new GetDiseaseListPresenter();
+            var presenter = new GetPtDiseaseListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetDiseaseListResponse>>(presenter.Result);
+            return new ActionResult<Response<GetPtDiseaseListResponse>>(presenter.Result);
         }
     }
 }

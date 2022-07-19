@@ -18,6 +18,16 @@ namespace PostgreDataContext
             optionsBuilder.UseNpgsql(_connectionString);
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<PtByomei>().HasKey(table => new
+            {
+                table.HpId,
+                table.PtId,
+                table.Id
+            });
+        }
+
         public DbSet<PtInf> PtInfs { get; set; } = default!;
 
         public DbSet<ZUketukeSbtDayInf> ZUketukeSbtDayInfs { get; set; } = default!;

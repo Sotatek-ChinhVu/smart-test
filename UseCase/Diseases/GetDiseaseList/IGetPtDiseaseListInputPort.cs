@@ -7,7 +7,7 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.Diseases.GetDiseaseList
 {
-    public interface IGetDiseaseListOutputPort : IOutputPort<GetDiseaseListOutputData>
+    public interface IGetPtDiseaseListInputPort : IInputPort<GetPtDiseaseListInputData, GetPtDiseaseListOutputData>
     {
     }
 }
