@@ -18,8 +18,8 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpPost("GetById")]
-        public ActionResult<Response<GetPatientInforByIdResponse>> GetById([FromBody] GetByIdRequest request)
+        [HttpPost("GetPatientById")]
+        public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromBody] GetByIdRequest request)
         {
             var input = new GetPatientInforByIdInputData(request.PtId);
             var output = _bus.Handle(input);
