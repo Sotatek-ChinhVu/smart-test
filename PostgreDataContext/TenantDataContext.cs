@@ -12,25 +12,6 @@ namespace PostgreDataContext
         : base(options)
         {
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<OdrInf>().HasKey(o => new
-            {
-                o.HpId,
-                o.RaiinNo,
-                o.RpNo,
-                o.RpEdaNo,
-                o.Id
-            });
-            modelBuilder.Entity<OdrInfDetail>().HasKey(o => new
-            {
-                o.HpId,
-                o.RaiinNo,
-                o.RpNo,
-                o.RpEdaNo,
-                o.RowNo
-            });
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -39,16 +20,16 @@ namespace PostgreDataContext
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AccountingFormMst>().HasKey(a => new { a.HpId, a.FormNo});
-            modelBuilder.Entity<ApprovalInf>().HasKey(a => new {a.Id, a.HpId, a.RaiinNo});
+            modelBuilder.Entity<AccountingFormMst>().HasKey(a => new { a.HpId, a.FormNo });
+            modelBuilder.Entity<ApprovalInf>().HasKey(a => new { a.Id, a.HpId, a.RaiinNo });
             modelBuilder.Entity<AutoSanteiMst>().HasKey(a => new { a.Id, a.HpId, a.ItemCd });
             modelBuilder.Entity<BuiOdrByomeiMst>().HasKey(b => new { b.HpId, b.BuiId, b.ByomeiBui });
-            modelBuilder.Entity<BuiOdrItemByomeiMst>().HasKey(b => new { b.HpId, b.ItemCd, b.ByomeiBui});
+            modelBuilder.Entity<BuiOdrItemByomeiMst>().HasKey(b => new { b.HpId, b.ItemCd, b.ByomeiBui });
             modelBuilder.Entity<BuiOdrItemMst>().HasKey(b => new { b.HpId, b.ItemCd });
             modelBuilder.Entity<BuiOdrMst>().HasKey(b => new { b.HpId, b.BuiId });
             modelBuilder.Entity<ByomeiMst>().HasKey(b => new { b.HpId, b.ByomeiCd });
             modelBuilder.Entity<ByomeiMstAftercare>().HasKey(b => new { b.ByomeiCd, b.Byomei, b.StartDate });
-            modelBuilder.Entity<ByomeiSetGenerationMst>().HasKey(b => new { b.HpId, b.GenerationId});
+            modelBuilder.Entity<ByomeiSetGenerationMst>().HasKey(b => new { b.HpId, b.GenerationId });
             modelBuilder.Entity<ByomeiSetMst>().HasKey(b => new { b.HpId, b.GenerationId, b.SeqNo });
             modelBuilder.Entity<CalcLog>().HasKey(b => new { b.HpId, b.PtId, b.RaiinNo, b.SeqNo });
             modelBuilder.Entity<CmtCheckMst>().HasKey(b => new { b.HpId, b.ItemCd, b.SeqNo });
@@ -56,6 +37,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<ConversionItemInf>().HasKey(b => new { b.HpId, b.SourceItemCd, b.DestItemCd });
             modelBuilder.Entity<DefHokenNo>().HasKey(b => new { b.HpId, b.Digit1, b.Digit2, b.SeqNo });
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
+            modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
