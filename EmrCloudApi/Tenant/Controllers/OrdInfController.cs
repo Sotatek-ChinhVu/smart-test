@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters.User;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.User;
 using EmrCloudApi.Tenant.Requests.OrdInfs;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.OrdInfs;
@@ -18,7 +19,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet("GetListTree")]
+        [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetOrdInfListTreeResponse>> GetList([FromQuery] GetOrdInfListTreeRequest request)
         {
             var input = new GetOrdInfListTreeInputData(request.PtId, request.HpId, request.RaiinNo, request.SinDate);

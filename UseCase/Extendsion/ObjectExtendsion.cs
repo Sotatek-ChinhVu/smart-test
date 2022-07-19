@@ -10,8 +10,9 @@
 
         public static string AsString(this Object inputObject, string defaultValue = "")
         {
-            if (inputObject == null || inputObject == DBNull.Value) return defaultValue;
-            return inputObject.ToString();
+            var result = inputObject?.ToString();
+            if (inputObject == null || inputObject == DBNull.Value || result == null) return defaultValue;
+            return  result;
         }
 
         public static int AsInteger(this object inputObject)

@@ -18,8 +18,7 @@ namespace Domain.Models.OrdInfs
             return new GroupKoui(value);
         }
 
-        private int GetGroupKoui(
-       int odrKouiKbn)
+        private int GetGroupKoui(int odrKouiKbn)
         {
             var result = odrKouiKbn / 10 * 10;
 

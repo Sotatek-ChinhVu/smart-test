@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public void Create(OrdInfMst ord)
+        public void Create(OrdInf ord)
         {
             throw new NotImplementedException();
         }
@@ -22,16 +22,16 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<OrdInfMst> GetAll()
+        public IEnumerable<OrdInf> GetAll()
         {
-            var result = _tenantDataContext.OdrInfs.AsQueryable().Select(o => new OrdInfMst(
-                o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.CreateDate, o.CreateId, o.CreateMachine, o.UpdateDate, o.UpdateId, o.UpdateMachine, o.Id));
+            var result = _tenantDataContext.OdrInfs.AsQueryable().Select(o => new OrdInf(
+                o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.Id));
             return result;
         }
-        public IEnumerable<OrdInfMst> GetList(long ptId, long raiinNo, int sinDate)
+        public IEnumerable<OrdInf> GetList(long ptId, long raiinNo, int sinDate)
         {
-            var result = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0).Select(o => new OrdInfMst(
-                o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.CreateDate, o.CreateId, o.CreateMachine, o.UpdateDate, o.UpdateId, o.UpdateMachine, o.Id));
+            var result = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && odr.IsDeleted == 0).Select(o => new OrdInf(
+                o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.Id));
             return result;
         }
 
@@ -40,12 +40,12 @@ namespace Infrastructure.Repositories
             return 100;
         }
 
-        public OrdInfMst Read(int ordId)
+        public OrdInf Read(int ordId)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(OrdInfMst ord)
+        public void Update(OrdInf ord)
         {
             throw new NotImplementedException();
         }

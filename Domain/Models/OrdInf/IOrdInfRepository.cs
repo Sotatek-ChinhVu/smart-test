@@ -2,16 +2,18 @@
 {
     public interface IOrdInfRepository
     {
-        void Create(OrdInfMst ord);
+        void Create(OrdInf ord);
 
-        OrdInfMst Read(int ordId);
+        OrdInf Read(int ordId);
 
-        void Update(OrdInfMst ord);
+        void Update(OrdInf ord);
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInfMst> GetAll();
-        IEnumerable<OrdInfMst> GetList(long ptId, long raiinNo, int sinDate);
+        IEnumerable<OrdInf> GetAll();
+
+        IEnumerable<OrdInf> GetList(long ptId, long raiinNo, int sinDate);
+
         int MaxUserId();
     }
 }
