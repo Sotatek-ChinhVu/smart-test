@@ -1,15 +1,7 @@
-﻿using Domain.CommonObject;
-using Domain.Models.PatientInfor;
+﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
-using Domain.Models.User;
-using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
