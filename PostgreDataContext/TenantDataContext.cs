@@ -17,24 +17,6 @@ namespace PostgreDataContext
         {
             optionsBuilder.UseNpgsql(_connectionString);
         }
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            builder.Entity<RsvInf>().HasKey(table => new
-            {
-                table.HpId,
-                table.RsvFrameId,
-                table.SinDate,
-                table.StartTime,
-                table.RaiinNo
-            });
-            builder.Entity<KensaInfDetail>().HasKey(table => new
-            {
-                table.HpId,
-                table.PtId,
-                table.IraiCd,
-                table.SeqNo
-            });
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +37,21 @@ namespace PostgreDataContext
             modelBuilder.Entity<ConversionItemInf>().HasKey(b => new { b.HpId, b.SourceItemCd, b.DestItemCd });
             modelBuilder.Entity<DefHokenNo>().HasKey(b => new { b.HpId, b.Digit1, b.Digit2, b.SeqNo });
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<RsvInf>().HasKey(table => new
+            {
+                table.HpId,
+                table.RsvFrameId,
+                table.SinDate,
+                table.StartTime,
+                table.RaiinNo
+            });
+            modelBuilder.Entity<KensaInfDetail>().HasKey(table => new
+            {
+                table.HpId,
+                table.PtId,
+                table.IraiCd,
+                table.SeqNo
+            });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +8,7 @@ namespace Domain.Models.SpecialNote
 {
     public class SpecialNoteDTO
     {
-        public PtId? PtId { get; set; }
+        public int PtId { get; set; }
 
         public string? Comment { get; set; }    
 

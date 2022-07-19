@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.SpecialNote;
+﻿using Domain.Models.SpecialNote;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -18,15 +17,15 @@ namespace Infrastructure.Repositories
         {
             _tenantDataContext = tenantProvider.GetDataContext();
         }
-        public SpecialNoteDTO Get(PtId ptId, SinDate sinDate)
+        public SpecialNoteDTO Get(int ptId, int sinDate)
         {
             var ptInf = _tenantDataContext.PtInfs.SingleOrDefault(
-                p => p.PtId == ptId.Value
+                p => p.PtId == ptId
                 );
             var cmtInf = _tenantDataContext.PtCmtInfs.SingleOrDefault(
-                p => p.PtId == ptId.Value);
-            var kensaInfDetails = _tenantDataContext.KensaInfDetails.Where(p => p.PtId == ptId.Value && p.IraiDate <= sinDate.Value).OrderByDescending(p => p.IraiDate).Take(3).ToList();
-            var rsvInf = _tenantDataContext.RsvInfs.Where(r => r.PtId == ptId.Value).ToList();
+                p => p.PtId == ptId);
+            var kensaInfDetails = _tenantDataContext.KensaInfDetails.Where(p => p.PtId == ptId && p.IraiDate <= sinDate).OrderByDescending(p => p.IraiDate).Take(3).ToList();
+            var rsvInf = _tenantDataContext.RsvInfs.Where(r => r.PtId == ptId).ToList();
             SpecialNoteDTO specialNoteDTO = new SpecialNoteDTO();
             System.Collections.IList list = rsvInf;
             for (int i = 0; i < list.Count; i++) {

@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +10,6 @@ namespace Domain.Models.SpecialNote
     {
         public IEnumerable<SpecialNoteDTO> GetAll();
 
-        public SpecialNoteDTO Get(PtId ptId, SinDate sinDate);
+        public SpecialNoteDTO Get(int ptId, int sinDate);
     }
 }
