@@ -7,6 +7,10 @@
 
         public static readonly string GetUserListSuccessed = "Get userList successed!!!";
 
+        //Patient Infor
+        public static readonly string GetPatientInforNotExist = "Not exist data!";
+        public static readonly string GetPatientByIdSuccessed = "Successed";
+        public static readonly string GetPatientByIdInvalidId = "Invalid PtId";
 
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
