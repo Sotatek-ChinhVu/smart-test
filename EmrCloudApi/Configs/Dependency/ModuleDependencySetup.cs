@@ -1,13 +1,16 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.PatientInfor;
 using Interactor.KarteInfs;
 using Interactor.Reception;
 using Interactor.User;
 using UseCase.Core.Builder;
+using UseCase.PatientInformation.GetById;
 using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.User.Create;
@@ -34,6 +37,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
+            services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
         }
 
@@ -53,7 +57,10 @@ namespace EmrCloudApi.Configs.Dependency
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 
-            var bus = busBuilder.Build();
+            // PatientInfor
+            busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
+
+            var bus = busBuilder.Build();   
             services.AddSingleton(bus);
         }
     }
