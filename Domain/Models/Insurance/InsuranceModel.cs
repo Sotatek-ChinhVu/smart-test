@@ -8,7 +8,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, string hokensyaName, string hokensyaPost, string hokensyaAddress, string hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate)
+        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string? edaNo, int hokenEdaNo, string? hokensyaNo, string? kigo, string? bango, int honkeKbn, int hokenKbn, string? houbetu, string? hokensyaName, string? hokensyaPost, string? hokensyaAddress, string? hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string? tokki1, string? tokki2, string? tokki3, string? tokki4, string? tokki5, string? rousaiKofuNo, int rousaiSaigaiKbn, string? rousaiJigyosyoName, string? rousaiPrefName, string? rousaiCityName, int rousaiSyobyoDate, string? rousaiSyobyoCd, string? rousaiRoudouCd, string? rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string? jibaiHokenName, string? jibaiHokenTanto, string? jibaiHokenTel, int jibaiJyusyouDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -71,18 +71,18 @@ namespace Domain.Models.InsuranceInfor
         public int HokenId { get; set; }
         public long SeqNo { get; set; }
         public int HokenNo { get; set; }
-        public string EdaNo { get; set; }
+        public string? EdaNo { get; set; }
         public int HokenEdaNo { get; set; }
-        public string HokensyaNo { get; set; }
-        public string Kigo { get; set; }
-        public string Bango { get; set; }
+        public string? HokensyaNo { get; set; }
+        public string? Kigo { get; set; }
+        public string? Bango { get; set; }
         public int HonkeKbn { get; set; }
         public int HokenKbn { get; set; }
-        public string Houbetu { get; set; }
-        public string HokensyaName { get; set; }
-        public string HokensyaPost { get; set; }
-        public string HokensyaAddress { get; set; }
-        public string HokensyaTel { get; set; }
+        public string? Houbetu { get; set; }
+        public string? HokensyaName { get; set; }
+        public string? HokensyaPost { get; set; }
+        public string? HokensyaAddress { get; set; }
+        public string? HokensyaTel { get; set; }
         public int KeizokuKbn { get; set; }
         public int SikakuDate { get; set; }
         public int KofuDate { get; set; }
@@ -99,26 +99,26 @@ namespace Domain.Models.InsuranceInfor
         public int GenmenKbn { get; set; }
         public int GenmenRate { get; set; }
         public int GenmenGaku { get; set; }
-        public string Tokki1 { get; set; }
-        public string Tokki2 { get; set; }
-        public string Tokki3 { get; set; }
-        public string Tokki4 { get; set; }
-        public string Tokki5 { get; set; }
-        public string RousaiKofuNo { get; set; }
+        public string? Tokki1 { get; set; }
+        public string? Tokki2 { get; set; }
+        public string? Tokki3 { get; set; }
+        public string? Tokki4 { get; set; }
+        public string? Tokki5 { get; set; }
+        public string? RousaiKofuNo { get; set; }
         public int RousaiSaigaiKbn { get; set; }
-        public string RousaiJigyosyoName { get; set; }
-        public string RousaiPrefName { get; set; }
-        public string RousaiCityName { get; set; }
+        public string? RousaiJigyosyoName { get; set; }
+        public string? RousaiPrefName { get; set; }
+        public string? RousaiCityName { get; set; }
         public int RousaiSyobyoDate { get; set; }
-        public string RousaiSyobyoCd { get; set; }
-        public string RousaiRoudouCd { get; set; }
-        public string RousaiKantokuCd { get; set; }
+        public string? RousaiSyobyoCd { get; set; }
+        public string? RousaiRoudouCd { get; set; }
+        public string? RousaiKantokuCd { get; set; }
         public int RousaiReceCount { get; set; }
         public int RyoyoStartDate { get; set; }
         public int RyoyoEndDate { get; set; }
-        public string JibaiHokenName { get; set; }
-        public string JibaiHokenTanto { get; set; }
-        public string JibaiHokenTel { get; set; }
+        public string? JibaiHokenName { get; set; }
+        public string? JibaiHokenTanto { get; set; }
+        public string? JibaiHokenTel { get; set; }
         public int JibaiJyusyouDate { get; set; }
     }
 }
