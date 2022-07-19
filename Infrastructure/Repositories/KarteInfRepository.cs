@@ -32,7 +32,7 @@ namespace Infrastructure.Repositories
                         k.SinDate,
                         k.Text,
                         k.IsDeleted,
-                        Encoding.UTF8.GetString(k.RichText)
+                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText)
                     )
                   ).ToList();
         }

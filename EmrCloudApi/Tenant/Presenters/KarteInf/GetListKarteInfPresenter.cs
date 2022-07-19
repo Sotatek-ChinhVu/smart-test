@@ -13,30 +13,25 @@ namespace EmrCloudApi.Tenant.Presenters.KarteInfs
         {
             Result = new Response<GetListKarteInfResponse>()
             {
-                Data = new GetListKarteInfResponse(),
+                Data = new GetListKarteInfResponse(outputData.KarteInfs),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
             {
                 case GetListKarteInfStatus.InvalidRaiinNo:
                     Result.Message = ResponseMessage.GetReceptionInvalidRaiinNo;
-                    Result.Data.KarteInfs = outputData.KarteInfs;
                     break;
                 case GetListKarteInfStatus.InvalidPtId:
                     Result.Message = ResponseMessage.GetKarteInfInvalidPtId;
-                    Result.Data.KarteInfs = outputData.KarteInfs;
                     break;
                 case GetListKarteInfStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.GetKarteInfInvalidSinDate;
-                    Result.Data.KarteInfs = outputData.KarteInfs;
                     break;
                 case GetListKarteInfStatus.NoData:
                     Result.Message = ResponseMessage.GetKarteInfNoData;
-                    Result.Data.KarteInfs = outputData.KarteInfs;
                     break;
                 case GetListKarteInfStatus.Successed:
                     Result.Message = ResponseMessage.GetKarteInfSuccessed;
-                    Result.Data.KarteInfs = outputData.KarteInfs;
                     break;
             }
         }
