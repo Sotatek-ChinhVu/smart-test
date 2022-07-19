@@ -1,9 +1,7 @@
-﻿using Domain.CommonObject;
-
-namespace EmrCloudApi.Tenant.Requests.Insurance
+﻿namespace EmrCloudApi.Tenant.Requests.Insurance
 {
     public class GetInsuranceListRequest
     {
-        public int ptId { get; set; }
+        public int PtId { get; set; }
     }
 }
