@@ -4,6 +4,6 @@ namespace EmrCloudApi.Tenant.Responses.Reception
 {
     public class GetReceptionResponse
     {
-        public ReceptionModel? ReceptionModel { get; set; }
+        public ReceptionDto? Reception { get; set; }
     }
 }

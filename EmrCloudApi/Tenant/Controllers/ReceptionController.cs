@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters.Reception;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
@@ -19,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpPost("Get")]
+        [HttpPost(ApiPath.Get)]
         public ActionResult<Response<GetReceptionResponse>> Get([FromBody] GetReceptionRequest request)
         {
             var input = new GetReceptionInputData(request.RaiinNo);

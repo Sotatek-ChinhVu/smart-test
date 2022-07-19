@@ -10,7 +10,6 @@ namespace Entity.Tenant
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
         [Column(name: "ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -19,7 +18,6 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -28,7 +26,6 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
