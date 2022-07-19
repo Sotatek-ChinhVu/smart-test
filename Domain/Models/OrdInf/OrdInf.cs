@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.OrdInfs
+﻿using Domain.Models.OrdInfDetails;
+
+namespace Domain.Models.OrdInfs
 {
     public class OrdInf
     {
@@ -21,8 +23,9 @@
         public int IsDeleted { get; private set; }
         public long Id { get; private set; }
         public GroupKoui GroupKoui { get; private set; }
+        public List<OrdInfDetail> OrdInfDetails { get; private set; }
 
-        public OrdInf(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id)
+        public OrdInf(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetail> ordInfDetails)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -43,6 +46,7 @@
             IsDeleted = isDeleted;
             Id = id;
             GroupKoui = GroupKoui.From(odrKouiKbn);
+            OrdInfDetails = ordInfDetails;
         }
     }
 }

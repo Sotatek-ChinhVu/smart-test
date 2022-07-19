@@ -8,9 +8,28 @@ namespace PostgreDataContext
         private readonly string _connectionString = String.Empty;
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
 
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)    
+        public TenantDataContext(DbContextOptions<TenantDataContext> options)
         : base(options)
         {
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<OdrInf>().HasKey(o => new
+            {
+                o.HpId,
+                o.RaiinNo,
+                o.RpNo,
+                o.RpEdaNo,
+                o.Id
+            });
+            modelBuilder.Entity<OdrInfDetail>().HasKey(o => new
+            {
+                o.HpId,
+                o.RaiinNo,
+                o.RpNo,
+                o.RpEdaNo,
+                o.RowNo
+            });
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
