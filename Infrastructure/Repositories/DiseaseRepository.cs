@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Domain.Models.Diseases;
-using Domain.CommonObject;
 using PostgreDataContext;
 using Infrastructure.Interfaces;
 using Domain.Enum;

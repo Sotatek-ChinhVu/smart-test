@@ -1,6 +1,4 @@
-﻿using Domain.CommonObject;
-
-namespace Domain.Models.Diseases
+﻿namespace Domain.Models.Diseases
 {
     public class PtDisease
     {

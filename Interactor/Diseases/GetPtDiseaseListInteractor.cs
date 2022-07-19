@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.Diseases;
+﻿using Domain.Models.Diseases;
 using System;
 using System.Collections.Generic;
 using System.Linq;
