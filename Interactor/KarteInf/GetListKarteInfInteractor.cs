@@ -1,5 +1,4 @@
 ﻿using Domain.Models.KarteInfs;
-using System.Text;
 using UseCase.KarteInfs.GetLists;
 
 namespace Interactor.KarteInfs
@@ -25,10 +24,6 @@ namespace Interactor.KarteInfs
             if (inputData.SinDate <= 0)
             {
                 return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.InvalidSinDate);
-            }
-            if (inputData.IsDeleted !=  0  && inputData.IsDeleted != 1)
-            {
-                return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.InvalidIsDeleted);
             }
 
             var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted);

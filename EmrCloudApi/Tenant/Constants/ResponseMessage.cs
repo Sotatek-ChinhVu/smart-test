@@ -22,7 +22,6 @@
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
-        public static readonly string GetKarteInfInvalidIsDeleted = "Invalid IsDeleted";
         public static readonly string GetKarteInfSuccessed = "Successed";
     }
 }

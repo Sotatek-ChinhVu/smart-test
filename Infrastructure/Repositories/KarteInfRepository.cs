@@ -13,9 +13,9 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, int isDeleted)
+        public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && k.IsDeleted == isDeleted);
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0));
 
             if (karteInfEntity == null)
             {
