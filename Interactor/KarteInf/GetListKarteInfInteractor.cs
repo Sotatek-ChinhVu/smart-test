@@ -42,7 +42,7 @@ namespace Interactor.KarteInfs
                 k.SinDate,
                 k.Text,
                 k.IsDeleted,
-                Encoding.UTF8.GetString(k.RichText)
+                k.RichText
              )).ToList(), GetListKarteInfStatus.Successed);
         }
     }

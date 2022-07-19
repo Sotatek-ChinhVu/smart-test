@@ -2,6 +2,6 @@
 {
     public interface IKarteInfRepository
     {
-        List<KarteInf> GetList(long ptId, long rainNo, long sinDate);
+        List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate);
     }
 }

@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.KarteInfs
 {
-    public class KarteInf
+    public class KarteInfModel
     {
-        public KarteInf(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, byte[] richText)
+        public KarteInfModel(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -23,6 +23,6 @@
         public int SinDate { get; private set; }
         public string Text { get; private set; }
         public int IsDeleted { get; private set; }
-        public byte[] RichText { get; private set; }
+        public string RichText { get; private set; }
     }
 }

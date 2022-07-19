@@ -1,6 +1,7 @@
 ﻿using Domain.Models.KarteInfs;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -12,17 +13,17 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public List<KarteInf> GetList(long ptId, long rainNo, long sinDate)
+        public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate)
         {
             var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate);
 
             if (karteInfEntity == null)
             {
-                return new List<KarteInf>();
+                return new List<KarteInfModel>();
             }
 
             return karteInfEntity.Select(k =>
-                    new KarteInf(
+                    new KarteInfModel(
                         k.HpId,
                         k.RaiinNo,
                         k.KarteKbn,
@@ -31,7 +32,7 @@ namespace Infrastructure.Repositories
                         k.SinDate,
                         k.Text,
                         k.IsDeleted,
-                        k.RichText
+                        Encoding.UTF8.GetString(k.RichText)
                     )
                   ).ToList();
         }
