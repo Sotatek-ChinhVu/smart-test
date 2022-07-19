@@ -1,6 +1,6 @@
 ﻿namespace Domain.Models.OrdInfDetails
 {
-    public class OrdInfDetail
+    public class OrdInfDetailModel
     {
         public int HpId { get; set; }
         public long RaiinNo { get; set; }
@@ -37,7 +37,7 @@
         public string? FontColor { get; set; }
         public int CommentNewline { get; set; }
 
-        public OrdInfDetail(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string? itemCd, string? itemName, double suryo, string? unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string? kokuji1, string? kokuji2, int isNodspRece, string? ipnCd, string? ipnName, int jissiKbn, DateTime? jissiDate, int jissiId, string? jissiMachine, string? reqCd, string? bunkatu, string? cmtName, string? cmtOpt, string? fontColor, int commentNewline)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string? itemCd, string? itemName, double suryo, string? unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string? kokuji1, string? kokuji2, int isNodspRece, string? ipnCd, string? ipnName, int jissiKbn, DateTime? jissiDate, int jissiId, string? jissiMachine, string? reqCd, string? bunkatu, string? cmtName, string? cmtOpt, string? fontColor, int commentNewline)
         {
             HpId = hpId;
             RaiinNo = raiinNo;

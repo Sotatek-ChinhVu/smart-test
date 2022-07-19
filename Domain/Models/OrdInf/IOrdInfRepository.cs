@@ -2,17 +2,17 @@
 {
     public interface IOrdInfRepository
     {
-        void Create(OrdInf ord);
+        void Create(OrdInfModel ord);
 
-        OrdInf Read(int ordId);
+        OrdInfModel Read(int ordId);
 
-        void Update(OrdInf ord);
+        void Update(OrdInfModel ord);
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInf> GetAll();
+        IEnumerable<OrdInfModel> GetAll();
 
-        IEnumerable<OrdInf> GetList(long ptId, long raiinNo, int sinDate);
+        IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate);
 
         int MaxUserId();
     }

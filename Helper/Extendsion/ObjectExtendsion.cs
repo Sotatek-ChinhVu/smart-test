@@ -12,7 +12,7 @@
         {
             var result = inputObject?.ToString();
             if (inputObject == null || inputObject == DBNull.Value || result == null) return defaultValue;
-            return  result;
+            return result;
         }
 
         public static int AsInteger(this object inputObject)
