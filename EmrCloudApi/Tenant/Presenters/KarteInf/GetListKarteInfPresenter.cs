@@ -33,6 +33,9 @@ namespace EmrCloudApi.Tenant.Presenters.KarteInfs
                 case GetListKarteInfStatus.Successed:
                     Result.Message = ResponseMessage.GetKarteInfSuccessed;
                     break;
+                case GetListKarteInfStatus.InvalidIsDeleted:
+                    Result.Message = ResponseMessage.GetKarteInfInvalidIsDeleted;
+                    break;
             }
         }
     }

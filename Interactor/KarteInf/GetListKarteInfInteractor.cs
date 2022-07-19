@@ -26,8 +26,12 @@ namespace Interactor.KarteInfs
             {
                 return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.InvalidSinDate);
             }
+            if (inputData.IsDeleted !=  0  && inputData.IsDeleted != 1)
+            {
+                return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.InvalidIsDeleted);
+            }
 
-            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted);
             if (karteInfModel == null || karteInfModel.Count == 0)
             {
                 return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.NoData);
