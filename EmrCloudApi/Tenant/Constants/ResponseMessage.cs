@@ -20,5 +20,12 @@
         //PtDisease controller
         public static readonly string GetPtIdNotExisted = "Not existed";
         public static readonly string GetPtDiseaseSuccessed = "Success";
+
+        //KarteInf controller
+        public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
+        public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string GetKarteInfNoData = "No Data";
+        public static readonly string GetKarteInfSuccessed = "Successed";
     }
 }
