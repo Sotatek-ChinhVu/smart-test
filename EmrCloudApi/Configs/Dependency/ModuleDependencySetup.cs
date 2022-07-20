@@ -57,7 +57,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
             // PatientInfor
-            busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
+            busBuilder.RegisterUseCase<GetRsvInfByPtIdInputData, GetPatientInforByIdInteractor>();
 
 
             //SpecialNote

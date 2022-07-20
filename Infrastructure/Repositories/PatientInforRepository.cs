@@ -1,5 +1,4 @@
-﻿using Domain.CommonObject;
-using Domain.Models.PatientInfor;
+﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Domain.Models.User;
 using Entity.Tenant;
