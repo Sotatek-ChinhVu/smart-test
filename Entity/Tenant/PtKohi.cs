@@ -101,7 +101,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string TokusyuNo { get; set; } = string.Empty;
+        public string? TokusyuNo { get; set; }
 
 		/// <summary>
 		/// 資格取得日
@@ -178,7 +178,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string CreateMachine { get; set; } = string.Empty;
+		public string? CreateMachine { get; set; }
 
 		/// <summary>
 		/// 更新日時			
@@ -198,6 +198,6 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
-		public string UpdateMachine { get; set; }  = string.Empty;
+		public string? UpdateMachine { get; set; }
 	}
 }
