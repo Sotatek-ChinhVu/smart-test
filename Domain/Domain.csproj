@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Helper\Helper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Domain.Core">
       <HintPath>..\EmrCloudApi\lib\Domain.Core.dll</HintPath>
     </Reference>
