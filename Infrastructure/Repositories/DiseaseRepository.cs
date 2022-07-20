@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public IEnumerable<PtDisease> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
+        public IEnumerable<PtDiseaseModel> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
         {
             return _tenantDataContext.PtByomeis
                 .Where(b => b.HpId == hpId &&
@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
                 .ThenByDescending(b => b.IsImportant)
                 .ThenBy(b => b.SortNo)
                 .ThenBy(b => b.Id)
-                .Select (b => new PtDisease(
+                .Select (b => new PtDiseaseModel(
                         b.HpId,
                         b.PtId,
                         b.SeqNo,

@@ -4,6 +4,6 @@ namespace EmrCloudApi.Tenant.Responses.Diseases
 {
     public class GetPtDiseaseListResponse
     {
-        public List<PtDisease> DiseaseList { get; set; } = new List<PtDisease>();
+        public List<PtDiseaseModel> DiseaseList { get; set; } = new List<PtDiseaseModel>();
     }
 }

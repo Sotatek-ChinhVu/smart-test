@@ -10,11 +10,11 @@ namespace UseCase.Diseases.GetDiseaseList
 {
     public class GetPtDiseaseListOutputData : IOutputData
     {
-        public List<PtDisease>? DiseaseList { get; private set; }
+        public List<PtDiseaseModel>? DiseaseList { get; private set; }
 
         public GetPtDiseaseListStatus Status { get; private set; }
 
-        public GetPtDiseaseListOutputData(List<PtDisease> diseaseList, GetPtDiseaseListStatus status)
+        public GetPtDiseaseListOutputData(List<PtDiseaseModel> diseaseList, GetPtDiseaseListStatus status)
         {
             DiseaseList = diseaseList;
             Status = status;

@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.Diseases
 {
-    public class PtDisease
+    public class PtDiseaseModel
     {
-        public PtDisease(int hpId, long ptId, long seqNo, string? byomeiCd, int sortNo, 
+        public PtDiseaseModel(int hpId, long ptId, long seqNo, string? byomeiCd, int sortNo, 
             string? syusyokuCd1, string? syusyokuCd2, string? syusyokuCd3, string? syusyokuCd4, 
             string? syusyokuCd5, string? syusyokuCd6, string? syusyokuCd7, string? syusyokuCd8, 
             string? syusyokuCd9, string? syusyokuCd10, string? syusyokuCd11, string? syusyokuCd12, 
