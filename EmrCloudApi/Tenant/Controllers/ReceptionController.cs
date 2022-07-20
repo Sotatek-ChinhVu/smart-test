@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,6 +31,16 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetList)]
+        public IActionResult GetList([FromQuery] GetReceptionListRequest request)
+        {
+            var input = new GetReceptionListInputData(request.HpId, request.SinDate, request.GrpIds);
+            var output = _bus.Handle(input);
+            var presenter = new GetReceptionListPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }

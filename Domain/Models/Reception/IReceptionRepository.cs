@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.Reception
+﻿namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
         ReceptionModel? Get(long raiinNo);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, List<int> grpIds);
     }
 }
