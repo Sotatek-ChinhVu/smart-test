@@ -1,15 +1,19 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
 using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.OrdInfs;
 using Interactor.PatientInfor;
 using Interactor.KarteInfs;
 using Interactor.Reception;
 using Interactor.User;
 using UseCase.Core.Builder;
+using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
 using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
@@ -36,6 +40,7 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
@@ -50,6 +55,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
+            //Order Info
+            busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
+
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
@@ -59,7 +67,7 @@ namespace EmrCloudApi.Configs.Dependency
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
 
-            var bus = busBuilder.Build();   
+            var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
     }
