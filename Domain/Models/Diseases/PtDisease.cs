@@ -2,13 +2,13 @@
 {
     public class PtDisease
     {
-        public PtDisease(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo, 
-            string syusyokuCd1, string syusyokuCd2, string syusyokuCd3, string syusyokuCd4, 
-            string syusyokuCd5, string syusyokuCd6, string syusyokuCd7, string syusyokuCd8, 
-            string syusyokuCd9, string syusyokuCd10, string syusyokuCd11, string syusyokuCd12, 
-            string syusyokuCd13, string syusyokuCd14, string syusyokuCd15, string syusyokuCd16, 
-            string syusyokuCd17, string syusyokuCd18, string syusyokuCd19, string syusyokuCd20, 
-            string syusyokuCd21, string byomei, int startDate, int tenkiKbn, int tenkiDate, 
+        public PtDisease(int hpId, long ptId, long seqNo, string? byomeiCd, int sortNo, 
+            string? syusyokuCd1, string? syusyokuCd2, string? syusyokuCd3, string? syusyokuCd4, 
+            string? syusyokuCd5, string? syusyokuCd6, string? syusyokuCd7, string? syusyokuCd8, 
+            string? syusyokuCd9, string? syusyokuCd10, string? syusyokuCd11, string? syusyokuCd12, 
+            string? syusyokuCd13, string? syusyokuCd14, string? syusyokuCd15, string? syusyokuCd16, 
+            string? syusyokuCd17, string? syusyokuCd18, string? syusyokuCd19, string? syusyokuCd20, 
+            string? syusyokuCd21, string? byomei, int startDate, int tenkiKbn, int tenkiDate, 
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte, 
             int isDeleted, long id, int isImportant, int sinDate)
         {
@@ -17,6 +17,7 @@
             SeqNo = seqNo;
             ByomeiCd = byomeiCd;
             SortNo = sortNo;
+#pragma warning disable CS8604 // Possible null reference argument.
             SyusyokuCd = new Dictionary<string, string>()
             {
                 {"SyusyokuCd1" , syusyokuCd1 },
@@ -41,15 +42,13 @@
                 {"SyusyokuCd20" , syusyokuCd20 },
                 {"SyusyokuCd21" , syusyokuCd21 }
             };
+#pragma warning restore CS8604 // Possible null reference argument.
             Byomei = byomei;
             IsSuspect = 0;
-            foreach (var item in SyusyokuCd) {
-                if (item.Value != null)
+            foreach (var item in SyusyokuCd.Select(e => e.Value)) {
+                if (item != null && item.Equals("8002"))
                 {
-                    if (item.Value.Equals("8002"))
-                    {
                         IsSuspect = 1;
-                    }
                 }
             }
             StartDate = startDate;
@@ -69,10 +68,10 @@
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public long SeqNo { get; private set; }
-        public string ByomeiCd { get; private set; }
+        public string? ByomeiCd { get; private set; }
         public int SortNo { get; private set; }
-        public Dictionary<string, string> SyusyokuCd { get; private set; }
-        public string Byomei { get; private set; }
+        public Dictionary<string, string>? SyusyokuCd { get; private set; }
+        public string? Byomei { get; private set; }
         public int IsSuspect { get; private set; }
         public int StartDate { get; private set; }
         public int TenkiKbn { get; private set; }
