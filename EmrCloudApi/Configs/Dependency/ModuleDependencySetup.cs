@@ -57,11 +57,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
             // PatientInfor
-            busBuilder.RegisterUseCase<GetRsvInfByPtIdInputData, GetPatientInforByIdInteractor>();
+            busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
 
 
             //SpecialNote
-            busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
 
             var bus = busBuilder.Build();   
             services.AddSingleton(bus);
