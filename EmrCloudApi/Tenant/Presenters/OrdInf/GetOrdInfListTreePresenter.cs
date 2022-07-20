@@ -3,7 +3,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.OrdInfs;
 using UseCase.OrdInfs.GetListTrees;
 
-namespace EmrCloudApi.Tenant.Presenters.User
+namespace EmrCloudApi.Tenant.Presenters.OrdInfs
 {
     public class GetOrdInfListTreePresenter : IGetOrdInfListTreeOutputPort
     {

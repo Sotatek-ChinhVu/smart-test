@@ -1,4 +1,5 @@
-﻿using UseCase.Common;
+﻿
+using Helper.Common;
 
 namespace UseCase.OrdInfs.GetListTrees
 {
@@ -17,6 +18,7 @@ namespace UseCase.OrdInfs.GetListTrees
             }
 
         }
+
         public string GroupName
         {
             get
@@ -29,7 +31,9 @@ namespace UseCase.OrdInfs.GetListTrees
                 return "";
             }
         }
+
         public int? HokenPid { get; private set; }
+
         public int InOutKbn
         {
             get
@@ -42,6 +46,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return 0;
             }
         }
+
         public string InOutName
         {
             get
@@ -54,6 +59,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return "";
             }
         }
+
         public int KouiCode
         {
             get
@@ -66,6 +72,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return 0;
             }
         }
+
         public int SanteiKbn
         {
             get
@@ -78,6 +85,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return 0;
             }
         }
+
         public string SanteiName
         {
             get
@@ -93,6 +101,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return "";
             }
         }
+
         public int SikyuKbn
         {
             get
@@ -105,6 +114,7 @@ namespace UseCase.OrdInfs.GetListTrees
                 return 0;
             }
         }
+
         public string SikyuName
         {
             get
@@ -158,6 +168,7 @@ namespace UseCase.OrdInfs.GetListTrees
         }
 
         public string SinkyuName { get; private set; }
+
         public List<OdrInfItem> OdrInfs { get; private set; }
 
         public GroupOdrItem(string sinkyuName, List<OdrInfItem> odrInfs, int? hokenPid)

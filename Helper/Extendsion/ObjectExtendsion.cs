@@ -1,4 +1,4 @@
-﻿namespace UseCase.Extendsions
+﻿namespace Helper.Extendsions
 {
     public static class ObjectExtendsion
     {

@@ -1,6 +1,6 @@
-﻿using UseCase.Extendsions;
+﻿using Helper.Extendsions;
 
-namespace UseCase.Common
+namespace Helper.Common
 {
     public static class OdrUtil
     {
@@ -95,7 +95,7 @@ namespace UseCase.Common
         public static string GetInOutName(int kouiCode, int inoutKbn)
         {
             string Result = string.Empty;
-            // TODO hardcode setting 検査依頼有無
+            //To do hardcode setting 検査依頼有無
             int FKensaUmu = 1;
 
             // kouiCode = 100, kouiCode = 101
@@ -120,13 +120,16 @@ namespace UseCase.Common
                 }
                 else if (wkNo == 6)
                 {
-                    if ((new List<int>() { 1, 3, 4 }).Contains(FKensaUmu))
+                    if (!(new List<int>() { 1, 3, 4 }).Contains(FKensaUmu))
                     {
-                        if (inoutKbn == 0)
-                            Result = "院内";
-                        else
-                            Result = "院外";
+                        return Result;
                     }
+                    if (inoutKbn == 0)
+                        Result = "院内";
+                    else
+                        Result = "院外";
+
+                    return Result;
                 }
             }
 

@@ -10,10 +10,6 @@
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInfModel> GetAll();
-
-        IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate);
-
-        int MaxUserId();
+        IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted);
     }
 }

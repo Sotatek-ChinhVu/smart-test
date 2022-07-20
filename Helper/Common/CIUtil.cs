@@ -1,4 +1,4 @@
-﻿namespace UseCase.Common
+﻿namespace Helper.Common
 {
     public static class CIUtil
     {

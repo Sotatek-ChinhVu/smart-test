@@ -38,7 +38,6 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
-            services.AddTransient<IOrdInfDetailRepository, OrdInfDetailRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
         }

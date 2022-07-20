@@ -1,5 +1,5 @@
 ﻿using Domain.Core;
-using UseCase.Common;
+using Helper.Common;
 
 namespace Domain.Models.OrdInfs
 {
