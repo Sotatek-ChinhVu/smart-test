@@ -16,13 +16,13 @@ namespace UseCase.Diseases.GetDiseaseList
         public int HokenId { get; private set; }
         public DiseaseViewType RequestFrom { get; private set; }
 
-        public GetPtDiseaseListInputData(int hpId, long ptId, int sinDate, int hokenId, int diseaseViewModel)
+        public GetPtDiseaseListInputData(int hpId, long ptId, int sinDate, int hokenId, int diseaseRequestFrom)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
             HokenId = hokenId;
-            RequestFrom = (DiseaseViewType) Enum.Parse(typeof(DiseaseViewType), diseaseViewModel.ToString());
+            RequestFrom = (DiseaseViewType) Enum.Parse(typeof(DiseaseViewType), diseaseRequestFrom.ToString());
         }
     }
 }
