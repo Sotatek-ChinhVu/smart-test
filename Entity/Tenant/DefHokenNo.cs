@@ -19,12 +19,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
+        [Key]
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 1桁目
         /// </summary>
+        [Key]
         [Column(name: "DIGIT_1", Order = 2)]
         [MaxLength(1)]
         public string Digit1 { get; set; } = string.Empty;
@@ -32,6 +34,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 2桁目
         /// </summary>
+        [Key]
         [Column(name: "DIGIT_2", Order = 3)]
         [MaxLength(1)]
         public string Digit2 { get; set; } = string.Empty;
@@ -81,6 +84,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
+        [Key]
         [Column(name: "SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

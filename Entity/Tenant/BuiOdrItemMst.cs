@@ -11,12 +11,14 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 診療行為コード
         /// </summary>
+        [Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;

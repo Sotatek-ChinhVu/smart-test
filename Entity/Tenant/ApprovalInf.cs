@@ -8,6 +8,7 @@ namespace Entity.Tenant
     public class ApprovalInf : EmrCloneable<ApprovalInf>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
 
@@ -16,6 +17,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
 
@@ -37,6 +39,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
+        [Key]
         [Column("RAIIN_NO", Order = 3)]
         public long RaiinNo { get; set; }
 

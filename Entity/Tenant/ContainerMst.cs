@@ -12,6 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -19,6 +20,7 @@ namespace Entity.Tenant
         /// 容器コード
         /// KENSA_MST.CONTAINDER_CD
         /// </summary>
+        [Key]
         [Column("CONTAINER_CD", Order = 2)]
         public long ContainerCd { get; set; }
 
