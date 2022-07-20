@@ -16,6 +16,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -24,6 +25,7 @@ namespace Entity.Tenant
         /// 連番[0..zzzz]
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         [Column("FORM_NO", Order = 2)]
         public int FormNo { get; set; }
 
