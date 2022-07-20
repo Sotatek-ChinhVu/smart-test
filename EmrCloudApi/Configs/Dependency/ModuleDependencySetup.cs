@@ -40,7 +40,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
-            services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
