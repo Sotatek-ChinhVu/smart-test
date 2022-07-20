@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters.Diseases;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.Diseases;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Diseases;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet("get-pt-disease-list")]
+        [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetPtDiseaseListResponse>> GetDiseaseListMedicalExamination(int hpId, long ptId, int sinDate, int hokenId , int diseaseViewModel)
         {
             var input = new GetPtDiseaseListInputData(hpId, ptId, sinDate, hokenId, diseaseViewModel);
