@@ -84,7 +84,7 @@ namespace Interactor.OrdInfs
                             od.CmtName,
                             od.CmtName,
                             od.FontColor,
-                                od.CommentNewline
+                            od.CommentNewline
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
