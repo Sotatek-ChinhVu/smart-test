@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using UseCase.Core.Async.Core;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.RsvInf.GetById
+namespace UseCase.RaiinCmtInf
 {
-    public interface IGetRsvInfByPtIdInputPort : IInputPort<GetRsvInfByPtIdInputData, GetRsvInfByPtIdOutputData>
+    public interface IGetRaiinCmtInfInputPort : IInputPort<GetRaiinCmtInfInputData, GetRaiinCmtInfOutputData>
     {
     }
 }

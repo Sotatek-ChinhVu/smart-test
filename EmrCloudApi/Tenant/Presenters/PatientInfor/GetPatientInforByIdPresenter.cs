@@ -5,11 +5,11 @@ using UseCase.PatientInformation.GetById;
 
 namespace EmrCloudApi.Tenant.Presenters.PatientInformation
 {
-    public class GetPatientInforByIdPresenter : IGetRsvInfByPtIdOutputPort
+    public class GetPatientInforByIdPresenter : IGetPatientInforByIdOutputPort
     {
         public Response<GetPatientInforByIdResponse> Result { get; private set; } = default!;
 
-        public void Complete(GetRsvInfByPtIdOutputData outputData)
+        public void Complete(GetPatientInforByIdOutputData outputData)
         {
             Result = new Response<GetPatientInforByIdResponse>
             {

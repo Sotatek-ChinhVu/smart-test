@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.PatientInformation.GetById
+namespace UseCase.PatientCommentInfo.GetById
 {
     public class GetPatientCommentInfoByPtIdInputData : IInputData<GetPatientCommentInfoByPtIdOutputData>
     {
