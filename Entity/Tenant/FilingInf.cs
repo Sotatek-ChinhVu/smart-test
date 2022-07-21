@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -118,6 +118,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }

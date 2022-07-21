@@ -849,7 +849,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
     }
 }
