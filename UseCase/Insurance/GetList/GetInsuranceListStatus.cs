@@ -8,7 +8,8 @@ namespace UseCase.Insurance.GetList
 {
     public enum GetInsuranceListStatus : byte
     {
-        InvalidId = 0,
+        InvalidHpId = 3,
+        InvalidPtId = 2,
         Successed = 1
     }
 }

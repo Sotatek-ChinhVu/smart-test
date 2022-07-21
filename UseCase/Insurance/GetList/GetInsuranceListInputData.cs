@@ -9,9 +9,11 @@ namespace UseCase.Insurance.GetList
 {
     public class GetInsuranceListInputData : IInputData<GetInsuranceListByIdOutputData>
     {
+        public int HpId { get; private set; }
         public long PtId { get; private set; }
-        public GetInsuranceListInputData(long ptId)
+        public GetInsuranceListInputData(int hpId, long ptId)
         {
+            HpId = hpId;
             PtId = ptId;
         }
     }

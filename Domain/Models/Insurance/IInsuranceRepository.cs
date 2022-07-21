@@ -9,6 +9,6 @@ namespace Domain.Models.Insurance
 {
     public interface IInsuranceRepository
     {
-        IEnumerable<InsuranceModel> GetInsuranceListById(long ptId);
+        IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId);
     }
 }

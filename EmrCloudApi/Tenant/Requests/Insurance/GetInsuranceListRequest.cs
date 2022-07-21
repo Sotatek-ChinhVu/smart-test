@@ -2,6 +2,7 @@
 {
     public class GetInsuranceListRequest
     {
-        public int PtId { get; set; }
+        public int HpId { get; set; }
+        public long PtId { get; set; }
     }
 }

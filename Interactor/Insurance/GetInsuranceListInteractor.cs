@@ -21,10 +21,14 @@ namespace Interactor.Insurance
         {
             if (inputData.PtId < 0)
             {
-                return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidId);
+                return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidPtId);
+            }
+            if (inputData.HpId < 0)
+            {
+                return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidHpId);
             }
 
-            var data = _insuranceResponsitory.GetInsuranceListById(inputData.PtId);
+            var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId);
             return new GetInsuranceListByIdOutputData(data.ToList(), GetInsuranceListStatus.Successed);
         }
     }

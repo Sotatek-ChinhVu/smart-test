@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTANSYA_NO")]
         [MaxLength(8)]
-        public string FutansyaNo { get; set; } = string.Empty;
+        public string? FutansyaNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 受給者番号
