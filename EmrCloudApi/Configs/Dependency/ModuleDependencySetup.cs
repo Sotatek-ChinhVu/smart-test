@@ -1,22 +1,31 @@
-﻿using Domain.Models.Insurance;
+﻿﻿using Domain.Models.Insurance;
 ﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.OrdInfDetails;
+using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
+using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Interactor.Insurance;
+using Interactor.OrdInfs;
 using Interactor.PatientInfor;
+using Interactor.KarteInfs;
 using Interactor.Reception;
 using Interactor.User;
-using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using UseCase.Core.Builder;
 using UseCase.Insurance.GetList;
+using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
+using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.User.Create;
 using UseCase.User.GetList;
+using Domain.Models.RaiinKubunMst;
+using UseCase.RaiinKubunMst.GetList;
+using Interactor.RaiinKubunMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -38,9 +47,12 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IInsuranceRepository, InsuranceRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
+            services.AddTransient<IKarteInfRepository, KarteInfRepository>();
+            services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -52,17 +64,25 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
+            //Order Info
+            busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
+            //Karte
+            busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
+
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
 
-            var bus = busBuilder.Build();   
+            //RaiinKubun
+            busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
+
+            var bus = busBuilder.Build();
             services.AddSingleton(bus);
-        } 
+        }
     }
 }

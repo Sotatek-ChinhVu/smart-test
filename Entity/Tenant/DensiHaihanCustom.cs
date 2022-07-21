@@ -10,13 +10,15 @@ namespace Entity.Tenant
     public class DensiHaihanCustom : EmrCloneable<DensiHaihanCustom>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]        
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
 
@@ -24,6 +26,7 @@ namespace Entity.Tenant
         /// 項目コード１
         /// 
         /// </summary>
+        [Key]
         [Column("ITEM_CD1", Order = 3)]
         [MaxLength(10)]
         public string ItemCd1 { get; set; } = string.Empty;
@@ -77,6 +80,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }
@@ -104,6 +108,7 @@ namespace Entity.Tenant
         /// "0: システム設定分
         /// 1: ユーザー設定分"
         /// </summary>
+        [Key]
         [Column("USER_SETTING", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public int UserSetting { get; set; }
@@ -149,7 +154,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -173,7 +178,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

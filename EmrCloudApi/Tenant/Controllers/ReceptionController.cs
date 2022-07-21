@@ -20,8 +20,8 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpPost(ApiPath.Get)]
-        public ActionResult<Response<GetReceptionResponse>> Get([FromBody] GetReceptionRequest request)
+        [HttpGet(ApiPath.Get)]
+        public ActionResult<Response<GetReceptionResponse>> Get([FromQuery] GetReceptionRequest request)
         {
             var input = new GetReceptionInputData(request.RaiinNo);
             var output = _bus.Handle(input);

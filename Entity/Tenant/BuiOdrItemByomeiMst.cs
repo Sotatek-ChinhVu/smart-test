@@ -12,6 +12,7 @@ namespace Entity.Tenant
         /// BUI_ODR_ITEM_MST.HP_ID
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -19,6 +20,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// BUI_ODR_ITEM_MST.ITEM_CD
         /// </summary>
+        [Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -27,6 +29,7 @@ namespace Entity.Tenant
         /// 病名部位
         /// 病名に登録された部位
         /// </summary>
+        [Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
         public string ByomeiBui { get; set; } = string.Empty;
@@ -65,7 +68,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

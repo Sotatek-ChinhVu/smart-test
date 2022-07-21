@@ -12,6 +12,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -19,6 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
+        [Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -33,6 +35,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
+        [Key]
         [Column("RAIIN_NO", Order = 3)]
         public long RaiinNo { get; set; }
 
@@ -40,6 +43,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
@@ -81,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -104,7 +108,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
 
     }
 }

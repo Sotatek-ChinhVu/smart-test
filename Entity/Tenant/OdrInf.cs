@@ -41,14 +41,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 剤番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("RP_NO", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 剤枝番
         ///     剤に変更があった場合、カウントアップ
         /// </summary>
-        //[Key]
+        [Key]
         [Column("RP_EDA_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpEdaNo { get; set; }
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ID
         /// </summary>
-        //[Key]
+        [Key]
         [Column("ID", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -89,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RP_NAME")]
         [MaxLength(240)]
-        public string RpName { get; set; } = string.Empty;
+        public string? RpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 院内院外区分
@@ -181,7 +181,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時	
@@ -201,6 +201,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }

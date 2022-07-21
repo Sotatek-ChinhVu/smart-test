@@ -13,6 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
+        [Key]
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -24,6 +25,7 @@ namespace Entity.Tenant
         ///     9000～9999：歯科部位コード（現在なし）  
         ///     「ＩＣＤ１０対応標準病名マスター」における「修飾語テーブル」の「レセ電算修飾語コード」項目と同一内容である。 
         /// </summary>
+        [Key]
         [Column(name: "BYOMEI_CD", Order = 2)]
         [MaxLength(7)]
         public string ByomeiCd { get; set; } = string.Empty;
@@ -263,7 +265,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
@@ -283,6 +285,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }
