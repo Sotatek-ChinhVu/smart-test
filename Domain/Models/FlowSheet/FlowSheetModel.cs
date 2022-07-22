@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.RaiinListMst;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,6 @@ namespace Domain.Models.FlowSheet
         public int KbnCd { get; private set; }
         public string? KbnName { get; private set; }
         // RaiinListMst
-        public string? DynamicColName { get; private set; }
+        public Dictionary<RaiinListMstModel, int>? DynamicColNameAndResult { get; private set; }
     }
 }
