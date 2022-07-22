@@ -39,6 +39,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
+            modelBuilder.Entity<KarteKbnMst>().HasKey(o => new { o.HpId, o.KarteKbn });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

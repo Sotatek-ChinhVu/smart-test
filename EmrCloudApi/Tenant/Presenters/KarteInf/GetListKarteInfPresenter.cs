@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.KarteInfs;
-using UseCase.KarteInfs.GetLists;
+using EmrCloudApi.Tenant.Responses.MedicalExamination.KarteInfs;
+using UseCase.MedicalExamination.KarteInfs.GetLists;
 
 namespace EmrCloudApi.Tenant.Presenters.KarteInfs
 {

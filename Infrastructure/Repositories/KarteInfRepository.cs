@@ -32,7 +32,35 @@ namespace Infrastructure.Repositories
                         k.SinDate,
                         k.Text,
                         k.IsDeleted,
-                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText)
+                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText),
+                        k.CreateDate,
+                        k.UpdateDate
+                    )
+                  ).ToList();
+        }
+
+        public List<KarteInfModel> GetList(long ptId, int hpId)
+        {
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId);
+
+            if (karteInfEntity == null)
+            {
+                return new List<KarteInfModel>();
+            }
+
+            return karteInfEntity.Select(k =>
+                    new KarteInfModel(
+                        k.HpId,
+                        k.RaiinNo,
+                        k.KarteKbn,
+                        k.SeqNo,
+                        k.PtId,
+                        k.SinDate,
+                        k.Text,
+                        k.IsDeleted,
+                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText),
+                        k.CreateDate,
+                        k.UpdateDate
                     )
                   ).ToList();
         }

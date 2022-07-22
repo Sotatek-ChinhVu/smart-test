@@ -1,11 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.OrdInfs;
-using EmrCloudApi.Tenant.Requests.OrdInfs;
+using EmrCloudApi.Tenant.Requests.MedicalExamination.OrdInfs;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.OrdInfs;
+using EmrCloudApi.Tenant.Responses.MedicalExamination.OrdInfs;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.OrdInfs.GetListTrees;
+using UseCase.MedicalExamination.OrdInfs.GetListTrees;
 
 namespace EmrCloudApi.Tenant.Controllers
 {

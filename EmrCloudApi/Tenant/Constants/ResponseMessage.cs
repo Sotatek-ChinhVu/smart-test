@@ -18,19 +18,28 @@
         public static readonly string GetReceptionSuccessed = "Successed";
 
         //KarteInf controller
-        public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
+        public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
         public static readonly string GetKarteInfSuccessed = "Successed";
 
         //OrdInf controller
-        public static readonly string GetOrdInfInvalidRaiinNo = "Invalid raiinNo";
-        public static readonly string GetOrdInfInvalidHpId = "Invalid hpId";
-        public static readonly string GetOrdInfInvalidPtId = "Invalid ptId";
-        public static readonly string GetOrdInfInvalidSinDate = "Invalid sinDate";
+        public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string GetOrdInfInvalidHpId = "Invalid HpId";
+        public static readonly string GetOrdInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetOrdInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetOrdInfNoData = "No Data";
         public static readonly string GetOrdInfSuccessed = "Successed";
 
+
+        //Medical examination controller
+        public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
+        public static readonly string GetMedicalExaminationInvalidHpId = "Invalid HpId";
+        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
+        public static readonly string GetMedicalExaminationInvalidSinDate = "Invalid SinDate";
+        public static readonly string GetMedicalExaminationNoData = "No Data";
+        public static readonly string GetMedicalExaminationSuccessed = "Successed";
+        public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
     }
 }

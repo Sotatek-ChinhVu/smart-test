@@ -1,11 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.KarteInfs;
-using EmrCloudApi.Tenant.Requests.KarteInfs;
+using EmrCloudApi.Tenant.Requests.MedicalExamination.KarteInfs;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.KarteInfs;
+using EmrCloudApi.Tenant.Responses.MedicalExamination.KarteInfs;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.KarteInfs.GetLists;
+using UseCase.MedicalExamination.KarteInfs.GetLists;
 
 namespace EmrCloudApi.Tenant.Controllers
 {

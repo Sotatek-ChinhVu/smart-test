@@ -1,21 +1,23 @@
-﻿using Domain.Models.OrdInfDetails;
+﻿using Domain.Models.KarteInfs;
+using Domain.Models.KarteKbn;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
-using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
-using Interactor.OrdInfs;
+using Interactor.MedicalExamination;
+using Interactor.MedicalExamination.KarteInfs;
+using Interactor.MedicalExamination.OrdInfs;
 using Interactor.PatientInfor;
-using Interactor.KarteInfs;
 using Interactor.Reception;
 using Interactor.User;
 using UseCase.Core.Builder;
-using UseCase.OrdInfs.GetListTrees;
+using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.KarteInfs.GetLists;
+using UseCase.MedicalExamination.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
-using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.User.Create;
 using UseCase.User.GetList;
@@ -44,6 +46,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
+            services.AddTransient<IKarteKbnRepository, KarteKbnRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -66,6 +69,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
+
+            //Medical Examination
+            busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
