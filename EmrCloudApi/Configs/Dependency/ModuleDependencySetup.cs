@@ -2,7 +2,6 @@
 ﻿using Domain.Models.PatientInfor;
 ﻿using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
-using Domain.Models.PatientInfor;
 using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;

@@ -74,7 +74,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column("JYUKYUSYA_NO")]
         [MaxLength(7)]
-        public string JyukyusyaNo { get; set; } = string.Empty;
+        public string? JyukyusyaNo { get; set; } = string.Empty;
 
 
 		/// <summary>
@@ -94,14 +94,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 特殊受給者番号
 		/// </summary>
 		[Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string TokusyuNo { get; set; } = string.Empty;
+        public string? TokusyuNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 資格取得日

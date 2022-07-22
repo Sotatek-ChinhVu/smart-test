@@ -25,23 +25,24 @@ namespace Infrastructure.Repositories
             var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None).ToList();
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.IsDeleted == DeleteStatus.None).ToList();
             var dataHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.PtId == ptId).ToList();
+            var dataHokenPattern = _tenantDataContext.PtHokenPatterns.Where(x => x.PtId == 4511).ToList();
 
             var joinQuery = from ptHokenPattern in dataHokenPatterList
                             join ptHokenInf in dataHokenInf on
                                 new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
-                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
-                            join ptKohi1 in dataKohi on
-                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
-                                new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId }
-                            join ptKohi2 in dataKohi on
-                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi2Id } equals
-                                new { ptKohi2.HpId, ptKohi2.PtId, Kohi2Id = ptKohi2.HokenId }
-                            join ptKohi3 in dataKohi on
-                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi3Id } equals
-                                new { ptKohi3.HpId, ptKohi3.PtId, Kohi3Id = ptKohi3.HokenId }
-                            join ptKohi4 in dataKohi on
-                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi4Id } equals
-                                new { ptKohi4.HpId, ptKohi4.PtId, Kohi4Id = ptKohi4.HokenId }
+                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } //into ptHokenInfs from ptHokenInf in ptHokenInfs.DefaultIfEmpty()
+                            //join ptKohi1 in dataKohi on
+                            //    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
+                            //    new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId } into datakohi1 from ptKohi1 in datakohi1.DefaultIfEmpty()
+                            //join ptKohi2 in dataKohi on
+                            //    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi2Id } equals
+                            //    new { ptKohi2.HpId, ptKohi2.PtId, Kohi2Id = ptKohi2.HokenId } into datakohi2 from ptKohi2 in datakohi2.DefaultIfEmpty()
+                            //join ptKohi3 in dataKohi on
+                            //    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi3Id } equals
+                            //    new { ptKohi3.HpId, ptKohi3.PtId, Kohi3Id = ptKohi3.HokenId } into datakohi3 from ptKohi3 in datakohi3.DefaultIfEmpty()
+                            //join ptKohi4 in dataKohi on
+                            //    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi4Id } equals
+                            //    new { ptKohi4.HpId, ptKohi4.PtId, Kohi4Id = ptKohi4.HokenId } into datakohi4 from ptKohi4 in datakohi4.DefaultIfEmpty()
                             select new
                                 {
                                     ptHokenPattern.HpId,
@@ -57,6 +58,7 @@ namespace Infrastructure.Repositories
                                     ptHokenPattern.Kohi2Id,
                                     ptHokenPattern.Kohi3Id,
                                     ptHokenPattern.Kohi4Id,
+                                    ptHokenInf = ptHokenInf,
                                     ptHokenInf.HokensyaNo,
                                     ptHokenInf.Kigo,
                                     ptHokenInf.Bango,
@@ -67,50 +69,58 @@ namespace Infrastructure.Repositories
                                     ptHokenInf.SikakuDate,
                                     ptHokenInf.KofuDate,
                                     ConfirmDate = GetConfirmDate(ptHokenPattern.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
-                                    Kohi1FutansyaNo = ptKohi1.FutansyaNo,
-                                    Kohi1JyukyusyaNo = ptKohi1.JyukyusyaNo,
-                                    Kohi1HokenId = ptKohi1.HokenId,
-                                    Kohi1StartDate = ptKohi1.StartDate,
-                                    Kohi1EndDate = ptKohi1.EndDate,
-                                    Kohi1ConfirmDate = GetConfirmDate(ptHokenPattern.Kohi1Id, HokenGroupConstant.HokenGroupKohi),
-                                    Kohi1Rate = ptKohi1.Rate,
-                                    Kohi1GendoGaku = ptKohi1.GendoGaku,
-                                    Kohi1SikakuDate = ptKohi1.SikakuDate,
-                                    Kohi1KofuDate = ptKohi1.KofuDate,
-                                    Kohi1TokusyuNo = ptKohi1.TokusyuNo,
-                                    Kohi2FutansyaNo = ptKohi2.FutansyaNo,
-                                    Kohi2JyukyusyaNo = ptKohi2.JyukyusyaNo,
-                                    Kohi2HokenId = ptKohi2.HokenId,
-                                    Kohi2StartDate = ptKohi2.StartDate,
-                                    Kohi2EndDate = ptKohi2.EndDate,
-                                    Kohi2ConfirmDate = GetConfirmDate(ptHokenPattern.Kohi2Id, HokenGroupConstant.HokenGroupKohi),
-                                    Kohi2Rate = ptKohi2.Rate,
-                                    Kohi2GendoGaku = ptKohi2.GendoGaku,
-                                    Kohi2SikakuDate = ptKohi2.SikakuDate,
-                                    Kohi2KofuDate = ptKohi2.KofuDate,
-                                    Kohi2TokusyuNo = ptKohi2.TokusyuNo,
-                                    Kohi3FutansyaNo = ptKohi3.FutansyaNo,
-                                    Kohi3JyukyusyaNo = ptKohi3.JyukyusyaNo,
-                                    Kohi3HokenId = ptKohi3.HokenId,
-                                    Kohi3StartDate = ptKohi3.StartDate,
-                                    Kohi3EndDate = ptKohi3.EndDate,
-                                    Kohi3ConfirmDate = GetConfirmDate(ptHokenPattern.Kohi3Id, HokenGroupConstant.HokenGroupKohi),
-                                    Kohi3Rate = ptKohi3.Rate,
-                                    Kohi3GendoGaku = ptKohi3.GendoGaku,
-                                    Kohi3SikakuDate = ptKohi3.SikakuDate,
-                                    Kohi3KofuDate = ptKohi3.KofuDate,
-                                    Kohi3TokusyuNo = ptKohi3.TokusyuNo,
-                                    Kohi4FutansyaNo = ptKohi4.FutansyaNo,
-                                    Kohi4JyukyusyaNo = ptKohi4.JyukyusyaNo,
-                                    Kohi4HokenId = ptKohi4.HokenId,
-                                    Kohi4StartDate = ptKohi4.StartDate,
-                                    Kohi4EndDate = ptKohi4.EndDate,
-                                    Kohi4ConfirmDate = GetConfirmDate(ptHokenPattern.Kohi4Id, HokenGroupConstant.HokenGroupKohi),
-                                    Kohi4Rate = ptKohi4.Rate,
-                                    Kohi4GendoGaku = ptKohi4.GendoGaku,
-                                    Kohi4SikakuDate = ptKohi4.SikakuDate,
-                                    Kohi4KofuDate = ptKohi4.KofuDate,
-                                    Kohi4TokusyuNo = ptKohi4.TokusyuNo,
+                                    //Kohi1 = ptKohi1 != null ? new KohiInfModel(
+                                    //    ptKohi1.FutansyaNo,
+                                    //    ptKohi1.JyukyusyaNo,
+                                    //    ptKohi1.HokenId,
+                                    //    ptKohi1.StartDate,
+                                    //    ptKohi1.EndDate,
+                                    //    GetConfirmDate(ptHokenPattern.Kohi1Id, HokenGroupConstant.HokenGroupKohi),
+                                    //    ptKohi1.Rate,
+                                    //    ptKohi1.GendoGaku,
+                                    //    ptKohi1.SikakuDate,
+                                    //    ptKohi1.KofuDate,
+                                    //    ptKohi1.TokusyuNo
+                                    //)  : null,
+                                    //Kohi2 = ptKohi2 != null ? new KohiInfModel(
+                                    //        ptKohi2.FutansyaNo,
+                                    //        ptKohi2.JyukyusyaNo,
+                                    //        ptKohi2.HokenId,
+                                    //        ptKohi2.StartDate,
+                                    //        ptKohi2.EndDate,
+                                    //        GetConfirmDate(ptHokenPattern.Kohi2Id, HokenGroupConstant.HokenGroupKohi),
+                                    //        ptKohi2.Rate,
+                                    //        ptKohi2.GendoGaku,
+                                    //        ptKohi2.SikakuDate,
+                                    //        ptKohi2.KofuDate,
+                                    //        ptKohi2.TokusyuNo
+                                    //    ) : null,
+                                    //Kohi3 = ptKohi3 != null ? new KohiInfModel(
+                                    //            ptKohi3.FutansyaNo,
+                                    //            ptKohi3.JyukyusyaNo,
+                                    //            ptKohi3.HokenId,
+                                    //            ptKohi3.StartDate,
+                                    //            ptKohi3.EndDate,
+                                    //            GetConfirmDate(ptHokenPattern.Kohi3Id, HokenGroupConstant.HokenGroupKohi),
+                                    //            ptKohi3.Rate,
+                                    //            ptKohi3.GendoGaku,
+                                    //            ptKohi3.SikakuDate,
+                                    //            ptKohi3.KofuDate,
+                                    //            ptKohi3.TokusyuNo
+                                    //        ) : null,
+                                    //Kohi4 = ptKohi4 != null ? new KohiInfModel(
+                                    //            ptKohi4.FutansyaNo,
+                                    //            ptKohi4.JyukyusyaNo,
+                                    //            ptKohi4.HokenId,
+                                    //            ptKohi4.StartDate,
+                                    //            ptKohi4.EndDate,
+                                    //            GetConfirmDate(ptHokenPattern.Kohi4Id, HokenGroupConstant.HokenGroupKohi),
+                                    //            ptKohi4.Rate,
+                                    //            ptKohi4.GendoGaku,
+                                    //            ptKohi4.SikakuDate,
+                                    //            ptKohi4.KofuDate,
+                                    //            ptKohi4.TokusyuNo
+                                    //        ) : null,
                                     ptHokenInf.KogakuKbn,
                                     ptHokenInf.TasukaiYm,
                                     ptHokenInf.TokureiYm1,
@@ -140,6 +150,7 @@ namespace Infrastructure.Repositories
                                     ptHokenInf.RousaiCityName,
                                     ptHokenInf.RousaiReceCount
                                 };
+            var dataCheck = joinQuery.AsEnumerable().ToList();
             var data = joinQuery.AsEnumerable().Select(
                     x => new InsuranceModel(
                         x.HpId,
@@ -166,50 +177,10 @@ namespace Infrastructure.Repositories
                         x.SikakuDate,
                         x.KofuDate,
                         x.ConfirmDate,
-                        x.Kohi1FutansyaNo,
-                        x.Kohi1JyukyusyaNo,
-                        x.Kohi1HokenId,
-                        x.Kohi1StartDate,
-                        x.Kohi1EndDate,
-                        x.Kohi1ConfirmDate,
-                        x.Kohi1Rate,
-                        x.Kohi1GendoGaku,
-                        x.Kohi1SikakuDate,
-                        x.Kohi1KofuDate,
-                        x.Kohi1TokusyuNo,
-                        x.Kohi2FutansyaNo,
-                        x.Kohi2JyukyusyaNo,
-                        x.Kohi2HokenId,
-                        x.Kohi2StartDate,
-                        x.Kohi2EndDate,
-                        x.Kohi2ConfirmDate,
-                        x.Kohi2Rate,
-                        x.Kohi2GendoGaku,
-                        x.Kohi2SikakuDate,
-                        x.Kohi2KofuDate,
-                        x.Kohi2TokusyuNo,
-                        x.Kohi3FutansyaNo,
-                        x.Kohi3JyukyusyaNo,
-                        x.Kohi3HokenId,
-                        x.Kohi3StartDate,
-                        x.Kohi3EndDate,
-                        x.Kohi3ConfirmDate,
-                        x.Kohi3Rate,
-                        x.Kohi3GendoGaku,
-                        x.Kohi3SikakuDate,
-                        x.Kohi3KofuDate,
-                        x.Kohi3TokusyuNo,
-                        x.Kohi4FutansyaNo,
-                        x.Kohi4JyukyusyaNo,
-                        x.Kohi4HokenId,
-                        x.Kohi4StartDate,
-                        x.Kohi4EndDate,
-                        x.Kohi4ConfirmDate,
-                        x.Kohi4Rate,
-                        x.Kohi4GendoGaku,
-                        x.Kohi4SikakuDate,
-                        x.Kohi4KofuDate,
-                        x.Kohi4TokusyuNo,
+                        null,
+                        null,
+                        null,
+                        null,
                         x.KogakuKbn,
                         x.TasukaiYm,
                         x.TokureiYm1,
@@ -247,8 +218,7 @@ namespace Infrastructure.Repositories
                 foreach (var item in data)
                 {
                     var hokenMst = _tenantDataContext.HokenMsts.Where(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
-                    var hokenName = GetHokenName(item, hokenMst);
-                    item.HokenName = hokenName;
+                    item.HokenName = GetHokenName(item, hokenMst);
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == item.HpId && x.PtId == item.PtId && x.HokenId == item.HokenId).FirstOrDefault();
                     if (ptRousaiTenkis != null)
                     {

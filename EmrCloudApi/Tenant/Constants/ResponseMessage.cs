@@ -17,12 +17,11 @@
         public static readonly string GetReceptionNotExisted = "Not existed";
         public static readonly string GetReceptionSuccessed = "Successed";
 
-<<<<<<< HEAD
         //Insurance
         public static readonly string GetInsuranceListInvalidPtId = "Invalid PtId !";
         public static readonly string GetInsuranceListInvalidHpId = "Invalid HpId !";
         public static readonly string GetInsuranceListSuccessed = "Successed!!!";
-=======
+
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
@@ -41,6 +40,5 @@
         //RaiinKubun controller
         public static readonly string GetRaiinKubunMstListSuccessed = "Successed";
 
->>>>>>> develop
     }
 }
