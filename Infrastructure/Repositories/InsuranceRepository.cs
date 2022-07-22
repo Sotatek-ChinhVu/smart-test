@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetDataContext();
         }
 
-        public IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId, int SinDate)
+        public IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId, int sinDate)
         {
             var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.HokenPid).ToList();
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None ).ToList();
@@ -227,7 +227,7 @@ namespace Infrastructure.Repositories
                 foreach (var item in data)
                 {
                     var hokenMst = _tenantDataContext.HokenMsts.Where(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
-                    item.HokenName = GetHokenName(item, hokenMst, SinDate);
+                    item.HokenName = GetHokenName(item, hokenMst, sinDate);
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == item.HpId && x.PtId == item.PtId && x.HokenId == item.HokenId).FirstOrDefault();
                     if (ptRousaiTenkis != null)
                     {

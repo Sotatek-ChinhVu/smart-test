@@ -22,11 +22,15 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceList
             };
             switch (output.Status)
             {
+                
+                case GetInsuranceListStatus.InvalidPtId:
+                    Result.Message = ResponseMessage.GetInsuranceListInvalidPtId;
+                    break;
                 case GetInsuranceListStatus.InvalidHpId:
                     Result.Message = ResponseMessage.GetInsuranceListInvalidHpId;
                     break;
-                case GetInsuranceListStatus.InvalidPtId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidPtId;
+                case GetInsuranceListStatus.InvalidSinDate:
+                    Result.Message = ResponseMessage.GetInsuranceListInvalidSinDate;
                     break;
                 case GetInsuranceListStatus.Successed:
                     Result.Message = ResponseMessage.GetInsuranceListSuccessed;

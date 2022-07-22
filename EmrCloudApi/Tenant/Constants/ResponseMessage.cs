@@ -20,6 +20,7 @@
         //Insurance
         public static readonly string GetInsuranceListInvalidPtId = "Invalid PtId !";
         public static readonly string GetInsuranceListInvalidHpId = "Invalid HpId !";
+        public static readonly string GetInsuranceListInvalidSinDate = "Invalid SinDate !";
         public static readonly string GetInsuranceListSuccessed = "Successed!!!";
 
         //KarteInf controller
