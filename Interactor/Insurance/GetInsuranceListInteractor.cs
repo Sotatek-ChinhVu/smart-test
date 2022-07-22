@@ -28,7 +28,7 @@ namespace Interactor.Insurance
                 return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidHpId);
             }
 
-            var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId);
+            var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             return new GetInsuranceListByIdOutputData(data.ToList(), GetInsuranceListStatus.Successed);
         }
     }

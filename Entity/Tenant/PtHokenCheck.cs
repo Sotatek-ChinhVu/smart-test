@@ -72,7 +72,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CHECK_CMT")]
         [MaxLength(100)]
-        public string CheckCmt { get; set; } = string.Empty;
+        public string? CheckCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

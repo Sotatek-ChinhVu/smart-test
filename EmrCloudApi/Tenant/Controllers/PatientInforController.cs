@@ -37,7 +37,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("InsuranceListByPtId")]
         public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromBody] GetInsuranceListRequest request)
         {
-            var input = new GetInsuranceListInputData(request.HpId, request.PtId);
+            var input = new GetInsuranceListInputData(request.HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceListPresenter();

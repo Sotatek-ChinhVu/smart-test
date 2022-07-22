@@ -11,10 +11,12 @@ namespace UseCase.Insurance.GetList
     {
         public int HpId { get; private set; }
         public long PtId { get; private set; }
-        public GetInsuranceListInputData(int hpId, long ptId)
+        public int SinDate { get; private set; }
+        public GetInsuranceListInputData(int hpId, long ptId, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
+            SinDate = sinDate;
         }
     }
 }
