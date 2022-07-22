@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.KarteInfs.GetLists
+namespace UseCase.FlowSheet.GetList
 {
-    public interface IGetListKarteInfInputPort : IInputPort<GetListKarteInfInputData, GetListKarteInfOutputData>
+    public class FlowSheetOutputData :IOutputData
     {
     }
 }

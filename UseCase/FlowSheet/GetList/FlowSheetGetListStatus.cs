@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.FlowSheet
+namespace UseCase.FlowSheet.GetList
 {
-    public class FlowSheetRepository : IFlowSheetRepository
+    public class FlowSheetGetListStatus
     {
     }
 }
