@@ -36,5 +36,8 @@
         public static readonly string GetOrdInfNoData = "No Data";
         public static readonly string GetOrdInfSuccessed = "Successed";
 
+        //RaiinKubun controller
+        public static readonly string GetRaiinKubunMstListSuccessed = "Successed";
+
     }
 }

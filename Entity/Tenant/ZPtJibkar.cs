@@ -74,7 +74,7 @@ namespace Entity.Tenant
 
         [Column(name: "CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
@@ -85,6 +85,6 @@ namespace Entity.Tenant
 
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; }  = string.Empty;
     }
 }
