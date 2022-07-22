@@ -1,12 +1,15 @@
-﻿using EmrCloudApi.Tenant.Presenters.InsuranceList;
+﻿using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.Insurance;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.GetById;
 using UseCase.Insurance.GetList;
 using UseCase.PatientInformation.GetById;
 
@@ -44,6 +47,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetInsuranceListResponse>>(presenter.Result);
+        }
+
+        [HttpPost("GetInsuranceById")]
+        public ActionResult<Response<GetInsuranceByIdResponse>> GetInsuranceById([FromBody] GetInsuranceByIdRequest request)
+        {
+            var input = new GetInsuranceByIdInputData(request.HpId, request.PtId, request.SinDate, request.HokenPid);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetInsuranceByIdPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetInsuranceByIdResponse>>(presenter.Result);
         }
     }
 }

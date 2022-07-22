@@ -25,6 +25,7 @@ using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
 using Interactor.RaiinKubunMst;
+using UseCase.Insurance.GetById;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -71,6 +72,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
+            busBuilder.RegisterUseCase<GetInsuranceByIdInputData, GetInsuranceByIdInteractor>();
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 

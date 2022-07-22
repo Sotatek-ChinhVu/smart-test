@@ -22,6 +22,12 @@
         public static readonly string GetInsuranceListInvalidHpId = "Invalid HpId !";
         public static readonly string GetInsuranceListSuccessed = "Successed!!!";
 
+        public static readonly string GetInsuranceByIdInvalidPtId = "Invalid PtId !";
+        public static readonly string GetInsuranceByIdInvalidHpId = "Invalid HpId !";
+        public static readonly string GetInsuranceByIdInvalidSinDate = "Invalid SinDate !";
+        public static readonly string GetInsuranceByIdInvalidHokenPid = "Invalid HokenPid !";
+        public static readonly string GetInsuranceByIdSuccessed = "Successed!!!";
+
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
