@@ -11,7 +11,6 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
 
         public void Complete(GetPtDiseaseListOutputData outputData)
         {
-#pragma warning disable CS8601 // Possible null reference assignment.
             Result = new Response<GetPtDiseaseListResponse>()
             {
                 Data = new GetPtDiseaseListResponse()
@@ -23,7 +22,7 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
             switch (outputData.Status)
             {
                 case GetPtDiseaseListStatus.PtDiseaseListNotExisted:
-                    Result.Message = ResponseMessage.GetPtIdNotExisted;
+                    Result.Message = ResponseMessage.GetListNotExisted;
                     break;
                 case GetPtDiseaseListStatus.Success:
                     Result.Message = ResponseMessage.GetPtDiseaseSuccessed;
