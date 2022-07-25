@@ -19,27 +19,27 @@
             SortNo = sortNo;
             SyusyokuCd = new Dictionary<string, string>()
             {
-                {"SyusyokuCd1" , syusyokuCd1 != null ? syusyokuCd1 : "" },
-                {"SyusyokuCd2" , syusyokuCd2 != null ? syusyokuCd2 : "" },
-                {"SyusyokuCd3" , syusyokuCd3 != null ? syusyokuCd3 : "" },
-                {"SyusyokuCd4" , syusyokuCd4 != null ? syusyokuCd4 : "" },
-                {"SyusyokuCd5" , syusyokuCd5 != null ? syusyokuCd5 : "" },
-                {"SyusyokuCd6" , syusyokuCd6 != null ? syusyokuCd6 : "" },
-                {"SyusyokuCd7" , syusyokuCd7 != null ? syusyokuCd7 : "" },
-                {"SyusyokuCd8" , syusyokuCd8 != null ? syusyokuCd8 : "" },
-                {"SyusyokuCd9" , syusyokuCd9 != null ? syusyokuCd9 : "" },
-                {"SyusyokuCd10" , syusyokuCd10 != null ? syusyokuCd10 : "" },
-                {"SyusyokuCd11" , syusyokuCd11 != null ? syusyokuCd11 : "" },
-                {"SyusyokuCd12" , syusyokuCd12 != null ? syusyokuCd12 : "" },
-                {"SyusyokuCd13" , syusyokuCd13 != null ? syusyokuCd13 : "" },
-                {"SyusyokuCd14" , syusyokuCd14 != null ? syusyokuCd14 : "" },
-                {"SyusyokuCd15" , syusyokuCd15 != null ? syusyokuCd15 : "" },
-                {"SyusyokuCd16" , syusyokuCd16 != null ? syusyokuCd16 : "" },
-                {"SyusyokuCd17" , syusyokuCd17 != null ? syusyokuCd17 : "" },
-                {"SyusyokuCd18" , syusyokuCd18 != null ? syusyokuCd18 : "" },
-                {"SyusyokuCd19" , syusyokuCd19 != null ? syusyokuCd19 : "" },
-                {"SyusyokuCd20" , syusyokuCd20 != null ? syusyokuCd20 : "" },
-                {"SyusyokuCd21" , syusyokuCd21 != null ? syusyokuCd21 : "" }
+                {"SyusyokuCd1" , syusyokuCd1},
+                {"SyusyokuCd2" , syusyokuCd2},
+                {"SyusyokuCd3" , syusyokuCd3},
+                {"SyusyokuCd4" , syusyokuCd4},
+                {"SyusyokuCd5" , syusyokuCd5},
+                {"SyusyokuCd6" , syusyokuCd6},
+                {"SyusyokuCd7" , syusyokuCd7},
+                {"SyusyokuCd8" , syusyokuCd8},
+                {"SyusyokuCd9" , syusyokuCd9},
+                {"SyusyokuCd10" , syusyokuCd10},
+                {"SyusyokuCd11" , syusyokuCd11},
+                {"SyusyokuCd12" , syusyokuCd12},
+                {"SyusyokuCd13" , syusyokuCd13},
+                {"SyusyokuCd14" , syusyokuCd14},
+                {"SyusyokuCd15" , syusyokuCd15},
+                {"SyusyokuCd16" , syusyokuCd16},
+                {"SyusyokuCd17" , syusyokuCd17},
+                {"SyusyokuCd18" , syusyokuCd18},
+                {"SyusyokuCd19" , syusyokuCd19},
+                {"SyusyokuCd20" , syusyokuCd20},
+                {"SyusyokuCd21" , syusyokuCd21}
             };
             Byomei = byomei;
             IsSuspect = 0;

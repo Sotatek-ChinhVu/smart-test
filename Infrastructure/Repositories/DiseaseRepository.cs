@@ -9,6 +9,7 @@ using PostgreDataContext;
 using Infrastructure.Interfaces;
 using Domain.Enum;
 using Domain.Constant;
+using Entity.Tenant;
 
 namespace Infrastructure.Repositories
 {
@@ -35,34 +36,34 @@ namespace Infrastructure.Repositories
                 .ThenByDescending(b => b.IsImportant)
                 .ThenBy(b => b.SortNo)
                 .ThenBy(b => b.Id)
-                .Select (b => new PtDiseaseModel(
+                .Select(b => new PtDiseaseModel(
                         b.HpId,
                         b.PtId,
                         b.SeqNo,
-                        b.ByomeiCd,
+                        b.ByomeiCd ?? string.Empty,
                         b.SortNo,
-                        b.SyusyokuCd1,
-                        b.SyusyokuCd2,
-                        b.SyusyokuCd3,
-                        b.SyusyokuCd4,
-                        b.SyusyokuCd5,
-                        b.SyusyokuCd6,
-                        b.SyusyokuCd7,
-                        b.SyusyokuCd8,
-                        b.SyusyokuCd9,
-                        b.SyusyokuCd10,
-                        b.SyusyokuCd11,
-                        b.SyusyokuCd12,
-                        b.SyusyokuCd13,
-                        b.SyusyokuCd14,
-                        b.SyusyokuCd15,
-                        b.SyusyokuCd16,
-                        b.SyusyokuCd17,
-                        b.SyusyokuCd18,
-                        b.SyusyokuCd19,
-                        b.SyusyokuCd20,
-                        b.SyusyokuCd21,
-                        b.Byomei,
+                        b.SyusyokuCd1 ?? string.Empty,
+                        b.SyusyokuCd2 ?? string.Empty,
+                        b.SyusyokuCd3 ?? string.Empty,
+                        b.SyusyokuCd4 ?? string.Empty,
+                        b.SyusyokuCd5 ?? string.Empty,
+                        b.SyusyokuCd6 ?? string.Empty,
+                        b.SyusyokuCd7 ?? string.Empty,
+                        b.SyusyokuCd8 ?? string.Empty,
+                        b.SyusyokuCd9 ?? string.Empty,
+                        b.SyusyokuCd10 ?? string.Empty,
+                        b.SyusyokuCd11 ?? string.Empty,
+                        b.SyusyokuCd12 ?? string.Empty,
+                        b.SyusyokuCd13 ?? string.Empty,
+                        b.SyusyokuCd14 ?? string.Empty,
+                        b.SyusyokuCd15 ?? string.Empty,
+                        b.SyusyokuCd16 ?? string.Empty,
+                        b.SyusyokuCd17 ?? string.Empty,
+                        b.SyusyokuCd18 ?? string.Empty,
+                        b.SyusyokuCd19 ?? string.Empty,
+                        b.SyusyokuCd20 ?? string.Empty,
+                        b.SyusyokuCd21 ?? string.Empty,
+                        b.Byomei ?? string.Empty,
                         b.StartDate,
                         b.TenkiKbn,
                         b.TenkiDate,
