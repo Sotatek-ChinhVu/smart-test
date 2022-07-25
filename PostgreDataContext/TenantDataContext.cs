@@ -37,6 +37,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<ConversionItemInf>().HasKey(b => new { b.HpId, b.SourceItemCd, b.DestItemCd });
             modelBuilder.Entity<DefHokenNo>().HasKey(b => new { b.HpId, b.Digit1, b.Digit2, b.SeqNo });
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<PtByomei>().HasKey(table => new { table.HpId, table.PtId, table.Id });
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
