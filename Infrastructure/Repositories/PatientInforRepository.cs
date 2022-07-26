@@ -1,5 +1,7 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+using Entity.Tenant;
+using Helper.Extendsions;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -19,7 +21,23 @@ namespace Infrastructure.Repositories
             if (itemData == null)
                 return null;
             else
-                return new PatientInforModel(
+                return ConvertToModel(itemData);
+        }
+
+        public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
+        {
+            long ptNum = keyword.AsLong();
+
+            var ptInfList = _tenantDataContext.PtInfs
+                .Where(p => p.IsDelete == 0 && p.PtNum == ptNum)
+                .ToList();
+
+            return ptInfList.Select(p => ConvertToModel(p)).ToList();
+        }
+
+        private PatientInforModel ConvertToModel(PtInf itemData)
+        {
+            return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
                 itemData.ReferenceNo,
@@ -32,27 +50,27 @@ namespace Infrastructure.Repositories
                 itemData.LimitConsFlg,
                 itemData.IsDead,
                 itemData.DeathDate,
-                itemData.HomePost,
-                itemData.HomeAddress1,
-                itemData.HomeAddress2,
-                itemData.Tel1,
-                itemData.Tel2,
-                itemData.Mail,
-                itemData.Setanusi,
-                itemData.Zokugara,
-                itemData.Job,
-                itemData.RenrakuName,
-                itemData.RenrakuPost,
-                itemData.RenrakuAddress1,
-                itemData.RenrakuAddress2,
-                itemData.RenrakuTel,
-                itemData.RenrakuMemo,
-                itemData.OfficeName,
-                itemData.OfficePost,
-                itemData.OfficeAddress1,
-                itemData.OfficeAddress2,
-                itemData.OfficeTel,
-                itemData.OfficeMemo,
+                itemData.HomePost ?? string.Empty,
+                itemData.HomeAddress1 ?? string.Empty,
+                itemData.HomeAddress2 ?? string.Empty,
+                itemData.Tel1 ?? string.Empty,
+                itemData.Tel2 ?? string.Empty,
+                itemData.Mail ?? string.Empty,
+                itemData.Setanusi ?? string.Empty,
+                itemData.Zokugara ?? string.Empty,
+                itemData.Job ?? string.Empty,
+                itemData.RenrakuName ?? string.Empty,
+                itemData.RenrakuPost ?? string.Empty,
+                itemData.RenrakuAddress1 ?? string.Empty,
+                itemData.RenrakuAddress2 ?? string.Empty,
+                itemData.RenrakuTel ?? string.Empty,
+                itemData.RenrakuMemo ?? string.Empty,
+                itemData.OfficeName ?? string.Empty,
+                itemData.OfficePost ?? string.Empty,
+                itemData.OfficeAddress1 ?? string.Empty,
+                itemData.OfficeAddress2 ?? string.Empty,
+                itemData.OfficeTel ?? string.Empty,
+                itemData.OfficeMemo ?? string.Empty,
                 itemData.IsRyosyoDetail,
                 itemData.PrimaryDoctor,
                 itemData.IsTester,

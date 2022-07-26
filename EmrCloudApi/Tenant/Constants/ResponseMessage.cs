@@ -2,6 +2,14 @@
 {
     public static class ResponseMessage
     {
+        //Invalid parameter
+        public static readonly string InvalidKeyword = "Invalid keyword";
+
+        //Common
+        public static readonly string NotFound = "Not found";
+        public static readonly string Success = "Success";
+
+
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
 
