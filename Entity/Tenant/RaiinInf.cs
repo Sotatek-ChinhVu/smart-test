@@ -99,7 +99,7 @@ namespace Entity.Tenant
         [Column("UKETUKE_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string? UketukeTime { get; set; }
+        public string? UketukeTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 受付者ID
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         [Column("SIN_END_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string? SinEndTime { get; set; }
+        public string? SinEndTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算時間
@@ -140,7 +140,7 @@ namespace Entity.Tenant
         [Column("KAIKEI_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string? KaikeiTime { get; set; }
+        public string? KaikeiTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算者ID

@@ -89,7 +89,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "CREATE_MACHINE")]
 		[MaxLength(60)]
-		public string? CreateMachine { get; set; }
+		public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			

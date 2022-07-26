@@ -101,7 +101,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string? TokusyuNo { get; set; }
+        public string? TokusyuNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 資格取得日
