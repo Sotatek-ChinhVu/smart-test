@@ -1,3 +1,4 @@
+using Domain.Common;
 using Domain.Constant;
 using Domain.Models.Reception;
 using Infrastructure.Constants;
@@ -205,7 +206,8 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd)).ToList()
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd)).ToList(),
+                sinDate
             )).ToList();
 
             return models;
