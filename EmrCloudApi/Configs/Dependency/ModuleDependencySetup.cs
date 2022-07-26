@@ -19,6 +19,7 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
 using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetList;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
@@ -72,6 +73,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();

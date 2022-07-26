@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.PtByomeis
                 .Where(b => b.HpId == hpId &&
                             b.PtId == ptId &&
-                            b.IsDeleted != DeleteTypes.Deleted &&
+                            b.IsDeleted != 1 &&
                             b.IsNodspKarte != 1 &&
                             (b.TenkiKbn == TenkiKbnConst.Continued ||
                             b.StartDate <= sinDate && b.TenkiDate >= sinDate ||
