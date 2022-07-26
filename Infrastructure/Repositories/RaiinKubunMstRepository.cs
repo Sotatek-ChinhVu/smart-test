@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                             r.KbnCd,
                             r.SortNo,
                             r.KbnName,
-                            r.ColorCd,
+                            r.ColorCd ?? string.Empty,
                             r.IsConfirmed == 1,
                             r.IsAuto == 1,
                             r.IsAutoDelete == 1,
