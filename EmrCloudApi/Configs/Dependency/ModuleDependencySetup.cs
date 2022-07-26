@@ -3,6 +3,7 @@ using Domain.Models.KarteKbn;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
+using Domain.Models.Diseases;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -12,6 +13,7 @@ using Interactor.MedicalExamination.KarteInfs;
 using Interactor.MedicalExamination.OrdInfs;
 using Interactor.PatientInfor;
 using Interactor.Reception;
+using Interactor.Diseases;
 using Interactor.User;
 using UseCase.Core.Builder;
 using UseCase.MedicalExamination.GetHistory;
@@ -19,11 +21,14 @@ using UseCase.MedicalExamination.KarteInfs.GetLists;
 using UseCase.MedicalExamination.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetList;
+using UseCase.Diseases.GetDiseaseList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
 using Interactor.RaiinKubunMst;
+using UseCase.PatientInfor.SearchSimple;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -45,6 +50,7 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
@@ -62,17 +68,22 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
+            //PtByomeis
+            busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
+
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

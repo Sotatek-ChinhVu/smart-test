@@ -2,6 +2,14 @@
 {
     public static class ResponseMessage
     {
+        //Invalid parameter
+        public static readonly string InvalidKeyword = "Invalid keyword";
+
+        //Common
+        public static readonly string NotFound = "Not found";
+        public static readonly string Success = "Success";
+
+
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
 
@@ -15,7 +23,11 @@
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";
-        public static readonly string GetReceptionSuccessed = "Successed";
+        public static readonly string GetReceptionSuccessed = "Success";
+
+        //PtDisease controller
+        public static readonly string GetListNotExisted = "Not existed";
+        public static readonly string GetPtDiseaseSuccessed = "Success";
 
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
