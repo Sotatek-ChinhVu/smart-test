@@ -23,7 +23,7 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
             return new GetReceptionListOutputData("SinDate must be greater than 0.");
         }
 
-        var models = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.GrpIds);
+        var models = _receptionRepository.GetList(inputData.HpId, inputData.SinDate);
         return new GetReceptionListOutputData(models);
     }
 }

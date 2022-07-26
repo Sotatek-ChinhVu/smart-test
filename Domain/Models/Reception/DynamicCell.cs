@@ -7,7 +7,7 @@ public class DynamicCell
         GrpId = grpId;
     }
 
-    public DynamicCell(int grpId, int kbnCd, string kbnName, string? colorCd)
+    public DynamicCell(int grpId, int kbnCd, string kbnName, string colorCd)
     {
         GrpId = grpId;
         KbnCd = kbnCd;
@@ -18,5 +18,5 @@ public class DynamicCell
     public int GrpId { get; set; }
     public int KbnCd { get; set; }
     public string KbnName { get; set; } = string.Empty;
-    public string? ColorCd { get; set; }
+    public string ColorCd { get; set; } = string.Empty;
 }

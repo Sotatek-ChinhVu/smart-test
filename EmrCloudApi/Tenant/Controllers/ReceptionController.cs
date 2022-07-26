@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses;
@@ -31,16 +32,6 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
-        }
-
-        [HttpGet(ApiPath.GetList)]
-        public IActionResult GetList([FromQuery] GetReceptionListRequest request)
-        {
-            var input = new GetReceptionListInputData(request.HpId, request.SinDate, request.GrpIds);
-            var output = _bus.Handle(input);
-            var presenter = new GetReceptionListPresenter();
-            presenter.Complete(output);
-            return Ok(presenter.Result);
         }
     }
 }

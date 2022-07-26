@@ -3,6 +3,6 @@
     public interface IReceptionRepository
     {
         ReceptionModel? Get(long raiinNo);
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, List<int> grpIds);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate);
     }
 }

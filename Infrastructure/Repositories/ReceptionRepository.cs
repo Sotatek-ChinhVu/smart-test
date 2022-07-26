@@ -53,12 +53,12 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, List<int> grpIds)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate)
         {
-            return GetReceptionRowModels(hpId, sinDate, grpIds);
+            return GetReceptionRowModels(hpId, sinDate);
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, List<int> grpIds)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -154,7 +154,6 @@ namespace Infrastructure.Repositories
                             && inf.PtId == raiinInf.PtId
                             && inf.SinDate == sinDate
                             && inf.RaiinNo == raiinInf.RaiinNo
-                            && grpIds.Contains(inf.GrpId)
                         select detail
                     ).ToList(),
                     parentRaiinNo = (
@@ -178,6 +177,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
+            var grpIds = _tenantDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.parentRaiinNo,
@@ -201,12 +201,12 @@ namespace Infrastructure.Repositories
                 r.tantoName,
                 r.kaName,
                 r.lastVisitDate,
-                r.primaryDoctorName,
+                r.primaryDoctorName ?? string.Empty,
                 r.relatedRaiinCmtInfRemark?.Text ?? string.Empty,
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd)).ToList(),
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd ?? string.Empty)).ToList(),
                 sinDate
             )).ToList();
 
