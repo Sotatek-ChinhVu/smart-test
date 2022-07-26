@@ -18,8 +18,8 @@ public class ReceptionRowModel
         RaiinNo = raiinNo;
         SameVisit = parentRaiinNo == 0 ? string.Empty : parentRaiinNo.ToString();
         UketukeNo = uketukeNo;
-        Status = RaiinState.VisitStatus[hasLockInf ? RaiinState.Examining : raiinStatus];
-        OriginalStatus = RaiinState.VisitStatus[raiinStatus];
+        Status = hasLockInf ? RaiinState.Examining : raiinStatus;
+        OriginalStatus = raiinStatus;
         PtNum = ptNum;
         KanaName = kanaName;
         Name = name;
@@ -48,14 +48,20 @@ public class ReceptionRowModel
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
     }
 
+    public string StatusText
+    {
+        get => RaiinState.VisitStatus[Status];
+    }
+
     public long RaiinNo { get; private set; }
     // 順番
     public int UketukeNo { get; private set; }
     // 同一来院
     public string SameVisit { get; private set; }
     // 状態
-    public string Status { get; private set; }
-    public string OriginalStatus { get; private set; }
+    public int Status { get; private set; }
+
+    public int OriginalStatus { get; private set; }
     // 患者番号
     public long PtNum { get; private set; }
     // カナ氏名
