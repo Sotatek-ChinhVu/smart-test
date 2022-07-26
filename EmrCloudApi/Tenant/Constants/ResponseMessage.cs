@@ -43,5 +43,22 @@
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
         public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+
+        //Set
+        public static readonly string GetSetListInvalidHpId = "Invalid HpId";
+        public static readonly string GetSetListSinDate = "Invalid SinDate";
+        public static readonly string GetSetListInvalidSetKbn = "Invalid SetKbn";
+        public static readonly string GetSetListInvalidSetKbnEdaNo = "Invalid SetKbnEdaNo";
+        public static readonly string GetSetListNoData = "No Data";
+        public static readonly string GetSetListSuccessed = "Successed";
+
+        //Set
+        public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
+        public static readonly string GetSetKbnListSinDate = "Invalid SinDate";
+        public static readonly string GetSetKbnListInvalidSetKbnFrom = "Invalid SetKbnFrom";
+        public static readonly string GetSetKbnListInvalidSetKbnTo = "Invalid SetKbnTo";
+        public static readonly string GetSetKbnListInvalidSetKbn = "SetKbnTo must more than SetKbnFrom";
+        public static readonly string GetSetKbnListNoData = "No Data";
+        public static readonly string GetSetKbntListSuccessed = "Successed";
     }
 }

@@ -2,7 +2,11 @@
 using Domain.Models.KarteKbn;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
+using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
+using Domain.Models.Set;
+using Domain.Models.SetGeneration;
+using Domain.Models.SetKbn;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -11,19 +15,22 @@ using Interactor.MedicalExamination;
 using Interactor.MedicalExamination.KarteInfs;
 using Interactor.MedicalExamination.OrdInfs;
 using Interactor.PatientInfor;
+using Interactor.RaiinKubunMst;
 using Interactor.Reception;
+using Interactor.Set;
+using Interactor.SetKbn;
 using Interactor.User;
 using UseCase.Core.Builder;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.KarteInfs.GetLists;
 using UseCase.MedicalExamination.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
+using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
+using UseCase.Set.GetList;
+using UseCase.SetKbn.GetList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
-using Domain.Models.RaiinKubunMst;
-using UseCase.RaiinKubunMst.GetList;
-using Interactor.RaiinKubunMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -51,6 +58,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IKarteKbnRepository, KarteKbnRepository>();
+            services.AddTransient<ISetRepository, SetRepository>();
+            services.AddTransient<ISetGenerationRepository, SetGenerationRepository>();
+            services.AddTransient<ISetKbnMstRepository, SetKbnRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -79,6 +89,12 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
+
+            //Set
+            busBuilder.RegisterUseCase<GetSetListInputData, GetSetListInteractor>();
+
+            //SetKbn
+            busBuilder.RegisterUseCase<GetSetKbnListInputData, GetSetKbnListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
