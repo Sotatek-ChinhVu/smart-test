@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Interactor.FlowSheet
 {
-    public class FlowSheetGetListInteractor
+    public class GetListFlowSheetInteractor
     {
     }
 }

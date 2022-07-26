@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UseCase.FlowSheet.GetList
 {
-    public class FlowSheetGetListStatus
+    public class GetListFlowSheetStatus
     {
     }
 }

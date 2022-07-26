@@ -8,5 +8,6 @@ namespace Domain.Models.FlowSheet
 {
     public interface IFlowSheetRepository
     {
+        List<FlowSheetModel> GetListFlowSheet();
     }
 }

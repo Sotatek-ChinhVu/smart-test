@@ -7,7 +7,7 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.FlowSheet.GetList
 {
-    public interface IFlowSheetOutputPort :IOutputPort<FlowSheetOutputData>
+    public class GetListFlowSheetOutputData :IOutputData
     {
     }
 }
