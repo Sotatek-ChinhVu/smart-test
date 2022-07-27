@@ -113,7 +113,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOKEN_MEMO")]
         [MaxLength(400)]
-        public string HokenMemo { get; set; } = string.Empty;
+        public string? HokenMemo { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用開始日
