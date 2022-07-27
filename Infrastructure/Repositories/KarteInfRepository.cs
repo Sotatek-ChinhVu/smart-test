@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
+using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Text;
@@ -15,54 +16,43 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0));
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
 
             if (karteInfEntity == null)
             {
                 return new List<KarteInfModel>();
             }
 
-            return karteInfEntity.Select(k =>
-                    new KarteInfModel(
-                        k.HpId,
-                        k.RaiinNo,
-                        k.KarteKbn,
-                        k.SeqNo,
-                        k.PtId,
-                        k.SinDate,
-                        k.Text,
-                        k.IsDeleted,
-                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText),
-                        k.CreateDate,
-                        k.UpdateDate
-                    )
-                  ).ToList();
+            return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
         public List<KarteInfModel> GetList(long ptId, int hpId)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId);
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId).ToList();
 
             if (karteInfEntity == null)
             {
                 return new List<KarteInfModel>();
             }
 
-            return karteInfEntity.Select(k =>
-                    new KarteInfModel(
-                        k.HpId,
-                        k.RaiinNo,
-                        k.KarteKbn,
-                        k.SeqNo,
-                        k.PtId,
-                        k.SinDate,
-                        k.Text,
-                        k.IsDeleted,
-                        k.RichText == null ? string.Empty : Encoding.UTF8.GetString(k.RichText),
-                        k.CreateDate,
-                        k.UpdateDate
-                    )
-                  ).ToList();
+            return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
+        }
+
+        private KarteInfModel ConvertToModel(KarteInf itemData)
+        {
+            return new KarteInfModel(
+                itemData.HpId,
+                itemData.RaiinNo,
+                itemData.KarteKbn,
+                itemData.SeqNo,
+                itemData.PtId,
+                itemData.SinDate,
+                itemData.Text,
+                itemData.IsDeleted,
+                itemData.RichText == null ? string.Empty : Encoding.UTF8.GetString(itemData.RichText),
+                itemData.CreateDate,
+                itemData.UpdateDate
+                );
         }
     }
 }

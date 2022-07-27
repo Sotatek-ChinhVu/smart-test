@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.KarteKbn
+﻿namespace Domain.Models.KarteKbnMst
 {
-    public class KarteKbnMst
+    public class KarteKbnMstModel
     {
-        public KarteKbnMst(int hpId, int karteKbn, string? kbnName, string? kbnShortName, int canImg, int sortNo, int isDeleted)
+        public KarteKbnMstModel(int hpId, int karteKbn, string? kbnName, string? kbnShortName, int canImg, int sortNo, int isDeleted)
         {
             HpId = hpId;
             KarteKbn = karteKbn;

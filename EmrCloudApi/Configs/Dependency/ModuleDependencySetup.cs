@@ -1,34 +1,34 @@
-﻿using Domain.Models.KarteInfs;
-using Domain.Models.KarteKbn;
+﻿using Domain.Models.Diseases;
+using Domain.Models.KarteInfs;
+using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
+using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
-using Domain.Models.Diseases;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.Diseases;
 using Interactor.MedicalExamination;
 using Interactor.MedicalExamination.KarteInfs;
 using Interactor.MedicalExamination.OrdInfs;
 using Interactor.PatientInfor;
+using Interactor.RaiinKubunMst;
 using Interactor.Reception;
-using Interactor.Diseases;
 using Interactor.User;
 using UseCase.Core.Builder;
+using UseCase.Diseases.GetDiseaseList;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.KarteInfs.GetLists;
 using UseCase.MedicalExamination.OrdInfs.GetListTrees;
+using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
-using UseCase.Diseases.GetDiseaseList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
-using Domain.Models.RaiinKubunMst;
-using UseCase.RaiinKubunMst.GetList;
-using Interactor.RaiinKubunMst;
-using UseCase.PatientInfor.SearchSimple;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -56,7 +56,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
-            services.AddTransient<IKarteKbnRepository, KarteKbnRepository>();
+            services.AddTransient<IKarteKbnMstRepository, KarteKbnMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

@@ -1,5 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
-using Domain.Models.KarteKbn;
+using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using UseCase.MedicalExamination;
 using UseCase.MedicalExamination.GetHistory;
@@ -10,8 +10,8 @@ namespace Interactor.MedicalExamination
     {
         private readonly IOrdInfRepository _ordInfRepository;
         private readonly IKarteInfRepository _karteInfRepository;
-        private readonly IKarteKbnRepository _karteKbnRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnRepository karteKbnRepository)
+        private readonly IKarteKbnMstRepository _karteKbnRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -43,7 +43,7 @@ namespace Interactor.MedicalExamination
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
 
             #region karte
-            List<KarteKbnMst> AllkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
+            List<KarteKbnMstModel> AllkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
             List<KarteInfModel> AllkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
@@ -51,6 +51,7 @@ namespace Interactor.MedicalExamination
               .GetList(inputData.PtId, inputData.HpId)
                 .ToList();
 
+            //Hash code because no have KaMst, HokenPattern which join with user to return data
             var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(901139649, 20220401, 30, "Hoken Title", "2022/04/01", 1, 1, 1, "Test", 0, "Tantoname", 1, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
             List<KarteInfModel> karteInfByRaiinNo = AllkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
