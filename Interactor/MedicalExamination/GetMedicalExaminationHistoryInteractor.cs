@@ -43,20 +43,20 @@ namespace Interactor.MedicalExamination
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
 
             #region karte
-            List<KarteKbnMstModel> AllkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
-            List<KarteInfModel> AllkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
+            List<KarteKbnMstModel> allkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
+            List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-            List<OrdInfModel> AllOdrInfs = _ordInfRepository
+            List<OrdInfModel> allOdrInfs = _ordInfRepository
               .GetList(inputData.PtId, inputData.HpId)
                 .ToList();
 
             //Hash code because no have KaMst, HokenPattern which join with user to return data
             var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(901139649, 20220401, 30, "Hoken Title", "2022/04/01", 1, 1, 1, "Test", 0, "Tantoname", 1, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
-            List<KarteInfModel> karteInfByRaiinNo = AllkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
+            List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
 
-            historyKarteOdrRaiin.KarteHistories.AddRange(from karteKbn in AllkarteKbns
+            historyKarteOdrRaiin.KarteHistories.AddRange(from karteKbn in allkarteKbns
                                                          where karteInfByRaiinNo.Any(c => c.KarteKbn == karteKbn.KarteKbn)
                                                          let karteGrp = new GrpKarteHistoryItem(karteKbn == null ? 0 : karteKbn.KarteKbn, string.IsNullOrEmpty(karteKbn?.KbnName) ? String.Empty : karteKbn.KbnName, string.IsNullOrEmpty(karteKbn?.KbnShortName) ? String.Empty : karteKbn.KbnShortName, karteKbn == null ? 0 : karteKbn.CanImg, karteKbn == null ? 0 : karteKbn.SortNo, karteInfByRaiinNo.Where(c => c.KarteKbn == karteKbn?.KarteKbn).OrderByDescending(c => c.IsDeleted)
         .Select(c => new KarteInfHistoryItem(
@@ -73,7 +73,7 @@ namespace Interactor.MedicalExamination
         ).ToList())
                                                          select karteGrp);
 
-            List<OrdInfModel> odrInfListByRaiinNo = AllOdrInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo)
+            List<OrdInfModel> odrInfListByRaiinNo = allOdrInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo)
                                                 .OrderBy(odr => odr.OdrKouiKbn)
                                                 .ThenBy(odr => odr.RpNo)
                                                 .ThenBy(odr => odr.RpEdaNo)
