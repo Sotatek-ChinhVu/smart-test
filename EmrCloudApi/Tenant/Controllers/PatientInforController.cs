@@ -45,6 +45,8 @@ namespace EmrCloudApi.Tenant.Controllers
             present.Complete(output);
 
             return new ActionResult<Response<GetListGroupInfResponse>>(present.Result);
+        }
+
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
