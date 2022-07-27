@@ -31,6 +31,9 @@ using UseCase.Reception.UpdateStaticCell;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.KaMst;
+using UseCase.RaiinKbnInf.Upsert;
+using Interactor.RaiinKbnInf;
+using Domain.Models.RaiinKbnInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -61,6 +64,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
             services.AddTransient<IKaMstRepository, KaMstRepository>();
+            services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -92,6 +96,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
+
+            // RaiinKbnInf
+            busBuilder.RegisterUseCase<UpsertRaiinKbnInfInputData, UpsertRaiinKbnInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

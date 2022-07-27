@@ -1,10 +1,12 @@
 ﻿using Domain.Models.Reception;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.RaiinKbnInf;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.RaiinKbnInf.Upsert;
 using UseCase.Reception.GetList;
 using UseCase.Reception.UpdateStaticCell;
 
@@ -15,6 +17,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+
     public VisitingController(UseCaseBus bus)
     {
         _bus = bus;
@@ -35,6 +38,15 @@ public class VisitingController : ControllerBase
     {
         var output = _bus.Handle(input);
         var presenter = new UpdateReceptionStaticCellPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.Update + "DynamicCell")]
+    public ActionResult<Response<bool>> UpdateDynamicCell([FromBody] UpsertRaiinKbnInfInputData input)
+    {
+        var output = _bus.Handle(input);
+        var presenter = new UpsertRaiinKbnInfPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
