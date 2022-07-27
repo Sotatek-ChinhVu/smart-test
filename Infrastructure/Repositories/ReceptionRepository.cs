@@ -181,6 +181,7 @@ namespace Infrastructure.Repositories
             var grpIds = _tenantDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
+                r.raiinInf.PtId,
                 r.parentRaiinNo,
                 r.raiinInf.UketukeNo,
                 r.relatedLockInf is not null,

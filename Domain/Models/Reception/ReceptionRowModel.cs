@@ -7,7 +7,7 @@ namespace Domain.Models.Reception;
 
 public class ReceptionRowModel
 {
-    public ReceptionRowModel(long raiinNo, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus,
+    public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus,
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
         string rsvFrameName, string uketukeSbtName, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
@@ -16,6 +16,8 @@ public class ReceptionRowModel
         int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
         RaiinNo = raiinNo;
+        PtId = ptId;
+        SinDate = sinDate;
         SameVisit = parentRaiinNo == 0 ? string.Empty : parentRaiinNo.ToString();
         UketukeNo = uketukeNo;
         Status = hasLockInf ? RaiinState.Examining : raiinStatus;
@@ -53,6 +55,8 @@ public class ReceptionRowModel
         get => RaiinState.VisitStatus[Status];
     }
 
+    public long PtId { get; set; }
+    public int SinDate { get; set; }
     public long RaiinNo { get; private set; }
     // 順番
     public int UketukeNo { get; private set; }
