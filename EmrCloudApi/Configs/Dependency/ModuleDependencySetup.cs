@@ -4,6 +4,7 @@
 using Domain.Models.OrdInfs;
 using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
+using Domain.Models.Diseases;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -13,6 +14,7 @@ using Interactor.OrdInfs;
 using Interactor.PatientInfor;
 using Interactor.KarteInfs;
 using Interactor.Reception;
+using Interactor.Diseases;
 using Interactor.User;
 using UseCase.Core.Builder;
 using UseCase.Insurance.GetList;
@@ -20,11 +22,17 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
 using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetList;
+using UseCase.Diseases.GetDiseaseList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
 using Interactor.RaiinKubunMst;
+using UseCase.PatientInfor.SearchSimple;
+using UseCase.PatientGroupMst.GetList;
+using Interactor.PatientGroupMst;
+using Domain.Models.PatientGroupMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -46,12 +54,14 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IInsuranceRepository, InsuranceRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
+            services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -63,11 +73,15 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
+            //PtByomeis
+            busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
+
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
@@ -76,6 +90,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
+            busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
+            busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

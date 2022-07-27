@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CommonObject\**" />
+    <EmbeddedResource Remove="CommonObject\**" />
+    <None Remove="CommonObject\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Helper\Helper.csproj" />
   </ItemGroup>
 
