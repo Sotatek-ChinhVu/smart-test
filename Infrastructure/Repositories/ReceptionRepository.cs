@@ -1,6 +1,7 @@
 using Domain.Common;
 using Domain.Constant;
 using Domain.Models.Reception;
+using Entity.Tenant;
 using Infrastructure.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -211,6 +212,58 @@ namespace Infrastructure.Repositories
             )).ToList();
 
             return models;
+        }
+
+        public bool UpdateStatus(int hpId, long raiinNo, int status)
+        {
+            return Update(hpId, raiinNo, r => r.Status = status);
+        }
+
+        public bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeNo = uketukeNo);
+        }
+
+        public bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeTime = uketukeTime);
+        }
+
+        public bool UpdateSinStartTime(int hpId, long raiinNo, string sinStartTime)
+        {
+            return Update(hpId, raiinNo, r => r.SinStartTime = sinStartTime);
+        }
+
+        public bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeSbt = uketukeSbt);
+        }
+
+        public bool UpdateTantoId(int hpId, long raiinNo, int tantoId)
+        {
+            return Update(hpId, raiinNo, r => r.TantoId = tantoId);
+        }
+
+        public bool UpdateKaId(int hpId, long raiinNo, int kaId)
+        {
+            return Update(hpId, raiinNo, r => r.KaId = kaId);
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = _tenantDataContext.RaiinInfs.Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo
+                && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
+            raiinInf.UpdateDate = DateTime.UtcNow;
+            _tenantDataContext.SaveChanges();
+            return true;
         }
     }
 }

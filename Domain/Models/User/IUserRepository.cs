@@ -19,5 +19,6 @@ namespace Domain.Models.User
         IEnumerable<UserMst> GetAll();
 
         int MaxUserId();
+        int GetUserIdBySname(string sname);
     }
 }

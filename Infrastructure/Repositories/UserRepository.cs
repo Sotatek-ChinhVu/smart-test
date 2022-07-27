@@ -1,5 +1,7 @@
-﻿using Domain.Models.User;
+﻿using Domain.Constant;
+using Domain.Models.User;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -45,6 +47,13 @@ namespace Infrastructure.Repositories
         public void Update(UserMst user)
         {
             throw new NotImplementedException();
+        }
+
+        public int GetUserIdBySname(string sname)
+        {
+            var record = _tenantDataContext.UserMsts.AsNoTracking()
+                .Where(u => u.Sname == sname).Select(u => new { u.UserId }).FirstOrDefault();
+            return record is null ? CommonConstants.InvalidId : record.UserId;
         }
     }
 }
