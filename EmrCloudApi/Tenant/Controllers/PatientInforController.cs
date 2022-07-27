@@ -1,9 +1,13 @@
-﻿using EmrCloudApi.Tenant.Presenters.PatientInformation;
+﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Presenters.PatientInformation;
+using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.GroupInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.GroupInf.GetList;
 using UseCase.PatientInformation.GetById;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -28,6 +32,18 @@ namespace EmrCloudApi.Tenant.Controllers
             present.Complete(output);
 
             return new ActionResult<Response<GetPatientInforByIdResponse>>(present.Result);
+        }
+
+        [HttpGet("GetListDataGroup")]
+        public ActionResult<Response<GetListGroupInfResponse>> GetListDataGroup([FromQuery] GetListGroupInfRequest request)
+        {
+            var input = new GetListGroupInfInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+
+            var present = new GetListGroupInfPresenter();
+            present.Complete(output);
+
+            return new ActionResult<Response<GetListGroupInfResponse>>(present.Result);
         }
     }
 }

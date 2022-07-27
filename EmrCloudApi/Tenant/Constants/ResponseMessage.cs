@@ -12,6 +12,11 @@
         public static readonly string GetPatientByIdSuccessed = "Successed";
         public static readonly string GetPatientByIdInvalidId = "Invalid PtId";
 
+        //Group Infor
+        public static readonly string GetGroupInfInvalidHpId = "Invalid HpId";
+        public static readonly string GetGroupInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetGroupInfSuccessed = "Successed";
+
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";
