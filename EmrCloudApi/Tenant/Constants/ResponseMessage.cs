@@ -47,5 +47,11 @@
         //RaiinKubun controller
         public static readonly string GetRaiinKubunMstListSuccessed = "Successed";
 
+        //Calculation Inf
+        public static readonly string CalculationInfNotExist = "Not exist data!";
+        public static readonly string CalculationInfSuccessed = "Successed";
+        public static readonly string CalculationInfInvalidHpId = "Invalid HpId";
+        public static readonly string CalculationInfInvalidPtId = "Invalid PtId";
+
     }
 }

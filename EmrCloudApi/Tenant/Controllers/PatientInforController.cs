@@ -1,8 +1,12 @@
-﻿using EmrCloudApi.Tenant.Presenters.PatientInformation;
+﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
+using EmrCloudApi.Tenant.Presenters.PatientInformation;
+using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.CalculationInf;
 using UseCase.Core.Sync;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
@@ -41,6 +45,18 @@ namespace EmrCloudApi.Tenant.Controllers
             present.Complete(output);
 
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
+        }
+
+        [HttpGet("GetCalculationPatient")]
+        public ActionResult<Response<CalculationInfResponse>> GetCalculationPatient([FromQuery] CalculationInfRequest request)
+        {
+            var input = new CalculationInfInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+
+            var present = new CalculationInfPresenter();
+            present.Complete(output);
+
+            return new ActionResult<Response<CalculationInfResponse>>(present.Result);
         }
     }
 }
