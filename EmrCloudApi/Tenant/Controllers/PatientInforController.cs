@@ -66,8 +66,8 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
         }
 
-        [HttpGet("GetCalculationPatient")]
-        public ActionResult<Response<CalculationInfResponse>> GetCalculationPatient([FromQuery] CalculationInfRequest request)
+        [HttpGet("GetListCalculationPatient")]
+        public ActionResult<Response<CalculationInfResponse>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
         {
             var input = new CalculationInfInputData(request.HpId, request.PtId);
             var output = _bus.Handle(input);
