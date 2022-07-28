@@ -19,7 +19,6 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var dataGroupPatient1 = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId).ToList();
             var dataGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
                 .Select( x => new GroupInfModel(
                     x.HpId,
