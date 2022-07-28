@@ -4,9 +4,9 @@ using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
-using Domain.Models.Set;
-using Domain.Models.SetGeneration;
-using Domain.Models.SetKbn;
+using Domain.Models.SetGenerationMst;
+using Domain.Models.SetKbnMst;
+using Domain.Models.SetMst;
 using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -17,8 +17,8 @@ using Interactor.MedicalExamination.OrdInfs;
 using Interactor.PatientInfor;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
-using Interactor.Set;
-using Interactor.SetKbn;
+using Interactor.SetKbnMst;
+using Interactor.SetMst;
 using Interactor.User;
 using UseCase.Core.Builder;
 using UseCase.MedicalExamination.GetHistory;
@@ -27,8 +27,8 @@ using UseCase.MedicalExamination.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
-using UseCase.Set.GetList;
-using UseCase.SetKbn.GetList;
+using UseCase.SetKbnMst.GetList;
+using UseCase.SetMst.GetList;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 
@@ -58,9 +58,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IKarteKbnRepository, KarteKbnRepository>();
-            services.AddTransient<ISetRepository, SetRepository>();
-            services.AddTransient<ISetGenerationRepository, SetGenerationRepository>();
-            services.AddTransient<ISetKbnMstRepository, SetKbnRepository>();
+            services.AddTransient<ISetMstRepository, SetMstRepository>();
+            services.AddTransient<ISetGenerationMstRepository, SetGenerationMstRepository>();
+            services.AddTransient<ISetKbnMstRepository, SetKbnMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -91,10 +91,10 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
 
             //Set
-            busBuilder.RegisterUseCase<GetSetListInputData, GetSetListInteractor>();
+            busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
 
             //SetKbn
-            busBuilder.RegisterUseCase<GetSetKbnListInputData, GetSetKbnListInteractor>();
+            busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

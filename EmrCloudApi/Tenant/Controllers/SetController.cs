@@ -1,11 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.Set;
-using EmrCloudApi.Tenant.Requests.Set;
+using EmrCloudApi.Tenant.Presenters.SetMst;
+using EmrCloudApi.Tenant.Requests.SetMst;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.Set;
+using EmrCloudApi.Tenant.Responses.SetMst;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Set.GetList;
+using UseCase.SetMst.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -20,15 +20,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetSetListResponse>> GetList([FromQuery] GetSetListRequest request)
+        public ActionResult<Response<GetSetMstListResponse>> GetList([FromQuery] GetSetMstListRequest request)
         {
-            var input = new GetSetListInputData(request.HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
+            var input = new GetSetMstListInputData(request.HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
             var output = _bus.Handle(input);
 
-            var presenter = new GetSetListPresenter();
+            var presenter = new GetSetMstListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetSetListResponse>>(presenter.Result);
+            return new ActionResult<Response<GetSetMstListResponse>>(presenter.Result);
         }
     }
 }
