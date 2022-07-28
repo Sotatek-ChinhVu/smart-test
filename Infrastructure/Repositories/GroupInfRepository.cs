@@ -17,6 +17,19 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
+        {
+            var dataGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId))
+                .Select(x => new GroupInfModel(
+                    x.HpId,
+                    x.PtId,
+                    x.GroupId,
+                    x.GroupCode ?? string.Empty
+                    ))
+                .ToList();
+            return dataGroupPatient;
+        }
+
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
             var dataGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
