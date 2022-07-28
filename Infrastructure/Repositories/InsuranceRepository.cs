@@ -8,7 +8,7 @@ namespace Infrastructure.Repositories
 {
     public class InsuranceRepository : IInsuranceRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public InsuranceRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
