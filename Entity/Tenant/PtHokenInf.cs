@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 患者ID
         ///		患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -29,14 +29,14 @@ namespace Entity.Tenant
         /// 保険ID
         ///		患者別に保険情報を識別するための固有の番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("HOKEN_ID", Order = 3)]
         public int HokenId { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
