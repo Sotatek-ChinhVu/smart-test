@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters.InsuranceList;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
@@ -8,14 +9,13 @@ using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetList;
-﻿using EmrCloudApi.Tenant.Presenters.PatientInfor;
-using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.GetList;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
@@ -44,8 +44,8 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetPatientInforByIdResponse>>(present.Result);
         }
 
-        [HttpPost("InsuranceListByPtId")]
-        public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromBody] GetInsuranceListRequest request)
+        [HttpGet("InsuranceListByPtId")]
+        public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
             var input = new GetInsuranceListInputData(request.HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
