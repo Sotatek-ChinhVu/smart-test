@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories
 {
     public class CalculationInfRepository: ICalculationInfRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public CalculationInfRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();

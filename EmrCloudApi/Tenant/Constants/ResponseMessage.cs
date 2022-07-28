@@ -29,6 +29,12 @@
         public static readonly string GetListNotExisted = "Not existed";
         public static readonly string GetPtDiseaseSuccessed = "Success";
 
+        //Insurance
+        public static readonly string GetInsuranceListInvalidPtId = "Invalid PtId !";
+        public static readonly string GetInsuranceListInvalidHpId = "Invalid HpId !";
+        public static readonly string GetInsuranceListInvalidSinDate = "Invalid SinDate !";
+        public static readonly string GetInsuranceListSuccessed = "Successed!!!";
+
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";

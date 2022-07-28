@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 分類番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
