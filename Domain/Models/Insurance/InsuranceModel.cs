@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenName, string? hokensyaNo, string? kigo, string? bango, string? edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string? tokki1, string? tokki2, string? tokki3, string? tokki4, string? tokki5, string? rousaiKofuNo, string nenkinBango, string? rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string? rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string? rousaiSyobyoCd, string? rousaiJigyosyoName, string? rousaiPrefName, string? rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate)
+        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenName, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -86,10 +86,10 @@ namespace Domain.Models.InsuranceInfor
         public int Kohi3Id { get; private set; }
         public int Kohi4Id { get; private set; }
         public string HokenName { get; set; }
-        public string? HokensyaNo { get; private set; }
-        public string? Kigo { get; private set; }
-        public string? Bango { get; private set; }
-        public string? EdaNo { get; private set; }
+        public string HokensyaNo { get; private set; }
+        public string Kigo { get; private set; }
+        public string Bango { get; private set; }
+        public string EdaNo { get; private set; }
         public int HonkeKbn { get; private set; }
         public int StartDate { get; private set; }
         public int EndDate { get; private set; }
@@ -110,25 +110,25 @@ namespace Domain.Models.InsuranceInfor
         public int GenmenGaku { get; private set; }
         public int SyokumuKbn { get; private set; }
         public int KeizokuKbn { get; private set; }
-        public string? Tokki1 { get; private set; }
-        public string? Tokki2 { get; private set; }
-        public string? Tokki3 { get; private set; }
-        public string? Tokki4 { get; private set; }
-        public string? Tokki5 { get; private set; }
+        public string Tokki1 { get; private set; }
+        public string Tokki2 { get; private set; }
+        public string Tokki3 { get; private set; }
+        public string Tokki4 { get; private set; }
+        public string Tokki5 { get; private set; }
         //2
-        public string? RousaiKofuNo { get; private set; }
+        public string RousaiKofuNo { get; private set; }
         public string NenkinBango { get; private set; }
-        public string? RousaiRoudouCd { get; private set; }
+        public string RousaiRoudouCd { get; private set; }
         public string KenkoKanriBango { get; private set; }
         public int RousaiSaigaiKbn { get; private set; }
-        public string? RousaiKantokuCd { get; private set; }
+        public string RousaiKantokuCd { get; private set; }
         public int RousaiSyobyoDate { get; private set; }
         public int RyoyoStartDate { get; private set; }
         public int RyoyoEndDate { get; private set; }
-        public string? RousaiSyobyoCd { get; private set; }
-        public string? RousaiJigyosyoName { get; private set; }
-        public string? RousaiPrefName { get; private set; }
-        public string? RousaiCityName { get; private set; }
+        public string RousaiSyobyoCd { get; private set; }
+        public string RousaiJigyosyoName { get; private set; }
+        public string RousaiPrefName { get; private set; }
+        public string RousaiCityName { get; private set; }
         public int RousaiReceCount { get; private set; }
         //detail 2 3 
         public int RousaiTenkiSinkei { get; set; }

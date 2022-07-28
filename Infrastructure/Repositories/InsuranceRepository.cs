@@ -72,8 +72,8 @@ namespace Infrastructure.Repositories
                                     ptHokenInf.KofuDate,
                                     ConfirmDate = GetConfirmDate(ptHokenPattern.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
                                 Kohi1 = ptKohi1 != null ? new KohiInfModel(
-                                        ptKohi1.FutansyaNo,
-                                        ptKohi1.JyukyusyaNo,
+                                        ptKohi1.FutansyaNo ?? string.Empty,
+                                        ptKohi1.JyukyusyaNo ?? string.Empty,
                                         ptKohi1.HokenId,
                                         ptKohi1.StartDate,
                                         ptKohi1.EndDate,
@@ -82,13 +82,13 @@ namespace Infrastructure.Repositories
                                         ptKohi1.GendoGaku,
                                         ptKohi1.SikakuDate,
                                         ptKohi1.KofuDate,
-                                        ptKohi1.TokusyuNo,
+                                        ptKohi1.TokusyuNo ?? string.Empty,
                                         ptKohi1.HokenSbtKbn,
-                                        ptKohi1.Houbetu
+                                        ptKohi1.Houbetu ?? string.Empty
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
-                                            ptKohi2.FutansyaNo,
-                                            ptKohi2.JyukyusyaNo,
+                                            ptKohi2.FutansyaNo ?? string.Empty,
+                                            ptKohi2.JyukyusyaNo ?? string.Empty,
                                             ptKohi2.HokenId,
                                             ptKohi2.StartDate,
                                             ptKohi2.EndDate,
@@ -97,13 +97,13 @@ namespace Infrastructure.Repositories
                                             ptKohi2.GendoGaku,
                                             ptKohi2.SikakuDate,
                                             ptKohi2.KofuDate,
-                                            ptKohi2.TokusyuNo,
+                                            ptKohi2.TokusyuNo ?? string.Empty,
                                             ptKohi2.HokenSbtKbn,
-                                            ptKohi2.Houbetu
+                                            ptKohi2.Houbetu ?? string.Empty
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
-                                                ptKohi3.FutansyaNo,
-                                                ptKohi3.JyukyusyaNo,
+                                                ptKohi3.FutansyaNo ?? string.Empty,
+                                                ptKohi3.JyukyusyaNo ?? string.Empty,
                                                 ptKohi3.HokenId,
                                                 ptKohi3.StartDate,
                                                 ptKohi3.EndDate,
@@ -112,13 +112,13 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.GendoGaku,
                                                 ptKohi3.SikakuDate,
                                                 ptKohi3.KofuDate,
-                                                ptKohi3.TokusyuNo,
+                                                ptKohi3.TokusyuNo ?? string.Empty,
                                                 ptKohi3.HokenSbtKbn,
-                                                ptKohi3.Houbetu
+                                                ptKohi3.Houbetu ?? string.Empty
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
-                                                ptKohi4.FutansyaNo,
-                                                ptKohi4.JyukyusyaNo,
+                                                ptKohi4.FutansyaNo ?? string.Empty,
+                                                ptKohi4.JyukyusyaNo ?? string.Empty,
                                                 ptKohi4.HokenId,
                                                 ptKohi4.StartDate,
                                                 ptKohi4.EndDate,
@@ -127,9 +127,9 @@ namespace Infrastructure.Repositories
                                                 ptKohi4.GendoGaku,
                                                 ptKohi4.SikakuDate,
                                                 ptKohi4.KofuDate,
-                                                ptKohi4.TokusyuNo,
+                                                ptKohi4.TokusyuNo ?? string.Empty,
                                                 ptKohi4.HokenSbtKbn,
-                                                ptKohi4.Houbetu
+                                                ptKohi4.Houbetu ?? string.Empty
                                             ) : null,
                                     ptHokenInf.KogakuKbn,
                                     ptHokenInf.TasukaiYm,
