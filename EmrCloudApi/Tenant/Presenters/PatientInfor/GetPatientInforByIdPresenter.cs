@@ -28,8 +28,11 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInformation
                 case GetPatientInforByIdStatus.DataNotExist:
                     Result.Message = ResponseMessage.GetPatientInforNotExist;
                     break;
-                case GetPatientInforByIdStatus.InvalidId:
-                    Result.Message = ResponseMessage.GetPatientByIdInvalidId;
+                case GetPatientInforByIdStatus.InvalidHpId:
+                    Result.Message = ResponseMessage.GetInsuranceListInvalidHpId;
+                    break;
+                case GetPatientInforByIdStatus.InvalidPtId:
+                    Result.Message = ResponseMessage.GetInsuranceListInvalidPtId;
                     break;
                 default:
                     break;

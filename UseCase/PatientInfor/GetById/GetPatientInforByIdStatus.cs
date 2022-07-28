@@ -10,6 +10,7 @@ namespace UseCase.PatientInformation.GetById
     {
         Successed = 1,
         DataNotExist = 2,
-        InvalidId = 3
+        InvalidHpId = 3,
+        InvalidPtId = 4
     }
 }
