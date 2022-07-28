@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public PatientGroupMstRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<PatientGroupMstModel> GetAll()
@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
                 (
                     groupMst.GrpId,
                     groupMst.SortNo,
-                    groupMst.GrpName,
+                    groupMst.GrpName ?? string.Empty,
                     groupDetailList.Select(g => new PatientGroupDetailModel(g.GrpId, g.GrpCode, g.SeqNo, g.SortNo, g.GrpCodeName)).ToList()
                 );
         }

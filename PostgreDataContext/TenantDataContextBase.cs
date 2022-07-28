@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PostgreDataContext
 {
-    public class TenantDataContextBase : DbContext
+    public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
-        public TenantDataContextBase(string connectionString) => _connectionString = connectionString;
+        public TenantDataContext(string connectionString) => _connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -45,6 +45,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

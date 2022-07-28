@@ -2,7 +2,7 @@
 
 namespace PostgreDataContext
 {
-    public class TenantNoTrackingDataContext : TenantDataContextBase
+    public class TenantNoTrackingDataContext : TenantDataContext
     {
         public TenantNoTrackingDataContext(string connectionString) : base(connectionString)
         {

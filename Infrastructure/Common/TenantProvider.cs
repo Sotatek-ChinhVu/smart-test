@@ -22,9 +22,14 @@ namespace Infrastructure.CommonDB
             return "host=192.168.1.70;port=5432;database=EmrYamamoto;user id=postgres;password=Emr!23";
         }
 
-        public TenantNoTrackingDataContext GetDataContext()
+        public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
             return new TenantNoTrackingDataContext(GetConnectionString());
+        }
+
+        public TenantDataContext GetTrackingTenantDataContext()
+        {
+            return new TenantDataContext(GetConnectionString());
         }
     }
 }
