@@ -1,4 +1,6 @@
+using Domain.CalculationInf;
 using Domain.Models.Diseases;
+using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
@@ -13,7 +15,9 @@ using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
+using Interactor.CalculationInf;
 using Interactor.Diseases;
+using Interactor.GrpInf;
 using Interactor.Insurance;
 using Interactor.KarteInfs;
 using Interactor.OrdInfs;
@@ -24,8 +28,10 @@ using Interactor.Reception;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.User;
+using UseCase.CalculationInf;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
 using UseCase.KarteInfs.GetLists;
 using UseCase.OrdInfs.GetListTrees;
@@ -67,6 +73,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
+            services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
+            services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<ISetMstRepository, SetMstRepository>();
             services.AddTransient<ISetGenerationMstRepository, SetGenerationMstRepository>();
             services.AddTransient<ISetKbnMstRepository, SetKbnMstRepository>();
@@ -104,6 +112,11 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
+
+            //Calculation Inf
+            busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
+            //Group Inf
+            busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 
             //Set
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();

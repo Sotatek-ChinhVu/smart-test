@@ -2,6 +2,8 @@
 {
     public class GetByIdRequest
     {
-        public int PtId { get; set; } = 0;
+        public int HpId { get; set; }
+
+        public long PtId { get; set; }
     }
 }

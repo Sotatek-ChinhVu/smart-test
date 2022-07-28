@@ -23,21 +23,21 @@ namespace Entity.Tenant
 		/// 患者ID
 		///		患者を識別するためのシステム固有の番号
 		/// </summary>
-		//[Key]
+		[Key]
         [Column(name: "PT_ID", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 分類番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "GRP_ID", Order = 3)]
         public int GroupId { get; set; }
 
 		/// <summary>
 		/// 連番
 		/// </summary>
-		//[Key]
+		[Key]
 		[Column(name: "SEQ_NO", Order = 4)]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long SeqNo { get; set; }
@@ -54,7 +54,7 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "GRP_CODE")]
         [MaxLength(4)]
-        public string GroupCode { get; set; } = string.Empty;
+        public string? GroupCode { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 削除区分

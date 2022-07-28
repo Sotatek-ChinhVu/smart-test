@@ -18,7 +18,13 @@
         //Patient Infor
         public static readonly string GetPatientInforNotExist = "Not exist data!";
         public static readonly string GetPatientByIdSuccessed = "Successed";
-        public static readonly string GetPatientByIdInvalidId = "Invalid PtId";
+        public static readonly string GetPatientByIdInvalidHpId = "Invalid HpId";
+        public static readonly string GetPatientByIdInvalidPtId = "Invalid PtId";
+
+        //Group Infor
+        public static readonly string GetGroupInfInvalidHpId = "Invalid HpId";
+        public static readonly string GetGroupInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetGroupInfSuccessed = "Successed";
 
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
@@ -69,5 +75,11 @@
         public static readonly string GetSetKbnListInvalidSetKbn = "SetKbnTo must more than SetKbnFrom";
         public static readonly string GetSetKbnListNoData = "No Data";
         public static readonly string GetSetKbntListSuccessed = "Successed";
+        //Calculation Inf
+        public static readonly string CalculationInfNotExist = "Not exist data!";
+        public static readonly string CalculationInfSuccessed = "Successed";
+        public static readonly string CalculationInfInvalidHpId = "Invalid HpId";
+        public static readonly string CalculationInfInvalidPtId = "Invalid PtId";
+
     }
 }
