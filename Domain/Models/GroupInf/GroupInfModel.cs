@@ -8,21 +8,20 @@ namespace Domain.Models.GroupInf
 {
     public class GroupInfModel
     {
-        public GroupInfModel(PtGrpNameMstModel? ptGrpNameMst, PtGrpItemModel? ptGrpItem)
+        public GroupInfModel(int hpPt, long ptId, int groupId, string groupCode)
         {
-            PtGrpNameMst = ptGrpNameMst;
-            PtGrpItem = ptGrpItem;
+            HpPt = hpPt;
+            PtId = ptId;
+            GroupId = groupId;
+            GroupCode = groupCode;
         }
-        public PtGrpNameMstModel? PtGrpNameMst { get; private set; }
-        public PtGrpItemModel? PtGrpItem { get; private set; }
 
-        public string? GroupCode { get; set; }
-        public long PtId { get; set; }
-        public List<PtGrpItemModel>? ListItem { get; set; }
-        public int SortNo { get; set; }
+        public int HpPt { get; private set; }
 
+        public long PtId { get; private set; }
+
+        public int GroupId { get; private set; }
+
+        public string GroupCode { get; private set; }
     }
-
-
-
 }
