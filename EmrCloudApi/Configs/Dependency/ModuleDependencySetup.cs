@@ -29,6 +29,9 @@ using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
 using Interactor.RaiinKubunMst;
+using UseCase.GroupInf.GetList;
+using Interactor.GrpInf;
+using Domain.Models.GroupInf;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
@@ -61,6 +64,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
+            services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
         }
 
@@ -95,6 +99,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
+
+            //Group Inf
+            busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
