@@ -54,7 +54,8 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
 
     private bool UpdateStaticCell(UpdateReceptionStaticCellInputData input)
     {
-        switch (input.CellName)
+        string pascalCaseCellName = FirstCharToUpper(input.CellName);
+        switch (pascalCaseCellName)
         {
             // Update RaiinInf
             case nameof(ReceptionRowModel.Status):
@@ -99,5 +100,14 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             default:
                 return false;
         }
+    }
+
+    private string FirstCharToUpper(string s)
+    {
+        if (string.IsNullOrEmpty(s))
+        {
+            return string.Empty;
+        }
+        return char.ToUpper(s[0]) + s.Substring(1);
     }
 }
