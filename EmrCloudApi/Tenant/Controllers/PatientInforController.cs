@@ -1,13 +1,21 @@
-using EmrCloudApi.Tenant.Presenters.InsuranceList;
-using EmrCloudApi.Tenant.Presenters.PatientInfor;
+﻿﻿﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
-using EmrCloudApi.Tenant.Requests.Insurance;
+using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.CalculationInf;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
+﻿﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Requests.GroupInf;
+using EmrCloudApi.Tenant.Responses.GroupInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.CalculationInf;
 using UseCase.Core.Sync;
+using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
 using UseCase.PatientGroupMst.GetList;
@@ -38,6 +46,18 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetPatientInforByIdResponse>>(present.Result);
         }
 
+        [HttpGet("GetListPatientGroup")]
+        public ActionResult<Response<GetListGroupInfResponse>> GetListPatientGroup([FromQuery] GetListGroupInfRequest request)
+        {
+            var input = new GetListGroupInfInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+
+            var present = new GetListGroupInfPresenter();
+            present.Complete(output);
+
+            return new ActionResult<Response<GetListGroupInfResponse>>(present.Result);
+        }
+
         [HttpGet("InsuranceListByPtId")]
         public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
@@ -62,6 +82,18 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
         }
 
+        [HttpGet("GetListCalculationPatient")]
+        public ActionResult<Response<CalculationInfResponse>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
+        {
+            var input = new CalculationInfInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+
+            var present = new CalculationInfPresenter();
+            present.Complete(output);
+
+            return new ActionResult<Response<CalculationInfResponse>>(present.Result);
+        }
+        
         [HttpGet("GetPatientGroupMst")]
         public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
         {

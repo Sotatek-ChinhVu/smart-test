@@ -21,6 +21,11 @@
         public static readonly string GetPatientByIdInvalidHpId = "Invalid HpId";
         public static readonly string GetPatientByIdInvalidPtId = "Invalid PtId";
 
+        //Group Infor
+        public static readonly string GetGroupInfInvalidHpId = "Invalid HpId";
+        public static readonly string GetGroupInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetGroupInfSuccessed = "Successed";
+
         //Reception controller
         public static readonly string GetReceptionInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetReceptionNotExisted = "Not existed";
@@ -53,6 +58,12 @@
 
         //RaiinKubun controller
         public static readonly string GetRaiinKubunMstListSuccessed = "Successed";
+
+        //Calculation Inf
+        public static readonly string CalculationInfNotExist = "Not exist data!";
+        public static readonly string CalculationInfSuccessed = "Successed";
+        public static readonly string CalculationInfInvalidHpId = "Invalid HpId";
+        public static readonly string CalculationInfInvalidPtId = "Invalid PtId";
 
     }
 }
