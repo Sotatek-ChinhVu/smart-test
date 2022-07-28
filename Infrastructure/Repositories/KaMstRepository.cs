@@ -12,11 +12,11 @@ public class KaMstRepository : IKaMstRepository
 
     public KaMstRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
     public int GetKaIdByKaSname(string kaSname)
     {
-        var record = _tenantDataContext.KaMsts.AsNoTracking()
+        var record = _tenantDataContext.KaMsts
                 .Where(k => k.KaSname == kaSname).Select(k => new { k.KaId }).FirstOrDefault();
         return record is null ? CommonConstants.InvalidId : record.KaId;
     }

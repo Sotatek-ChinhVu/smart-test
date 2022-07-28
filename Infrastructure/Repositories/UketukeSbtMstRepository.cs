@@ -12,12 +12,12 @@ public class UketukeSbtMstRepository : IUketukeSbtMstRepository
 
     public UketukeSbtMstRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public int GetKbnIdByKbnName(string kbnName)
     {
-        var record = _tenantDataContext.UketukeSbtMsts.AsNoTracking()
+        var record = _tenantDataContext.UketukeSbtMsts
                 .Where(u => u.KbnName == kbnName).Select(u => new { u.KbnId }).FirstOrDefault();
         return record is null ? CommonConstants.InvalidId : record.KbnId;
     }

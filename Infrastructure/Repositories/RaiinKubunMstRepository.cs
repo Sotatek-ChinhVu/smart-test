@@ -7,10 +7,10 @@ namespace Infrastructure.Repositories
 {
     public class RaiinKubunMstRepository : IRaiinKubunMstRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public RaiinKubunMstRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<RaiinKubunMstModel> GetList(bool isDeleted)

@@ -12,7 +12,7 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
 
     public RaiinCmtInfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetDataContext();
+        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text)

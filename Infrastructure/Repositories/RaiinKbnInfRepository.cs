@@ -12,7 +12,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
 
     public RaiinKbnInfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetDataContext();
+        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd)

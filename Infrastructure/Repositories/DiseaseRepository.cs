@@ -15,10 +15,10 @@ namespace Infrastructure.Repositories
 {
     public class DiseaseRepository : IPtDiseaseRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<PtDiseaseModel> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)

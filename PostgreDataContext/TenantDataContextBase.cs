@@ -5,13 +5,8 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
-        private readonly string _connectionString = String.Empty;
+        private readonly string _connectionString;
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
-        : base(options)
-        {
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -43,9 +38,15 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
             modelBuilder.Entity<RaiinKbnInf>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.GrpId, r.SeqNo });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
+            modelBuilder.Entity<PtHokenPattern>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo, r.HokenPid });
             modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
             modelBuilder.Entity<PtInf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<RaiinCmtInf>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn, r.SeqNo });
+            modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
+            modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
+            modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

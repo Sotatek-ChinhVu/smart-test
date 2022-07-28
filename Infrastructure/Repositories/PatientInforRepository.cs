@@ -9,10 +9,10 @@ namespace Infrastructure.Repositories
 {
     public class PatientInforRepository : IPatientInforRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public PatientInforModel? GetById(long ptId)
