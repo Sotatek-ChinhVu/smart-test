@@ -1,8 +1,8 @@
-﻿using Domain.Models.KarteInfs;
-using Domain.Models.KarteKbn;
+﻿using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.KarteInfs;
 using Domain.Models.Reception;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
@@ -11,20 +11,18 @@ using Domain.Models.User;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
-using Interactor.MedicalExamination;
-using Interactor.MedicalExamination.KarteInfs;
-using Interactor.MedicalExamination.OrdInfs;
+using Interactor.OrdInfs;
 using Interactor.PatientInfor;
+using Interactor.KarteInfs;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.User;
 using UseCase.Core.Builder;
-using UseCase.MedicalExamination.GetHistory;
-using UseCase.MedicalExamination.KarteInfs.GetLists;
-using UseCase.MedicalExamination.OrdInfs.GetListTrees;
+using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientInformation.GetById;
+using UseCase.KarteInfs.GetLists;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
 using UseCase.SetKbnMst.GetList;
@@ -57,7 +55,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
-            services.AddTransient<IKarteKbnRepository, KarteKbnRepository>();
             services.AddTransient<ISetMstRepository, SetMstRepository>();
             services.AddTransient<ISetGenerationMstRepository, SetGenerationMstRepository>();
             services.AddTransient<ISetKbnMstRepository, SetKbnMstRepository>();
@@ -86,9 +83,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
-
-            //Medical Examination
-            busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
 
             //Set
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();

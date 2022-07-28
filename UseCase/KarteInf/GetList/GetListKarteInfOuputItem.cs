@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.KarteInfs
+﻿using UseCase.Core.Sync.Core;
+
+namespace UseCase.KarteInfs.GetLists
 {
-    public class KarteInfModel
+    public class GetListKarteInfOuputItem : IOutputData
     {
-        public KarteInfModel(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
+        public GetListKarteInfOuputItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
