@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
 {
     public class GroupInfRepository: IGroupInfRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public GroupInfRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
@@ -19,6 +19,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
+            var dataGroupPatient1 = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId).ToList();
             var dataGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
                 .Select( x => new GroupInfModel(
                     x.HpId,
@@ -26,7 +27,6 @@ namespace Infrastructure.Repositories
                     x.GroupId,
                     x.GroupCode ?? string.Empty
                     ))
-                .OrderBy(x => x.GroupId)
                 .ToList();
             return dataGroupPatient;
         }

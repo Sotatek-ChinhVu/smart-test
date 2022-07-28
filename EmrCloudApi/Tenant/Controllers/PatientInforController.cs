@@ -1,4 +1,4 @@
-﻿<<<<<<< HEAD
+﻿
 ﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.GroupInf;
@@ -9,21 +9,13 @@ using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
-=======
 using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
-using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.Insurance;
-using EmrCloudApi.Tenant.Requests.PatientInfor;
-using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
-using EmrCloudApi.Tenant.Responses.PatientInformaiton;
-using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Sync;
 using UseCase.Insurance.GetList;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
 using UseCase.PatientGroupMst.GetList;
->>>>>>> develop
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 
