@@ -1,5 +1,4 @@
-﻿
-﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
+﻿﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
@@ -43,8 +42,8 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetPatientInforByIdResponse>>(present.Result);
         }
 
-        [HttpGet("GetListDataGroup")]
-        public ActionResult<Response<GetListGroupInfResponse>> GetListDataGroup([FromQuery] GetListGroupInfRequest request)
+        [HttpGet("GetListPatientGroup")]
+        public ActionResult<Response<GetListGroupInfResponse>> GetListPatientGroup([FromQuery] GetListGroupInfRequest request)
         {
             var input = new GetListGroupInfInputData(request.HpId, request.PtId);
             var output = _bus.Handle(input);
