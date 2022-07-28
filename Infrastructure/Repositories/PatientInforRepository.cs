@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public PatientInforModel? GetById(long ptId)
+        public PatientInforModel? GetById(int hpId, long ptId)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
             if (itemData == null)
                 return null;
             else
@@ -37,6 +37,7 @@ namespace Infrastructure.Repositories
 
         private PatientInforModel ConvertToModel(PtInf itemData)
         {
+            var ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
@@ -74,7 +75,8 @@ namespace Infrastructure.Repositories
                 itemData.IsRyosyoDetail,
                 itemData.PrimaryDoctor,
                 itemData.IsTester,
-                itemData.MainHokenPid
+                itemData.MainHokenPid,
+                ptMemo != null ? ptMemo.Memo : string.Empty
                 );
         }
     }
