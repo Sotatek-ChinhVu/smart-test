@@ -73,5 +73,19 @@ namespace UseCase.MedicalExamination.GetHistory
             HokenGroups = hokenGroups;
             KarteHistories = karteHistories;
         }
+
+        public HistoryKarteOdrRaiinItem(long raiinNo, int syosaisinKbn, int jikanKbn, int kaId, int tantoId, int hokenPid, int sinDate, int santeiKbn, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
+        {
+            RaiinNo = raiinNo;
+            SyosaisinKbn = syosaisinKbn;
+            JikanKbn = jikanKbn;
+            KaId = kaId;
+            TantoId = tantoId;
+            SanteiKbn = santeiKbn;
+            HokenGroups = hokenGroups;
+            KarteHistories = karteHistories;
+            HokenPid = hokenPid;
+            SinDate = sinDate;
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.SikakuDate,
                                 ptHokenInf.KofuDate,
                                 ConfirmDate = GetConfirmDate(ptHokenPattern.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
-                                Kohi1 = ptKohi1 != null ? new PtHokenPattern(
+                                Kohi1 = ptKohi1 != null ? new KohiInfModel(
                                         ptKohi1.FutansyaNo ?? string.Empty,
                                         ptKohi1.JyukyusyaNo ?? string.Empty,
                                         ptKohi1.HokenId,
@@ -80,7 +80,7 @@ namespace Infrastructure.Repositories
                                         ptKohi1.HokenSbtKbn,
                                         ptKohi1.Houbetu ?? string.Empty
                                     ) : null,
-                                Kohi2 = ptKohi2 != null ? new PtHokenPattern(
+                                Kohi2 = ptKohi2 != null ? new KohiInfModel(
                                             ptKohi2.FutansyaNo ?? string.Empty,
                                             ptKohi2.JyukyusyaNo ?? string.Empty,
                                             ptKohi2.HokenId,
@@ -95,7 +95,7 @@ namespace Infrastructure.Repositories
                                             ptKohi2.HokenSbtKbn,
                                             ptKohi2.Houbetu ?? string.Empty
                                         ) : null,
-                                Kohi3 = ptKohi3 != null ? new PtHokenPattern(
+                                Kohi3 = ptKohi3 != null ? new KohiInfModel(
                                                 ptKohi3.FutansyaNo ?? string.Empty,
                                                 ptKohi3.JyukyusyaNo ?? string.Empty,
                                                 ptKohi3.HokenId,
@@ -110,7 +110,7 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.HokenSbtKbn,
                                                 ptKohi3.Houbetu ?? string.Empty
                                             ) : null,
-                                Kohi4 = ptKohi4 != null ? new PtHokenPattern(
+                                Kohi4 = ptKohi4 != null ? new KohiInfModel(
                                                 ptKohi4.FutansyaNo ?? string.Empty,
                                                 ptKohi4.JyukyusyaNo ?? string.Empty,
                                                 ptKohi4.HokenId,
