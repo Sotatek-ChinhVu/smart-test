@@ -13,10 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.CalculationInf
         {
             Result = new Response<CalculationInfResponse>
             {
-                Data = new CalculationInfResponse()
-                {
-                    ListCalculations = outputData.ListCalculation
-                },
+                Data = new CalculationInfResponse(outputData.ListCalculation),
                 Status = (byte)outputData.Status
             };
 
