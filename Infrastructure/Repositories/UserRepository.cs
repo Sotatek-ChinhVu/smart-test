@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public UserRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 
         public void Create(UserMst user)
         {
-
+            throw new NotImplementedException();
         }
 
         public void Delete(UserId userId)

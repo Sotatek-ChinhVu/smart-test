@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Entity\Entity.csproj" />
+    <Compile Remove="CommonObject\**" />
+    <EmbeddedResource Remove="CommonObject\**" />
+    <None Remove="CommonObject\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Helper\Helper.csproj" />
   </ItemGroup>
 
@@ -15,10 +20,6 @@
     <Reference Include="Domain.Core">
       <HintPath>..\EmrCloudApi\lib\Domain.Core.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="CommonObject\" />
   </ItemGroup>
 
 </Project>
