@@ -9,10 +9,10 @@ namespace Infrastructure.Repositories
 {
     public class PatientInforRepository : IPatientInforRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public PatientInforModel? GetById(long ptId)
@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
             long ptNum = keyword.AsLong();
 
             var ptInfList = _tenantDataContext.PtInfs
-                .Where(p => p.IsDelete == 0 && p.PtNum == ptNum)
+                .Where(p => p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword))))
                 .ToList();
 
             return ptInfList.Select(p => ConvertToModel(p)).ToList();

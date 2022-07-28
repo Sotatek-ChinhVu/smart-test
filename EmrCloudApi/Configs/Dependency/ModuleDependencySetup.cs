@@ -53,10 +53,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
+            services.AddTransient<IInsuranceRepository, InsuranceRepository>();
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IKarteKbnMstRepository, KarteKbnMstRepository>();
+            services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -78,12 +80,15 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
 
+            //Insurance
+            busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
+            busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

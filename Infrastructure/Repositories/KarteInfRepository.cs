@@ -8,10 +8,10 @@ namespace Infrastructure.Repositories
 {
     public class KarteInfRepository : IKarteInfRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public KarteInfRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
