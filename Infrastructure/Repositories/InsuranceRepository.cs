@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.SikakuDate,
                                 ptHokenInf.KofuDate,
                                 ConfirmDate = GetConfirmDate(ptHokenPattern.HokenId, HokenGroupConstant.HokenGroupHokenPattern),
-                                Kohi1 = ptKohi1 != null ? new KohiInfModel(
+                                Kohi1 = ptKohi1 != null ? new PtHokenPattern(
                                         ptKohi1.FutansyaNo ?? string.Empty,
                                         ptKohi1.JyukyusyaNo ?? string.Empty,
                                         ptKohi1.HokenId,
@@ -80,7 +80,7 @@ namespace Infrastructure.Repositories
                                         ptKohi1.HokenSbtKbn,
                                         ptKohi1.Houbetu ?? string.Empty
                                     ) : null,
-                                Kohi2 = ptKohi2 != null ? new KohiInfModel(
+                                Kohi2 = ptKohi2 != null ? new PtHokenPattern(
                                             ptKohi2.FutansyaNo ?? string.Empty,
                                             ptKohi2.JyukyusyaNo ?? string.Empty,
                                             ptKohi2.HokenId,
@@ -95,7 +95,7 @@ namespace Infrastructure.Repositories
                                             ptKohi2.HokenSbtKbn,
                                             ptKohi2.Houbetu ?? string.Empty
                                         ) : null,
-                                Kohi3 = ptKohi3 != null ? new KohiInfModel(
+                                Kohi3 = ptKohi3 != null ? new PtHokenPattern(
                                                 ptKohi3.FutansyaNo ?? string.Empty,
                                                 ptKohi3.JyukyusyaNo ?? string.Empty,
                                                 ptKohi3.HokenId,
@@ -110,7 +110,7 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.HokenSbtKbn,
                                                 ptKohi3.Houbetu ?? string.Empty
                                             ) : null,
-                                Kohi4 = ptKohi4 != null ? new KohiInfModel(
+                                Kohi4 = ptKohi4 != null ? new PtHokenPattern(
                                                 ptKohi4.FutansyaNo ?? string.Empty,
                                                 ptKohi4.JyukyusyaNo ?? string.Empty,
                                                 ptKohi4.HokenId,
@@ -278,6 +278,40 @@ namespace Infrastructure.Repositories
             int result = 0;
             result = Int32.Parse(dateTime.ToString(format));
             return result;
+        }
+
+        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, bool allowDisplayDeleted)
+        {
+            bool isAllHoken = true;
+            bool isHoken = true;   //HokenKbn: 1,2
+            bool isJihi = true;     //HokenKbn: 0
+            bool isRosai = true;   //HokenKbn: 11,12,13 
+            bool isJibai = true;   //HokenKbn: 14
+
+            var result = _tenantDataContext.PtHokenPatterns.Where
+                                (
+                                    p => p.HpId == hpId && p.PtId == ptId && (p.IsDeleted == 0 || allowDisplayDeleted) &&
+                                        (
+                                            isAllHoken ||
+                                            isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
+                                            isJihi && p.HokenKbn == 0 ||
+                                            isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
+                                            isJibai && p.HokenKbn == 14)).ToList();
+
+            return result.Select(r => new InsuranceModel(
+                        r.HpId,
+                        r.PtId,
+                        r.HokenPid,
+                        r.SeqNo,
+                        r.HokenKbn,
+                        r.HokenSbtCd,
+                        r.HokenId,
+                        r.Kohi1Id,
+                        r.Kohi2Id,
+                        r.Kohi3Id,
+                        r.Kohi4Id,
+                        r.StartDate,
+                        r.EndDate)).ToList();
         }
     }
 }

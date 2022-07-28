@@ -70,6 +70,8 @@ namespace UseCase.MedicalExamination.GetHistory
             TantoId = tantoId;
             TantoName = tantoName;
             SanteiKbn = santeiKbn;
+            HokenGroups = hokenGroups;
+            KarteHistories = karteHistories;
         }
     }
 }

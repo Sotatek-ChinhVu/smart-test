@@ -1,4 +1,5 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.Insurance;
+using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
@@ -13,12 +14,14 @@ namespace Interactor.MedicalExamination
         private readonly IKarteInfRepository _karteInfRepository;
         private readonly IKarteKbnMstRepository _karteKbnRepository;
         private readonly IReceptionRepository _receptionRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository)
+        private readonly IInsuranceRepository _insuranceRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
             _karteKbnRepository = karteKbnRepository;
             _receptionRepository = receptionRepository;
+            _insuranceRepository = insuranceRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -43,41 +46,21 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidPageSize);
             }
-            #region hard value
-            bool isAllHoken = true;
-            bool isHoken = true;   //HokenKbn: 1,2
-            bool isJihi = true;     //HokenKbn: 0
-            bool isRosai = true;   //HokenKbn: 11,12,13 
-            bool isJibai = true;   //HokenKbn: 14
 
+            #region hard value
             int karteDeleteHistory = 1;
             bool allowDisplayDeleted = karteDeleteHistory > 0;
             #endregion
+
             var result = new GetMedicalExaminationHistoryOutputData();
             result.RaiinfList = new List<HistoryKarteOdrRaiinItem>();
-            var hpId = inputData.HpId;
 
-
-            var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId)
-                             (r =>
-                                 r.HpId == hpId && r.PtId == request.PtId && r.Status >= 3 &&
-                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))
-                             , cancellationToken).Result
-                        join ptHokenPattern in _ptHokenPatternRepositoryAsync.ListAsQueryableAsync
-                             (
-                                 p => p.HpId == hpId && p.PtId == request.PtId && (p.IsDeleted == 0 || allowDisplayDeleted) &&
-                                     (
-                                         isAllHoken ||
-                                         isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
-                                         isJihi && p.HokenKbn == 0 ||
-                                         isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
-                                         isJibai && p.HokenKbn == 14
-                                     )
-                             , cancellationToken).Result
+            var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
+                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             result.Total = query.Count();
-            var rainInfs = query.OrderByDescending(c => c.SinDate).Skip((request.PageIndex - 1) * request.PageSize).Take(request.PageSize).ToList();
+            var rainInfs = query.OrderByDescending(c => c.SinDate).Skip((inputData.PageIndex - 1) * inputData.PageSize).Take(inputData.PageSize).ToList();
 
 
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
@@ -91,10 +74,11 @@ namespace Interactor.MedicalExamination
               .GetList(inputData.PtId, inputData.HpId)
                 .ToList();
 
-            //Hash code because no have KaMst, HokenPattern which join with user to return data
-            var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(901139649, 20220401, 30, "Hoken Title", "2022/04/01", 1, 1, 1, "Test", 0, "Tantoname", 1, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+            foreach (var raiinInf in rainInfs)
+            {
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, raiinInf.HokenTitle, rainInfs.HokenRate, raiinInf.SyosaisinKbn, raiinInf.KaId, raiinInf.kaName, raiinInf.TantoId, raiinInf.tantoName, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
-            List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
+                List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
 
             historyKarteOdrRaiin.KarteHistories.AddRange(from karteKbn in allkarteKbns
                                                          where karteInfByRaiinNo.Any(c => c.KarteKbn == karteKbn.KarteKbn)
@@ -225,6 +209,7 @@ namespace Interactor.MedicalExamination
                 }
 
                 historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
+            }
             }
             historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
 
