@@ -12,7 +12,7 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public PatientInforModel? GetById(long ptId)

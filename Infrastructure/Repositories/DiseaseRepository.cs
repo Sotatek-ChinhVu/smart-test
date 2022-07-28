@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<PtDiseaseModel> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)

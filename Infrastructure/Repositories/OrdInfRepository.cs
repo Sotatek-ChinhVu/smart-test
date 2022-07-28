@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public OrdInfRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public void Create(OrdInfModel ord)

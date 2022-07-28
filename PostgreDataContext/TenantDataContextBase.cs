@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PostgreDataContext
 {
-    public class TenantDataContextBase : DbContext
+    public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
-        public TenantDataContextBase(string connectionString) => _connectionString = connectionString;
+        public TenantDataContext(string connectionString) => _connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
