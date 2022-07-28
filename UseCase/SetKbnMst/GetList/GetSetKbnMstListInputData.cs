@@ -12,9 +12,9 @@ namespace UseCase.SetKbnMst.GetList
             SetKbnTo = setKbnTo;
         }
 
-        public int HpId { get; set; }
-        public int SinDate { get; set; }
-        public int SetKbnFrom { get; set; }
-        public int SetKbnTo { get; set; }
+        public int HpId { get; private set; }
+        public int SinDate { get; private set; }
+        public int SetKbnFrom { get; private set; }
+        public int SetKbnTo { get; private set; }
     }
 }

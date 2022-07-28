@@ -9,6 +9,6 @@ namespace EmrCloudApi.Tenant.Responses.SetKbnMst
             Data = data;
         }
 
-        public List<GetSetKbnMstListOutputItem>? Data { get; set; }
+        public List<GetSetKbnMstListOutputItem>? Data { get; private set; }
     }
 }

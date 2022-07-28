@@ -14,13 +14,13 @@
             GenerationId = generationId;
         }
 
-        public int HpId { get; set; }
-        public int SetKbn { get; set; }
-        public int SetKbnEdaNo { get; set; }
-        public string SetKbnName { get; set; }
-        public int KaCd { get; set; }
-        public int DocCd { get; set; }
-        public int IsDeleted { get; set; }
-        public int GenerationId { get; set; }
+        public int HpId { get; private set; }
+        public int SetKbn { get; private set; }
+        public int SetKbnEdaNo { get; private set; }
+        public string SetKbnName { get; private set; }
+        public int KaCd { get; private set; }
+        public int DocCd { get; private set; }
+        public int IsDeleted { get; private set; }
+        public int GenerationId { get; private set; }
     }
 }
