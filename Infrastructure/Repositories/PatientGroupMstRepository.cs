@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories
 {
     public class PatientGroupMstRepository : IPatientGroupMstRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public PatientGroupMstRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();

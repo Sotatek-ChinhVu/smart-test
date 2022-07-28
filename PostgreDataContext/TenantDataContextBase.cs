@@ -3,15 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PostgreDataContext
 {
-    public class TenantDataContext : DbContext
+    public class TenantDataContextBase : DbContext
     {
-        private readonly string _connectionString = String.Empty;
-        public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
-        : base(options)
-        {
-        }
+        private readonly string _connectionString;
+        public TenantDataContextBase(string connectionString) => _connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -44,6 +39,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
             modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
             modelBuilder.Entity<PtInf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
+            modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

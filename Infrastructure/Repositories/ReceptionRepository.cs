@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories
 {
     public class ReceptionRepository : IReceptionRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public ReceptionRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();

@@ -15,7 +15,7 @@ namespace Infrastructure.Repositories
 {
     public class DiseaseRepository : IPtDiseaseRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetDataContext();
