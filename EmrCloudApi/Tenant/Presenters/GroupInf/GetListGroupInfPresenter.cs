@@ -13,10 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.GroupInf
         {
             Result = new Response<GetListGroupInfResponse>
             {
-                Data = new GetListGroupInfResponse()
-                {
-                    ListData = outputData.ListGroup
-                },
+                Data = new GetListGroupInfResponse(outputData.ListGroup),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
@@ -33,8 +30,6 @@ namespace EmrCloudApi.Tenant.Presenters.GroupInf
                 default:
                     break;
             }
-
-
         }
     }
 }

@@ -5,6 +5,11 @@ namespace EmrCloudApi.Tenant.Responses.GroupInf
 {
     public class GetListGroupInfResponse
     {
-        public List<GroupInfModel> ListData { get; set; } = new List<GroupInfModel>();
+        public GetListGroupInfResponse(List<GroupInfModel> listData)
+        {
+            ListData = listData;
+        }
+
+        public List<GroupInfModel> ListData { get; private set; }
     }
 }
