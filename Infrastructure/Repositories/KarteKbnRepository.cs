@@ -8,10 +8,10 @@ namespace Infrastructure.Repositories
 {
     public class KarteKbnRepository : IKarteKbnRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public KarteKbnRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<KarteKbnMst> GetList(int hpId, bool isDeleted)

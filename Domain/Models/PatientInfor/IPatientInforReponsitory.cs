@@ -10,5 +10,7 @@ namespace Domain.Models.PatientInfor
     public interface IPatientInforRepository
     {
         PatientInforModel? GetById(long ptId);
+
+        List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
     }
 }
