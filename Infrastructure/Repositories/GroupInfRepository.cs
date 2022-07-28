@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public GroupInfRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
