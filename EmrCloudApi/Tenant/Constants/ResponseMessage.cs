@@ -18,7 +18,8 @@
         //Patient Infor
         public static readonly string GetPatientInforNotExist = "Not exist data!";
         public static readonly string GetPatientByIdSuccessed = "Successed";
-        public static readonly string GetPatientByIdInvalidId = "Invalid PtId";
+        public static readonly string GetPatientByIdInvalidHpId = "Invalid HpId";
+        public static readonly string GetPatientByIdInvalidPtId = "Invalid PtId";
 
         //Group Infor
         public static readonly string GetGroupInfInvalidHpId = "Invalid HpId";
