@@ -6,10 +6,10 @@ namespace Infrastructure.Repositories
 {
     public class SetGenerationMstRepository : ISetGenerationMstRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public SetGenerationMstRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)

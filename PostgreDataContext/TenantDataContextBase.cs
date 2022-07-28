@@ -5,13 +5,8 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
-        private readonly string _connectionString = String.Empty;
+        private readonly string _connectionString;
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
-        : base(options)
-        {
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +32,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<ConversionItemInf>().HasKey(b => new { b.HpId, b.SourceItemCd, b.DestItemCd });
             modelBuilder.Entity<DefHokenNo>().HasKey(b => new { b.HpId, b.Digit1, b.Digit2, b.SeqNo });
             modelBuilder.Entity<DensiHaihanCustom>().HasKey(b => new { b.Id, b.HpId, b.ItemCd1, b.SeqNo, b.UserSetting });
+            modelBuilder.Entity<PtByomei>().HasKey(table => new { table.HpId, table.PtId, table.Id });
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
@@ -45,6 +41,14 @@ namespace PostgreDataContext
             modelBuilder.Entity<SetMst>().HasKey(o => new { o.HpId, o.SetCd });
             modelBuilder.Entity<SetKbnMst>().HasKey(o => new { o.HpId, o.SetKbn, o.SetKbnEdaNo, o.GenerationId });
             modelBuilder.Entity<SetGenerationMst>().HasKey(o => new { o.HpId, o.GenerationId });
+            modelBuilder.Entity<PtHokenPattern>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo, r.HokenPid });
+            modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
+            modelBuilder.Entity<PtInf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
+            modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
+            modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
