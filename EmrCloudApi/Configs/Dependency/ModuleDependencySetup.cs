@@ -29,6 +29,9 @@ using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
 using Interactor.RaiinKubunMst;
+using UseCase.GroupInf.GetList;
+using Interactor.GrpInf;
+using Domain.Models.GroupInf;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.Reception.UpdateStaticCell;
 using Domain.Models.RaiinCmtInf;
@@ -37,6 +40,9 @@ using Domain.Models.KaMst;
 using UseCase.RaiinKbnInf.Upsert;
 using Interactor.RaiinKbnInf;
 using Domain.Models.RaiinKbnInf;
+using UseCase.CalculationInf;
+using Interactor.CalculationInf;
+using Domain.CalculationInf;
 using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
@@ -72,6 +78,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
             services.AddTransient<IKaMstRepository, KaMstRepository>();
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
+            services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
+            services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
         }
 
@@ -110,6 +118,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             // RaiinKbnInf
             busBuilder.RegisterUseCase<UpsertRaiinKbnInfInputData, UpsertRaiinKbnInfInteractor>();
+            //Calculation Inf
+            busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
+            //Group Inf
+            busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
