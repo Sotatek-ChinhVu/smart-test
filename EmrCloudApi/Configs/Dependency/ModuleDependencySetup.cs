@@ -34,6 +34,9 @@ using Domain.Models.KaMst;
 using UseCase.RaiinKbnInf.Upsert;
 using Interactor.RaiinKbnInf;
 using Domain.Models.RaiinKbnInf;
+using UseCase.PatientGroupMst.GetList;
+using Interactor.PatientGroupMst;
+using Domain.Models.PatientGroupMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -65,6 +68,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
             services.AddTransient<IKaMstRepository, KaMstRepository>();
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
+            services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -93,6 +97,7 @@ namespace EmrCloudApi.Configs.Dependency
             // PatientInfor
             busBuilder.RegisterUseCase<GetPatientInforByIdInputData, GetPatientInforByIdInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
+            busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

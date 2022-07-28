@@ -1,9 +1,12 @@
-﻿using EmrCloudApi.Tenant.Presenters.PatientInformation;
+﻿using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 
@@ -41,6 +44,18 @@ namespace EmrCloudApi.Tenant.Controllers
             present.Complete(output);
 
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
+        }
+
+        [HttpGet("GetPatientGroupMst")]
+        public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
+        {
+            var input = new GetListPatientGroupMstInputData();
+            var output = _bus.Handle(input);
+
+            var presenter = new GetListPatientGroupMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetListPatientGroupMstResponse>>(presenter.Result);
         }
     }
 }
