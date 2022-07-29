@@ -47,4 +47,23 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
 
         _tenantDataContext.SaveChanges();
     }
+
+    public bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId)
+    {
+        var raiinKbnInf = _tenantDataContext.RaiinKbnInfs.FirstOrDefault(r =>
+            r.HpId == hpId
+            && r.PtId == ptId
+            && r.SinDate == sinDate
+            && r.RaiinNo == raiinNo
+            && r.GrpId == grpId
+            && r.IsDelete == DeleteTypes.None);
+        if (raiinKbnInf is null)
+        {
+            return false;
+        }
+
+        raiinKbnInf.IsDelete = DeleteTypes.Deleted;
+        _tenantDataContext.SaveChanges();
+        return true;
+    }
 }

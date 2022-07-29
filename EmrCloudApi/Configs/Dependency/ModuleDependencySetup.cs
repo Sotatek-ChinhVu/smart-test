@@ -46,6 +46,7 @@ using Domain.CalculationInf;
 using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
+using UseCase.Reception.UpdateDynamicCell;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -102,6 +103,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
+            busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();

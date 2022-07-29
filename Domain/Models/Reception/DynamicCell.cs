@@ -1,10 +1,13 @@
-﻿namespace Domain.Models.Reception;
+﻿using Helper.Constants;
+
+namespace Domain.Models.Reception;
 
 public class DynamicCell
 {
     public DynamicCell(int grpId)
     {
         GrpId = grpId;
+        KbnCd = CommonConstants.KbnCdDeleteFlag;
     }
 
     public DynamicCell(int grpId, int kbnCd, string kbnName, string colorCd)
