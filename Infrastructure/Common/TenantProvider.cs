@@ -19,7 +19,7 @@ namespace Infrastructure.CommonDB
 
         public string GetConnectionString()
         {
-            return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+            return "host=192.168.1.70;port=5432;database=EmrYamamoto;user id=postgres;password=Emr!23";
         }
 
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
