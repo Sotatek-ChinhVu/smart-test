@@ -18,8 +18,8 @@ public class DynamicCell
         ColorCd = colorCd;
     }
 
-    public int GrpId { get; set; }
-    public int KbnCd { get; set; }
-    public string KbnName { get; set; } = string.Empty;
-    public string ColorCd { get; set; } = string.Empty;
+    public int GrpId { get; private set; }
+    public int KbnCd { get; private set; }
+    public string KbnName { get; private set; } = string.Empty;
+    public string ColorCd { get; private set; } = string.Empty;
 }

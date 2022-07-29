@@ -3,5 +3,5 @@
 public interface IRaiinKbnInfRepository
 {
     void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd);
-    public bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId);
+    bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId);
 }

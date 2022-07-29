@@ -55,8 +55,8 @@ public class ReceptionRowModel
         get => RaiinState.VisitStatus[Status];
     }
 
-    public long PtId { get; set; }
-    public int SinDate { get; set; }
+    public long PtId { get; private set; }
+    public int SinDate { get; private set; }
     public long RaiinNo { get; private set; }
     // 順番
     public int UketukeNo { get; private set; }
