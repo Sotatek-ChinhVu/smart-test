@@ -10,7 +10,10 @@ namespace PostgreDataContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.UseNpgsql(_connectionString, buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
