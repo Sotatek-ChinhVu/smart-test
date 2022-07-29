@@ -34,8 +34,10 @@ public class VisitingController : ControllerBase
     }
 
     [HttpPut(ApiPath.Update + "StaticCell")]
-    public ActionResult<Response<bool>> UpdateStaticCell([FromBody] UpdateReceptionStaticCellInputData input)
+    public ActionResult<Response<UpdateReceptionStaticCellResponse>> UpdateStaticCell([FromBody] UpdateReceptionStaticCellRequest req)
     {
+        var input = new UpdateReceptionStaticCellInputData(
+            req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue);
         var output = _bus.Handle(input);
         var presenter = new UpdateReceptionStaticCellPresenter();
         presenter.Complete(output);

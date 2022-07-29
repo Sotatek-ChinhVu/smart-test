@@ -15,7 +15,7 @@ public class UpdateReceptionStaticCellOutputData : IOutputData
         Status = 1;
     }
 
-    public int Status { get; set; } = 0;
-    public string Message { get; set; } = string.Empty;
-    public bool Success { get; set; }
+    public int Status { get; private set; } = 0;
+    public string Message { get; private set; } = string.Empty;
+    public bool Success { get; private set; }
 }

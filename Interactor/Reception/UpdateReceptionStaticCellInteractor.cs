@@ -72,7 +72,6 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 {
                     return false;
                 }
-
                 return _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbtKbnId);
             case nameof(ReceptionRowModel.TantoName):
                 var tantoId = _userRepository.GetUserIdBySname(input.CellValue);
@@ -80,7 +79,6 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 {
                     return false;
                 }
-
                 return _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tantoId);
             case nameof(ReceptionRowModel.KaName):
                 var kaId = _kaMstRepository.GetKaIdByKaSname(input.CellValue);
@@ -88,7 +86,6 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 {
                     return false;
                 }
-
                 return _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, kaId);
             // Update or insert RaiinCmtInf
             case nameof(ReceptionRowModel.RaiinCmt):
