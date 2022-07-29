@@ -2,5 +2,10 @@
 
 public class UpdateReceptionDynamicCellResponse
 {
-    public bool Success { get; set; }
+    public UpdateReceptionDynamicCellResponse(bool success)
+    {
+        Success = success;
+    }
+
+    public bool Success { get; private set; }
 }

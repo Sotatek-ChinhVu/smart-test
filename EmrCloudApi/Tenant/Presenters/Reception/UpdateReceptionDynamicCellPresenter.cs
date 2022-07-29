@@ -10,8 +10,19 @@ public class UpdateReceptionDynamicCellPresenter : IUpdateReceptionDynamicCellOu
 
     public void Complete(UpdateReceptionDynamicCellOutputData output)
     {
-        Result.Data = new UpdateReceptionDynamicCellResponse { Success = output.Success };
-        Result.Message = output.Message;
-        Result.Status = output.Status;
+        Result.Data = new UpdateReceptionDynamicCellResponse(output.Status == UpdateReceptionDynamicCellStatus.Success);
+        Result.Message = GetMessage(output.Status);
+        Result.Status = (int)output.Status;
     }
+
+    private string GetMessage(UpdateReceptionDynamicCellStatus status) => status switch
+    {
+        UpdateReceptionDynamicCellStatus.Success => "Cell value updated successfully.",
+        UpdateReceptionDynamicCellStatus.InvalidHpId => "HpId must be greater than 0.",
+        UpdateReceptionDynamicCellStatus.InvalidSinDate => "SinDate must be greater than 0.",
+        UpdateReceptionDynamicCellStatus.InvalidRaiinNo => "RaiinNo must be greater than 0.",
+        UpdateReceptionDynamicCellStatus.InvalidPtId => "PtId must be greater than 0.",
+        UpdateReceptionDynamicCellStatus.InvalidGrpId => "GrpId cannot be negative.",
+        _ => string.Empty
+    };
 }

@@ -4,18 +4,10 @@ namespace UseCase.Reception.UpdateDynamicCell;
 
 public class UpdateReceptionDynamicCellOutputData : IOutputData
 {
-    public UpdateReceptionDynamicCellOutputData(string message)
+    public UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus status)
     {
-        Message = message;
+        Status = status;
     }
 
-    public UpdateReceptionDynamicCellOutputData(bool success)
-    {
-        Success = success;
-        Status = 1;
-    }
-
-    public int Status { get; private set; } = 0;
-    public string Message { get; private set; } = string.Empty;
-    public bool Success { get; private set; }
+    public UpdateReceptionDynamicCellStatus Status { get; private set; }
 }

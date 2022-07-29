@@ -4,18 +4,10 @@ namespace UseCase.Reception.UpdateStaticCell;
 
 public class UpdateReceptionStaticCellOutputData : IOutputData
 {
-    public UpdateReceptionStaticCellOutputData(string message)
+    public UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus status)
     {
-        Message = message;
+        Status = status;
     }
 
-    public UpdateReceptionStaticCellOutputData(bool success)
-    {
-        Success = success;
-        Status = 1;
-    }
-
-    public int Status { get; private set; } = 0;
-    public string Message { get; private set; } = string.Empty;
-    public bool Success { get; private set; }
+    public UpdateReceptionStaticCellStatus Status { get; private set; }
 }

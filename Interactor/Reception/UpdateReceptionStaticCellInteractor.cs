@@ -33,23 +33,23 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
     {
         if (input.HpId <= 0)
         {
-            return new UpdateReceptionStaticCellOutputData($"{nameof(input.HpId)} must be greater than 0.");
+            return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidHpId);
         }
         if (input.SinDate <= 0)
         {
-            return new UpdateReceptionStaticCellOutputData($"{nameof(input.SinDate)} must be greater than 0.");
+            return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidSinDate);
         }
         if (input.RaiinNo <= 0)
         {
-            return new UpdateReceptionStaticCellOutputData($"{nameof(input.RaiinNo)} must be greater than 0.");
+            return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidRaiinNo);
         }
         if (input.PtId <= 0)
         {
-            return new UpdateReceptionStaticCellOutputData($"{nameof(input.PtId)} must be greater than 0.");
+            return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidPtId);
         }
 
-        var success = UpdateStaticCell(input);
-        return new UpdateReceptionStaticCellOutputData(success);
+        var status = UpdateStaticCell(input) ? UpdateReceptionStaticCellStatus.Success : UpdateReceptionStaticCellStatus.UnknownError;
+        return new UpdateReceptionStaticCellOutputData(status);
     }
 
     private bool UpdateStaticCell(UpdateReceptionStaticCellInputData input)

@@ -17,27 +17,27 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
     {
         if (input.HpId <= 0)
         {
-            return new UpdateReceptionDynamicCellOutputData($"{nameof(input.HpId)} must be greater than 0.");
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidHpId);
         }
         if (input.SinDate <= 0)
         {
-            return new UpdateReceptionDynamicCellOutputData($"{nameof(input.SinDate)} must be greater than 0.");
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidSinDate);
         }
         if (input.RaiinNo <= 0)
         {
-            return new UpdateReceptionDynamicCellOutputData($"{nameof(input.RaiinNo)} must be greater than 0.");
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidRaiinNo);
         }
         if (input.PtId <= 0)
         {
-            return new UpdateReceptionDynamicCellOutputData($"{nameof(input.PtId)} must be greater than 0.");
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidPtId);
         }
         if (input.GrpId < 0)
         {
-            return new UpdateReceptionDynamicCellOutputData($"{nameof(input.GrpId)} cannot be negative.");
+            return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.InvalidGrpId);
         }
 
         UpdateDynamicCell(input);
-        return new UpdateReceptionDynamicCellOutputData(true);
+        return new UpdateReceptionDynamicCellOutputData(UpdateReceptionDynamicCellStatus.Success);
     }
 
     private void UpdateDynamicCell(UpdateReceptionDynamicCellInputData input)
