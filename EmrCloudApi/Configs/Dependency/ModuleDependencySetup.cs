@@ -37,8 +37,6 @@ using UseCase.Reception.UpdateStaticCell;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.KaMst;
-using UseCase.RaiinKbnInf.Upsert;
-using Interactor.RaiinKbnInf;
 using Domain.Models.RaiinKbnInf;
 using UseCase.CalculationInf;
 using Interactor.CalculationInf;
@@ -118,8 +116,6 @@ namespace EmrCloudApi.Configs.Dependency
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
 
-            // RaiinKbnInf
-            busBuilder.RegisterUseCase<UpsertRaiinKbnInfInputData, UpsertRaiinKbnInfInteractor>();
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
