@@ -37,7 +37,22 @@ namespace Infrastructure.Repositories
 
         private PatientInforModel ConvertToModel(PtInf itemData)
         {
-            var ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
+            //Get ptMemo
+            string memo = string.Empty;
+            PtMemo? ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
+            if (ptMemo != null)
+            {
+                memo = ptMemo.Memo ?? string.Empty;
+            }
+
+            //Get lastVisitDate
+            int lastVisitDate = 0;
+            RaiinInf? raiinInf = _tenantDataContext.RaiinInfs.Where(r => r.PtId == itemData.PtId).OrderByDescending(r => r.SinDate).FirstOrDefault();
+            if (raiinInf != null)
+            {
+                lastVisitDate = raiinInf.SinDate;
+            }
+
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
@@ -76,8 +91,8 @@ namespace Infrastructure.Repositories
                 itemData.PrimaryDoctor,
                 itemData.IsTester,
                 itemData.MainHokenPid,
-                ptMemo != null ? ptMemo.Memo : string.Empty
-                );
+                memo,
+                lastVisitDate);
         }
     }
 }

@@ -23,6 +23,83 @@ namespace Helper.Common
             }
         }
 
+        //表示用西暦(yyyy/mm/dd)を西暦に変換
+        public static int ShowSDateToSDate(string Ymd)
+        {
+            int Result = 0;
+            // Get current year, month, day
+            DateTime currentDate = DateTime.Now;
+
+            int numberOfSeparators = Ymd.Count(c => c == '/');
+            if (numberOfSeparators == 0)
+            {
+                // parameter does not include / character
+                switch (Ymd.Length)
+                {
+                    case 1:
+                    case 2:
+                        Ymd = Ymd.AsInteger().ToString("D2");
+                        Ymd = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + Ymd;
+                        break;
+                    case 3:
+                    case 4:
+                        Ymd = Ymd.AsInteger().ToString("D4");
+                        Ymd = currentDate.Year + "/" + Ymd.Substring(0, 2) + "/" + Ymd.Substring(2);
+                        break;
+                    case 8:
+                        Ymd = Ymd.Substring(0, 4) + "/" + Ymd.Substring(4, 2) + "/" + Ymd.Substring(6);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (numberOfSeparators == 1)
+            {
+                string temp = DateTime.Now.Year.AsString() + "/";
+                int firstLocation = Ymd.IndexOf('/');
+
+                temp += Ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
+                temp += Ymd.Substring(firstLocation + 1).PadLeft(2, '0');
+
+                Ymd = temp;
+            }
+
+            if (numberOfSeparators == 2)
+            {
+                int firstLocation = Ymd.IndexOf('/');
+
+                string temp = Ymd.Substring(0, firstLocation) + "/";
+                string remainTemp = Ymd.Substring(firstLocation + 1);
+
+                int secondLocation = remainTemp.IndexOf('/');
+                temp += remainTemp.Substring(0, secondLocation).PadLeft(2, '0') + "/";
+                temp += remainTemp.Substring(secondLocation + 1).PadLeft(2, '0');
+
+                Ymd = temp;
+            }
+
+
+
+            bool parseResult = DateTime.TryParseExact(Ymd, "yyyy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult);
+
+            if (!parseResult)
+            {
+                return 0;
+            }
+
+            Result = dtResult.ToString("yyyyMMdd").AsInteger();
+
+            // Try to convert to wareki
+            string wareki = SDateToShowWDate(Result);
+            if (string.IsNullOrEmpty(wareki))
+            {
+                return 0;
+            }
+
+            return Result;
+        }
+
         /// <summary>
         /// format date string (e.g:19911224) to age in format: 
         /// [a] years old [b] month(s) [c] day(s)
