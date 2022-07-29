@@ -1,4 +1,4 @@
-﻿namespace Domain.Constant;
+﻿namespace Helper.Constants;
 
 public static class CmtKbns
 {

@@ -2,7 +2,7 @@ using Domain.Common;
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
-using Infrastructure.Constants;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;

@@ -1,6 +1,6 @@
 ﻿using Domain.Common;
-using Domain.Constant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extendsions;
 
 namespace Domain.Models.Reception;

@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Constants;
+﻿namespace Helper.Constants;
 
 public static class FunctionCode
 {

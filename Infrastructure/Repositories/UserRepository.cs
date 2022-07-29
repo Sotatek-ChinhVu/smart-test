@@ -1,5 +1,5 @@
-﻿using Domain.Constant;
-using Domain.Models.User;
+﻿using Domain.Models.User;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;

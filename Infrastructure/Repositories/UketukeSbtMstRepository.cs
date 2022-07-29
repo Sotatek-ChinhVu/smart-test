@@ -1,7 +1,6 @@
-﻿using Domain.Constant;
-using Domain.Models.UketukeSbtMst;
+﻿using Domain.Models.UketukeSbtMst;
+using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;

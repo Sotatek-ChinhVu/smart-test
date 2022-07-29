@@ -1,6 +1,6 @@
 ﻿using Domain.Models.RaiinCmtInf;
 using Entity.Tenant;
-using Infrastructure.Constants;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

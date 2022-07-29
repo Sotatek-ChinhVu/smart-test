@@ -1,9 +1,9 @@
-﻿using Domain.Constant;
-using Domain.Models.KaMst;
+﻿using Domain.Models.KaMst;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.Reception;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
+using Helper.Constants;
 using UseCase.Reception.UpdateStaticCell;
 
 namespace Interactor.Reception;

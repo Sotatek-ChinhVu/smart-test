@@ -1,7 +1,6 @@
-﻿using Domain.Constant;
-using Domain.Models.KaMst;
+﻿using Domain.Models.KaMst;
+using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
