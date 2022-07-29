@@ -14,9 +14,11 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
-    public VisitingController(UseCaseBus bus)
+    private readonly ILogger<VisitingController> _logger;
+    public VisitingController(UseCaseBus bus, ILogger<VisitingController> logger)
     {
         _bus = bus;
+        _logger = logger;
     }
 
     [HttpGet(ApiPath.GetList)]
