@@ -1,5 +1,6 @@
 ﻿using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,16 @@ namespace Infrastructure.CommonDB
     public class TenantProvider : ITenantProvider
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public TenantProvider(IHttpContextAccessor httpContextAccessor)
+        private readonly IConfiguration _configuration;
+        public TenantProvider(IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         public string GetConnectionString()
         {
-            return "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+            return _configuration["TenantDbSample"];
         }
 
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
