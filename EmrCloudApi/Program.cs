@@ -4,6 +4,13 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Add config from json file
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("env.json", optional: true, reloadOnChange: true)
+          .AddJsonFile($"env.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true, true);
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers();
