@@ -74,10 +74,23 @@ namespace Interactor.MedicalExamination
             List<OrdInfModel> allOdrInfs = _ordInfRepository
               .GetList(inputData.PtId, inputData.HpId)
                 .ToList();
+            var doctors = _userRepository.GetAllDoctors();
+            var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var hokenFirst = hokens.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, raiinInf.TantoId, raiinInf.HokenPid, raiinInf.SinDate, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+
+                //if (raiin.HokenGroups != null)
+                //{
+                //    foreach (var grpHoken in raiin.HokenGroups)
+                //    {
+                //        grpHoken.HokenTitle = hokens.FirstOrDefault(c => c.HokenId == grpHoken.HokenPid)?.HokenPatternName;
+                //    }
+                //}
+                var doctorFirst = doctors.FirstOrDefault(c => c.UserId == raiinInf.TantoId);
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, String.Empty, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
 
@@ -112,7 +125,8 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, String.Empty, new List<GroupOdrGHistoryItem>());
+                    var hoken = hokens.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
                     .GroupBy(odr => new
@@ -215,24 +229,13 @@ namespace Interactor.MedicalExamination
             }
 
             //var kaMsts = Mediator.Send(new GetAllKaMstsQuery() { }).Result.Data;
-            var doctors = _userRepository.;
-            var hokens = Mediator.Send(new GetFindPtHokenPatternList() { HpId = request.HpId, SinDay = request.SinDate, PtId = request.PtId, IsGetDeleted = true }).Result;
-            if (history != null && history.RaiinfList != null)
-            {
-                foreach (var raiin in history.RaiinfList)
-                {
-                    raiin.KaName = kaMsts.FirstOrDefault(c => c.KaId == raiin.KaId)?.KaSname;
-                    raiin.TantoName = doctors.FirstOrDefault(c => c.UserId == raiin.TantoId)?.Sname;
-                    raiin.HokenTitle = hokens.FirstOrDefault(c => c.HokenId == raiin.HokenPid)?.HokenPatternName;
-                    raiin.HokenRate = hokens.FirstOrDefault(c => c.HokenId == raiin.HokenPid)?.DisplayRateOnly;
 
-                    if (raiin.HokenGroups != null)
-                    {
-                        foreach (var grpHoken in raiin.HokenGroups)
-                        {
-                            grpHoken.HokenTitle = hokens.FirstOrDefault(c => c.HokenId == grpHoken.HokenPid)?.HokenPatternName;
-                        }
-                    }
+            if (historyKarteOdrRaiins != null)
+            {
+                foreach (var raiin in historyKarteOdrRaiins)
+                {
+                    //raiin.KaName = kaMsts.FirstOrDefault(c => c.KaId == raiin.KaId)?.KaSname;
+
                 }
             }
 

@@ -8,16 +8,16 @@ namespace Domain.Models.User
 {
     public interface IUserRepository
     {
-        void Create(UserMst user);
+        void Create(UserMstModel user);
 
-        UserMst Read(UserId userId);
+        UserMstModel Read(int userId);
 
-        void Update(UserMst user);
+        void Update(UserMstModel user);
 
-        void Delete(UserId userId);
+        void Delete(int userId);
 
-        IEnumerable<UserMst> GetAll();
-        IEnumerable<UserMst> GetAllDoctors();
+        IEnumerable<UserMstModel> GetAll();
+        IEnumerable<UserMstModel> GetAllDoctors();
 
         int MaxUserId();
     }

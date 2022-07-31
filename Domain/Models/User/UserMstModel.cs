@@ -1,11 +1,15 @@
-﻿using Domain.Models.User;
-using UseCase.Core.Sync.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Domain.Models.User;
 
-namespace UseCase.User.Create
+namespace Domain.Models.User
 {
-    public class CreateUserInputData : IInputData<CreateUserOutputData>
+    public class UserMstModel
     {
-        public CreateUserInputData(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName)
+        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName)
         {
             HpId = hpId;
             Id = id;
@@ -45,11 +49,6 @@ namespace UseCase.User.Create
         public int IsDeleted { get; set; }
         public string RenkeiCd1 { get; set; }
         public string DrName { get; set; }
-
-
-        public UserMstModel GenerateUserModel(int id)
-        {
-            return new UserMstModel(HpId, id, UserId, JobCd, ManagerKbn, KaId, KanaName, Name, Sname, LoginId, LoginPass, MayakuLicenseNo, StartDate, EndDate, SortNo, IsDeleted, RenkeiCd1, DrName);
-        }
+       
     }
 }

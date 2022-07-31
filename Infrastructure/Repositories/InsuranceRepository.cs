@@ -78,7 +78,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1.KofuDate,
                                         ptKohi1.TokusyuNo ?? string.Empty,
                                         ptKohi1.HokenSbtKbn,
-                                        ptKohi1.Houbetu ?? string.Empty
+                                        ptKohi1.Houbetu ?? string.Empty,
+                                         _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi1.HokenNo && ptKohi1.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate))?.SingleOrDefault()
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
                                             ptKohi2.FutansyaNo ?? string.Empty,
@@ -93,7 +94,8 @@ namespace Infrastructure.Repositories
                                             ptKohi2.KofuDate,
                                             ptKohi2.TokusyuNo ?? string.Empty,
                                             ptKohi2.HokenSbtKbn,
-                                            ptKohi2.Houbetu ?? string.Empty
+                                            ptKohi2.Houbetu ?? string.Empty,
+                                            _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi2.HokenNo && ptKohi2.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate))?.SingleOrDefault()
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
                                                 ptKohi3.FutansyaNo ?? string.Empty,
@@ -108,7 +110,8 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.KofuDate,
                                                 ptKohi3.TokusyuNo ?? string.Empty,
                                                 ptKohi3.HokenSbtKbn,
-                                                ptKohi3.Houbetu ?? string.Empty
+                                                ptKohi3.Houbetu ?? string.Empty,
+                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi3.HokenNo && ptKohi3.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate))?.SingleOrDefault()
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
                                                 ptKohi4.FutansyaNo ?? string.Empty,
@@ -123,7 +126,8 @@ namespace Infrastructure.Repositories
                                                 ptKohi4.KofuDate,
                                                 ptKohi4.TokusyuNo ?? string.Empty,
                                                 ptKohi4.HokenSbtKbn,
-                                                ptKohi4.Houbetu ?? string.Empty
+                                                ptKohi4.Houbetu ?? string.Empty,
+                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi4.HokenNo && ptKohi4.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate))?.SingleOrDefault()
                                             ) : null,
                                 ptHokenInf.KogakuKbn,
                                 ptHokenInf.TasukaiYm,
@@ -163,11 +167,14 @@ namespace Infrastructure.Repositories
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
+                    bool isHokenMstNotNull = true;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
+                    var ptInf = _tenantDataContext.PtInfs.Where(pt => pt.HpId == item.HpId && pt.PtId == item.PtId && pt.IsDelete == 0).FirstOrDefault();
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
                         futanRate = hokenMst.FutanRate;
+                        isHokenMstNotNull = false;
                     }
 
                     int rousaiTenkiSinkei = 0;
@@ -242,8 +249,10 @@ namespace Infrastructure.Repositories
                         rousaiTenkiEndDate,
                         houbetu,
                         futanRate,
-                        sinDate
-                    );
+                        sinDate,
+                        isHokenMstNotNull,
+                        ptInf?.Birthday == null ? 0 : ptInf.Birthday
+                        );
 
                     result.Add(insuranceModel);
                 }

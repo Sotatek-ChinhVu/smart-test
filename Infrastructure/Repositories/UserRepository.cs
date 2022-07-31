@@ -1,12 +1,8 @@
 ﻿using Domain.Models.User;
+using Entity.Tenant;
 using Infrastructure.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -18,23 +14,23 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public void Create(UserMst user)
+        public void Create(UserMstModel user)
         {
             throw new NotImplementedException();
         }
 
-        public void Delete(UserId userId)
+        public void Delete(int userId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserMst> GetAll()
+        public IEnumerable<UserMstModel> GetAll()
         {
-            return _tenantDataContext.UserMsts.Select(u => new UserMst(u.UserId, u.Name)).ToList();
-        }   
-        public IEnumerable<UserMst> GetAllDoctors()
+            return _tenantDataContext.UserMsts.Select(u => ConvertToModel(u)).ToList();
+        }
+        public IEnumerable<UserMstModel> GetAllDoctors()
         {
-            return _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).Select(u => new UserMst(u.UserId, u.Name)).OrderBy(i => i.SortNo).ToList();
+            return _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo).ToList();
         }
 
         public int MaxUserId()
@@ -42,14 +38,39 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.UserMsts.Max(u => u.UserId);
         }
 
-        public UserMst Read(UserId userId)
+        public UserMstModel Read(int userId)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(UserMst user)
+        public void Update(UserMstModel user)
         {
             throw new NotImplementedException();
         }
+
+        private UserMstModel ConvertToModel(UserMst itemData)
+        {
+            return new UserMstModel(
+                itemData.HpId,
+                itemData.Id,
+                itemData.UserId,
+                itemData.JobCd,
+                itemData.ManagerKbn,
+                itemData.KaId,
+                itemData.KanaName,
+                itemData.Name,
+                itemData.Sname,
+                itemData.LoginId,
+                itemData.LoginPass,
+                itemData.MayakuLicenseNo,
+                itemData.StartDate,
+                itemData.EndDate,
+                itemData.SortNo,
+                itemData.IsDeleted,
+                itemData.RenkeiCd1,
+                itemData.DrName
+              );
+        }
+
     }
 }
