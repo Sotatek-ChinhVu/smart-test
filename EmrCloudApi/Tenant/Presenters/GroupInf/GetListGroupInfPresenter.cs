@@ -19,13 +19,13 @@ namespace EmrCloudApi.Tenant.Presenters.GroupInf
             switch (outputData.Status)
             {
                 case GetListGroupInfSatus.Successed:
-                    Result.Message = ResponseMessage.GetGroupInfSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     break;
                 case GetListGroupInfSatus.InValidHpId:
-                    Result.Message = ResponseMessage.GetGroupInfInvalidHpId;
+                    Result.Message = ResponseMessage.InvalidHpId;
                     break;
                 case GetListGroupInfSatus.InvalidPtId:
-                    Result.Message = ResponseMessage.GetGroupInfInvalidPtId;
+                    Result.Message = ResponseMessage.InvalidPtId;
                     break;
                 default:
                     break;
