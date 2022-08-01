@@ -19,7 +19,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
                     UserList = outputData.UserList
                 },
                 Status = 1,
-                Message = ResponseMessage.GetUserListSuccessed
+                Message = ResponseMessage.Success
             };
         }
     }

@@ -39,7 +39,7 @@ namespace Entity.Tenant
 		/// メモ
 		/// </summary>
 		[Column(name: "MEMO")]
-        public string Memo { get; set; } = string.Empty;
+        public string? Memo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 削除区分

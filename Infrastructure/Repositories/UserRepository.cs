@@ -1,7 +1,9 @@
 ﻿using Domain.Models.User;
 using Entity.Tenant;
-using Infrastructure.Constants;
+using Helper.Constant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -32,6 +34,13 @@ namespace Infrastructure.Repositories
         {
             var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).ToList();
             return result.Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo);
+        }
+
+        public UserMstModel? GetByUserId(int userId)
+        {
+            var entity = _tenantDataContext.UserMsts
+                .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            return entity is null ? null : ConvertToModel(entity);
         }
 
         public int MaxUserId()

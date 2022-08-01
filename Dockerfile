@@ -27,4 +27,3 @@ COPY --from=build-env /app/EmrCloudApi/out/ .
 ENV ASPNETCORE_URLS=http://+:5286
 EXPOSE 5286
 ENTRYPOINT ["dotnet", "EmrCloudApi.dll"]
-

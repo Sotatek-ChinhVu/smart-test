@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.KaMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
@@ -17,7 +18,8 @@ namespace Interactor.MedicalExamination
         private readonly IReceptionRepository _receptionRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository)
+        private readonly IKaMstRepository _kaRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -25,6 +27,7 @@ namespace Interactor.MedicalExamination
             _receptionRepository = receptionRepository;
             _insuranceRepository = insuranceRepository;
             _userRepository = userRepository;
+            _kaRepository = kaRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -81,7 +84,9 @@ namespace Interactor.MedicalExamination
             foreach (var raiinInf in rainInfs)
             {
                 var doctorFirst = doctors.FirstOrDefault(c => c.UserId == raiinInf.TantoId);
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, String.Empty, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+                var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
+
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
@@ -219,17 +224,6 @@ namespace Interactor.MedicalExamination
                 }
                 historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
             }
-
-            //var kaMsts = Mediator.Send(new GetAllKaMstsQuery() { }).Result.Data;
-
-            //if (historyKarteOdrRaiins != null)
-            //{
-            //    foreach (var raiin in historyKarteOdrRaiins)
-            //    {
-            //        //raiin.KaName = kaMsts.FirstOrDefault(c => c.KaId == raiin.KaId)?.KaSname;
-
-            //    }
-            //}
 
             var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed);
 

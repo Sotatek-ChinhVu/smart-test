@@ -20,5 +20,6 @@ namespace Domain.Models.User
         IEnumerable<UserMstModel> GetAllDoctors();
 
         int MaxUserId();
+        UserMstModel? GetByUserId(int userId);
     }
 }

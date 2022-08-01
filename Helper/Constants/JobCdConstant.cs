@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Constants
+﻿namespace Helper.Constant
 {
     public static class JobCdConstant
     {

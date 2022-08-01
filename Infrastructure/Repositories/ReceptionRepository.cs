@@ -1,6 +1,7 @@
 using Domain.Constant;
 using Domain.Models.Reception;
-using Infrastructure.Constants;
+using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -95,27 +96,27 @@ namespace Infrastructure.Repositories
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = _tenantDataContext.RaiinInfs.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
-            var raiinCmtInfs = _tenantDataContext.RaiinCmtInfs.AsNoTracking().Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = _tenantDataContext.RaiinKbnInfs.AsNoTracking().Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = _tenantDataContext.RaiinKbnDetails.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = _tenantDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = _tenantDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = _tenantDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = _tenantDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = _tenantDataContext.PtInfs.AsNoTracking().Where(x => x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = _tenantDataContext.PtCmtInfs.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptKohis = _tenantDataContext.PtKohis.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptInfs = _tenantDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var ptCmtInfs = _tenantDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = _tenantDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = _tenantDataContext.RsvInfs.AsNoTracking();
-            var rsvFrameMsts = _tenantDataContext.RsvFrameMsts.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var rsvInfs = _tenantDataContext.RsvInfs;
+            var rsvFrameMsts = _tenantDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = _tenantDataContext.UserMsts.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var userMsts = _tenantDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = _tenantDataContext.KaMsts.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var kaMsts = _tenantDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
-            var lockInfs = _tenantDataContext.LockInfs.AsNoTracking().Where(x =>
+            var lockInfs = _tenantDataContext.LockInfs.Where(x =>
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
             // Uketuke
-            var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.AsNoTracking().Where(x => x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Perform the join operation
             var raiinQuery =
@@ -165,10 +166,10 @@ namespace Infrastructure.Repositories
                     raiinInf,
                     ptInf,
                     ptCmtInf,
-                    uketukeSbtName = relatedUketukeSbtMst.KbnName,
-                    tantoName = relatedTanto.Sname,
+                    uketukeSbt = relatedUketukeSbtMst,
+                    tanto = relatedTanto,
                     primaryDoctorName = relatedPrimaryDoctor.Sname,
-                    kaName = relatedKaMst.KaSname,
+                    ka = relatedKaMst,
                     relatedRaiinCmtInfComment,
                     relatedRaiinCmtInfRemark,
                     relatedRsvFrameMst,
@@ -213,6 +214,7 @@ namespace Infrastructure.Repositories
             var grpIds = _tenantDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
+                r.raiinInf.PtId,
                 r.parentRaiinNo,
                 r.raiinInf.UketukeNo,
                 r.relatedLockInf is not null,
@@ -224,15 +226,18 @@ namespace Infrastructure.Repositories
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
-                r.uketukeSbtName,
+                r.uketukeSbt?.KbnName ?? string.Empty,
+                r.uketukeSbt?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,
                 r.raiinInf.SinStartTime ?? string.Empty,
                 r.raiinInf.SinEndTime ?? string.Empty,
                 r.raiinInf.KaikeiTime ?? string.Empty,
                 r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
                 r.ptCmtInf?.Text ?? string.Empty,
-                r.tantoName,
-                r.kaName,
+                r.tanto?.Sname ?? string.Empty,
+                r.tanto?.UserId ?? CommonConstants.InvalidId,
+                r.ka?.KaSname ?? string.Empty,
+                r.ka?.KaId ?? CommonConstants.InvalidId,
                 r.lastVisitDate,
                 r.primaryDoctorName ?? string.Empty,
                 r.relatedRaiinCmtInfRemark?.Text ?? string.Empty,
@@ -244,6 +249,58 @@ namespace Infrastructure.Repositories
             )).ToList();
 
             return models;
+        }
+
+        public bool UpdateStatus(int hpId, long raiinNo, int status)
+        {
+            return Update(hpId, raiinNo, r => r.Status = status);
+        }
+
+        public bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeNo = uketukeNo);
+        }
+
+        public bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeTime = uketukeTime);
+        }
+
+        public bool UpdateSinStartTime(int hpId, long raiinNo, string sinStartTime)
+        {
+            return Update(hpId, raiinNo, r => r.SinStartTime = sinStartTime);
+        }
+
+        public bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt)
+        {
+            return Update(hpId, raiinNo, r => r.UketukeSbt = uketukeSbt);
+        }
+
+        public bool UpdateTantoId(int hpId, long raiinNo, int tantoId)
+        {
+            return Update(hpId, raiinNo, r => r.TantoId = tantoId);
+        }
+
+        public bool UpdateKaId(int hpId, long raiinNo, int kaId)
+        {
+            return Update(hpId, raiinNo, r => r.KaId = kaId);
+        }
+
+        private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
+        {
+            var raiinInf = _tenantDataContext.RaiinInfs.AsTracking().Where(r =>
+                r.HpId == hpId
+                && r.RaiinNo == raiinNo
+                && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            updateEntity(raiinInf);
+            raiinInf.UpdateDate = DateTime.UtcNow;
+            _tenantDataContext.SaveChanges();
+            return true;
         }
     }
 }

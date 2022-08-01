@@ -19,27 +19,27 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
             switch (outputData.Status)
             {
                 case GetOrdInfListTreeStatus.InvalidRaiinNo:
-                    Result.Message = ResponseMessage.GetOrdInfInvalidRaiinNo;
+                    Result.Message = ResponseMessage.InvalidRaiinNo;
                     Result.Data.GroupHokenItems = new List<GroupHokenItem>();
                     break;
                 case GetOrdInfListTreeStatus.InvalidHpId:
-                    Result.Message = ResponseMessage.GetOrdInfInvalidHpId;
+                    Result.Message = ResponseMessage.InvalidHpId;
                     Result.Data.GroupHokenItems = new List<GroupHokenItem>();
                     break;
                 case GetOrdInfListTreeStatus.InvalidPtId:
-                    Result.Message = ResponseMessage.GetOrdInfInvalidPtId;
+                    Result.Message = ResponseMessage.InvalidPtId;
                     Result.Data.GroupHokenItems = new List<GroupHokenItem>();
                     break;
                 case GetOrdInfListTreeStatus.InvalidSinDate:
-                    Result.Message = ResponseMessage.GetOrdInfInvalidSinDate;
+                    Result.Message = ResponseMessage.InvalidSinDate;
                     Result.Data.GroupHokenItems = new List<GroupHokenItem>();
                     break;
                 case GetOrdInfListTreeStatus.NoData:
-                    Result.Message = ResponseMessage.GetOrdInfNoData;
+                    Result.Message = ResponseMessage.NoData;
                     Result.Data.GroupHokenItems = new List<GroupHokenItem>();
                     break;
                 case GetOrdInfListTreeStatus.Successed:
-                    Result.Message = ResponseMessage.GetOrdInfSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     Result.Data.GroupHokenItems = outputData.GroupHokens;
                     break;
             }

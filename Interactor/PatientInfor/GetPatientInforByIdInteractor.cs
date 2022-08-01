@@ -19,13 +19,17 @@ namespace Interactor.PatientInfor
 
         public GetPatientInforByIdOutputData Handle(GetPatientInforByIdInputData inputData)
         {
+            if (inputData.HpId < 0)
+            {
+                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
+            }
 
             if (inputData.PtId < 0)
             {
-                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidId);
+                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
             }
 
-            var data = _patientInforRepository.GetById(inputData.PtId);
+            var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId);
             if (data == null)
                 return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.DataNotExist);
             return new GetPatientInforByIdOutputData(data, GetPatientInforByIdStatus.Successed);
