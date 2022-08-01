@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 患者ID
         ///		患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("PT_ID", Order = 2)]
 		public long PtId { get; set; }
 
@@ -29,14 +29,14 @@ namespace Entity.Tenant
         /// 保険ID
         ///		患者別に保険情報を識別するための固有の番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("HOKEN_ID", Order = 3)]
 		public int HokenId { get; set; }
 
 		/// <summary>
 		/// 連番
 		/// </summary>
-		//[Key]
+		[Key]
 		[Column("SEQ_NO", Order = 4)]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long SeqNo { get; set; }
@@ -67,14 +67,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTANSYA_NO")]
         [MaxLength(8)]
-        public string FutansyaNo { get; set; } = string.Empty;
+        public string? FutansyaNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 受給者番号
 		/// </summary>
 		[Column("JYUKYUSYA_NO")]
         [MaxLength(7)]
-        public string JyukyusyaNo { get; set; } = string.Empty;
+        public string? JyukyusyaNo { get; set; } = string.Empty;
 
 
 		/// <summary>
@@ -94,14 +94,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 特殊受給者番号
 		/// </summary>
 		[Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string TokusyuNo { get; set; } = string.Empty;
+        public string? TokusyuNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 資格取得日

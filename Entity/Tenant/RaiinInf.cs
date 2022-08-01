@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -99,7 +99,7 @@ namespace Entity.Tenant
         [Column("UKETUKE_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string UketukeTime { get; set; } = string.Empty;
+        public string? UketukeTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 受付者ID
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         [Column("SIN_END_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string SinEndTime { get; set; } = string.Empty;
+        public string? SinEndTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算時間
@@ -140,7 +140,7 @@ namespace Entity.Tenant
         [Column("KAIKEI_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string KaikeiTime { get; set; } = string.Empty;
+        public string? KaikeiTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 精算者ID

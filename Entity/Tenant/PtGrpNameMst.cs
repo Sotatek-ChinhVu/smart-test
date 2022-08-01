@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 分類番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "GRP_NAME")]
         [MaxLength(20)]
-        public string GrpName { get; set; } = string.Empty;
+        public string? GrpName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 削除区分

@@ -5,17 +5,15 @@ namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
-        private readonly string _connectionString = String.Empty;
+        private readonly string _connectionString;
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
-
-        public TenantDataContext(DbContextOptions<TenantDataContext> options)
-        : base(options)
-        {
-        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.UseNpgsql(_connectionString, buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,7 +39,25 @@ namespace PostgreDataContext
             modelBuilder.Entity<OdrInf>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.Id });
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
+            modelBuilder.Entity<RaiinKbnInf>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.GrpId, r.SeqNo });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
+            modelBuilder.Entity<PtHokenPattern>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo, r.HokenPid });
+            modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
+            modelBuilder.Entity<RaiinCmtInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn, e.SeqNo });
+            modelBuilder.Entity<PtInf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtCmtInf>().HasKey(e => new { e.Id, e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<RsvInf>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.StartTime, e.RaiinNo });
+            modelBuilder.Entity<RsvFrameMst>().HasKey(e => new { e.HpId, e.RsvFrameId });
+            modelBuilder.Entity<UserMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<KaMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<LockInf>().HasKey(e => new { e.HpId, e.PtId, e.FunctionCd, e.SinDate, e.RaiinNo, e.OyaRaiinNo });
+            modelBuilder.Entity<UketukeSbtMst>().HasKey(e => new { e.HpId, e.KbnId });
+            modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
+            modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
+            modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
+            modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
             modelBuilder.Entity<RaiinListCmt>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });

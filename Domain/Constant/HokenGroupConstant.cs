@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Constant
 {
-    public static class DeleteTypes
+    public static class HokenGroupConstant
     {
-        public const int None = 0;
-        public const int Deleted = 1;
-        public const int Confirm = 2;
+        public const int HokenGroupHokenPattern = 1;
+        public const int HokenGroupKohi = 2;
     }
 }

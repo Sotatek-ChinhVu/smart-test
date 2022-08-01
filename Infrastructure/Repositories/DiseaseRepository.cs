@@ -15,10 +15,10 @@ namespace Infrastructure.Repositories
 {
     public class DiseaseRepository : IPtDiseaseRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<PtDiseaseModel> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
@@ -26,7 +26,7 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.PtByomeis
                 .Where(b => b.HpId == hpId &&
                             b.PtId == ptId &&
-                            b.IsDeleted != DeleteTypes.Deleted &&
+                            b.IsDeleted != 1 &&
                             b.IsNodspKarte != 1 &&
                             (b.TenkiKbn == TenkiKbnConst.Continued ||
                             b.StartDate <= sinDate && b.TenkiDate >= sinDate ||

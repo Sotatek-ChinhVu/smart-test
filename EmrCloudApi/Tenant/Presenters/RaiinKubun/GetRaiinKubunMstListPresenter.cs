@@ -16,7 +16,7 @@ namespace EmrCloudApi.Tenant.Presenters.RaiinKubun
                 {
                     RaiinKubunMstList = outputData.RaiinKubunList
                 },
-                Message = ResponseMessage.GetRaiinKubunMstListSuccessed,
+                Message = ResponseMessage.Success,
                 Status = 1
             };
         }

@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
+        //[Key]
         [Column(name: "ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

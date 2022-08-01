@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.Reception;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
