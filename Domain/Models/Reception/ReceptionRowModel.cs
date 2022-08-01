@@ -9,9 +9,9 @@ public class ReceptionRowModel
 {
     public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus,
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
-        string rsvFrameName, string uketukeSbtName, string uketukeTime, string sinStartTime,
+        string rsvFrameName, string uketukeSbtName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
-        string tantoName, string kaName, int lastVisitDate, string sname, string raiinRemark,
+        string tantoName, int tantoId, string kaName, int kaId, int lastVisitDate, string sname, string raiinRemark,
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells,
         int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
@@ -31,6 +31,7 @@ public class ReceptionRowModel
         YoyakuTime = yoyakuTime;
         ReservationName = rsvFrameName;
         UketukeSbtName = uketukeSbtName;
+        UketukeSbtId = uketukeSbtId;
         UketukeTime = uketukeTime;
         SinStartTime = sinStartTime;
         SinEndTime = sinEndTime;
@@ -39,7 +40,9 @@ public class ReceptionRowModel
         PtComment = ptComment;
         HokenPatternName = "TODO";
         TantoName = tantoName;
+        TantoId = tantoId;
         KaName = kaName;
+        KaId = kaId;
         LastVisitDate = CIUtil.SDateToShowSDate(lastVisitDate);
         Sname = sname;
         RaiinRemark = raiinRemark;
@@ -86,6 +89,7 @@ public class ReceptionRowModel
     public string ReservationName { get; private set; }
     // 受付種別
     public string UketukeSbtName { get; private set; }
+    public int UketukeSbtId { get; private set; }
     // 受付時間
     public string UketukeTime { get; private set; }
     // 診察開始
@@ -102,8 +106,10 @@ public class ReceptionRowModel
     public string HokenPatternName { get; private set; }
     // 担当医
     public string TantoName { get; private set; }
+    public int TantoId { get; private set; }
     // 診療科
     public string KaName { get; private set; }
+    public int KaId { get; private set; }
     // 前回来院
     public string LastVisitDate { get; private set; }
     // 主治医

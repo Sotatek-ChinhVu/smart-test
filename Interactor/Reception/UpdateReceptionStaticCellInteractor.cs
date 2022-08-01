@@ -66,27 +66,27 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 return _receptionRepository.UpdateUketukeTime(input.HpId, input.RaiinNo, input.CellValue);
             case nameof(ReceptionRowModel.SinStartTime):
                 return _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue);
-            case nameof(ReceptionRowModel.UketukeSbtName):
-                var uketukeSbtKbnId = _uketukeSbtMstRepository.GetKbnIdByKbnName(input.CellValue);
-                if (uketukeSbtKbnId == CommonConstants.InvalidId)
+            case nameof(ReceptionRowModel.UketukeSbtId):
+                var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(int.Parse(input.CellValue));
+                if (uketukeSbt is null)
                 {
                     return false;
                 }
-                return _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbtKbnId);
-            case nameof(ReceptionRowModel.TantoName):
-                var tantoId = _userRepository.GetUserIdBySname(input.CellValue);
-                if (tantoId == CommonConstants.InvalidId)
+                return _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbt.KbnId);
+            case nameof(ReceptionRowModel.TantoId):
+                var tanto = _userRepository.GetByUserId(int.Parse(input.CellValue));
+                if (tanto is null)
                 {
                     return false;
                 }
-                return _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tantoId);
-            case nameof(ReceptionRowModel.KaName):
-                var kaId = _kaMstRepository.GetKaIdByKaSname(input.CellValue);
-                if (kaId == CommonConstants.InvalidId)
+                return _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId);
+            case nameof(ReceptionRowModel.KaId):
+                var ka = _kaMstRepository.GetByKaId(int.Parse(input.CellValue));
+                if (ka is null)
                 {
                     return false;
                 }
-                return _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, kaId);
+                return _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, ka.KaId);
             // Update or insert RaiinCmtInf
             case nameof(ReceptionRowModel.RaiinCmt):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Comment, input.CellValue);

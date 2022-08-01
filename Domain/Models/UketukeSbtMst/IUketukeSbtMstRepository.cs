@@ -2,5 +2,5 @@
 
 public interface IUketukeSbtMstRepository
 {
-    int GetKbnIdByKbnName(string kbnName);
+    UketukeSbtMstModel? GetByKbnId(int kbnId);
 }

@@ -2,5 +2,5 @@
 
 public interface IKaMstRepository
 {
-    int GetKaIdByKaSname(string kaSname);
+    KaMstModel? GetByKaId(int kaId);
 }

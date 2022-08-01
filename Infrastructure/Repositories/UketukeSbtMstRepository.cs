@@ -1,4 +1,5 @@
 ﻿using Domain.Models.UketukeSbtMst;
+using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -14,10 +15,18 @@ public class UketukeSbtMstRepository : IUketukeSbtMstRepository
         _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
-    public int GetKbnIdByKbnName(string kbnName)
+    public UketukeSbtMstModel? GetByKbnId(int kbnId)
     {
-        var record = _tenantDataContext.UketukeSbtMsts
-                .Where(u => u.KbnName == kbnName).Select(u => new { u.KbnId }).FirstOrDefault();
-        return record is null ? CommonConstants.InvalidId : record.KbnId;
+        var entity = _tenantDataContext.UketukeSbtMsts.Where(u => u.KbnId == kbnId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+        return entity is null ? null : ToModel(entity);
+    }
+
+    private UketukeSbtMstModel ToModel(UketukeSbtMst u)
+    {
+        return new UketukeSbtMstModel(
+            u.KbnId,
+            u.KbnName,
+            u.SortNo,
+            u.IsDeleted);
     }
 }

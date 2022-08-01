@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KaMst;
+using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -13,10 +14,23 @@ public class KaMstRepository : IKaMstRepository
     {
         _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
-    public int GetKaIdByKaSname(string kaSname)
+
+    public KaMstModel? GetByKaId(int kaId)
     {
-        var record = _tenantDataContext.KaMsts
-                .Where(k => k.KaSname == kaSname).Select(k => new { k.KaId }).FirstOrDefault();
-        return record is null ? CommonConstants.InvalidId : record.KaId;
+        var entity = _tenantDataContext.KaMsts
+            .Where(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None).FirstOrDefault();
+        return entity is null ? null : ToModel(entity);
+    }
+
+    private KaMstModel ToModel(KaMst k)
+    {
+        return new KaMstModel(
+            k.Id,
+            k.KaId,
+            k.SortNo,
+            k.ReceKaCd,
+            k.KaSname,
+            k.KaName,
+            k.IsDeleted);
     }
 }
