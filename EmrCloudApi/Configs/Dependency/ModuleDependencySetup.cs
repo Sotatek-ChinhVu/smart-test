@@ -45,6 +45,9 @@ using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
 using UseCase.Reception.UpdateDynamicCell;
+using Domain.Models.RaiinFilterMst;
+using UseCase.RaiinFilterMst.GetList;
+using Interactor.RaiinFilterMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -80,6 +83,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
+            services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -120,6 +124,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+
+            // RaiinFilter
+            busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
