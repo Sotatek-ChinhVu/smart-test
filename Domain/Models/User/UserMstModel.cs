@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models.User;
-
-namespace Domain.Models.User
+﻿namespace Domain.Models.User
 {
     public class UserMstModel
     {
-        public UserMstModel(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName)
+        public UserMstModel(int hpId, int userId, int jobCd, int managerKbn, int kaId, string kanaName, string name, string sname, string loginId, string loginPass, string mayakuLicenseNo, int startDate, int endDate, int sortNo, int isDeleted, string renkeiCd1, string drName)
         {
             HpId = hpId;
-            Id = id;
             UserId = userId;
             JobCd = jobCd;
             ManagerKbn = managerKbn;
@@ -31,24 +23,23 @@ namespace Domain.Models.User
             DrName = drName;
         }
 
-        public int HpId { get; set; }
-        public long Id { get; set; }
-        public int UserId { get; set; }
-        public int JobCd { get; set; }
-        public int ManagerKbn { get; set; }
-        public int KaId { get; set; }
-        public string KanaName { get; set; }
-        public string Name { get; set; }
-        public string Sname { get; set; }
-        public string LoginId { get; set; }
-        public string LoginPass { get; set; }
-        public string MayakuLicenseNo { get; set; }
-        public int StartDate { get; set; }
-        public int EndDate { get; set; }
-        public int SortNo { get; set; }
-        public int IsDeleted { get; set; }
-        public string RenkeiCd1 { get; set; }
-        public string DrName { get; set; }
-       
+        public int HpId { get; private set; }
+        public int UserId { get; private set; }
+        public int JobCd { get; private set; }
+        public int ManagerKbn { get; private set; }
+        public int KaId { get; private set; }
+        public string KanaName { get; private set; }
+        public string Name { get; private set; }
+        public string Sname { get; private set; }
+        public string LoginId { get; private set; }
+        public string LoginPass { get; private set; }
+        public string MayakuLicenseNo { get; private set; }
+        public int StartDate { get; private set; }
+        public int EndDate { get; private set; }
+        public int SortNo { get; private set; }
+        public int IsDeleted { get; private set; }
+        public string RenkeiCd1 { get; private set; }
+        public string DrName { get; private set; }
+
     }
 }

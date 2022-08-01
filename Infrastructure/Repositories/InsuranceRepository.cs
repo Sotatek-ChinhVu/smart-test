@@ -167,14 +167,14 @@ namespace Infrastructure.Repositories
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
-                    bool isHokenMstNotNull = true;
+                    bool isHokenMstNotNull = false;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
                     var ptInf = _tenantDataContext.PtInfs.Where(pt => pt.HpId == item.HpId && pt.PtId == item.PtId && pt.IsDelete == 0).FirstOrDefault();
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
                         futanRate = hokenMst.FutanRate;
-                        isHokenMstNotNull = false;
+                        isHokenMstNotNull = true;
                     }
 
                     int rousaiTenkiSinkei = 0;

@@ -80,14 +80,6 @@ namespace Interactor.MedicalExamination
 
             foreach (var raiinInf in rainInfs)
             {
-
-                //if (raiin.HokenGroups != null)
-                //{
-                //    foreach (var grpHoken in raiin.HokenGroups)
-                //    {
-                //        grpHoken.HokenTitle = hokens.FirstOrDefault(c => c.HokenId == grpHoken.HokenPid)?.HokenPatternName;
-                //    }
-                //}
                 var doctorFirst = doctors.FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, String.Empty, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
@@ -230,14 +222,14 @@ namespace Interactor.MedicalExamination
 
             //var kaMsts = Mediator.Send(new GetAllKaMstsQuery() { }).Result.Data;
 
-            if (historyKarteOdrRaiins != null)
-            {
-                foreach (var raiin in historyKarteOdrRaiins)
-                {
-                    //raiin.KaName = kaMsts.FirstOrDefault(c => c.KaId == raiin.KaId)?.KaSname;
+            //if (historyKarteOdrRaiins != null)
+            //{
+            //    foreach (var raiin in historyKarteOdrRaiins)
+            //    {
+            //        //raiin.KaName = kaMsts.FirstOrDefault(c => c.KaId == raiin.KaId)?.KaSname;
 
-                }
-            }
+            //    }
+            //}
 
             var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed);
 

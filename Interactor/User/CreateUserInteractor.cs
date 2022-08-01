@@ -19,7 +19,7 @@ namespace Interactor.User
 
         public CreateUserOutputData Handle(CreateUserInputData inputData)
         {
-            if (string.IsNullOrWhiteSpace(inputData.Name.Value))
+            if (string.IsNullOrWhiteSpace(inputData.Name))
             {
                 return new CreateUserOutputData(0, CreateUserStatus.InvalidName);
             }

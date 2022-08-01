@@ -90,6 +90,56 @@ namespace Domain.Models.InsuranceInfor
             Kohi4Id = kohi4Id;
             StartDate = startDate;
             EndDate = endDate;
+            HokenNo = 0;
+            HokenEdaNo = 0;
+            HokensyaNo = String.Empty;
+            Kigo = String.Empty;
+            Bango = String.Empty;
+            EdaNo = String.Empty;
+            HonkeKbn = 0;
+            SikakuDate = 0;
+            KofuDate = 0;
+            ConfirmDate = 0;
+            Kohi1 = new KohiInfModel(string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, null);
+            Kohi2 = new KohiInfModel(string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, null);
+            Kohi3 = new KohiInfModel(string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, null);
+            Kohi4 = new KohiInfModel(string.Empty, string.Empty, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty, 0, string.Empty, null);
+            KogakuKbn = 0;
+            TasukaiYm = 0;
+            TokureiYm1 = 0;
+            TokureiYm2 = 0;
+            GenmenKbn = 0;
+            GenmenRate = 0;
+            GenmenGaku = 0;
+            SyokumuKbn = 0;
+            KeizokuKbn = 0;
+            Tokki1 = string.Empty;
+            Tokki2 = string.Empty;
+            Tokki3 = string.Empty;
+            Tokki4 = string.Empty;
+            Tokki5 = string.Empty;
+            RousaiKofuNo = string.Empty;
+            NenkinBango = string.Empty;
+            RousaiRoudouCd = string.Empty;
+            KenkoKanriBango = string.Empty;
+            RousaiSaigaiKbn = 0;
+            RousaiKantokuCd = string.Empty;
+            RousaiSyobyoDate = 0;
+            RyoyoStartDate = 0;
+            RyoyoEndDate = 0;
+            RousaiSyobyoCd = string.Empty;
+            RousaiJigyosyoName = string.Empty;
+            RousaiPrefName = string.Empty;
+            RousaiCityName = string.Empty;
+            RousaiReceCount = 0;
+            RousaiTenkiSinkei = 0;
+            RousaiTenkiTenki = 0;
+            RousaiTenkiEndDate = 0;
+            HokenMstHoubetu = string.Empty;
+            HokenMstFutanRate = 0;
+            SinDate = 0;
+            IsHokenMstNotNull = true;
+            Birthday = 0;
         }
 
         public int HpId { get; private set; }
@@ -578,7 +628,6 @@ namespace Domain.Models.InsuranceInfor
                         if (KogakuKbn == 3
                             || (new List<int>() { 26, 27, 28 }.Contains(KogakuKbn)))
                         {
-                            //rateMst2 = 30;
                             return 30;
                         }
                         else

@@ -25,7 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Update)]
         public ActionResult<Response<CreateUserResponse>> Save([FromBody] CreateUserRequest saveUserRequest)
         {
-            var input = new CreateUserInputData(saveUserRequest.UserName);
+            var input = new CreateUserInputData(saveUserRequest.HpId, saveUserRequest.JobCd, saveUserRequest.JobCd, saveUserRequest.KaId, saveUserRequest.KanaName, saveUserRequest.Name, saveUserRequest.Sname, saveUserRequest.LoginId, saveUserRequest.LoginPass, saveUserRequest.MayakuLicenseNo, saveUserRequest.StartDate, saveUserRequest.Endate, saveUserRequest.SortNo, 0, saveUserRequest.RenkeiCd1, saveUserRequest.DrName);
             var output = _bus.Handle(input);
 
             var presenter = new CreateUserPresenter();

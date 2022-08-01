@@ -30,7 +30,8 @@ namespace Infrastructure.Repositories
         }
         public IEnumerable<UserMstModel> GetAllDoctors()
         {
-            return _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo).ToList();
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).ToList();
+            return result.Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public int MaxUserId()
@@ -52,22 +53,21 @@ namespace Infrastructure.Repositories
         {
             return new UserMstModel(
                 itemData.HpId,
-                itemData.Id,
                 itemData.UserId,
                 itemData.JobCd,
                 itemData.ManagerKbn,
                 itemData.KaId,
-                itemData.KanaName,
+                itemData.KanaName ?? String.Empty,
                 itemData.Name,
                 itemData.Sname,
                 itemData.LoginId,
                 itemData.LoginPass,
-                itemData.MayakuLicenseNo,
+                itemData.MayakuLicenseNo ?? String.Empty,
                 itemData.StartDate,
                 itemData.EndDate,
                 itemData.SortNo,
                 itemData.IsDeleted,
-                itemData.RenkeiCd1,
+                itemData.RenkeiCd1 ?? String.Empty,
                 itemData.DrName
               );
         }
