@@ -22,10 +22,10 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
             switch (outputData.Status)
             {
                 case GetPtDiseaseListStatus.PtDiseaseListNotExisted:
-                    Result.Message = ResponseMessage.GetListNotExisted;
+                    Result.Message = ResponseMessage.NoData;
                     break;
                 case GetPtDiseaseListStatus.Success:
-                    Result.Message = ResponseMessage.GetPtDiseaseSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     break;
             }
         }

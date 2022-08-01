@@ -23,16 +23,16 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInformation
             switch (outputData.Status)
             {
                 case GetPatientInforByIdStatus.Successed:
-                    Result.Message = ResponseMessage.GetPatientByIdSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     break;
                 case GetPatientInforByIdStatus.DataNotExist:
-                    Result.Message = ResponseMessage.GetPatientInforNotExist;
+                    Result.Message = ResponseMessage.NoData;
                     break;
                 case GetPatientInforByIdStatus.InvalidHpId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidHpId;
+                    Result.Message = ResponseMessage.InvalidHpId;
                     break;
                 case GetPatientInforByIdStatus.InvalidPtId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidPtId;
+                    Result.Message = ResponseMessage.InvalidPtId;
                     break;
                 default:
                     break;

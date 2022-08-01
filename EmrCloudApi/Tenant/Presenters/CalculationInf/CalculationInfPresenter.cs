@@ -20,16 +20,16 @@ namespace EmrCloudApi.Tenant.Presenters.CalculationInf
             switch (outputData.Status)
             {
                 case CalculationInfStatus.Successed:
-                    Result.Message = ResponseMessage.CalculationInfSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     break;
                 case CalculationInfStatus.InvalidHpId:
-                    Result.Message = ResponseMessage.CalculationInfInvalidHpId;
+                    Result.Message = ResponseMessage.InvalidHpId;
                     break;
                 case CalculationInfStatus.InvalidPtId:
-                    Result.Message = ResponseMessage.CalculationInfInvalidPtId;
+                    Result.Message = ResponseMessage.InvalidPtId;
                     break;
                 case CalculationInfStatus.DataNotExist:
-                    Result.Message = ResponseMessage.CalculationInfNotExist;
+                    Result.Message = ResponseMessage.NoData;
                     break;
             }
 
