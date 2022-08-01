@@ -30,9 +30,18 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserMstModel> GetAll()
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
         {
-            return _tenantDataContext.UserMsts.ToList().Select(u => ToModel(u));
+            var query = _tenantDataContext.UserMsts.Where(u =>
+                u.StartDate <= sinDate
+                && u.EndDate >= sinDate
+                && u.IsDeleted == DeleteTypes.None);
+            if (isDoctorOnly)
+            {
+                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+            }
+
+            return query.OrderBy(u => u.SortNo).ToList().Select(u => ToModel(u)).ToList();
         }
 
         public UserMstModel? GetByUserId(int userId)
