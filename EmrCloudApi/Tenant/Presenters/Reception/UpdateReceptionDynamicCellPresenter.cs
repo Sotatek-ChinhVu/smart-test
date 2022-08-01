@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
 using UseCase.Reception.UpdateDynamicCell;
 
@@ -17,12 +18,12 @@ public class UpdateReceptionDynamicCellPresenter : IUpdateReceptionDynamicCellOu
 
     private string GetMessage(UpdateReceptionDynamicCellStatus status) => status switch
     {
-        UpdateReceptionDynamicCellStatus.Success => "Cell value updated successfully.",
-        UpdateReceptionDynamicCellStatus.InvalidHpId => "HpId must be greater than 0.",
-        UpdateReceptionDynamicCellStatus.InvalidSinDate => "SinDate must be greater than 0.",
-        UpdateReceptionDynamicCellStatus.InvalidRaiinNo => "RaiinNo must be greater than 0.",
-        UpdateReceptionDynamicCellStatus.InvalidPtId => "PtId must be greater than 0.",
-        UpdateReceptionDynamicCellStatus.InvalidGrpId => "GrpId cannot be negative.",
+        UpdateReceptionDynamicCellStatus.Success => ResponseMessage.UpdateReceptionDynamicCellSuccess,
+        UpdateReceptionDynamicCellStatus.InvalidHpId => ResponseMessage.UpdateReceptionDynamicCellInvalidHpId,
+        UpdateReceptionDynamicCellStatus.InvalidSinDate => ResponseMessage.UpdateReceptionDynamicCellInvalidSinDate,
+        UpdateReceptionDynamicCellStatus.InvalidRaiinNo => ResponseMessage.UpdateReceptionDynamicCellInvalidRaiinNo,
+        UpdateReceptionDynamicCellStatus.InvalidPtId => ResponseMessage.UpdateReceptionDynamicCellInvalidPtId,
+        UpdateReceptionDynamicCellStatus.InvalidGrpId => ResponseMessage.UpdateReceptionDynamicCellInvalidGrpId,
         _ => string.Empty
     };
 }
