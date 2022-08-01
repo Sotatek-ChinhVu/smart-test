@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public PatientInforModel? GetById(long ptId)
+        public PatientInforModel? GetById(int hpId, long ptId)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
             if (itemData == null)
                 return null;
             else
@@ -37,6 +37,22 @@ namespace Infrastructure.Repositories
 
         private PatientInforModel ConvertToModel(PtInf itemData)
         {
+            //Get ptMemo
+            string memo = string.Empty;
+            PtMemo? ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
+            if (ptMemo != null)
+            {
+                memo = ptMemo.Memo ?? string.Empty;
+            }
+
+            //Get lastVisitDate
+            int lastVisitDate = 0;
+            RaiinInf? raiinInf = _tenantDataContext.RaiinInfs.Where(r => r.PtId == itemData.PtId).OrderByDescending(r => r.SinDate).FirstOrDefault();
+            if (raiinInf != null)
+            {
+                lastVisitDate = raiinInf.SinDate;
+            }
+
             return new PatientInforModel(
                 itemData.HpId,
                 itemData.PtId,
@@ -74,8 +90,9 @@ namespace Infrastructure.Repositories
                 itemData.IsRyosyoDetail,
                 itemData.PrimaryDoctor,
                 itemData.IsTester,
-                itemData.MainHokenPid
-                );
+                itemData.MainHokenPid,
+                memo,
+                lastVisitDate);
         }
     }
 }

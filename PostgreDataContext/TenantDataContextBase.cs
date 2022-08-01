@@ -10,7 +10,10 @@ namespace PostgreDataContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.UseNpgsql(_connectionString, buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,8 +43,15 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
             modelBuilder.Entity<PtHokenPattern>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo, r.HokenPid });
             modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
+            modelBuilder.Entity<RaiinCmtInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn, e.SeqNo });
             modelBuilder.Entity<PtInf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
-            modelBuilder.Entity<RaiinCmtInf>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn, r.SeqNo });
+            modelBuilder.Entity<PtCmtInf>().HasKey(e => new { e.Id, e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<RsvInf>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.StartTime, e.RaiinNo });
+            modelBuilder.Entity<RsvFrameMst>().HasKey(e => new { e.HpId, e.RsvFrameId });
+            modelBuilder.Entity<UserMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<KaMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<LockInf>().HasKey(e => new { e.HpId, e.PtId, e.FunctionCd, e.SinDate, e.RaiinNo, e.OyaRaiinNo });
+            modelBuilder.Entity<UketukeSbtMst>().HasKey(e => new { e.HpId, e.KbnId });
             modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
             modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
             modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
