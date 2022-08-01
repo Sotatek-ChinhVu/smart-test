@@ -7,34 +7,32 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.FlowSheet
 {
-    // Show history list of visiting date
     public class FlowSheetModel
     {
-        // KarteInf && RaiinInf && RaiinListTag & RaiinListCmt
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
-        public int RaiinListTag { get; private set; }
-        public string Result { get; private set; } // First line of karte
-        public long RaiinNo { get; private set; } // link to sindate?
+        public RaiinListTagModel? RaiinListTag { get; set; }
+        public string? FullLineOfKarte { get; private set; }
+        public long RaiinNo { get; private set; }
         public int SyosaisinKbn { get; private set; }
-        public string? RaiinListComment { get; private set; }
-        public int IsDeleted { get; private set; }
+        public RaiinListCmtModel? RaiinListCmt { get; set; }
+        public bool IsNextOrder { get; private set; }
+        public bool IsTodayOrder { get; private set; }
+        public int Status { get; private set; }
         // Raiin List Detail && RaiinListInf (for dynamic column)
-        public int KbnCd { get; private set; }
-        public int GrpId { get; private set; } // dynamic column result
-        public FlowSheetModel   (int hpId, long ptId, int sinDate, int raiinListTag, string firstLineOfKarte, 
-                                long raiinNo, int syosaisinKbn, int isDeleted, int kbnCd)
+        public List<RaiinListInfModel>? RaiinListInfs { get; set; }
+        public FlowSheetModel(int hpId, long ptId, int sinDate, string? fullLineOfKarte, long raiinNo, int syosaisinKbn, bool isNextOrder, bool isTodayOrder, int status)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
-            RaiinListTag = raiinListTag;
-            Result = firstLineOfKarte ?? string.Empty;
+            FullLineOfKarte = fullLineOfKarte ?? string.Empty;
             RaiinNo = raiinNo;
             SyosaisinKbn = syosaisinKbn;
-            IsDeleted = isDeleted;
-            KbnCd = kbnCd;
+            Status = status;
+            IsNextOrder = isNextOrder;
+            IsTodayOrder = isTodayOrder;
         }
     }
 }

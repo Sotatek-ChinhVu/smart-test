@@ -42,6 +42,12 @@ namespace PostgreDataContext
             modelBuilder.Entity<OdrInfDetail>().HasKey(o => new { o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.RowNo });
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
+            modelBuilder.Entity<RaiinListCmt>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn });
+            modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
+            modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });
+            modelBuilder.Entity<RaiinListDetail>().HasKey(r => new { r.HpId, r.GrpId, r.KbnCd });
+            modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
+            modelBuilder.Entity<RaiinListMst>().HasKey(r => new { r.HpId, r.GrpId });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
