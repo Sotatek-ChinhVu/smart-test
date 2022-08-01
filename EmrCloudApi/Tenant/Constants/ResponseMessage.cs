@@ -37,5 +37,20 @@
         //Calculation Inf
 
 
+        // Visiting controller
+        //  - UpdateStaticCell
+        public static readonly string UpdateReceptionStaticCellUnknownError = "Failed to update cell value.";
+        public static readonly string UpdateReceptionStaticCellSuccess = "Cell value updated successfully.";
+        public static readonly string UpdateReceptionStaticCellInvalidHpId = "HpId must be greater than 0.";
+        public static readonly string UpdateReceptionStaticCellInvalidSinDate = "SinDate must be greater than 0.";
+        public static readonly string UpdateReceptionStaticCellInvalidRaiinNo = "RaiinNo must be greater than 0.";
+        public static readonly string UpdateReceptionStaticCellInvalidPtId = "PtId must be greater than 0.";
+        //  - UpdateDynamicCell
+        public static readonly string UpdateReceptionDynamicCellSuccess = "Cell value updated successfully.";
+        public static readonly string UpdateReceptionDynamicCellInvalidHpId = "HpId must be greater than 0.";
+        public static readonly string UpdateReceptionDynamicCellInvalidSinDate = "SinDate must be greater than 0.";
+        public static readonly string UpdateReceptionDynamicCellInvalidRaiinNo = "RaiinNo must be greater than 0.";
+        public static readonly string UpdateReceptionDynamicCellInvalidPtId = "PtId must be greater than 0.";
+        public static readonly string UpdateReceptionDynamicCellInvalidGrpId = "GrpId cannot be negative.";
     }
 }

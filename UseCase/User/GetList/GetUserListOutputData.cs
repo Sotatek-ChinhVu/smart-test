@@ -10,9 +10,9 @@ namespace UseCase.User.GetList
 {
     public class GetUserListOutputData : IOutputData
     {
-        public List<UserMst> UserList { get; private set; }
+        public List<UserMstModel> UserList { get; private set; }
 
-        public GetUserListOutputData(List<UserMst> userList)
+        public GetUserListOutputData(List<UserMstModel> userList)
         {
             UserList = userList;
         }

@@ -33,12 +33,18 @@ using UseCase.GroupInf.GetList;
 using Interactor.GrpInf;
 using Domain.Models.GroupInf;
 using UseCase.PatientInfor.SearchSimple;
+using UseCase.Reception.UpdateStaticCell;
+using Domain.Models.RaiinCmtInf;
+using Domain.Models.UketukeSbtMst;
+using Domain.Models.KaMst;
+using Domain.Models.RaiinKbnInf;
 using UseCase.CalculationInf;
 using Interactor.CalculationInf;
 using Domain.CalculationInf;
 using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
+using UseCase.Reception.UpdateDynamicCell;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -67,6 +73,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientInforRepository, PatientInforRepository>();
             services.AddTransient<IKarteInfRepository, KarteInfRepository>();
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
+            services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
+            services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
+            services.AddTransient<IKaMstRepository, KaMstRepository>();
+            services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
@@ -90,6 +100,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
+            busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
+            busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();

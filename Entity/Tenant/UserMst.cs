@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "MAYAKU_LICENSE_NO")]
         [MaxLength(20)]
-        public string MayakuLicenseNo { get; set; } = string.Empty;
+        public string? MayakuLicenseNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 在籍開始日
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "RENKEI_CD1")]
         [MaxLength(14)]
-        public string RenkeiCd1 { get; set; } = string.Empty;
+        public string? RenkeiCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
