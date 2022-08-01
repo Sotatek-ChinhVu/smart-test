@@ -5,6 +5,45 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+                result = 0;
+            }
+            return result;
+        }
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -674,46 +713,5 @@ namespace Helper.Common
         public int Year;
         public int Month;
         public int Day;
-        }
-
-        // Format for param: yyyymmdd
-        public static DateTime IntToDate(int iDateTime)
-        {
-            var result = SDateToDateTime(iDateTime);
-            return result == null ? new DateTime() : result.Value;
-        }
-        public static DateTime? SDateToDateTime(int Ymd)
-        {
-            if (Ymd <= 0 || Ymd == 99999999)
-            {
-                return null;
-            }
-
-            try
-            {
-                // Padding zero first
-                string s = Ymd.ToString("D8");
-
-                // Then convert to date time
-                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
-        {
-            int result;
-            try
-            {
-                result = dateTime.ToString(format).AsInteger();
-            }
-            catch (Exception e)
-            {
-                result = 0;
-            }
-            return result;
-        }
     }
 }
