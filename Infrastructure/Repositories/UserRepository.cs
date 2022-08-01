@@ -30,9 +30,9 @@ namespace Infrastructure.Repositories
         {
             return _tenantDataContext.UserMsts.Select(u => ConvertToModel(u)).ToList();
         }
-        public IEnumerable<UserMstModel> GetAllDoctors()
+        public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor).ToList();
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).ToList();
             return result.Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo);
         }
 

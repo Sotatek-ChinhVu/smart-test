@@ -17,7 +17,7 @@ namespace Domain.Models.User
         void Delete(int userId);
 
         IEnumerable<UserMstModel> GetAll();
-        IEnumerable<UserMstModel> GetAllDoctors();
+        IEnumerable<UserMstModel> GetDoctorsList(int userId);
 
         int MaxUserId();
         UserMstModel? GetByUserId(int userId);

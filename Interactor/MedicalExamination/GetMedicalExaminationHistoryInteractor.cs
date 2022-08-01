@@ -74,16 +74,13 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-            List<OrdInfModel> allOdrInfs = _ordInfRepository
-              .GetList(inputData.PtId, inputData.HpId)
-                .ToList();
-            var doctors = _userRepository.GetAllDoctors();
+        
             var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = hokens.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
-                var doctorFirst = doctors.FirstOrDefault(c => c.UserId == raiinInf.TantoId);
+                var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
 
                 var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
@@ -106,9 +103,10 @@ namespace Interactor.MedicalExamination
                                 c.UpdateDate,
                                 c.IsDeleted)
             ).ToList())
-                                                             select karteGrp);
+                                                             select karteGrp);    
 
-                List<OrdInfModel> odrInfListByRaiinNo = allOdrInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo)
+                List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
+              .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo)
                                                     .OrderBy(odr => odr.OdrKouiKbn)
                                                     .ThenBy(odr => odr.RpNo)
                                                     .ThenBy(odr => odr.RpEdaNo)
