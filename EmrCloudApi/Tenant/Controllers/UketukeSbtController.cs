@@ -1,9 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.UketukeSbt;
+using EmrCloudApi.Tenant.Requests.UketukeSbt;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UketukeSbt;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -25,6 +27,16 @@ public class UketukeSbtController : ControllerBase
         var input = new GetUketukeSbtMstListInputData();
         var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstListPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Get + "BySinDate")]
+    public ActionResult<Response<GetUketukeSbtMstBySinDateResponse>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
+    {
+        var input = new GetUketukeSbtMstBySinDateInputData(req.SinDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetUketukeSbtMstBySinDatePresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

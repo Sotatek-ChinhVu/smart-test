@@ -52,6 +52,8 @@ using UseCase.KaMst.GetList;
 using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
+using UseCase.UketukeSbtMst.GetBySinDate;
+using Domain.Models.UketukeSbtDayInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -88,6 +90,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -137,6 +140,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
+            busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

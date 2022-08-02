@@ -655,9 +655,15 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
-    }
-    #endregion
+        #endregion
 
+        public static string GetComputerName()
+        {
+            return Environment.MachineName;
+        }
+    }
+
+    
     public enum WarekiFormat
     {
         Short,
