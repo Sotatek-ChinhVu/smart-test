@@ -23,19 +23,19 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceMst
             {
 
                 case GetInsuranceMstStatus.InvalidPtId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidPtId;
+                    Result.Message = ResponseMessage.InvalidPtId;
                     break;
                 case GetInsuranceMstStatus.InvalidHpId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidHpId;
+                    Result.Message = ResponseMessage.InvalidHpId;
                     break;
                 case GetInsuranceMstStatus.InvalidSinDate:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidSinDate;
+                    Result.Message = ResponseMessage.InvalidSinDate;
                     break;
                 case GetInsuranceMstStatus.InvalidHokenId:
-                    Result.Message = ResponseMessage.GetInsuranceListInvalidSinDate;
+                    Result.Message = ResponseMessage.InvalidHokenId;
                     break;
                 case GetInsuranceMstStatus.Successed:
-                    Result.Message = ResponseMessage.GetInsuranceListSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     break;
             }
         }

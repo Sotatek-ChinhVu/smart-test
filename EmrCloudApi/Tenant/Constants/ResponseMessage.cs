@@ -8,6 +8,7 @@
         public static readonly string InvalidPtId = "Invalid PtId";
         public static readonly string InvalidRaiinNo = "Invalid RaiinNo";
         public static readonly string InvalidSinDate = "Invalid SinDate";
+        public static readonly string InvalidHokenId = "Invalid HokenId";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -27,13 +28,6 @@
         //PtDisease controller
 
         //Insurance
-
-        //Insurance Mst
-        public static readonly string GetInsuranceMstInvalidPtId = "Invalid PtId !";
-        public static readonly string GetInsuranceMstInvalidHpId = "Invalid HpId !";
-        public static readonly string GetInsuranceMstInvalidSinDate = "Invalid SinDate !";
-        public static readonly string GetInsuranceMstInvalidHokenId = "Invalid HokenId !";
-        public static readonly string GetInsuranceMstSuccessed = "Successed!!!";
 
         //KarteInf controller
 
