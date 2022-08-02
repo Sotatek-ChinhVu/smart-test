@@ -8,7 +8,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, bool isHokenMstNotNull, int birthday)
+        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay)
         {
             HpId = hpId;
             PtId = ptId;
@@ -71,8 +71,7 @@ namespace Domain.Models.InsuranceInfor
             HokenMstHoubetu = houbetu;
             HokenMstFutanRate = futanRate;
             SinDate = sinDate;
-            IsHokenMstNotNull = isHokenMstNotNull;
-            Birthday = birthday;
+            DisplayRateOnly = GetRateOnly(birthDay);
         }
 
         public InsuranceModel(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
@@ -138,8 +137,7 @@ namespace Domain.Models.InsuranceInfor
             HokenMstHoubetu = string.Empty;
             HokenMstFutanRate = 0;
             SinDate = 0;
-            IsHokenMstNotNull = true;
-            Birthday = 0;
+            DisplayRateOnly = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -269,19 +267,11 @@ namespace Domain.Models.InsuranceInfor
 
         public int SinDate { get; private set; }
 
-        public int Birthday { get; private set; }
+        public string DisplayRateOnly { get; private set; }
 
-        public string DisplayRateOnly
-        {
-            get => GetRateOnly();
-        }
         public bool IsEmptyHoken
         {
             get => (HokenId == 0);
-        }
-        public bool IsHokenMstNotNull
-        {
-            get; private set;
         }
 
         private string GetHokenName()
@@ -447,7 +437,7 @@ namespace Domain.Models.InsuranceInfor
         }
 
 
-        private string GetRateOnly()
+        private string GetRateOnly(int birthDay)
         {
             string resultRate = string.Empty;
             int rate = 0;
@@ -461,7 +451,7 @@ namespace Domain.Models.InsuranceInfor
                 switch (HokenKbn)
                 {
                     case 0:
-                        if (!IsEmptyHoken && IsHokenMstNotNull)
+                        if (!IsEmptyHoken && HokenMstFutanRate != 0)
                         {
                             if (HokenMstHoubetu == HokenConstant.HOUBETU_JIHI_108)
                             {
@@ -477,7 +467,7 @@ namespace Domain.Models.InsuranceInfor
                     case 12:
                     case 13:
                     case 14:
-                        if (!IsEmptyHoken && IsHokenMstNotNull)
+                        if (!IsEmptyHoken && HokenMstFutanRate != 0)
                         {
                             resultRate += HokenMstFutanRate + "%";
                         }
@@ -490,13 +480,14 @@ namespace Domain.Models.InsuranceInfor
                 int firstNum = hokenSbtCd[0].AsInteger();
                 bool isHoken39 = firstNum == 3;
 
-                rate = GetRate(isHoken39);
+                rate = GetRate(isHoken39, birthDay);
             }
 
             resultRate += rate + "%";
             return resultRate;
         }
-        private int GetRate(bool isHoken39)
+
+        private int GetRate(bool isHoken39, int birthDay)
         {
             bool hasRateCome = false;
             int rateReturn = 0;
@@ -504,7 +495,7 @@ namespace Domain.Models.InsuranceInfor
                 && HokenMstHoubetu != null
                 && HokenMstHoubetu != HokenConstant.HOUBETU_NASHI)
             {
-                rateReturn = GetRateHoken(isHoken39);
+                rateReturn = GetRateHoken(isHoken39, birthDay);
                 hasRateCome = true;
             }
             if (!IsEmptyKohi1 && Kohi1.HokenMstModel != null)
@@ -600,25 +591,16 @@ namespace Domain.Models.InsuranceInfor
             return rateReturn;
         }
 
-        private int GetRateHoken(bool isHoken39)
+        private int GetRateHoken(bool isHoken39, int birthday)
         {
-            if (!IsEmptyHoken && IsHokenMstNotNull)
+            if (!IsEmptyHoken && HokenMstFutanRate != 0)
             {
-                int rateMst1;
-                if (HokenMstFutanRate == 0)
-                {
-                    rateMst1 = 0;
-                }
-                else
-                {
-                    rateMst1 = HokenMstFutanRate;
-                }
-
+                int rateMst1 = HokenMstFutanRate;
                 int rateMst2 = 0;
                 if (HokenKbn == 1 || HokenKbn == 2)
                 {
                     // 未就学児:
-                    if (IsPreSchool())
+                    if (IsPreSchool(birthday))
                     {
                         rateMst2 = 20;
                     }
@@ -636,7 +618,7 @@ namespace Domain.Models.InsuranceInfor
                         }
                     }
                     // 高齢:
-                    else if (IsElder())
+                    else if (IsElder(birthday))
                     {
                         if (KogakuKbn == 3
                             || (new List<int>() { 26, 27, 28 }.Contains(KogakuKbn)))
@@ -644,11 +626,11 @@ namespace Domain.Models.InsuranceInfor
                             return 30;
                             //rateMst2 = HokenInf.HokenMasterModel.FutanRate;  // 30%
                         }
-                        else if (Age >= 75 && SinDate >= KaiseiDate.d20140501)
+                        else if (Age(birthday) >= 75 && SinDate >= KaiseiDate.d20140501)
                         {
                             rateMst2 = 20;
                         }
-                        else if (CIUtil.Is70Zenki_20per(Birthday, SinDate))
+                        else if (CIUtil.Is70Zenki_20per(birthday, SinDate))
                         {
                             rateMst2 = 20;
                         }
@@ -667,19 +649,19 @@ namespace Domain.Models.InsuranceInfor
             return 0;
         }
 
-        private bool IsPreSchool()
+        private bool IsPreSchool(int birthday)
         {
-            return !CIUtil.IsStudent(Birthday, SinDate);
+            return !CIUtil.IsStudent(birthday, SinDate);
         }
 
-        private bool IsElder()
+        private bool IsElder(int birthday)
         {
-            return CIUtil.AgeChk(Birthday, SinDate, 70);
+            return CIUtil.AgeChk(birthday, SinDate, 70);
         }
 
-        private int Age
+        private int Age(int birthday)
         {
-            get => CIUtil.SDateToAge(Birthday, SinDate);
+            return CIUtil.SDateToAge(birthday, SinDate);
         }
 
         public bool IsEmptyKohi1

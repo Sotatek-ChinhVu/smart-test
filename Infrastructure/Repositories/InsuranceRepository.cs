@@ -163,18 +163,17 @@ namespace Infrastructure.Repositories
             List<InsuranceModel> result = new List<InsuranceModel>();
             if (itemList.Count > 0)
             {
+                var ptInf = _tenantDataContext.PtInfs.Where(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete == 0).FirstOrDefault();
                 foreach (var item in itemList)
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
-                    bool isHokenMstNotNull = false;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
-                    var ptInf = _tenantDataContext.PtInfs.Where(pt => pt.HpId == item.HpId && pt.PtId == item.PtId && pt.IsDelete == 0).FirstOrDefault();
+                    
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
                         futanRate = hokenMst.FutanRate;
-                        isHokenMstNotNull = true;
                     }
 
                     int rousaiTenkiSinkei = 0;
@@ -250,7 +249,6 @@ namespace Infrastructure.Repositories
                         houbetu,
                         futanRate,
                         sinDate,
-                        isHokenMstNotNull,
                         ptInf?.Birthday == null ? 0 : ptInf.Birthday
                         );
 
