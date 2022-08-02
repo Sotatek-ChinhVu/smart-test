@@ -22,6 +22,14 @@ public class KaMstRepository : IKaMstRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public List<KaMstModel> GetList()
+    {
+        return _tenantDataContext.KaMsts
+            .Where(k => k.IsDeleted == DeleteTypes.None)
+            .OrderBy(k => k.SortNo).ToList()
+            .Select(k => ToModel(k)).ToList();
+    }
+
     private KaMstModel ToModel(KaMst k)
     {
         return new KaMstModel(

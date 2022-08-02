@@ -48,6 +48,11 @@ using UseCase.InsuranceMst.Get;
 using Interactor.InsuranceMst;
 using Domain.Models.IsuranceMst;
 using UseCase.Reception.UpdateDynamicCell;
+using Domain.Models.RaiinFilterMst;
+using UseCase.RaiinFilterMst.GetList;
+using Interactor.RaiinFilterMst;
+using UseCase.KaMst.GetList;
+using Interactor.KaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -84,6 +89,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IInsuranceMstRepository, InsuranceMstRepository>();
+            services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -127,6 +133,12 @@ namespace EmrCloudApi.Configs.Dependency
             
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
+
+            // RaiinFilter
+            busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
+
+            // Ka
+            busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
