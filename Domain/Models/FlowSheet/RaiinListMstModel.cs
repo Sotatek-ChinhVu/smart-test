@@ -9,9 +9,9 @@ namespace Domain.Models.FlowSheet
 {
     public class RaiinListMstModel
     {
-        public int GrpId { get; set; }
-        public string GrpName { get; set; } = string.Empty;
-        public int SortNo { get; set; }
-        public List<RaiinListDetail>? RaiinListDetailsList { get; set; }
+        public int GrpId { get; private set; }
+        public string GrpName { get; private set; } = string.Empty;
+        public int SortNo { get; private set; }
+        public List<RaiinListDetail> RaiinListDetailsList { get; private set; }
     }
 }

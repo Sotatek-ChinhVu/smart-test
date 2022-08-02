@@ -8,7 +8,12 @@ namespace Domain.Models.FlowSheet
 {
     public class RaiinDateModel
     {
-        public long RaiinNo { get; set; }
-        public int SinDate { get; set; }
+        public long RaiinNo { get; private set; }
+        public int SinDate { get; private set; }
+        public RaiinDateModel(long raiinNo, int sinDate)
+        {
+            RaiinNo = raiinNo;
+            SinDate = sinDate;
+        }
     }
 }

@@ -9,13 +9,13 @@ namespace Domain.Models.FlowSheet
 {
     public class WeekOfMonthModel
     {
-        public DayInfo Sun { get; set; }
-        public DayInfo Mon { get; set; }
-        public DayInfo Tue { get; set; }
-        public DayInfo Wed { get; set; }
-        public DayInfo Thu { get; set; }
-        public DayInfo Fri { get; set; }
-        public DayInfo Sat { get; set; }
+        public DayInfo Sun { get; private set; }
+        public DayInfo Mon { get; private set; }
+        public DayInfo Tue { get; private set; }
+        public DayInfo Wed { get; private set; }
+        public DayInfo Thu { get; private set; }
+        public DayInfo Fri { get; private set; }
+        public DayInfo Sat { get; private set; }
         public WeekOfMonthModel(DayInfo sun, DayInfo mon, DayInfo tue, DayInfo wed, DayInfo thu, DayInfo fri, DayInfo sat)
         {
             Sun = sun ?? new();
@@ -40,13 +40,13 @@ namespace Domain.Models.FlowSheet
 
     public class DayInfo
     {
-        public int Date { get; set; }
-        public string Day { get; set; } = string.Empty;
-        public string ToolTip { get; set; } = string.Empty;
-        public EmrCalendarDateColor Foreground { get; set; }
-        public EmrCalendarDateColor Background { get; set; }
-        public EmrCalendarDateColor BorderBrush { get; set; }
-        public bool IsToday { get; set; }
+        public int Date { get; private set; }
+        public string Day { get; private set; } = string.Empty;
+        public string ToolTip { get; private set; } = string.Empty;
+        public EmrCalendarDateColor Foreground { get; private set; }
+        public EmrCalendarDateColor Background { get; private set; }
+        public EmrCalendarDateColor BorderBrush { get; private set; }
+        public bool IsToday { get; private set; }
 
         public DayInfo (int date, string day, string toolTip, EmrCalendarDateColor foreground, EmrCalendarDateColor background, EmrCalendarDateColor borderBrush, bool isToday)
         {

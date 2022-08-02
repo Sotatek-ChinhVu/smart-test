@@ -8,8 +8,6 @@ namespace Domain.Models.FlowSheet
 {
     public class RaiinListInfModel
     {
-        private RaiinListInfModel item;
-
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public long RaiinNo { get; private set; }
@@ -18,7 +16,7 @@ namespace Domain.Models.FlowSheet
         public int KbnCd { get; private set; }
         public int RaiinListKbn { get; private set; }
         public int SortNo { get; private set; }
-        public bool IsContainsFile { get; set; } = false;
+        public bool IsContainsFile { get; private set; } = false;
         public RaiinListInfModel(int hpId, long ptId, long raiinNo, int sinDate, int grpId, int kbnCd, int raiinListKbn, int sortNo)
         {
             HpId = hpId;
@@ -32,7 +30,14 @@ namespace Domain.Models.FlowSheet
         }
         public RaiinListInfModel(RaiinListInfModel item)
         {
-            this.item = item;
+            HpId = item.HpId;
+            PtId = item.PtId;
+            RaiinNo = item.RaiinNo;
+            SinDate = item.SinDate;
+            GrpId = item.GrpId;
+            KbnCd = item.KbnCd;
+            RaiinListKbn = item.RaiinListKbn;
+            SortNo = item.SortNo;
         }
     }
 }

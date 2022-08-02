@@ -10,20 +10,20 @@ namespace Domain.Models.FlowSheet
     public class CalendarGridModel
     {
         public ObservableCollection<WeekOfMonthModel> WeekOfMonths { get; set; }
-        public DateTime MonthYear { get; set; }
-        public int Month { get; set; }
-        public int Year { get; set; }
-        public int MonthTextMode { get; set; } = 1;
-        public bool HighlightToday { get; set; } = true;
-        public bool HighCurrentMonth { get; set; }
-        public string MonthText { get; set; }
-        public string MonthFontWeight { get; set; } = "Normal";
-        public List<KeyValuePair<int, int>> RaiinDayDict { get; set; }
-        public Dictionary<int, string> Holidays { get; set; }
-        public List<HolidayModel> HolidayModels { get; set; }
-        public int SinDate { get; set; }
-        public List<KeyValuePair<int, string>> RaiinTags { get; set; }
-        public List<KeyValuePair<int, RaiinStateDictObjectValue>> RaiinStateDict { get; set; }
+        public DateTime MonthYear { get; private set; }
+        public int Month { get; private set; }
+        public int Year { get; private set; }
+        public int MonthTextMode { get; private set; } = 1;
+        public bool HighlightToday { get; private set; } = true;
+        public bool HighCurrentMonth { get; private set; }
+        public string MonthText { get; private set; }
+        public string MonthFontWeight { get; private set; } = "Normal";
+        public List<KeyValuePair<int, int>> RaiinDayDict { get; private set; }
+        public Dictionary<int, string> Holidays { get; private set; }
+        public List<HolidayModel> HolidayModels { get; private set; }
+        public int SinDate { get; private set; }
+        public List<KeyValuePair<int, string>> RaiinTags { get; private set; }
+        public List<KeyValuePair<int, RaiinStateDictObjectValue>> RaiinStateDict { get; private set; }
 
         public CalendarGridModel(DateTime date)
         {
@@ -49,8 +49,8 @@ namespace Domain.Models.FlowSheet
     }
     public class RaiinStateDictObjectValue
     {
-        public int Value { get; set; }
-        public long RaiinNo { get; set; }
+        public int Value { get; private set; }
+        public long RaiinNo { get; private set; }
 
         public RaiinStateDictObjectValue(int value, long raiinNo)
         {

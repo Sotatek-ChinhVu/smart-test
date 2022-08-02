@@ -40,6 +40,7 @@ namespace Helper.Common
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 result = 0;
             }
             return result;

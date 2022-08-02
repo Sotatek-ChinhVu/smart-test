@@ -14,16 +14,16 @@ namespace Domain.Models.FlowSheet
         public long RaiinNo { get; private set; }
         public int SinDate { get; private set; }
         public int CmtKbn { get; private set; }
-        public string? Text { get; private set; }
-        public bool IsAddNew { get; set; }
-        public RaiinListCmtModel(int hpId, long ptId, long raiinNo, int sinDate, int cmtKbn, string? text)
+        public string Text { get; private set; }
+        public bool IsAddNew { get; private set; }
+        public RaiinListCmtModel(int hpId, long ptId, long raiinNo, int sinDate, int cmtKbn, string text)
         {
             HpId = hpId;
             PtId = ptId;
             RaiinNo = raiinNo;
             SinDate = sinDate;
             CmtKbn = cmtKbn;
-            Text = text;
+            Text = text ?? string.Empty;
         }
         public RaiinListCmtModel(RaiinListCmt model)
         {
@@ -35,14 +35,14 @@ namespace Domain.Models.FlowSheet
             Text = model.Text;
             IsAddNew = false;
         }
-        public RaiinListCmtModel(int hpId, long ptId, long raiinNo, int sinDate, int cmtKbn, string? text, bool isAddNew)
+        public RaiinListCmtModel(int hpId, long ptId, long raiinNo, int sinDate, int cmtKbn, string text, bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
             RaiinNo = raiinNo;
             SinDate = sinDate;
             CmtKbn = cmtKbn;
-            Text = text;
+            Text = text ?? string.Empty;
             IsAddNew = isAddNew;
         }
     }

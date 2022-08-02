@@ -108,11 +108,10 @@ namespace Interactor.FlowSheet
                 {
                     tempList.Add(new KeyValuePair<int, int>(item.SinDate, item.SyosaisinKbn));
                     stateList.Add(new KeyValuePair<int, RaiinStateDictObjectValue>(item.SinDate, new(item.Status, listRaiinNo.FirstOrDefault(c => c.SinDate == item.SinDate)?.RaiinNo ?? 0)));
-                    // need adding starResource
-                    //if (!string.IsNullOrEmpty(item.RaiinListTag.StarResource))
-                    //{
-                    //    tagList.Add(new KeyValuePair<int, string>(item.SinDate, item.RaiinListTag.StarResource));
-                    //}
+                    if (!string.IsNullOrEmpty(item.RaiinListTag.StarResource))
+                    {
+                        tagList.Add(new KeyValuePair<int, string>(item.SinDate, item.RaiinListTag.StarResource));
+                    }
                 }
             }
             model.RaiinStateDict = stateList;

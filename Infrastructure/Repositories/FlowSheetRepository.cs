@@ -2,6 +2,7 @@
 using Domain.Models.FlowSheet;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extendsions;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -14,7 +15,7 @@ namespace Infrastructure.Repositories
         private readonly TenantDataContext _tenantDataContext;
         public FlowSheetRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo)
         {
@@ -73,7 +74,7 @@ namespace Infrastructure.Repositories
                                         .Join(nextOdrKarteInfs, g => new { g.HpId, g.PtId, g.RsvkrtNo }, k => new { k.HpId, k.PtId, k.RsvkrtNo }, 
                                         (g, k) => new { NextOdr = g, Karte = k});
             var nextOdrs = output.AsEnumerable().Select(
-                    data => new FlowSheetModel(hpId, ptId, data.NextOdr.RsvDate, data.Karte?.Text, data.NextOdr.RsvkrtNo, -1, true, false, 0));
+                    data => new FlowSheetModel(hpId, ptId, data.NextOdr.RsvDate, data.Karte.Text ?? string.Empty, data.NextOdr.RsvkrtNo, -1, true, false, 0));
             return nextOdrs;
         }
 
