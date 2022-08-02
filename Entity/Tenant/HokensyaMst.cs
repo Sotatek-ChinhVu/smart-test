@@ -66,10 +66,10 @@ namespace Entity.Tenant
         /// <summary>
         /// 保険者番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "HOKENSYA_NO", Order = 2)]
         [MaxLength(8)]
-        public string? HokensyaNo { get; set; } = string.Empty;
+        public string HokensyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 記号

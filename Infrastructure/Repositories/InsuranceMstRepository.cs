@@ -479,7 +479,7 @@ namespace Infrastructure.Repositories
                 prefNo = hpInf.PrefNo;
             }
 
-            var listAllDataHokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HokensyaNo.StartsWith(keyword)
+            var listAllDataHokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => (!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.StartsWith(keyword))
                                                         && (x.PrefNo == 0 || x.PrefNo == prefNo) 
                                                         && (x.HokenKbn == 1 || x.HokenKbn == 2)
                                                         && x.HpId == hpId
@@ -488,21 +488,21 @@ namespace Infrastructure.Repositories
                                                         .ToList();
             var listDataPaging = listAllDataHokensyaMst.Select(item => new HokensyaMstModel(
                                                                 item.HpId,
-                                                                item.Name,
-                                                                item.KanaName,
-                                                                item.HoubetuKbn,
-                                                                item.Houbetu,
+                                                                item.Name ?? string.Empty,
+                                                                item.KanaName ?? string.Empty,
+                                                                item.HoubetuKbn ?? string.Empty,
+                                                                item.Houbetu ?? string.Empty,
                                                                 item.HokenKbn,
                                                                 item.PrefNo,
                                                                 item.HokensyaNo,
-                                                                item.Kigo,
-                                                                item.Bango,
+                                                                item.Kigo ?? string.Empty,
+                                                                item.Bango ?? string.Empty,
                                                                 item.RateHonnin,
                                                                 item.RateKazoku,
-                                                                item.PostCode,
-                                                                item.Address1,
-                                                                item.Address2,
-                                                                item.Tel1
+                                                                item.PostCode ?? string.Empty,
+                                                                item.Address1 ?? string.Empty,
+                                                                item.Address2 ?? string.Empty,
+                                                                item.Tel1 ?? string.Empty
                                                             ))
                                 .OrderBy(item => item.HokensyaNo).Skip(pageIndex).Take(pageCount);
             return listDataPaging;

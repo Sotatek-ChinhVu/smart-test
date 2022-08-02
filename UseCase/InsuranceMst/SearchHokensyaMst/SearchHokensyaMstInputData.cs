@@ -9,7 +9,7 @@ namespace UseCase.SearchHokensyaMst.Get
 {
     public class SearchHokensyaMstInputData : IInputData<SearchHokensyaMstOutputData>
     {
-        public SearchHokensyaMstInputData(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
+        public SearchHokensyaMstInputData(int hpId, int pageIndex, int pageCount, int sinDate, string? keyword)
         {
             HpId = hpId;
             PageIndex = pageIndex;
@@ -26,6 +26,6 @@ namespace UseCase.SearchHokensyaMst.Get
 
         public int SinDate { get; private set; }
 
-        public string Keyword { get; private set; }
+        public string? Keyword { get; private set; }
     }
 }
