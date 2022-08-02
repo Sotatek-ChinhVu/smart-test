@@ -46,21 +46,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "RECE_KA_CD")]
         [MaxLength(2)]
-        public string ReceKaCd { get; set; } = string.Empty;
+        public string? ReceKaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療科略称
         /// </summary>
         [Column(name: "KA_SNAME")]
         [MaxLength(20)]
-        public string KaSname { get; set; } = string.Empty;
+        public string? KaSname { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療科名称
         /// </summary>
         [Column(name: "KA_NAME")]
         [MaxLength(40)]
-        public string KaName { get; set; } = string.Empty;
+        public string? KaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
