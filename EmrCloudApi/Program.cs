@@ -4,13 +4,6 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Add config from json file
-builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
-{
-    config.AddJsonFile("env.json", optional: true, reloadOnChange: true)
-          .AddJsonFile($"env.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", true, true);
-});
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -37,6 +30,19 @@ var dependencySetup = new ModuleDependencySetup();
 dependencySetup.Run(builder.Services);
 
 var app = builder.Build();
+
+//Add config from json file
+string enviroment = "Development";
+if (app.Environment.IsProduction() ||
+    app.Environment.IsStaging())
+{
+    enviroment = "Staging";
+}
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("env.json", optional: true, reloadOnChange: true)
+          .AddJsonFile($"env.{enviroment}.json", true, true);
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() ||
