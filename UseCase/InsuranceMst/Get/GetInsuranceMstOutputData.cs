@@ -10,11 +10,11 @@ namespace UseCase.InsuranceMst.Get
 {
     public class GetInsuranceMstOutputData : IOutputData
     {
-        public InsuranceMstModel? InsuranceMstData { get; private set; }
+        public InsuranceMstModel InsuranceMstData { get; private set; }
 
         public GetInsuranceMstStatus Status { get; private set; }
 
-        public GetInsuranceMstOutputData(InsuranceMstModel? data, GetInsuranceMstStatus status)
+        public GetInsuranceMstOutputData(InsuranceMstModel data, GetInsuranceMstStatus status)
         {
             InsuranceMstData = data;
             Status = status;

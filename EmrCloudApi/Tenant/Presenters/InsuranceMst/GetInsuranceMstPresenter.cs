@@ -13,10 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceMst
             Result = new Response<GetInsuranceMstResponse>()
             {
 
-                Data = new GetInsuranceMstResponse()
-                {
-                    InsuranceMst = output.InsuranceMstData
-                },
+                Data = new GetInsuranceMstResponse(output.InsuranceMstData),
                 Status = (byte)output.Status,
             };
             switch (output.Status)

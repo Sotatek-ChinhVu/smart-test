@@ -4,6 +4,12 @@ namespace EmrCloudApi.Tenant.Responses.InsuranceMst
 {
     public class GetInsuranceMstResponse
     {
-        public InsuranceMstModel? InsuranceMst { get; set; }
+        public InsuranceMstModel InsuranceMst { get; private set; }
+
+        public GetInsuranceMstResponse(InsuranceMstModel insuranceMst)
+        {
+            InsuranceMst = insuranceMst;
+        }
+
     }
 }

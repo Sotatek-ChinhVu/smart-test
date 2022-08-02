@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.Insurance
+﻿namespace EmrCloudApi.Tenant.Requests.InsuranceMst
 {
     public class GetInsuranceMstRequest
     {

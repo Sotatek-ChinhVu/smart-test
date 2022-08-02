@@ -24,6 +24,7 @@ using UseCase.PatientInformation.GetById;
 using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using UseCase.InsuranceMst.Get;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
+using EmrCloudApi.Tenant.Requests.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
