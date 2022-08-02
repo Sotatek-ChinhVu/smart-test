@@ -3,4 +3,5 @@
 public enum GetRaiinFilterMstListStatus
 {
     Success = 1,
+    NoData,
 }

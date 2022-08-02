@@ -19,6 +19,7 @@ public class GetRaiinFilterMstListPresenter : IGetRaiinFilterMstListOutputPort
     private string GetMessage(GetRaiinFilterMstListStatus status) => status switch
     {
         GetRaiinFilterMstListStatus.Success => ResponseMessage.Success,
+        GetRaiinFilterMstListStatus.NoData => ResponseMessage.NoData,
         _ => string.Empty
     };
 }
