@@ -12,5 +12,5 @@ public class GetRaiinFilterMstListOutputData : IOutputData
     }
 
     public GetRaiinFilterMstListStatus Status { get; private set; }
-    public List<RaiinFilterMstModel> FilterMsts { get; private set; } = new List<RaiinFilterMstModel>();
+    public List<RaiinFilterMstModel> FilterMsts { get; private set; }
 }
