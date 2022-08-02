@@ -21,6 +21,9 @@ using EmrCloudApi.Tenant.Responses.PatientInfor;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using EmrCloudApi.Tenant.Responses.InsuranceMst;
+using UseCase.InsuranceMst.Get;
+using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -104,6 +107,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListPatientGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetInsuranceMst")]
+        public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
+        {
+            var input = new GetInsuranceMstInputData(request.HpId, request.PtId, request.SinDate, request.HokenId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetInsuranceMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetInsuranceMstResponse>>(presenter.Result);
         }
     }
 }

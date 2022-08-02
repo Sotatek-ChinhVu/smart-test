@@ -578,6 +578,42 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
+
+        //西暦(yyyymmdd)から年齢を計算する
+        //Calculate age from yyyymmdd format
+        public static int SDateToAge(int Ymd, int ToYmd)
+        {
+            if (Ymd <= 0 || ToYmd <= 0)
+            {
+                return -1;
+            }
+            string WrkStr;
+            int Age;
+
+            try
+            {
+                WrkStr = Ymd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
+
+                WrkStr = ToYmd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);
+
+                Age = toDate.Year - birthDate.Year;
+
+                if (birthDate.Month > toDate.Month)
+                    Age = Age - 1;
+
+                if ((birthDate.Month == toDate.Month) &&
+                    (birthDate.Day > toDate.Day))
+                    Age = Age - 1;
+            }
+            catch
+            {
+                Age = -1;
+            }
+
+            return Age;
+        }
     }
     #endregion
 

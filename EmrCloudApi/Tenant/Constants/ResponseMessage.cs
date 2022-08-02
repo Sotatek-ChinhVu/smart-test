@@ -40,6 +40,13 @@
         public static readonly string GetInsuranceListInvalidSinDate = "Invalid SinDate !";
         public static readonly string GetInsuranceListSuccessed = "Successed!!!";
 
+        //Insurance Mst
+        public static readonly string GetInsuranceMstInvalidPtId = "Invalid PtId !";
+        public static readonly string GetInsuranceMstInvalidHpId = "Invalid HpId !";
+        public static readonly string GetInsuranceMstInvalidSinDate = "Invalid SinDate !";
+        public static readonly string GetInsuranceMstInvalidHokenId = "Invalid HokenId !";
+        public static readonly string GetInsuranceMstSuccessed = "Successed!!!";
+
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid raiinNo";
         public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";

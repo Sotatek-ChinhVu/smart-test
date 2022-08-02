@@ -39,6 +39,9 @@ using Domain.CalculationInf;
 using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
+using UseCase.InsuranceMst.Get;
+using Interactor.InsuranceMst;
+using Domain.Models.IsuranceMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -70,6 +73,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
+            services.AddTransient<IInsuranceMstRepository, InsuranceMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -108,6 +112,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+            
+            //Insurance Mst
+            busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
