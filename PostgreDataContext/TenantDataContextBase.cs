@@ -59,7 +59,6 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
             modelBuilder.Entity<RoudouMst>().HasKey(r => new { r.RoudouCd });
-            modelBuilder.Entity<ByomeiMstAftercare>().HasKey(r => new { r.Byomei, r.ByomeiCd, r.StartDate });
             modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.RoudouCd, r.KantokuCd });
             modelBuilder.Entity<HokenMst>().HasKey(r => new { r.HpId, r.PrefNo, r.HokenNo, r.HokenEdaNo, r.StartDate });
         }

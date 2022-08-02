@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.Insurance;
 using Domain.Models.IsuranceMst;
 using Helper.Common;
 using Infrastructure.Constants;
@@ -174,7 +175,7 @@ namespace Infrastructure.Repositories
             var ByomeiMstAftercares = _tenantDataContext.ByomeiMstAftercares.OrderBy(entity => entity.ByomeiCd)
                                          .Select(x => new ByomeiMstAftercareModel(
                                                 x.ByomeiCd,
-                                                x.ByomeiCd
+                                                x.Byomei
                                              ))
                                         .ToList();
 
@@ -266,6 +267,7 @@ namespace Infrastructure.Repositories
                           x.HokenId,
                           x.StartDate,
                           x.EndDate,
+                          0,
                           x.Rate,
                           x.GendoGaku,
                           x.SikakuDate,
@@ -300,6 +302,7 @@ namespace Infrastructure.Repositories
                                   itemKohi1.HokenId,
                                   itemKohi1.StartDate,
                                   itemKohi1.EndDate,
+                                  0,
                                   itemKohi1.Rate,
                                   itemKohi1.GendoGaku,
                                   itemKohi1.SikakuDate,
@@ -330,6 +333,7 @@ namespace Infrastructure.Repositories
                                   itemKohi2.HokenId,
                                   itemKohi2.StartDate,
                                   itemKohi2.EndDate,
+                                  0,
                                   itemKohi2.Rate,
                                   itemKohi2.GendoGaku,
                                   itemKohi2.SikakuDate,
@@ -361,6 +365,7 @@ namespace Infrastructure.Repositories
                                   itemKohi3.HokenId,
                                   itemKohi3.StartDate,
                                   itemKohi3.EndDate,
+                                  0,
                                   itemKohi3.Rate,
                                   itemKohi3.GendoGaku,
                                   itemKohi3.SikakuDate,
@@ -392,6 +397,7 @@ namespace Infrastructure.Repositories
                                   itemKohi4.HokenId,
                                   itemKohi4.StartDate,
                                   itemKohi4.EndDate,
+                                  0,
                                   itemKohi4.Rate,
                                   itemKohi4.GendoGaku,
                                   itemKohi4.SikakuDate,
