@@ -36,9 +36,9 @@ public class KaMstRepository : IKaMstRepository
             k.Id,
             k.KaId,
             k.SortNo,
-            k.ReceKaCd,
-            k.KaSname,
-            k.KaName,
+            k.ReceKaCd ?? string.Empty,
+            k.KaSname ?? string.Empty,
+            k.KaName ?? string.Empty,
             k.IsDeleted);
     }
 }
