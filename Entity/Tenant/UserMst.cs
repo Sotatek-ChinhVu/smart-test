@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HP_ID", Order = 1)]
         //[Index("USER_MST_IDX01", 1)]
         public int HpId { get; set; }
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "MAYAKU_LICENSE_NO")]
         [MaxLength(20)]
-        public string MayakuLicenseNo { get; set; } = string.Empty;
+        public string? MayakuLicenseNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 在籍開始日
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "RENKEI_CD1")]
         [MaxLength(14)]
-        public string RenkeiCd1 { get; set; } = string.Empty;
+        public string? RenkeiCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

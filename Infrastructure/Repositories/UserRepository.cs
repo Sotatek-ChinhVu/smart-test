@@ -1,5 +1,8 @@
 ﻿using Domain.Models.User;
+using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -17,7 +20,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public void Create(UserMst user)
+        public void Create(UserMstModel user)
         {
             throw new NotImplementedException();
         }
@@ -27,9 +30,25 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserMst> GetAll()
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
         {
-            return _tenantDataContext.UserMsts.Select(u => new UserMst(u.UserId, u.Name)).ToList();
+            var query = _tenantDataContext.UserMsts.Where(u =>
+                u.StartDate <= sinDate
+                && u.EndDate >= sinDate
+                && u.IsDeleted == DeleteTypes.None);
+            if (isDoctorOnly)
+            {
+                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+            }
+
+            return query.OrderBy(u => u.SortNo).ToList().Select(u => ToModel(u)).ToList();
+        }
+
+        public UserMstModel? GetByUserId(int userId)
+        {
+            var entity = _tenantDataContext.UserMsts
+                .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            return entity is null ? null : ToModel(entity);
         }
 
         public int MaxUserId()
@@ -37,14 +56,35 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.UserMsts.Max(u => u.UserId);
         }
 
-        public UserMst Read(UserId userId)
+        public UserMstModel Read(UserId userId)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(UserMst user)
+        public void Update(UserMstModel user)
         {
             throw new NotImplementedException();
+        }
+
+        private UserMstModel ToModel(UserMst u)
+        {
+            return new UserMstModel(
+                u.UserId,
+                u.JobCd,
+                u.ManagerKbn,
+                u.KaId,
+                u.KanaName,
+                u.Name,
+                u.Sname,
+                u.DrName,
+                u.LoginId,
+                u.LoginPass,
+                u.MayakuLicenseNo ?? string.Empty,
+                u.StartDate,
+                u.EndDate,
+                u.SortNo,
+                u.RenkeiCd1 ?? string.Empty,
+                u.IsDeleted);
         }
     }
 }

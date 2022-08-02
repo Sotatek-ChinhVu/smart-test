@@ -1,13 +1,12 @@
-﻿using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using UseCase.PatientInfor.SearchSimple;
 
 namespace EmrCloudApi.Tenant.Responses.PatientInformaiton
 {
     public class SearchPatientInforSimpleResponse
     {
-        public List<PatientInforModel> Data { get; private set; }
+        public List<PatientInfoWithGroup> Data { get; private set; }
 
-        public SearchPatientInforSimpleResponse(List<PatientInforModel> data)
+        public SearchPatientInforSimpleResponse(List<PatientInfoWithGroup> data)
         {
             Data = data;
         }

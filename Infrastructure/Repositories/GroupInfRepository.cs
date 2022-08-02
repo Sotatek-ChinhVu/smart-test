@@ -17,17 +17,40 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
+        {
+            var result =
+                from groupPatient in _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId))
+                join groupDetailMst in _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0)
+                on groupPatient.GroupCode equals groupDetailMst.GrpCode
+                select new GroupInfModel
+                (
+                    groupPatient.HpId,
+                    groupPatient.PtId,
+                    groupPatient.GroupId,
+                    groupPatient.GroupCode ?? string.Empty,
+                    groupDetailMst.GrpCodeName
+                );
+
+            return result.ToList();
+        }
+
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var dataGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
-                .Select( x => new GroupInfModel(
-                    x.HpId,
-                    x.PtId,
-                    x.GroupId,
-                    x.GroupCode ?? string.Empty
-                    ))
-                .ToList();
-            return dataGroupPatient;
+            var result =
+                from groupPatient in _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
+                join groupDetailMst in _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0)
+                on groupPatient.GroupCode equals groupDetailMst.GrpCode
+                select new GroupInfModel
+                (
+                    groupPatient.HpId,
+                    groupPatient.PtId,
+                    groupPatient.GroupId,
+                    groupPatient.GroupCode ?? string.Empty,
+                    groupDetailMst.GrpCodeName
+                );
+
+            return result.ToList();
         }
     }
 }

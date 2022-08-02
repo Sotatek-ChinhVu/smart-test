@@ -1,26 +1,25 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.User;
-using Microsoft.AspNetCore.Mvc;
 using UseCase.User.GetList;
 
-namespace EmrCloudApi.Tenant.Presenters.User
+namespace EmrCloudApi.Tenant.Presenters.User;
+
+public class GetUserListPresenter : IGetUserListOutputPort
 {
-    public class GetUserListPresenter : IGetUserListOutputPort
+    public Response<GetUserListResponse> Result { get; private set; } = new Response<GetUserListResponse>();
+    
+    public void Complete(GetUserListOutputData output)
     {
-        public Response<GetUserListResponse> Result { get; private set; } = default!;
-        
-        public void Complete(GetUserListOutputData outputData)
-        {
-            Result = new Response<GetUserListResponse>()
-            {
-                Data = new GetUserListResponse()
-                {
-                    UserList = outputData.UserList
-                },
-                Status = 1,
-                Message = ResponseMessage.GetUserListSuccessed
-            };
-        }
+        Result.Data = new GetUserListResponse(output.Users);
+        Result.Message = GetMessage(output.Status);
+        Result.Status = (int)output.Status;
     }
+
+    private string GetMessage(GetUserListStatus status) => status switch
+    {
+        GetUserListStatus.Success => ResponseMessage.Success,
+        GetUserListStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+        _ => string.Empty
+    };
 }

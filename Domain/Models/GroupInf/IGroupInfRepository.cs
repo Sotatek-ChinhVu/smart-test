@@ -9,5 +9,7 @@ namespace Domain.Models.GroupInf
     public interface IGroupInfRepository
     {
         IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId);
+
+        IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList);
     }
 }
