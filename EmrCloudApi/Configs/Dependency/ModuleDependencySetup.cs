@@ -53,6 +53,8 @@ using UseCase.RaiinFilterMst.GetList;
 using Interactor.RaiinFilterMst;
 using UseCase.KaMst.GetList;
 using Interactor.KaMst;
+using UseCase.UketukeSbtMst.GetList;
+using Interactor.UketukeSbtMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -139,6 +141,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+
+            // UketukeSbt
+            busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
