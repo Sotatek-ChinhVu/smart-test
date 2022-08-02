@@ -61,6 +61,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RoudouMst>().HasKey(r => new { r.RoudouCd });
             modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.RoudouCd, r.KantokuCd });
             modelBuilder.Entity<HokenMst>().HasKey(r => new { r.HpId, r.PrefNo, r.HokenNo, r.HokenEdaNo, r.StartDate });
+            modelBuilder.Entity<HokensyaMst>().HasKey(r => new { r.HpId });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

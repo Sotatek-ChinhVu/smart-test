@@ -9,6 +9,8 @@
         public static readonly string InvalidRaiinNo = "Invalid RaiinNo";
         public static readonly string InvalidSinDate = "Invalid SinDate";
         public static readonly string InvalidHokenId = "Invalid HokenId";
+        public static readonly string InvalidPageIndex = "Invalid PageIndex";
+        public static readonly string InvalidPageCount = "Invalid PageCount";
 
         //Common
         public static readonly string NotFound = "Not found";

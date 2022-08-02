@@ -55,6 +55,7 @@ using UseCase.KaMst.GetList;
 using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
+using UseCase.SearchHokensyaMst.Get;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -144,6 +145,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
+
+            // HokensyaMst
+            busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

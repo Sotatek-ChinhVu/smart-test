@@ -10,6 +10,6 @@ namespace Domain.Models.IsuranceMst
     {
         public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate, int hokenId);
 
-        //public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate);
+        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword);
     }
 }

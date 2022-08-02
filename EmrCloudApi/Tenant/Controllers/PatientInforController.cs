@@ -25,6 +25,7 @@ using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using UseCase.InsuranceMst.Get;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
+using UseCase.SearchHokensyaMst.Get;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -120,6 +121,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetInsuranceMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("SearchHokensyaMst")]
+        public ActionResult<Response<SearchHokensyaMstResponse>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
+        {
+            var input = new SearchHokensyaMstInputData(request.HpId, request.PageIndex, request.PageCount, request.SinDate, request.Keyword);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchHokenMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchHokensyaMstResponse>>(presenter.Result);
         }
     }
 }

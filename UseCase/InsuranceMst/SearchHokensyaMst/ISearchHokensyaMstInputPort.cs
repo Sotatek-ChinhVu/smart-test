@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.InsuranceMst.Get
+namespace UseCase.SearchHokensyaMst.Get
 {
-    public interface IGetInsuranceMstOutputPort : IOutputPort<GetInsuranceMstOutputData>
+    public interface ISearchHokensyaMstInputPort : IInputPort<SearchHokensyaMstInputData, SearchHokensyaMstOutputData>
     {
     }
 }

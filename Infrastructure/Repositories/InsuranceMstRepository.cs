@@ -470,7 +470,43 @@ namespace Infrastructure.Repositories
             return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, Kohi1MstFilter, Kohi2MstFilter, Kohi3MstFilter, Kohi4MstFilter, dataKohis, dataHokenInf, dataComboboxKantokuMst, ByomeiMstAftercares, dataComboboxHokenMst);
         }
 
-       
+        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
+        {
+            int prefNo = 0;
+            var hpInf = _tenantDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
+            if (hpInf != null)
+            {
+                prefNo = hpInf.PrefNo;
+            }
+
+            var listAllDataHokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HokensyaNo.StartsWith(keyword)
+                                                        && (x.PrefNo == 0 || x.PrefNo == prefNo) 
+                                                        && (x.HokenKbn == 1 || x.HokenKbn == 2)
+                                                        && x.HpId == hpId
+                                                        && x.IsDelete == 0
+                                                        && x.DeleteDate < sinDate)
+                                                        .ToList();
+            var listDataPaging = listAllDataHokensyaMst.Select(item => new HokensyaMstModel(
+                                                                item.HpId,
+                                                                item.Name,
+                                                                item.KanaName,
+                                                                item.HoubetuKbn,
+                                                                item.Houbetu,
+                                                                item.HokenKbn,
+                                                                item.PrefNo,
+                                                                item.HokensyaNo,
+                                                                item.Kigo,
+                                                                item.Bango,
+                                                                item.RateHonnin,
+                                                                item.RateKazoku,
+                                                                item.PostCode,
+                                                                item.Address1,
+                                                                item.Address2,
+                                                                item.Tel1
+                                                            ))
+                                .OrderBy(item => item.HokensyaNo).Skip(pageIndex).Take(pageCount);
+            return listDataPaging;
+        }
 
 
         private static List<HokenMstModel> GetDataCbbKohiMasterMaintenance(KohiInfModel itemKohi, List<HokenMstModel> kohiMst, List<HokenMstModel> oldKohiInfMstList, int sinDay)

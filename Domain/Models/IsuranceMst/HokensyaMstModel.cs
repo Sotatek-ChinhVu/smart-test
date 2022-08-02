@@ -8,7 +8,7 @@ namespace Domain.Models.IsuranceMst
 {
     public class HokensyaMstModel
     {
-        public HokensyaMstModel(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, string hokenKbn, string prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1)
+        public HokensyaMstModel(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1)
         {
             HpId = hpId;
             Name = name;
@@ -38,9 +38,9 @@ namespace Domain.Models.IsuranceMst
 
         public string Houbetu { get; private set; }
 
-        public string HokenKbn { get; private set; }
+        public int HokenKbn { get; private set; }
 
-        public string PrefNo { get; private set; }
+        public int PrefNo { get; private set; }
 
         public string HokensyaNo { get; private set; }
 
