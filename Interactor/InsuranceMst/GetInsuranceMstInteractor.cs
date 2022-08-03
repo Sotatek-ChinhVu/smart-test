@@ -1,4 +1,4 @@
-﻿using Domain.Models.IsuranceMst;
+﻿using Domain.Models.InsuranceMst;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,25 +21,20 @@ namespace Interactor.InsuranceMst
         {
             if (inputData.HpId < 0)
             {
-                return new GetInsuranceMstOutputData(null, GetInsuranceMstStatus.InvalidHpId);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidHpId);
             }
 
             if (inputData.PtId < 0)
             {
-                return new GetInsuranceMstOutputData(null, GetInsuranceMstStatus.InvalidPtId);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidPtId);
             }
             
             if (inputData.SinDate < 0)
             {
-                return new GetInsuranceMstOutputData(null, GetInsuranceMstStatus.InvalidSinDate);
+                return new GetInsuranceMstOutputData(new InsuranceMstModel(), GetInsuranceMstStatus.InvalidSinDate);
             }
 
-            if (inputData.HokenId < 0)
-            {
-                return new GetInsuranceMstOutputData(null, GetInsuranceMstStatus.InvalidHokenId);
-            }
-
-            var data = _insuranceMstReponsitory.GetDataInsuranceMst(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.HokenId);
+            var data = _insuranceMstReponsitory.GetDataInsuranceMst(inputData.HpId, inputData.PtId, inputData.SinDate);
             return new GetInsuranceMstOutputData(data, GetInsuranceMstStatus.Successed);
         }
     }

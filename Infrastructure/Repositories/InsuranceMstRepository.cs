@@ -1,6 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
-using Domain.Models.IsuranceMst;
+using Domain.Models.InsuranceMst;
 using Helper.Common;
 using Infrastructure.Constants;
 using Infrastructure.Interfaces;
@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate, int hokenId)
+        public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate)
         {
             // data combobox 1 toki
             var TokkiMsts = _tenantDataContext.TokkiMsts.Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
@@ -144,13 +144,7 @@ namespace Infrastructure.Repositories
                 || hokenInf.HokenSbtKbn == 8
                 || hokenInf.HokenSbtKbn == 0);
 
-            var KohiMst = NewHokenMstList.FindAll(kohiInf =>
-                kohiInf.HokenSbtKbn == 2
-                || kohiInf.HokenSbtKbn == 5
-                || kohiInf.HokenSbtKbn == 6
-                || kohiInf.HokenSbtKbn == 7);
-
-            var OldKohiInfMstList = OldHokenMstList.FindAll(kohiInf =>
+            var KohiHokenMst = NewHokenMstList.FindAll(kohiInf =>
                 kohiInf.HokenSbtKbn == 2
                 || kohiInf.HokenSbtKbn == 5
                 || kohiInf.HokenSbtKbn == 6
@@ -281,143 +275,6 @@ namespace Infrastructure.Repositories
                        ))
                     .ToList();
 
-
-            var Kohi1MstFilter = new List<HokenMstModel>();
-            var Kohi2MstFilter = new List<HokenMstModel>();
-            var Kohi3MstFilter = new List<HokenMstModel>();
-            var Kohi4MstFilter = new List<HokenMstModel>();
-
-            var hokenPartent = _tenantDataContext.PtHokenPatterns.SingleOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenPid == hokenId);
-            if (hokenPartent != null)
-            {
-                //kohi1
-                if (hokenPartent.Kohi1Id > 0)
-                {
-                    var itemKohi1 = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenPartent.Kohi1Id);
-                    if (itemKohi1 != null)
-                    {
-                        var kohi1Model = new KohiInfModel(
-                                  itemKohi1.FutansyaNo ?? string.Empty,
-                                  itemKohi1.JyukyusyaNo ?? string.Empty,
-                                  itemKohi1.HokenId,
-                                  itemKohi1.StartDate,
-                                  itemKohi1.EndDate,
-                                  0,
-                                  itemKohi1.Rate,
-                                  itemKohi1.GendoGaku,
-                                  itemKohi1.SikakuDate,
-                                  itemKohi1.KofuDate,
-                                  itemKohi1.TokusyuNo ?? string.Empty,
-                                  itemKohi1.HokenSbtKbn,
-                                  itemKohi1.Houbetu ?? string.Empty,
-                                  itemKohi1.HokenNo,
-                                  itemKohi1.HokenEdaNo,
-                                  itemKohi1.PrefNo
-                            );
-                        Kohi1MstFilter = GetDataCbbKohiMasterMaintenance(kohi1Model, KohiMst, OldKohiInfMstList, sinDate);
-                    }
-                }
-                else
-                {
-                    Kohi1MstFilter = KohiMst;
-                }
-                if (hokenPartent.Kohi2Id > 0)
-                {
-                    //kohi2
-                    var itemKohi2 = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenPartent.Kohi2Id);
-                    if (itemKohi2 != null)
-                    {
-                        var kohi2Model = new KohiInfModel(
-                                  itemKohi2.FutansyaNo ?? string.Empty,
-                                  itemKohi2.JyukyusyaNo ?? string.Empty,
-                                  itemKohi2.HokenId,
-                                  itemKohi2.StartDate,
-                                  itemKohi2.EndDate,
-                                  0,
-                                  itemKohi2.Rate,
-                                  itemKohi2.GendoGaku,
-                                  itemKohi2.SikakuDate,
-                                  itemKohi2.KofuDate,
-                                  itemKohi2.TokusyuNo ?? string.Empty,
-                                  itemKohi2.HokenSbtKbn,
-                                  itemKohi2.Houbetu ?? string.Empty,
-                                  itemKohi2.HokenNo,
-                                  itemKohi2.HokenEdaNo,
-                                  itemKohi2.PrefNo
-                            );
-                        Kohi2MstFilter = GetDataCbbKohiMasterMaintenance(kohi2Model, KohiMst, OldKohiInfMstList, sinDate);
-                    }
-                }
-                else
-                {
-                     Kohi2MstFilter = KohiMst;
-                }
-
-                if (hokenPartent.Kohi3Id > 0)
-                {
-                    //Kohi3
-                    var itemKohi3 = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenPartent.Kohi3Id);
-                    if (itemKohi3 != null)
-                    {
-                        var Kohi3Model = new KohiInfModel(
-                                  itemKohi3.FutansyaNo ?? string.Empty,
-                                  itemKohi3.JyukyusyaNo ?? string.Empty,
-                                  itemKohi3.HokenId,
-                                  itemKohi3.StartDate,
-                                  itemKohi3.EndDate,
-                                  0,
-                                  itemKohi3.Rate,
-                                  itemKohi3.GendoGaku,
-                                  itemKohi3.SikakuDate,
-                                  itemKohi3.KofuDate,
-                                  itemKohi3.TokusyuNo ?? string.Empty,
-                                  itemKohi3.HokenSbtKbn,
-                                  itemKohi3.Houbetu ?? string.Empty,
-                                  itemKohi3.HokenNo,
-                                  itemKohi3.HokenEdaNo,
-                                  itemKohi3.PrefNo
-                            );
-                         Kohi3MstFilter = GetDataCbbKohiMasterMaintenance(Kohi3Model, KohiMst, OldKohiInfMstList, sinDate);
-                    }
-                }
-                else
-                {
-                     Kohi3MstFilter = KohiMst;
-                }
-
-                if (hokenPartent.Kohi1Id > 0)
-                {
-                    //Kohi4
-                    var itemKohi4 = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenPartent.Kohi4Id);
-                    if (itemKohi4 != null)
-                    {
-                        var Kohi4Model = new KohiInfModel(
-                                  itemKohi4.FutansyaNo ?? string.Empty,
-                                  itemKohi4.JyukyusyaNo ?? string.Empty,
-                                  itemKohi4.HokenId,
-                                  itemKohi4.StartDate,
-                                  itemKohi4.EndDate,
-                                  0,
-                                  itemKohi4.Rate,
-                                  itemKohi4.GendoGaku,
-                                  itemKohi4.SikakuDate,
-                                  itemKohi4.KofuDate,
-                                  itemKohi4.TokusyuNo ?? string.Empty,
-                                  itemKohi4.HokenSbtKbn,
-                                  itemKohi4.Houbetu ?? string.Empty,
-                                  itemKohi4.HokenNo,
-                                  itemKohi4.HokenEdaNo,
-                                  itemKohi4.PrefNo
-                            );
-                         Kohi4MstFilter = GetDataCbbKohiMasterMaintenance(Kohi4Model, KohiMst, OldKohiInfMstList, sinDate);
-                    }
-                }
-                else
-                {
-                     Kohi4MstFilter = KohiMst;
-                }
-            }
-
             // data combobox 2 hokenKogakuKbnDict
             Dictionary<int, string> hokenKogakuKbnDict = new Dictionary<int, string>();
             if (dataHokenInfor != null)
@@ -467,7 +324,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, Kohi1MstFilter, Kohi2MstFilter, Kohi3MstFilter, Kohi4MstFilter, dataKohis, dataHokenInf, dataComboboxKantokuMst, ByomeiMstAftercares, dataComboboxHokenMst);
+            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, KohiHokenMst, dataKohis, dataHokenInf, dataComboboxKantokuMst, ByomeiMstAftercares, dataComboboxHokenMst);
         }
 
         public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
@@ -506,53 +363,6 @@ namespace Infrastructure.Repositories
                                                             ))
                                 .OrderBy(item => item.HokensyaNo).Skip(pageIndex).Take(pageCount);
             return listDataPaging;
-        }
-
-
-        private static List<HokenMstModel> GetDataCbbKohiMasterMaintenance(KohiInfModel itemKohi, List<HokenMstModel> kohiMst, List<HokenMstModel> oldKohiInfMstList, int sinDay)
-        {
-            var kohiMstData = new List<HokenMstModel>();
-            string kohiHobetu = itemKohi.Houbetu;
-            if (string.IsNullOrEmpty(kohiHobetu) || string.IsNullOrEmpty(itemKohi.FutansyaNo))
-            {
-                var hokenMstModel = kohiMst.Find(hoken => hoken.Houbetu == kohiHobetu
-                                                            && hoken.HokenNo == itemKohi.HokenNo
-                                                            && hoken.HokenEdaNo == itemKohi.HokenEdaNo
-                                                            && hoken.PrefNo == itemKohi.PrefNo);
-                if (hokenMstModel == null)
-                {
-                    kohiMstData = oldKohiInfMstList;
-                }
-                else
-                {
-                    kohiMstData = kohiMst;
-                }
-            }
-            else
-            {
-                var hokenMstModel = kohiMst.Find(hoken => hoken.Houbetu == kohiHobetu
-                                                            && hoken.HokenNo == itemKohi.HokenNo
-                                                            && hoken.HokenEdaNo == itemKohi.HokenEdaNo);
-
-                if (hokenMstModel == null)
-                {
-                    var dataKohiInfMst = oldKohiInfMstList.FindAll(hoken => hoken.Houbetu == kohiHobetu
-                                                                        && ((hoken.StartDate <= sinDay && hoken.EndDate >= sinDay)
-                                                                            || (hoken.HokenNo == itemKohi.HokenNo
-                                                                                && hoken.HokenEdaNo == itemKohi.HokenEdaNo)
-                                                                            )
-                                                                        );
-                    if(dataKohiInfMst != null)
-                    {
-                        kohiMstData = dataKohiInfMst;
-                    }
-                }
-                else
-                {
-                    kohiMstData = kohiMst.FindAll(hoken => hoken.Houbetu == kohiHobetu);
-                }
-            }
-            return kohiMstData;
         }
     }
 }

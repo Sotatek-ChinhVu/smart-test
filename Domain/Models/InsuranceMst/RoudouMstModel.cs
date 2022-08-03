@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Models.IsuranceMst
+namespace Domain.Models.InsuranceMst
 {
     internal class RoudouMstModel
     {

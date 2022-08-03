@@ -28,9 +28,6 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceMst
                 case GetInsuranceMstStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
-                case GetInsuranceMstStatus.InvalidHokenId:
-                    Result.Message = ResponseMessage.InvalidHokenId;
-                    break;
                 case GetInsuranceMstStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;

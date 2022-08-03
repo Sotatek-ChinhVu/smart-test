@@ -15,14 +15,11 @@ namespace UseCase.InsuranceMst.Get
 
         public int SinDate { get; private set; }
 
-        public int HokenId { get; private set; }
-
-        public GetInsuranceMstInputData(int hpId, long ptId, int sinDate, int hokenId)
+        public GetInsuranceMstInputData(int hpId, long ptId, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
-            HokenId = hokenId;
         }
     }
 }

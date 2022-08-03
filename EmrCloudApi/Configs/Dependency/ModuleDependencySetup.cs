@@ -46,7 +46,7 @@ using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
 using UseCase.InsuranceMst.Get;
 using Interactor.InsuranceMst;
-using Domain.Models.IsuranceMst;
+using Domain.Models.InsuranceMst;
 using UseCase.Reception.UpdateDynamicCell;
 using Domain.Models.RaiinFilterMst;
 using UseCase.RaiinFilterMst.GetList;

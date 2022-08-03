@@ -1,4 +1,4 @@
-﻿using Domain.Models.IsuranceMst;
+﻿using Domain.Models.InsuranceMst;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -114,7 +114,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetInsuranceMst")]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
-            var input = new GetInsuranceMstInputData(request.HpId, request.PtId, request.SinDate, request.HokenId);
+            var input = new GetInsuranceMstInputData(request.HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceMstPresenter();

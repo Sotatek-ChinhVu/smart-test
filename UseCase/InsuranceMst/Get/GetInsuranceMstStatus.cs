@@ -8,7 +8,6 @@ namespace UseCase.InsuranceMst.Get
 {
     public enum GetInsuranceMstStatus : byte
     {
-        InvalidHokenId = 5,
         InvalidSinDate = 4,
         InvalidHpId = 3,
         InvalidPtId = 2,
