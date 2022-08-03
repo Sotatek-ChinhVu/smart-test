@@ -26,7 +26,7 @@ public class KaMstRepository : IKaMstRepository
     {
         return _tenantDataContext.KaMsts
             .Where(k => k.IsDeleted == DeleteTypes.None)
-            .OrderBy(k => k.SortNo).ToList()
+            .OrderBy(k => k.SortNo).AsEnumerable()
             .Select(k => ToModel(k)).ToList();
     }
 
@@ -36,9 +36,9 @@ public class KaMstRepository : IKaMstRepository
             k.Id,
             k.KaId,
             k.SortNo,
-            k.ReceKaCd,
-            k.KaSname,
-            k.KaName,
+            k.ReceKaCd ?? string.Empty,
+            k.KaSname ?? string.Empty,
+            k.KaName ?? string.Empty,
             k.IsDeleted);
     }
 }

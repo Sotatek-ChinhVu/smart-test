@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                 query = query.Where(u => u.JobCd == JobCodes.Doctor);
             }
 
-            return query.OrderBy(u => u.SortNo).ToList().Select(u => ToModel(u)).ToList();
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public UserMstModel? GetByUserId(int userId)

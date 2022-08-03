@@ -20,7 +20,7 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
     public List<UketukeSbtDayInfModel> GetListBySinDate(int sinDate)
     {
         return _tenantDataContext.UketukeSbtDayInfs
-            .Where(u => u.SinDate == sinDate).ToList()
+            .Where(u => u.SinDate == sinDate).AsEnumerable()
             .Select(u => ToModel(u)).ToList();
     }
 

@@ -24,7 +24,6 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Diseases.GetDiseaseList;
-using UseCase.User.Create;
 using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
@@ -100,7 +99,6 @@ namespace EmrCloudApi.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             //User
-            busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
             //PtByomeis
