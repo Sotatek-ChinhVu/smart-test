@@ -20,7 +20,6 @@ public class GetNextUketukeSbtMstPresenter : IGetNextUketukeSbtMstOutputPort
     {
         GetNextUketukeSbtMstStatus.Success => ResponseMessage.Success,
         GetNextUketukeSbtMstStatus.NotFound => ResponseMessage.NotFound,
-        GetNextUketukeSbtMstStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
         _ => string.Empty
     };
 }

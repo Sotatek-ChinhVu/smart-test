@@ -52,9 +52,6 @@ public class GetUketukeSbtMstBySinDateInteractor : IGetUketukeSbtMstBySinDateInp
             return null;
         }
 
-        // Create or update the related UketukeSbtDayInf
-        _uketukeSbtDayInfRepository.Upsert(sinDate, firstMst.KbnId, 0);
-
         return firstMst;
     }
 }

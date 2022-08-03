@@ -2,6 +2,5 @@
 
 public class GetNextUketukeSbtMstRequest
 {
-    public int SinDate { get; set; }
     public int KbnId { get; set; }
 }
