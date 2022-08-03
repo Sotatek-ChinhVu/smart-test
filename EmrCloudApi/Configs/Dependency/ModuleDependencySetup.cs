@@ -53,6 +53,7 @@ using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
 using UseCase.UketukeSbtMst.GetBySinDate;
+using UseCase.UketukeSbtMst.GetNext;
 using Domain.Models.UketukeSbtDayInf;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -141,6 +142,7 @@ namespace EmrCloudApi.Configs.Dependency
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
             busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeSbtMstInputData, GetNextUketukeSbtMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

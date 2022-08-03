@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
+using UseCase.UketukeSbtMst.GetNext;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -37,6 +38,16 @@ public class UketukeSbtController : ControllerBase
         var input = new GetUketukeSbtMstBySinDateInputData(req.SinDate);
         var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstBySinDatePresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Get + "Next")]
+    public ActionResult<Response<GetNextUketukeSbtMstResponse>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
+    {
+        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.KbnId);
+        var output = _bus.Handle(input);
+        var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
