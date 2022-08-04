@@ -1,14 +1,14 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.UketukeSbtDayInf;
+using EmrCloudApi.Tenant.Responses.UketukeSbt;
 using UseCase.UketukeSbtDayInf.Upsert;
 
-namespace EmrCloudApi.Tenant.Presenters.UketukeSbtDayInf;
+namespace EmrCloudApi.Tenant.Presenters.UketukeSbt;
 
 public class UpsertUketukeSbtDayInfPresenter : IUpsertUketukeSbtDayInfOutputPort
 {
     public Response<UpsertUketukeSbtDayInfResponse> Result { get; private set; } = new Response<UpsertUketukeSbtDayInfResponse>();
-    
+
     public void Complete(UpsertUketukeSbtDayInfOutputData output)
     {
         Result.Data = new UpsertUketukeSbtDayInfResponse(output.Status == UpsertUketukeSbtDayInfStatus.Success);

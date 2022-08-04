@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Responses.UketukeSbtDayInf;
+﻿namespace EmrCloudApi.Tenant.Responses.UketukeSbt;
 
 public class UpsertUketukeSbtDayInfResponse
 {
