@@ -56,6 +56,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using Domain.Models.UketukeSbtDayInf;
 using Interactor.UketukeSbtDayInf;
 using UseCase.UketukeSbtDayInf.Upsert;
+using Domain.Models.PtCmtInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -92,6 +93,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
         }
 
