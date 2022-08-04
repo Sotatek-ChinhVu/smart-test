@@ -73,7 +73,8 @@ public class ReceptionRowModel
     // 年齢
     public string Age { get; private set; }
     // 読
-    public bool IsNameDuplicate { get; private set; }
+    public bool IsNameDuplicate { get; set; }
+    public string NameDuplicateState => IsNameDuplicate ? "●" : string.Empty;
     // 予約時間
     public string YoyakuTime { get; private set; }
     // 予約名
