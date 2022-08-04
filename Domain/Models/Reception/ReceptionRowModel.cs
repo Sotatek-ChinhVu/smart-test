@@ -9,9 +9,9 @@ public class ReceptionRowModel
 {
     public ReceptionRowModel(long raiinNo, long ptId, long parentRaiinNo, int uketukeNo, bool hasLockInf, int raiinStatus,
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
-        string rsvFrameName, string uketukeSbtName, int uketukeSbtId, string uketukeTime, string sinStartTime,
+        string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
-        string tantoName, int tantoId, string kaName, int kaId, int lastVisitDate, string sname, string raiinRemark,
+        int tantoId, int kaId, int lastVisitDate, string sname, string raiinRemark,
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells,
         int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
@@ -30,7 +30,6 @@ public class ReceptionRowModel
         Age = CIUtil.SDateToDecodeAge(birthday.AsString(), sinDate.AsString());
         YoyakuTime = yoyakuTime;
         ReservationName = rsvFrameName;
-        UketukeSbtName = uketukeSbtName;
         UketukeSbtId = uketukeSbtId;
         UketukeTime = uketukeTime;
         SinStartTime = sinStartTime;
@@ -39,9 +38,7 @@ public class ReceptionRowModel
         RaiinCmt = raiinCmt;
         PtComment = ptComment;
         HokenPatternName = "TODO";
-        TantoName = tantoName;
         TantoId = tantoId;
-        KaName = kaName;
         KaId = kaId;
         LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
         Sname = sname;
@@ -53,11 +50,6 @@ public class ReceptionRowModel
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
     }
 
-    public string StatusText
-    {
-        get => RaiinState.VisitStatus[Status];
-    }
-
     public long PtId { get; private set; }
     public int SinDate { get; private set; }
     public long RaiinNo { get; private set; }
@@ -67,7 +59,6 @@ public class ReceptionRowModel
     public string SameVisit { get; private set; }
     // 状態
     public int Status { get; private set; }
-
     public int OriginalStatus { get; private set; }
     // 患者番号
     public long PtNum { get; private set; }
@@ -88,7 +79,6 @@ public class ReceptionRowModel
     // 予約名
     public string ReservationName { get; private set; }
     // 受付種別
-    public string UketukeSbtName { get; private set; }
     public int UketukeSbtId { get; private set; }
     // 受付時間
     public string UketukeTime { get; private set; }
@@ -105,10 +95,8 @@ public class ReceptionRowModel
     // 保険
     public string HokenPatternName { get; private set; }
     // 担当医
-    public string TantoName { get; private set; }
     public int TantoId { get; private set; }
     // 診療科
-    public string KaName { get; private set; }
     public int KaId { get; private set; }
     // 前回来院
     public string LastVisitDate { get; private set; }
