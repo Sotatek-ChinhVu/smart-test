@@ -25,7 +25,7 @@ public class UketukeSbtMstRepository : IUketukeSbtMstRepository
     {
         return _tenantDataContext.UketukeSbtMsts
             .Where(u => u.IsDeleted == DeleteTypes.None)
-            .OrderBy(u => u.SortNo).ToList()
+            .OrderBy(u => u.SortNo).AsEnumerable()
             .Select(u => ToModel(u)).ToList();
     }
 

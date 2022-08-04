@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.User;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.User.Create;
 using UseCase.User.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -19,18 +18,6 @@ public class UserController : ControllerBase
     public UserController(UseCaseBus bus)
     {
         _bus = bus;
-    }
-
-    [HttpPost(ApiPath.Update)]
-    public ActionResult<Response<CreateUserResponse>> Save([FromBody] CreateUserRequest saveUserRequest)
-    {
-        var input = new CreateUserInputData(saveUserRequest.UserName);
-        var output = _bus.Handle(input);
-
-        var presenter = new CreateUserPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<CreateUserResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]

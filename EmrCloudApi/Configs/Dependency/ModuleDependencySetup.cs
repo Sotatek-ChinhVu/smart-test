@@ -24,7 +24,6 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Diseases.GetDiseaseList;
-using UseCase.User.Create;
 using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
@@ -55,6 +54,12 @@ using Interactor.UketukeSbtMst;
 using Domain.Models.PatientRaiinKubun;
 using UseCase.PatientRaiinKubun.Get;
 using Interactor.PatientRaiinKubun;
+using UseCase.UketukeSbtMst.GetBySinDate;
+using UseCase.UketukeSbtMst.GetNext;
+using Domain.Models.UketukeSbtDayInf;
+using Interactor.UketukeSbtDayInf;
+using UseCase.UketukeSbtDayInf.Upsert;
+using Domain.Models.PtCmtInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -92,6 +97,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
             services.AddTransient<IPatientRaiinKubunReponsitory, PatientRaiinKubunReponsitory>();
+            services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
+            services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -100,7 +107,6 @@ namespace EmrCloudApi.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             //User
-            busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
             //PtByomeis
@@ -142,6 +148,11 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
+            busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeSbtMstInputData, GetNextUketukeSbtMstInteractor>();
+
+            // UketukeSbtDayInf
+            busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
