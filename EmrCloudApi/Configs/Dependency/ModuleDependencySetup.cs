@@ -52,6 +52,9 @@ using UseCase.KaMst.GetList;
 using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
+using Domain.Models.PatientRaiinKubun;
+using UseCase.PatientRaiinKubun.Get;
+using Interactor.PatientRaiinKubun;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -88,6 +91,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IPatientRaiinKubunReponsitory, PatientRaiinKubunReponsitory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -110,6 +114,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
+            busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
