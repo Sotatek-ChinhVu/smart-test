@@ -52,6 +52,7 @@ using UseCase.KaMst.GetList;
 using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
+using Domain.Models.PtCmtInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -88,6 +89,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
