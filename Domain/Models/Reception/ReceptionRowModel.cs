@@ -43,7 +43,7 @@ public class ReceptionRowModel
         TantoId = tantoId;
         KaName = kaName;
         KaId = kaId;
-        LastVisitDate = CIUtil.SDateToShowSDate(lastVisitDate);
+        LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
         Sname = sname;
         RaiinRemark = raiinRemark;
         ConfirmationState = GetConfirmationStateText(confirmationState);
