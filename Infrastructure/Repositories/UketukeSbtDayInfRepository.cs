@@ -35,9 +35,9 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
                 SinDate = sinDate,
                 UketukeSbt = uketukeSbt,
                 SeqNo = seqNo,
-                CreateId = CommonConstants.InvalidId,
+                CreateId = TempIdentity.UserId,
                 CreateDate = DateTime.UtcNow,
-                CreateMachine = CIUtil.GetComputerName()
+                CreateMachine = TempIdentity.ComputerName
             });
         }
         else
