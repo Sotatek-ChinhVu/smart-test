@@ -35,7 +35,10 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
                 SinDate = sinDate,
                 RaiinNo = raiinNo,
                 GrpId = grpId,
-                KbnCd = kbnCd
+                KbnCd = kbnCd,
+                CreateDate = DateTime.UtcNow,
+                CreateId = TempIdentity.UserId,
+                CreateMachine = TempIdentity.ComputerName
             });
         }
         else
@@ -43,6 +46,8 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
             // Update
             raiinKbnInf.KbnCd = kbnCd;
             raiinKbnInf.UpdateDate = DateTime.UtcNow;
+            raiinKbnInf.UpdateId = TempIdentity.UserId;
+            raiinKbnInf.UpdateMachine = TempIdentity.ComputerName;
         }
 
         _tenantDataContext.SaveChanges();

@@ -263,6 +263,8 @@ namespace Infrastructure.Repositories
 
             updateEntity(raiinInf);
             raiinInf.UpdateDate = DateTime.UtcNow;
+            raiinInf.UpdateId = TempIdentity.UserId;
+            raiinInf.UpdateMachine = TempIdentity.ComputerName;
             _tenantDataContext.SaveChanges();
             return true;
         }

@@ -2,12 +2,6 @@
 
 public class UserMstModel
 {
-    public UserMstModel(int userId, string name)
-    {
-        UserId = userId;
-        Name = name;
-    }
-
     public UserMstModel(int userId, int jobCd, int managerKbn, int kaId,
         string kanaName, string name, string sname, string drName, string loginId,
         string loginPass, string mayakuLicenseNo, int startDate, int endDate,

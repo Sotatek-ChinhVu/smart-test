@@ -1,5 +1,6 @@
 ﻿using Domain.Models.PtCmtInf;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -25,13 +26,18 @@ public class PtCmtInfRepository : IPtCmtInfRepository
             {
                 HpId = 1,
                 PtId = ptId,
-                Text = text
+                Text = text,
+                CreateDate = DateTime.UtcNow,
+                CreateId = TempIdentity.UserId,
+                CreateMachine = TempIdentity.ComputerName
             });
         }
         else
         {
             ptCmt.Text = text;
             ptCmt.UpdateDate = DateTime.UtcNow;
+            ptCmt.UpdateId = TempIdentity.UserId;
+            ptCmt.UpdateMachine = TempIdentity.ComputerName;
         }
 
         _tenantDataContext.SaveChanges();
