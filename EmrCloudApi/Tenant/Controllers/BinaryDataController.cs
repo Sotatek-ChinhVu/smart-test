@@ -12,20 +12,20 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost]
         public ActionResult<BinaryStructure> Post()
         {
-            //var stream = Request.Body;
+            var stream = Request.Body;
 
-            string txtPath = @"C:\Users\Admin\Downloads\ImageByte.txt";
-            string text = System.IO.File.ReadAllText(txtPath);
-            string[] chars = text.Split(" ");
-            byte[] bytes = chars.Select(c => StringToByteArray(c)).ToArray();
+            //string txtPath = @"C:\Users\Admin\Downloads\ImageByte.txt";
+            //string text = System.IO.File.ReadAllText(txtPath);
+            //string[] chars = text.Split(" ");
+            //byte[] bytes = chars.Select(c => StringToByteArray(c)).ToArray();
 
-            //List<byte> byteArray = new List<byte>(); 
-            //foreach (var item in chars) 
-            //{
-            //    byteArray.Add(Convert.ToByte(long.Parse(item)));
-            //}
+            ////List<byte> byteArray = new List<byte>(); 
+            ////foreach (var item in chars) 
+            ////{
+            ////    byteArray.Add(Convert.ToByte(long.Parse(item)));
+            ////}
 
-            Stream stream = new MemoryStream(bytes);
+            //Stream stream = new MemoryStream(bytes);
 
             BinaryStructure result = ProcessBinaryData(stream);
             return new ActionResult<BinaryStructure>(result);
