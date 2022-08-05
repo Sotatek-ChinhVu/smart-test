@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         {
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3);
             var karteInfs = _tenantDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0 && !string.IsNullOrEmpty(k.Text.Trim()));
-            var output = raiinInfs.Join(karteInfs, r => new { r.HpId, r.PtId, r.RaiinNo, r.SinDate }, k => new { k.HpId, k.PtId, k.RaiinNo, k.SinDate }, 
+            var output = raiinInfs.Join(karteInfs, r => new { r.HpId, r.PtId, r.RaiinNo, r.SinDate }, k => new { k.HpId, k.PtId, k.RaiinNo, k.SinDate },
                                     (r, k) => new FlowSheetModel(r.HpId, r.PtId, r.SinDate, k.Text, r.RaiinNo, r.SyosaisinKbn, false, false, r.Status)).ToList();
             var nextOdrs = GetNextOdr(hpId, ptId);
             output.AddRange(nextOdrs);
@@ -80,11 +80,9 @@ namespace Infrastructure.Repositories
 
         public FlowSheetModel CreateTodayOrder(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            FlowSheetModel newModel = new FlowSheetModel(hpId, ptId, sinDate, string.Empty, raiinNo, 2, false, true, 0);
+            
             RaiinListTagModel tag = new RaiinListTagModel(hpId, ptId, raiinNo, sinDate, true);
             RaiinListCmtModel cmt = new RaiinListCmtModel(hpId, ptId, raiinNo, sinDate, 9, string.Empty, true);
-            newModel.RaiinListTag = tag;
-            newModel.RaiinListCmt = cmt;
             List<RaiinListInfModel> raiinList = new List<RaiinListInfModel>();
             var raiinListInf = GetRaiinListInfModels(hpId, ptId).FindAll(item => item.HpId == hpId
                                                              && item.PtId == ptId
@@ -95,14 +93,12 @@ namespace Infrastructure.Repositories
             foreach (var item in raiinListInf)
             {
                 if (raiinList.Any(r => r.GrpId == item.GrpId)) continue;
-                raiinList.Add(new RaiinListInfModel(item)
-                {
-                    IsContainsFile = raiinListInf?.FirstOrDefault(x =>
+                bool isContainsFile = raiinListInf?.FirstOrDefault(x =>
                         x.GrpId == item.GrpId && x.KbnCd == item.KbnCd &&
-                        item.RaiinListKbn == 4) != null
-                });
+                        item.RaiinListKbn == 4) != null;
+                raiinList.Add(new RaiinListInfModel(item, isContainsFile));
             }
-            newModel.RaiinListInfs = raiinList;
+            FlowSheetModel newModel = new FlowSheetModel(hpId, ptId, sinDate, string.Empty, raiinNo, 2, false, true, 0, tag, cmt, raiinList);
             return newModel;
         }
 
@@ -117,13 +113,7 @@ namespace Infrastructure.Repositories
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
             var output = query.Select(
-                data => new RaiinListMstModel
-                {
-                    GrpId = data.Mst.GrpId,
-                    GrpName = data.Mst.GrpName,
-                    SortNo = data.Mst.SortNo,
-                    RaiinListDetailsList = data.Detail?.ToList()
-                });
+                data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName, data.Mst.SortNo, data.Detail));
             return output.ToList();
         }
         public List<HolidayModel> GetHolidayMst(int hpId)
@@ -140,11 +130,7 @@ namespace Infrastructure.Repositories
             List<RaiinDateModel> listRaiinNo = _tenantDataContext.RaiinInfs.Where(c => c.PtId == ptId && c.HpId == hpId && c.IsDeleted == DeleteTypes.None
                                         && c.SinDate >= limitFromCurrentAgo && c.SinDate <= limitLastDate)
                                         .GroupBy(gr => gr.SinDate)
-                                        .Select(g => new RaiinDateModel
-                                        {
-                                            SinDate = g.Key,
-                                            RaiinNo = g.Min(cm => cm.RaiinNo)
-                                        }).ToList();
+                                        .Select(g => new RaiinDateModel(g.Key, (int)g.Min(cm => cm.RaiinNo))).ToList();
             return listRaiinNo;
         }
     }

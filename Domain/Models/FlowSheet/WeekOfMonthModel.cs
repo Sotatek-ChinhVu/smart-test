@@ -16,15 +16,15 @@ namespace Domain.Models.FlowSheet
         public DayInfo Thu { get; private set; }
         public DayInfo Fri { get; private set; }
         public DayInfo Sat { get; private set; }
-        public WeekOfMonthModel(DayInfo sun, DayInfo mon, DayInfo tue, DayInfo wed, DayInfo thu, DayInfo fri, DayInfo sat)
+        public WeekOfMonthModel(DayInfo mon, DayInfo tue, DayInfo wed, DayInfo thu, DayInfo fri, DayInfo sat, DayInfo sun)
         {
-            Sun = sun ?? new();
             Mon = mon ?? new();
             Tue = tue ?? new();
             Wed = wed ?? new();
             Thu = thu ?? new();
             Fri = fri ?? new();
             Sat = sat ?? new();
+            Sun = sun ?? new();
         }
         public WeekOfMonthModel()
         {
@@ -41,8 +41,8 @@ namespace Domain.Models.FlowSheet
     public class DayInfo
     {
         public int Date { get; private set; }
-        public string Day { get; private set; } = string.Empty;
-        public string ToolTip { get; private set; } = string.Empty;
+        public string Day { get; private set; }
+        public string ToolTip { get; private set; }
         public EmrCalendarDateColor Foreground { get; private set; }
         public EmrCalendarDateColor Background { get; private set; }
         public EmrCalendarDateColor BorderBrush { get; private set; }
@@ -58,6 +58,44 @@ namespace Domain.Models.FlowSheet
             BorderBrush = borderBrush;
             IsToday = isToday;
         }
-        public DayInfo () { }
+        public DayInfo ()
+        {
+            Date = 0;
+            Day = string.Empty;
+            ToolTip= string.Empty;
+        }
+
+        public DayInfo(DayInfo tempDayInfo2)
+        {
+            Date = tempDayInfo2.Date;
+            Day = tempDayInfo2.Day ?? string.Empty;
+            ToolTip = tempDayInfo2.ToolTip ?? string.Empty;
+            Foreground = tempDayInfo2.Foreground;
+            Background = tempDayInfo2.Background;
+            BorderBrush = tempDayInfo2.BorderBrush;
+            IsToday = tempDayInfo2.IsToday;
+        }
+
+        public DayInfo(DayInfo tempDayInfo2, EmrCalendarDateColor borderBrush, bool isToday)
+        {
+            Date = tempDayInfo2.Date;
+            Day = tempDayInfo2.Day ?? string.Empty;
+            ToolTip = tempDayInfo2.ToolTip ?? string.Empty;
+            Foreground = tempDayInfo2.Foreground;
+            Background = tempDayInfo2.Background;
+            BorderBrush = borderBrush;
+            IsToday = isToday;
+        }
+
+        public DayInfo(DayInfo tempDayInfo2, EmrCalendarDateColor foreGroundOfDayInfo)
+        {
+            Date = tempDayInfo2.Date;
+            Day = tempDayInfo2.Day ?? string.Empty;
+            ToolTip = tempDayInfo2.ToolTip ?? string.Empty;
+            Foreground = foreGroundOfDayInfo;
+            Background = tempDayInfo2.Background;
+            BorderBrush = tempDayInfo2.BorderBrush;
+            IsToday = tempDayInfo2.IsToday;
+        }
     }
 }

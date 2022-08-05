@@ -45,5 +45,9 @@ namespace Domain.Models.FlowSheet
             Text = text ?? string.Empty;
             IsAddNew = isAddNew;
         }
+
+        public RaiinListCmtModel()
+        {
+        }
     }
 }

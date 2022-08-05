@@ -28,7 +28,7 @@ namespace Domain.Models.FlowSheet
             RaiinListKbn = raiinListKbn;
             SortNo = sortNo;
         }
-        public RaiinListInfModel(RaiinListInfModel item)
+        public RaiinListInfModel(RaiinListInfModel item, bool isContainsFile)
         {
             HpId = item.HpId;
             PtId = item.PtId;
@@ -38,6 +38,7 @@ namespace Domain.Models.FlowSheet
             KbnCd = item.KbnCd;
             RaiinListKbn = item.RaiinListKbn;
             SortNo = item.SortNo;
+            IsContainsFile = isContainsFile;
         }
     }
 }

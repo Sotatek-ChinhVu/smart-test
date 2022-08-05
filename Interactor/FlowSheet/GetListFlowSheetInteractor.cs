@@ -1,6 +1,7 @@
 ﻿using Domain.Constant;
 using Domain.Models.FlowSheet;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extendsions;
 using System;
 using System.Collections.Generic;
@@ -17,39 +18,43 @@ namespace Interactor.FlowSheet
         private const int MAX_CALENDAR_MONTH = 12;
 
         private readonly IFlowSheetRepository _flowsheetRepository;
-        public GetListFlowSheetInteractor(IFlowSheetRepository repository) { 
+        public GetListFlowSheetInteractor(IFlowSheetRepository repository)
+        {
             _flowsheetRepository = repository;
         }
         public GetListFlowSheetOutputData Handle(GetListFlowSheetInputData inputData)
         {
-            var flowsheetResult = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+            List<FlowSheetModel> resultList = new();
+            var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
             var raiinListTags = _flowsheetRepository.GetRaiinListTags(inputData.HpId, inputData.PtId);
             var raiinListCmts = _flowsheetRepository.GetRaiinListCmts(inputData.HpId, inputData.PtId);
             var raiinListInf = _flowsheetRepository.GetRaiinListInfModels(inputData.HpId, inputData.PtId);
             var listRaiinNo = _flowsheetRepository.GetListRaiinNo(inputData.HpId, inputData.PtId, inputData.SinDate);
-            foreach(FlowSheetModel model in flowsheetResult)
+            foreach (FlowSheetModel model in flowsheetList)
             {
                 var raiinTag = raiinListTags?.FirstOrDefault(tag => tag.RaiinNo == model.RaiinNo && tag.SinDate == model.SinDate);
+                RaiinListTagModel raiinTagResult;
                 if (raiinTag != null)
                 {
-                    model.RaiinListTag = new RaiinListTagModel(raiinTag);
-                } 
+                    raiinTagResult = new(raiinTag);
+                }
                 else
                 {
-                    model.RaiinListTag = new RaiinListTagModel(inputData.HpId, inputData.PtId, model.RaiinNo, model.SinDate);
-                    model.RaiinListTag.IsAddNew = true;
+                    bool isAddNew = true;
+                    raiinTagResult = new(inputData.HpId, inputData.PtId, model.RaiinNo, model.SinDate, isAddNew);
                 }
                 var raiinCmt = raiinListCmts?.FirstOrDefault(cmt => cmt.RaiinNo == model.RaiinNo && cmt.SinDate == model.SinDate);
+                RaiinListCmtModel raiinCmtResult;
                 if (raiinCmt != null)
                 {
-                    model.RaiinListCmt = new RaiinListCmtModel(raiinCmt);
+                    raiinCmtResult = new(raiinCmt);
                 }
                 else
                 {
-                    model.RaiinListCmt = new RaiinListCmtModel(inputData.HpId, inputData.PtId, model.RaiinNo, model.SinDate, 9, string.Empty);
-                    model.RaiinListCmt.IsAddNew = true;
+                    var isAddNew = true;
+                    raiinCmtResult = new(inputData.HpId, inputData.PtId, model.RaiinNo, model.SinDate, 9, string.Empty, isAddNew);
                 }
-                List<RaiinListInfModel> raiinList = new List<RaiinListInfModel>();
+                List<RaiinListInfModel> raiinList = new();
                 var raiinListInfs = raiinListInf.FindAll(item => item.HpId == inputData.HpId
                                     && item.PtId == inputData.PtId
                                     && item.SinDate == model.SinDate
@@ -59,48 +64,53 @@ namespace Interactor.FlowSheet
                 foreach (var item in raiinListInfs)
                 {
                     if (raiinList.Any(r => r.GrpId == item.GrpId)) continue;
-                    raiinList.Add(new RaiinListInfModel(item)
-                    {
-                        IsContainsFile = raiinListInfs?.FirstOrDefault(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd && item.RaiinListKbn == 4) != null
-                    });
+                    bool isContainsFile = raiinListInfs?.FirstOrDefault(x => x.GrpId == item.GrpId && x.KbnCd == item.KbnCd && item.RaiinListKbn == 4) != null;
+                    raiinList.Add(new(item, isContainsFile));
                 }
-                model.RaiinListInfs = raiinListInfs;
+
+                resultList.Add(new(model, raiinTagResult, raiinCmtResult, raiinList));
             }
 
-            var _raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
+            var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
 
-            var _tempHolidayCollection = _flowsheetRepository.GetHolidayMst(inputData.HpId);
-            var _staticCalendarDataSource = new List<CalendarGridModel>();
+            var tempHolidayCollection = _flowsheetRepository.GetHolidayMst(inputData.HpId);
+            List<CalendarGridModel> tempCalendarDataSource = new();
+            List<CalendarGridModel> finalCalendarDataSource = new();
             DateTime now = CIUtil.IntToDate(inputData.SinDate);
             for (int i = 0; i < MAX_CALENDAR_MONTH; i++)
             {
                 DateTime tempDate = now.AddMonths(-i);
 
-                CalendarGridModel calendarGridVM = new CalendarGridModel(tempDate);
-                _staticCalendarDataSource.Insert(0, calendarGridVM);
+                CalendarGridModel calendarGridVM = new(tempDate);
+                tempCalendarDataSource.Insert(0, calendarGridVM);
             }
-            foreach (CalendarGridModel model in _staticCalendarDataSource)
+            foreach (CalendarGridModel model in tempCalendarDataSource)
             {
-                SetCalendarItemList(model, _tempHolidayCollection, inputData.SinDate, flowsheetResult, listRaiinNo);
+                var calendarResult = SetCalendarItemList(model, tempHolidayCollection, inputData.SinDate, flowsheetList, listRaiinNo);
+                finalCalendarDataSource.Add(calendarResult);
             }
-            return new GetListFlowSheetOutputData(flowsheetResult, _raiinListMst, _staticCalendarDataSource);
+            return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, finalCalendarDataSource);
         }
-        public void SetCalendarItemList(CalendarGridModel model, List<HolidayModel> tempHolidayCollection, int sinDate, List<FlowSheetModel> flowSheetList, List<RaiinDateModel> listRaiinNo)
+        public CalendarGridModel SetCalendarItemList(CalendarGridModel model, List<HolidayModel> tempHolidayCollection, int sinDate, List<FlowSheetModel> flowSheetList, List<RaiinDateModel> listRaiinNo)
         {
+            CalendarGridModel finalModel;
             int startDate = model.MonthYear.Year * 10000 + model.MonthYear.Month * 100;
             int endDate = model.MonthYear.AddMonths(1).Year * 10000 + model.MonthYear.AddMonths(1).Month * 100;
+            int finalSinDate;
             if (startDate < sinDate && endDate > sinDate)
             {
-                model.SinDate = sinDate;
+                finalSinDate = sinDate;
+            }
+            else
+            {
+                finalSinDate = 0;
             }
 
-            var list = tempHolidayCollection.Where(item => item.SinDate < endDate && item.SinDate > startDate)
+            var holidayList = tempHolidayCollection.Where(item => item.SinDate < endDate && item.SinDate > startDate)
                 .Select(item => new HolidayModel(item.SinDate % 100, item.HolidayKbn, item.KyusinKbn, item.HolidayName)).ToList();
 
-            model.HolidayModels = list;
-
-            List<KeyValuePair<int, int>> tempList = new List<KeyValuePair<int, int>>();
-            List<KeyValuePair<int, string>> tagList = new List<KeyValuePair<int, string>>();
+            List<KeyValuePair<int, int>> tempList = new();
+            List<KeyValuePair<int, string>> tagList = new();
             List<KeyValuePair<int, RaiinStateDictObjectValue>> stateList = new();
             foreach (var item in flowSheetList)
             {
@@ -114,238 +124,296 @@ namespace Interactor.FlowSheet
                     }
                 }
             }
-            model.RaiinStateDict = stateList;
-            model.RaiinTags = tagList;
-            model.RaiinDayDict = tempList;
-            CreateCalendarDate(model);
+            finalModel = CreateCalendarDate(model, finalSinDate, holidayList, stateList, tagList, tempList);
+            return new CalendarGridModel(finalModel);
         }
-        private void CreateCalendarDate(CalendarGridModel model)
+        private CalendarGridModel CreateCalendarDate(CalendarGridModel model, int sinDate, List<HolidayModel> holidays, 
+                                                    List<KeyValuePair<int, RaiinStateDictObjectValue>> stateList,
+                                                    List<KeyValuePair<int, string>> tagList, List<KeyValuePair<int, int>> tempList)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            if (model.Year == 0 || model.Month == 0) return;
-            DateTime firstDay = new DateTime(model.Year, model.Month, 1);
-
+            if (model.Year == 0 || model.Month == 0) return new(model, sinDate, holidays, stateList, tagList, tempList);
+            DateTime firstDay = new(model.Year, model.Month, 1);
             int rowCount = 0;
 
             while (rowCount < 6)
             {
                 int days = firstDay.DayOfWeek - DayOfWeek.Monday + 1;
                 DateTime start = firstDay.AddDays(-days);
-                WeekOfMonthModel weekOfMonth;
+                WeekOfMonthModel tempWeekOfMonth;
+                WeekOfMonthModel finalWeekOfMonth;
+                DayInfo dayInfo;
+                DayInfo finalDayInfo;
+                DayInfo monDayInfo = new();
+                DayInfo tueDayInfo = new();
+                DayInfo wedDayInfo = new();
+                DayInfo thuDayInfo = new();
+                DayInfo friDayInfo = new();
+                DayInfo satDayInfo = new();
+                DayInfo sunDayInfo = new();
+
+                string dayOfDayInfo;
                 if (rowCount < model.WeekOfMonths.Count)
                 {
-                    weekOfMonth = model.WeekOfMonths[rowCount];
+                    tempWeekOfMonth = model.WeekOfMonths[rowCount];
                 }
                 else
                 {
-                    weekOfMonth = new WeekOfMonthModel();
+                    tempWeekOfMonth = new();
                 }
 
                 for (int i = 0; i <= 6; i++)
                 {
                     DateTime current = start.AddDays(i);
-                    DayInfo dayInfo;
+                    
                     switch (current.DayOfWeek)
                     {
                         case DayOfWeek.Monday:
-                            dayInfo = weekOfMonth.Mon;
+                            dayInfo = tempWeekOfMonth.Mon;
                             break;
                         case DayOfWeek.Tuesday:
-                            dayInfo = weekOfMonth.Tue;
+                            dayInfo = tempWeekOfMonth.Tue;
                             break;
                         case DayOfWeek.Wednesday:
-                            dayInfo = weekOfMonth.Wed;
+                            dayInfo = tempWeekOfMonth.Wed;
                             break;
                         case DayOfWeek.Thursday:
-                            dayInfo = weekOfMonth.Thu;
+                            dayInfo = tempWeekOfMonth.Thu;
                             break;
                         case DayOfWeek.Friday:
-                            dayInfo = weekOfMonth.Fri;
+                            dayInfo = tempWeekOfMonth.Fri;
                             break;
                         case DayOfWeek.Saturday:
-                            dayInfo = weekOfMonth.Sat;
+                            dayInfo = tempWeekOfMonth.Sat;
                             break;
                         case DayOfWeek.Sunday:
-                            dayInfo = weekOfMonth.Sun;
+                            dayInfo = tempWeekOfMonth.Sun;
                             break;
                         default:
-                            dayInfo = new DayInfo();
+                            dayInfo = new();
                             break;
                     }
 
                     if (dayInfo == null)
                     {
-                        dayInfo = new DayInfo();
+                        dayInfo = new();
                     }
-                    dayInfo.Day = string.Empty;
-                    dayInfo.Date = 0;
-                    dayInfo.Background = EmrCalendarDateColor.Default;
-                    dayInfo.ToolTip = string.Empty;
+                    EmrCalendarDateColor foreGroundOfDayInfo;
+                    DayInfo tempDayInfo = new();
+                    DayInfo tempDayInfo2 = new();
+                    DayInfo tempDayInfo3;
                     if (current.Month == model.Month)
                     {
-                        dayInfo.Day = current.Day.AsString();
+                        dayOfDayInfo = current.Day.AsString();
 
-                        UpdateDayInfo(dayInfo, model);
+                        tempDayInfo = UpdateDayInfo(dayInfo, model, dayOfDayInfo, holidays, stateList, tempList);
 
+                        if (current.DayOfWeek == DayOfWeek.Saturday)
+                        {
+                            foreGroundOfDayInfo = EmrCalendarDateColor.BlueForeGround;
+                            tempDayInfo2 = new(tempDayInfo, foreGroundOfDayInfo);
+                        }
+                        if (current.DayOfWeek == DayOfWeek.Sunday)
+                        {
+                            foreGroundOfDayInfo = EmrCalendarDateColor.BlueForeGround;
+                            tempDayInfo2 = new(tempDayInfo, foreGroundOfDayInfo);
+                        }
+                    }
+                    if (tempDayInfo2.Date != 0)
+                    {
+                        tempDayInfo3 = UpdateBorder(tempDayInfo2, model, holidays);
+                        finalDayInfo = new(tempDayInfo3);
                         switch (current.DayOfWeek)
                         {
                             case DayOfWeek.Monday:
-                                weekOfMonth.Mon = dayInfo;
+                                monDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Tuesday:
-                                weekOfMonth.Tue = dayInfo;
+                                tueDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Wednesday:
-                                weekOfMonth.Wed = dayInfo;
+                                wedDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Thursday:
-                                weekOfMonth.Thu = dayInfo;
+                                thuDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Friday:
-                                weekOfMonth.Fri = dayInfo;
+                                friDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Saturday:
-                                dayInfo.Foreground = EmrCalendarDateColor.BlueForeGround;
-                                weekOfMonth.Sat = dayInfo;
+                                satDayInfo = new(finalDayInfo);
                                 break;
                             case DayOfWeek.Sunday:
-                                dayInfo.Foreground = EmrCalendarDateColor.RedForeGround;
-                                weekOfMonth.Sun = dayInfo;
+                                sunDayInfo = new(finalDayInfo);
                                 break;
                         }
                     }
-
-                    UpdateBorder(dayInfo, model);
+                    else
+                    {
+                        tempDayInfo3 = UpdateBorder(tempDayInfo, model, holidays);
+                        finalDayInfo = new(tempDayInfo3);
+                        switch (current.DayOfWeek)
+                        {
+                            case DayOfWeek.Monday:
+                                monDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Tuesday:
+                                tueDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Wednesday:
+                                wedDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Thursday:
+                                thuDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Friday:
+                                friDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Saturday:
+                                satDayInfo = new(finalDayInfo);
+                                break;
+                            case DayOfWeek.Sunday:
+                                sunDayInfo = new(finalDayInfo);
+                                break;
+                        }
+                    }
                 }
+                finalWeekOfMonth = new(monDayInfo, tueDayInfo, wedDayInfo, thuDayInfo, friDayInfo, satDayInfo, sunDayInfo);
                 if (rowCount < model.WeekOfMonths.Count)
                 {
-                    model.WeekOfMonths[rowCount] = weekOfMonth;
+                    model.WeekOfMonths[rowCount] = finalWeekOfMonth;
                 }
                 else
                 {
-                    model.WeekOfMonths.Add(weekOfMonth);
+                    model.WeekOfMonths.Add(finalWeekOfMonth);
                 }
                 firstDay = start.AddDays(7);
                 rowCount++;
+
+                model = new(model);
             }
             watch.Stop();
+
+            return model;
         }
-        private void UpdateBorder(DayInfo dayInfo, CalendarGridModel model)
+        private DayInfo UpdateBorder(DayInfo dayInfo, CalendarGridModel model, List<HolidayModel> holidays)
         {
-            if (model.HolidayModels == null) return;
-            dayInfo.BorderBrush = EmrCalendarDateColor.Default;
+            if (model.HolidayModels == null) return dayInfo;
+            EmrCalendarDateColor borderBrush = EmrCalendarDateColor.Default;
+            bool isToday = false;
             int day = dayInfo.Day.AsInteger();
             int date = model.Year * 10000 + model.Month * 100 + day;
-            var calendarHolidayModel = model.HolidayModels.FirstOrDefault(item => item.SinDate == day);
+            var calendarHolidayModel = holidays.FirstOrDefault(item => item.SinDate == day);
             if (calendarHolidayModel != null && calendarHolidayModel.KyusinKbn == 1 && !(model.HighlightToday && date == model.SinDate))
             {
-                dayInfo.BorderBrush = EmrCalendarDateColor.RedBorder;
+                borderBrush = EmrCalendarDateColor.RedBorder;
             }
             if (model.HighlightToday && date == model.SinDate)
             {
-                dayInfo.IsToday = true;
+                isToday = true;
             }
             else
             {
-                dayInfo.IsToday = false;
+                isToday = false;
             }
+            return new DayInfo(dayInfo, borderBrush, isToday);
         }
-        private void UpdateDayInfo(DayInfo dayInfo, CalendarGridModel model)
+        private DayInfo UpdateDayInfo(DayInfo dayInfo, CalendarGridModel model, string dayStr, List<HolidayModel> holidays,
+                                                    List<KeyValuePair<int, RaiinStateDictObjectValue>> stateList, List<KeyValuePair<int, int>> tempList)
         {
-            void GetBackgroud(KeyValuePair<int, int> dateSyosaiItem)
-            {
-                switch (dateSyosaiItem.Value)
-                {
-                    case SyosaiConst.Syosin:
-                    case SyosaiConst.Syosin2:
-                        dayInfo.Background = EmrCalendarDateColor.HasFirstVisit;
-                        break;
-                    case SyosaiConst.Saisin:
-                    case SyosaiConst.Saisin2:
-                    case SyosaiConst.SaisinDenwa:
-                    case SyosaiConst.SaisinDenwa2:
-                        dayInfo.Background = EmrCalendarDateColor.CalHasCallAgain;
-                        break;
-                    case SyosaiConst.None:
-                        dayInfo.Background = EmrCalendarDateColor.CalHasData;
-                        break;
-                    case SyosaiConst.NextOrder:
-                        dayInfo.Background = EmrCalendarDateColor.CalNextOrder;
-                        break;
-                    case SyosaiConst.Jihi:
-                        dayInfo.Background = EmrCalendarDateColor.HasOwnExpense;
-                        break;
-                }
-            }
-            dayInfo.Background = EmrCalendarDateColor.Default;
-            dayInfo.Foreground = EmrCalendarDateColor.NormalForeGround;
+            EmrCalendarDateColor finalBackGroundColor = EmrCalendarDateColor.Default;
+            EmrCalendarDateColor finalForeGroundColor = EmrCalendarDateColor.NormalForeGround;
 
-            int day = dayInfo.Day.AsInteger();
+            int day = dayStr.AsInteger();
             int date = model.Year * 10000 + model.Month * 100 + day;
 
-            // Set full date
-            dayInfo.Date = date;
+            int dateOfDayInfo = date;
+            string toolTipOfDayInfo = string.Empty;
 
-            // Set background and tooltip
-
-            if (model.HolidayModels != null)
+            if (holidays != null)
             {
-                var calendarHolidayModel = model.HolidayModels.FirstOrDefault(item => item.SinDate == day);
+                var calendarHolidayModel = holidays.FirstOrDefault(item => item.SinDate == day);
 
                 if (calendarHolidayModel != null)
                 {
                     switch (calendarHolidayModel.HolidayKbn)
                     {
                         case 1:
-                            dayInfo.Background = EmrCalendarDateColor.HolidayRed;
-                            dayInfo.Foreground = EmrCalendarDateColor.RedForeGround;
+                            finalBackGroundColor = EmrCalendarDateColor.HolidayRed;
+                            finalForeGroundColor = EmrCalendarDateColor.RedForeGround;
                             break;
                         case 2:
-                            dayInfo.Background = EmrCalendarDateColor.Holiday;
+                            finalBackGroundColor = EmrCalendarDateColor.Holiday;
                             break;
                     }
 
                     if (!string.IsNullOrEmpty(calendarHolidayModel.HolidayName))
                     {
-                        dayInfo.ToolTip = string.Format("{0} {1}", CIUtil.IntToDate(dayInfo.Date).ToString("MM/dd"), calendarHolidayModel.HolidayName);
+                        toolTipOfDayInfo = string.Format("{0} {1}", CIUtil.IntToDate(dayInfo.Date).ToString("MM/dd"), calendarHolidayModel.HolidayName);
                     }
                 }
             }
 
-            var dateSyosaiItems = model.RaiinDayDict.Where(item => item.Key == date);
-            var datetateItem = model.RaiinStateDict.FirstOrDefault(item => item.Key == date);
+            var dateSyosaiItems = tempList.Where(item => item.Key == date);
+            var datetateItem = stateList.FirstOrDefault(item => item.Key == date);
             foreach (var dateSyosaiItem in dateSyosaiItems)
             {
                 if (!dateSyosaiItem.Equals(default(KeyValuePair<int, int>)))
                 {
                     if (!(!datetateItem.Equals(default(KeyValuePair<int, int>)) && date == model.SinDate && datetateItem.Value.Value < RaiinState.TempSave))
                     {
-                        dayInfo.ToolTip = (string.IsNullOrEmpty(dayInfo.ToolTip) ? "" : dayInfo.ToolTip + Environment.NewLine) + SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.Value];
+                        toolTipOfDayInfo = (string.IsNullOrEmpty(dayInfo.ToolTip) ? "" : dayInfo.ToolTip + Environment.NewLine) + SyosaiConst.FlowSheetCalendarDict[dateSyosaiItem.Value];
                     }
 
                     GetBackgroud(dateSyosaiItem);
                 }
             }
 
-            var dateSyosaiNoneStatus = model.RaiinDayDict.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.None);
+            var dateSyosaiNoneStatus = tempList.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.None);
             if (!dateSyosaiNoneStatus.Equals(default(KeyValuePair<int, int>))) GetBackgroud(dateSyosaiNoneStatus);
-            var dateSyosaiJihiStatus = model.RaiinDayDict.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Jihi);
+            var dateSyosaiJihiStatus = tempList.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Jihi);
             if (!dateSyosaiJihiStatus.Equals(default(KeyValuePair<int, int>))) GetBackgroud(dateSyosaiJihiStatus);
-            var dateSyosaiSaisinStatus = model.RaiinDayDict.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Saisin);
+            var dateSyosaiSaisinStatus = tempList.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Saisin);
             if (!dateSyosaiSaisinStatus.Equals(default(KeyValuePair<int, int>))) GetBackgroud(dateSyosaiSaisinStatus);
-            var dateSyosaiSyosinStatus = model.RaiinDayDict.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Syosin);
+            var dateSyosaiSyosinStatus = tempList.FirstOrDefault(item => item.Key == date && item.Value == SyosaiConst.Syosin);
             if (!dateSyosaiSyosinStatus.Equals(default(KeyValuePair<int, int>))) GetBackgroud(dateSyosaiSyosinStatus);
 
-            var dateTagItem = model.RaiinTags.FirstOrDefault(item => item.Key == date);
-            if (!dateTagItem.Equals(default(KeyValuePair<int, string>)) && !string.IsNullOrEmpty(dateTagItem.Value))
-            {
-                dayInfo.ToolTip = dayInfo.ToolTip;
-            }
             if (model.HighlightToday && date == model.SinDate)
             {
-                dayInfo.Background = EmrCalendarDateColor.Default;
+                finalBackGroundColor = EmrCalendarDateColor.Default;
             }
+            return new DayInfo(dateOfDayInfo, dayStr, toolTipOfDayInfo, finalForeGroundColor, finalBackGroundColor, EmrCalendarDateColor.Default, false);
+        }
+        public static EmrCalendarDateColor GetBackgroud(KeyValuePair<int, int> dateSyosaiItem)
+        {
+            EmrCalendarDateColor result;
+            switch (dateSyosaiItem.Value)
+            {
+                case SyosaiConst.Syosin:
+                case SyosaiConst.Syosin2:
+                    result = EmrCalendarDateColor.HasFirstVisit;
+                    break;
+                case SyosaiConst.Saisin:
+                case SyosaiConst.Saisin2:
+                case SyosaiConst.SaisinDenwa:
+                case SyosaiConst.SaisinDenwa2:
+                    result = EmrCalendarDateColor.CalHasCallAgain;
+                    break;
+                case SyosaiConst.None:
+                    result = EmrCalendarDateColor.CalHasData;
+                    break;
+                case SyosaiConst.NextOrder:
+                    result = EmrCalendarDateColor.CalNextOrder;
+                    break;
+                case SyosaiConst.Jihi:
+                    result = EmrCalendarDateColor.HasOwnExpense;
+                    break;
+                default:
+                    result = EmrCalendarDateColor.Default;
+                    break;
+            }
+            return result;
         }
     }
 }

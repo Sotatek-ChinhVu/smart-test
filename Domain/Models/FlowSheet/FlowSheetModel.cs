@@ -22,7 +22,7 @@ namespace Domain.Models.FlowSheet
         public int Status { get; private set; }
         // Raiin List Detail && RaiinListInf (for dynamic column)
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
-        public FlowSheetModel(int hpId, long ptId, int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, bool isNextOrder, bool isTodayOrder, int status)
+        public FlowSheetModel(int hpId, long ptId, int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, bool isNextOrder, bool isTodayOrder, int status, RaiinListTagModel tag, RaiinListCmtModel cmt, List<RaiinListInfModel> infs)
         {
             HpId = hpId;
             PtId = ptId;
@@ -33,9 +33,40 @@ namespace Domain.Models.FlowSheet
             Status = status;
             IsNextOrder = isNextOrder;
             IsTodayOrder = isTodayOrder;
-            RaiinListTag;
-            RaiinListCmt;
-            RaiinListInfs;
+            RaiinListTag = tag;
+            RaiinListCmt = cmt;
+            RaiinListInfs = infs;
+        }
+        public FlowSheetModel(FlowSheetModel model, RaiinListTagModel tag, RaiinListCmtModel cmt, List<RaiinListInfModel> inf)
+        {
+            HpId = model.HpId;
+            PtId = model.PtId;
+            SinDate = model.SinDate;
+            FullLineOfKarte = model.FullLineOfKarte;
+            RaiinNo = model.RaiinNo;
+            SyosaisinKbn= model.SyosaisinKbn;
+            Status = model.Status;
+            IsNextOrder = model.IsNextOrder;
+            IsTodayOrder = model.IsTodayOrder;
+            RaiinListTag = tag;
+            RaiinListCmt = cmt;
+            RaiinListInfs = inf;
+        }
+
+        public FlowSheetModel(int hpId, long ptId, int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, bool isNextOrder, bool isTodayOrder, int status)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            SinDate = sinDate;
+            FullLineOfKarte = fullLineOfKarte;
+            RaiinNo = raiinNo;
+            SyosaisinKbn = syosaisinKbn;
+            IsNextOrder = isNextOrder;
+            IsTodayOrder = isTodayOrder;
+            Status = status;
+            RaiinListTag = new();
+            RaiinListCmt = new();
+            RaiinListInfs = new();
         }
     }
 }

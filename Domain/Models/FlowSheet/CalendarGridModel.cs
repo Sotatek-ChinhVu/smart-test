@@ -9,7 +9,7 @@ namespace Domain.Models.FlowSheet
 {
     public class CalendarGridModel
     {
-        public ObservableCollection<WeekOfMonthModel> WeekOfMonths { get; set; }
+        public ObservableCollection<WeekOfMonthModel> WeekOfMonths { get; private set; }
         public DateTime MonthYear { get; private set; }
         public int Month { get; private set; }
         public int Year { get; private set; }
@@ -45,6 +45,41 @@ namespace Domain.Models.FlowSheet
             SinDate = 0;
             RaiinTags = new();
             RaiinStateDict = new();
+        }
+        public CalendarGridModel(CalendarGridModel model)
+        {
+            WeekOfMonths = model.WeekOfMonths;
+            MonthYear = model.MonthYear;
+            Month = model.Month;
+            Year = model.Year;
+            MonthText = model.MonthText;
+            HighlightToday = model.HighlightToday;
+            HighCurrentMonth = model.HighCurrentMonth;
+            MonthFontWeight = model.MonthFontWeight;
+            RaiinDayDict = model.RaiinDayDict;
+            Holidays = model.Holidays;
+            HolidayModels = model.HolidayModels;
+            SinDate = model.SinDate;
+            RaiinTags = model.RaiinTags;
+            RaiinStateDict = model.RaiinStateDict;
+        }
+
+        public CalendarGridModel(CalendarGridModel model, int sinDate, List<HolidayModel> holidays, List<KeyValuePair<int, RaiinStateDictObjectValue>> stateList, List<KeyValuePair<int, string>> tagList, List<KeyValuePair<int, int>> tempList)
+        {
+            WeekOfMonths = model.WeekOfMonths;
+            MonthYear = model.MonthYear;
+            Month = model.Month;
+            Year = model.Year;
+            MonthText = model.MonthText;
+            HighlightToday = model.HighlightToday;
+            HighCurrentMonth = model.HighCurrentMonth;
+            MonthFontWeight = model.MonthFontWeight;
+            RaiinDayDict = tempList;
+            Holidays = model.Holidays;
+            HolidayModels = holidays;
+            SinDate = sinDate;
+            RaiinTags = tagList;
+            RaiinStateDict = stateList;
         }
     }
     public class RaiinStateDictObjectValue

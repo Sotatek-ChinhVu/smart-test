@@ -37,13 +37,6 @@ namespace Domain.Models.FlowSheet
                 return FlowSheetConst.StarDictionary[0];
             }
         }
-        public RaiinListTagModel(int hpId, long ptId, long raiinNo, int sinDate)
-        {
-            HpId = hpId;
-            PtId = ptId;
-            RaiinNo = raiinNo;
-            SinDate = sinDate;
-        }
         public RaiinListTagModel(RaiinListTag model)
         {
             HpId = model.HpId;
@@ -60,6 +53,10 @@ namespace Domain.Models.FlowSheet
             RaiinNo = raiinNo;
             SinDate = sinDate;
             IsAddNew = isAddNew;
+        }
+
+        public RaiinListTagModel()
+        {
         }
     }
 }
