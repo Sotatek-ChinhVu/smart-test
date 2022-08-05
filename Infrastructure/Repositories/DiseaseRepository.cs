@@ -15,68 +15,122 @@ namespace Infrastructure.Repositories
 {
     public class DiseaseRepository : IPtDiseaseRepository
     {
+        private const string FREE_WORD = "0000999";
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public IEnumerable<PtDiseaseModel> GetAllDiseaseInMonth(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
+        public List<PtDiseaseModel>  GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
         {
-            return _tenantDataContext.PtByomeis
-                .Where(b => b.HpId == hpId &&
-                            b.PtId == ptId &&
-                            b.IsDeleted != 1 &&
-                            b.IsNodspKarte != 1 &&
-                            (b.TenkiKbn == TenkiKbnConst.Continued ||
-                            b.StartDate <= sinDate && b.TenkiDate >= sinDate ||
-                            b.StartDate <= (sinDate / 100 * 100 + 31) && b.TenkiDate >= (sinDate / 100 * 100 + 1)) &&
-                            (b.HokenPid == 0 || b.HokenPid == hokenId))
-                .OrderBy(b => b.TenkiKbn)
-                .ThenByDescending(b => b.IsImportant)
-                .ThenBy(b => b.SortNo)
-                .ThenBy(b => b.Id)
-                .Select(b => new PtDiseaseModel(
-                        b.HpId,
-                        b.PtId,
-                        b.SeqNo,
-                        b.ByomeiCd ?? string.Empty,
-                        b.SortNo,
-                        b.SyusyokuCd1 ?? string.Empty,
-                        b.SyusyokuCd2 ?? string.Empty,
-                        b.SyusyokuCd3 ?? string.Empty,
-                        b.SyusyokuCd4 ?? string.Empty,
-                        b.SyusyokuCd5 ?? string.Empty,
-                        b.SyusyokuCd6 ?? string.Empty,
-                        b.SyusyokuCd7 ?? string.Empty,
-                        b.SyusyokuCd8 ?? string.Empty,
-                        b.SyusyokuCd9 ?? string.Empty,
-                        b.SyusyokuCd10 ?? string.Empty,
-                        b.SyusyokuCd11 ?? string.Empty,
-                        b.SyusyokuCd12 ?? string.Empty,
-                        b.SyusyokuCd13 ?? string.Empty,
-                        b.SyusyokuCd14 ?? string.Empty,
-                        b.SyusyokuCd15 ?? string.Empty,
-                        b.SyusyokuCd16 ?? string.Empty,
-                        b.SyusyokuCd17 ?? string.Empty,
-                        b.SyusyokuCd18 ?? string.Empty,
-                        b.SyusyokuCd19 ?? string.Empty,
-                        b.SyusyokuCd20 ?? string.Empty,
-                        b.SyusyokuCd21 ?? string.Empty,
-                        b.Byomei ?? string.Empty,
-                        b.StartDate,
-                        b.TenkiKbn,
-                        b.TenkiDate,
-                        b.SyubyoKbn,
-                        b.SikkanKbn,
-                        b.NanByoCd,
-                        b.IsNodspRece,
-                        b.IsNodspKarte,
-                        b.IsDeleted,
-                        b.Id,
-                        b.IsImportant,
-                        sinDate
-                        ));
+            var ptByomeiListQueryable = _tenantDataContext.PtByomeis
+                .Where(p => p.HpId == hpId &&
+                            p.PtId == ptId &&
+                            p.IsDeleted != 1 &&
+                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
+
+            var ptByomeiList = ptByomeiListQueryable.ToList();
+
+            var byomeiMstQuery = _tenantDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+                                                             .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
+
+            var byomeiMstList = (from ptByomei in ptByomeiListQueryable
+                                 join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
+                                 select ptByomeiMst).ToList();
+
+            List<PtDiseaseModel> result = new List<PtDiseaseModel>();
+            foreach (var ptByomei in ptByomeiList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd);
+
+                string byomeiName = string.Empty;
+                string icd10 = string.Empty;
+                string icd102013 = string.Empty;
+                string icd1012013 = string.Empty;
+                string icd1022013 = string.Empty;
+
+                if (ptByomei.ByomeiCd != null && ptByomei.ByomeiCd.Equals(FREE_WORD))
+                {
+                    byomeiName = ptByomei.Byomei ?? string.Empty;
+                }
+                else
+                {
+                    if (byomeiMst != null)
+                    {
+                        byomeiName = byomeiMst.Sbyomei;
+
+                        icd10 = byomeiMst.Icd101;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd102))
+                        {
+                            icd10 += "/" + byomeiMst.Icd102;
+                        }
+                        icd102013 = byomeiMst.Icd1012013;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
+                        {
+                            icd102013 += "/" + byomeiMst.Icd1022013;
+                        }
+
+                        icd1012013 = byomeiMst.Icd1012013;
+                        icd1022013 = byomeiMst.Icd1022013;
+                    }
+                }
+                PtDiseaseModel ptDiseaseModel = new(
+                        ptByomei.HpId,
+                        ptByomei.PtId,
+                        ptByomei.SeqNo,
+                        ptByomei.ByomeiCd ?? string.Empty,
+                        ptByomei.SortNo,
+                        SyusyokuCdToList(ptByomei),
+                        byomeiName,
+                        ptByomei.StartDate,
+                        ptByomei.TenkiKbn,
+                        ptByomei.TenkiDate,
+                        ptByomei.SyubyoKbn,
+                        ptByomei.SikkanKbn,
+                        ptByomei.NanByoCd,
+                        ptByomei.IsNodspRece,
+                        ptByomei.IsNodspKarte,
+                        ptByomei.IsDeleted,
+                        ptByomei.Id,
+                        ptByomei.IsImportant,
+                        sinDate,
+                        icd10,
+                        icd102013,
+                        icd1012013,
+                        icd1022013,
+                        ptByomei.HokenPid);
+                result.Add(ptDiseaseModel);
+            }
+            return result;
+        }
+
+        private List<string> SyusyokuCdToList(PtByomei ptByomei)
+        {
+            return new List<string>()
+            {
+                ptByomei.SyusyokuCd1 ?? string.Empty,
+                ptByomei.SyusyokuCd2 ?? string.Empty,
+                ptByomei.SyusyokuCd3 ?? string.Empty,
+                ptByomei.SyusyokuCd4 ?? string.Empty,
+                ptByomei.SyusyokuCd5 ?? string.Empty,
+                ptByomei.SyusyokuCd6 ?? string.Empty,
+                ptByomei.SyusyokuCd7 ?? string.Empty,
+                ptByomei.SyusyokuCd8 ?? string.Empty,
+                ptByomei.SyusyokuCd9 ?? string.Empty,
+                ptByomei.SyusyokuCd10 ?? string.Empty,
+                ptByomei.SyusyokuCd11 ?? string.Empty,
+                ptByomei.SyusyokuCd12 ?? string.Empty,
+                ptByomei.SyusyokuCd13 ?? string.Empty,
+                ptByomei.SyusyokuCd14 ?? string.Empty,
+                ptByomei.SyusyokuCd15 ?? string.Empty,
+                ptByomei.SyusyokuCd16 ?? string.Empty,
+                ptByomei.SyusyokuCd17 ?? string.Empty,
+                ptByomei.SyusyokuCd18 ?? string.Empty,
+                ptByomei.SyusyokuCd19 ?? string.Empty,
+                ptByomei.SyusyokuCd20 ?? string.Empty,
+                ptByomei.SyusyokuCd21 ?? string.Empty
+            };
         }
     }
 }

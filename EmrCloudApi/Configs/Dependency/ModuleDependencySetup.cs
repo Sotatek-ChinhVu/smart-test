@@ -24,7 +24,6 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Diseases.GetDiseaseList;
-using UseCase.User.Create;
 using UseCase.User.GetList;
 using Domain.Models.RaiinKubunMst;
 using UseCase.RaiinKubunMst.GetList;
@@ -45,6 +44,19 @@ using UseCase.PatientGroupMst.GetList;
 using Interactor.PatientGroupMst;
 using Domain.Models.PatientGroupMst;
 using UseCase.Reception.UpdateDynamicCell;
+using Domain.Models.RaiinFilterMst;
+using UseCase.RaiinFilterMst.GetList;
+using Interactor.RaiinFilterMst;
+using UseCase.KaMst.GetList;
+using Interactor.KaMst;
+using UseCase.UketukeSbtMst.GetList;
+using Interactor.UketukeSbtMst;
+using UseCase.UketukeSbtMst.GetBySinDate;
+using UseCase.UketukeSbtMst.GetNext;
+using Domain.Models.UketukeSbtDayInf;
+using Interactor.UketukeSbtDayInf;
+using UseCase.UketukeSbtDayInf.Upsert;
+using Domain.Models.PtCmtInf;
 using UseCase.FlowSheet.GetList;
 using Interactor.FlowSheet;
 using Domain.Models.FlowSheet;
@@ -83,6 +95,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
+            services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
+            services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
         }
 
@@ -92,7 +107,6 @@ namespace EmrCloudApi.Configs.Dependency
             var busBuilder = new SyncUseCaseBusBuilder(registration);
 
             //User
-            busBuilder.RegisterUseCase<CreateUserInputData, CreateUserInteractor>();
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
 
             //PtByomeis
@@ -124,6 +138,20 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+
+            // RaiinFilter
+            busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
+
+            // Ka
+            busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+
+            // UketukeSbt
+            busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
+            busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
+            busBuilder.RegisterUseCase<GetNextUketukeSbtMstInputData, GetNextUketukeSbtMstInteractor>();
+
+            // UketukeSbtDayInf
+            busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();

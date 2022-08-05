@@ -24,6 +24,16 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
         }
 
         var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate);
+        CheckNameDuplicate(receptionInfos);
         return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
+    }
+
+    private void CheckNameDuplicate(List<ReceptionRowModel> receptionInfos)
+    {
+        foreach (var info in receptionInfos)
+        {
+            var duplicate = receptionInfos.Find(r => r.KanaName == info.KanaName && r.PtId != info.PtId);
+            info.IsNameDuplicate = duplicate is not null;
+        }
     }
 }

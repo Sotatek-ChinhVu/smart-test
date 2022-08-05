@@ -30,9 +30,18 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserMstModel> GetAll()
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
         {
-            return _tenantDataContext.UserMsts.ToList().Select(u => ToModel(u));
+            var query = _tenantDataContext.UserMsts.Where(u =>
+                u.StartDate <= sinDate
+                && u.EndDate >= sinDate
+                && u.IsDeleted == DeleteTypes.None);
+            if (isDoctorOnly)
+            {
+                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+            }
+
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public UserMstModel? GetByUserId(int userId)
@@ -64,12 +73,12 @@ namespace Infrastructure.Repositories
                 u.JobCd,
                 u.ManagerKbn,
                 u.KaId,
-                u.KanaName,
-                u.Name,
-                u.Sname,
-                u.DrName,
-                u.LoginId,
-                u.LoginPass,
+                u.KanaName ?? string.Empty,
+                u.Name ?? string.Empty,
+                u.Sname ?? string.Empty,
+                u.DrName ?? string.Empty,
+                u.LoginId ?? string.Empty,
+                u.LoginPass ?? string.Empty,
                 u.MayakuLicenseNo ?? string.Empty,
                 u.StartDate,
                 u.EndDate,

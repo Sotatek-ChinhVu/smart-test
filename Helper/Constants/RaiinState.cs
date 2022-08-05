@@ -32,7 +32,7 @@ public static class RaiinState
     /// </summary>
     public const int Examining = 2;
 
-    public static readonly Dictionary<int, string> VisitStatus = new()
+    public static Dictionary<int, string> VisitStatus => new()
     {
         { Reservation, "予約" },
         { Receptionist, "" },
@@ -43,13 +43,13 @@ public static class RaiinState
         { Settled, "済み" },
     };
 
-    public static readonly Dictionary<int, string> ChangeCalStatusDict = new()
+    public static Dictionary<int, string> ChangeCalStatusDict => new()
     {
         { TempSave, "一時保存" },
         { Calculate, "計算" },
     };
 
-    public static readonly Dictionary<int, string> ChangeWaitStatusDict = new()
+    public static Dictionary<int, string> ChangeWaitStatusDict => new()
     {
         { TempSave, "一時保存" },
         { Waiting, "精算" },

@@ -21,6 +21,14 @@ public class UketukeSbtMstRepository : IUketukeSbtMstRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public List<UketukeSbtMstModel> GetList()
+    {
+        return _tenantDataContext.UketukeSbtMsts
+            .Where(u => u.IsDeleted == DeleteTypes.None)
+            .OrderBy(u => u.SortNo).AsEnumerable()
+            .Select(u => ToModel(u)).ToList();
+    }
+
     private UketukeSbtMstModel ToModel(UketukeSbtMst u)
     {
         return new UketukeSbtMstModel(
