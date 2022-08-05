@@ -57,6 +57,9 @@ using Domain.Models.UketukeSbtDayInf;
 using Interactor.UketukeSbtDayInf;
 using UseCase.UketukeSbtDayInf.Upsert;
 using Domain.Models.PtCmtInf;
+using Domain.Models.UserConf;
+using Domain.Models.SystemConf;
+using UseCase.Reception.GetSettings;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -95,6 +98,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
+            services.AddTransient<IUserConfRepository, UserConfRepository>();
+            services.AddTransient<ISystemConfRepository, SystemConfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -116,6 +121,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
