@@ -52,6 +52,7 @@ using UseCase.KaMst.GetList;
 using Interactor.KaMst;
 using UseCase.UketukeSbtMst.GetList;
 using Interactor.UketukeSbtMst;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -59,6 +60,18 @@ namespace EmrCloudApi.Configs.Dependency
     {
         public void Run(IServiceCollection services)
         {
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);

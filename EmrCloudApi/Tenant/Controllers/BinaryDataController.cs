@@ -12,6 +12,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost]
         public ActionResult<BinaryStructure> Post()
         {
+            Request.EnableBuffering();
+
             var stream = Request.Body;
 
             //string txtPath = @"C:\Users\Admin\Downloads\ImageByte.txt";
