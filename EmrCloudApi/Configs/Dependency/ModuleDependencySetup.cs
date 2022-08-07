@@ -57,6 +57,7 @@ using Domain.Models.UketukeSbtDayInf;
 using Interactor.UketukeSbtDayInf;
 using UseCase.UketukeSbtDayInf.Upsert;
 using Domain.Models.PtCmtInf;
+using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -104,6 +105,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
+            busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
