@@ -10,7 +10,7 @@ namespace EmrCalculateApi.Implementation
         private readonly List<SystemConf> _systemConfigs;
         public SystemConfigProvider(ITenantProvider tenantProvider)
         {
-            _systemConfigs = tenantProvider.GetDataContext().SystemConfs.ToList();
+            _systemConfigs = tenantProvider.GetNoTrackingDataContext().SystemConfs.ToList();
         }
 
         public int GetChokiDateRange()

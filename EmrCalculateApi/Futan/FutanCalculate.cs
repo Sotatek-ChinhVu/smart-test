@@ -76,7 +76,7 @@ namespace EmrCalculateApi.Futan
         public FutanCalculate(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _systemConfigProvider = systemConfigProvider;
-            _tenantDataContext = tenantProvider.GetDataContext();
+            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _emrLogger = emrLogger;
 
             _futancalcFinder = new FutancalcFinder(_tenantDataContext);
