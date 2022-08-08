@@ -10,7 +10,7 @@ namespace EmrCloudApi.Tenant.Controllers
     {
         // POST api/values
         [HttpPost]
-        public ActionResult<BinaryStructure> Post()
+        public ActionResult<string> Post()
         {
             Request.EnableBuffering();
 
@@ -29,8 +29,8 @@ namespace EmrCloudApi.Tenant.Controllers
 
             //Stream stream = new MemoryStream(bytes);
 
-            BinaryStructure result = ProcessBinaryData(stream);
-            return new ActionResult<BinaryStructure>(result);
+            //BinaryStructure result = ProcessBinaryData(stream);
+            return new ActionResult<string>(StreamToHexString(stream));
         }
 
         public static byte StringToByteArray(string hex)
@@ -39,6 +39,31 @@ namespace EmrCloudApi.Tenant.Controllers
                              .Where(x => x % 2 == 0)
                              .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                              .First();
+        }
+
+        private string StreamToHexString(Stream? inputStream)
+        {
+            inputStream!.Seek(0, System.IO.SeekOrigin.Begin);
+
+            var bt = new byte[4096];
+            int nRead = 0;
+            List<byte> contentFile = new List<byte>();
+            while ((nRead = inputStream.Read(bt, 0, 4096)) > 0)
+            {
+                if (nRead != 4096)
+                {
+                    for (int i = 0; i < nRead; i++)
+                    {
+                        contentFile.Add(bt[i]);
+                    }
+                }
+                else
+                {
+                    contentFile.AddRange(bt);
+                }
+            }
+
+            return ByteArrayToString(contentFile);
         }
 
         private BinaryStructure ProcessBinaryData(Stream? inputStream)
