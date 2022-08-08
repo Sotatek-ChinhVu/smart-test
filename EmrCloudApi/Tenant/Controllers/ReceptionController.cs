@@ -2,17 +2,21 @@
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Presenters.Reception;
+using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
 using EmrCloudApi.Tenant.Requests.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Requests.ReceptionInsurance;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Responses.Reception;
+using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
+using UseCase.ReceptionInsurance.Get;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -48,6 +52,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPatientRaiinKubunResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetReceptionInsurance")]
+        public ActionResult<Response<ReceptionInsuranceResponse>> GetReceptionInsurance([FromQuery] ReceptionInsuranceRequest request)
+        {
+            var input = new GetReceptionInsuranceInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new ReceptionInsurancePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ReceptionInsuranceResponse>>(presenter.Result);
         }
     }
 }
