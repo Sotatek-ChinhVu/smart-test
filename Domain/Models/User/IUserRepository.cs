@@ -19,6 +19,11 @@ namespace Domain.Models.User
         List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);
 
         int MaxUserId();
+
         UserMstModel? GetByUserId(int userId);
+
+        bool CheckExistedId(List<long> idList);
+
+        void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList);
     }
 }

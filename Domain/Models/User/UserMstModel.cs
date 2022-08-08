@@ -2,7 +2,7 @@
 
 public class UserMstModel
 {
-    public UserMstModel(int userId, int jobCd, int managerKbn, int kaId,
+    public UserMstModel(long id, int userId, int jobCd, int managerKbn, int kaId,
         string kanaName, string name, string sname, string drName, string loginId,
         string loginPass, string mayakuLicenseNo, int startDate, int endDate,
         int sortNo, string renkeiCd1, int isDeleted)
@@ -23,7 +23,10 @@ public class UserMstModel
         SortNo = sortNo;
         RenkeiCd1 = renkeiCd1;
         IsDeleted = isDeleted;
+        Id = id;
     }
+
+    public long Id { get; set; }
 
     public int UserId { get; private set; }
     public int JobCd { get; private set; }

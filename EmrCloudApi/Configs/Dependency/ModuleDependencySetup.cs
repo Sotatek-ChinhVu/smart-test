@@ -63,6 +63,7 @@ using Domain.Models.PtCmtInf;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
+using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -112,6 +113,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
+            busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();

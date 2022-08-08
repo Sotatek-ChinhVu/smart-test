@@ -174,6 +174,16 @@ namespace Infrastructure.Repositories
                             && x.Status >= RaiinState.TempSave
                         orderby x.SinDate descending
                         select x.SinDate
+                    ).FirstOrDefault(),
+                    firstVisitDate = (
+                        from x in raiinInfs
+                        where x.HpId == hpId
+                            && x.PtId == raiinInf.PtId
+                            && x.SinDate < sinDate
+                            && x.Status >= RaiinState.TempSave
+                            && x.SyosaisinKbn == SyosaiConst.Syosin
+                        orderby x.SinDate descending
+                        select x.SinDate
                     ).FirstOrDefault()
                 };
 
@@ -203,6 +213,7 @@ namespace Infrastructure.Repositories
                 r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
                 r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
                 r.lastVisitDate,
+                r.firstVisitDate,
                 r.primaryDoctorName ?? string.Empty,
                 r.relatedRaiinCmtInfRemark?.Text ?? string.Empty,
                 r.raiinInf.ConfirmationState,
