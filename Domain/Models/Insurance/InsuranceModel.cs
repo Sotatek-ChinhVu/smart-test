@@ -202,6 +202,15 @@ namespace Domain.Models.InsuranceInfor
 
         public int SinDate { get; private set; }
 
+        public string JibaiHokenName { get; private set; }
+
+        public string JibaiHokenTanto { get; private set; }
+
+        public string JibaiHokenTel { get; private set; }
+
+        public int JibaiJyusyouDate { get; private set; }
+
+
         private string GetHokenName()
         {
             string hokenName = HokenPid.ToString().PadLeft(3, '0') + ". ";
