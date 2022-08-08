@@ -32,7 +32,10 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
                 SinDate = sinDate,
                 RaiinNo = raiinNo,
                 CmtKbn = cmtKbn,
-                Text = text
+                Text = text,
+                CreateDate = DateTime.UtcNow,
+                CreateId = TempIdentity.UserId,
+                CreateMachine = TempIdentity.ComputerName
             });
         }
         else
@@ -40,6 +43,8 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
             // Update
             raiinCmt.Text = text;
             raiinCmt.UpdateDate = DateTime.UtcNow;
+            raiinCmt.UpdateId = TempIdentity.UserId;
+            raiinCmt.UpdateMachine = TempIdentity.ComputerName;
         }
 
         _tenantDataContext.SaveChanges();
