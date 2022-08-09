@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UketukeSbt;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.UketukeSbtDayInf.Upsert;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -49,16 +48,6 @@ public class UketukeSbtController : ControllerBase
         var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId);
         var output = _bus.Handle(input);
         var presenter = new GetNextUketukeSbtMstPresenter();
-        presenter.Complete(output);
-        return Ok(presenter.Result);
-    }
-
-    [HttpPost(ApiPath.Upsert + "DayInf")]
-    public ActionResult<Response<UpsertUketukeSbtDayInfResponse>> Upsert([FromBody] UpsertUketukeSbtDayInfRequest req)
-    {
-        var input = new UpsertUketukeSbtDayInfInputData(req.SinDate, req.UketukeSbt, req.SeqNo);
-        var output = _bus.Handle(input);
-        var presenter = new UpsertUketukeSbtDayInfPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
