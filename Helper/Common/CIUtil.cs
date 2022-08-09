@@ -5,6 +5,46 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                result = 0;
+            }
+            return result;
+        }
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -506,13 +546,6 @@ namespace Helper.Common
             warekiYmd.Day = workString.Substring(4, 2).AsInteger();
 
             return $"{ymd / 10000}({warekiYmd.Gengo}{warekiYmd.Year})/{warekiYmd.Month}/{warekiYmd.Day}";
-        }
-
-        public static int DateTimeToInt(DateTime dateTime, string format = "yyyyMMdd")
-        {
-            int result = 0;
-            result = Int32.Parse(dateTime.ToString(format));
-            return result;
         }
 
         // Get Wareki name and Wareki year from Seireki
