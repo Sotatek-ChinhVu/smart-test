@@ -1,11 +1,4 @@
-﻿using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.FlowSheet
+﻿namespace Domain.Models.FlowSheet
 {
     public class RaiinListCmtModel
     {
