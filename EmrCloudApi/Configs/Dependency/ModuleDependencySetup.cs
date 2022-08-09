@@ -65,12 +65,9 @@ using UseCase.PatientRaiinKubun.Get;
 using Interactor.PatientRaiinKubun;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetNext;
-using UseCase.UketukeSbtDayInf.Upsert;
-using Domain.Models.PtCmtInf;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
-using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -170,9 +167,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
             busBuilder.RegisterUseCase<GetUketukeSbtMstBySinDateInputData, GetUketukeSbtMstBySinDateInteractor>();
             busBuilder.RegisterUseCase<GetNextUketukeSbtMstInputData, GetNextUketukeSbtMstInteractor>();
-
-            // UketukeSbtDayInf
-            busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
