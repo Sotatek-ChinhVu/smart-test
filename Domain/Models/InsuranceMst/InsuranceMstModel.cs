@@ -14,20 +14,16 @@ namespace Domain.Models.InsuranceMst
             ListTokkiMstModel = new List<TokkiMstModel>();
             HokenKogakuKbnDict = new Dictionary<int, string>();
             KohiHokenMstData = new List<HokenMstModel>();
-            KohiInfData = new List<KohiInfModel>();
-            HokenInfData = new List<HokenInfModel>();
             KantokuMstData = new List<KantokuMstModel>();
             ByomeiMstAftercareData = new List<ByomeiMstAftercareModel>();
             HokenMstData = new List<HokenMstModel>();
         }
 
-        public InsuranceMstModel(List<TokkiMstModel> listTokkiMstModel, Dictionary<int, string> hokenKogakuKbnDict, List<HokenMstModel> kohiHokenMstData, List<KohiInfModel> kohiInfData, List<HokenInfModel> hokenInfData, List<KantokuMstModel> kantokuMstData, List<ByomeiMstAftercareModel> byomeiMstAftercareData, List<HokenMstModel> hokenMstData)
+        public InsuranceMstModel(List<TokkiMstModel> listTokkiMstModel, Dictionary<int, string> hokenKogakuKbnDict, List<HokenMstModel> kohiHokenMstData, List<KantokuMstModel> kantokuMstData, List<ByomeiMstAftercareModel> byomeiMstAftercareData, List<HokenMstModel> hokenMstData)
         {
             ListTokkiMstModel = listTokkiMstModel;
             HokenKogakuKbnDict = hokenKogakuKbnDict;
             KohiHokenMstData = kohiHokenMstData;
-            KohiInfData = kohiInfData;
-            HokenInfData = hokenInfData;
             KantokuMstData = kantokuMstData;
             ByomeiMstAftercareData = byomeiMstAftercareData;
             HokenMstData = hokenMstData;
@@ -38,10 +34,6 @@ namespace Domain.Models.InsuranceMst
         public Dictionary<int, string> HokenKogakuKbnDict { get; private set; }
 
         public List<HokenMstModel> KohiHokenMstData { get; private set; }
-
-        public List<KohiInfModel> KohiInfData { get; private set; }
-
-        public List<HokenInfModel> HokenInfData { get; private set; }
 
         public List<KantokuMstModel> KantokuMstData { get; private set; }
 

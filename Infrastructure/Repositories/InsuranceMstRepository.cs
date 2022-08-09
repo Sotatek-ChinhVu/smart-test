@@ -1,20 +1,14 @@
-﻿using Domain.Constant;
-using Domain.Models.Insurance;
-using Domain.Models.InsuranceMst;
+﻿using Domain.Models.InsuranceMst;
+using Entity.Tenant;
 using Helper.Common;
+using Helper.Extendsions;
 using Infrastructure.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class InsuranceMstRepository: IInsuranceMstRepository
+    public class InsuranceMstRepository : IInsuranceMstRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public InsuranceMstRepository(ITenantProvider tenantProvider)
@@ -36,7 +30,7 @@ namespace Infrastructure.Repositories
 
             int prefNo = 0;
             var hpInf = _tenantDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
-            if(hpInf != null)
+            if (hpInf != null)
             {
                 prefNo = hpInf.PrefNo;
             }
@@ -74,91 +68,9 @@ namespace Infrastructure.Repositories
                     allHokenMst.Add(itemModelNew);
                 }
             }
-            List<HokenMstModel> OldHokenMstList = new List<HokenMstModel>();
-            List<HokenMstModel> NewHokenMstList = new List<HokenMstModel>();
-
-            var iterHokNo = 0;
-            var iterHokEda = 0;
-            var iterPrefNo = 0;
-            // All hoken master sort by start date descending
-            foreach (var hokenMst in allHokenMst)
-            {
-                // foreach hoken mst, pick one hoken mst with: 
-                // start date <= sinday or lastest hoken master if sinday < start date
-                if (iterHokNo == hokenMst.HokenNo && iterHokEda == hokenMst.HokenEdaNo && iterPrefNo == hokenMst.PrefNo)
-                {
-                    continue;
-                }
-
-                iterHokNo = hokenMst.HokenNo;
-                iterHokEda = hokenMst.HokenEdaNo;
-                iterPrefNo = hokenMst.PrefNo;
-                var hokMstMapped = allHokenMst
-                    .FindAll(hk =>
-                    hk.HokenNo == hokenMst.HokenNo
-                    && hk.HokenEdaNo == hokenMst.HokenEdaNo
-                    && hk.PrefNo == hokenMst.PrefNo)
-                    .OrderByDescending(hk => hk.StartDate);
-
-                if (hokMstMapped.Count() > 1)
-                {
-                    // pick one newest within startDate <= sinday
-                    var firstMapped = hokMstMapped.FirstOrDefault(hokMst => hokMst.StartDate <= sinDate);
-                    if (firstMapped == null)
-                    {
-                        // does not exist any hoken master with startDate <= sinday, pick lastest hoken mst (with min start date)
-                        // pick last cause by all hoken master is order by start date descending
-                        var itemLast = hokMstMapped.LastOrDefault();
-                        if (itemLast != null)
-                        {
-                            OldHokenMstList.Add(itemLast);
-                        }
-                    }
-                    else
-                    {
-                        OldHokenMstList.Add(firstMapped);
-                        if (firstMapped.EndDate >= sinDate)
-                        {
-                            NewHokenMstList.Add(firstMapped);
-                        }
-                    }
-                }
-                else
-                {
-                    // have just one hoken mst with HokenNo and HokenEdaNo
-                    OldHokenMstList.Add(hokenMst);
-                    if (hokenMst.StartDate <= sinDate && hokenMst.EndDate >= sinDate)
-                    {
-                        NewHokenMstList.Add(hokenMst);
-                    }
-                }
-            }
-
-            var NewHokenInfMstList = NewHokenMstList.FindAll(hokenInf =>
-                hokenInf.HokenSbtKbn == 1
-                || hokenInf.HokenSbtKbn == 8
-                || hokenInf.HokenSbtKbn == 0);
-
-            var OldHokenInfMstList = OldHokenMstList.FindAll(hokenInf =>
-                hokenInf.HokenSbtKbn == 1
-                || hokenInf.HokenSbtKbn == 8
-                || hokenInf.HokenSbtKbn == 0);
-
-            var KohiHokenMst = NewHokenMstList.FindAll(kohiInf =>
-                kohiInf.HokenSbtKbn == 2
-                || kohiInf.HokenSbtKbn == 5
-                || kohiInf.HokenSbtKbn == 6
-                || kohiInf.HokenSbtKbn == 7);
-
-            var RousaiMst = NewHokenMstList.FindAll(rousaiInf =>
-                rousaiInf.HokenSbtKbn == 3
-                || rousaiInf.HokenSbtKbn == 4);
-
-            var JihiMst = NewHokenMstList.FindAll(hokenInf => hokenInf.HokenSbtKbn == 8
-                                                        || hokenInf.HokenSbtKbn == 9);
 
             // data combobox Kantoku
-            var KantokuMsts = _tenantDataContext.KantokuMsts.OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd)
+            var kantokuMsts = _tenantDataContext.KantokuMsts.OrderBy(entity => entity.RoudouCd).ThenBy(entity => entity.KantokuCd)
                                 .Select(x => new KantokuMstModel(
                                      x.RoudouCd,
                                      x.KantokuCd,
@@ -166,7 +78,7 @@ namespace Infrastructure.Repositories
                                     )).ToList();
 
             // data combobox ByomeiMstAftercares
-            var ByomeiMstAftercares = _tenantDataContext.ByomeiMstAftercares.OrderBy(entity => entity.ByomeiCd)
+            var byomeiMstAftercares = _tenantDataContext.ByomeiMstAftercares.OrderBy(entity => entity.ByomeiCd)
                                          .Select(x => new ByomeiMstAftercareModel(
                                                 x.ByomeiCd,
                                                 x.Byomei
@@ -174,106 +86,20 @@ namespace Infrastructure.Repositories
                                         .ToList();
 
             // data combobox 9
-            var dataHokenInfor = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
-            var dataComboboxHokenMst = new List<HokenMstModel>();
+            var dataHokenInfor = _tenantDataContext.PtHokenInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
             var dataComboboxKantokuMst = new List<KantokuMstModel>();
-            if (dataHokenInfor != null)
+            if (dataHokenInfor != null &&
+                (dataHokenInfor.HokenKbn == 11 || dataHokenInfor.HokenKbn == 12 || dataHokenInfor.HokenKbn == 13))
             {
-                if (dataHokenInfor.HokenKbn == 0 || dataHokenInfor.Houbetu == HokenConstant.HOUBETU_JIHI_108 || dataHokenInfor.Houbetu == HokenConstant.HOUBETU_JIHI_109)
+                if (!string.IsNullOrEmpty(dataHokenInfor.RousaiRoudouCd))
                 {
-                    if (JihiMst != null)
-                    {
-                        dataComboboxHokenMst = JihiMst;
-                    }
-                }
-                else if (dataHokenInfor.HokenKbn == 11 || dataHokenInfor.HokenKbn == 12 || dataHokenInfor.HokenKbn == 13)
-                {
-                    dataComboboxHokenMst = RousaiMst.FindAll(rousaiMst => rousaiMst.HokenNo == 103);
-                    if (!string.IsNullOrEmpty(dataHokenInfor.RousaiRoudouCd))
-                    {
-                        dataComboboxKantokuMst = KantokuMsts.FindAll(kantoku => kantoku.RoudouCD == dataHokenInfor.RousaiRoudouCd);
-                    }
-                    else
-                    {
-                        dataComboboxKantokuMst = KantokuMsts;
-                    }
-                }
-                else if (dataHokenInfor.HokenKbn == 14)
-                {
-                    dataComboboxHokenMst = RousaiMst.FindAll(rousaiMst => rousaiMst.HokenNo == 104);
-                }
-                else if (string.IsNullOrEmpty(dataHokenInfor.Houbetu))
-                {
-                    dataComboboxHokenMst = NewHokenInfMstList;
+                    dataComboboxKantokuMst = kantokuMsts.FindAll(kantoku => kantoku.RoudouCD == dataHokenInfor.RousaiRoudouCd);
                 }
                 else
                 {
-                    var hokenMstModel = NewHokenInfMstList.Find(hoken =>
-                                                                    (hoken.Houbetu == dataHokenInfor.Houbetu
-                                                                    || hoken.HokenNo == 68)
-                                                                    && hoken.HokenNo == dataHokenInfor.HokenNo
-                                                                    && hoken.HokenEdaNo == dataHokenInfor.HokenEdaNo);
-
-                    if (hokenMstModel == null)
-                    {
-                        dataComboboxHokenMst = OldHokenInfMstList.FindAll(hoken =>
-                                                                    (hoken.Houbetu == dataHokenInfor.Houbetu
-                                                                    || hoken.HokenNo == 68)
-                                                                    && ((hoken.StartDate <= sinDate && hoken.EndDate >= sinDate)
-                                                                        || (hoken.HokenNo == dataHokenInfor.HokenNo
-                                                                            && hoken.HokenEdaNo == dataHokenInfor.HokenEdaNo)
-                                                                        )
-                                                                    );
-                    }
-                    else
-                    {
-                        dataComboboxHokenMst = NewHokenInfMstList.FindAll(hoken =>
-                                                                  hoken.Houbetu == dataHokenInfor.Houbetu
-                                                                  || hoken.HokenNo == 68);
-                    }
+                    dataComboboxKantokuMst = kantokuMsts;
                 }
             }
-
-            // data combobox 8
-            var dataHokenInf = _tenantDataContext.PtHokenInfs
-                    .Where(entity => entity.HpId == hpId && entity.PtId == ptId)
-                    .OrderByDescending(entity => entity.HokenId)
-                    .Select(x => new HokenInfModel(
-                            x.HpId,
-                            x.PtId,
-                            x.HokenId,
-                            x.HokenKbn,
-                            x.HokensyaNo ?? string.Empty,
-                            x.HokenKbn,
-                            x.StartDate,
-                            x.EndDate,
-                            sinDate
-                        ))
-                    .ToList();
-
-            // data combobox 7  Kohi
-            var dataKohis = _tenantDataContext.PtKohis
-                    .Where(entity => entity.HpId == hpId && entity.PtId == ptId)
-                    .OrderByDescending(entity => entity.HokenId)
-                    .Select(x => new KohiInfModel(
-                          x.FutansyaNo ?? string.Empty,
-                          x.JyukyusyaNo ?? string.Empty,
-                          x.HokenId,
-                          x.StartDate,
-                          x.EndDate,
-                          0,
-                          x.Rate,
-                          x.GendoGaku,
-                          x.SikakuDate,
-                          x.KofuDate,
-                          x.TokusyuNo ?? string.Empty,
-                          x.HokenSbtKbn,
-                          x.Houbetu ?? string.Empty,
-                          x.HokenNo,
-                          x.HokenEdaNo,
-                          x.PrefNo
-                       ))
-                    .ToList();
 
             // data combobox 2 hokenKogakuKbnDict
             Dictionary<int, string> hokenKogakuKbnDict = new Dictionary<int, string>();
@@ -324,7 +150,64 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, KohiHokenMst, dataKohis, dataHokenInf, dataComboboxKantokuMst, ByomeiMstAftercares, dataComboboxHokenMst);
+            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false));
+        }
+
+        private List<HokenMstModel> GetHokenMstList(int today, bool isKohi)
+        {
+            var hospitalInfo = _tenantDataContext.HpInfs
+                .Where(p => p.HpId == 1)
+                .OrderByDescending(p => p.StartDate)
+                .FirstOrDefault();
+
+            int prefCd = 0;
+            if (hospitalInfo != null)
+            {
+                prefCd = hospitalInfo.PrefNo;
+            }
+
+            List<HokenMstModel> list = new List<HokenMstModel>();
+
+            IQueryable<HokenMst> query;
+
+            if (isKohi)
+            {
+                query = _tenantDataContext.HokenMsts.Where(kohiInf =>
+                    (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
+                    && kohiInf.StartDate < today
+                    && kohiInf.EndDate > today
+                    && (kohiInf.PrefNo == prefCd || kohiInf.PrefNo == 0 || kohiInf.IsOtherPrefValid == 1));
+            }
+            else
+            {
+                query = _tenantDataContext.HokenMsts.Where(hokenInf =>
+                    (hokenInf.HokenSbtKbn == 1 || hokenInf.HokenSbtKbn == 8)
+                    && hokenInf.StartDate < today
+                    && hokenInf.EndDate > today
+                    && (hokenInf.PrefNo == prefCd || hokenInf.PrefNo == 0 || hokenInf.IsOtherPrefValid == 1));
+            }
+
+            List<HokenMst> entities = query
+                .OrderBy(entity => entity.HpId)
+                .ThenBy(entity => entity.HokenNo)
+                .ThenBy(entity => entity.SortNo)
+                .ThenBy(entity => entity.HokenSbtKbn)
+                .ThenBy(entity => entity.StartDate)
+                .ToList();
+
+            List<RoudouMst> roudouMsts = _tenantDataContext.RoudouMsts.ToList();
+            entities?.ForEach(h =>
+            {
+                string prefName = string.Empty;
+                if (roudouMsts.Any(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo))
+                {
+                    prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName;
+                }
+
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName));
+            });
+
+            return list;
         }
 
         public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
@@ -337,7 +220,7 @@ namespace Infrastructure.Repositories
             }
 
             var listAllDataHokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => (!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.StartsWith(keyword))
-                                                        && (x.PrefNo == 0 || x.PrefNo == prefNo) 
+                                                        && (x.PrefNo == 0 || x.PrefNo == prefNo)
                                                         && (x.HokenKbn == 1 || x.HokenKbn == 2)
                                                         && x.HpId == hpId
                                                         && x.IsDelete == 0

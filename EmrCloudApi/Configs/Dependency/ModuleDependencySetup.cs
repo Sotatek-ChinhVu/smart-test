@@ -60,8 +60,6 @@ using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.InsuranceMst.Get;
-using Interactor.InsuranceMst;
 using Domain.Models.PatientRaiinKubun;
 using UseCase.PatientRaiinKubun.Get;
 using Interactor.PatientRaiinKubun;
