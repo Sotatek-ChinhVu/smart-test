@@ -31,13 +31,11 @@ namespace Infrastructure.Repositories
                                    HpId = rkbInf.HpId,
                                    GrpId = rkbInf.GrpId,
                                    KbnCd = rkbInf.KbnCd,
-                                   GrpName = rknMst.GrpName,
                                    SortNo = rknMst.SortNo
                                };
             var dataListItem = joinQuery.AsEnumerable().Select(x => new PatientRaiinKubunModel(
                                                          x.HpId,
                                                          x.GrpId,
-                                                         x.GrpName,
                                                          x.KbnCd,
                                                          x.SortNo
                                                          )).OrderBy(x => x.SortNo).ToList();
