@@ -59,6 +59,8 @@ using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
+using Domain.Models.PtCmtInf;
+using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -108,6 +110,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
+            busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();

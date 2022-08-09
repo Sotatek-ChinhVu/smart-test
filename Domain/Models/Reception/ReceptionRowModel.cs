@@ -10,7 +10,7 @@ public class ReceptionRowModel
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
-        int tantoId, int kaId, int lastVisitDate, string sname, string raiinRemark,
+        int tantoId, int kaId, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells,
         int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
@@ -40,6 +40,7 @@ public class ReceptionRowModel
         TantoId = tantoId;
         KaId = kaId;
         LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
+        FirstVisitDate = CIUtil.SDateToShowWDate2(firstVisitDate);
         Sname = sname;
         RaiinRemark = raiinRemark;
         ConfirmationState = GetConfirmationStateText(confirmationState);
@@ -100,6 +101,7 @@ public class ReceptionRowModel
     public int KaId { get; private set; }
     // 前回来院
     public string LastVisitDate { get; private set; }
+    public string FirstVisitDate { get; private set; }
     // 主治医
     public string Sname { get; private set; }
     // 備考

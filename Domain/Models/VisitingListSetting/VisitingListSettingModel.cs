@@ -49,25 +49,6 @@ namespace Domain.Models.VisitingListSetting
         }
     }
 
-    public class ConfigModel
-    {
-        public int GrpCd { get; private set; }
-
-        public string Param { get; private set; }
-
-        public double Value { get; private set; }
-
-        public int EdaNo { get; private set; }
-
-        public ConfigModel(int grpCd, string param, double value, int edaNo)
-        {
-            GrpCd = grpCd;
-            Param = param;
-            Value = value;
-            EdaNo = edaNo;
-        }
-    }
-
     public class ReceptionTimeColorConfig
     {
         public ReceptionTimeColorConfig(int duration)
