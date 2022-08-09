@@ -19,7 +19,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetFlowSheet")]
         public ActionResult<Response<GetListFlowSheetResponse>> GetList([FromQuery] GetListFlowSheetRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsHolidayOnly, inputData.HolidayFrom, inputData.HolidayTo);
             var output = _bus.Handle(input);
             var presenter = new GetListFlowSheetPresenter();
             presenter.Complete(output);

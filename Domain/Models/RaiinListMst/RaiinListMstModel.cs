@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.RaiinListMst
+﻿namespace Domain.Models.RaiinListMst
 {
     public class RaiinListMstModel
     {
-        public int HpId { get; private set; }
-
-        public int GroupId { get; private set; }
-
-        public string GroupName { get; private set; }
-
-        public RaiinListMstModel(int hpId, int groupId, string groupName)
+        public RaiinListMstModel(int grpId, string grpName, int sortNo, List<RaiinListDetailModel> raiinListDetailsList)
         {
-            HpId = hpId;
-            GroupId = groupId;
-            GroupName = groupName;
+            GrpId = grpId;
+            GrpName = grpName;
+            SortNo = sortNo;
+            RaiinListDetailsList = raiinListDetailsList;
         }
+
+        public int GrpId { get; private set; }
+
+        public string GrpName { get; private set; }
+
+        public int SortNo { get; private set; }
+
+        public List<RaiinListDetailModel> RaiinListDetailsList { get; private set; }
     }
 }

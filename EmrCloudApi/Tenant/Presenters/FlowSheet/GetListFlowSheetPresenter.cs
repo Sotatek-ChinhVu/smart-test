@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.FlowSheet;
 using UseCase.FlowSheet.GetList;
 
@@ -15,8 +16,10 @@ namespace EmrCloudApi.Tenant.Presenters.FlowSheet
                 {
                     ListFlowSheet = outputData.ListFlowSheetModel,
                     ListRaiinListMstModels = outputData.ListRaiinListMstModels,
-                    ListCalendarGridModel = outputData.ListCalendarGridModel,
-                }
+                    ListHolidayModel = outputData.ListHolidayModel,
+                },
+                Message = ResponseMessage.Success,
+                Status = 1
             };
         }
     }
