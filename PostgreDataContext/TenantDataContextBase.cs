@@ -52,6 +52,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KaMst>().HasKey(e => new { e.Id, e.HpId });
             modelBuilder.Entity<LockInf>().HasKey(e => new { e.HpId, e.PtId, e.FunctionCd, e.SinDate, e.RaiinNo, e.OyaRaiinNo });
             modelBuilder.Entity<UketukeSbtMst>().HasKey(e => new { e.HpId, e.KbnId });
+            modelBuilder.Entity<UketukeSbtDayInf>().HasKey(e => new { e.HpId, e.SinDate, e.SeqNo });
             modelBuilder.Entity<PtGrpNameMst>().HasKey(r => new { r.HpId, r.GrpId });
             modelBuilder.Entity<PtGrpItem>().HasKey(r => new { r.HpId, r.GrpId, r.GrpCode, r.SeqNo });
             modelBuilder.Entity<PtHokenInf>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
@@ -62,6 +63,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<KantokuMst>().HasKey(r => new { r.RoudouCd, r.KantokuCd });
             modelBuilder.Entity<HokenMst>().HasKey(r => new { r.HpId, r.PrefNo, r.HokenNo, r.HokenEdaNo, r.StartDate });
             modelBuilder.Entity<HokensyaMst>().HasKey(r => new { r.HpId, r.HokensyaNo });
+            modelBuilder.Entity<UserConf>().HasKey(e => new { e.HpId, e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo });
+            modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

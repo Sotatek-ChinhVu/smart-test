@@ -1,4 +1,3 @@
-using Domain.Common;
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
@@ -133,10 +132,10 @@ namespace Infrastructure.Repositories
                     raiinInf,
                     ptInf,
                     ptCmtInf,
-                    uketukeSbt = relatedUketukeSbtMst,
-                    tanto = relatedTanto,
                     primaryDoctorName = relatedPrimaryDoctor.Sname,
-                    ka = relatedKaMst,
+                    relatedUketukeSbtMst,
+                    relatedTanto,
+                    relatedKaMst,
                     relatedRaiinCmtInfComment,
                     relatedRaiinCmtInfRemark,
                     relatedRsvFrameMst,
@@ -174,6 +173,16 @@ namespace Infrastructure.Repositories
                             && x.Status >= RaiinState.TempSave
                         orderby x.SinDate descending
                         select x.SinDate
+                    ).FirstOrDefault(),
+                    firstVisitDate = (
+                        from x in raiinInfs
+                        where x.HpId == hpId
+                            && x.PtId == raiinInf.PtId
+                            && x.SinDate < sinDate
+                            && x.Status >= RaiinState.TempSave
+                            && x.SyosaisinKbn == SyosaiConst.Syosin
+                        orderby x.SinDate descending
+                        select x.SinDate
                     ).FirstOrDefault()
                 };
 
@@ -193,19 +202,17 @@ namespace Infrastructure.Repositories
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
                 r.relatedRsvFrameMst?.RsvFrameName ?? string.Empty,
-                r.uketukeSbt?.KbnName ?? string.Empty,
-                r.uketukeSbt?.KbnId ?? CommonConstants.InvalidId,
+                r.relatedUketukeSbtMst?.KbnId ?? CommonConstants.InvalidId,
                 r.raiinInf.UketukeTime ?? string.Empty,
                 r.raiinInf.SinStartTime ?? string.Empty,
                 r.raiinInf.SinEndTime ?? string.Empty,
                 r.raiinInf.KaikeiTime ?? string.Empty,
                 r.relatedRaiinCmtInfComment?.Text ?? string.Empty,
                 r.ptCmtInf?.Text ?? string.Empty,
-                r.tanto?.Sname ?? string.Empty,
-                r.tanto?.UserId ?? CommonConstants.InvalidId,
-                r.ka?.KaSname ?? string.Empty,
-                r.ka?.KaId ?? CommonConstants.InvalidId,
+                r.relatedTanto?.UserId ?? CommonConstants.InvalidId,
+                r.relatedKaMst?.KaId ?? CommonConstants.InvalidId,
                 r.lastVisitDate,
+                r.firstVisitDate,
                 r.primaryDoctorName ?? string.Empty,
                 r.relatedRaiinCmtInfRemark?.Text ?? string.Empty,
                 r.raiinInf.ConfirmationState,
@@ -266,6 +273,8 @@ namespace Infrastructure.Repositories
 
             updateEntity(raiinInf);
             raiinInf.UpdateDate = DateTime.UtcNow;
+            raiinInf.UpdateId = TempIdentity.UserId;
+            raiinInf.UpdateMachine = TempIdentity.ComputerName;
             _tenantDataContext.SaveChanges();
             return true;
         }

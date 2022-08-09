@@ -655,7 +655,6 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
-
         //西暦(yyyymmdd)から年齢を計算する
         //Calculate age from yyyymmdd format
         public static int SDateToAge(int Ymd, int ToYmd)
@@ -703,6 +702,7 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
+#pragma warning disable S1104 // Fields should not have public accessibility
         public string Ymd;
         public string GYmd;
         public string Gengo;
@@ -710,5 +710,6 @@ namespace Helper.Common
         public int Year;
         public int Month;
         public int Day;
+#pragma warning restore S1104 // Fields should not have public accessibility
     }
 }

@@ -20,6 +20,11 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public bool CheckExistedId(List<long> idList)
+        {
+            return _tenantDataContext.UserMsts.Any(u => idList.Contains(u.Id));
+        }
+
         public void Create(UserMstModel user)
         {
             throw new NotImplementedException();
@@ -41,7 +46,7 @@ namespace Infrastructure.Repositories
                 query = query.Where(u => u.JobCd == JobCodes.Doctor);
             }
 
-            return query.OrderBy(u => u.SortNo).ToList().Select(u => ToModel(u)).ToList();
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public UserMstModel? GetByUserId(int userId)
@@ -66,9 +71,15 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
+        public void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList)
+        {
+
+        }
+
         private UserMstModel ToModel(UserMst u)
         {
             return new UserMstModel(
+                u.Id,
                 u.UserId,
                 u.JobCd,
                 u.ManagerKbn,
