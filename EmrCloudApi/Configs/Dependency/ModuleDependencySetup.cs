@@ -33,7 +33,6 @@ using Interactor.PatientInfor;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
-using Interactor.UketukeSbtDayInf;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using UseCase.CalculationInf;
@@ -174,6 +173,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
+
+            // HokensyaMst
+            busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
