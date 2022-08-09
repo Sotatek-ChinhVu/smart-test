@@ -508,6 +508,13 @@ namespace Helper.Common
             return $"{ymd / 10000}({warekiYmd.Gengo}{warekiYmd.Year})/{warekiYmd.Month}/{warekiYmd.Day}";
         }
 
+        public static int DateTimeToInt(DateTime dateTime, string format = "yyyyMMdd")
+        {
+            int result = 0;
+            result = Int32.Parse(dateTime.ToString(format));
+            return result;
+        }
+
         // Get Wareki name and Wareki year from Seireki
         // // fmtReki[0: 和暦を英字 1: 和暦を漢字]
         private static string getWareki(int Ymd, int fmtReki = 0)
@@ -687,11 +694,10 @@ namespace Helper.Common
             {
                 Age = -1;
             }
-
             return Age;
         }
+        #endregion
     }
-    #endregion
 
     public enum WarekiFormat
     {
