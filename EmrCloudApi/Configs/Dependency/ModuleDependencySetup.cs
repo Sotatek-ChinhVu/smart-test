@@ -60,11 +60,19 @@ using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
 using UseCase.SearchHokensyaMst.Get;
+using UseCase.InsuranceMst.Get;
+using Interactor.InsuranceMst;
+using Domain.Models.PatientRaiinKubun;
+using UseCase.PatientRaiinKubun.Get;
+using Interactor.PatientRaiinKubun;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using Domain.Models.ReceptionInsurance;
+using Interactor.ReceptionInsurance;
+using UseCase.ReceptionInsurance.Get;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -102,11 +110,13 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<IInsuranceMstRepository, InsuranceMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
+            services.AddTransient<IPatientRaiinKubunReponsitory, PatientRaiinKubunReponsitory>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
+            services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -130,6 +140,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
+            busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
@@ -168,6 +179,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
+       
+            // UketukeSbtDayInf
+            busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
