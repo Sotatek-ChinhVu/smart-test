@@ -22,12 +22,9 @@ namespace Domain.Models.VisitingListSetting
 
         public int SelectTodoSetting { get; private set; } = 0;
 
-        public List<ReceptionTimeColorConfig> ReceptionTimeColorConfigs { get; private set; } = new()
-        {
-            new(15), new(30), new(999)
-        };
+        public List<ReceptionTimeColorConfig> ReceptionTimeColorConfigs { get; private set; }
 
-        public List<ReceptionStatusColorConfig> ReceptionStatusColorConfigs { get; private set; } = new();
+        public List<ReceptionStatusColorConfig> ReceptionStatusColorConfigs { get; private set; }
 
         public List<ReceptionSettingsComment> ReceptionComments { get; private set; } = new()
         {
@@ -39,71 +36,16 @@ namespace Domain.Models.VisitingListSetting
             new(0, "TODO: Free comments.")
         };
 
-        public VisitingListSettingModel(List<ConfigModel> userConfigList, List<ConfigModel> systemConfig)
+        public VisitingListSettingModel(string fontName, int fontSize, int autoRefresh, int mouseWheel, int kanFocus, int selectTodoSetting, List<ReceptionTimeColorConfig> receptionTimeColorConfigs, List<ReceptionStatusColorConfig> receptionStatusColorConfigs)
         {
-            ApplyUserConfig(userConfigList);
-            ApplySystemConfigs(systemConfig);
-        }
-
-        private void ApplyUserConfig(List<ConfigModel> userConfigList)
-        {
-            foreach (var config in userConfigList)
-            {
-                switch (config.GrpCd)
-                {
-                    case UserConfCommon.GroupCodes.Font:
-                        FontName = config.Param;
-                        FontSize = (int)config.Value;
-                        break;
-                    case UserConfCommon.GroupCodes.AutoRefresh:
-                        AutoRefresh = (int)config.Value;
-                        break;
-                    case UserConfCommon.GroupCodes.MouseWheel:
-                        MouseWheel = (int)config.Value;
-                        break;
-                    case UserConfCommon.GroupCodes.KanFocus:
-                        KanFocus = (int)config.Value;
-                        break;
-                    case UserConfCommon.GroupCodes.SelectTodoSetting:
-                        SelectTodoSetting = (int)config.Value;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        private void ApplySystemConfigs(List<ConfigModel> configs)
-        {
-            ReceptionTimeColorConfigs = configs
-                .Where(c => c.GrpCd == SystemConfGroupCodes.ReceptionTimeColor)
-                .Select(c => new ReceptionTimeColorConfig(c.EdaNo, c.Param))
-                .ToList();
-
-            var receptionStatusColorConfigs = configs
-                .Where(c => c.GrpCd == SystemConfGroupCodes.ReceptionStatusColor)
-                .Select(c => new ReceptionStatusColorConfig(c.EdaNo, c.Param))
-                .ToList();
-
-            ReceptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
-        }
-
-        /// <summary>
-        /// Some configs may not match with the status code or missing so we have to standardize the configs.
-        /// </summary>
-        /// <param name="configs"></param>
-        /// <returns></returns>
-        private List<ReceptionStatusColorConfig> StandardizeReceptionStatusColorConfigs(List<ReceptionStatusColorConfig> configs)
-        {
-            var receptionStatuses = RaiinState.ReceptionStatusToText.Select(pair => pair.Key).ToList();
-            var matchingStatusVsConfigQuery =
-                from status in receptionStatuses
-                join config in configs on status equals config.Status into colorConfigs
-                from colorConfig in colorConfigs.DefaultIfEmpty() // Left join with statuses
-                orderby status
-                select colorConfig ?? new ReceptionStatusColorConfig(status); // Set the default value for the missing config
-
-            return matchingStatusVsConfigQuery.ToList();
+            FontName = fontName;
+            FontSize = fontSize;
+            AutoRefresh = autoRefresh;
+            MouseWheel = mouseWheel;
+            KanFocus = kanFocus;
+            SelectTodoSetting = selectTodoSetting;
+            ReceptionTimeColorConfigs = receptionTimeColorConfigs;
+            ReceptionStatusColorConfigs = receptionStatusColorConfigs;
         }
     }
 
