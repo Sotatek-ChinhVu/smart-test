@@ -4,10 +4,12 @@ namespace UseCase.UketukeSbtMst.GetNext;
 
 public class GetNextUketukeSbtMstInputData : IInputData<GetNextUketukeSbtMstOutputData>
 {
-    public GetNextUketukeSbtMstInputData(int kbnId)
+    public GetNextUketukeSbtMstInputData(int sinDate, int currentKbnId)
     {
-        KbnId = kbnId;
+        SinDate = sinDate;
+        CurrentKbnId = currentKbnId;
     }
 
-    public int KbnId { get; private set; }
+    public int SinDate { get; private set; }
+    public int CurrentKbnId { get; private set; }
 }

@@ -46,7 +46,7 @@ public class UketukeSbtController : ControllerBase
     [HttpGet(ApiPath.Get + "Next")]
     public ActionResult<Response<GetNextUketukeSbtMstResponse>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        var input = new GetNextUketukeSbtMstInputData(req.KbnId);
+        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId);
         var output = _bus.Handle(input);
         var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);
