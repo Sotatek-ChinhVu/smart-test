@@ -1,13 +1,14 @@
 ﻿using Domain.Models.Reception;
+using Domain.Models.VisitingListSetting;
 
 namespace EmrCloudApi.Tenant.Responses.Reception;
 
 public class GetReceptionSettingsResponse
 {
-    public GetReceptionSettingsResponse(ReceptionSettings settings)
+    public GetReceptionSettingsResponse(VisitingListSettingModel settings)
     {
         Settings = settings;
     }
 
-    public ReceptionSettings Settings { get; private set; }
+    public VisitingListSettingModel Settings { get; private set; }
 }

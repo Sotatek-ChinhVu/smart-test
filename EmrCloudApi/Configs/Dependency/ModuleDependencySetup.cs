@@ -60,6 +60,7 @@ using Domain.Models.PtCmtInf;
 using Domain.Models.UserConf;
 using Domain.Models.SystemConf;
 using UseCase.Reception.GetSettings;
+using Domain.Models.VisitingListSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -100,6 +101,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
+            services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
