@@ -662,6 +662,7 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
+
         //西暦(yyyymmdd)から年齢を計算する
         //Calculate age from yyyymmdd format
         public static int SDateToAge(int Ymd, int ToYmd)
