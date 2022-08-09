@@ -3,12 +3,6 @@ using Domain.Models.FlowSheet;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extendsions;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.FlowSheet.GetList;
 
 namespace Interactor.FlowSheet
@@ -127,7 +121,7 @@ namespace Interactor.FlowSheet
             finalModel = CreateCalendarDate(model, finalSinDate, holidayList, stateList, tagList, tempList);
             return new CalendarGridModel(finalModel);
         }
-        private CalendarGridModel CreateCalendarDate(CalendarGridModel model, int sinDate, List<HolidayModel> holidays, 
+        private CalendarGridModel CreateCalendarDate(CalendarGridModel model, int sinDate, List<HolidayModel> holidays,
                                                     List<KeyValuePair<int, RaiinStateDictObjectValue>> stateList,
                                                     List<KeyValuePair<int, string>> tagList, List<KeyValuePair<int, int>> tempList)
         {
@@ -166,7 +160,7 @@ namespace Interactor.FlowSheet
                 for (int i = 0; i <= 6; i++)
                 {
                     DateTime current = start.AddDays(i);
-                    
+
                     switch (current.DayOfWeek)
                     {
                         case DayOfWeek.Monday:

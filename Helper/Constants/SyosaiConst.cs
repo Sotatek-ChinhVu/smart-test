@@ -77,4 +77,18 @@ public static class SyosaiConst
     /// 次回オーダー
     /// </summary>
     public const int NextOrder = -1;
+
+    public static Dictionary<int, string> FlowSheetCalendarDict { get; } = new Dictionary<int, string>()
+    {
+        {Unspecified, "（指定なし）" },
+        {Syosin, "初診" },
+        {Syosin2, "同日初診" },
+        {Saisin, "再診" },
+        {Saisin2, "再診（２科目）" },
+        {SaisinDenwa, "電話再診" },
+        {SaisinDenwa2, "電話再診（２科目）" },
+        {None, "なし" },
+        {Jihi, "なし（×自動算定）" },
+        {NextOrder, "予約オーダー" }
+    };
 }
