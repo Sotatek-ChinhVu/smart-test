@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId, int sinDate)
         {
-            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.HokenPid).ToList();
+            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId && (x.StartDate <= sinDate && x.EndDate >= sinDate)  ).OrderByDescending(x => x.HokenPid).ToList();
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None).ToList();
             var dataHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
             var joinQuery = from ptHokenPattern in dataHokenPatterList
@@ -78,7 +78,10 @@ namespace Infrastructure.Repositories
                                         ptKohi1.KofuDate,
                                         ptKohi1.TokusyuNo ?? string.Empty,
                                         ptKohi1.HokenSbtKbn,
-                                        ptKohi1.Houbetu ?? string.Empty
+                                        ptKohi1.Houbetu ?? string.Empty,
+                                        ptKohi1.HokenNo,
+                                        ptKohi1.HokenEdaNo,
+                                        ptKohi1.PrefNo
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
                                             ptKohi2.FutansyaNo ?? string.Empty,
@@ -93,7 +96,10 @@ namespace Infrastructure.Repositories
                                             ptKohi2.KofuDate,
                                             ptKohi2.TokusyuNo ?? string.Empty,
                                             ptKohi2.HokenSbtKbn,
-                                            ptKohi2.Houbetu ?? string.Empty
+                                            ptKohi2.Houbetu ?? string.Empty,
+                                            ptKohi2.HokenNo,
+                                            ptKohi2.HokenEdaNo,
+                                            ptKohi2.PrefNo
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
                                                 ptKohi3.FutansyaNo ?? string.Empty,
@@ -108,7 +114,10 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.KofuDate,
                                                 ptKohi3.TokusyuNo ?? string.Empty,
                                                 ptKohi3.HokenSbtKbn,
-                                                ptKohi3.Houbetu ?? string.Empty
+                                                ptKohi3.Houbetu ?? string.Empty,
+                                                ptKohi3.HokenNo,
+                                                ptKohi3.HokenEdaNo,
+                                                ptKohi3.PrefNo
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
                                                 ptKohi4.FutansyaNo ?? string.Empty,
@@ -123,7 +132,10 @@ namespace Infrastructure.Repositories
                                                 ptKohi4.KofuDate,
                                                 ptKohi4.TokusyuNo ?? string.Empty,
                                                 ptKohi4.HokenSbtKbn,
-                                                ptKohi4.Houbetu ?? string.Empty
+                                                ptKohi4.Houbetu ?? string.Empty,
+                                                ptKohi4.HokenNo,
+                                                ptKohi4.HokenEdaNo,
+                                                ptKohi4.PrefNo
                                             ) : null,
                                 ptHokenInf.KogakuKbn,
                                 ptHokenInf.TasukaiYm,

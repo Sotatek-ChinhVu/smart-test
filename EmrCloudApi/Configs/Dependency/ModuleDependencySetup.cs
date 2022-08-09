@@ -51,16 +51,19 @@ using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
-using UseCase.Reception.GetSettings;
-using UseCase.Reception.UpdateDynamicCell;
-using UseCase.Reception.UpdateStaticCell;
-using UseCase.UketukeSbtDayInf.Upsert;
-using UseCase.UketukeSbtMst.GetBySinDate;
-using UseCase.UketukeSbtMst.GetList;
-using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
-using Domain.Models.PtCmtInf;
+using UseCase.Reception.UpdateStaticCell;
+using UseCase.Reception.UpdateDynamicCell;
+using UseCase.UketukeSbtMst.GetList;
+using UseCase.SearchHokensyaMst.Get;
+using Domain.Models.InsuranceMst;
 using UseCase.User.UpsertList;
+using UseCase.Reception.GetSettings;
+using UseCase.InsuranceMst.Get;
+using Interactor.InsuranceMst;
+using UseCase.UketukeSbtMst.GetBySinDate;
+using UseCase.UketukeSbtMst.GetNext;
+using UseCase.UketukeSbtDayInf.Upsert;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -96,6 +99,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
             services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
+            services.AddTransient<IInsuranceMstRepository, InsuranceMstRepository>();
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
@@ -142,6 +146,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+            
+            //Insurance Mst
+            busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
@@ -156,6 +163,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
+
+            // HokensyaMst
+            busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

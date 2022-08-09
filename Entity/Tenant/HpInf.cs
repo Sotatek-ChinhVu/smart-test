@@ -30,42 +30,42 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "HP_CD")]
 		[MaxLength(7)]
-		public string HpCd { get; set; } = string.Empty;
+		public string? HpCd { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 労災医療機関コード			
 		/// </summary>
 		[Column(name: "ROUSAI_HP_CD")]
 		[MaxLength(7)]
-		public string RousaiHpCd { get; set; } = string.Empty;
+		public string? RousaiHpCd { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 医療機関名			
 		/// </summary>
 		[Column(name: "HP_NAME")]
 		[MaxLength(80)]
-		public string HpName { get; set; } = string.Empty;
+		public string? HpName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// レセ医療機関名			
 		/// </summary>
 		[Column(name: "RECE_HP_NAME")]
 		[MaxLength(80)]
-		public string ReceHpName { get; set; } = string.Empty;
+		public string? ReceHpName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 開設者氏名			
 		/// </summary>
 		[Column(name: "KAISETU_NAME")]
 		[MaxLength(40)]
-		public string KaisetuName { get; set; } = string.Empty;
+		public string? KaisetuName { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 郵便番号			
 		/// </summary>
 		[Column(name: "POST_CD")]
 		[MaxLength(7)]
-		public string PostCd { get; set; } = string.Empty;
+		public string? PostCd { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 都道府県番号			
@@ -78,35 +78,35 @@ namespace Entity.Tenant
 		/// </summary>
 		[Column(name: "ADDRESS1")]
 		[MaxLength(100)]
-		public string Address1 { get; set; } = string.Empty;
+		public string? Address1 { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 医療機関所在地２			
 		/// </summary>
 		[Column(name: "ADDRESS2")]
 		[MaxLength(100)]
-		public string Address2 { get; set; } = string.Empty;
+		public string? Address2 { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 電話番号			
 		/// </summary>
 		[Column(name: "TEL")]
 		[MaxLength(15)]
-		public string Tel { get; set; } = string.Empty;
+		public string? Tel { get; set; } = string.Empty;
 
 		/// <summary>
 		/// FAX番号			
 		/// </summary>
 		[Column(name: "FAX_NO")]
         [MaxLength(15)]
-        public string FaxNo { get; set; } = string.Empty;
+        public string? FaxNo { get; set; } = string.Empty;
 
 		/// <summary>
 		/// その他連絡先
 		/// </summary>
 		[Column(name: "OTHER_CONTACTS")]
         [MaxLength(100)]
-        public string OtherContacts { get; set; } = string.Empty;
+        public string? OtherContacts { get; set; } = string.Empty;
 
 		/// <summary>
 		/// 作成日時	

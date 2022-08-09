@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 監督署コード
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "KANTOKU_CD", Order = 2)]
 		[MaxLength(2)]
         public string KantokuCd { get; set; } = string.Empty;
