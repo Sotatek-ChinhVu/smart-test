@@ -65,9 +65,6 @@ using UseCase.PatientRaiinKubun.Get;
 using Interactor.PatientRaiinKubun;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetNext;
-using Domain.Models.ReceptionInsurance;
-using Interactor.ReceptionInsurance;
-using UseCase.ReceptionInsurance.Get;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -108,7 +105,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPatientRaiinKubunReponsitory, PatientRaiinKubunReponsitory>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
-            services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
         }
