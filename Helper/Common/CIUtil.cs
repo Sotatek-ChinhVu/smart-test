@@ -668,6 +668,7 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
+#pragma warning disable S1104 // Fields should not have public accessibility
         public string Ymd;
         public string GYmd;
         public string Gengo;
@@ -675,5 +676,6 @@ namespace Helper.Common
         public int Year;
         public int Month;
         public int Day;
+#pragma warning restore S1104 // Fields should not have public accessibility
     }
 }

@@ -1,4 +1,3 @@
-using Domain.Common;
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
