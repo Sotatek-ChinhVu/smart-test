@@ -656,6 +656,27 @@ namespace Helper.Common
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
         #endregion
+
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result = 0;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+
+            }
+            return result;
+        }
+
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
     }
 
     

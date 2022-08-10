@@ -15,6 +15,21 @@ public class PtCmtInfRepository : IPtCmtInfRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
+    public List<PtCmtInfModel> GetList(long ptId, int hpId)
+    {
+        var ptCmts = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(p => p.UpdateDate)
+.Select(x => new PtCmtInfModel(
+                x.HpId,
+                x.PtId,
+                x.SeqNo,
+                x.Text,
+                x.IsDeleted,
+                x.Id
+            ));
+        ;
+        return ptCmts.ToList();
+    }
+
     public void Upsert(long ptId, string text)
     {
         var ptCmt = _tenantDataContext.PtCmtInfs
