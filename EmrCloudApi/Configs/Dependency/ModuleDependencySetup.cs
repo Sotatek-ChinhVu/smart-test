@@ -58,6 +58,9 @@ using Interactor.UketukeSbtDayInf;
 using UseCase.UketukeSbtDayInf.Upsert;
 using Domain.Models.PtCmtInf;
 using UseCase.User.UpsertList;
+using Domain.Models.ReceptionSameVisit;
+using UseCase.ReceptionSameVisit.Get;
+using Interactor.ReceptionSameVisit;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -96,6 +99,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
+            services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -150,6 +154,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
+
+            // Reception Same Visit
+            busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

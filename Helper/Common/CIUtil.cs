@@ -656,6 +656,25 @@ namespace Helper.Common
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
         #endregion
+
+        public static string HourAndMinuteFormat(string value)
+        {
+            string sResult = "";
+            if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
+            {
+                if (value.Length > 4)
+                {
+                    sResult = CIUtil.Copy(value, 1, 4);
+                }
+                else
+                {
+                    sResult = value;
+                }
+                sResult = sResult.PadLeft(4, '0');
+                sResult = sResult.Insert(2, ":");
+            }
+            return sResult;
+        }
     }
 
     
