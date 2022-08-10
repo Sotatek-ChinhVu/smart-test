@@ -182,14 +182,22 @@ namespace Infrastructure.Repositories
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
+                    long raiinNo = 0;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId &&  (dataHokenInf == null || x.HokenNo == dataHokenInf.HokenNo && x.HokenEdaNo == dataHokenInf.HokenEdaNo));
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
                         futanRate = hokenMst.FutanRate;
                     }
-                    var itemHokenData = new HokenPatternModel(
-                                            ptId,               
+                    if(item.RaiinInf != null)
+                    {
+                        raiinNo = item.RaiinInf.RaiinNo;
+                    }    
+
+                    if (item.PtHokenPatternItem != null)
+                    {
+                        var itemHokenData = new HokenPatternModel(
+                                            ptId,
                                             item.PtHokenPatternItem.HokenPid,
                                             item.PtHokenPatternItem.StartDate,
                                             item.PtHokenPatternItem.EndDate,
@@ -206,10 +214,11 @@ namespace Infrastructure.Repositories
                                             sinDate,
                                             houbetu,
                                             futanRate,
-                                            item.RaiinInf.RaiinNo
+                                            raiinNo
                                             );
-                    
-                    listHokenData.Add(itemHokenData);
+
+                        listHokenData.Add(itemHokenData);
+                    }    
                 }
             }
             var listSameVisitModel = new List<ReceptionSameVisitModel>();
