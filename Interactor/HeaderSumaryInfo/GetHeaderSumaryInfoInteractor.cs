@@ -1,4 +1,6 @@
-﻿using Domain.Models.OrdInfs;
+﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.OrdInfs;
 using Domain.Models.PtAlrgyDrug;
 using Domain.Models.PtAlrgyElse;
 using Domain.Models.PtAlrgyFood;
@@ -11,6 +13,7 @@ using Domain.Models.PtPregnancy;
 using Domain.Models.PtSupple;
 using Helper.Common;
 using Helper.Enums;
+using Helper.Extendsions;
 using UseCase.HeaderSumaryInfo.Get;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -28,8 +31,9 @@ namespace Interactor.HeaderSumaryInfo
         private readonly IPtSuppleRepository _ptPtSuppleRepository;
         private readonly IPtPregnancyRepository _ptPregnancyRepository;
         private readonly IPtCmtInfRepository _ptCmtInfRepository;
+        private readonly IInsuranceRepository _insuranceRepository;
 
-        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository)
+        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository)
         {
             _ptAlrgryElseRepository = ptAlrgryElseRepository;
             _ptPtAlrgyFoodRepository = ptPtAlrgyFoodRepository;
@@ -41,6 +45,7 @@ namespace Interactor.HeaderSumaryInfo
             _ptPtSuppleRepository = ptPtSuppleRepository;
             _ptPregnancyRepository = ptPregnancyRepository;
             _ptCmtInfRepository = ptCmtInfRepository;
+            _insuranceRepository = insuranceRepository;
         }
 
         public GetOrdInfListTreeOutputData Handle(GetOrdInfListTreeInputData inputData)
@@ -663,49 +668,137 @@ namespace Interactor.HeaderSumaryInfo
         //    }
         //}
 
-        private void GetInsuranceInfo(PtInfNotificationItem ptHeaderInfoModel)
+        private void GetInsuranceInfo(long ptId, int sinDate, int hpId, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 10;
             ptHeaderInfoModel.HeaderName = "◆保険情報";
-            List<In> listPtHokenInfoModel = _hokenPatternService.FindAllPtHokenPatternByPtId(_PtId, _SinDate, _HpId, 28).Result;
-            if (listPtHokenInfoModel?.Count == 0) return;
+            var listPtHokenInfoItem = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate, 28).ToList();
+            if (listPtHokenInfoItem?.Count == 0) return;
             string futanInfo = string.Empty;
             string kohiInf = string.Empty;
-            foreach (var ptHokenInfoModel in listPtHokenInfoModel)
+
+            if (listPtHokenInfoItem?.Count > 0)
             {
-                kohiInf = string.Empty;
-                if (!ptHokenInfoModel.IsEmptyKohi1)
+                foreach (var ptHokenInfoModel in listPtHokenInfoItem)
                 {
-                    kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi1Inf);
+                    kohiInf = string.Empty;
+                    if (!ptHokenInfoModel.IsEmptyKohi1)
+                    {
+                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi1Inf);
+                    }
+                    if (!ptHokenInfoModel.IsEmptyKohi2)
+                    {
+                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi2Inf);
+                    }
+                    if (!ptHokenInfoModel.IsEmptyKohi3)
+                    {
+                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi3Inf);
+                    }
+                    if (!ptHokenInfoModel.IsEmptyKohi4)
+                    {
+                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi4Inf);
+                    }
+                    if (string.IsNullOrEmpty(kohiInf))
+                    {
+                        continue;
+                    }
+                    kohiInf = kohiInf?.TrimEnd();
+                    kohiInf = kohiInf?.TrimEnd('　');
+                    kohiInf = kohiInf?.TrimEnd(',');
+                    futanInfo += ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ";
+                    futanInfo += kohiInf;
+                    futanInfo += Environment.NewLine;
                 }
-                if (!ptHokenInfoModel.IsEmptyKohi2)
-                {
-                    kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi2Inf);
-                }
-                if (!ptHokenInfoModel.IsEmptyKohi3)
-                {
-                    kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi3Inf);
-                }
-                if (!ptHokenInfoModel.IsEmptyKohi4)
-                {
-                    kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi4Inf);
-                }
-                if (string.IsNullOrEmpty(kohiInf))
-                {
-                    continue;
-                }
-                kohiInf = kohiInf?.TrimEnd();
-                kohiInf = kohiInf?.TrimEnd('　');
-                kohiInf = kohiInf?.TrimEnd(',');
-                futanInfo += ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ";
-                futanInfo += kohiInf;
-                futanInfo += Environment.NewLine;
             }
             futanInfo = futanInfo?.TrimEnd();
             if (!string.IsNullOrEmpty(futanInfo?.Trim()))
             {
                 ptHeaderInfoModel.HeaderInfo = futanInfo;
             }
+        }
+
+        private string GetFutanInfo(KohiInfModel ptKohi)
+        {
+            HokenMstModel hokenMst = ptKohi.HokenMasterModel;
+            int gokenGaku = ptKohi.GendoGaku;
+            string futanInfo = string.Empty;
+
+            if (!string.IsNullOrEmpty(ptKohi.FutansyaNo))
+            {
+                futanInfo += "[" + ptKohi.FutansyaNo + "]";
+            }
+            else
+            {
+                if (hokenMst == null)
+                {
+                    return string.Empty;
+                }
+                futanInfo += "[" + hokenMst.HoubetsuNumber + "]";
+            }
+
+            if (hokenMst == null && !string.IsNullOrEmpty(ptKohi.FutansyaNo))
+            {
+                return futanInfo + "," + " ";
+            }
+            if (hokenMst.FutanKbn == 0)
+            {
+                //負担なし
+                futanInfo += "0円";
+            }
+            else
+            {
+                if (hokenMst.KaiLimitFutan > 0)
+                {
+                    if (hokenMst.DayLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo += gokenGaku.AsString() + "円/回・";
+                    }
+                    else
+                    {
+                        futanInfo += hokenMst.KaiLimitFutan.AsString() + "円/回・";
+                    }
+                }
+
+                if (hokenMst.DayLimitFutan > 0)
+                {
+                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo += gokenGaku.AsString() + "円/日・";
+                    }
+                    else
+                    {
+                        futanInfo += hokenMst.DayLimitFutan.AsString() + "円/日・";
+                    }
+                }
+
+                if (hokenMst.DayLimitCount > 0)
+                {
+                    futanInfo = hokenMst.DayLimitCount.AsString() + "回/日・";
+                }
+
+                if (hokenMst.MonthLimitFutan > 0)
+                {
+                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.DayLimitFutan <= 0 && gokenGaku > 0)
+                    {
+                        futanInfo += gokenGaku.AsString() + "円/月・";
+                    }
+                    else
+                    {
+                        futanInfo += hokenMst.MonthLimitFutan.AsString() + "円/月・";
+                    }
+                }
+
+                if (hokenMst.MonthLimitCount > 0)
+                {
+                    futanInfo += hokenMst.MonthLimitCount.AsString() + "回/月";
+                }
+            }
+            if (!string.IsNullOrEmpty(futanInfo))
+            {
+                futanInfo = futanInfo.TrimEnd('・');
+                futanInfo = futanInfo + "," + " ";
+            }
+            return futanInfo;
         }
     }
 }
