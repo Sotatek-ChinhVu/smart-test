@@ -16,6 +16,7 @@
         public static readonly string NotFound = "Not found";
         public static readonly string Success = "Success";
         public static readonly string NoData = "No data";
+        public static readonly string Failed = "Failed";
 
 
         public static readonly string CreateUserInvalidName = "Please input user name";

@@ -73,6 +73,8 @@ using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
 using Domain.Models.ColumnSetting;
 using UseCase.Reception.GetVisitingColumnSettings;
+using UseCase.ColumnSetting.SaveList;
+using Interactor.ColumnSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -184,6 +186,9 @@ namespace EmrCloudApi.Configs.Dependency
        
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
+
+            // ColumnSetting
+            busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
