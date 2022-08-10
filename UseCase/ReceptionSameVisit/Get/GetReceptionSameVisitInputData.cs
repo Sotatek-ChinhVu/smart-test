@@ -9,12 +9,11 @@ namespace UseCase.ReceptionSameVisit.Get
 {
     public class GetReceptionSameVisitInputData : IInputData<GetReceptionSameVisitOutputData>
     {
-        public GetReceptionSameVisitInputData(int hpId, long ptId, int sinDate, int userIdDoctor)
+        public GetReceptionSameVisitInputData(int hpId, long ptId, int sinDate)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
-            UserIdDoctor = userIdDoctor;
         }
 
         public int HpId { get; private set; }
@@ -22,8 +21,6 @@ namespace UseCase.ReceptionSameVisit.Get
         public long PtId { get; private set; }
 
         public int SinDate { get; private set; }
-
-        public int UserIdDoctor { get; private set; }
 
     }
 }

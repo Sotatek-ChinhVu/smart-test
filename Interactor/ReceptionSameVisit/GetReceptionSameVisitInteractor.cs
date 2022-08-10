@@ -32,13 +32,8 @@ namespace Interactor.ReceptionSameVisit
             {
                 return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidSinDate);
             }
-            
-            if (inputData.UserIdDoctor <= 0)
-            {
-                return new GetReceptionSameVisitOutputData(new List<ReceptionSameVisitModel>(), GetReceptionSameVisitStatus.InvalidUserIdDoctor);
-            }
 
-            var listData = _receptionSameVisitRepository.GetReceptionSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.UserIdDoctor);
+            var listData = _receptionSameVisitRepository.GetReceptionSameVisit(inputData.HpId, inputData.PtId, inputData.SinDate);
             
             return new GetReceptionSameVisitOutputData(listData.ToList(), GetReceptionSameVisitStatus.Success);
         }

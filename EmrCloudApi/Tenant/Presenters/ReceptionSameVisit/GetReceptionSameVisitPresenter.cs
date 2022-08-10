@@ -22,7 +22,6 @@ namespace EmrCloudApi.Tenant.Presenters.ReceptionSameVisit
             GetReceptionSameVisitStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             GetReceptionSameVisitStatus.InvalidPtId => ResponseMessage.InvalidPtId,
             GetReceptionSameVisitStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
-            GetReceptionSameVisitStatus.InvalidUserIdDoctor => ResponseMessage.InvalidUserIdDoctor,
             _ => string.Empty
         };
     }

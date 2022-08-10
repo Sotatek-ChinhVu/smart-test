@@ -11,7 +11,6 @@ namespace UseCase.ReceptionSameVisit.Get
         Success = 1,
         InvalidHpId = 2,
         InvalidPtId = 3,
-        InvalidSinDate = 4,
-        InvalidUserIdDoctor = 5
+        InvalidSinDate = 4
     }
 }

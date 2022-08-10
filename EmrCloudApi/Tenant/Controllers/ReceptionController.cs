@@ -73,7 +73,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListSameVisit")]
         public ActionResult<Response<GetReceptionSameVisitResponse>> GetListSameVisit([FromQuery] GetReceptionSameVisitRequest request)
         {
-            var input = new GetReceptionSameVisitInputData(request.HpId, request.PtId,  request.SinDate, request.UserIdDoctor);
+            var input = new GetReceptionSameVisitInputData(request.HpId, request.PtId,  request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionSameVisitPresenter();

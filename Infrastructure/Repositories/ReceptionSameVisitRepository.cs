@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public IEnumerable<ReceptionSameVisitModel> GetReceptionSameVisit(int hpId, long ptId, int sinDate, int userIdDoctor)
+        public IEnumerable<ReceptionSameVisitModel> GetReceptionSameVisit(int hpId, long ptId, int sinDate)
         {
             var listDataRaiinInf = _tenantDataContext.RaiinInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.IsDeleted == DeleteTypes.None).ToList();
             
@@ -243,7 +243,7 @@ namespace Infrastructure.Repositories
 
                     if (_doctors != null)
                     {
-                        var tempDoctor = _doctors.Find(dr => dr.UserId == userIdDoctor);
+                        var tempDoctor = _doctors.Find(dr => dr.UserId == item.TantoId);
                         doctorName = tempDoctor == null ? string.Empty : (tempDoctor.Name ?? string.Empty);
                     }
 

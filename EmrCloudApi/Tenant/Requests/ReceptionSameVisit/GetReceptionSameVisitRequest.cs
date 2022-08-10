@@ -9,7 +9,5 @@ namespace EmrCloudApi.Tenant.Requests.ReceptionSameVisit
         public long PtId { get; set; }
 
         public int SinDate { get; set; }
-
-        public int UserIdDoctor { get; set; }
     }
 }
