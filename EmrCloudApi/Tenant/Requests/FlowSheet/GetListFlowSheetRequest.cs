@@ -9,11 +9,5 @@
         public int SinDate { get; set; }
 
         public long RaiinNo { get; set; }
-
-        public bool IsHolidayOnly { get; set; }
-
-        public int HolidayFrom { get; set; }
-
-        public int HolidayTo { get; set; }
     }
 }

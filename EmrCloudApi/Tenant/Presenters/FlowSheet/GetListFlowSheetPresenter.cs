@@ -15,8 +15,7 @@ namespace EmrCloudApi.Tenant.Presenters.FlowSheet
                 Data = new GetListFlowSheetResponse()
                 {
                     ListFlowSheet = outputData.ListFlowSheetModel,
-                    ListRaiinListMstModels = outputData.ListRaiinListMstModels,
-                    ListHolidayModel = outputData.ListHolidayModel,
+                    ListRaiinListMstModels = outputData.ListRaiinListMstModels
                 },
                 Message = ResponseMessage.Success,
                 Status = 1
