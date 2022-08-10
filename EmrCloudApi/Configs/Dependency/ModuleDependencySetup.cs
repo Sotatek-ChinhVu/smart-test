@@ -75,7 +75,6 @@ using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
 using Domain.Models.ColumnSetting;
-using UseCase.Reception.GetVisitingColumnSettings;
 using UseCase.ColumnSetting.SaveList;
 using Interactor.ColumnSetting;
 using UseCase.ColumnSetting.GetList;
@@ -149,7 +148,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
-            busBuilder.RegisterUseCase<GetVisitingColumnSettingsInputData, GetVisitingColumnSettingsInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
