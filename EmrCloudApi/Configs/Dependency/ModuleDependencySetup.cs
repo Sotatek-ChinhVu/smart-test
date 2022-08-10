@@ -78,6 +78,7 @@ using Domain.Models.ColumnSetting;
 using UseCase.Reception.GetVisitingColumnSettings;
 using UseCase.ColumnSetting.SaveList;
 using Interactor.ColumnSetting;
+using UseCase.ColumnSetting.GetList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -193,6 +194,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
+            busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();

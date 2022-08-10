@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.ColumnSetting;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ColumnSetting;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Sync;
 
@@ -18,6 +19,16 @@ public class ColumnSettingController : ControllerBase
     public ColumnSettingController(UseCaseBus bus)
     {
         _bus = bus;
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public ActionResult<Response<GetColumnSettingListResponse>> GetList([FromQuery] GetColumnSettingListRequest req)
+    {
+        var input = new GetColumnSettingListInputData(req.UserId, req.TableName);
+        var output = _bus.Handle(input);
+        var presenter = new GetColumnSettingListPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]
