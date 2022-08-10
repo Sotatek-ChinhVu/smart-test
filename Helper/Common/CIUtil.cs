@@ -5,6 +5,46 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                result = 0;
+            }
+            return result;
+        }
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -655,10 +695,44 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
+
+        //西暦(yyyymmdd)から年齢を計算する
+        //Calculate age from yyyymmdd format
+        public static int SDateToAge(int Ymd, int ToYmd)
+        {
+            if (Ymd <= 0 || ToYmd <= 0)
+            {
+                return -1;
+            }
+            string WrkStr;
+            int Age;
+
+            try
+            {
+                WrkStr = Ymd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
+
+                WrkStr = ToYmd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);
+
+                Age = toDate.Year - birthDate.Year;
+
+                if (birthDate.Month > toDate.Month)
+                    Age = Age - 1;
+
+                if ((birthDate.Month == toDate.Month) &&
+                    (birthDate.Day > toDate.Day))
+                    Age = Age - 1;
+            }
+            catch
+            {
+                Age = -1;
+            }
+            return Age;
+        }
         #endregion
     }
 
-    
     public enum WarekiFormat
     {
         Short,
@@ -668,6 +742,7 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
+#pragma warning disable S1104 // Fields should not have public accessibility
         public string Ymd;
         public string GYmd;
         public string Gengo;
@@ -675,5 +750,6 @@ namespace Helper.Common
         public int Year;
         public int Month;
         public int Day;
+#pragma warning restore S1104 // Fields should not have public accessibility
     }
 }
