@@ -68,6 +68,9 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using Domain.Models.ReceptionSameVisit;
+using UseCase.ReceptionSameVisit.Get;
+using Interactor.ReceptionSameVisit;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
@@ -120,6 +123,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
+            services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -189,6 +193,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
+
+            // Reception Same Visit
+            busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
