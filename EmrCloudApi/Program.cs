@@ -40,6 +40,14 @@ dependencySetup.Run(builder.Services);
 
 var app = builder.Build();
 
+// Run EF Core Migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<TenantDataContext>();
+    context.Database.Migrate();
+}
+
 //Add config from json file
 string enviroment = "Development";
 if (app.Environment.IsProduction() ||
