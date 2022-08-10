@@ -1,6 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.Insurance;
-using Domain.Models.User;
+﻿using Domain.Models.User;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
