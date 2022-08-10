@@ -71,6 +71,8 @@ using UseCase.User.UpsertList;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
+using Domain.Models.ColumnSetting;
+using UseCase.Reception.GetVisitingColumnSettings;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -115,6 +117,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -139,6 +142,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
+            busBuilder.RegisterUseCase<GetVisitingColumnSettingsInputData, GetVisitingColumnSettingsInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();

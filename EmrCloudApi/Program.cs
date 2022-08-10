@@ -1,4 +1,6 @@
 using EmrCloudApi.Configs.Dependency;
+using Microsoft.EntityFrameworkCore;
+using PostgreDataContext;
 using Serilog;
 using Serilog.Events;
 
@@ -19,6 +21,13 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
+});
+
+// This config is needed for EF Core Migrations to find the DbContext
+builder.Services.AddDbContext<TenantDataContext>(options =>
+{
+    var connectionStr = builder.Configuration["TenantDbSample"];
+    options.UseNpgsql(connectionStr);
 });
 
 //Serilog 

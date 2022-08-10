@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Reception.GetVisitingColumnSettings;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
@@ -41,6 +42,16 @@ public class VisitingController : ControllerBase
         var input = new GetReceptionSettingsInputData(req.UserId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Get + "ColumnSettings")]
+    public ActionResult<Response<List<ReceptionRowModel>>> GetColumnSettings([FromQuery] GetVisitingColumnSettingsRequest req)
+    {
+        var input = new GetVisitingColumnSettingsInputData(req.UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetVisitingColumnSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
