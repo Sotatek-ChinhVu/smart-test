@@ -5,16 +5,16 @@ using UseCase.FlowSheet.GetList;
 
 namespace EmrCloudApi.Tenant.Presenters.FlowSheet
 {
-    public class GetListFlowSheetPresenter : IGetListFlowSheetOutputPort
+    public class GetListRaiinMstPresenter : IGetListFlowSheetOutputPort
     {
-        public Response<GetListFlowSheetResponse> Result { get; private set; } = new Response<GetListFlowSheetResponse>();
+        public Response<GetListRaiinMstResponse> Result { get; private set; } = new Response<GetListRaiinMstResponse>();
         public void Complete(GetListFlowSheetOutputData outputData)
         {
-            Result = new Response<GetListFlowSheetResponse>()
+            Result = new Response<GetListRaiinMstResponse>()
             {
-                Data = new GetListFlowSheetResponse()
+                Data = new GetListRaiinMstResponse()
                 {
-                    ListFlowSheet = outputData.ListFlowSheetModel
+                    ListRaiinListMstModels = outputData.ListRaiinListMstModels
                 },
                 Message = ResponseMessage.Success,
                 Status = 1

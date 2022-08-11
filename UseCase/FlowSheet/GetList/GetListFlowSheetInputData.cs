@@ -19,11 +19,13 @@ namespace UseCase.FlowSheet.GetList
 
         public bool IsHolidayOnly { get; private set; }
 
+        public bool IsRaiinListMstOnly { get; private set; }
+
         public int HolidayFrom { get; private set; }
 
         public int HolidayTo { get; private set; }
 
-        public GetListFlowSheetInputData(int hpId, long ptId, int sinDate, long raiinNo, bool isHolidayOnly, int holidayFrom, int holidayTo)
+        public GetListFlowSheetInputData(int hpId, long ptId, int sinDate, long raiinNo, bool isHolidayOnly, int holidayFrom, int holidayTo, bool isRaiinListMstOnly)
         {
             HpId = hpId;
             PtId = ptId;
@@ -32,6 +34,7 @@ namespace UseCase.FlowSheet.GetList
             IsHolidayOnly = isHolidayOnly;
             HolidayFrom = holidayFrom;
             HolidayTo = holidayTo;
+            IsRaiinListMstOnly = isRaiinListMstOnly;
         }
     }
 }
