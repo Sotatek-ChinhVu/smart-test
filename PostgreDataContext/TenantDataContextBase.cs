@@ -6,14 +6,24 @@ namespace PostgreDataContext
     public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
+
+        public TenantDataContext(DbContextOptions<TenantDataContext> options)
+        : base(options)
+        {
+            _connectionString = string.Empty;
+        }
+
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString, buider =>
+            if (!string.IsNullOrEmpty(_connectionString))
             {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            });
+                optionsBuilder.UseNpgsql(_connectionString, buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                });
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -71,7 +81,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<HokensyaMst>().HasKey(r => new { r.HpId, r.HokensyaNo });
             modelBuilder.Entity<UserConf>().HasKey(e => new { e.HpId, e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo });
             modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
+            modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
         }
+
+        public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
 

@@ -74,6 +74,10 @@ using Interactor.ReceptionSameVisit;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
+using Domain.Models.ColumnSetting;
+using UseCase.ColumnSetting.SaveList;
+using Interactor.ColumnSetting;
+using UseCase.ColumnSetting.GetList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -118,6 +122,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
         }
 
@@ -184,6 +189,10 @@ namespace EmrCloudApi.Configs.Dependency
        
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
+
+            // ColumnSetting
+            busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
+            busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
