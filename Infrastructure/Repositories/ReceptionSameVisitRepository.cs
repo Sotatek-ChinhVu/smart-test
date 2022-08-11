@@ -274,7 +274,8 @@ namespace Infrastructure.Repositories
                                             yoyakuInfo,
                                             doctorName,
                                             comment,
-                                            item.OyaRaiinNo
+                                            item.OyaRaiinNo,
+                                            item.HokenPid
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);
