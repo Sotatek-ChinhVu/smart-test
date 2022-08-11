@@ -1,6 +1,7 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
 using Domain.Models.PtAlrgyDrug;
 using Domain.Models.PtAlrgyElse;
 using Domain.Models.PtAlrgyFood;
@@ -11,6 +12,8 @@ using Domain.Models.PtOtcDrug;
 using Domain.Models.PtOtherDrug;
 using Domain.Models.PtPregnancy;
 using Domain.Models.PtSupple;
+using Domain.Models.RaiinCmtInf;
+using Domain.Models.SeikaturekiInf;
 using Helper.Common;
 using Helper.Enums;
 using Helper.Extendsions;
@@ -32,8 +35,12 @@ namespace Interactor.HeaderSumaryInfo
         private readonly IPtPregnancyRepository _ptPregnancyRepository;
         private readonly IPtCmtInfRepository _ptCmtInfRepository;
         private readonly IInsuranceRepository _insuranceRepository;
+        private readonly ISeikaturekiInfRepository _seikaturekiInRepository;
+        private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
+        private readonly IPatientInforRepository _patientInfRepository;
+        private PtInfoItem? _ptInfoItem;
 
-        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository)
+        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, ISeikaturekiInfRepository seikaturekiInRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IPatientInforRepository patientInfRepository)
         {
             _ptAlrgryElseRepository = ptAlrgryElseRepository;
             _ptPtAlrgyFoodRepository = ptPtAlrgyFoodRepository;
@@ -46,145 +53,16 @@ namespace Interactor.HeaderSumaryInfo
             _ptPregnancyRepository = ptPregnancyRepository;
             _ptCmtInfRepository = ptCmtInfRepository;
             _insuranceRepository = insuranceRepository;
+            _seikaturekiInRepository = seikaturekiInRepository;
+            _raiinCmtInfRepository = raiinCmtInfRepository;
+            _patientInfRepository = patientInfRepository;
         }
 
         public GetOrdInfListTreeOutputData Handle(GetOrdInfListTreeInputData inputData)
         {
-            if (inputData.RaiinNo <= 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidRaiinNo);
-            }
-            if (inputData.HpId <= 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidHpId);
-            }
-            if (inputData.PtId <= 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidPtId);
-            }
-            if (inputData.SinDate <= 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
-            }
-            var allOdrInfs = _ordInfRepository
-                    .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
-                    .Select(o => new OdrInfItem(
-                        o.HpId,
-                        o.RaiinNo,
-                        o.RpNo,
-                        o.RpEdaNo,
-                        o.PtId,
-                        o.SinDate,
-                        o.HokenPid,
-                        o.OdrKouiKbn,
-                        o.RpName,
-                        o.InoutKbn,
-                        o.SikyuKbn,
-                        o.SyohoSbt,
-                        o.SanteiKbn,
-                        o.TosekiKbn,
-                        o.DaysCnt,
-                        o.SortNo,
-                        o.Id,
-                        o.GroupKoui.Value,
-                        o.OrdInfDetails.Select(od => new OdrInfDetailItem(
-                            od.HpId,
-                            od.RaiinNo,
-                            od.RpNo,
-                            od.RpEdaNo,
-                            od.RowNo,
-                            od.PtId,
-                            od.SinDate,
-                            od.SinKouiKbn,
-                            od.ItemCd,
-                            od.ItemName,
-                            od.Suryo,
-                            od.UnitName,
-                            od.UnitSbt,
-                            od.TermVal,
-                            od.KohatuKbn,
-                            od.SyohoKbn,
-                            od.SyohoLimitKbn,
-                            od.DrugKbn,
-                            od.YohoKbn,
-                            od.Kokuji1,
-                            od.Kokuji2,
-                            od.IsNodspRece,
-                            od.IpnCd,
-                            od.IpnName,
-                            od.JissiKbn,
-                            od.JissiDate,
-                            od.JissiId,
-                            od.JissiMachine,
-                            od.ReqCd,
-                            od.Bunkatu,
-                            od.CmtName,
-                            od.CmtName,
-                            od.FontColor,
-                            od.CommentNewline
-                        )).OrderBy(odrDetail => odrDetail.RpNo)
-                        .ThenBy(odrDetail => odrDetail.RpEdaNo)
-                        .ThenBy(odrDetail => odrDetail.RowNo)
-                        .ToList()))
-                    .OrderBy(odr => odr.OdrKouiKbn)
-                    .ThenBy(odr => odr.RpNo)
-                    .ThenBy(odr => odr.RpEdaNo)
-                    .ThenBy(odr => odr.SortNo)
-                    .ToList();
+            var ptInfo = _patientInfRepository.GetById(inputData.HpId, inputData.PtId, false);
+            var _ptInfoItem = ptInfo == null ? null : new PtInfoItem(ptInfo);
 
-            var hokenOdrInfs = allOdrInfs
-                .GroupBy(odr => odr.HokenPid)
-                .Select(grp => grp.FirstOrDefault())
-                .ToList();
-
-            if (hokenOdrInfs == null || hokenOdrInfs.Count == 0)
-            {
-                return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.NoData);
-            }
-
-            var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
-            foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
-            {
-                var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title ");
-                // Find By Group
-                var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
-                    .GroupBy(odr => new
-                    {
-                        odr.HokenPid,
-                        odr.GroupOdrKouiKbn,
-                        odr.InoutKbn,
-                        odr.SyohoSbt,
-                        odr.SikyuKbn,
-                        odr.TosekiKbn,
-                        odr.SanteiKbn
-                    })
-                    .Select(grp => grp.FirstOrDefault())
-                    .ToList();
-                if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
-                {
-                    foreach (var groupOdrInf in groupOdrInfs)
-                    {
-                        var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
-                                                && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
-                                                && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                            .ToList();
-                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
-
-                        foreach (OdrInfItem rpOdrInf in rpOdrInfs)
-                        {
-                            group.OdrInfs.Add(rpOdrInf);
-                        }
-                        groupHoken.GroupOdrItems.Add(group);
-                    }
-                }
-                tree.GroupHokens.Add(groupHoken);
-            }
-
-            return tree;
         }
 
         private string GetSettingParam(int groupCd, int grpItemCd = 0, string defaultValue = "", bool fromLastestDb = false)
@@ -204,14 +82,14 @@ namespace Interactor.HeaderSumaryInfo
             return "";
         }
 
-        private PtInfNotificationItem GetSummaryInfo(string propertyCd, int headerType, InfoType infoType = InfoType.PtHeaderInfo)
+        private PtInfNotificationItem GetSummaryInfo(long ptId, int hpId, long raiinNo, int sinDate, string propertyCd, int headerType, InfoType infoType = InfoType.PtHeaderInfo)
         {
             PtInfNotificationItem ptHeaderInfoModel = new PtInfNotificationItem()
             {
                 PropertyColor = "000000" // default color
             };
 
-            GetData(propertyCd, ref ptHeaderInfoModel);
+            GetData(hpId, ptId, sinDate, propertyCd, ref ptHeaderInfoModel);
 
             if (infoType == InfoType.PtHeaderInfo)
             {
@@ -222,7 +100,7 @@ namespace Interactor.HeaderSumaryInfo
                         //電話番号
                         break;
                     case "D":
-                        GetReceptionComment(ptHeaderInfoModel);
+                        GetReceptionComment(ptId, hpId, raiinNo, sinDate, ptHeaderInfoModel);
                         //受付コメント
                         break;
                     case "E":
@@ -259,7 +137,7 @@ namespace Interactor.HeaderSumaryInfo
                         break;
                     case "E":
                         //"受付コメント";
-                        GetReceptionComment(ptHeaderInfoModel);
+                        GetReceptionComment(ptId, hpId, raiinNo, sinDate, ptHeaderInfoModel);
                         ptHeaderInfoModel.GrpItemCd = 14;
                         break;
                     case "F":
@@ -273,7 +151,7 @@ namespace Interactor.HeaderSumaryInfo
             return ptHeaderInfoModel;
         }
 
-        private void GetData(string propertyCd, ref PtInfNotificationItem ptHeaderInfoModel)
+        private void GetData(int hpId, long ptId, int sinDate,string propertyCd, ref PtInfNotificationItem ptHeaderInfoModel)
         {
             switch (propertyCd)
             {
@@ -283,15 +161,15 @@ namespace Interactor.HeaderSumaryInfo
                     break;
                 case "2":
                     //アレルギー 
-                    GetDrugInfo(ptHeaderInfoModel);
+                    GetDrugInfo(ptId, sinDate, ptHeaderInfoModel);
                     break;
                 case "3":
                     // 病歴
-                    GetPathologicalStatus(ptHeaderInfoModel);
+                    GetPathologicalStatus(ptId, ptHeaderInfoModel);
                     break;
                 case "4":
                     // 服薬情報
-                    GetInteraction(ptHeaderInfoModel);
+                    GetInteraction(ptId, sinDate, ptHeaderInfoModel);
                     break;
                 case "5":
                     //算定情報
@@ -299,7 +177,7 @@ namespace Interactor.HeaderSumaryInfo
                     break;
                 case "6":
                     //出産予定
-                    GetReproductionInfo(ptHeaderInfoModel);
+                    GetReproductionInfo(ptId, hpId, sinDate, ptHeaderInfoModel);
                     break;
                 case "7":
                     //予約情報
@@ -307,7 +185,7 @@ namespace Interactor.HeaderSumaryInfo
                     break;
                 case "8":
                     //コメント
-                    GetComment(ptHeaderInfoModel);
+                    GetComment(ptId, hpId, ptHeaderInfoModel);
                     break;
                 case "9":
                     //住所
@@ -319,7 +197,7 @@ namespace Interactor.HeaderSumaryInfo
                     break;
                 case "B":
                     //生活歴
-                    GetLifeHistory(ptHeaderInfoModel);
+                    GetLifeHistory(ptId, hpId, ptHeaderInfoModel);
                     break;
             }
         }
@@ -637,7 +515,7 @@ namespace Interactor.HeaderSumaryInfo
         //    ptHeaderInfoModel.HeaderInfo = ptHeaderInfoModel.HeaderInfo?.TrimEnd(Environment.NewLine.ToCharArray());
         //}
 
-        private void GetComment(long ptId, int hpId,PtInfNotificationItem ptHeaderInfoModel)
+        private void GetComment(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 8;
             ptHeaderInfoModel.HeaderName = "■コメント";
@@ -658,147 +536,211 @@ namespace Interactor.HeaderSumaryInfo
             return result;
         }
 
-        //private void GetAddress(PtInfNotificationItem ptHeaderInfoModel)
+        private void GetAddress(PtInfNotificationItem ptHeaderInfoModel)
+        {
+            ptHeaderInfoModel.GrpItemCd = 9;
+            ptHeaderInfoModel.HeaderName = "◆住所";
+            if (_ptInfoItem != null && !string.IsNullOrEmpty(_ptInfoItem.HomeAddress1 + _ptInfoItem.HomeAddress2))
+            {
+                ptHeaderInfoModel.HeaderInfo = _ptInfoItem.HomeAddress1 + " " + _ptInfoItem.HomeAddress2;
+            }
+        }
+
+        //private void GetInsuranceInfo(long ptId, int sinDate, int hpId, PtInfNotificationItem ptHeaderInfoModel)
         //{
-        //    ptHeaderInfoModel.GrpItemCd = 9;
-        //    ptHeaderInfoModel.HeaderName = "◆住所";
-        //    if (_ptInfModel != null && !string.IsNullOrEmpty(_ptInfModel.HomeAddress1 + _ptInfModel.HomeAddress2))
+        //    ptHeaderInfoModel.GrpItemCd = 10;
+        //    ptHeaderInfoModel.HeaderName = "◆保険情報";
+        //    var listPtHokenInfoItem = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate, 28).ToList();
+        //    if (listPtHokenInfoItem?.Count == 0) return;
+        //    string futanInfo = string.Empty;
+        //    string kohiInf = string.Empty;
+
+        //    if (listPtHokenInfoItem?.Count > 0)
         //    {
-        //        ptHeaderInfoModel.HeaderInfo = _ptInfModel.HomeAddress1 + " " + _ptInfModel.HomeAddress2;
+        //        foreach (var ptHokenInfoModel in listPtHokenInfoItem)
+        //        {
+        //            kohiInf = string.Empty;
+        //            if (!ptHokenInfoModel.IsEmptyKohi1)
+        //            {
+        //                kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi1Inf);
+        //            }
+        //            if (!ptHokenInfoModel.IsEmptyKohi2)
+        //            {
+        //                kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi2Inf);
+        //            }
+        //            if (!ptHokenInfoModel.IsEmptyKohi3)
+        //            {
+        //                kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi3Inf);
+        //            }
+        //            if (!ptHokenInfoModel.IsEmptyKohi4)
+        //            {
+        //                kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi4Inf);
+        //            }
+        //            if (string.IsNullOrEmpty(kohiInf))
+        //            {
+        //                continue;
+        //            }
+        //            kohiInf = kohiInf?.TrimEnd();
+        //            kohiInf = kohiInf?.TrimEnd('　');
+        //            kohiInf = kohiInf?.TrimEnd(',');
+        //            futanInfo += ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ";
+        //            futanInfo += kohiInf;
+        //            futanInfo += Environment.NewLine;
+        //        }
+        //    }
+        //    futanInfo = futanInfo?.TrimEnd();
+        //    if (!string.IsNullOrEmpty(futanInfo?.Trim()))
+        //    {
+        //        ptHeaderInfoModel.HeaderInfo = futanInfo;
         //    }
         //}
 
-        private void GetInsuranceInfo(long ptId, int sinDate, int hpId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 10;
-            ptHeaderInfoModel.HeaderName = "◆保険情報";
-            var listPtHokenInfoItem = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate, 28).ToList();
-            if (listPtHokenInfoItem?.Count == 0) return;
-            string futanInfo = string.Empty;
-            string kohiInf = string.Empty;
+        //private string GetFutanInfo(KohiInfModel ptKohi)
+        //{
+        //    HokenMstModel hokenMst = ptKohi.HokenMasterModel;
+        //    int gokenGaku = ptKohi.GendoGaku;
+        //    string futanInfo = string.Empty;
 
-            if (listPtHokenInfoItem?.Count > 0)
+        //    if (!string.IsNullOrEmpty(ptKohi.FutansyaNo))
+        //    {
+        //        futanInfo += "[" + ptKohi.FutansyaNo + "]";
+        //    }
+        //    else
+        //    {
+        //        if (hokenMst == null)
+        //        {
+        //            return string.Empty;
+        //        }
+        //        futanInfo += "[" + hokenMst.HoubetsuNumber + "]";
+        //    }
+
+        //    if (hokenMst == null && !string.IsNullOrEmpty(ptKohi.FutansyaNo))
+        //    {
+        //        return futanInfo + "," + " ";
+        //    }
+        //    if (hokenMst.FutanKbn == 0)
+        //    {
+        //        //負担なし
+        //        futanInfo += "0円";
+        //    }
+        //    else
+        //    {
+        //        if (hokenMst.KaiLimitFutan > 0)
+        //        {
+        //            if (hokenMst.DayLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+        //            {
+        //                futanInfo += gokenGaku.AsString() + "円/回・";
+        //            }
+        //            else
+        //            {
+        //                futanInfo += hokenMst.KaiLimitFutan.AsString() + "円/回・";
+        //            }
+        //        }
+
+        //        if (hokenMst.DayLimitFutan > 0)
+        //        {
+        //            if (hokenMst.KaiLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
+        //            {
+        //                futanInfo += gokenGaku.AsString() + "円/日・";
+        //            }
+        //            else
+        //            {
+        //                futanInfo += hokenMst.DayLimitFutan.AsString() + "円/日・";
+        //            }
+        //        }
+
+        //        if (hokenMst.DayLimitCount > 0)
+        //        {
+        //            futanInfo = hokenMst.DayLimitCount.AsString() + "回/日・";
+        //        }
+
+        //        if (hokenMst.MonthLimitFutan > 0)
+        //        {
+        //            if (hokenMst.KaiLimitFutan <= 0 && hokenMst.DayLimitFutan <= 0 && gokenGaku > 0)
+        //            {
+        //                futanInfo += gokenGaku.AsString() + "円/月・";
+        //            }
+        //            else
+        //            {
+        //                futanInfo += hokenMst.MonthLimitFutan.AsString() + "円/月・";
+        //            }
+        //        }
+
+        //        if (hokenMst.MonthLimitCount > 0)
+        //        {
+        //            futanInfo += hokenMst.MonthLimitCount.AsString() + "回/月";
+        //        }
+        //    }
+        //    if (!string.IsNullOrEmpty(futanInfo))
+        //    {
+        //        futanInfo = futanInfo.TrimEnd('・');
+        //        futanInfo = futanInfo + "," + " ";
+        //    }
+        //    return futanInfo;
+        //}
+
+        private void GetLifeHistory(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
+        {
+            ptHeaderInfoModel.GrpItemCd = 11;
+            ptHeaderInfoModel.HeaderName = "■生活歴";
+
+            var seikaturekiInfModel = _seikaturekiInRepository.GetList(ptId, hpId).FirstOrDefault();
+            if (seikaturekiInfModel != null)
             {
-                foreach (var ptHokenInfoModel in listPtHokenInfoItem)
-                {
-                    kohiInf = string.Empty;
-                    if (!ptHokenInfoModel.IsEmptyKohi1)
-                    {
-                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi1Inf);
-                    }
-                    if (!ptHokenInfoModel.IsEmptyKohi2)
-                    {
-                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi2Inf);
-                    }
-                    if (!ptHokenInfoModel.IsEmptyKohi3)
-                    {
-                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi3Inf);
-                    }
-                    if (!ptHokenInfoModel.IsEmptyKohi4)
-                    {
-                        kohiInf += GetFutanInfo(ptHokenInfoModel.Kohi4Inf);
-                    }
-                    if (string.IsNullOrEmpty(kohiInf))
-                    {
-                        continue;
-                    }
-                    kohiInf = kohiInf?.TrimEnd();
-                    kohiInf = kohiInf?.TrimEnd('　');
-                    kohiInf = kohiInf?.TrimEnd(',');
-                    futanInfo += ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ";
-                    futanInfo += kohiInf;
-                    futanInfo += Environment.NewLine;
-                }
-            }
-            futanInfo = futanInfo?.TrimEnd();
-            if (!string.IsNullOrEmpty(futanInfo?.Trim()))
-            {
-                ptHeaderInfoModel.HeaderInfo = futanInfo;
+                ptHeaderInfoModel.HeaderInfo = seikaturekiInfModel.Text;
             }
         }
 
-        private string GetFutanInfo(KohiInfModel ptKohi)
+        private void GetPhoneNumber(PtInfNotificationItem ptHeaderInfoModel)
         {
-            HokenMstModel hokenMst = ptKohi.HokenMasterModel;
-            int gokenGaku = ptKohi.GendoGaku;
-            string futanInfo = string.Empty;
+            ptHeaderInfoModel.GrpItemCd = 12;
+            ptHeaderInfoModel.HeaderName = "◆電話番号";
 
-            if (!string.IsNullOrEmpty(ptKohi.FutansyaNo))
+            if (_ptInfoItem != null && !string.IsNullOrEmpty(_ptInfoItem.Tel1 + _ptInfoItem.Tel2))
             {
-                futanInfo += "[" + ptKohi.FutansyaNo + "]";
+                ptHeaderInfoModel.HeaderInfo = _ptInfoItem.Tel1 + Environment.NewLine + _ptInfoItem.Tel2;
             }
-            else
-            {
-                if (hokenMst == null)
-                {
-                    return string.Empty;
-                }
-                futanInfo += "[" + hokenMst.HoubetsuNumber + "]";
-            }
-
-            if (hokenMst == null && !string.IsNullOrEmpty(ptKohi.FutansyaNo))
-            {
-                return futanInfo + "," + " ";
-            }
-            if (hokenMst.FutanKbn == 0)
-            {
-                //負担なし
-                futanInfo += "0円";
-            }
-            else
-            {
-                if (hokenMst.KaiLimitFutan > 0)
-                {
-                    if (hokenMst.DayLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/回・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst.KaiLimitFutan.AsString() + "円/回・";
-                    }
-                }
-
-                if (hokenMst.DayLimitFutan > 0)
-                {
-                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.MonthLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/日・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst.DayLimitFutan.AsString() + "円/日・";
-                    }
-                }
-
-                if (hokenMst.DayLimitCount > 0)
-                {
-                    futanInfo = hokenMst.DayLimitCount.AsString() + "回/日・";
-                }
-
-                if (hokenMst.MonthLimitFutan > 0)
-                {
-                    if (hokenMst.KaiLimitFutan <= 0 && hokenMst.DayLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/月・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst.MonthLimitFutan.AsString() + "円/月・";
-                    }
-                }
-
-                if (hokenMst.MonthLimitCount > 0)
-                {
-                    futanInfo += hokenMst.MonthLimitCount.AsString() + "回/月";
-                }
-            }
-            if (!string.IsNullOrEmpty(futanInfo))
-            {
-                futanInfo = futanInfo.TrimEnd('・');
-                futanInfo = futanInfo + "," + " ";
-            }
-            return futanInfo;
         }
+
+        private void GetReceptionComment (long ptId, int hpId, long raiinNo, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
+        {
+            ptHeaderInfoModel.GrpItemCd = 13;
+            ptHeaderInfoModel.HeaderName = "◆来院コメント";
+            var raiinCmtInf = _raiinCmtInfRepository.GetList(hpId, ptId, sinDate, raiinNo).FirstOrDefault();
+            if (raiinCmtInf != null)
+            {
+                ptHeaderInfoModel.HeaderInfo = raiinCmtInf.Text;
+            }
+        }
+
+        private void GetFamilyList(PtInfNotificationItem ptHeaderInfoModel)
+        {
+            ptHeaderInfoModel.GrpItemCd = 14;
+            ptHeaderInfoModel.HeaderName = "◆家族歴";
+
+            var ptFamilyList = _specialNoteFinderService.GetFamilyListByPtId(_PtId, _HpId).Result;
+            if (ptFamilyList != null)
+            {
+                string headerInfo = string.Empty;
+                foreach (PtFamilyModel ptFamilyModel in ptFamilyList)
+                {
+                    SetDiseaseName(ptFamilyModel);
+                    if (!string.IsNullOrWhiteSpace(ptFamilyModel.DiseaseName))
+                    {
+                        if (!string.IsNullOrEmpty(headerInfo))
+                        {
+                            headerInfo += Environment.NewLine;
+                        }
+                        headerInfo += $"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(headerInfo))
+                {
+                    ptHeaderInfoModel.HeaderInfo = headerInfo;
+                }
+            }
+        }
+
     }
 }

@@ -9,7 +9,7 @@ namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository
     {
-        PatientInforModel? GetById(int hpId, long ptId);
+        PatientInforModel? GetById(int hpId, long ptId, bool isDeleted = true);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
     }

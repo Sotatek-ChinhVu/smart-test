@@ -15,6 +15,22 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
+    public List<RaiinCmtInfModel> GetList(int hpId, long ptId, int sinDate, long raiinNo)
+    {
+        var raiinCmtInfs = _tenantDataContext.RaiinCmtInfs.Where(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDelete != 1).
+                                Select(r => new RaiinCmtInfModel(
+                                    r.HpId,
+                                    r.RaiinNo,
+                                    r.CmtKbn,
+                                    r.SeqNo,
+                                    r.PtId,
+                                    r.SinDate,
+                                    r.Text,
+                                    r.IsDelete
+                                ));
+        return raiinCmtInfs.ToList();
+    }
+
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text)
     {
         var raiinCmt = _tenantDataContext.RaiinCmtInfs.FirstOrDefault(r =>

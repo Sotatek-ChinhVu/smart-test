@@ -15,9 +15,9 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId)
+        public PatientInforModel? GetById(int hpId, long ptId, bool isDeleted = true)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && ( x.IsDelete != 1 || isDeleted)).FirstOrDefault();
             if (itemData == null)
                 return null;
             else
@@ -34,6 +34,7 @@ namespace Infrastructure.Repositories
 
             return ptInfList.Select(p => ConvertToModel(p)).ToList();
         }
+
 
         private PatientInforModel ConvertToModel(PtInf itemData)
         {
@@ -92,7 +93,9 @@ namespace Infrastructure.Repositories
                 itemData.IsTester,
                 itemData.MainHokenPid,
                 memo,
-                lastVisitDate);
+                lastVisitDate,
+                itemData.Setanusi ?? String.Empty
+                );
         }
     }
 }

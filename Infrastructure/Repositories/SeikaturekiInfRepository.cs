@@ -18,7 +18,7 @@ public class SeikaturekiInfRepository : ISeikaturekiInfRepository
 
     public List<SeikaturekiInfModel> GetList(long ptId, int hpId)
     {
-        var seikaturekiInfs = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId).Select(x => new SeikaturekiInfModel(
+        var seikaturekiInfs = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.UpdateDate).Select(x => new SeikaturekiInfModel(
                 x.Id,
                 x.HpId,
                 x.PtId,
