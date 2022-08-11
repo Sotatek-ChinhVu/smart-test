@@ -8,7 +8,7 @@ namespace Domain.Models.ReceptionSameVisit
 {
     public class ReceptionSameVisitModel
     {
-        public ReceptionSameVisitModel(int hpId, long ptId, int uketukeNo, string kaName, string hokenPidName, string uketukeTime, int status, string timePeriod, string yoyakuInfo, string doctorName, string comment)
+        public ReceptionSameVisitModel(int hpId, long ptId, int uketukeNo, string kaName, string hokenPidName, string uketukeTime, int status, string timePeriod, string yoyakuInfo, string doctorName, string comment, long oyaRaiinNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -21,6 +21,7 @@ namespace Domain.Models.ReceptionSameVisit
             YoyakuInfo = yoyakuInfo;
             DoctorName = doctorName;
             Comment = comment;
+            OyaRaiinNo = oyaRaiinNo;    
         }
 
         public int HpId { get; private set; }
@@ -44,5 +45,7 @@ namespace Domain.Models.ReceptionSameVisit
         public string DoctorName { get; private set; }
 
         public string Comment { get; private set; }
+
+        public long OyaRaiinNo { get; private set; }
     }
 }

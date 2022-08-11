@@ -273,7 +273,8 @@ namespace Infrastructure.Repositories
                                             timePeriod,
                                             yoyakuInfo,
                                             doctorName,
-                                            comment
+                                            comment,
+                                            item.OyaRaiinNo
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);
