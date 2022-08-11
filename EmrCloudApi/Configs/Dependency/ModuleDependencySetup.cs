@@ -1,8 +1,5 @@
 using Domain.CalculationInf;
-using Domain.Models.Diseases;
-using Domain.Models.GroupInf;
-using Domain.Models.Insurance;
-﻿using Domain.CalculationInf;
+using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
@@ -13,17 +10,18 @@ using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
-using Domain.Models.RaiinKubunMst;
-using Domain.Models.Reception;
-using Domain.Models.SetGenerationMst;
-using Domain.Models.SetKbnMst;
-using Domain.Models.SetMst;
+using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
 using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
+using Domain.Models.ReceptionInsurance;
+using Domain.Models.ReceptionSameVisit;
+using Domain.Models.SetGenerationMst;
+using Domain.Models.SetKbnMst;
+using Domain.Models.SetMst;
 using Domain.Models.SystemConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
@@ -33,9 +31,8 @@ using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Interactor.CalculationInf;
+using Interactor.ColumnSetting;
 using Interactor.Diseases;
-using Interactor.GrpInf;
-using Interactor.Insurance;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.Insurance;
@@ -45,20 +42,21 @@ using Interactor.KarteInfs;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
-using Interactor.RaiinKubunMst;
-using Interactor.Reception;
-using Interactor.SetKbnMst;
-using Interactor.SetMst;
+using Interactor.PatientRaiinKubun;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
+using Interactor.ReceptionInsurance;
+using Interactor.ReceptionSameVisit;
+using Interactor.SetKbnMst;
+using Interactor.SetMst;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using UseCase.CalculationInf;
+using UseCase.ColumnSetting.GetList;
+using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
-using UseCase.GroupInf.GetList;
-using UseCase.Insurance.GetList;
 using UseCase.FlowSheet.GetList;
 using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
@@ -69,13 +67,7 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
-using UseCase.RaiinKubunMst.GetList;
-using UseCase.Reception.Get;
-using UseCase.Reception.GetList;
-using UseCase.SetKbnMst.GetList;
-using UseCase.SetMst.GetList;
-using UseCase.User.Create;
-using UseCase.User.GetList;
+using UseCase.PatientRaiinKubun.Get;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
@@ -83,25 +75,16 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.ReceptionInsurance.Get;
+using UseCase.ReceptionSameVisit.Get;
 using UseCase.SearchHokensyaMst.Get;
-using Domain.Models.PatientRaiinKubun;
-using UseCase.PatientRaiinKubun.Get;
-using Interactor.PatientRaiinKubun;
+using UseCase.SetKbnMst.GetList;
+using UseCase.SetMst.GetList;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using Domain.Models.ReceptionSameVisit;
-using UseCase.ReceptionSameVisit.Get;
-using Interactor.ReceptionSameVisit;
-using Domain.Models.ReceptionInsurance;
-using Interactor.ReceptionInsurance;
-using UseCase.ReceptionInsurance.Get;
-using Domain.Models.ColumnSetting;
-using UseCase.ColumnSetting.SaveList;
-using Interactor.ColumnSetting;
-using UseCase.ColumnSetting.GetList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -199,7 +182,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
-       
+
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
 
@@ -219,7 +202,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
-       
+
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
