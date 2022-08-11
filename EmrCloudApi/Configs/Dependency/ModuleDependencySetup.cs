@@ -71,6 +71,10 @@ using UseCase.User.UpsertList;
 using Domain.Models.ReceptionInsurance;
 using Interactor.ReceptionInsurance;
 using UseCase.ReceptionInsurance.Get;
+using Domain.Models.KarteFilterDetail;
+using Domain.Models.KarteFilterMst;
+using UseCase.KarteFilter;
+using Interactor.KarteFilter;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -115,6 +119,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IKarteFilterDetailRepository, KarteFilterDetailRepository>();
+            services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -180,6 +186,9 @@ namespace EmrCloudApi.Configs.Dependency
        
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
+
+            // KarteFilter
+            busBuilder.RegisterUseCase<KarteFilterInputData, GetKarteFilterMstsInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
