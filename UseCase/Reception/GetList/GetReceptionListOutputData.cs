@@ -5,18 +5,17 @@ namespace UseCase.Reception.GetList;
 
 public class GetReceptionListOutputData : IOutputData
 {
-    public GetReceptionListOutputData(string message)
+    public GetReceptionListOutputData(GetReceptionListStatus status)
     {
-        Message = message;
+        Status = status;
     }
 
-    public GetReceptionListOutputData(List<ReceptionRowModel> models)
+    public GetReceptionListOutputData(GetReceptionListStatus status, List<ReceptionRowModel> receptionInfos)
     {
-        Models = models;
-        Status = 1;
+        Status = status;
+        ReceptionInfos = receptionInfos;
     }
 
-    public int Status { get; set; } = 0;
-    public string Message { get; set; } = string.Empty;
-    public List<ReceptionRowModel> Models { get; set; } = new List<ReceptionRowModel>();
+    public GetReceptionListStatus Status { get; private set; }
+    public List<ReceptionRowModel> ReceptionInfos { get; private set; } = new List<ReceptionRowModel>();
 }

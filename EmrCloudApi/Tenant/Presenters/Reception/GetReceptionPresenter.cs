@@ -19,15 +19,15 @@ namespace EmrCloudApi.Tenant.Presenters.Reception
             switch (outputData.Status)
             {
                 case GetReceptionStatus.InvalidRaiinNo:
-                    Result.Message = ResponseMessage.GetReceptionInvalidRaiinNo;
+                    Result.Message = ResponseMessage.InvalidRaiinNo;
                     Result.Data.Reception = null;
                     break;
                 case GetReceptionStatus.ReceptionNotExisted:
-                    Result.Message = ResponseMessage.GetReceptionNotExisted;
+                    Result.Message = ResponseMessage.NoData;
                     Result.Data.Reception = null;
                     break;
                 case GetReceptionStatus.Successed:
-                    Result.Message = ResponseMessage.GetReceptionSuccessed;
+                    Result.Message = ResponseMessage.Success;
                     Result.Data.Reception = outputData.ReceptionModel!.ToDto();
                     break;
             }

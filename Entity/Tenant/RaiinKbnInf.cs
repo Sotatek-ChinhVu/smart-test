@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 患者ID
         /// </summary>
-        //[Key]
+        [Key]
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -35,21 +35,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column("RAIIN_NO", Order = 3)]
 		public long RaiinNo { get; set; }
 
         /// <summary>
         /// コメント区分
         /// </summary>
-        //[Key]
+        [Key]
         [Column("GRP_ID", Order = 4)]
 		public int GrpId { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long SeqNo { get; set; }

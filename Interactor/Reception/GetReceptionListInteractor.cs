@@ -16,14 +16,24 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
     {
         if (inputData.HpId <= 0)
         {
-            return new GetReceptionListOutputData("HpId must be greater than 0.");
+            return new GetReceptionListOutputData(GetReceptionListStatus.InvalidHpId);
         }
         if (inputData.SinDate <= 0)
         {
-            return new GetReceptionListOutputData("SinDate must be greater than 0.");
+            return new GetReceptionListOutputData(GetReceptionListStatus.InvalidSinDate);
         }
 
-        var models = _receptionRepository.GetList(inputData.HpId, inputData.SinDate);
-        return new GetReceptionListOutputData(models);
+        var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate);
+        CheckNameDuplicate(receptionInfos);
+        return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
+    }
+
+    private void CheckNameDuplicate(List<ReceptionRowModel> receptionInfos)
+    {
+        foreach (var info in receptionInfos)
+        {
+            var duplicate = receptionInfos.Find(r => r.KanaName == info.KanaName && r.PtId != info.PtId);
+            info.IsNameDuplicate = duplicate is not null;
+        }
     }
 }

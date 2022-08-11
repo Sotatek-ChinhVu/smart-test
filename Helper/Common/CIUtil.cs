@@ -5,6 +5,46 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                result = 0;
+            }
+            return result;
+        }
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -21,6 +61,83 @@ namespace Helper.Common
             {
                 return input.Substring(index - 1);
             }
+        }
+
+        //表示用西暦(yyyy/mm/dd)を西暦に変換
+        public static int ShowSDateToSDate(string Ymd)
+        {
+            int Result = 0;
+            // Get current year, month, day
+            DateTime currentDate = DateTime.Now;
+
+            int numberOfSeparators = Ymd.Count(c => c == '/');
+            if (numberOfSeparators == 0)
+            {
+                // parameter does not include / character
+                switch (Ymd.Length)
+                {
+                    case 1:
+                    case 2:
+                        Ymd = Ymd.AsInteger().ToString("D2");
+                        Ymd = currentDate.Year + "/" + currentDate.Month.ToString("D2") + "/" + Ymd;
+                        break;
+                    case 3:
+                    case 4:
+                        Ymd = Ymd.AsInteger().ToString("D4");
+                        Ymd = currentDate.Year + "/" + Ymd.Substring(0, 2) + "/" + Ymd.Substring(2);
+                        break;
+                    case 8:
+                        Ymd = Ymd.Substring(0, 4) + "/" + Ymd.Substring(4, 2) + "/" + Ymd.Substring(6);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (numberOfSeparators == 1)
+            {
+                string temp = DateTime.Now.Year.AsString() + "/";
+                int firstLocation = Ymd.IndexOf('/');
+
+                temp += Ymd.Substring(0, firstLocation).PadLeft(2, '0') + "/";
+                temp += Ymd.Substring(firstLocation + 1).PadLeft(2, '0');
+
+                Ymd = temp;
+            }
+
+            if (numberOfSeparators == 2)
+            {
+                int firstLocation = Ymd.IndexOf('/');
+
+                string temp = Ymd.Substring(0, firstLocation) + "/";
+                string remainTemp = Ymd.Substring(firstLocation + 1);
+
+                int secondLocation = remainTemp.IndexOf('/');
+                temp += remainTemp.Substring(0, secondLocation).PadLeft(2, '0') + "/";
+                temp += remainTemp.Substring(secondLocation + 1).PadLeft(2, '0');
+
+                Ymd = temp;
+            }
+
+
+
+            bool parseResult = DateTime.TryParseExact(Ymd, "yyyy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult);
+
+            if (!parseResult)
+            {
+                return 0;
+            }
+
+            Result = dtResult.ToString("yyyyMMdd").AsInteger();
+
+            // Try to convert to wareki
+            string wareki = SDateToShowWDate(Result);
+            if (string.IsNullOrEmpty(wareki))
+            {
+                return 0;
+            }
+
+            return Result;
         }
 
         /// <summary>
@@ -578,8 +695,62 @@ namespace Helper.Common
             }
             return tempString.Substring(0, 2) + "/" + tempString.Substring(2, 2) + "/" + tempString.Substring(4, 2);
         }
+
+        //西暦(yyyymmdd)から年齢を計算する
+        //Calculate age from yyyymmdd format
+        public static int SDateToAge(int Ymd, int ToYmd)
+        {
+            if (Ymd <= 0 || ToYmd <= 0)
+            {
+                return -1;
+            }
+            string WrkStr;
+            int Age;
+
+            try
+            {
+                WrkStr = Ymd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
+
+                WrkStr = ToYmd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);
+
+                Age = toDate.Year - birthDate.Year;
+
+                if (birthDate.Month > toDate.Month)
+                    Age = Age - 1;
+
+                if ((birthDate.Month == toDate.Month) &&
+                    (birthDate.Day > toDate.Day))
+                    Age = Age - 1;
+            }
+            catch
+            {
+                Age = -1;
+            }
+            return Age;
+        }
+        #endregion
+
+        public static string HourAndMinuteFormat(string value)
+        {
+            string sResult = "";
+            if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
+            {
+                if (value.Length > 4)
+                {
+                    sResult = CIUtil.Copy(value, 1, 4);
+                }
+                else
+                {
+                    sResult = value;
+                }
+                sResult = sResult.PadLeft(4, '0');
+                sResult = sResult.Insert(2, ":");
+            }
+            return sResult;
+        }
     }
-    #endregion
 
     public enum WarekiFormat
     {
@@ -590,6 +761,7 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
+#pragma warning disable S1104 // Fields should not have public accessibility
         public string Ymd;
         public string GYmd;
         public string Gengo;
@@ -597,5 +769,6 @@ namespace Helper.Common
         public int Year;
         public int Month;
         public int Day;
+#pragma warning restore S1104 // Fields should not have public accessibility
     }
 }
