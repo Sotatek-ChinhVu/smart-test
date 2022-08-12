@@ -71,6 +71,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<HokensyaMst>().HasKey(r => new { r.HpId, r.HokensyaNo });
             modelBuilder.Entity<UserConf>().HasKey(e => new { e.HpId, e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo });
             modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
+            modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<TenMst>().HasKey(e => new { e.HpId, e.ItemCd, e.StartDate });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
@@ -313,7 +315,7 @@ namespace PostgreDataContext
 
         public DbSet<KensaMst> KensaMsts { get; set; } = default!;
 
-        public DbSet<YakkaSyusaiMst> yakkaSyusaiMsts { get; set; } = default!;
+        public DbSet<YakkaSyusaiMst> YakkaSyusaiMsts { get; set; } = default!;
 
         public DbSet<KarteFilterDetail> KarteFilterDetails { get; set; } = default!;
 
