@@ -3,7 +3,7 @@ using Domain.Models.KarteFilterDetail;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.User;
 using Helper.Constants;
-using UseCase.KarteFilter;
+using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace Interactor.KarteFilter;
 

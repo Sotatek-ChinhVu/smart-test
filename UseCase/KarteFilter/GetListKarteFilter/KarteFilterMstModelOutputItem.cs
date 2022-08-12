@@ -1,7 +1,7 @@
 ﻿using Domain.Models.KarteFilterMst;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.KarteFilter;
+namespace UseCase.KarteFilter.GetListKarteFilter;
 
 public class KarteFilterMstModelOutputItem : IOutputData
 {

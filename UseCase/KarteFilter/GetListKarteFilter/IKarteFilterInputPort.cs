@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.KarteFilter;
+namespace UseCase.KarteFilter.GetListKarteFilter;
 
 public interface IKarteFilterInputPort : IInputPort<KarteFilterInputData, KarteFilterOutputData>
 {

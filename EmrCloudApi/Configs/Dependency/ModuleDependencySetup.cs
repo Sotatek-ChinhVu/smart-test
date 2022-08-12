@@ -87,8 +87,8 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using Domain.Models.KarteFilterDetail;
 using Domain.Models.KarteFilterMst;
-using UseCase.KarteFilter;
 using Interactor.KarteFilter;
+using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace EmrCloudApi.Configs.Dependency
 {

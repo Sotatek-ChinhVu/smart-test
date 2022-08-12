@@ -1,4 +1,4 @@
-﻿using UseCase.KarteFilter;
+﻿using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace EmrCloudApi.Tenant.Responses.KarteFilter;
 

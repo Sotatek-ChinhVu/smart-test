@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteFilter;
-using UseCase.KarteFilter;
+using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace EmrCloudApi.Tenant.Presenters.KarteFilter
 {

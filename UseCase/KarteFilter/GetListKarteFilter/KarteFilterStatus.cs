@@ -1,4 +1,4 @@
-﻿namespace UseCase.KarteFilter;
+﻿namespace UseCase.KarteFilter.GetListKarteFilter;
 
 public enum KarteFilterStatus : byte
 {
