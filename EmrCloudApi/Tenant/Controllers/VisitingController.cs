@@ -18,15 +18,14 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly ILogger<VisitingController> _logger;
+
     public VisitingController(UseCaseBus bus, ILogger<VisitingController> logger)
     {
         _bus = bus;
-        _logger = logger;
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<List<ReceptionRowModel>>> GetList([FromQuery] GetReceptionListRequest request)
+    public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
         var input = new GetReceptionListInputData(request.HpId, request.SinDate);
         var output = _bus.Handle(input);

@@ -6,14 +6,24 @@ namespace PostgreDataContext
     public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
+
+        public TenantDataContext(DbContextOptions<TenantDataContext> options)
+        : base(options)
+        {
+            _connectionString = string.Empty;
+        }
+
         public TenantDataContext(string connectionString) => _connectionString = connectionString;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(_connectionString, buider =>
+            if (!string.IsNullOrEmpty(_connectionString))
             {
-                buider.EnableRetryOnFailure(maxRetryCount: 3);
-            });
+                optionsBuilder.UseNpgsql(_connectionString, buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                });
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +51,9 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnMst>().HasKey(r => new { r.HpId, r.GrpCd });
             modelBuilder.Entity<RaiinKbnInf>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.GrpId, r.SeqNo });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(r => new { r.HpId, r.GrpCd, r.KbnCd });
+            modelBuilder.Entity<SetMst>().HasKey(o => new { o.HpId, o.SetCd });
+            modelBuilder.Entity<SetKbnMst>().HasKey(o => new { o.HpId, o.SetKbn, o.SetKbnEdaNo, o.GenerationId });
+            modelBuilder.Entity<SetGenerationMst>().HasKey(o => new { o.HpId, o.GenerationId });
             modelBuilder.Entity<PtHokenPattern>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo, r.HokenPid });
             modelBuilder.Entity<RaiinInf>().HasKey(r => new { r.HpId, r.RaiinNo });
             modelBuilder.Entity<RaiinCmtInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn, e.SeqNo });
@@ -73,7 +86,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
             modelBuilder.Entity<KarteFilterDetail>().HasKey(e => new { e.HpId, e.UserId, e.FilterId, e.FilterItemCd, e.FilterEdaNo });
             modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId});
+            modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
         }
+
+        public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;
 
