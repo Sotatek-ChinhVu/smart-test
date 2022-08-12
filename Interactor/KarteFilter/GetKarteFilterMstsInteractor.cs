@@ -91,6 +91,8 @@ public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
             // update field to KarteFilterMstModel
             foreach (var model in result)
             {
+
+                // update Ka information
                 foreach (KaMstModel KaMst in KaMsts)
                 {
                     if (KaMst != null)
@@ -117,25 +119,29 @@ public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
                             );
                             model.KarteFilterDetailModels.Add(KarteFilterDetail);
                         }
-                        KarteFilterDetail = new KarteFilterDetailOutputItem(
-                            KarteFilterDetail.HpId,
-                            KarteFilterDetail.UserId,
-                            KarteFilterDetail.FilterId,
-                            KarteFilterDetail.FilterItemCd,
-                            KarteFilterDetail.FilterEdaNo,
-                            KarteFilterDetail.Val,
-                            KarteFilterDetail.IsModifiedData,
-                            KarteFilterDetail.Param,
-                            KaMst.KaId,
-                            KaMst.KaName,
-                            KaMst.KaSname,
-                            KarteFilterDetail.UserKaId,
-                            KarteFilterDetail.Sname,
-                            KarteFilterDetail.UserSortNo
-                        );
+                        else
+                        {
+                            KarteFilterDetail = new KarteFilterDetailOutputItem(
+                                 KarteFilterDetail.HpId,
+                                 KarteFilterDetail.UserId,
+                                 KarteFilterDetail.FilterId,
+                                 KarteFilterDetail.FilterItemCd,
+                                 KarteFilterDetail.FilterEdaNo,
+                                 KarteFilterDetail.Val,
+                                 KarteFilterDetail.IsModifiedData,
+                                 KarteFilterDetail.Param,
+                                 KaMst.KaId,
+                                 KaMst.KaName,
+                                 KaMst.KaSname,
+                                 KarteFilterDetail.UserKaId,
+                                 KarteFilterDetail.Sname,
+                                 KarteFilterDetail.UserSortNo
+                             );
+                        }
                     }
                 }
 
+                // update user information
                 foreach (UserMstModel UserMst in UserMsts)
                 {
                     var KaMst = KaMsts.FirstOrDefault(k => k.KaId == UserMst.KaId);
@@ -156,31 +162,35 @@ public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
                                 KaMst.KaId,
                                 KaMst.KaName,
                                 KaMst.KaSname,
-                                0,
-                                "",
-                                0
+                                UserMst.UserId,
+                                UserMst.Sname,
+                                UserMst.SortNo
                             );
                             model.KarteFilterDetailModels.Add(KarteFilterDetail);
                         }
-                        KarteFilterDetail = new KarteFilterDetailOutputItem(
-                            KarteFilterDetail.HpId,
-                            KarteFilterDetail.UserId,
-                            KarteFilterDetail.FilterId,
-                            KarteFilterDetail.FilterItemCd,
-                            KarteFilterDetail.FilterEdaNo,
-                            KarteFilterDetail.Val,
-                            KarteFilterDetail.IsModifiedData,
-                            KarteFilterDetail.Param,
-                            KaMst.KaId,
-                            KaMst.KaName,
-                            KaMst.KaSname,
-                            UserMst.UserId,
-                            UserMst.Sname,
-                            UserMst.SortNo
-                        );
+                        else
+                        {
+                            KarteFilterDetail = new KarteFilterDetailOutputItem(
+                                KarteFilterDetail.HpId,
+                                KarteFilterDetail.UserId,
+                                KarteFilterDetail.FilterId,
+                                KarteFilterDetail.FilterItemCd,
+                                KarteFilterDetail.FilterEdaNo,
+                                KarteFilterDetail.Val,
+                                KarteFilterDetail.IsModifiedData,
+                                KarteFilterDetail.Param,
+                                KaMst.KaId,
+                                KaMst.KaName,
+                                KaMst.KaSname,
+                                UserMst.UserId,
+                                UserMst.Sname,
+                                UserMst.SortNo
+                            );
+                        }
                     }
                 }
             }
+
             return new KarteFilterOutputData(result, KarteFilterStatus.Successed);
         }
         catch (Exception)
