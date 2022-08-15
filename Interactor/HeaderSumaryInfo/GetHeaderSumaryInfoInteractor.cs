@@ -682,7 +682,7 @@ namespace Interactor.HeaderSumaryInfo
             var strFutanInfo = futanInfo?.ToString().TrimEnd();
             if (!string.IsNullOrEmpty(strFutanInfo?.Trim()))
             {
-                ptHeaderInfoModel.HeaderInfo = futanInfo?.ToString() ?? String.Empty;
+                ptHeaderInfoModel.HeaderInfo = strFutanInfo?.ToString() ?? String.Empty;
             }
         }
 

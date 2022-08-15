@@ -2,7 +2,7 @@
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel? hokenMstModel)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstIModel? hokenMstModel)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -49,7 +49,7 @@
 
         public string Houbetu { get; private set; }
 
-        public HokenMstModel? HokenMstModel { get; private set; }
+        public HokenMstIModel? HokenMstModel { get; private set; }
 
         public int HokenNo { get; private set; }
 

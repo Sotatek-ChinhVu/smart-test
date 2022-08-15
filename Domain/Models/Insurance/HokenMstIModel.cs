@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.Insurance
 {
-    public class HokenMstModel
+    public class HokenMstIModel
     {
-        public HokenMstModel(int futanKbn, int futanRate)
+        public HokenMstIModel(int futanKbn, int futanRate)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -14,7 +14,7 @@
             MonthLimitCount = 0;
         }
 
-        public HokenMstModel(int futanKbn, int futanRate, string houbetsuNumber, int kaiLimitFutan, int monthLimitFutan, int dayLimitFutan, int dayLimitCount, int monthLimitCount)
+        public HokenMstIModel(int futanKbn, int futanRate, string houbetsuNumber, int kaiLimitFutan, int monthLimitFutan, int dayLimitFutan, int dayLimitCount, int monthLimitCount)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;

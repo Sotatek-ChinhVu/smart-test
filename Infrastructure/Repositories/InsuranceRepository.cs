@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId, int sinDate, int prefCd)
         {
-            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.HokenPid).ToList();
+            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId && sinDate >= x.StartDate && sinDate <= x.EndDate).OrderByDescending(x => x.HokenPid).ToList();
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None).ToList();
             var dataHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
             var joinQuery = from ptHokenPattern in dataHokenPatterList
@@ -344,7 +344,7 @@ namespace Infrastructure.Repositories
                                         ptKohi1.HokenNo,
                                         ptKohi1.HokenEdaNo,
                                         ptKohi1.PrefNo,
-                                        _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi1.HokenNo && ptKohi1.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
+                                        _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi1.HokenNo && ptKohi1.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstIModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
                                             ptKohi2.FutansyaNo ?? string.Empty,
@@ -363,7 +363,7 @@ namespace Infrastructure.Repositories
                                             ptKohi1.HokenNo,
                                             ptKohi1.HokenEdaNo,
                                             ptKohi1.PrefNo,
-                                            _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi2.HokenNo && ptKohi2.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
+                                            _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi2.HokenNo && ptKohi2.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstIModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
                                                 ptKohi3.FutansyaNo ?? string.Empty,
@@ -382,7 +382,7 @@ namespace Infrastructure.Repositories
                                                 ptKohi1.HokenNo,
                                                 ptKohi1.HokenEdaNo,
                                                 ptKohi1.PrefNo,
-                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi3.HokenNo && ptKohi3.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
+                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi3.HokenNo && ptKohi3.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstIModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
                                                 ptKohi4.FutansyaNo ?? string.Empty,
@@ -401,7 +401,7 @@ namespace Infrastructure.Repositories
                                                 ptKohi1.HokenNo,
                                                 ptKohi1.HokenEdaNo,
                                                 ptKohi1.PrefNo,
-                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi4.HokenNo && ptKohi4.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
+                                                _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi4.HokenNo && ptKohi4.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstIModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                             ) : null,
                                 ptHokenInf.KogakuKbn,
                                 ptHokenInf.TasukaiYm,
@@ -445,7 +445,7 @@ namespace Infrastructure.Repositories
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
-                    var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo && (x.PrefNo == prefCd || x.PrefNo == 0 || x.IsOtherPrefValid == 1));
+                    var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo && (x.PrefNo == prefCd || x.PrefNo == 0 || x.IsOtherPrefValid == 1) && sinDate >= x.StartDate && sinDate <= x.EndDate);
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;

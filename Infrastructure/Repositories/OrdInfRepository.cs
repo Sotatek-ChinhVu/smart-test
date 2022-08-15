@@ -49,7 +49,7 @@ namespace Infrastructure.Repositories
         {
             var result = new List<OrdInfModel>();
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0)).Select(o => new OrdInfModel(
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.SinDate < sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0)).Select(o => new OrdInfModel(
                 o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.Id, new List<OrdInfDetailModel>()
                   )).ToList();
 
