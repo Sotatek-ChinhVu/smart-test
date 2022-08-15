@@ -73,7 +73,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
                 .Select(c => new ReceptionStatusColorConfig(c.GrpEdaNo, c.Param))
                 .ToList();
 
-        receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
+       receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
 
         return new VisitingListSettingModel(fontName, fontSize, autoRefresh, mouseWheel, kanFocus, selectToDoSetting, receptionTimeColorConfigs, receptionStatusColorConfigs);
     }

@@ -180,6 +180,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
+            services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
+            services.AddTransient<ISystemConfRepository, SystemConfRepository>();
+            services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
+            services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -207,6 +212,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
+
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
 
@@ -221,6 +227,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
+
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 

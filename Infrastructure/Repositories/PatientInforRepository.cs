@@ -26,6 +26,12 @@ namespace Infrastructure.Repositories
                 return ConvertToModel(itemData);
         }
 
+        public List<PatientInforModel> GetById(long ptId)
+        {
+            var itemDatas = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).ToList();
+            return itemDatas.Select(p => ConvertToModel(p)).ToList();
+        }
+
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
         {
             long ptNum = keyword.AsLong();
@@ -386,7 +392,7 @@ namespace Infrastructure.Repositories
                         {
                             ptIdsByByomeisQuery = ptIdsByByomeisQuery!.Union(ptIdsByByomeiItemQuery);
                         }
-                        else if(input.ByomeiLogicalOperator == LogicalOperator.And)
+                        else if (input.ByomeiLogicalOperator == LogicalOperator.And)
                         {
                             ptIdsByByomeisQuery = ptIdsByByomeisQuery!.Intersect(ptIdsByByomeiItemQuery);
                         }
@@ -560,13 +566,5 @@ namespace Infrastructure.Repositories
                 itemData.Setanusi ?? String.Empty
                 );
         }
-
-
-        public List<PatientInforModel> GetById(long ptId)
-        {
-            var itemDatas = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).ToList();
-            return itemDatas.Select(p => ConvertToModel(p)).ToList();
-        }
-
     }
 }
