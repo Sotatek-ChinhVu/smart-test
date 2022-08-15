@@ -430,7 +430,11 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.RousaiJigyosyoName,
                                 ptHokenInf.RousaiPrefName,
                                 ptHokenInf.RousaiCityName,
-                                ptHokenInf.RousaiReceCount
+                                ptHokenInf.RousaiReceCount,
+                                ptHokenInf.JibaiHokenName,
+                                ptHokenInf.JibaiHokenTanto,
+                                ptHokenInf.JibaiHokenTel,
+                                ptHokenInf.JibaiJyusyouDate
                             };
             var itemList = joinQuery.ToList();
 
@@ -520,8 +524,12 @@ namespace Infrastructure.Repositories
                         rousaiTenkiEndDate,
                         houbetu,
                         futanRate,
-                        sinDate
-                        
+                        sinDate,
+                        item.JibaiHokenName,
+                        item.JibaiHokenTanto,
+                        item.JibaiHokenTel,
+                        item.JibaiJyusyouDate
+
                     );
 
                     result.Add(insuranceModel);
