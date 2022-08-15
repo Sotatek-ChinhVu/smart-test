@@ -1,8 +1,5 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Domain.Models.TenMst;
+﻿using Domain.Models.TenMst;
 using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -97,7 +94,7 @@ public class TenMstRepository : ITenMstRepository
                 itemData.FukubikuKotunanKasan,
                 itemData.MasuiKasan,
                 itemData.MoniterKasan,
-                itemData.ToketuKasan ,
+                itemData.ToketuKasan,
                 itemData.TenKbnNo ?? String.Empty,
                 itemData.ShortstayOpe,
                 itemData.BuiKbn,
@@ -205,7 +202,7 @@ public class TenMstRepository : ITenMstRepository
                 itemData.IsNodspYakutai,
                 itemData.ZaikeiPoint,
                 itemData.KensaLabel
-                
-                ) ;
+
+                );
     }
 }

@@ -1,16 +1,9 @@
 ﻿using Domain.Models.PtAlrgyDrug;
-using Domain.Models.PtAlrgyElse;
-using Domain.Models.PtAlrgyFood;
 using Helper.Extendsions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UseCase.HeaderSumaryInfo.Get
 {
-    public class PtAlrgyDrugItem: ObservableObject
+    public class PtAlrgyDrugItem : ObservableObject
     {
         public PtAlrgyDrugModel PtAlrgyDrug { get; }
 

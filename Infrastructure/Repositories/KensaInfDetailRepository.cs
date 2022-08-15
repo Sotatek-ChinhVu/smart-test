@@ -1,9 +1,4 @@
 ﻿using Domain.Models.KensaInfDetail;
-using Domain.Models.KensaMst;
-using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -20,7 +15,7 @@ public class KensaInfDetailRepository : IKensaInfDetailRepository
 
     public List<KensaInfDetailModel> GetList(int hpId, long ptId, int sinDate)
     {
-        var ptInfections = _tenantDataContext.KensaInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0 && x.KensaItemCd.StartsWith("V") && x.IraiCd <= sinDate && !string.IsNullOrEmpty(x.ResultVal)).Select(x => new KensaInfDetailModel(
+        var ptInfections = _tenantDataContext.KensaInfDetails.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0 && (x.KensaItemCd != null && x.KensaItemCd.StartsWith("V")) && x.IraiCd <= sinDate && !string.IsNullOrEmpty(x.ResultVal)).Select(x => new KensaInfDetailModel(
               x.HpId,
               x.PtId,
               x.IraiCd,

@@ -1,8 +1,5 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Domain.Models.UserConfig;
+﻿using Domain.Models.UserConfig;
 using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -19,57 +16,38 @@ public class UserConfigRepository : IUserConfigRepository
 
     public List<UserConfigModel> GetList(int groupCd, int grpItemCd)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd).Select(x => new UserConfigModel(
-              x.HpId,
-              x.UserId,
-              x.GrpCd,
-              x.GrpItemCd,
-              x.GrpItemEdaNo,
-              x.Val,
-              x.Param ?? String.Empty
-            ));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd).Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int hpId, int groupCd, int grpItemCd, int userId)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd && x.HpId == hpId && x.UserId == userId).Select(x => new UserConfigModel(
-                  x.HpId,
-                  x.UserId,
-                  x.GrpCd,
-                  x.GrpItemCd,
-                  x.GrpItemEdaNo,
-                  x.Val,
-                  x.Param ?? String.Empty
-                ));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd && x.HpId == hpId && x.UserId == userId).Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int hpId, int groupCd, int userId)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd &&  x.HpId == hpId && x.UserId == userId).Select(x => new UserConfigModel(
-                  x.HpId,
-                  x.UserId,
-                  x.GrpCd,
-                  x.GrpItemCd,
-                  x.GrpItemEdaNo,
-                  x.Val,
-                  x.Param ?? String.Empty
-                ));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.HpId == hpId && x.UserId == userId).Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int groupCd)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd).Select(x => new UserConfigModel(
-                  x.HpId,
-                  x.UserId,
-                  x.GrpCd,
-                  x.GrpItemCd,
-                  x.GrpItemEdaNo,
-                  x.Val,
-                  x.Param ?? String.Empty
-                ));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd).Select(x => ToModel(x));
         return userConfigs.ToList();
+    }
+
+    public List<UserConfigModel> GetListFT(int userId, int fromGrpCd, int toGrpCd)
+    {
+        return _tenantDataContext.UserConfs
+            .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
+            .AsEnumerable().Select(u => ToModel(u)).ToList();
+    }
+
+    private UserConfigModel ToModel(UserConf u)
+    {
+        return new UserConfigModel(u.HpId, u.UserId, u.GrpCd,
+            u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param ?? String.Empty);
     }
 }

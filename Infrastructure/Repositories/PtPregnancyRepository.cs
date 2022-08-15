@@ -1,7 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtPregnancy;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.PtPregnancy;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

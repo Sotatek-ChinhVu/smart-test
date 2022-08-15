@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.SummaryInf
+﻿namespace Domain.Models.SummaryInf
 {
     public class SummaryInfModel
     {
@@ -26,6 +20,6 @@ namespace Domain.Models.SummaryInf
         public string Text { get; private set; }
         public string Rtext { get; private set; }
         public DateTime CreateDate { get; private set; }
-       
+
     }
 }

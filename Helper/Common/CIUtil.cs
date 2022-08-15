@@ -1085,7 +1085,7 @@ namespace Helper.Common
             try
             {
                 WrkStr = Ymd.ToString("D8");
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out  DateTime birthDate);
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
 
                 WrkStr = ToYmd.ToString("D8");
                 DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);
@@ -1227,6 +1227,24 @@ namespace Helper.Common
             return string.Empty;
         }
 
+        public static string HourAndMinuteFormat(string value)
+        {
+            string sResult = "";
+            if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
+            {
+                if (value.Length > 4)
+                {
+                    sResult = CIUtil.Copy(value, 1, 4);
+                }
+                else
+                {
+                    sResult = value;
+                }
+                sResult = sResult.PadLeft(4, '0');
+                sResult = sResult.Insert(2, ":");
+            }
+            return sResult;
+        }
     }
 
 

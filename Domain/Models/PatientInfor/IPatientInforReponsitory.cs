@@ -1,9 +1,4 @@
 ﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Models.PatientInfor
 {
@@ -13,5 +8,7 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> GetById(long ptId);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
+
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input);
     }
 }

@@ -1,17 +1,11 @@
 ﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Domain.Models.PtFamily;
-using Domain.Models.PtFamilyReki;
 using Helper.Common;
 using Helper.Extendsions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UseCase.HeaderSumaryInfo.Get
 {
-    public class PtFamilyItem: ObservableObject
+    public class PtFamilyItem : ObservableObject
     {
         /// <summary>
         /// Return Entity PtFamily

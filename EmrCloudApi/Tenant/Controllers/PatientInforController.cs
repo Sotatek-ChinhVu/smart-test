@@ -21,6 +21,12 @@ using EmrCloudApi.Tenant.Responses.PatientInfor;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
+using EmrCloudApi.Tenant.Responses.InsuranceMst;
+using UseCase.InsuranceMst.Get;
+using EmrCloudApi.Tenant.Presenters.InsuranceMst;
+using EmrCloudApi.Tenant.Requests.InsuranceMst;
+using UseCase.SearchHokensyaMst.Get;
+using UseCase.PatientInfor.SearchAdvanced;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -82,6 +88,16 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
         }
 
+        [HttpPost("SearchAdvanced")]
+        public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
+        {
+            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoAdvancedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoAdvancedResponse>>(presenter.Result);
+        }
+
         [HttpGet("GetListCalculationPatient")]
         public ActionResult<Response<CalculationInfResponse>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
         {
@@ -104,6 +120,30 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListPatientGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetInsuranceMst")]
+        public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
+        {
+            var input = new GetInsuranceMstInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetInsuranceMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetInsuranceMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("SearchHokensyaMst")]
+        public ActionResult<Response<SearchHokensyaMstResponse>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
+        {
+            var input = new SearchHokensyaMstInputData(request.HpId, request.PageIndex, request.PageCount, request.SinDate, request.Keyword);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchHokenMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchHokensyaMstResponse>>(presenter.Result);
         }
     }
 }

@@ -79,6 +79,9 @@ namespace Infrastructure.Repositories
                                         ptKohi1.TokusyuNo ?? string.Empty,
                                         ptKohi1.HokenSbtKbn,
                                         ptKohi1.Houbetu ?? string.Empty,
+                                        ptKohi1.HokenNo,
+                                        ptKohi1.HokenEdaNo,
+                                        ptKohi1.PrefNo,
                                         null
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
@@ -95,6 +98,9 @@ namespace Infrastructure.Repositories
                                             ptKohi2.TokusyuNo ?? string.Empty,
                                             ptKohi2.HokenSbtKbn,
                                             ptKohi2.Houbetu ?? string.Empty,
+                                            ptKohi2.HokenNo,
+                                            ptKohi2.HokenEdaNo,
+                                            ptKohi2.PrefNo,
                                             null
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
@@ -111,6 +117,9 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.TokusyuNo ?? string.Empty,
                                                 ptKohi3.HokenSbtKbn,
                                                 ptKohi3.Houbetu ?? string.Empty,
+                                                ptKohi3.HokenNo,
+                                                ptKohi3.HokenEdaNo,
+                                                ptKohi3.PrefNo,
                                                 null
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
@@ -127,6 +136,9 @@ namespace Infrastructure.Repositories
                                                 ptKohi4.TokusyuNo ?? string.Empty,
                                                 ptKohi4.HokenSbtKbn,
                                                 ptKohi4.Houbetu ?? string.Empty,
+                                                ptKohi4.HokenNo,
+                                                ptKohi4.HokenEdaNo,
+                                                ptKohi4.PrefNo,
                                                 null
                                             ) : null,
                                 ptHokenInf.KogakuKbn,
@@ -156,7 +168,11 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.RousaiJigyosyoName,
                                 ptHokenInf.RousaiPrefName,
                                 ptHokenInf.RousaiCityName,
-                                ptHokenInf.RousaiReceCount
+                                ptHokenInf.RousaiReceCount,
+                                ptHokenInf.JibaiHokenName,
+                                ptHokenInf.JibaiHokenTanto,
+                                ptHokenInf.JibaiHokenTel,
+                                ptHokenInf.JibaiJyusyouDate
                             };
             var itemList = joinQuery.ToList();
 
@@ -246,7 +262,12 @@ namespace Infrastructure.Repositories
                         rousaiTenkiEndDate,
                         houbetu,
                         futanRate,
-                        sinDate
+                        sinDate,
+                        item.JibaiHokenName,
+                        item.JibaiHokenTanto,
+                        item.JibaiHokenTel,
+                        item.JibaiJyusyouDate
+
                     );
 
                     result.Add(insuranceModel);
@@ -320,6 +341,9 @@ namespace Infrastructure.Repositories
                                         ptKohi1.TokusyuNo ?? string.Empty,
                                         ptKohi1.HokenSbtKbn,
                                         ptKohi1.Houbetu ?? string.Empty,
+                                        ptKohi1.HokenNo,
+                                        ptKohi1.HokenEdaNo,
+                                        ptKohi1.PrefNo,
                                         _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi1.HokenNo && ptKohi1.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                     ) : null,
                                 Kohi2 = ptKohi2 != null ? new KohiInfModel(
@@ -336,6 +360,9 @@ namespace Infrastructure.Repositories
                                             ptKohi2.TokusyuNo ?? string.Empty,
                                             ptKohi2.HokenSbtKbn,
                                             ptKohi2.Houbetu ?? string.Empty,
+                                            ptKohi1.HokenNo,
+                                            ptKohi1.HokenEdaNo,
+                                            ptKohi1.PrefNo,
                                             _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi2.HokenNo && ptKohi2.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                         ) : null,
                                 Kohi3 = ptKohi3 != null ? new KohiInfModel(
@@ -352,6 +379,9 @@ namespace Infrastructure.Repositories
                                                 ptKohi3.TokusyuNo ?? string.Empty,
                                                 ptKohi3.HokenSbtKbn,
                                                 ptKohi3.Houbetu ?? string.Empty,
+                                                ptKohi1.HokenNo,
+                                                ptKohi1.HokenEdaNo,
+                                                ptKohi1.PrefNo,
                                                 _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi3.HokenNo && ptKohi3.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                             ) : null,
                                 Kohi4 = ptKohi4 != null ? new KohiInfModel(
@@ -368,6 +398,9 @@ namespace Infrastructure.Repositories
                                                 ptKohi4.TokusyuNo ?? string.Empty,
                                                 ptKohi4.HokenSbtKbn,
                                                 ptKohi4.Houbetu ?? string.Empty,
+                                                ptKohi1.HokenNo,
+                                                ptKohi1.HokenEdaNo,
+                                                ptKohi1.PrefNo,
                                                 _tenantDataContext.HokenMsts.Where(h => h.HokenNo == ptKohi4.HokenNo && ptKohi4.HokenEdaNo == h.HokenEdaNo)?.Select(h => new HokenMstModel(h.FutanKbn, h.FutanRate, h.Houbetu, h.KaiLimitFutan, h.MonthLimitFutan, h.DayLimitFutan, h.DayLimitCount, h.MonthLimitCount))?.FirstOrDefault()
                                             ) : null,
                                 ptHokenInf.KogakuKbn,
@@ -488,6 +521,7 @@ namespace Infrastructure.Repositories
                         houbetu,
                         futanRate,
                         sinDate
+                        
                     );
 
                     result.Add(insuranceModel);

@@ -1,5 +1,4 @@
-﻿using Domain.Models.PtFamily;
-using Domain.Models.PtFamilyReki;
+﻿using Domain.Models.PtFamilyReki;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -16,7 +15,7 @@ public class PtFamilyRekiRepository : IPtFamilyRekiRepository
 
     public List<PtFamilyRekiModel> GetList(int hpId)
     {
-        var ptRekis = _tenantDataContext.PtFamilyRekis.Where(x=> x.HpId == hpId && x.IsDeleted == 0 && !string.IsNullOrEmpty(x.Byomei)).Select(x => new PtFamilyRekiModel(
+        var ptRekis = _tenantDataContext.PtFamilyRekis.Where(x => x.HpId == hpId && x.IsDeleted == 0 && !string.IsNullOrEmpty(x.Byomei)).Select(x => new PtFamilyRekiModel(
                x.Id,
                x.HpId,
                x.PtId,

@@ -1,15 +1,10 @@
 ﻿using Domain.Models.PtFamilyReki;
 using Helper.Constants;
 using Helper.Extendsions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UseCase.HeaderSumaryInfo.Get
 {
-    public class PtFamilyRekiItem: ObservableObject
+    public class PtFamilyRekiItem : ObservableObject
     {
         public PtFamilyRekiModel PtFamilyReki { get; }
         private const string FREE_WORD = "0000999";
