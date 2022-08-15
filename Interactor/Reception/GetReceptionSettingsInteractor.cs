@@ -1,5 +1,4 @@
-﻿using Domain.Models.Reception;
-using Domain.Models.SystemConf;
+﻿using Domain.Models.SystemConf;
 using Domain.Models.UserConfig;
 using Domain.Models.VisitingListSetting;
 using Helper.Common;
@@ -73,7 +72,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
                 .Select(c => new ReceptionStatusColorConfig(c.GrpEdaNo, c.Param))
                 .ToList();
 
-       receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
+        receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
 
         return new VisitingListSettingModel(fontName, fontSize, autoRefresh, mouseWheel, kanFocus, selectToDoSetting, receptionTimeColorConfigs, receptionStatusColorConfigs);
     }
