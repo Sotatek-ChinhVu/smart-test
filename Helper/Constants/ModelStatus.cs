@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Helper.Constants
+﻿namespace Helper.Constants
 {
     public enum ModelStatus
     {

@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
 
         public PatientInforModel? GetById(int hpId, long ptId, bool isDeleted = true)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && ( x.IsDelete != 1 || isDeleted)).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDelete != 1 || isDeleted)).FirstOrDefault();
             if (itemData == null)
                 return null;
             else

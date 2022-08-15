@@ -1,7 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtKioReki;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.PtKioReki;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

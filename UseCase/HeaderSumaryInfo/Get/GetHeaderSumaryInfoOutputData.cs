@@ -13,8 +13,8 @@ namespace UseCase.HeaderSumaryInfo.Get
         }
 
         public List<PtInfNotificationItem>? Header1Info { get; private set; }
-       public List<PtInfNotificationItem>? Header2Info { get; private set; }
-       public List<PtInfNotificationItem>? Notification { get; private set; }
-       public GetHeaderSumaryInfoStatus Status { get; private set; }
+        public List<PtInfNotificationItem>? Header2Info { get; private set; }
+        public List<PtInfNotificationItem>? Notification { get; private set; }
+        public GetHeaderSumaryInfoStatus Status { get; private set; }
     }
 }

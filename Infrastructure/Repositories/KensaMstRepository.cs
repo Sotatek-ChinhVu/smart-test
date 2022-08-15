@@ -1,8 +1,4 @@
 ﻿using Domain.Models.KensaMst;
-using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

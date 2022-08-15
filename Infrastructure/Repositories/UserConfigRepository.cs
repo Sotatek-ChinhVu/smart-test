@@ -1,8 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Domain.Models.UserConfig;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.UserConfig;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -47,7 +43,7 @@ public class UserConfigRepository : IUserConfigRepository
 
     public List<UserConfigModel> GetList(int hpId, int groupCd, int userId)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd &&  x.HpId == hpId && x.UserId == userId).Select(x => new UserConfigModel(
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.HpId == hpId && x.UserId == userId).Select(x => new UserConfigModel(
                   x.HpId,
                   x.UserId,
                   x.GrpCd,

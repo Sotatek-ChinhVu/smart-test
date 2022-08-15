@@ -1,7 +1,4 @@
 ﻿using Domain.Models.PtAlrgyElse;
-using Domain.Models.PtCmtInf;
-using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

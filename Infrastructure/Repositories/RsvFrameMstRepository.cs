@@ -1,9 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtInfection;
-using Domain.Models.RsvFrameMst;
-using Domain.Models.RsvInfo;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.RsvFrameMst;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

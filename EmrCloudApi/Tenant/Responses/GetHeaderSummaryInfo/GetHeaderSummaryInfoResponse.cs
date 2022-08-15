@@ -1,5 +1,4 @@
 ﻿using UseCase.HeaderSumaryInfo.Get;
-using UseCase.OrdInfs.GetListTrees;
 
 namespace EmrCloudApi.Tenant.Responses.GetHeaderSummaryInfo
 {

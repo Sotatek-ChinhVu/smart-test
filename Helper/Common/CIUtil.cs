@@ -1085,7 +1085,7 @@ namespace Helper.Common
             try
             {
                 WrkStr = Ymd.ToString("D8");
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out  DateTime birthDate);
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime birthDate);
 
                 WrkStr = ToYmd.ToString("D8");
                 DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);

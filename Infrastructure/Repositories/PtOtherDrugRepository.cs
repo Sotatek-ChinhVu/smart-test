@@ -1,7 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtOtherDrug;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.PtOtherDrug;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

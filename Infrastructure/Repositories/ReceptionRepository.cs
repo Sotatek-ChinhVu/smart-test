@@ -1,5 +1,3 @@
-using Domain.Common;
-using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
@@ -253,7 +251,7 @@ namespace Infrastructure.Repositories
             var kaMsts = _tenantDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId);
             // Lock (Function lock)
             var lockInfs = _tenantDataContext.LockInfs.Where(x =>
-                (x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte) && x.HpId == hpId );
+                (x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte) && x.HpId == hpId);
             // Uketuke
             var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None && x.HpId == hpId);
 
