@@ -16,25 +16,25 @@ public class UserConfigRepository : IUserConfigRepository
 
     public List<UserConfigModel> GetList(int groupCd, int grpItemCd)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd).ToList().Select(x => ToModel(x));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd).AsEnumerable().Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int hpId, int groupCd, int grpItemCd, int userId)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd && x.HpId == hpId && x.UserId == userId).ToList().Select(x => ToModel(x));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd && x.HpId == hpId && x.UserId == userId).AsEnumerable().Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int hpId, int groupCd, int userId)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.HpId == hpId && x.UserId == userId).ToList().Select(x => ToModel(x));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.HpId == hpId && x.UserId == userId).AsEnumerable().Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
     public List<UserConfigModel> GetList(int groupCd)
     {
-        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd).ToList().Select(x => ToModel(x));
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd).AsEnumerable().Select(x => ToModel(x));
         return userConfigs.ToList();
     }
 
