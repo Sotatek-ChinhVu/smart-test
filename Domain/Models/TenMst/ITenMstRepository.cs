@@ -2,6 +2,6 @@
 {
     public interface ITenMstRepository
     {
-        List<TenMstModel> GetList(int hpId, int sinDate);
+        IEnumerable<TenMstModel> GetList(int hpId, int sinDate);
     }
 }

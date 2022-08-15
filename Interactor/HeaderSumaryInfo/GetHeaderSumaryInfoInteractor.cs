@@ -193,7 +193,7 @@ namespace Interactor.HeaderSumaryInfo
             //Wait user config
             if (!fromLastestDb)
             {
-                var userConf = _userConfigRepository.GetList(groupCd, grpItemCd).FirstOrDefault(x => x.UserId == userId);
+                var userConf = _userConfigRepository.Get(userId, groupCd, grpItemCd);
                 return userConf != null ? userConf.Param : defaultValue;
             }
             else
@@ -459,13 +459,12 @@ namespace Interactor.HeaderSumaryInfo
         {
             ptHeaderInfoModel.GrpItemCd = 5;
             ptHeaderInfoModel.HeaderName = "◆算定情報";
-            var listSanteiInfModels = GetCalculationInfo(ptId, hpId, sinDate);
+            var listSanteiInfModels = GetCalculationInfo(ptId, hpId, sinDate).Where(u => u.DayCount > u.AlertDays);
             var strHeaderInfo = new StringBuilder();
 
-            if (listSanteiInfModels.Count > 0)
+            if (listSanteiInfModels != null)
             {
-                listSanteiInfModels = listSanteiInfModels.Where(u => u.DayCount > u.AlertDays).ToList();
-                foreach (SanteiInfomationItem santeiInfomationModel in listSanteiInfModels)
+                foreach (var santeiInfomationModel in listSanteiInfModels)
                 {
                     strHeaderInfo.Append(santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + @"～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine);
                 }
@@ -480,7 +479,7 @@ namespace Interactor.HeaderSumaryInfo
             var tenMsts = _tenMstRepository.GetList(hpId, sinDate);
 
             // Query Santei inf code
-            var kensaTenMst = _tenMstRepository.GetList(hpId, sinDate);
+            var kensaTenMst = tenMsts;
 
             var tenMstList = from santeiInf in santeiInfs
                              join tenMst in kensaTenMst on santeiInf.ItemCd
@@ -492,20 +491,23 @@ namespace Interactor.HeaderSumaryInfo
                                  ItemCd = tenMst?.ItemCd ?? santeiInf.ItemCd
                              };
 
-
             var odrInfs = _ordInfRepository.GetList(ptId, hpId, sinDate, false);
-
+            var odrInfDetails = _ordInfRepository.GetList(ptId, hpId);
 
             var listOdrInfs = from odrInfItem in odrInfs
+                              join odrInfDetailItem in odrInfDetails on new { odrInfItem.RaiinNo, odrInfItem.RpEdaNo, odrInfItem.RpNo } equals
+                                                                         new { odrInfDetailItem.RaiinNo, odrInfDetailItem.RpEdaNo, odrInfDetailItem.RpNo }
+                              join tenMstItem in tenMstList on odrInfDetailItem.ItemCd equals tenMstItem.ItemCd
                               select new
                               {
-                                  tenMstList.SingleOrDefault(t => odrInfItem?.OrdInfDetails?.Any(od => od.ItemCd == t.ItemCd) == true)?.SanteiCd,
+                                  tenMstItem.SanteiCd,
                                   OdrInf = odrInfItem,
-                                  OdrInfDetail = odrInfItem.OrdInfDetails,
+                                  OdrInfDetail = odrInfDetailItem,
                               };
 
+
             //Get last oder day by ItemCd
-            var listOrdInfomation = listOdrInfs.AsEnumerable().OrderByDescending(u => u.OdrInf.SinDate).GroupBy(o => o.SanteiCd).Select(g => g.First()).ToList(); //select distinct by ItemCd
+            var listOrdInfomation = listOdrInfs.OrderByDescending(u => u.OdrInf.SinDate).GroupBy(o => o.SanteiCd).Select(g => g.First()).ToList(); //select distinct by ItemCd
             var listOrdDetailInfomation = listOrdInfomation.Select(o => new { o.OdrInfDetail, o.SanteiCd }).ToList(); // only select OdrDetailInfo 
 
             var santeiQuery = from santeiInfItem in santeiInfs
@@ -516,7 +518,7 @@ namespace Interactor.HeaderSumaryInfo
                                   SnteiInfDetail = santeiInfItem.SanteiInfoDetailModel,
                                   TenMst = tenMstItem
                               };
-            var result = santeiQuery.AsEnumerable().Select(u => new SanteiInfomationItem(u.SanteiInf, u.SnteiInfDetail?.FirstOrDefault(), u.TenMst, listOrdDetailInfomation.FirstOrDefault(o => o.SanteiCd == u.SanteiInf.ItemCd)?.OdrInfDetail?.FirstOrDefault(), sinDate)).OrderBy(t => t.ItemCd).ToList();
+            var result = santeiQuery.Select(u => new SanteiInfomationItem(u.SanteiInf, u.SnteiInfDetail?.FirstOrDefault(), u.TenMst, listOrdDetailInfomation.FirstOrDefault(o => o.SanteiCd == u.SanteiInf.ItemCd)?.OdrInfDetail, sinDate)).OrderBy(t => t.ItemCd).ToList();
             return result;
         }
 

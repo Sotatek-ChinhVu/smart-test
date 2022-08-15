@@ -2,6 +2,6 @@
 {
     public interface ISanteiInfoRepository
     {
-        List<SanteiInfoModel> GetList(int hpId, long ptId, int sinDate);
+        IEnumerable<SanteiInfoModel> GetList(int hpId, long ptId, int sinDate);
     }
 }

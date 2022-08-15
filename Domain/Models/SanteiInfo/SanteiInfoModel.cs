@@ -2,7 +2,7 @@
 {
     public class SanteiInfoModel
     {
-        public SanteiInfoModel(int hpId, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, long id, List<SanteiInfoDetailModel>? santeiInfoDetailModel)
+        public SanteiInfoModel(int hpId, long ptId, string itemCd, int seqNo, int alertDays, int alertTerm, long id, IEnumerable<SanteiInfoDetailModel>? santeiInfoDetailModel)
         {
             HpId = hpId;
             PtId = ptId;
@@ -21,6 +21,6 @@
         public int AlertDays { get; private set; }
         public int AlertTerm { get; private set; }
         public long Id { get; private set; }
-        public List<SanteiInfoDetailModel>? SanteiInfoDetailModel { get; private set; }
+        public IEnumerable<SanteiInfoDetailModel>? SanteiInfoDetailModel { get; private set; }
     }
 }

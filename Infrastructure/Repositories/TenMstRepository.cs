@@ -14,10 +14,10 @@ public class TenMstRepository : ITenMstRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<TenMstModel> GetList(int hpId, int sinDate)
+    public IEnumerable<TenMstModel> GetList(int hpId, int sinDate)
     {
-        var tenMsts = _tenantDataContext.TenMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.EndDate >= sinDate).ToList();
-        return tenMsts.Select(x => ConvertToModel(x)).ToList();
+        var tenMsts = _tenantDataContext.TenMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.EndDate >= sinDate).AsEnumerable();
+        return tenMsts.Select(x => ConvertToModel(x));
     }
 
     private TenMstModel ConvertToModel(TenMst itemData)

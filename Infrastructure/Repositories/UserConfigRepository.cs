@@ -50,4 +50,10 @@ public class UserConfigRepository : IUserConfigRepository
         return new UserConfigModel(u.HpId, u.UserId, u.GrpCd,
             u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param ?? String.Empty);
     }
+
+    public UserConfigModel? Get(int userId, int groupCd, int grpItemCd)
+    {
+        var userConfigs = _tenantDataContext.UserConfs.Where(x => x.GrpCd == groupCd && x.GrpItemCd == grpItemCd && x.UserId == userId).AsEnumerable().Select(x => ToModel(x));
+        return userConfigs.FirstOrDefault();
+    }
 }

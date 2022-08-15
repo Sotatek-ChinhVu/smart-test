@@ -13,7 +13,7 @@ public class SanteiInfoRepository : ISanteiInfoRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<SanteiInfoModel> GetList(int hpId, long ptId, int sinDate)
+    public IEnumerable<SanteiInfoModel> GetList(int hpId, long ptId, int sinDate)
     {
         List<int> listAletTermIsValid = new List<int>() { 2, 3, 4, 5, 6 };
 
@@ -25,7 +25,7 @@ public class SanteiInfoRepository : ISanteiInfoRepository
                 x.AlertDays,
                 x.AlertTerm,
                 x.Id,
-                _tenantDataContext.SanteiInfDetails.Where(s => s.HpId == hpId && s.PtId == ptId && s.KisanDate > 0 && s.EndDate >= sinDate && s.IsDeleted == 0)
+                _tenantDataContext.SanteiInfDetails.Where(s => s.HpId == hpId && s.PtId == ptId && s.KisanDate > 0 && s.EndDate >= sinDate && s.IsDeleted == 0 && s.ItemCd == x.ItemCd)
                 .Select(sd => new SanteiInfoDetailModel(
                     sd.HpId,
                     sd.PtId,
@@ -39,8 +39,8 @@ public class SanteiInfoRepository : ISanteiInfoRepository
                     sd.Comment,
                     sd.IsDeleted,
                     sd.Id
-                )).ToList()
+                )).AsEnumerable()
             ));
-        return santeiInfos.ToList();
+        return santeiInfos;
     }
 }
