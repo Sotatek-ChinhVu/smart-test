@@ -24,10 +24,10 @@ public class PtOtcDrugRepository : IPtOtcDrugRepository
                 x.SeqNo,
                 x.SortNo,
                 x.SerialNum,
-                x.TradeName,
+                x.TradeName ?? String.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt,
+                x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
         return ptOtcDrugs.ToList();

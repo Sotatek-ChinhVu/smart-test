@@ -19,17 +19,17 @@ public class PtAlrgyFoodRepository : IPtAlrgyFoodRepository
 
     public List<PtAlrgyFoodModel> GetList(long ptId)
     {
-        var ptAlrgyElses = _tenantDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyFoodModel(
+        var ptAlrgyFoods = _tenantDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyFoodModel(
               x.HpId,
               x.PtId,
               x.SeqNo,
               x.SortNo,
-              x.AlrgyKbn,
+              x.AlrgyKbn ?? String.Empty,
               x.StartDate,
               x.EndDate,
-              x.Cmt,
+              x.Cmt ?? String.Empty,
               x.IsDeleted
             ));
-        return ptAlrgyElses.ToList();
+        return ptAlrgyFoods.ToList();
     }
 }

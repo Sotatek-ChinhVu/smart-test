@@ -42,7 +42,7 @@ namespace Domain.Models.KensaMst
         public string KensaName { get; private set; }
         public string KensaKana { get; private set; }
         public string Unit { get; private set; }
-        public int MaterialCd { get; set; }
+        public int MaterialCd { get; private set; }
         public int ContainerCd { get; private set; }
         public string MaleStd { get; private set; }
         public string MaleStdLow { get; private set; }

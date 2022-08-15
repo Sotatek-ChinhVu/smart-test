@@ -36,7 +36,7 @@ namespace UseCase.HeaderSumaryInfo.Get
             get { return PtAlrgyFood.Cmt; }
         }
 
-        private string foodName;
+        private string foodName = string.Empty;
         public string FoodName
         {
             get => foodName;

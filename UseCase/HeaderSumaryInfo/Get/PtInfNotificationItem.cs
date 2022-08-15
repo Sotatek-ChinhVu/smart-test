@@ -14,21 +14,21 @@ namespace UseCase.HeaderSumaryInfo.Get
 
         }
 
-        private string _headerInfo;
+        private string _headerInfo = string.Empty;
         public string HeaderInfo
         {
             get => _headerInfo;
             set => Set(ref _headerInfo, value);
         }
 
-        private string _headerName;
+        private string _headerName = string.Empty;
         public string HeaderName
         {
             get => _headerName;
             set => Set(ref _headerName, value);
         }
 
-        private string _propertyColor;
+        private string _propertyColor = string.Empty;
         public string PropertyColor
         {
             get => _propertyColor;
@@ -51,10 +51,10 @@ namespace UseCase.HeaderSumaryInfo.Get
 
         public double HeaderNameSize { get; set; }
 
-        public int GrpItemCd;
+        public int GrpItemCd { get; set; }
 
-        private byte[] _rtext;
-        public byte[] Rtext
+        private byte[]? _rtext = null;
+        public byte[]? Rtext
         {
             get => _rtext;
             set => Set(ref _rtext, value);

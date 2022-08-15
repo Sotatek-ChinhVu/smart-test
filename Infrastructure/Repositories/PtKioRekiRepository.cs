@@ -18,18 +18,18 @@ public class PtKioReKiRepository : IPtKioRekiRepository
 
     public List<PtKioRekiModel> GetList(long ptId)
     {
-        var ptKioRekis = _tenantDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtKioRekiModel(
+        var ptKioRekis = _tenantDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(p => p.SortNo).Select(x => new PtKioRekiModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd,
-               x.ByotaiCd,
-               x.Byomei,
+               x.ByomeiCd ?? String.Empty,
+               x.ByotaiCd ?? String.Empty,
+               x.Byomei ?? String.Empty,
                x.StartDate,
-               x.Cmt,
+               x.Cmt ?? String.Empty,
                x.IsDeleted
-            )).OrderBy(p => p.SortNo);
+            ));
 
         return ptKioRekis.ToList();
     }

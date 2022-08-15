@@ -59,6 +59,23 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtHokenCheck>().HasKey(r => new { r.HpId, r.PtID, r.HokenGrp, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
             modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
+            modelBuilder.Entity<PtSanteiConf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.PtId, r.IraiCd, r.SeqNo });
+            modelBuilder.Entity<KensaMst>().HasKey(r => new { r.HpId, r.KensaItemCd, r.KensaItemSeqNo });
+            modelBuilder.Entity<PtAlrgyDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtAlrgyElse>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtAlrgyFood>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtInfection>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtKioReki>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtOtcDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtOtherDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtPregnancy>().HasKey(r => new { r.Id, r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtSupple>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<RsvFrameMst>().HasKey(r => new { r.HpId, r.RsvFrameId });
+            modelBuilder.Entity<RsvGrpMst>().HasKey(r => new { r.HpId, r.RsvGrpId });
+            modelBuilder.Entity<RsvInf>().HasKey(r => new { r.HpId, r.RsvFrameId, r.SinDate, r.StartTime, r.RaiinNo });
+            modelBuilder.Entity<TenMst>().HasKey(r => new { r.HpId, r.ItemCd, r.StartDate });
+            modelBuilder.Entity<UserConf>().HasKey(r => new { r.HpId, r.UserId, r.GrpCd, r.GrpItemEdaNo });
         }
 
         public DbSet<PtInf> PtInfs { get; set; } = default!;

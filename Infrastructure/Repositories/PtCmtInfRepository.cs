@@ -22,7 +22,7 @@ public class PtCmtInfRepository : IPtCmtInfRepository
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
-                x.Text,
+                x.Text ?? String.Empty,
                 x.IsDeleted,
                 x.Id
             ));

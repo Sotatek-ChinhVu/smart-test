@@ -1,8 +1,4 @@
-﻿using Domain.Models.PtCmtInf;
-using Domain.Models.PtKioReKi;
-using Domain.Models.PtSupple;
-using Entity.Tenant;
-using Helper.Constants;
+﻿using Domain.Models.PtSupple;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -19,18 +15,18 @@ public class PtSuppleRepository : IPtSuppleRepository
 
     public List<PtSuppleModel> GetList(long ptId)
     {
-        var ptKioRekis = _tenantDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
+        var ptSupples = _tenantDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtSuppleModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.IndexCd,
-                x.IndexWord,
+                x.IndexCd ?? String.Empty,
+                x.IndexWord ?? String.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt,
+                x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
-        return ptKioRekis.ToList();
+        return ptSupples.ToList();
     }
 }

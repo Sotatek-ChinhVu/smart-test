@@ -8,7 +8,7 @@ namespace Domain.Models.PtPregnancy
 {
     public class PtPregnancyModel
     {
-        public PtPregnancyModel(long id, int hpId, long ptId, int seqNo, int startDate, int endDate, int periodDate, int periodDueDate, int ovulationDate, int ovulationDueDate, int isDeleted)
+        public PtPregnancyModel(long id, int hpId, long ptId, int seqNo, int startDate, int endDate, int periodDate, int periodDueDate, int ovulationDate, int ovulationDueDate, int isDeleted, DateTime updateDate, int updateId, string updateMachine)
         {
             Id = id;
             HpId = hpId;
@@ -21,6 +21,9 @@ namespace Domain.Models.PtPregnancy
             OvulationDate = ovulationDate;
             OvulationDueDate = ovulationDueDate;
             IsDeleted = isDeleted;
+            UpdateDate = updateDate;
+            UpdateId = updateId;
+            UpdateMachine = updateMachine;
         }
 
         public long Id { get; private set; }
@@ -34,5 +37,8 @@ namespace Domain.Models.PtPregnancy
         public int OvulationDate { get; private set; }
         public int OvulationDueDate { get; private set; }
         public int IsDeleted { get; private set; }
+        public DateTime UpdateDate { get; private set; }
+        public int UpdateId { get; private set; }
+        public string UpdateMachine { get; private set; }
     }
 }

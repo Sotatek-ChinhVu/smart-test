@@ -23,10 +23,10 @@ public class PtAlrgyElseRepository : IPtAlrgyElseRepository
                 x.PtId,
                 x.SeqNo,
                 x.SortNo,
-                x.AlrgyName,
+                x.AlrgyName ?? String.Empty,
                 x.StartDate,
                 x.EndDate,
-                x.Cmt,
+                x.Cmt ?? String.Empty,
                 x.IsDeleted
             ));
         return ptAlrgyElses.ToList();

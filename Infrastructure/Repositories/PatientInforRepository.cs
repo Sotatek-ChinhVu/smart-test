@@ -97,5 +97,13 @@ namespace Infrastructure.Repositories
                 itemData.Setanusi ?? String.Empty
                 );
         }
+
+
+        public List<PatientInforModel> GetById(long ptId)
+        {
+            var itemDatas = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).ToList();
+            return itemDatas.Select(p => ConvertToModel(p)).ToList();
+        }
+
     }
 }

@@ -25,11 +25,11 @@ public class PtAlrgyDrugRepository : IPtAlrgyDrugRepository
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ItemCd,
-               x.DrugName,
+               x.ItemCd ?? String.Empty,
+               x.DrugName ?? String.Empty,
                x.StartDate,
                x.EndDate,
-               x.Cmt,
+               x.Cmt ?? String.Empty,
                x.IsDeleted
             ));
         return ptAlrgyDrugs.ToList();

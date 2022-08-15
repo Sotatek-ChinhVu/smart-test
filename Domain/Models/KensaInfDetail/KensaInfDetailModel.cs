@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.KensaInfDetail
 {
-    public class KensaInfDetail
+    public class KensaInfDetailModel
     {
-        public KensaInfDetail(int hpId, long ptId, long iraiCd, long seqNo, int iraiDate, long raiinNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2)
+        public KensaInfDetailModel(int hpId, long ptId, long iraiCd, long seqNo, int iraiDate, long raiinNo, string kensaItemCd, string resultVal, string resultType, string abnormalKbn, int isDeleted, string cmtCd1, string cmtCd2, DateTime updateDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -23,6 +23,7 @@ namespace Domain.Models.KensaInfDetail
             IsDeleted = isDeleted;
             CmtCd1 = cmtCd1;
             CmtCd2 = cmtCd2;
+            UpdateDate = updateDate;
         }
 
         public int HpId { get; private set; }
@@ -38,5 +39,6 @@ namespace Domain.Models.KensaInfDetail
         public int IsDeleted { get; private set; }
         public string CmtCd1 { get; private set; }
         public string CmtCd2 { get; private set; }
+        public DateTime UpdateDate { get; private set; }
     }
 }

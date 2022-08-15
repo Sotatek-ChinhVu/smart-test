@@ -58,6 +58,29 @@ using Interactor.UketukeSbtDayInf;
 using UseCase.UketukeSbtDayInf.Upsert;
 using Domain.Models.PtCmtInf;
 using UseCase.User.UpsertList;
+using Domain.Models.KensaMst;
+using Domain.Models.KensaInfDetail;
+using Domain.Models.PtAlrgyDrug;
+using Domain.Models.PtAlrgyElse;
+using Domain.Models.PtAlrgyFood;
+using Domain.Models.RsvFrameMst;
+using Domain.Models.RsvGrpMst;
+using Domain.Models.RsvInfo;
+using Domain.Models.SanteiInfo;
+using Domain.Models.SeikaturekiInf;
+using Domain.Models.SummaryInf;
+using Domain.Models.TenMst;
+using Domain.Models.PtKioReki;
+using Domain.Models.PtOtcDrug;
+using Domain.Models.PtOtherDrug;
+using Domain.Models.PtPregnancy;
+using UseCase.HeaderSumaryInfo.Get;
+using Interactor.HeaderSumaryInfo;
+using Domain.Models.PtInfection;
+using Domain.Models.PtFamilyReki;
+using Domain.Models.PtFamily;
+using Domain.Models.PtSupple;
+using Domain.Models.UserConfig;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -96,6 +119,30 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinFilterMstRepository, RaiinFilterMstRepository>();
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
+            services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
+            services.AddTransient<IKensaMstRepository, KensaMstRepository>();
+            services.AddTransient<IKensaInfDetailRepository, KensaInfDetailRepository>();
+            services.AddTransient<IKensaInfDetailRepository, KensaInfDetailRepository>();
+            services.AddTransient<IPtAlrgyDrugRepository, PtAlrgyDrugRepository>();
+            services.AddTransient<IPtAlrgyElseRepository, PtAlrgyElseRepository>();
+            services.AddTransient<IPtAlrgyFoodRepository, PtAlrgyFoodRepository>();
+            services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
+            services.AddTransient<IRsvFrameMstRepository, RsvFrameMstRepository>();
+            services.AddTransient<IRsvGrpMstRepository, RsvGrpMstRepository>();
+            services.AddTransient<IRsvInfoRepository, RsvInfoRepository>();
+            services.AddTransient<ISanteiInfoRepository, SanteiInfoRepository>();
+            services.AddTransient<ISeikaturekiInfRepository, SeikaturekiInfRepository>();
+            services.AddTransient<ISummaryInfRepository, SummaryInfRepository>();
+            services.AddTransient<ITenMstRepository, TenMstRepository>();
+            services.AddTransient<IPtKioRekiRepository, PtKioReKiRepository>();
+            services.AddTransient<IPtOtcDrugRepository, PtOtcDrugRepository>();
+            services.AddTransient<IPtPregnancyRepository, PtPregnancyRepository>();
+            services.AddTransient<IPtOtherDrugRepository, PtOtherDrugRepository>();
+            services.AddTransient<IPtInfectionRepository, PtInfectionRepository>();
+            services.AddTransient<IPtFamilyRekiRepository, PtFamilyRekiRepository>();
+            services.AddTransient<IPtFamilyRepository, PtFamilyRepository>();
+            services.AddTransient<IPtSuppleRepository, PtSuppleRepository>();
+            services.AddTransient<IUserConfigRepository, UserConfigRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -150,6 +197,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<UpsertUketukeSbtDayInfInputData, UpsertUketukeSbtDayInfInteractor>();
+
+            //HeaderSummaryInfo
+            busBuilder.RegisterUseCase<GetHeaderSumaryInfoInputData, GetHeaderSumaryInfoInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

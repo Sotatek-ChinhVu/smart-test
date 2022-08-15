@@ -9,7 +9,7 @@ namespace UseCase.HeaderSumaryInfo.Get
 {
     public class PtInfoItem
     {
-        public PatientInforModel PtInf { get; } = null;
+        public PatientInforModel PtInf { get; }
 
         public PtInfoItem(PatientInforModel ptInf)
         {

@@ -14,7 +14,7 @@ namespace Helper.Extendsions
     public class ObservableObject : INotifyPropertyChanged
     {
         /// <summary>Occurs when a property value changes. </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         /// <summary>Updates the property and raises the changed event, but only if the new value does not equal the old value. </summary>
         /// <param name="propertyName">The property name as lambda. </param>
@@ -67,7 +67,7 @@ namespace Helper.Extendsions
 
         /// <summary>Raises the property changed event. </summary>
         /// <param name="propertyName">The property name. </param>
-        public void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        public void RaisePropertyChanged([CallerMemberName] string? propertyName = null)
         {
             RaisePropertyChanged(new PropertyChangedEventArgs(propertyName));
         }
@@ -112,7 +112,7 @@ namespace Helper.Extendsions
         }
     }
 
-    public class ExpressionUtilities
+    public static class ExpressionUtilities
     {
         /// <summary>Returns the property name of the property specified in the given lambda (e.g. GetPropertyName(i => i.MyProperty)). </summary>
         /// <typeparam name="TClass">The type of the class with the property. </typeparam>
@@ -124,8 +124,8 @@ namespace Helper.Extendsions
 #endif
         public static string GetPropertyName<TClass, TProperty>(Expression<Func<TClass, TProperty>> expression)
         {
-            if (expression.Body is UnaryExpression)
-                return ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name;
+            if (expression.Body is UnaryExpression expression1)
+                return ((MemberExpression)(expression1.Operand)).Member.Name;
             return ((MemberExpression)expression.Body).Member.Name;
         }
 
@@ -138,9 +138,9 @@ namespace Helper.Extendsions
 #endif
         public static string GetPropertyName<TProperty>(Expression<Func<TProperty>> expression)
         {
-            if (expression.Body is UnaryExpression)
-                return ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name;
-            return ((MemberExpression)expression.Body).Member.Name;
+            return expression.Body is UnaryExpression
+                ? ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name
+                : ((MemberExpression)expression.Body).Member.Name;
         }
 
         /// <summary>Returns the property name of the property specified in the given lambda (e.g. GetPropertyName(i => i.MyProperty)). </summary>
@@ -152,9 +152,9 @@ namespace Helper.Extendsions
 #endif
         public static string GetPropertyName<TClass>(Expression<Func<TClass, object>> expression)
         {
-            if (expression.Body is UnaryExpression)
-                return ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name;
-            return ((MemberExpression)expression.Body).Member.Name;
+            return expression.Body is UnaryExpression
+                ? ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name
+                : ((MemberExpression)expression.Body).Member.Name;
         }
 
     }

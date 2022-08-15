@@ -18,18 +18,18 @@ public class PtInfectionRepository : IPtInfectionRepository
 
     public List<PtInfectionModel> GetList(long ptId)
     {
-        var ptInfections = _tenantDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtInfectionModel(
+        var ptInfections = _tenantDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0).OrderBy(x => x.SortNo).Select(x => new PtInfectionModel(
                x.HpId,
                x.PtId,
                x.SeqNo,
                x.SortNo,
-               x.ByomeiCd,
-               x.ByotaiCd,
-               x.Byomei,
+               x.ByomeiCd ?? String.Empty,
+               x.ByotaiCd ?? String.Empty,
+               x.Byomei ?? String.Empty,
                x.StartDate,
-               x.Cmt,
+               x.Cmt ?? String.Empty,
                x.IsDeleted
-            )).OrderBy(x => x.SortNo);
+            ));
         return ptInfections.ToList();
     }
 }

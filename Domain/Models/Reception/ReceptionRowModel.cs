@@ -13,7 +13,7 @@ public class ReceptionRowModel
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
         int tantoId, int kaId, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
         int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells,
-        int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
+        int sinDate, string kaSname = "", string tatoName = "", UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
         RaiinNo = raiinNo;
         PtId = ptId;
@@ -49,6 +49,8 @@ public class ReceptionRowModel
         GrpIdToDynamicCell = grpIds.ToDictionary(
             grpId => grpId,
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
+        KaSname = kaSname;
+        TatoName = tatoName;
     }
 
     public long PtId { get; private set; }
@@ -111,6 +113,10 @@ public class ReceptionRowModel
     public string ConfirmationState { get; private set; }
     // 資格確認結果
     public string ConfirmationResult { get; private set; }
+
+    public string KaSname { get; private set; }
+
+    public string TatoName { get; private set; }
     // Dynamic cells
     public Dictionary<int, DynamicCell> GrpIdToDynamicCell { get; private set; }
 

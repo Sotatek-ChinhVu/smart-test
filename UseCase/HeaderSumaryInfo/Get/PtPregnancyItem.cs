@@ -11,7 +11,7 @@ namespace UseCase.HeaderSumaryInfo.Get
 {
     public class PtPregnancyItem : ObservableObject
     {
-        public PtPregnancyModel PtPregnancy { get; private set; }
+        public PtPregnancyModel PtPregnancy { get; set; }
 
         public PtPregnancyItem(PtPregnancyModel ptPregnancy)
         {
@@ -31,16 +31,6 @@ namespace UseCase.HeaderSumaryInfo.Get
         public string StartDate
         {
             get => CIUtil.SDateToShowSDate(PtPregnancy.StartDate);
-            set
-            {
-                int startDate = CIUtil.ShowSDateToSDate(value);
-                if (startDate > PtPregnancy.EndDate && PtPregnancy.EndDate > 0)
-                {
-                    startDate = 0;
-                }
-                PtPregnancy.StartDate = startDate;
-                RaisePropertyChanged(() => StartDate);
-            }
         }
 
         public int PregnacyEndDate => PtPregnancy.EndDate;
@@ -48,18 +38,6 @@ namespace UseCase.HeaderSumaryInfo.Get
         public string EndDate
         {
             get => CIUtil.SDateToShowSDate(PtPregnancy.EndDate);
-            set
-            {
-                int endDate = CIUtil.ShowSDateToSDate(value);
-                if (endDate < PtPregnancy.StartDate || endDate == 0)
-                {
-                    endDate = 99999999;
-                }
-                PtPregnancy.EndDate = endDate;
-                RaisePropertyChanged(() => EndDate);
-                RaisePropertyChanged(() => OvulationWeek);
-                RaisePropertyChanged(() => PeriodWeek);
-            }
         }
 
         public int FullStartDate
@@ -120,38 +98,6 @@ namespace UseCase.HeaderSumaryInfo.Get
                 if (PtPregnancy.PeriodDate == 0) return null;
                 return CIUtil.IntToDate(PtPregnancy.PeriodDate);
             }
-            set
-            {
-                if (value.HasValue)
-                {
-                    if (!PeriodDueDate.HasValue)
-                    {
-                        PtPregnancy.PeriodDueDate = value.Value.AddDays(280).ToString("yyyyMMdd").AsInteger();
-                        RaisePropertyChanged(() => PeriodDueDate);
-                    }
-                    else
-                    {
-                        if (PeriodDate.HasValue)
-                        {
-                            var tempDueDate = PeriodDate.Value.AddDays(280);
-                            if (tempDueDate == PeriodDueDate.Value)
-                            {
-                                PtPregnancy.PeriodDueDate = value.Value.AddDays(280).ToString("yyyyMMdd").AsInteger();
-                                RaisePropertyChanged(() => PeriodDueDate);
-                            }
-                        }
-                    }
-
-                    PtPregnancy.PeriodDate = value.Value.ToString("yyyyMMdd").AsInteger();
-                }
-                else
-                {
-                    PtPregnancy.PeriodDate = 0;
-                }
-
-                RaisePropertyChanged(() => PeriodDate);
-                RaisePropertyChanged(() => PeriodWeek);
-            }
         }
         public DateTime? PeriodDueDate
         {
@@ -159,32 +105,6 @@ namespace UseCase.HeaderSumaryInfo.Get
             {
                 if (PtPregnancy.PeriodDueDate == 0) return null;
                 return CIUtil.IntToDate(PtPregnancy.PeriodDueDate);
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    if (!PeriodDate.HasValue)
-                    {
-                        PtPregnancy.PeriodDate = value.Value.AddDays(-280).ToString("yyyyMMdd").AsInteger();
-                        RaisePropertyChanged(() => PeriodDate);
-                    }
-                    PtPregnancy.PeriodDueDate = value.Value.ToString("yyyyMMdd").AsInteger();
-                }
-                else
-                {
-                    if (PeriodDate.HasValue)
-                    {
-                        PtPregnancy.PeriodDueDate = PeriodDate.Value.AddDays(280).ToString("yyyyMMdd").AsInteger();
-                    }
-                    else
-                    {
-                        PtPregnancy.PeriodDueDate = 0;
-                    }
-                }
-
-                RaisePropertyChanged(() => PeriodDueDate);
-                RaisePropertyChanged(() => PeriodWeek);
             }
         }
 
@@ -196,38 +116,6 @@ namespace UseCase.HeaderSumaryInfo.Get
                 if (PtPregnancy.OvulationDate == 0) return null;
                 return CIUtil.IntToDate(PtPregnancy.OvulationDate);
             }
-            set
-            {
-                if (value.HasValue)
-                {
-                    if (!OvulationDueDate.HasValue)
-                    {
-                        PtPregnancy.OvulationDueDate = value.Value.AddDays(266).ToString("yyyyMMdd").AsInteger();
-                        RaisePropertyChanged(() => OvulationDueDate);
-                    }
-                    else
-                    {
-                        if (OvulationDate.HasValue)
-                        {
-                            var tempDueDate = OvulationDate.Value.AddDays(266);
-                            if (tempDueDate == OvulationDueDate.Value)
-                            {
-                                PtPregnancy.OvulationDueDate = value.Value.AddDays(266).ToString("yyyyMMdd").AsInteger();
-                                RaisePropertyChanged(() => OvulationDueDate);
-                            }
-                        }
-                    }
-
-                    PtPregnancy.OvulationDate = value.Value.ToString("yyyyMMdd").AsInteger();
-                }
-                else
-                {
-                    PtPregnancy.OvulationDate = 0;
-                }
-
-                RaisePropertyChanged(() => OvulationDate);
-                RaisePropertyChanged(() => OvulationWeek);
-            }
         }
 
         public DateTime? OvulationDueDate
@@ -237,73 +125,27 @@ namespace UseCase.HeaderSumaryInfo.Get
                 if (PtPregnancy.OvulationDueDate == 0) return null;
                 return CIUtil.IntToDate(PtPregnancy.OvulationDueDate);
             }
-            set
-            {
-                if (value.HasValue)
-                {
-                    if (!OvulationDate.HasValue)
-                    {
-                        PtPregnancy.OvulationDate = value.Value.AddDays(-266).ToString("yyyyMMdd").AsInteger();
-                        RaisePropertyChanged(() => OvulationDate);
-                    }
-                    PtPregnancy.OvulationDueDate = value.Value.ToString("yyyyMMdd").AsInteger();
-                }
-                else
-                {
-                    if (OvulationDate.HasValue)
-                    {
-                        PtPregnancy.OvulationDueDate = OvulationDate.Value.AddDays(266).ToString("yyyyMMdd").AsInteger();
-                    }
-                    else
-                    {
-                        PtPregnancy.OvulationDueDate = 0;
-                    }
-                }
-
-                RaisePropertyChanged(() => OvulationDueDate);
-                RaisePropertyChanged(() => OvulationWeek);
-            }
         }
 
 
         public int IsDelete
         {
             get => PtPregnancy.IsDeleted;
-            set
-            {
-                if (PtPregnancy.IsDeleted == value) return;
-                PtPregnancy.IsDeleted = value;
-            }
         }
 
         public DateTime UpdateDate
         {
             get => PtPregnancy.UpdateDate;
-            set
-            {
-                if (PtPregnancy.UpdateDate == value) return;
-                PtPregnancy.UpdateDate = value;
-            }
         }
 
         public int UpdateId
         {
             get => PtPregnancy.UpdateId;
-            set
-            {
-                if (PtPregnancy.UpdateId == value) return;
-                PtPregnancy.UpdateId = value;
-            }
         }
 
         public string UpdateMachine
         {
             get => PtPregnancy.UpdateMachine;
-            set
-            {
-                if (PtPregnancy.UpdateMachine == value) return;
-                PtPregnancy.UpdateMachine = value;
-            }
         }
 
         public string PeriodWeek

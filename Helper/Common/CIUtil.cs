@@ -5,6 +5,14 @@ namespace Helper.Common
 {
     public static class CIUtil
     {
+        //Calculate age from yyyymmdd format
+        private const int HEISEI_START_YEAR = 1989;
+
+        private const int SHOWA_START_YEAR = 1926;
+        private const int TAISHO_START_YEAR = 1912;
+        private const int MEIJI_START_YEAR = 1868;
+        private const int REIWA_START_YEAR = 2019;
+
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -215,7 +223,7 @@ namespace Helper.Common
         }
 
         #region Convert Datetime Helpers (private)
-        private static string SDateToShowWDate(int ymd, WarekiFormat warekiFormat = WarekiFormat.Short)
+        private static string SDateToShowWDate(int ymd, WarekiFormat warekiFormat)
         {
             string workString;
 
@@ -664,9 +672,9 @@ namespace Helper.Common
             {
                 result = dateTime.ToString(format).AsInteger();
             }
-            catch (Exception e)
+            catch
             {
-
+                return result;
             }
             return result;
         }
@@ -677,9 +685,551 @@ namespace Helper.Common
             var result = SDateToDateTime(iDateTime);
             return result == null ? new DateTime() : result.Value;
         }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public static double AsDouble(this Object inputObject)
+        {
+            double result;
+            if (double.TryParse(inputObject.AsString(), out result))
+            {
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        //西暦を表示用和暦(x yy/mm/dd)に変換
+        //Convert format yyyyymmdd to Japanese style x yy/mm/dd
+        public static string SDateToShowWDate(int ymd)
+        {
+            return SDateToShowWDate(ymd, WarekiFormat.Short);
+        }
+
+        /// <summary>
+        /// yy/MM/dd to yyyyMMdd
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static int ShowSDateToSDate3(string input)
+        {
+            DateTime dateTime;
+            if (DateTime.TryParseExact(input, "yy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
+            {
+                return DateTimeToInt(dateTime);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// This is the main and very important converter function
+        /// Please be careful when edit/fix bugs
+        /// 
+        /// Test cases must be added and every path of the code
+        /// must be covered
+        /// </summary>
+        /// <param name="ymd"></param>
+        /// <returns></returns>
+        //表示用和暦(x yy/mm/dd)を西暦に変換
+        public static int ShowWDateToSDate(string ymd)
+        {
+            int result = 0;
+            char wGengo;
+            string wYmd = ymd.Trim();
+            DateTime currentDate = DateTime.Now;
+
+            // One character : Current date of current month
+            // 一文字は当月のその日
+            if (wYmd.Length < 2)
+            {
+                if (wYmd != "")
+                {
+                    wYmd = currentDate.Year + ""
+                           + currentDate.Month.ToString("D2")
+                           + wYmd.AsInteger().ToString("D2");
+                    if (DateTime.TryParseExact(wYmd, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dtResult))
+                    {
+                        return dtResult.ToString("yyyyMMdd").AsInteger();
+                    }
+                }
+                return result;
+            }
+
+            int delimiterCount = 0;
+            if (wYmd.IndexOf('.') >= 0 || wYmd.IndexOf('/') >= 0)
+            {
+                // 区切りが「.」のとき「/」に変換
+                // Replace [.] character with [/]
+                string tempWmd = wYmd.Replace(".", "/");
+                foreach (char c in tempWmd)
+                {
+                    if (c == '/') delimiterCount++;
+                }
+            }
+
+            bool canExtractGengoPart = false;
+            if (delimiterCount == 3) canExtractGengoPart = true;
+            if (delimiterCount == 1)
+            {
+                string tempWmd = wYmd.Substring(2);
+                if (tempWmd.Length == 6)
+                {
+                    // allow patter 3.500101 = Showa(3), 50th year, January 1st
+                    canExtractGengoPart = true;
+                }
+            }
+
+            // Character the represented Japanese year is included
+            // 元号付きバージョン
+            if ((wYmd[0] == 'M') || (wYmd[0] == 'T') || (wYmd[0] == 'S') || (wYmd[0] == 'H') || (wYmd[0] == 'R') ||
+                (wYmd[0] == 'm') || (wYmd[0] == 't') || (wYmd[0] == 's') || (wYmd[0] == 'h') || (wYmd[0] == 'r') ||
+                (wYmd[0] == '明') || (wYmd[0] == '大') || (wYmd[0] == '昭') || (wYmd[0] == '平') || (wYmd[0] == '令') ||
+                (wYmd[1] == ' ') ||
+                (wYmd[1] == '.') && canExtractGengoPart)
+            {
+                switch (wYmd[0])
+                {
+                    case '1':
+                    case 'm':
+                    case 'M':
+                    case '明':
+                        wGengo = 'M';
+                        break;
+
+                    case '2':
+                    case 't':
+                    case 'T':
+                    case '大':
+                        wGengo = 'T';
+                        break;
+
+                    case '3':
+                    case 's':
+                    case 'S':
+                    case '昭':
+                        wGengo = 'S';
+                        break;
+
+                    case '4':
+                    case 'h':
+                    case 'H':
+                    case '平':
+                        wGengo = 'H';
+                        break;
+
+                    case '5':
+                    case 'r':
+                    case 'R':
+                    case '令':
+                        wGengo = 'R';
+                        break;
+
+                    default:
+                        wGengo = '@';
+                        break;
+                }
+
+                if ((wYmd[1] == ' ') || (wYmd[1] == '.'))
+                {
+                    // Substring from the 3rd character
+                    // To do exception could be rised here
+                    wYmd = wYmd.Substring(2);
+                }
+                else
+                {
+                    // Substring from the 2nd character
+                    // To do exception could be rised here
+                    wYmd = wYmd.Substring(1);
+                }
+            }
+            else
+            {
+                wGengo = ' ';
+            }
+
+            // 区切りが「.」のとき「/」に変換
+            // Replace [.] character with [/]
+            wYmd = wYmd.Replace(".", "/");
+            // Must count again here
+            delimiterCount = 0;
+            foreach (char c in wYmd)
+            {
+                if (c == '/') delimiterCount++;
+            }
+
+            // Delimter character exists
+            if (delimiterCount > 0)
+            {
+                // wYmd can have multiple form here
+                // m/d or mm/dd
+                // yy/mm/dd or yy/m/d or yyyy/mm/dd
+                string sTemp = string.Empty;
+                if (delimiterCount == 2)
+                {
+                    // Character [/] exists
+                    // Get year part
+                    sTemp = wYmd.Substring(0, wYmd.IndexOf('/'));
+
+                    // Year is equal to 0, then error
+                    if (sTemp == "0" || sTemp == "00")
+                    {
+                        wYmd = "";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            int sYear;
+                            if (sTemp.Length <= 2)
+                            {
+                                int WYear = sTemp.AsInteger();
+                                sYear = WYearToSYear(WYear, wGengo);
+                            }
+                            else
+                            {
+                                sYear = sTemp.AsInteger();
+                            }
+
+                            sTemp = wYmd.Substring(wYmd.IndexOf('/') + 1);
+                            //Extract month and day part
+                            string sMonth = sTemp.Substring(0, sTemp.IndexOf('/'));
+                            string sDay = sTemp.Substring(sTemp.IndexOf('/') + 1);
+                            //Zero padding
+                            if (sMonth.Length < 2)
+                            {
+                                sMonth = "0" + sMonth;
+                            }
+                            if (sDay.Length < 2)
+                            {
+                                sDay = "0" + sDay;
+                            }
+
+                            wYmd = sYear + sMonth + sDay;
+                        }
+                        catch
+                        {
+                            wYmd = "";
+                        }
+                    }
+                }
+
+                if (delimiterCount == 1)
+                {
+                    int sYear = DateTime.Now.Year;
+                    // m/d or mm/dd
+                    //Extract month and day part
+                    string sMonth = wYmd.Substring(0, wYmd.IndexOf('/'));
+                    string sDay = wYmd.Substring(wYmd.IndexOf('/') + 1);
+                    //Zero padding
+                    if (sMonth.Length < 2)
+                    {
+                        sMonth = "0" + sMonth;
+                    }
+                    if (sDay.Length < 2)
+                    {
+                        sDay = "0" + sDay;
+                    }
+
+                    wYmd = sYear + sMonth + sDay;
+                }
+            }
+            else
+            {
+                // Length = 7 or Length > 9 is error
+                if (wYmd.Length == 7 || wYmd.Length >= 9)
+                {
+                    wYmd = "";
+                }
+                else if (wYmd.Length == 8)
+                {
+                    // Length = 8
+                    // Do nothing, current format should be good enough to convert
+                }
+                else if (wYmd.Length == 6 || wYmd.Length == 5)
+                {
+                    // Length = 6 or Length = 5
+                    // Zero padding first
+                    if (wYmd.Length == 5)
+                        wYmd = "0" + wYmd;
+
+                    if (wYmd[0] == '0' && wYmd[1] == '0')
+                    {
+                        wYmd = "";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            int WYear = wYmd.Substring(0, 2).AsInteger();
+                            int SYear = WYearToSYear(WYear, wGengo);
+                            wYmd = SYear.ToString() + wYmd.Substring(2, 4);
+                        }
+                        catch
+                        {
+                            wYmd = "";
+                        }
+                    }
+                }
+                else
+                {
+                    if (wGengo == ' ')
+                    {
+                        if (wYmd.Length == 4 || wYmd.Length == 3)
+                        {
+                            // Zero padding first
+                            if (wYmd.Length == 3)
+                                wYmd = "0" + wYmd;
+                            // Length = 4
+                            wYmd = currentDate.Year.ToString() +
+                                    wYmd.Substring(0, 2) +
+                                    wYmd.Substring(2);
+                        }
+                        else
+                        {
+                            // Length = 2
+                            wYmd = currentDate.Year.ToString() +
+                                    currentDate.Month.ToString("D2") +
+                                    wYmd;
+                        }
+                    }
+                    else
+                    {
+                        wYmd = "";
+                    }
+                }
+            }
+
+            if (DateTime.TryParseExact(wYmd, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parseResult))
+            {
+                result = parseResult.ToString("yyyyMMdd").AsInteger();
+                // Do not convert before 1968/09/08
+                if (result < 18680908 || result == 99999999)
+                {
+                    result = 0;
+                }
+                //Try to convert to wareki
+                string wareki = SDateToShowWDate(result);
+                if (string.IsNullOrEmpty(wareki))
+                {
+                    result = 0;
+                }
+            }
+            else
+            {
+                result = 0;
+            }
+
+            return result;
+        }
+
+        private static int WYearToSYear(int WYear, char Gengo)
+        {
+            switch (Gengo)
+            {
+                case ' ':
+                case 'R':
+                case 'r':
+                    return WYear + (REIWA_START_YEAR - 1);
+
+                case 'H':
+                case 'h':
+                    return WYear + (HEISEI_START_YEAR - 1);
+
+                case 'S':
+                case 's':
+                    return WYear + (SHOWA_START_YEAR - 1);
+
+                case 'T':
+                case 't':
+                    return WYear + (TAISHO_START_YEAR - 1);
+
+                case 'M':
+                case 'm':
+                    return WYear + (MEIJI_START_YEAR - 1);
+
+                default:
+                    Exception exception = new Exception();
+                    throw exception;
+            }
+        }
+
+        public static int SDateToAge(int Ymd, int ToYmd)
+        {
+            if (Ymd <= 0 || ToYmd <= 0)
+            {
+                return -1;
+            }
+            string WrkStr;
+            int Age;
+
+            try
+            {
+                WrkStr = Ymd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out  DateTime birthDate);
+
+                WrkStr = ToYmd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime toDate);
+
+                Age = toDate.Year - birthDate.Year;
+
+                if (birthDate.Month > toDate.Month)
+                    Age = Age - 1;
+
+                if ((birthDate.Month == toDate.Month) &&
+                    (birthDate.Day > toDate.Day))
+                    Age = Age - 1;
+            }
+            catch
+            {
+                Age = -1;
+            }
+
+            return Age;
+        }
+
+        public static int GetSanteInfDayCount(int sinDate, int lastOdrDate, int alertTerm)
+        {
+            int targetDateInt = lastOdrDate;
+            if (targetDateInt == 0)
+            {
+                return 0;
+            }
+
+            int dayCount = 0;
+            // Current Date
+            DateTime nowDate = IntToDate(sinDate);
+            int nowDateInt = sinDate;
+            // Target Date
+            DateTime targetDate = IntToDate(targetDateInt);
+            // Calculate base on AlertTerm
+            switch (alertTerm)
+            {
+                case 2:
+                    if (targetDateInt < nowDateInt)
+                        dayCount = DaysBetween(targetDate, nowDate) + 1;
+                    else
+                        dayCount = DaysBetween(nowDate, targetDate) + 1;
+                    break;
+                case 3:
+                    //曜日を取得
+                    DayOfWeek day = targetDate.DayOfWeek;
+                    if (day != System.DayOfWeek.Sunday)
+                    {
+                        //日曜始まりの週でカウント
+                        int incDay = (int)day * -1;
+                        targetDate = targetDate.AddDays(incDay);
+                        _ = DateTimeToInt(targetDate);
+                    }
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+
+                    break;
+                case 4:
+                    //月初から月単位でカウント
+                    int startDateint = targetDate.Year * 10000 + targetDate.Month * 100 + 1;
+                    DateTime startDate = IntToDate(startDateint);
+                    dayCount = MonthsBetween(startDate, nowDate) + 1;
+                    break;
+                case 5:
+                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
+                    break;
+                case 6:
+                    dayCount = MonthsBetween(targetDate, nowDate) + 1;
+                    break;
+            }
+            if (dayCount < 0)
+            {
+                dayCount *= (-1);
+            }
+            return dayCount;
+        }
+
+        public static string TimeToShowTime(int TimeValue)
+        {
+            string Result = string.Empty;
+            string WrkStr = string.Empty;
+            if (TimeValue.ToString().Length > 4)
+                WrkStr = TimeValue.ToString("D6");
+
+            else
+                WrkStr = TimeValue.ToString("D4");
+            Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
+            return Result;
+        }
+
+        public static int DaysBetween(DateTime from, DateTime to)
+        {
+            return (int)(to - @from).TotalDays;
+        }
+
+        public static int WeeksBetween(DateTime fromDate, DateTime endDate)
+        {
+            return DaysBetween(fromDate, endDate) / 7;
+        }
+
+        public static int MonthsBetween(DateTime startDate, DateTime now)
+        {
+            int monthDiff = ((now.Year - startDate.Year) * 12) + (now.Month - startDate.Month);
+
+            if (monthDiff > 0 && startDate.Day > now.Day)
+            {
+                monthDiff--;
+            }
+            else if (monthDiff < 0 && startDate.Day < now.Day)
+            {
+                monthDiff++;
+            }
+            return monthDiff;
+        }
+
+        //西暦を表示用西暦(yyyy/mm/dd (ddd))に変換
+        //Convert format yyyymmdd to yyyy/mm/dd(//Convert format yyyymmdd to yyyy/mm/ddd)
+        public static string SDateToShowSDate2(int Ymd)
+        {
+            if (Ymd <= 0)
+            {
+                return string.Empty;
+            }
+
+            // Must use ja-JP culture info here
+            // We need format date time as 2019/12/08(月)
+            // instead of 2019/12/08(Mon)
+            // Omit this culture info will cause wrong date/time format
+            CultureInfo jaJP = new CultureInfo("ja-JP");
+
+            // Zero padding
+            string WrkStr = Ymd.ToString("D8");
+
+            if (DateTime.TryParseExact(WrkStr, "yyyyMMdd", jaJP, DateTimeStyles.None, out DateTime WrkDate))
+            {
+                return WrkDate.ToString("yyyy/MM/dd(ddd)", jaJP);
+            }
+
+            return string.Empty;
+        }
+
     }
 
-    
+
     public enum WarekiFormat
     {
         Short,
@@ -689,12 +1239,12 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
-        public string Ymd;
-        public string GYmd;
-        public string Gengo;
-        public int GengoId;
-        public int Year;
-        public int Month;
-        public int Day;
+        public string Ymd { get; set; }
+        public string GYmd { get; set; }
+        public string Gengo { get; set; }
+        public int GengoId { get; set; }
+        public int Year { get; set; }
+        public int Month { get; set; }
+        public int Day { get; set; }
     }
 }

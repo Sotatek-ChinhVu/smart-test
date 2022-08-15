@@ -29,7 +29,10 @@ public class PtPregnancyRepository : IPtPregnancyRepository
                 x.PeriodDueDate,
                 x.OvulationDate,
                 x.OvulationDueDate,
-                x.IsDeleted
+                x.IsDeleted,
+                x.UpdateDate,
+                x.UpdateId,
+                x.UpdateMachine ?? String.Empty
             ));
         return ptPregnancys.ToList();
     }
