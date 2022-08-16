@@ -89,6 +89,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.InputItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -221,6 +222,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
