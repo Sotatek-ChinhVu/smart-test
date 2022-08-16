@@ -9,46 +9,44 @@ namespace Domain.Models.InputItem
 {
     public class InputItemModel
     {
-        public InputItemModel(int hpId, string itemCd, string rousaiKbnDisplay, string kanaName1, string name, string kohatuKbnDisplay, string kubunToDisplay, string kouseisinKbnDisplay, string tenDisplay, string odrUnitName, string kensaCenterItemCDDisplay, int endDate, int drugKbn, string masterSbt, int buiKbn)
+        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2)
         {
             HpId = hpId;
             ItemCd = itemCd;
-            RousaiKbnDisplay = rousaiKbnDisplay;
+            RousaiKbn = rousaiKbn;
             KanaName1 = kanaName1;
             Name = name;
-            KohatuKbnDisplay = kohatuKbnDisplay;
-            KubunToDisplay = kubunToDisplay;
-            KouseisinKbnDisplay = kouseisinKbnDisplay;
-            TenDisplay = tenDisplay;
+            KohatuKbn = kohatuKbn;
+            MadokuKbn = madokuKbn;
+            KouseisinKbn = kouseisinKbn;
             OdrUnitName = odrUnitName;
-            KensaCenterItemCDDisplay = kensaCenterItemCDDisplay;
             EndDate = endDate;
             DrugKbn = drugKbn;
             MasterSbt = masterSbt;
             BuiKbn = buiKbn;
+            Ten = ten;
+            TenId = tenId;
+            KensaMstCenterItemCd1 = kensaMstCenterItemCd1;
+            KensaMstCenterItemCd2 = kensaMstCenterItemCd2;
         }
 
         public int HpId { get; private set; }
 
         public string ItemCd { get; private set; }
 
-        public string RousaiKbnDisplay { get; private set; }
+        public int RousaiKbn { get; private set; }
 
         public string KanaName1 { get; private set; }
 
         public string Name { get; private set; }
 
-        public string KohatuKbnDisplay { get; private set; }
+        public int KohatuKbn { get; private set; }
 
-        public string KubunToDisplay { get; private set; }
+        public int MadokuKbn { get; private set; }
 
-        public string KouseisinKbnDisplay { get; private set; }
-
-        public string TenDisplay { get; private set; }
+        public int KouseisinKbn { get; private set; }
 
         public string OdrUnitName { get; private set; }
-
-        public string KensaCenterItemCDDisplay { get; private set; }
 
         public int EndDate { get; private set; }
 
@@ -58,11 +56,115 @@ namespace Domain.Models.InputItem
 
         public int BuiKbn { get; private set; }
 
+        public double Ten { get; private set; }
+
+        public int TenId { get; private set; }
+
+        public string KensaMstCenterItemCd1 { get; private set; }
+
+        public string KensaMstCenterItemCd2 { get; private set; }
+
+        public string RousaiKbnDisplay
+        {
+            get
+            {
+                if (RousaiKbn == 1) return "〇";
+                return "";
+            }
+        }
+
+        public string KouseisinKbnDisplay
+        {
+            get
+            {
+                switch (KouseisinKbn)
+                {
+                    case 1:
+                        return "抗不";
+                    case 2:
+                        return "睡眠";
+                    case 3:
+                        return "うつ";
+                    case 4:
+                        return "抗精";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        public string KubunToDisplay
+        {
+            get
+            {
+                switch (MadokuKbn)
+                {
+                    case 1:
+                        return "麻";
+                    case 2:
+                        return "毒";
+                    case 3:
+                        return "覚";
+                    case 5:
+                        return "向";
+                    default:
+                        return "";
+                }
+            }
+        }
+
+        public string KohatuKbnDisplay
+        {
+            get
+            {
+                if (KohatuKbn == 1)
+                {
+                    return "後";
+                }
+                else if (KohatuKbn == 2)
+                {
+                    return "〇";
+                }
+                return string.Empty;
+            }
+        }
+
+        public string KensaCenterItemCDDisplay
+        {
+            get
+            {
+                if(!String.IsNullOrEmpty(KensaMstCenterItemCd1) && !String.IsNullOrEmpty(KensaMstCenterItemCd2))
+                {
+                    return string.Format("{0}/{1}", KensaMstCenterItemCd1, KensaMstCenterItemCd1);
+                }
+                return string.Empty;
+            }
+        }
+
+        public string TenDisplay
+        {
+            get
+            {
+                if (Ten == 0) return Ten.ToString();
+
+                if (new[] { 1, 2, 4 }.Contains(TenId))
+                {
+                    return "￥" + Ten.ToString();
+                }
+                if (new[] { 5, 6 }.Contains(TenId))
+                {
+                    return Ten.ToString() + "%";
+                }
+
+                return Ten.ToString();
+            }
+        }
+
         public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn); }
 
         private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn)
         {
-            string rs = "";
+            string rs = "検体";
             if (itemCd == ItemCdConst.GazoDensibaitaiHozon)
             {
                 rs = "フィルム";

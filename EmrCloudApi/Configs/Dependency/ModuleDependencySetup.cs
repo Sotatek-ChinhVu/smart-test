@@ -3,6 +3,7 @@ using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.KaMst;
@@ -35,6 +36,7 @@ using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
+using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.KaMst;
@@ -59,6 +61,7 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
 using UseCase.GroupInf.GetList;
+using UseCase.InputItem.Search;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.KaMst.GetList;
@@ -134,6 +137,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
+            services.AddTransient<IInputItemRepository, InputItemRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -212,6 +216,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
+
+            //Input Item
+            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
