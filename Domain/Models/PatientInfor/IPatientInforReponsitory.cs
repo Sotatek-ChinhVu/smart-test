@@ -12,5 +12,7 @@ namespace Domain.Models.PatientInfor
         PatientInforModel? GetById(int hpId, long ptId);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
+
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input);
     }
 }
