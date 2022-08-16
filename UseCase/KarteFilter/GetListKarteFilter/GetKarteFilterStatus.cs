@@ -1,6 +1,6 @@
 ﻿namespace UseCase.KarteFilter.GetListKarteFilter;
 
-public enum KarteFilterStatus : byte
+public enum GetKarteFilterStatus : byte
 {
     Successed = 1,
     InvalidSinDate = 2,

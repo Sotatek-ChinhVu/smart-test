@@ -2,5 +2,5 @@
 
 public interface IKarteFilterDetailRepository
 {
-    List<KarteFilterDetail> GetList(int hpId, int userId);
+    List<KarteFilterDetailModel> GetList(int hpId, int userId);
 }

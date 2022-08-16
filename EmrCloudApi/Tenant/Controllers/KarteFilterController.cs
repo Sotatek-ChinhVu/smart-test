@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetKarteFilterMstResponse>> GetList([FromQuery] GetKarteFilterMstRequest request)
         {
-            var input = new KarteFilterInputData(request.SinDate);
+            var input = new GetKarteFilterInputData(request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetKarteFilterMstPresenter();

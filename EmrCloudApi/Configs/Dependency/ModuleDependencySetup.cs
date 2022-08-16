@@ -213,7 +213,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
             // KarteFilter
-            busBuilder.RegisterUseCase<KarteFilterInputData, GetKarteFilterMstsInteractor>();
+            busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
        
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();

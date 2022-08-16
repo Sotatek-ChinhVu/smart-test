@@ -2,9 +2,9 @@
 
 namespace UseCase.KarteFilter.GetListKarteFilter;
 
-public class KarteFilterInputData : IInputData<KarteFilterOutputData>
+public class GetKarteFilterInputData : IInputData<GetKarteFilterOutputData>
 {
-    public KarteFilterInputData(int sinDate)
+    public GetKarteFilterInputData(int sinDate)
     {
         this.sinDate = sinDate;
     }

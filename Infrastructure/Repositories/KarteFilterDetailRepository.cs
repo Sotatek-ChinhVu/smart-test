@@ -13,11 +13,11 @@ public class KarteFilterDetailRepository : IKarteFilterDetailRepository
         _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
-    public List<KarteFilterDetail> GetList(int hpId, int userId)
+    public List<KarteFilterDetailModel> GetList(int hpId, int userId)
     {
         var result = _tenantDataContext.KarteFilterDetails
                                  .Where(u => u.HpId == hpId && u.UserId == userId)
-                                 .Select(u => new KarteFilterDetail(
+                                 .Select(u => new KarteFilterDetailModel(
                                         u.HpId,
                                         u.UserId,
                                         u.FilterId,

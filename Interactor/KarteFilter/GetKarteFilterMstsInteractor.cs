@@ -3,11 +3,12 @@ using Domain.Models.KarteFilterDetail;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.User;
 using Helper.Constants;
+using System.Linq;
 using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace Interactor.KarteFilter;
 
-public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
+public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 {
     private readonly IKarteFilterDetailRepository _karteFilterDetailRepository;
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
@@ -25,152 +26,136 @@ public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
         _userRepository = userRepository;
     }
 
-    public KarteFilterOutputData Handle(KarteFilterInputData inputData)
+    public GetKarteFilterOutputData Handle(GetKarteFilterInputData inputData)
     {
         // Check sindate
         if (inputData.sinDate > 99999999 || inputData.sinDate < 10000000)
         {
-            return new KarteFilterOutputData(new List<KarteFilterMstModelOutputItem>(), KarteFilterStatus.InvalidSinDate);
+            return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.InvalidSinDate);
         }
 
         try
         {
             // check list KarteFilterMsts
-            var AllKarteFilterMsts = _karteFilterMstRepository
-                                            .GetList(_hpId, _userId);
+            var allKarteFilterMsts = _karteFilterMstRepository.GetList(_hpId, _userId);
 
-            if (AllKarteFilterMsts == null || AllKarteFilterMsts.Count <= 0)
+            if (allKarteFilterMsts == null || allKarteFilterMsts.Count <= 0)
             {
-                return new KarteFilterOutputData(new List<KarteFilterMstModelOutputItem>(), KarteFilterStatus.NoData);
+                return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.NoData);
             }
-
-            // check list KarteFilterDetails
-            var AllKarteFilterDetails = _karteFilterDetailRepository
-                                            .GetList(_hpId, _userId)
-                                            .Select(detail => new KarteFilterDetailOutputItem(
-                                                detail.HpId,
-                                                detail.UserId,
-                                                detail.FilterId,
-                                                detail.FilterItemCd,
-                                                detail.FilterEdaNo,
-                                                detail.Val,
-                                                true,
-                                                detail.Param,
-                                                0,
-                                                "",
-                                                "",
-                                                0,
-                                                "",
-                                                0
-                                             ))
-                                            .ToList();
-
-            // get list KarteFilterMstModel
-            var query = from mst in AllKarteFilterMsts
-                        join detail in AllKarteFilterDetails on mst.FilterId equals detail.FilterId into details
-                        select new
-                        {
-                            Mst = mst,
-                            Details = details.ToList()
-                        };
-
-            var result = query.AsEnumerable().Select(data => new KarteFilterMstModelOutputItem(
-                                                data.Details.ToList(),
-                                                data.Mst.HpId,
-                                                data.Mst.UserId,
-                                                data.Mst.FilterId,
-                                                data.Mst.FilterName,
-                                                data.Mst.FilterName,
-                                                data.Mst.AutoApply
+            var result = allKarteFilterMsts.AsEnumerable().Select(data => new GetKarteFilterMstModelOutputItem(
+                                                data.karteFilterDetailModels
+                                                .Select(item => new GetKarteFilterDetailOutputItem(
+                                                    item.HpId,
+                                                    item.UserId,
+                                                    item.FilterId,
+                                                    item.FilterItemCd,
+                                                    item.FilterEdaNo,
+                                                    item.Val,
+                                                    false,
+                                                    item.Param,
+                                                    0,
+                                                    String.Empty,
+                                                    String.Empty,
+                                                    0,
+                                                    "",
+                                                    0
+                                                )).ToList(),
+                                                data.HpId,
+                                                data.UserId,
+                                                data.FilterId,
+                                                data.FilterName,
+                                                data.FilterName,
+                                                data.AutoApply,
+                                                data.IsDeleted
                                             )).ToList();
 
             // get list KaMstModel and UserMstModel
-            List<KaMstModel> KaMsts = _kaMstRepository.GetList();
-            List<UserMstModel> UserMsts = _userRepository.GetAll(inputData.sinDate, true);
+            List<KaMstModel> kaMsts = _kaMstRepository.GetList();
+            List<UserMstModel> userMsts = _userRepository.GetAll(inputData.sinDate, true);
 
             // update field to KarteFilterMstModel
             foreach (var model in result)
             {
-
                 // update Ka information
-                foreach (KaMstModel KaMst in KaMsts)
+                foreach (var kaMst in kaMsts)
                 {
-                    if (KaMst != null)
+                    if (kaMst != null)
                     {
-                        var KarteFilterDetail = model.KarteFilterDetailModels.FirstOrDefault(k => k.FilterItemCd == 4 && k.FilterEdaNo == KaMst.KaId);
+                        var karteFilterDetail = model.KarteFilterDetailModels.FirstOrDefault(k => k.FilterItemCd == 4 && k.FilterEdaNo == kaMst.KaId);
 
-                        if (KarteFilterDetail == null)
+                        if (karteFilterDetail == null)
                         {
-                            KarteFilterDetail = new KarteFilterDetailOutputItem(
+                            karteFilterDetail = new GetKarteFilterDetailOutputItem(
                                 _hpId,
                                 _userId,
                                 model.FilterId,
                                 4,
-                                KaMst.KaId,
+                                kaMst.KaId,
                                 0,
-                                true,
+                                false,
                                 null,
-                                KaMst.KaId,
-                                KaMst.KaName,
-                                KaMst.KaSname,
+                                kaMst.KaId,
+                                kaMst.KaName,
+                                kaMst.KaSname,
                                 0,
                                 "",
                                 0
                             );
-                            model.KarteFilterDetailModels.Add(KarteFilterDetail);
+                            model.KarteFilterDetailModels.Add(karteFilterDetail);
                         }
                         else
                         {
-                            KarteFilterDetail = new KarteFilterDetailOutputItem(
-                                 KarteFilterDetail.HpId,
-                                 KarteFilterDetail.UserId,
-                                 KarteFilterDetail.FilterId,
-                                 KarteFilterDetail.FilterItemCd,
-                                 KarteFilterDetail.FilterEdaNo,
-                                 KarteFilterDetail.Val,
-                                 KarteFilterDetail.IsModifiedData,
-                                 KarteFilterDetail.Param,
-                                 KaMst.KaId,
-                                 KaMst.KaName,
-                                 KaMst.KaSname,
-                                 KarteFilterDetail.UserKaId,
-                                 KarteFilterDetail.Sname,
-                                 KarteFilterDetail.UserSortNo
+                            karteFilterDetail = new GetKarteFilterDetailOutputItem(
+                                 karteFilterDetail.HpId,
+                                 karteFilterDetail.UserId,
+                                 karteFilterDetail.FilterId,
+                                 karteFilterDetail.FilterItemCd,
+                                 karteFilterDetail.FilterEdaNo,
+                                 karteFilterDetail.Val,
+                                 karteFilterDetail.IsModifiedData,
+                                 karteFilterDetail.Param,
+                                 kaMst.KaId,
+                                 kaMst.KaName,
+                                 kaMst.KaSname,
+                                 karteFilterDetail.UserKaId,
+                                 karteFilterDetail.Sname,
+                                 karteFilterDetail.UserSortNo
                              );
                         }
                     }
                 }
 
                 // update user information
-                foreach (UserMstModel UserMst in UserMsts)
+                foreach (var userMst in userMsts)
                 {
-                    var KaMst = KaMsts.FirstOrDefault(k => k.KaId == UserMst.KaId);
-                    if (KaMst != null && UserMst != null)
+                    var KaMst = kaMsts.FirstOrDefault(k => k.KaId == userMst.KaId);
+                    if (KaMst != null && userMst != null)
                     {
-                        var KarteFilterDetail = model.KarteFilterDetailModels.FirstOrDefault(k => k.FilterItemCd == 2 && k.FilterEdaNo == UserMst.UserId);
+                        var KarteFilterDetail = model.KarteFilterDetailModels.FirstOrDefault(k => k.FilterItemCd == 2 && k.FilterEdaNo == userMst.UserId);
                         if (KarteFilterDetail == null)
                         {
-                            KarteFilterDetail = new KarteFilterDetailOutputItem(
+                            KarteFilterDetail = new GetKarteFilterDetailOutputItem(
                                 _hpId,
                                 _userId,
                                 model.FilterId,
                                 2,
-                                UserMst.UserId,
+                                userMst.UserId,
                                 0,
-                                true,
+                                false,
                                 null,
                                 KaMst.KaId,
                                 KaMst.KaName,
                                 KaMst.KaSname,
-                                UserMst.UserId,
-                                UserMst.Sname,
-                                UserMst.SortNo
+                                userMst.UserId,
+                                userMst.Sname,
+                                userMst.SortNo
                             );
                             model.KarteFilterDetailModels.Add(KarteFilterDetail);
                         }
                         else
                         {
-                            KarteFilterDetail = new KarteFilterDetailOutputItem(
+                            KarteFilterDetail = new GetKarteFilterDetailOutputItem(
                                 KarteFilterDetail.HpId,
                                 KarteFilterDetail.UserId,
                                 KarteFilterDetail.FilterId,
@@ -182,20 +167,20 @@ public class GetKarteFilterMstsInteractor : IKarteFilterInputPort
                                 KaMst.KaId,
                                 KaMst.KaName,
                                 KaMst.KaSname,
-                                UserMst.UserId,
-                                UserMst.Sname,
-                                UserMst.SortNo
+                                userMst.UserId,
+                                userMst.Sname,
+                                userMst.SortNo
                             );
                         }
                     }
                 }
             }
 
-            return new KarteFilterOutputData(result, KarteFilterStatus.Successed);
+            return new GetKarteFilterOutputData(result, GetKarteFilterStatus.Successed);
         }
         catch (Exception)
         {
-            return new KarteFilterOutputData(new List<KarteFilterMstModelOutputItem>(), KarteFilterStatus.Error);
+            return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.Error);
         }
     }
 }

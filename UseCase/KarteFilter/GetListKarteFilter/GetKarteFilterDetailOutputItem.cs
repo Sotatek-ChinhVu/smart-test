@@ -2,9 +2,9 @@
 
 namespace UseCase.KarteFilter.GetListKarteFilter;
 
-public class KarteFilterDetailOutputItem : IOutputData
+public class GetKarteFilterDetailOutputItem : IOutputData
 {
-    public KarteFilterDetailOutputItem(int hpId, int userId, long filterId, int filterItemCd, int filterEdaNo, int val, bool isModifiedData, string? param, int kaId, string kaName, string kaSName, int userKaId, string sname, int userSortNo)
+    public GetKarteFilterDetailOutputItem(int hpId, int userId, long filterId, int filterItemCd, int filterEdaNo, int val, bool isModifiedData, string? param, int kaId, string kaName, string kaSName, int userKaId, string sname, int userSortNo)
     {
         HpId = hpId;
         UserId = userId;

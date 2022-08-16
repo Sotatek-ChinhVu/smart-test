@@ -4,8 +4,8 @@ namespace EmrCloudApi.Tenant.Responses.KarteFilter;
 
 public class GetKarteFilterMstResponse
 {
-    public List<KarteFilterMstModelOutputItem>? KarteFilters { get; set; }
-    public GetKarteFilterMstResponse(List<KarteFilterMstModelOutputItem>? karteFilters)
+    public List<GetKarteFilterMstModelOutputItem>? KarteFilters { get; private set; }
+    public GetKarteFilterMstResponse(List<GetKarteFilterMstModelOutputItem>? karteFilters)
     {
         KarteFilters = karteFilters;
     }

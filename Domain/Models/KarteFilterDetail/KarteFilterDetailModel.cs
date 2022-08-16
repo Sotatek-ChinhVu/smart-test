@@ -1,8 +1,8 @@
 ﻿namespace Domain.Models.KarteFilterDetail;
 
-public class KarteFilterDetail
+public class KarteFilterDetailModel
 {
-    public KarteFilterDetail(int hpId, int userId, long filterId, int filterItemCd, int filterEdaNo, int val, string param)
+    public KarteFilterDetailModel(int hpId, int userId, long filterId, int filterItemCd, int filterEdaNo, int val, string param)
     {
         HpId = hpId;
         UserId = userId;

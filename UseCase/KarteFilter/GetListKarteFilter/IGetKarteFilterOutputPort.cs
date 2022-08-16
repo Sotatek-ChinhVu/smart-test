@@ -2,6 +2,6 @@
 
 namespace UseCase.KarteFilter.GetListKarteFilter;
 
-public interface IKarteFilterOutputPort : IOutputPort<KarteFilterOutputData>
+public interface IGetKarteFilterOutputPort : IOutputPort<GetKarteFilterOutputData>
 {
 }
