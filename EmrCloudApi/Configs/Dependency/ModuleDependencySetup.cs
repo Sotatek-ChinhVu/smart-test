@@ -85,7 +85,6 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using Domain.Models.KarteFilterDetail;
 using Domain.Models.KarteFilterMst;
 using Interactor.KarteFilter;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -137,7 +136,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
-            services.AddTransient<IKarteFilterDetailRepository, KarteFilterDetailRepository>();
             services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();

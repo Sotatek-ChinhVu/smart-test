@@ -1,10 +1,8 @@
-﻿using UseCase.Core.Sync.Core;
+﻿namespace Domain.Models.KarteFilterMst;
 
-namespace UseCase.KarteFilter.GetListKarteFilter;
-
-public class GetKarteFilterDetailOutputItem : IOutputData
+public class KarteFilterDetailModel
 {
-    public GetKarteFilterDetailOutputItem(int hpId, int userId, long filterId, bool bookMarkChecked, List<int> listHokenId, List<int> listKaId, List<int> listUserId)
+    public KarteFilterDetailModel(int hpId, int userId, long filterId, bool bookMarkChecked, List<int> listHokenId, List<int> listKaId, List<int> listUserId)
     {
         HpId = hpId;
         UserId = userId;

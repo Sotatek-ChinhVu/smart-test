@@ -1,10 +1,8 @@
-﻿using Domain.Models.KarteFilterDetail;
-
-namespace Domain.Models.KarteFilterMst;
+﻿namespace Domain.Models.KarteFilterMst;
 
 public class KarteFilterMstModel
 {
-    public KarteFilterMstModel(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, List<KarteFilterDetailModel> karteFilterDetailModels)
+    public KarteFilterMstModel(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, KarteFilterDetailModel karteFilterDetailModel)
     {
         HpId = hpId;
         UserId = userId;
@@ -13,7 +11,7 @@ public class KarteFilterMstModel
         SortNo = sortNo;
         AutoApply = autoApply;
         IsDeleted = isDeleted;
-        this.karteFilterDetailModels = karteFilterDetailModels;
+        this.karteFilterDetailModel = karteFilterDetailModel;
     }
 
     public int HpId { get; private set; }
@@ -30,6 +28,6 @@ public class KarteFilterMstModel
 
     public int IsDeleted { get; private set; }
 
-    public List<KarteFilterDetailModel> karteFilterDetailModels { get; private set; }
+    public KarteFilterDetailModel karteFilterDetailModel { get; private set; }
 
 }
