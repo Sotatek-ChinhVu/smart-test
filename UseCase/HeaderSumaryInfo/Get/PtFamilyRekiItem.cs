@@ -223,7 +223,6 @@ namespace UseCase.HeaderSumaryInfo.Get
             }
         }
 
-
         public string OldCmt { get; private set; } = string.Empty;
         public string OldText { get; private set; } = string.Empty;
 

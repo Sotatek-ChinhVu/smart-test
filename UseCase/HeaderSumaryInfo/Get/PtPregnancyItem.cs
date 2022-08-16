@@ -13,7 +13,6 @@ namespace UseCase.HeaderSumaryInfo.Get
             PtPregnancy = ptPregnancy;
         }
 
-
         private int _sinDay;
         public int SinDay { get => _sinDay; set => Set(ref _sinDay, value); }
         public long PtId
@@ -94,6 +93,7 @@ namespace UseCase.HeaderSumaryInfo.Get
                 return CIUtil.IntToDate(PtPregnancy.PeriodDate);
             }
         }
+
         public DateTime? PeriodDueDate
         {
             get
@@ -102,7 +102,6 @@ namespace UseCase.HeaderSumaryInfo.Get
                 return CIUtil.IntToDate(PtPregnancy.PeriodDueDate);
             }
         }
-
 
         public DateTime? OvulationDate
         {
@@ -121,7 +120,6 @@ namespace UseCase.HeaderSumaryInfo.Get
                 return CIUtil.IntToDate(PtPregnancy.OvulationDueDate);
             }
         }
-
 
         public int IsDelete
         {
@@ -170,6 +168,7 @@ namespace UseCase.HeaderSumaryInfo.Get
                 return GetPeriodWeek(startDate, 1, endDate);
             }
         }
+
         private string GetPeriodWeek(int startDay, int ovulation, int endDay = 0)
         {
             if (startDay == 0) return string.Empty;

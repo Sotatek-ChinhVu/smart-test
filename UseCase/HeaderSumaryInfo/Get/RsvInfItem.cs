@@ -12,7 +12,6 @@ namespace UseCase.HeaderSumaryInfo.Get
         public RsvGrpMstModel? RsvGrpMst { get; }
         public ReceptionRowModel? RaiinInfModel { get; }
 
-
         public RsvInfItem(RsvInfoModel? rsvInf, RsvFrameMstModel? rsvFrameMst, RsvGrpMstModel? rsvGrpMst, ReceptionRowModel? raiinInfModel)
         {
             RsvInf = rsvInf;

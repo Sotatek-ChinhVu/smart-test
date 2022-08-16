@@ -18,7 +18,7 @@ namespace UseCase.HeaderSumaryInfo.Get
         /// Return Entity PtInf
         /// </summary>
         public PatientInforModel PtInf { get; set; }
-
+        
         public PtFamilyItem(PtFamilyModel ptFamily, PatientInforModel ptInf)
         {
             PtFamily = ptFamily;
@@ -197,7 +197,6 @@ namespace UseCase.HeaderSumaryInfo.Get
         }
 
         public int Age => CIUtil.SDateToAge(Birthday, SinDay);
-
         public string AgeBinding
         {
             get

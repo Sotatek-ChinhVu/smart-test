@@ -83,6 +83,7 @@ namespace UseCase.HeaderSumaryInfo.Get
                 }
             }
         }
+
         public int StartDate
         {
             get { return PtOtherDrug.StartDate; }

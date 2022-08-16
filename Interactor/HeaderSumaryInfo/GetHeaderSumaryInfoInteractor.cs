@@ -522,7 +522,6 @@ namespace Interactor.HeaderSumaryInfo
             return result;
         }
 
-
         private void GetReproductionInfo(long ptId, int hpId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 6;
@@ -873,7 +872,6 @@ namespace Interactor.HeaderSumaryInfo
             ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd('/');
         }
 
-
         private List<KensaInfDetailItem> GetListKensaInfDetailModel(int hpId, long ptId, int sinDate)
         {
 
@@ -971,6 +969,7 @@ namespace Interactor.HeaderSumaryInfo
 
             return listNotification;
         }
+
         private List<PtInfNotificationItem> GetNotification(int userId, int hpId, long ptId, int sinDate)
         {
             List<PtInfNotificationItem> listNotification = GetNotificationContent(userId, hpId, ptId, sinDate);
@@ -1129,6 +1128,7 @@ namespace Interactor.HeaderSumaryInfo
                 }
             }
         }
+
         private void SetDiseaseName(PtFamilyItem ptFamilyModel)
         {
             var strDeaseName = new StringBuilder();
@@ -1186,7 +1186,6 @@ namespace Interactor.HeaderSumaryInfo
 
             return relationshipName;
         }
-
 
         private void SetForeground(UserConfigModel userConfigurationModel, List<PtInfNotificationItem> listHeader1InfoModels, List<PtInfNotificationItem> listHeader2InfoModels)
         {
