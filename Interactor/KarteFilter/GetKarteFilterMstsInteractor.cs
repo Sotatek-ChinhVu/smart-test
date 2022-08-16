@@ -10,7 +10,6 @@ namespace Interactor.KarteFilter;
 
 public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 {
-    private readonly IKarteFilterDetailRepository _karteFilterDetailRepository;
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
     private readonly IKaMstRepository _kaMstRepository;
     private readonly IUserRepository _userRepository;
@@ -18,9 +17,8 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
     private int _hpId = TempIdentity.HpId;
     private int _userId = TempIdentity.UserId;
 
-    public GetKarteFilterMstsInteractor(IKarteFilterDetailRepository karteFilterDetailRepository, IKarteFilterMstRepository karteFilterMstRepository, IKaMstRepository kaMstRepository, IUserRepository userRepository)
+    public GetKarteFilterMstsInteractor(IKarteFilterMstRepository karteFilterMstRepository, IKaMstRepository kaMstRepository, IUserRepository userRepository)
     {
-        _karteFilterDetailRepository = karteFilterDetailRepository;
         _karteFilterMstRepository = karteFilterMstRepository;
         _kaMstRepository = kaMstRepository;
         _userRepository = userRepository;
@@ -58,7 +56,7 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
                                                     String.Empty,
                                                     String.Empty,
                                                     0,
-                                                    "",
+                                                    String.Empty,
                                                     0
                                                 )).ToList(),
                                                 data.HpId,
