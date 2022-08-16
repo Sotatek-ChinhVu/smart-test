@@ -30,8 +30,6 @@ namespace EmrCloudApi.Tenant.Presenters.InputItem
                 case UpdateAdoptedInputItemStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
-                default:
-                    break;
             }
         }
     }

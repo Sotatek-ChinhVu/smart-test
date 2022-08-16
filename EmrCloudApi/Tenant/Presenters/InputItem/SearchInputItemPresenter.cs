@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.InputItem;
 using UseCase.InputItem.Search;
 
@@ -18,20 +19,25 @@ namespace EmrCloudApi.Tenant.Presenters.InputItem
             switch (outputData.Status)
             {
                 case SearchInputItemStatus.Successed:
+                    Result.Message = ResponseMessage.Success;
                     break;
                 case SearchInputItemStatus.InValidHpId:
+                    Result.Message = ResponseMessage.InvalidHpId;
                     break;
                 case SearchInputItemStatus.InValidKeyword:
+                    Result.Message = ResponseMessage.InvalidKeyword;
                     break;
                 case SearchInputItemStatus.InvalidSindate:
+                    Result.Message = ResponseMessage.InvalidSinDate;
                     break;
                 case SearchInputItemStatus.InvalidStartIndex:
+                    Result.Message = ResponseMessage.InvalidStartIndex;
                     break;
                 case SearchInputItemStatus.InvalidPageCount:
+                    Result.Message = ResponseMessage.InvalidPageCount;
                     break;
                 case SearchInputItemStatus.InvalidKouiKbn:
-                    break;
-                default:
+                    Result.Message = ResponseMessage.InvalidKouiKbn;
                     break;
             }
         }
