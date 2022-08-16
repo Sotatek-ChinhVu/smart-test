@@ -9,7 +9,7 @@ namespace Domain.Models.InputItem
 {
     public class InputItemModel
     {
-        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2)
+        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -28,6 +28,7 @@ namespace Domain.Models.InputItem
             TenId = tenId;
             KensaMstCenterItemCd1 = kensaMstCenterItemCd1;
             KensaMstCenterItemCd2 = kensaMstCenterItemCd2;
+            IsAdopted = isAdopted;
         }
 
         public int HpId { get; private set; }
@@ -55,6 +56,8 @@ namespace Domain.Models.InputItem
         public string MasterSbt { get; private set; }
 
         public int BuiKbn { get; private set; }
+
+        public int IsAdopted { get; private set; }
 
         public double Ten { get; private set; }
 
