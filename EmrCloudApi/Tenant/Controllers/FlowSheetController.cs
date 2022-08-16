@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.FlowSheet;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.Upsert;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -48,6 +49,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListRaiinMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Upsert)]
+        public ActionResult<Response<UpsertFlowSheetResponse>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
+        {
+            var input = new UpsertFlowSheetInputData(inputData.RainNo, inputData.PtId, inputData.SinDate, inputData.TagNo, inputData.CmtKbn, inputData.Text, inputData.SeqNo);
+            var output = _bus.Handle(input);
+            var presenter = new UpsertFlowSheetPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpsertFlowSheetResponse>>(presenter.Result);
         }
     }
 }

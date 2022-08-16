@@ -1,13 +1,9 @@
-﻿using Domain.Constant;
-using Domain.Models.FlowSheet;
+﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
-using Helper.Extendsions;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Collections.ObjectModel;
 
 namespace Infrastructure.Repositories
 {
@@ -24,7 +20,8 @@ namespace Infrastructure.Repositories
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3);
             var karteInfs = _tenantDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
             var query = from raiinInf in raiinInfs
-                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj from karteInf in gj.DefaultIfEmpty()
+                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
+                        from karteInf in gj.DefaultIfEmpty()
                         select new
                         {
                             raiinInf,
@@ -65,7 +62,7 @@ namespace Infrastructure.Repositories
                 if (comments.Any(c => c.RaiinNo == raiinInf.RaiinNo))
                 {
                     var commentInf = comments.First(c => c.RaiinNo == raiinInf.RaiinNo);
-                    comment = commentInf.Text; 
+                    comment = commentInf.Text ?? String.Empty;
                 }
 
                 var raiinListInfoModelList = raiinListInfs
@@ -99,6 +96,64 @@ namespace Infrastructure.Repositories
         {
             var holidayCollection = _tenantDataContext.HolidayMsts.Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None && holidayFrom <= h.SinDate && h.SinDate <= holidayTo);
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName)).ToList();
+        }
+
+        public void Upsert(long rainNo, long ptId, int sinDate, int tagNo, int cmtKbn, string text, int seqNo)
+        {
+            var raiinListCmt = _tenantDataContext.RaiinListCmts
+                        .OrderByDescending(p => p.UpdateDate)
+                        .FirstOrDefault(p => p.RaiinNo == rainNo && p.CmtKbn == cmtKbn);
+            if (raiinListCmt is null)
+            {
+                _tenantDataContext.RaiinListCmts.Add(new RaiinListCmt
+                {
+                    HpId = 1,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    RaiinNo = rainNo,
+                    CmtKbn = cmtKbn,
+                    SeqNo = seqNo,
+                    Text = text,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                });
+            }
+            else
+            {
+                raiinListCmt.Text = text;
+                raiinListCmt.UpdateDate = DateTime.UtcNow;
+                raiinListCmt.UpdateId = TempIdentity.UserId;
+                raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
+            }
+
+            var raiinListTag = _tenantDataContext.RaiinListTags
+                       .OrderByDescending(p => p.UpdateDate)
+                       .FirstOrDefault(p => p.RaiinNo == rainNo);
+            if (raiinListTag is null)
+            {
+                _tenantDataContext.RaiinListTags.Add(new RaiinListTag
+                {
+                    HpId = 1,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    RaiinNo = rainNo,
+                    SeqNo = seqNo,
+                    TagNo = tagNo,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                });
+            }
+            else
+            {
+                raiinListTag.TagNo = tagNo;
+                raiinListTag.UpdateDate = DateTime.UtcNow;
+                raiinListTag.UpdateId = TempIdentity.UserId;
+                raiinListTag.UpdateMachine = TempIdentity.ComputerName;
+            }
+
+            _tenantDataContext.SaveChanges();
         }
     }
 }

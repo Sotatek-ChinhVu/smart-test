@@ -58,6 +58,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
@@ -65,6 +66,7 @@ using UseCase.KaMst.GetList;
 using UseCase.KarteInfs.GetLists;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
@@ -85,7 +87,6 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.PatientInfor.SearchAdvanced;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -204,6 +205,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
+            busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();

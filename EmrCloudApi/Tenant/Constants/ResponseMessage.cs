@@ -72,5 +72,15 @@
         public static readonly string UpdateReceptionDynamicCellInvalidRaiinNo = "RaiinNo must be greater than 0.";
         public static readonly string UpdateReceptionDynamicCellInvalidPtId = "PtId must be greater than 0.";
         public static readonly string UpdateReceptionDynamicCellInvalidGrpId = "GrpId cannot be negative.";
+
+        //Flowsheet
+        public static readonly string UpsertFlowSheetSuccess = "Upsert value successfully.";
+        public static readonly string UpsertFlowSheetInvalidPtId = "HpId must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo must be greater than 0.";
+        public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
+
     }
 }
