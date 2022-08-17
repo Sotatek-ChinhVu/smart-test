@@ -174,7 +174,6 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
                 _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 1, 0));
             }
 
-
             // ListKaId 
             if (item.karteFilterDetailModel.ListKaId.Any())
             {
