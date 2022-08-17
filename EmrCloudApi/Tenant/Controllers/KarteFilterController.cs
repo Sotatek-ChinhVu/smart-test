@@ -32,16 +32,16 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result);
         }
 
-        //[HttpPost(ApiPath.SaveList)]
-        //public ActionResult<Response<GetKarteFilterMstResponse>> SaveList([FromQuery] SaveKarteFilterMstRequest request)
-        //{
-        //    var input = new SaveKarteFilterInputData(request.SinDate);
-        //    var output = _bus.Handle(input);
+        [HttpPost(ApiPath.SaveList)]
+        public ActionResult<Response<SaveKarteFilterMstResponse>> SaveList([FromBody] SaveKarteFilterMstRequest request)
+        {
+            var input = new SaveKarteFilterInputData(request.KarteFilters);
+            var output = _bus.Handle(input);
 
-        //    var presenter = new SaveKarteFilterMstPresenter();
-        //    presenter.Complete(output);
+            var presenter = new SaveKarteFilterMstPresenter();
+            presenter.Complete(output);
 
-        //    return new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result);
-        //}
+            return new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result);
+        }
     }
 }

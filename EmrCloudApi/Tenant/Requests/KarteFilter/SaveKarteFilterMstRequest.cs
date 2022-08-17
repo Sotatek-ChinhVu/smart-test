@@ -4,5 +4,5 @@ namespace EmrCloudApi.Tenant.Requests.KarteFilter;
 
 public class SaveKarteFilterMstRequest
 {
-   //public List<SaveKarteFilterMstModelInputItem>
+    public List<SaveKarteFilterMstModelInputItem>? KarteFilters { get; set; }
 }

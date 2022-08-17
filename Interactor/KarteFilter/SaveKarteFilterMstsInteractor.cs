@@ -19,32 +19,36 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
     {
         try
         {
-            var listKarteFilterMstModels = new List<KarteFilterMstModel>();
-            foreach (var item in inputData.saveKarteFilterMstModelInputs)
+            if (inputData.saveKarteFilterMstModelInputs != null)
             {
-                var karteFilterMstModel = new KarteFilterMstModel(
-                        item.HpId,
-                        item.UserId,
-                        item.FilterId,
-                        item.FilterName,
-                        item.SortNo,
-                        item.AutoApply,
-                        item.IsDeleted,
-                        new KarteFilterDetailModel
-                            (
-                                item.HpId,
-                                item.UserId,
-                                item.FilterId,
-                                item.karteFilterDetailModel.BookMarkChecked,
-                                item.karteFilterDetailModel.ListHokenId,
-                                item.karteFilterDetailModel.ListKaId,
-                                item.karteFilterDetailModel.ListUserId
-                            )
-                    );
-                listKarteFilterMstModels.Add(karteFilterMstModel);
+                var listKarteFilterMstModels = new List<KarteFilterMstModel>();
+                foreach (var item in inputData.saveKarteFilterMstModelInputs)
+                {
+                    var karteFilterMstModel = new KarteFilterMstModel(
+                            item.HpId,
+                            item.UserId,
+                            item.FilterId,
+                            item.FilterName,
+                            item.SortNo,
+                            item.AutoApply,
+                            item.IsDeleted,
+                            new KarteFilterDetailModel
+                                (
+                                    item.HpId,
+                                    item.UserId,
+                                    item.FilterId,
+                                    item.karteFilterDetailModel.BookMarkChecked,
+                                    item.karteFilterDetailModel.ListHokenId,
+                                    item.karteFilterDetailModel.ListKaId,
+                                    item.karteFilterDetailModel.ListUserId
+                                )
+                        );
+                    listKarteFilterMstModels.Add(karteFilterMstModel);
+                }
+                _karteFilterMstRepository.SaveList(listKarteFilterMstModels, _userId);
+                return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Successed);
             }
-            _karteFilterMstRepository.SaveList(listKarteFilterMstModels, _userId);
-            return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Successed);
+            return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Failed);
         }
         catch
         {
