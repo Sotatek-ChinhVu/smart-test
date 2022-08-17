@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.KarteFilter;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteFilter.GetListKarteFilter;
+using UseCase.KarteFilter.SaveListKarteFilter;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,5 +31,17 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result);
         }
+
+        //[HttpPost(ApiPath.SaveList)]
+        //public ActionResult<Response<GetKarteFilterMstResponse>> SaveList([FromQuery] SaveKarteFilterMstRequest request)
+        //{
+        //    var input = new SaveKarteFilterInputData(request.SinDate);
+        //    var output = _bus.Handle(input);
+
+        //    var presenter = new SaveKarteFilterMstPresenter();
+        //    presenter.Complete(output);
+
+        //    return new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result);
+        //}
     }
 }
