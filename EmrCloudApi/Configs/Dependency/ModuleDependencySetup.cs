@@ -86,6 +86,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.PatientInfor.SearchAdvanced;
+using EmrCloudApi.Realtime;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -102,6 +103,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITenantProvider, TenantProvider>();
+            services.AddTransient<IWebSocketService, WebSocketService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
