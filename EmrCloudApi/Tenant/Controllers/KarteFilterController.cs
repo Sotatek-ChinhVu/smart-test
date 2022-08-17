@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.KarteFilter;
-using EmrCloudApi.Tenant.Requests.KarteFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteFilter;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +19,9 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetKarteFilterMstResponse>> GetList([FromQuery] GetKarteFilterMstRequest request)
+        public ActionResult<Response<GetKarteFilterMstResponse>> GetList()
         {
-            var input = new GetKarteFilterInputData(request.SinDate);
+            var input = new GetKarteFilterInputData();
             var output = _bus.Handle(input);
 
             var presenter = new GetKarteFilterMstPresenter();

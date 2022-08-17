@@ -21,12 +21,6 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 
     public GetKarteFilterOutputData Handle(GetKarteFilterInputData inputData)
     {
-        // Check sindate
-        if (inputData.sinDate > 99999999 || inputData.sinDate < 10000000)
-        {
-            return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.InvalidSinDate);
-        }
-
         try
         {
             // check list KarteFilterMsts

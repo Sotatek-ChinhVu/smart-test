@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Admin\Presenters\" />
+    <Folder Include="Tenant\Requests\KarteFilter\" />
   </ItemGroup>
 
   <ItemGroup>
