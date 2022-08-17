@@ -1,6 +1,7 @@
 ﻿using Domain.Models.KarteFilterMst;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
@@ -37,102 +38,109 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
     public bool SaveList(List<KarteFilterMstModel> karteFilterMstModels, int userId)
     {
         bool status = false;
-        try
-        {
-            #region Save KarteFilterMst
-
-            // List Save New KarteFilter
-            var listKarteFilterMstModelToAdd = karteFilterMstModels
-                .Where(mst => mst.FilterId == 0 && mst.IsDeleted != 1)
-                .ToList();
-
-            if (listKarteFilterMstModelToAdd.Any())
+        var executionStrategy = _tenantData.Database.CreateExecutionStrategy();
+        executionStrategy.Execute(
+            () =>
             {
-                var listKarteFilterMstToAdd = new List<KarteFilterMst>();
-
-                var dictionaryKarteFilterMstMap = new Dictionary<KarteFilterMstModel, KarteFilterMst>();
-
-                // Map Dictionary
-                foreach (var mst in listKarteFilterMstModelToAdd)
+                using (var transaction = _tenantData.Database.BeginTransaction())
                 {
-                    KarteFilterMst karteFilterMst = new KarteFilterMst()
+                    try
                     {
-                        HpId = mst.HpId,
-                        UserId = mst.UserId,
-                        FilterId = mst.FilterId,
-                        FilterName = mst.FilterName,
-                        SortNo = mst.SortNo,
-                        AutoApply = mst.AutoApply,
-                        IsDeleted = mst.IsDeleted,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = userId,
-                        UpdateDate = DateTime.UtcNow,
-                        UpdateId = userId
-                    };
-                    dictionaryKarteFilterMstMap.Add(mst, karteFilterMst);
-                    listKarteFilterMstToAdd.Add(karteFilterMst);
-                }
+                        #region Save KarteFilterMst
+                        // List Save New KarteFilter
+                        var listKarteFilterMstModelToAdd = karteFilterMstModels
+                            .Where(mst => mst.FilterId == 0 && mst.IsDeleted != 1)
+                            .ToList();
 
-                // Save List KarteFilterMst
-                _tenantData.KarteFilterMsts.AddRange(listKarteFilterMstToAdd);
-                _tenantData.SaveChanges();
+                        if (listKarteFilterMstModelToAdd.Any())
+                        {
+                            var listKarteFilterMstToAdd = new List<KarteFilterMst>();
 
-                // Save KarteFilterDetail
-                foreach (var model in listKarteFilterMstModelToAdd)
-                {
-                    var newKarteFilterMstModel = new KarteFilterMstModel(
-                            model.HpId,
-                            model.UserId,
-                            dictionaryKarteFilterMstMap[model].FilterId,
-                            model.FilterName,
-                            model.SortNo,
-                            model.AutoApply,
-                            model.IsDeleted,
-                            model.KarteFilterDetailModel
-                        );
-                    SaveKarteFilterDetail(newKarteFilterMstModel);
-                }
-            }
+                            var dictionaryKarteFilterMstMap = new Dictionary<KarteFilterMstModel, KarteFilterMst>();
 
-            // List Update KarteFilter
-            var listKarteFilterMstToUpdate = karteFilterMstModels
-                .Where(mst => mst.FilterId != 0)
-                .ToList();
-            if (listKarteFilterMstToUpdate.Any())
-            {
-                // Update KarteFilterMst
-                foreach (var item in listKarteFilterMstToUpdate)
-                {
-                    var karteFilterMst = _tenantData.KarteFilterMsts.FirstOrDefault(mst => mst.HpId == item.HpId && mst.UserId == item.UserId && mst.FilterId == item.FilterId);
-                    if (karteFilterMst != null)
+                            // Map Dictionary
+                            foreach (var mst in listKarteFilterMstModelToAdd)
+                            {
+                                KarteFilterMst karteFilterMst = new KarteFilterMst()
+                                {
+                                    HpId = mst.HpId,
+                                    UserId = mst.UserId,
+                                    FilterId = mst.FilterId,
+                                    FilterName = mst.FilterName,
+                                    SortNo = mst.SortNo,
+                                    AutoApply = mst.AutoApply,
+                                    IsDeleted = mst.IsDeleted,
+                                    CreateDate = DateTime.UtcNow,
+                                    CreateId = userId,
+                                    UpdateDate = DateTime.UtcNow,
+                                    UpdateId = userId
+                                };
+                                dictionaryKarteFilterMstMap.Add(mst, karteFilterMst);
+                                listKarteFilterMstToAdd.Add(karteFilterMst);
+                            }
+
+                            // Save List KarteFilterMst
+                            _tenantData.KarteFilterMsts.AddRange(listKarteFilterMstToAdd);
+                            _tenantData.SaveChanges();
+
+                            // Save KarteFilterDetail
+                            foreach (var model in listKarteFilterMstModelToAdd)
+                            {
+                                var newKarteFilterMstModel = new KarteFilterMstModel(
+                                        model.HpId,
+                                        model.UserId,
+                                        dictionaryKarteFilterMstMap[model].FilterId,
+                                        model.FilterName,
+                                        model.SortNo,
+                                        model.AutoApply,
+                                        model.IsDeleted,
+                                        model.KarteFilterDetailModel
+                                    );
+                                SaveKarteFilterDetail(newKarteFilterMstModel);
+                            }
+                        }
+
+                        // List Update KarteFilter
+                        var listKarteFilterMstToUpdate = karteFilterMstModels
+                            .Where(mst => mst.FilterId != 0)
+                            .ToList();
+                        if (listKarteFilterMstToUpdate.Any())
+                        {
+                            // Update KarteFilterMst
+                            foreach (var item in listKarteFilterMstToUpdate)
+                            {
+                                var karteFilterMst = _tenantData.KarteFilterMsts.FirstOrDefault(mst => mst.HpId == item.HpId && mst.UserId == item.UserId && mst.FilterId == item.FilterId);
+                                if (karteFilterMst != null)
+                                {
+                                    karteFilterMst.UpdateDate = DateTime.UtcNow;
+                                    karteFilterMst.UpdateId = userId;
+                                    karteFilterMst.FilterId = item.FilterId;
+                                    karteFilterMst.FilterName = item.FilterName;
+                                    karteFilterMst.AutoApply = item.AutoApply;
+                                    karteFilterMst.IsDeleted = item.IsDeleted;
+                                    karteFilterMst.SortNo = item.SortNo;
+                                }
+                            }
+
+                            // Save KarteFilterDetail
+                            foreach (var item in listKarteFilterMstToUpdate)
+                            {
+                                SaveKarteFilterDetail(item);
+                            }
+                        }
+                        #endregion
+                        _tenantData.SaveChanges();
+
+                        status = true;
+                        transaction.Commit();
+                    }
+                    catch(Exception ex)
                     {
-                        karteFilterMst.UpdateDate = DateTime.UtcNow;
-                        karteFilterMst.UpdateId = userId;
-                        karteFilterMst.FilterId = item.FilterId;
-                        karteFilterMst.FilterName = item.FilterName;
-                        karteFilterMst.AutoApply = item.AutoApply;
-                        karteFilterMst.IsDeleted = item.IsDeleted;
-                        karteFilterMst.SortNo = item.SortNo;
+                        status = false;
+                        transaction.Rollback();
                     }
                 }
-
-                // Save KarteFilterDetail
-                foreach (var item in listKarteFilterMstToUpdate)
-                {
-                    SaveKarteFilterDetail(item);
-                }
-            }
-            #endregion
-
-            _tenantData.SaveChanges();
-            _tenantNoTrackingDataContext.SaveChanges();
-
-            status = true;
-        }
-        catch
-        {
-            status = false;
-        }
+            });
         return status;
     }
 
@@ -164,73 +172,72 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
         if (item.KarteFilterDetailModel != null && item.IsDeleted != 1)
         {
             // BookMarkChecked
-            var listBookMarkChecked = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 1).ToList();
+            var listBookMarkChecked = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 1).ToList();
             if (listBookMarkChecked.Any() && !item.KarteFilterDetailModel.BookMarkChecked)
             {
-                _tenantNoTrackingDataContext.Remove(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 1, 0));
+                _tenantData.KarteFilterDetails.Remove(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 1, 0));
             }
             if (item.KarteFilterDetailModel.BookMarkChecked && !listBookMarkChecked.Any())
             {
-                _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 1, 0));
+                _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 1, 0));
             }
 
             // ListKaId 
             if (item.KarteFilterDetailModel.ListKaId.Any())
             {
-                var listOldKaId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 4).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldKaId);
-                foreach (var id in item.KarteFilterDetailModel.ListKaId)
+                var listOldKaId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 4).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldKaId);
+                foreach (var id in item.KarteFilterDetailModel.ListKaId.Distinct())
                 {
-                    _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 4, id));
+                    _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 4, id));
                 }
             }
             else
             {
-                var listOldKaId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 4).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldKaId);
-                _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 4, 0));
+                var listOldKaId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 4).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldKaId);
+                _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 4, 0));
             }
 
             // ListUserId 
             if (item.KarteFilterDetailModel.ListUserId.Any())
             {
-                var listOldUserId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 2).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldUserId);
-
-                foreach (var id in item.KarteFilterDetailModel.ListUserId)
+                var listOldUserId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 2).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldUserId);
+                foreach (var id in item.KarteFilterDetailModel.ListUserId.Distinct())
                 {
-                    _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 2, id));
+                    _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 2, id));
                 }
             }
             else
             {
-                var listOldUserId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 2).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldUserId);
-                _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 2, 0));
+                var listOldUserId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 2).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldUserId);
+                _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 2, 0));
             }
 
             // ListHokenId
             if (item.KarteFilterDetailModel.ListUserId.Any())
             {
-                var listOldHokenId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 3).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldHokenId);
-                foreach (var id in item.KarteFilterDetailModel.ListHokenId)
+                var listOldHokenId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 3).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldHokenId);
+                foreach (var id in item.KarteFilterDetailModel.ListHokenId.Distinct())
                 {
-                    _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 3, id));
+                    _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 3, id));
                 }
             }
             else
             {
-                var listOldUserId = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 3).ToList();
-                _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldUserId);
-                _tenantNoTrackingDataContext.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 3, 0));
+                var listOldUserId = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId && detail.FilterItemCd == 3).ToList();
+                _tenantData.KarteFilterDetails.RemoveRange(listOldUserId);
+                _tenantData.KarteFilterDetails.Add(ConvertKarteFilterDetail(item.HpId, item.UserId, item.FilterId, 3, 0));
             }
         }
         if (item.IsDeleted == 1)
         {
             // Remove all KarteFilterDetail
-            var listOldKarteFilterDetails = _tenantNoTrackingDataContext.KarteFilterDetails.Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId).ToList();
-            _tenantNoTrackingDataContext.KarteFilterDetails.RemoveRange(listOldKarteFilterDetails);
+            var listOldKarteFilterDetails = _tenantData.KarteFilterDetails.AsNoTracking().Where(detail => detail.HpId == item.HpId && detail.UserId == item.UserId && detail.FilterId == item.FilterId).ToList();
+            _tenantData.KarteFilterDetails.RemoveRange(listOldKarteFilterDetails);
         }
     }
 }

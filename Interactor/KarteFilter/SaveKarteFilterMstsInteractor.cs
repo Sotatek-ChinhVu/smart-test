@@ -44,8 +44,10 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
                         );
                     listKarteFilterMstModels.Add(karteFilterMstModel);
                 }
-                _karteFilterMstRepository.SaveList(listKarteFilterMstModels, _userId);
-                return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Successed);
+                if (_karteFilterMstRepository.SaveList(listKarteFilterMstModels, _userId))
+                {
+                    return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Successed);
+                }
             }
             return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Failed);
         }

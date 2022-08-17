@@ -41,7 +41,7 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
                             item.KarteFilterDetailModel.FilterId,
                             item.KarteFilterDetailModel.BookMarkChecked,
                             item.KarteFilterDetailModel.ListHokenId,
-                            item.KarteFilterDetailModel.ListHokenId,
+                            item.KarteFilterDetailModel.ListKaId,
                             item.KarteFilterDetailModel.ListUserId
                         ),
                         item.HpId,
