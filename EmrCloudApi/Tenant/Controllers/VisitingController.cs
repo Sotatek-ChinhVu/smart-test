@@ -1,5 +1,6 @@
-﻿using Domain.Models.Reception;
+﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Messages.Reception;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Responses;
@@ -18,10 +19,13 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IWebSocketService _webSocketService;
 
-    public VisitingController(UseCaseBus bus, ILogger<VisitingController> logger)
+    public VisitingController(UseCaseBus bus,
+        IWebSocketService webSocketService)
     {
         _bus = bus;
+        _webSocketService = webSocketService;
     }
 
     [HttpGet(ApiPath.GetList)]
@@ -45,22 +49,34 @@ public class VisitingController : ControllerBase
     }
 
     [HttpPut(ApiPath.Update + "StaticCell")]
-    public ActionResult<Response<UpdateReceptionStaticCellResponse>> UpdateStaticCell([FromBody] UpdateReceptionStaticCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
         var input = new UpdateReceptionStaticCellInputData(
             req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue);
         var output = _bus.Handle(input);
+        if (output.Status == UpdateReceptionStaticCellStatus.Success)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionStaticCell,
+                new UpdateReceptionStaticCellMessage(input.RaiinNo, input.CellName, input.CellValue));
+        }
+
         var presenter = new UpdateReceptionStaticCellPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPut(ApiPath.Update + "DynamicCell")]
-    public ActionResult<Response<UpdateReceptionDynamicCellResponse>> UpdateDynamicCell([FromBody] UpdateReceptionDynamicCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
         var input = new UpdateReceptionDynamicCellInputData(
             req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd);
         var output = _bus.Handle(input);
+        if (output.Status == UpdateReceptionDynamicCellStatus.Success)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionDynamicCell,
+                new UpdateReceptionDynamicCellMessage(input.RaiinNo, input.GrpId, input.KbnCd));
+        }
+
         var presenter = new UpdateReceptionDynamicCellPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
