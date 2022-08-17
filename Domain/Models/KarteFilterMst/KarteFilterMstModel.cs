@@ -11,7 +11,7 @@ public class KarteFilterMstModel
         SortNo = sortNo;
         AutoApply = autoApply;
         IsDeleted = isDeleted;
-        this.karteFilterDetailModel = karteFilterDetailModel;
+        KarteFilterDetailModel = karteFilterDetailModel;
     }
 
     public int HpId { get; private set; }
@@ -28,6 +28,6 @@ public class KarteFilterMstModel
 
     public int IsDeleted { get; private set; }
 
-    public KarteFilterDetailModel karteFilterDetailModel { get; private set; }
+    public KarteFilterDetailModel KarteFilterDetailModel { get; private set; }
 
 }

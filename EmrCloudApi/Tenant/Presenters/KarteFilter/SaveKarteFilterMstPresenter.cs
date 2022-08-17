@@ -11,6 +11,7 @@ public class SaveKarteFilterMstPresenter : ISaveKarteFilterOutputPort
 
     public void Complete(SaveKarteFilterOutputData outputData)
     {
+        Result.Data = new SaveKarteFilterMstResponse(outputData.Status == SaveKarteFilterStatus.Successed);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

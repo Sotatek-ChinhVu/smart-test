@@ -21,12 +21,6 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 
     public GetKarteFilterOutputData Handle(GetKarteFilterInputData inputData)
     {
-        // Check sindate
-        if (inputData.sinDate > 99999999 || inputData.sinDate < 10000000)
-        {
-            return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.InvalidSinDate);
-        }
-
         try
         {
             // check list KarteFilterMsts
@@ -41,15 +35,15 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
             foreach (var item in allKarteFilterMsts)
             {
                 result.Add(new GetKarteFilterMstModelOutputItem(
-                        new GetKarteFilterDetailOutputItem(
-                                item.karteFilterDetailModel.HpId,
-                                item.karteFilterDetailModel.UserId,
-                                item.karteFilterDetailModel.FilterId,
-                                item.karteFilterDetailModel.BookMarkChecked,
-                                item.karteFilterDetailModel.ListHokenId,
-                                item.karteFilterDetailModel.ListKaId,
-                                item.karteFilterDetailModel.ListUserId
-                            ),
+                       new GetKarteFilterDetailOutputItem(
+                            item.KarteFilterDetailModel.HpId,
+                            item.KarteFilterDetailModel.UserId,
+                            item.KarteFilterDetailModel.FilterId,
+                            item.KarteFilterDetailModel.BookMarkChecked,
+                            item.KarteFilterDetailModel.ListHokenId,
+                            item.KarteFilterDetailModel.ListHokenId,
+                            item.KarteFilterDetailModel.ListUserId
+                        ),
                         item.HpId,
                         item.UserId,
                         item.FilterId,

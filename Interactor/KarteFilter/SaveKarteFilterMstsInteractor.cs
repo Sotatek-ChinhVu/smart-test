@@ -19,10 +19,10 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
     {
         try
         {
-            if (inputData.saveKarteFilterMstModelInputs != null)
+            if (inputData.SaveKarteFilterMstModelInputs != null)
             {
                 var listKarteFilterMstModels = new List<KarteFilterMstModel>();
-                foreach (var item in inputData.saveKarteFilterMstModelInputs)
+                foreach (var item in inputData.SaveKarteFilterMstModelInputs)
                 {
                     var karteFilterMstModel = new KarteFilterMstModel(
                             item.HpId,
@@ -32,16 +32,15 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
                             item.SortNo,
                             item.AutoApply,
                             item.IsDeleted,
-                            new KarteFilterDetailModel
-                                (
-                                    item.HpId,
-                                    item.UserId,
-                                    item.FilterId,
-                                    item.karteFilterDetailModel.BookMarkChecked,
-                                    item.karteFilterDetailModel.ListHokenId,
-                                    item.karteFilterDetailModel.ListKaId,
-                                    item.karteFilterDetailModel.ListUserId
-                                )
+                            new KarteFilterDetailModel(
+                                item.HpId,
+                                item.UserId,
+                                item.FilterId,
+                                item.KarteFilterDetailModel.BookMarkChecked,
+                                item.KarteFilterDetailModel.ListHokenId,
+                                item.KarteFilterDetailModel.ListKaId,
+                                item.KarteFilterDetailModel.ListUserId
+                            )
                         );
                     listKarteFilterMstModels.Add(karteFilterMstModel);
                 }

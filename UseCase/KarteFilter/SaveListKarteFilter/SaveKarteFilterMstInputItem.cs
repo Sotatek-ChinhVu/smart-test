@@ -1,8 +1,8 @@
 ﻿namespace UseCase.KarteFilter.SaveListKarteFilter;
 
-public class SaveKarteFilterMstModelInputItem
+public class SaveKarteFilterMstInputItem
 {
-    public SaveKarteFilterMstModelInputItem(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, SaveKarteFilterDetailModelInputItem karteFilterDetailModel)
+    public SaveKarteFilterMstInputItem(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, SaveKarteFilterDetailInputItem karteFilterDetailModel)
     {
         HpId = hpId;
         UserId = userId;
@@ -11,7 +11,7 @@ public class SaveKarteFilterMstModelInputItem
         SortNo = sortNo;
         AutoApply = autoApply;
         IsDeleted = isDeleted;
-        this.karteFilterDetailModel = karteFilterDetailModel;
+        KarteFilterDetailModel = karteFilterDetailModel;
     }
 
     public int HpId { get; private set; }
@@ -28,5 +28,5 @@ public class SaveKarteFilterMstModelInputItem
 
     public int IsDeleted { get; private set; }
 
-    public SaveKarteFilterDetailModelInputItem karteFilterDetailModel { get; private set; }
+    public SaveKarteFilterDetailInputItem KarteFilterDetailModel { get; private set; }
 }

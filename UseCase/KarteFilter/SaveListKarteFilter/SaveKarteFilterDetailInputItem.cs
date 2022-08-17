@@ -1,8 +1,8 @@
 ﻿namespace UseCase.KarteFilter.SaveListKarteFilter
 {
-    public class SaveKarteFilterDetailModelInputItem
+    public class SaveKarteFilterDetailInputItem
     {
-        public SaveKarteFilterDetailModelInputItem(int hpId, int userId, long filterId, bool bookMarkChecked, List<int> listHokenId, List<int> listKaId, List<int> listUserId)
+        public SaveKarteFilterDetailInputItem(int hpId, int userId, long filterId, bool bookMarkChecked, List<int> listHokenId, List<int> listKaId, List<int> listUserId)
         {
             HpId = hpId;
             UserId = userId;

@@ -4,9 +4,9 @@ namespace UseCase.KarteFilter.SaveListKarteFilter;
 
 public class SaveKarteFilterInputData : IInputData<SaveKarteFilterOutputData>
 {
-    public SaveKarteFilterInputData(List<SaveKarteFilterMstModelInputItem>? saveKarteFilterMstModelInputItems)
+    public SaveKarteFilterInputData(List<SaveKarteFilterMstInputItem> saveKarteFilterMstModelInputItems)
     {
-        this.saveKarteFilterMstModelInputs = saveKarteFilterMstModelInputItems;
+        SaveKarteFilterMstModelInputs = saveKarteFilterMstModelInputItems;
     }
-    public List<SaveKarteFilterMstModelInputItem>? saveKarteFilterMstModelInputs { get; private set; }
+    public List<SaveKarteFilterMstInputItem> SaveKarteFilterMstModelInputs { get; private set; } = new List<SaveKarteFilterMstInputItem>();
 }

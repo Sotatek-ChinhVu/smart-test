@@ -21,9 +21,9 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetKarteFilterMstResponse>> GetList([FromQuery] GetKarteFilterMstRequest request)
+        public ActionResult<Response<GetKarteFilterMstResponse>> GetList()
         {
-            var input = new GetKarteFilterInputData(request.SinDate);
+            var input = new GetKarteFilterInputData();
             var output = _bus.Handle(input);
 
             var presenter = new GetKarteFilterMstPresenter();
