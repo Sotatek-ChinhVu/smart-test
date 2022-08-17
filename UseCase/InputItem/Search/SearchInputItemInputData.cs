@@ -9,14 +9,14 @@ namespace UseCase.InputItem.Search
 {
     public class SearchInputItemInputData : IInputData<SearchInputItemOutputData>
     {
-        public SearchInputItemInputData(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, bool isSearchInline, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public SearchInputItemInputData(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
             SinDate = sinDate;
             StartIndex = startIndex;
             PageCount = pageCount;
-            IsSearchInline = isSearchInline;
+            GenericOrSameItem = genericOrSameItem;
             YJCd = yJCd;
             HpId = hpId;
             PointFrom = pointFrom;
@@ -36,7 +36,7 @@ namespace UseCase.InputItem.Search
 
         public int PageCount { get; private set; }
 
-        public bool IsSearchInline { get; private set; }
+        public int GenericOrSameItem { get; private set; }
 
         public string YJCd { get; private set; }
 

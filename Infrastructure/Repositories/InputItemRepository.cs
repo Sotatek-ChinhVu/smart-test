@@ -21,109 +21,107 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, bool isSearchInline, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<InputItemModel>();
-            if (isSearchInline && String.IsNullOrEmpty(keyword))
-            {
-                return listTenMstModels;
-            }
 
-            string sBigKeyword = keyword.ToUpper()
-              .Replace("ｧ", "ｱ")
-              .Replace("ｨ", "ｲ")
-              .Replace("ｩ", "ｳ")
-              .Replace("ｪ", "ｴ")
-              .Replace("ｫ", "ｵ")
-              .Replace("ｬ", "ﾔ")
-              .Replace("ｭ", "ﾕ")
-              .Replace("ｮ", "ﾖ")
-              .Replace("ｯ", "ﾂ");
+                string sBigKeyword = keyword.ToUpper()
+               .Replace("ｧ", "ｱ")
+               .Replace("ｨ", "ｲ")
+               .Replace("ｩ", "ｳ")
+               .Replace("ｪ", "ｴ")
+               .Replace("ｫ", "ｵ")
+               .Replace("ｬ", "ﾔ")
+               .Replace("ｭ", "ﾕ")
+               .Replace("ｮ", "ﾖ")
+               .Replace("ｯ", "ﾂ");
+               var queryResult = _tenantDataContext.TenMsts.Where(t =>
+                                   t.ItemCd.StartsWith(keyword)
+                                   || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   ||
+                                     (!String.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+
+                                   || (
+                                     !String.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   || (
+                                     !String.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   ||
+                                   (!String.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   ||
+                                   (!String.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   || (
+                                     !String.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
+                                     .Replace("ｧ", "ｱ")
+                                     .Replace("ｨ", "ｲ")
+                                     .Replace("ｩ", "ｳ")
+                                     .Replace("ｪ", "ｴ")
+                                     .Replace("ｫ", "ｵ")
+                                     .Replace("ｬ", "ﾔ")
+                                     .Replace("ｭ", "ﾕ")
+                                     .Replace("ｮ", "ﾖ")
+                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                   ||
+                                   (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
+
+
+
+
 
             var yakkaSyusaiMstList = _tenantDataContext.YakkaSyusaiMsts.ToList();
-            var queryResult = _tenantDataContext.TenMsts
-                    .Where(t =>
-                        t.ItemCd.StartsWith(keyword)
-                        || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        ||
-                          (!String.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-
-                        || (
-                          !String.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        || (
-                          !String.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        ||
-                        (!String.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        ||
-                        (!String.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        || (
-                          !String.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
-                          .Replace("ｧ", "ｱ")
-                          .Replace("ｨ", "ｲ")
-                          .Replace("ｩ", "ｳ")
-                          .Replace("ｪ", "ｴ")
-                          .Replace("ｫ", "ｵ")
-                          .Replace("ｬ", "ﾔ")
-                          .Replace("ｭ", "ﾕ")
-                          .Replace("ｮ", "ﾖ")
-                          .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                        ||
-                        (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
-
             if (kouiKbn > 0)
             {
                 //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
@@ -258,75 +256,26 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            if (isSearchInline)
+
+            if (sinDate > 0)
             {
-                if (sinDate > 0)
-                {
-                    queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
+                queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
 
-                    yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
-                }
-                else
-                {
-                    var newQuery = queryResult.ToList();
-                    if (newQuery != null)
-                    {
-                        queryResult = queryResult.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).FirstOrDefault() ?? new TenMst());
-                    }
-                }
-
-                queryResult = queryResult.Where(t => t.IsNosearch == 0);
-
-                var tenJoinYakkaSyusai = from ten in queryResult
-                                         join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                         on new { ten.HpId, ten.YakkaCd, ten.ItemCd, ten.StartDate }
-                                         equals new { yakkaSyusaiMstItem.HpId, yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd, yakkaSyusaiMstItem.StartDate }
-                                         into yakkaSyusaiMstItems
-                                         from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                         select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
-                var sinKouiCollection = new SinkouiCollection();
-
-                var queryFinal = from ten in tenJoinYakkaSyusai
-                                 join kouiKbnItem in sinKouiCollection
-                                 on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                                 from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                                 select new { TenMst = ten.TenMst };
-
-                var entities = queryFinal.OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip(startIndex).Take(pageCount);
-                var listTenMst = entities.Where(item => item.TenMst != null).ToList();
-
-                if (listTenMst != null && listTenMst.Count > 0)
-                {
-                    for (int i = 0; i < listTenMst.Count; i++)
-                    {
-                        var item = listTenMst[i];
-                        var newItemModel = new InputItemModel(
-                                                               item.TenMst.HpId,
-                                                               item.TenMst.ItemCd,
-                                                               item.TenMst.RousaiKbn,
-                                                               item.TenMst.KanaName1 ?? string.Empty,
-                                                               item.TenMst.Name,
-                                                               item.TenMst.KohatuKbn,
-                                                               item.TenMst.MadokuKbn,
-                                                               item.TenMst.KouseisinKbn,
-                                                               item.TenMst.OdrUnitName ?? string.Empty,
-                                                               item.TenMst.EndDate,
-                                                               item.TenMst.DrugKbn,
-                                                               item.TenMst.MasterSbt,
-                                                               item.TenMst.BuiKbn,
-                                                               item.TenMst.IsAdopted,
-                                                               item.TenMst.Ten,
-                                                               0,
-                                                               "",
-                                                               ""
-                                                                );
-                        listTenMstModels.Add(newItemModel);
-                    }
-                }
+                yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
             }
             else
             {
-                string YJCode = "";
+                var newQuery = queryResult.ToList();
+                if (newQuery != null)
+                {
+                    queryResult = queryResult.GroupBy(item => item.ItemCd, (key, group) => group.OrderByDescending(item => item.EndDate).FirstOrDefault() ?? new TenMst());
+                }
+            }
+
+
+            string YJCode = "";
+            if (genericOrSameItem == 1)
+            {
                 if (yjCd.Length >= 9)
                 {
                     YJCode = CIUtil.Copy(yjCd, 1, 9);
@@ -335,115 +284,117 @@ namespace Infrastructure.Repositories
                 {
                     YJCode = yjCd;
                 }
-
-                if (!string.IsNullOrEmpty(YJCode))
+            }
+            else if (genericOrSameItem == 2)
+            {
+                if (yjCd.Length >= 4)
                 {
-                    queryResult = queryResult.Where(t => !String.IsNullOrEmpty(t.YjCd) && t.YjCd.StartsWith(YJCode));
+                    YJCode = CIUtil.Copy(yjCd, 1, 4);
                 }
-
-                if (pointFrom > 0)
+                else
                 {
-                    queryResult = queryResult.Where(t => t.Ten >= pointFrom);
+                    YJCode = yjCd;
                 }
-
-                if (pointTo > 0)
-                {
-                    queryResult = queryResult.Where(t => t.Ten <= pointTo);
-                }
-
-                if (sinDate > 0)
-                {
-                    queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
-
-                    yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
-                }
-
-                //!searchItemCondition.IncludeRosai
-                if (!isRosai)
-                {
-                    queryResult = queryResult.Where(t => t.RousaiKbn != 1);
-                }
-
-                //!searchItemCondition.IncludeMisai
-                if (!isMirai)
-                {
-                    queryResult = queryResult.Where(t => t.IsAdopted == 1);
-                }
-
-                queryResult = queryResult.Where(t => t.IsNosearch == 0);
-
-                // Query 点数 for KN% item
-                var tenMstQuery = _tenantDataContext.TenMsts.Where(item => item.HpId == hpId
-                                                                                           && item.StartDate <= sinDate
-                                                                                           && item.EndDate >= sinDate).ToList();
-                var queryResultList = queryResult.AsEnumerable().ToList();
-
-                var kensaMstQuery = _tenantDataContext.KensaMsts.ToList();
-
-                var queryKNTensu = from tenKN in queryResultList
-                                   join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
-                                   where tenKN.ItemCd.StartsWith("KN")
-                                   select new { tenKN.ItemCd, ten.Ten };
-
-
-                var tenJoinYakkaSyusai = from ten in queryResultList
-                                         join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                         on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                         from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                         select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
-
-                var sinKouiCollection = new SinkouiCollection();
-
-                var queryFinal = from ten in tenJoinYakkaSyusai
-                                 join kouiKbnItem in sinKouiCollection
-                                 on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                                 from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                                 join tenKN in queryKNTensu
-                                 on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
-                                 from tenKN in tenKNLeft.DefaultIfEmpty()
-
-                                 select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN };
-
-
-                var queryJoinWithKensa = from q in queryFinal
-                                         join k in kensaMstQuery
-                                         on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
-                                         from kensaMst in kensaMsts.DefaultIfEmpty()
-                                         select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
-
-                var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).ToList();
-
-                if (listTenMst != null && listTenMst.Count > 0)
-                {
-                    for (int i = 0; i < listTenMst.Count; i++)
-                    {
-                        var item = listTenMst[i];
-                        var newItemModel = new InputItemModel(
-                                                               item.TenMst.HpId,
-                                                               item.TenMst.ItemCd,
-                                                               item.TenMst.RousaiKbn,
-                                                               item.TenMst.KanaName1 ?? string.Empty,
-                                                               item.TenMst.Name,
-                                                               item.TenMst.KohatuKbn,
-                                                               item.TenMst.MadokuKbn,
-                                                               item.TenMst.KouseisinKbn,
-                                                               item.TenMst.OdrUnitName ?? string.Empty,
-                                                               item.TenMst.EndDate,
-                                                               item.TenMst.DrugKbn,
-                                                               item.TenMst.MasterSbt,
-                                                               item.TenMst.BuiKbn,
-                                                               item.TenMst.IsAdopted,
-                                                               item.tenKN != null ? item.tenKN.Ten : item.TenMst.Ten,
-                                                               item.TenMst.TenId,
-                                                               item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
-                                                               item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty
-                                                                );
-                        listTenMstModels.Add(newItemModel);
-                    }
-                }
-
             }
 
+
+            if (!string.IsNullOrEmpty(YJCode))
+            {
+                queryResult = queryResult.Where(t => !String.IsNullOrEmpty(t.YjCd) && t.YjCd.StartsWith(YJCode));
+            }
+
+            if (pointFrom > 0)
+            {
+                queryResult = queryResult.Where(t => t.Ten >= pointFrom);
+            }
+
+            if (pointTo > 0)
+            {
+                queryResult = queryResult.Where(t => t.Ten <= pointTo);
+            }
+
+
+            //!searchItemCondition.IncludeRosai
+            if (!isRosai)
+            {
+                queryResult = queryResult.Where(t => t.RousaiKbn != 1);
+            }
+
+            //!searchItemCondition.IncludeMisai
+            if (!isMirai)
+            {
+                queryResult = queryResult.Where(t => t.IsAdopted == 1);
+            }
+
+            queryResult = queryResult.Where(t => t.IsNosearch == 0);
+
+            // Query 点数 for KN% item
+            var tenMstQuery = _tenantDataContext.TenMsts.Where(item => item.HpId == hpId
+                                                                                       && item.StartDate <= sinDate
+                                                                                       && item.EndDate >= sinDate).ToList();
+            var queryResultList = queryResult.AsEnumerable().ToList();
+
+            var kensaMstQuery = _tenantDataContext.KensaMsts.ToList();
+
+            var queryKNTensu = from tenKN in queryResultList
+                               join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
+                               where tenKN.ItemCd.StartsWith("KN")
+                               select new { tenKN.ItemCd, ten.Ten };
+
+
+            var tenJoinYakkaSyusai = from ten in queryResultList
+                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
+                                     on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
+                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
+                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
+            var sinKouiCollection = new SinkouiCollection();
+
+            var queryFinal = from ten in tenJoinYakkaSyusai
+                             join kouiKbnItem in sinKouiCollection
+                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
+                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+                             join tenKN in queryKNTensu
+                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                             from tenKN in tenKNLeft.DefaultIfEmpty()
+
+                             select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN };
+
+            var queryJoinWithKensa = from q in queryFinal
+                                     join k in kensaMstQuery
+                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                     from kensaMst in kensaMsts.DefaultIfEmpty()
+                                     select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
+
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip(startIndex).Take(pageCount);
+            var listTenMstData = listTenMst.ToList();
+            if (listTenMstData != null && listTenMstData.Count > 0)
+            {
+                for (int i = 0; i < listTenMstData.Count; i++)
+                {
+                    var item = listTenMstData[i];
+                    var newItemModel = new InputItemModel(
+                                                           item.TenMst.HpId,
+                                                           item.TenMst.ItemCd,
+                                                           item.TenMst.RousaiKbn,
+                                                           item.TenMst.KanaName1 ?? string.Empty,
+                                                           item.TenMst.Name,
+                                                           item.TenMst.KohatuKbn,
+                                                           item.TenMst.MadokuKbn,
+                                                           item.TenMst.KouseisinKbn,
+                                                           item.TenMst.OdrUnitName ?? string.Empty,
+                                                           item.TenMst.EndDate,
+                                                           item.TenMst.DrugKbn,
+                                                           item.TenMst.MasterSbt,
+                                                           item.TenMst.BuiKbn,
+                                                           item.TenMst.IsAdopted,
+                                                           item.tenKN != null ? item.tenKN.Ten : item.TenMst.Ten,
+                                                           item.TenMst.TenId,
+                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
+                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty
+                                                            );
+                    listTenMstModels.Add(newItemModel);
+                }
+            }
             return listTenMstModels;
         }
     }

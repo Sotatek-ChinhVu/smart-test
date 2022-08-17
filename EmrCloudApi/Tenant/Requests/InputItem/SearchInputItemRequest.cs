@@ -12,20 +12,20 @@
 
         public int PageCount { get; set; }
 
-        public bool IsSearchInline { get; set; }
+        public int GenericOrSameItem { get; set; } = 0;
 
         public string YJCd { get; set; } = string.Empty;
 
         public int HpId { get; set; }
 
-        public double PointFrom { get; set; }
+        public double PointFrom { get; set; } = 0; 
 
-        public double PointTo { get; set; }
+        public double PointTo { get; set; } = 0;
 
-        public bool IsRosai { get; set; }
+        public bool IsRosai { get; set; } = false;
 
-        public bool IsMirai { get; set; }
+        public bool IsMirai { get; set; } = false;
 
-        public bool IsExpired { get; set; }
+        public bool IsExpired { get; set; } = false;
     }
 }

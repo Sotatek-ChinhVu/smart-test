@@ -33,26 +33,27 @@ namespace Interactor.InputItem
                 return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidSindate);
             }
 
-            if (inputData.IsSearchInline)
+            if (inputData.StartIndex < 0)
             {
-                // search list inline
-                if (!String.IsNullOrEmpty(inputData.Keyword))
-                {
-                    return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InValidKeyword);
-                }
-
-                if (inputData.StartIndex < 0)
-                {
-                    return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidStartIndex);
-                }
-
-                if (inputData.PageCount <= 0)
-                {
-                    return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPageCount);
-                }
+                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidStartIndex);
             }
 
-            var data = _inputItemRepository.SearchDataInputItem(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.StartIndex, inputData.PageCount, inputData.IsSearchInline, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
+            if (inputData.PageCount <= 0)
+            {
+                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPageCount);
+            }
+
+            if (inputData.PointFrom < 0)
+            {
+                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPointFrom);
+            }
+
+            if (inputData.PointTo < 0)
+            {
+                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPointTo);
+            }
+
+            var data = _inputItemRepository.SearchDataInputItem(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.StartIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
 
             return new SearchInputItemOutputData(data.ToList(), SearchInputItemStatus.Successed);
         }
