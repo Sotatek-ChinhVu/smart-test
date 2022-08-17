@@ -41,15 +41,15 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
             foreach (var item in allKarteFilterMsts)
             {
                 result.Add(new GetKarteFilterMstModelOutputItem(
-                        new GetKarteFilterDetailOutputItem(
-                                item.karteFilterDetailModel.HpId,
-                                item.karteFilterDetailModel.UserId,
-                                item.karteFilterDetailModel.FilterId,
-                                item.karteFilterDetailModel.BookMarkChecked,
-                                item.karteFilterDetailModel.ListHokenId,
-                                item.karteFilterDetailModel.ListHokenId,
-                                item.karteFilterDetailModel.ListUserId
-                            ),
+                       new GetKarteFilterDetailOutputItem(
+                            item.karteFilterDetailModel.HpId,
+                            item.karteFilterDetailModel.UserId,
+                            item.karteFilterDetailModel.FilterId,
+                            item.karteFilterDetailModel.BookMarkChecked,
+                            item.karteFilterDetailModel.ListHokenId,
+                            item.karteFilterDetailModel.ListHokenId,
+                            item.karteFilterDetailModel.ListUserId
+                        ),
                         item.HpId,
                         item.UserId,
                         item.FilterId,
