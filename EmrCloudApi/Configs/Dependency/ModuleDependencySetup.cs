@@ -92,6 +92,7 @@ using Domain.Models.KarteFilterMst;
 using Interactor.KarteFilter;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.InputItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -219,7 +220,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // KarteFilter
             busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
-       
+            busBuilder.RegisterUseCase<SaveKarteFilterInputData, SaveKarteFilterMstsInteractor>();
+
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
