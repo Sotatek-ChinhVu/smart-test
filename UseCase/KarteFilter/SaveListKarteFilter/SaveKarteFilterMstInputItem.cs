@@ -1,8 +1,10 @@
-﻿namespace Domain.Models.KarteFilterMst;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class KarteFilterMstModel
+namespace UseCase.KarteFilter.SaveListKarteFilter;
+
+public class SaveKarteFilterMstInputItem
 {
-    public KarteFilterMstModel(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, KarteFilterDetailModel karteFilterDetailModel)
+    public SaveKarteFilterMstInputItem(int hpId, int userId, long filterId, string filterName, int sortNo, int autoApply, int isDeleted, SaveKarteFilterDetailInputItem karteFilterDetailModel)
     {
         HpId = hpId;
         UserId = userId;
@@ -20,6 +22,7 @@ public class KarteFilterMstModel
 
     public long FilterId { get; private set; }
 
+    [MaxLength(20)]
     public string FilterName { get; private set; }
 
     public int SortNo { get; private set; }
@@ -28,6 +31,5 @@ public class KarteFilterMstModel
 
     public int IsDeleted { get; private set; }
 
-    public KarteFilterDetailModel KarteFilterDetailModel { get; private set; }
-
+    public SaveKarteFilterDetailInputItem KarteFilterDetailModel { get; private set; }
 }

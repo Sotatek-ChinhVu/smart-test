@@ -3,6 +3,7 @@ using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.KaMst;
@@ -35,6 +36,7 @@ using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
+using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.KaMst;
@@ -58,13 +60,16 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
+using UseCase.InputItem.Search;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.KaMst.GetList;
 using UseCase.KarteInfs.GetLists;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
@@ -89,6 +94,8 @@ using Domain.Models.KarteFilterMst;
 using Interactor.KarteFilter;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.KarteFilter.SaveListKarteFilter;
+using UseCase.InputItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -139,6 +146,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
+            services.AddTransient<IInputItemRepository, InputItemRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -208,19 +216,25 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
+            busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
             // KarteFilter
             busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
-       
+            busBuilder.RegisterUseCase<SaveKarteFilterInputData, SaveKarteFilterMstsInteractor>();
+
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
+
+            //Input Item
+            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

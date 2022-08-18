@@ -1,14 +1,28 @@
-﻿using Domain.Models.RaiinListMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.FlowSheet
+﻿namespace Domain.Models.FlowSheet
 {
     public class FlowSheetModel
     {
+        public FlowSheetModel(long ptId, int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isContainsFile, bool isNextOrder, bool isToDayOdr, int raiinListTagSeqNo, long raiinListCmtSeqNo, int cmtKbn, List<RaiinListInfModel> raiinListInfs)
+        {
+            PtId = ptId;
+            SinDate = sinDate;
+            TagNo = tagNo;
+            FullLineOfKarte = fullLineOfKarte;
+            RaiinNo = raiinNo;
+            SyosaisinKbn = syosaisinKbn;
+            Comment = comment;
+            Status = status;
+            IsContainsFile = isContainsFile;
+            IsNextOrder = isNextOrder;
+            IsToDayOdr = isToDayOdr;
+            RaiinListTagSeqNo = raiinListTagSeqNo;
+            RaiinListCmtSeqNo = raiinListCmtSeqNo;
+            CmtKbn = cmtKbn;
+            RaiinListInfs = raiinListInfs;
+        }
+
+        public long PtId { get; private set; }
+
         public int SinDate { get; private set; }
 
         public int TagNo { get; private set; }
@@ -29,21 +43,13 @@ namespace Domain.Models.FlowSheet
 
         public bool IsToDayOdr { get; private set; }
 
+        public int RaiinListTagSeqNo { get; private set; }
+
+        public long RaiinListCmtSeqNo { get; private set; }
+
+        public int CmtKbn { get; private set; }
+
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
 
-        public FlowSheetModel(int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, int status, bool _isContainsFile, int tagNo, string cmt, List<RaiinListInfModel> infs, bool isNextOrder, bool isToDayOdr)
-        {
-            SinDate = sinDate;
-            FullLineOfKarte = fullLineOfKarte;
-            RaiinNo = raiinNo;
-            SyosaisinKbn = syosaisinKbn;
-            Status = status;
-            TagNo = tagNo;
-            Comment = cmt;
-            RaiinListInfs = infs;
-            IsContainsFile = _isContainsFile;
-            IsNextOrder = isNextOrder;
-            IsToDayOdr = isToDayOdr;
-        }
     }
 }
