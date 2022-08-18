@@ -1,4 +1,6 @@
-﻿namespace UseCase.KarteFilter.SaveListKarteFilter;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UseCase.KarteFilter.SaveListKarteFilter;
 
 public class SaveKarteFilterMstInputItem
 {
@@ -20,6 +22,7 @@ public class SaveKarteFilterMstInputItem
 
     public long FilterId { get; private set; }
 
+    [MaxLength(20)]
     public string FilterName { get; private set; }
 
     public int SortNo { get; private set; }
