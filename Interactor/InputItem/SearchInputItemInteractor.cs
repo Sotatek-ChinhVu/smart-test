@@ -28,7 +28,7 @@ namespace Interactor.InputItem
                 return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidKouiKbn);
             }
 
-            if (inputData.SinDate < 0)
+            if (inputData.SinDate <= 0)
             {
                 return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidSindate);
             }
