@@ -1,8 +1,5 @@
-﻿using Domain.Models.KaMst;
-using Domain.Models.KarteFilterMst;
-using Domain.Models.User;
+﻿using Domain.Models.KarteFilterMst;
 using Helper.Constants;
-using System.Linq;
 using UseCase.KarteFilter.GetListKarteFilter;
 
 namespace Interactor.KarteFilter;
@@ -27,14 +24,14 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 
             if (allKarteFilterMsts == null || allKarteFilterMsts.Count <= 0)
             {
-                return new GetKarteFilterOutputData(new (), GetKarteFilterStatus.NoData);
+                return new GetKarteFilterOutputData(new(), GetKarteFilterStatus.NoData);
             }
 
             return new GetKarteFilterOutputData(allKarteFilterMsts, GetKarteFilterStatus.Successed);
         }
         catch (Exception)
         {
-            return new GetKarteFilterOutputData(new (), GetKarteFilterStatus.Error);
+            return new GetKarteFilterOutputData(new(), GetKarteFilterStatus.Error);
         }
     }
 }

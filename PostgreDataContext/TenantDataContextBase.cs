@@ -88,6 +88,9 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteFilterDetail>().HasKey(e => new { e.HpId, e.UserId, e.FilterId, e.FilterItemCd, e.FilterEdaNo });
             modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId});
             modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
+            modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<TenMst>().HasKey(e => new { e.HpId, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<KensaMst>().HasKey(e => new { e.HpId, e.KensaItemCd, e.KensaItemSeqNo });
         }
 
         public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;
@@ -332,7 +335,7 @@ namespace PostgreDataContext
 
         public DbSet<KensaMst> KensaMsts { get; set; } = default!;
 
-        public DbSet<YakkaSyusaiMst> yakkaSyusaiMsts { get; set; } = default!;
+        public DbSet<YakkaSyusaiMst> YakkaSyusaiMsts { get; set; } = default!;
 
         public DbSet<KarteFilterDetail> KarteFilterDetails { get; set; } = default!;
 

@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_CD")]
         [MaxLength(10)]
-        public string CenterCd { get; set; } = string.Empty;
+        public string? CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 漢字名称
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_KANA")]
         [MaxLength(20)]
-        public string KensaKana { get; set; } = string.Empty;
+        public string? KensaKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT")]
         [MaxLength(20)]
-        public string Unit { get; set; } = string.Empty;
+        public string? Unit { get; set; } = string.Empty;
 
         /// <summary>
         /// 材料コード
@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD")]
         [MaxLength(60)]
-        public string MaleStd { get; set; } = string.Empty;
+        public string? MaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値下限
@@ -95,7 +95,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_LOW")]
         [MaxLength(60)]
-        public string MaleStdLow { get; set; } = string.Empty;
+        public string? MaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値上限
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_HIGH")]
         [MaxLength(60)]
-        public string MaleStdHigh { get; set; } = string.Empty;
+        public string? MaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD")]
         [MaxLength(60)]
-        public string FemaleStd { get; set; } = string.Empty;
+        public string? FemaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値下限
@@ -119,7 +119,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_LOW")]
         [MaxLength(60)]
-        public string FemaleStdLow { get; set; } = string.Empty;
+        public string? FemaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値上限
@@ -127,7 +127,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_HIGH")]
         [MaxLength(60)]
-        public string FemaleStdHigh { get; set; } = string.Empty;
+        public string? FemaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 式
@@ -135,7 +135,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORMULA")]
         [MaxLength(100)]
-        public string Formula { get; set; } = string.Empty;
+        public string? Formula { get; set; } = string.Empty;
 
         /// <summary>
         /// 小数桁
@@ -151,7 +151,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("OYA_ITEM_CD")]
         [MaxLength(10)]
-        public string OyaItemCd { get; set; } = string.Empty;
+        public string? OyaItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 親検査項目連番
@@ -175,7 +175,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_ITEM_CD1")]
         [MaxLength(10)]
-        public string CenterItemCd1 { get; set; } = string.Empty;
+        public string? CenterItemCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 外注コード２
@@ -183,7 +183,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_ITEM_CD2")]
         [MaxLength(10)]
-        public string CenterItemCd2 { get; set; } = string.Empty;
+        public string? CenterItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
