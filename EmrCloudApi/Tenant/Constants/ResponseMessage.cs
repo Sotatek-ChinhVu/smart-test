@@ -11,6 +11,10 @@
         public static readonly string InvalidHokenId = "Invalid HokenId";
         public static readonly string InvalidPageIndex = "Invalid PageIndex";
         public static readonly string InvalidPageCount = "Invalid PageCount";
+        public static readonly string InvalidStartIndex = "Invalid StartIndex";
+        public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
+        public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
+        public static readonly string InvalidItemCd = "Invalid ItemCd";
 
         //Common
         public static readonly string NotFound = "Not found";
