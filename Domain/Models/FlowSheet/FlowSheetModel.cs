@@ -2,25 +2,6 @@
 {
     public class FlowSheetModel
     {
-        public FlowSheetModel(long ptId, int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isContainsFile, bool isNextOrder, bool isToDayOdr, int raiinListTagSeqNo, long raiinListCmtSeqNo, int cmtKbn, List<RaiinListInfModel> raiinListInfs)
-        {
-            PtId = ptId;
-            SinDate = sinDate;
-            TagNo = tagNo;
-            FullLineOfKarte = fullLineOfKarte;
-            RaiinNo = raiinNo;
-            SyosaisinKbn = syosaisinKbn;
-            Comment = comment;
-            Status = status;
-            IsContainsFile = isContainsFile;
-            IsNextOrder = isNextOrder;
-            IsToDayOdr = isToDayOdr;
-            RaiinListTagSeqNo = raiinListTagSeqNo;
-            RaiinListCmtSeqNo = raiinListCmtSeqNo;
-            CmtKbn = cmtKbn;
-            RaiinListInfs = raiinListInfs;
-        }
-
         public long PtId { get; private set; }
 
         public int SinDate { get; private set; }
@@ -53,8 +34,6 @@
             RaiinListCmt = cmt;
             RaiinListInfs = infs;
             IsContainsFile = _isContainsFile;
-        }
-            IsToDayOdr = isToDayOdr;
         }
     }
 }

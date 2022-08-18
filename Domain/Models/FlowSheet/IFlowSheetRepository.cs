@@ -9,7 +9,5 @@ namespace Domain.Models.FlowSheet
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 
         List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
-
-        void Upsert(List<FlowSheetModel> inputDatas);
     }
 }

@@ -39,15 +39,5 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetListHolidayResponse>>(presenter.Result);
         }
-        [HttpGet(ApiPath.GetList + "RaiinMst")]
-        public ActionResult<Response<GetListRaiinMstResponse>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
-        {
-            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, false, 0, 0, true);
-            var output = _bus.Handle(input);
-            var presenter = new GetListRaiinMstPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<GetListRaiinMstResponse>>(presenter.Result);
-        }
     }
 }

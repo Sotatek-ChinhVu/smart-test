@@ -32,9 +32,9 @@ namespace Infrastructure.Repositories
 
             var dataList = query.ToList();
 
-            var tags = _tenantDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId).ToList();
-            var comments = _tenantDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId).ToList();
-            var raiinListInfs = _tenantDataContext.RaiinListInfs.Where(raiinInf => raiinInf.HpId == hpId && raiinInf.PtId == ptId);
+            var tags = _tenantNoTrackingDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId).ToList();
+            var comments = _tenantNoTrackingDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId).ToList();
+            var raiinListInfs = _tenantNoTrackingDataContext.RaiinListInfs.Where(raiinInf => raiinInf.HpId == hpId && raiinInf.PtId == ptId);
 
             List<FlowSheetModel> result = new();
             foreach (var data in dataList)
@@ -93,70 +93,6 @@ namespace Infrastructure.Repositories
         {
             var holidayCollection = _tenantNoTrackingDataContext.HolidayMsts.Where(h => h.HpId == hpId && h.IsDeleted == DeleteTypes.None && holidayFrom <= h.SinDate && h.SinDate <= holidayTo);
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName)).ToList();
-        }
-
-        public void Upsert(List<FlowSheetModel> inputDatas)
-        {
-            foreach (var inputData in inputDatas)
-            {
-
-                var raiinListCmt = _tenantTrackingDataContext.RaiinListCmts
-                            .OrderByDescending(p => p.UpdateDate)
-                            .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.CmtKbn == inputData.CmtKbn);
-
-                if (raiinListCmt is null)
-                {
-                    _tenantTrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
-                    {
-                        HpId = 1,
-                        PtId = inputData.PtId,
-                        SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RaiinNo,
-                        CmtKbn = inputData.CmtKbn,
-                        SeqNo = inputData.RaiinListCmtSeqNo,
-                        Text = inputData.Comment,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
-                    });
-                }
-                else
-                {
-                    raiinListCmt.Text = inputData.Comment;
-                    raiinListCmt.UpdateDate = DateTime.UtcNow;
-                    raiinListCmt.UpdateId = TempIdentity.UserId;
-                    raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
-                }
-
-                var raiinListTag = _tenantTrackingDataContext.RaiinListTags
-                           .OrderByDescending(p => p.UpdateDate)
-                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
-
-                if (raiinListTag is null)
-                {
-                    _tenantTrackingDataContext.RaiinListTags.Add(new RaiinListTag
-                    {
-                        HpId = 1,
-                        PtId = inputData.PtId,
-                        SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RaiinNo,
-                        SeqNo = inputData.RaiinListTagSeqNo,
-                        TagNo = inputData.TagNo,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
-                    });
-                }
-                else
-                {
-                    raiinListTag.TagNo = inputData.TagNo;
-                    raiinListTag.UpdateDate = DateTime.UtcNow;
-                    raiinListTag.UpdateId = TempIdentity.UserId;
-                    raiinListTag.UpdateMachine = TempIdentity.ComputerName;
-                }
-            }
-
-            _tenantTrackingDataContext.SaveChanges();
         }
     }
 }

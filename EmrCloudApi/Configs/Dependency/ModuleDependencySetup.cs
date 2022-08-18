@@ -93,7 +93,6 @@ using UseCase.User.UpsertList;
 using Domain.Models.KarteFilterMst;
 using Interactor.KarteFilter;
 using UseCase.KarteFilter.GetListKarteFilter;
-using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.InputItem.UpdateAdopted;
 
@@ -216,7 +215,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
-            busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
