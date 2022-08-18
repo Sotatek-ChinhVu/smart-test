@@ -494,7 +494,9 @@ namespace Infrastructure.Repositories
                 p.IsTester,
                 p.MainHokenPid,
                 memo,
-                lastVisitDate);
+                lastVisitDate,
+                0,
+                "");
         }
 
         private PatientInforModel ConvertToModel(PtInf itemData)
@@ -514,6 +516,18 @@ namespace Infrastructure.Repositories
             {
                 lastVisitDate = raiinInf.SinDate;
             }
+
+            //Get First Visit Date
+            int firstDate = 0;
+            RaiinInf? raiinInfFirstDate = _tenantDataContext.RaiinInfs.Where(x => x.HpId == itemData.HpId
+                                                                           && x.PtId == itemData.PtId
+                                                                           && x.SyosaisinKbn == SyosaiConst.Syosin
+                                                                           && x.Status >= RaiinState.TempSave
+                                                                           && x.IsDeleted == DeleteTypes.None
+                )
+                .OrderByDescending(x => x.SinDate)
+                .FirstOrDefault();
+
 
             return new PatientInforModel(
                 itemData.HpId,
@@ -554,7 +568,9 @@ namespace Infrastructure.Repositories
                 itemData.IsTester,
                 itemData.MainHokenPid,
                 memo,
-                lastVisitDate);
+                lastVisitDate,
+                0,
+                "");
         }
     }
 }
