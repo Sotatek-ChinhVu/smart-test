@@ -10,11 +10,15 @@ namespace Domain.Models.User
     {
         void Create(UserMstModel user);
 
-        UserMstModel Read(UserId userId);
+        UserMstModel Read(int userId);
 
         void Update(UserMstModel user);
 
-        void Delete(UserId userId);
+        void Delete(int userId);
+
+        IEnumerable<UserMstModel> GetAll();
+
+        IEnumerable<UserMstModel> GetDoctorsList(int userId);
 
         List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);
 
