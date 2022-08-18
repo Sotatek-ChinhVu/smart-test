@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.InputItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.InputItem.Search;
+using UseCase.InputItem.UpdateAdopted;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -26,6 +27,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var input = new SearchInputItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.StartIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, request.HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired);
             var output = _bus.Handle(input);
             var presenter = new SearchInputItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost("UpdateAdoptedInputItem")]
+        public ActionResult<Response<UpdateAdoptedInputItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedInputItemRequest request)
+        {
+            var input = new UpdateAdoptedInputItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.SinDateInputItem);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateAdoptedInputItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

@@ -3,6 +3,7 @@ using Domain.Models.InputItem;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -16,9 +17,11 @@ namespace Infrastructure.Repositories
     public class InputItemRepository : IInputItemRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContextTracking;
         public InputItemRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
@@ -396,6 +399,26 @@ namespace Infrastructure.Repositories
                 }
             }
             return listTenMstModels;
+        }
+
+        public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == TempIdentity.HpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
+
+            if (tenMst == null) return false;
+
+            if (tenMst.IsAdopted == valueAdopted) return false;
+
+            tenMst.IsAdopted = valueAdopted;
+
+            tenMst.UpdateDate = DateTime.UtcNow;
+            tenMst.UpdateId = TempIdentity.UserId;
+            tenMst.UpdateMachine = TempIdentity.ComputerName;
+
+            _tenantDataContextTracking.SaveChanges();
+
+            return true;
         }
     }
 }
