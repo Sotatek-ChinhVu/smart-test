@@ -15,6 +15,8 @@ namespace UseCase.InputItem.Search
         InvalidStartIndex = 5,
         InvalidPageCount = 6,
         InvalidKouiKbn = 7,
+        InvalidPointFrom = 8,
+        InvalidPointTo = 9,
 
     }
 }

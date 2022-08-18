@@ -88,6 +88,9 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using Domain.Models.KarteFilterMst;
+using Interactor.KarteFilter;
+using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.InputItem.UpdateAdopted;
 
@@ -137,6 +140,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
@@ -213,6 +217,9 @@ namespace EmrCloudApi.Configs.Dependency
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
+            // KarteFilter
+            busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
+       
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
