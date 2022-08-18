@@ -90,6 +90,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
             modelBuilder.Entity<TenMst>().HasKey(e => new { e.HpId, e.ItemCd, e.StartDate });
             modelBuilder.Entity<KensaMst>().HasKey(e => new { e.HpId, e.KensaItemCd, e.KensaItemSeqNo });
+            modelBuilder.Entity<RaiinListCmt>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn });
+            modelBuilder.Entity<RaiinListTag>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
         }
 
         public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;
