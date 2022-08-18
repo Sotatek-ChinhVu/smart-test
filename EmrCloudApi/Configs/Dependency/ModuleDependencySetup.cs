@@ -64,6 +64,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
@@ -97,6 +98,11 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using Domain.Models.KarteFilterMst;
+using Interactor.KarteFilter;
+using UseCase.KarteFilter.GetListKarteFilter;
+using UseCase.KarteFilter.SaveListKarteFilter;
+using UseCase.InputItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
 {

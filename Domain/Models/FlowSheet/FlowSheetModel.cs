@@ -1,14 +1,9 @@
-﻿using Domain.Models.RaiinListMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.FlowSheet
+﻿namespace Domain.Models.FlowSheet
 {
     public class FlowSheetModel
     {
+        public long PtId { get; private set; }
+
         public int SinDate { get; private set; }
 
         public int TagNo { get; private set; }
@@ -19,19 +14,16 @@ namespace Domain.Models.FlowSheet
 
         public int SyosaisinKbn { get; private set; }
 
-        public string Comment { get; private set; }
+        public RaiinListCmtModel RaiinListCmt { get; private set; }
 
         public int Status { get; private set; }
 
         public bool IsContainsFile { get; private set; }
 
-        public bool IsNextOrder { get; private set; }
-
-        public bool IsToDayOdr { get; private set; }
-
+        // Raiin List Detail && RaiinListInf (for dynamic column)
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
 
-        public FlowSheetModel(int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, int status, bool _isContainsFile, int tagNo, string cmt, List<RaiinListInfModel> infs, bool isNextOrder, bool isToDayOdr)
+        public FlowSheetModel(int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, int status, bool _isContainsFile, int tagNo, RaiinListCmtModel cmt, List<RaiinListInfModel> infs)
         {
             SinDate = sinDate;
             FullLineOfKarte = fullLineOfKarte;
@@ -39,11 +31,9 @@ namespace Domain.Models.FlowSheet
             SyosaisinKbn = syosaisinKbn;
             Status = status;
             TagNo = tagNo;
-            Comment = cmt;
+            RaiinListCmt = cmt;
             RaiinListInfs = infs;
             IsContainsFile = _isContainsFile;
-            IsNextOrder = isNextOrder;
-            IsToDayOdr = isToDayOdr;
         }
     }
 }
