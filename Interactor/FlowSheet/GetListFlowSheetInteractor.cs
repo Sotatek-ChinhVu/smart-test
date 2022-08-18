@@ -21,17 +21,15 @@ namespace Interactor.FlowSheet
             if (inputData.IsHolidayOnly)
             {
                 var holidayMstList = _flowsheetRepository.GetHolidayMst(inputData.HpId, inputData.HolidayFrom, inputData.HolidayTo);
+
                 return new GetListFlowSheetOutputData(new List<FlowSheetModel>(), new List<RaiinListMstModel>(), holidayMstList);
-            }
-            else if (inputData.IsRaiinListMstOnly)
-            {
-                var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
-                return new GetListFlowSheetOutputData(new List<FlowSheetModel>(), raiinListMst, new List<HolidayModel>());
             }
             else
             {
                 var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
-                return new GetListFlowSheetOutputData(flowsheetList, new List<RaiinListMstModel>(), new List<HolidayModel>());
+                var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
+
+                return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, new List<HolidayModel>());
             }
         }
     }

@@ -11,6 +11,10 @@
         public static readonly string InvalidHokenId = "Invalid HokenId";
         public static readonly string InvalidPageIndex = "Invalid PageIndex";
         public static readonly string InvalidPageCount = "Invalid PageCount";
+        public static readonly string InvalidStartIndex = "Invalid StartIndex";
+        public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
+        public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
+        public static readonly string InvalidItemCd = "Invalid ItemCd";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -36,6 +40,33 @@
         //Insurance
 
         //KarteInf controller
+        public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string GetKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string GetKarteInfNoData = "No Data";
+        public static readonly string GetKarteInfSuccessed = "Successed";
+
+        //OrdInf controller
+        public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string GetOrdInfInvalidHpId = "Invalid HpId";
+        public static readonly string GetOrdInfInvalidPtId = "Invalid PtId";
+        public static readonly string GetOrdInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string GetOrdInfNoData = "No Data";
+        public static readonly string GetOrdInfSuccessed = "Successed";
+
+        //RaiinKubun controller
+
+        //Calculation Inf
+
+
+        //Medical examination controller
+        public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
+        public static readonly string GetMedicalExaminationInvalidHpId = "Invalid HpId";
+        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
+        public static readonly string GetMedicalExaminationInvalidSinDate = "Invalid SinDate";
+        public static readonly string GetMedicalExaminationNoData = "No Data";
+        public static readonly string GetMedicalExaminationSuccessed = "Successed";
+        public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
 
         //OrdInf controller
 
@@ -78,12 +109,6 @@
 
         //Flowsheet
         public static readonly string UpsertFlowSheetSuccess = "Upsert value successfully.";
-        public static readonly string UpsertFlowSheetInvalidPtId = "HpId must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo must be greater than 0.";
         public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
-
     }
 }
