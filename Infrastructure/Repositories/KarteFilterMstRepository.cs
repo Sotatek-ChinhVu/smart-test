@@ -150,7 +150,7 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
                         status = true;
                         transaction.Commit();
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         status = false;
                         transaction.Rollback();
