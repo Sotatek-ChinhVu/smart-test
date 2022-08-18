@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.User;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.User.Create;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 
@@ -22,11 +23,24 @@ public class UserController : ControllerBase
         _bus = bus;
     }
 
+    [HttpPost(ApiPath.Update)]
+    public ActionResult<Response<CreateUserResponse>> Save([FromBody] CreateUserRequest saveUserRequest)
+    {
+        var input = new CreateUserInputData(saveUserRequest.HpId, saveUserRequest.JobCd, saveUserRequest.JobCd, saveUserRequest.KaId, saveUserRequest.KanaName, saveUserRequest.Name, saveUserRequest.Sname, saveUserRequest.LoginId, saveUserRequest.LoginPass, saveUserRequest.MayakuLicenseNo, saveUserRequest.StartDate, saveUserRequest.Endate, saveUserRequest.SortNo, 0, saveUserRequest.RenkeiCd1, saveUserRequest.DrName);
+        var output = _bus.Handle(input);
+
+        var presenter = new CreateUserPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CreateUserResponse>>(presenter.Result);
+    }
+
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetUserListResponse>> GetList([FromQuery] GetUserListRequest req)
     {
         var input = new GetUserListInputData(req.SinDate, req.IsDoctorOnly);
         var output = _bus.Handle(input);
+
         var presenter = new GetUserListPresenter();
         presenter.Complete(output);
 
