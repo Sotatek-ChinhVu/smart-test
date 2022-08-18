@@ -37,7 +37,6 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             var input = new UpsertPtDiseaseListInputData(request.PtDiseases.Select(r => new UpsertPtDiseaseListInputItem(
                     r.Id,
-                    r.HpId,
                     r.PtId,
                     r.SortNo,
                     r.SyusyokuCd1,

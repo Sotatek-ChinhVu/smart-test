@@ -17,7 +17,7 @@ namespace Interactor.Diseases
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 _diseaseRepository.Upsert(inputData.ptDiseaseModel.Select(i =>
                         new PtDiseaseModel(
-                                i.HpId,
+                                0,
                                 i.PtId,
                                 i.SeqNo,
                                 "",

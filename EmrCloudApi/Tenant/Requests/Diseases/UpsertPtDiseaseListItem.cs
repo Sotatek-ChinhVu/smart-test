@@ -5,12 +5,13 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
 {
     public class UpsertPtDiseaseListItem
     {
-
+        [Required]
         public long Id { get; set; }
-        public int HpId { get; set; }
 
+        [Required]
         public long PtId { get; set; }
 
+        [Required]
         public int SortNo { get; set; }
 
         [MaxLength(7)]
@@ -76,34 +77,45 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         [MaxLength(7)]
         public string SyusyokuCd21 { get; set; } = string.Empty;
 
-        [MaxLength(7)]
+        [MaxLength(160)]
         public string Byomei { get; set; } = string.Empty;
 
+        [Required]
         public int StartDate { get; set; }
 
+        [Required]
         public int TenkiKbn { get; set; }
 
+        [Required]
         public int TenkiDate { get; set; }
 
         public int SyubyoKbn { get; set; }
 
+        [Required]
         public int SikkanKbn { get; set; }
 
+        [Required]
         public int NanByoCd { get; set; }
 
         [MaxLength(80)]
         public string HosokuCmt { get; set; } = string.Empty;
 
+        [Required]
         public int HokenPid { get; set; }
 
+        [Required]
         public int IsNodspRece { get; set; }
 
+        [Required]
         public int IsNodspKarte { get; set; }
 
+        [Required]
         public long SeqNo { get; set; }
 
+        [Required]
         public int IsImportant { get; set; }
 
+        [Required]
         public int IsDeleted { get; set; }
     }
 }

@@ -145,7 +145,7 @@ namespace Infrastructure.Repositories
 
             return new PtByomei
             {
-                HpId = model.HpId,
+                HpId = TempIdentity.HpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,
                 SortNo = model.SortNo,

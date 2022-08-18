@@ -2,10 +2,9 @@
 {
     public class UpsertPtDiseaseListInputItem
     {
-        public UpsertPtDiseaseListInputItem(long id, int hpId, long ptId, int sortNo, string syusyokuCd1, string syusyokuCd2, string syusyokuCd3, string syusyokuCd4, string syusyokuCd5, string syusyokuCd6, string syusyokuCd7, string syusyokuCd8, string syusyokuCd9, string syusyokuCd10, string syusyokuCd11, string syusyokuCd12, string syusyokuCd13, string syusyokuCd14, string syusyokuCd15, string syusyokuCd16, string syusyokuCd17, string syusyokuCd18, string syusyokuCd19, string syusyokuCd20, string syusyokuCd21, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted)
+        public UpsertPtDiseaseListInputItem(long id, long ptId, int sortNo, string syusyokuCd1, string syusyokuCd2, string syusyokuCd3, string syusyokuCd4, string syusyokuCd5, string syusyokuCd6, string syusyokuCd7, string syusyokuCd8, string syusyokuCd9, string syusyokuCd10, string syusyokuCd11, string syusyokuCd12, string syusyokuCd13, string syusyokuCd14, string syusyokuCd15, string syusyokuCd16, string syusyokuCd17, string syusyokuCd18, string syusyokuCd19, string syusyokuCd20, string syusyokuCd21, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted)
         {
             Id = id;
-            HpId = hpId;
             PtId = ptId;
             SortNo = sortNo;
             SyusyokuCd1 = syusyokuCd1;
@@ -46,7 +45,6 @@
         }
 
         public long Id { get; private set; }
-        public int HpId { get; private set; }
         public long PtId { get; private set; }
         public int SortNo { get; private set; }
         public string SyusyokuCd1 { get; private set; }

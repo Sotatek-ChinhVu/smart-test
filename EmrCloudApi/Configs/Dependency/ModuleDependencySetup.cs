@@ -59,7 +59,6 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.FlowSheet.GetList;
-using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
@@ -206,7 +205,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
-            busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
