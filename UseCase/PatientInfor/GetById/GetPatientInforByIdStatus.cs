@@ -11,6 +11,8 @@ namespace UseCase.PatientInformation.GetById
         Successed = 1,
         DataNotExist = 2,
         InvalidHpId = 3,
-        InvalidPtId = 4
+        InvalidPtId = 4,
+        InvalidSinDate = 5,
+        InvalidRaiinNo = 6
     }
 }

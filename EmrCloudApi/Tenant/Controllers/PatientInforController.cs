@@ -43,7 +43,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(request.HpId, request.PtId);
+            var input = new GetPatientInforByIdInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
