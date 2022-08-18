@@ -31,4 +31,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="FlowSheet\Upsert\" />
+  </ItemGroup>
+
 </Project>
