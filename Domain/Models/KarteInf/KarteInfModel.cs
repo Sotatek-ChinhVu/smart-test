@@ -24,9 +24,9 @@
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
         public string Text { get; private set; }
-        public DateTime CreateDate { get; private set; }
-        public DateTime UpdateDate { get; private set; }
         public int IsDeleted { get; private set; }
         public string RichText { get; private set; }
+        public DateTime CreateDate { get; private set; }
+        public DateTime UpdateDate { get; private set; }
     }
 }

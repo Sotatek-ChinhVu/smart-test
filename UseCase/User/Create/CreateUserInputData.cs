@@ -45,7 +45,7 @@ namespace UseCase.User.Create
 
         public UserMstModel GenerateUserModel(int userId)
         {
-            return new UserMstModel(HpId, userId, JobCd, ManagerKbn, KaId, KanaName, Name, Sname, LoginId, LoginPass, MayakuLicenseNo, StartDate, EndDate, SortNo, IsDeleted, RenkeiCd1, DrName);
+            return new UserMstModel(0, userId, JobCd, ManagerKbn, KaId, KanaName, Name, Sname, DrName, LoginId, LoginPass, MayakuLicenseNo, StartDate, EndDate, SortNo, RenkeiCd1, IsDeleted);
         }
     }
 }

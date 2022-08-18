@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace UseCase.User.Create
 {
-    public enum CreateUserStatus : byte
+    public enum CreateUserStatus
     {
-        Success = 0,
-        InvalidName = 1,
+        Success = 1,
+        InvalidName = 0,
     }
 }

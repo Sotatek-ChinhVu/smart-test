@@ -7,6 +7,7 @@ using Domain.Models.Reception;
 using Domain.Models.User;
 using UseCase.MedicalExamination;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace Interactor.MedicalExamination
 {

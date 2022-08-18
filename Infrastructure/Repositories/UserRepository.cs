@@ -16,6 +16,11 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public bool CheckExistedId(List<long> idList)
+        {
+            return _tenantDataContext.UserMsts.Any(u => idList.Contains(u.Id));
+        }
+
         public void Create(UserMstModel user)
         {
             throw new NotImplementedException();
@@ -28,19 +33,34 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetAll()
         {
-            return _tenantDataContext.UserMsts.Select(u => ConvertToModel(u)).ToList();
+            return _tenantDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
+
+        public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
+        {
+            var query = _tenantDataContext.UserMsts.Where(u =>
+                u.StartDate <= sinDate
+                && u.EndDate >= sinDate
+                && u.IsDeleted == DeleteTypes.None);
+            if (isDoctorOnly)
+            {
+                query = query.Where(u => u.JobCd == JobCodes.Doctor);
+            }
+
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
+        }
+
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
             var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).ToList();
-            return result.Select(u => ConvertToModel(u)).OrderBy(i => i.SortNo);
+            return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public UserMstModel? GetByUserId(int userId)
         {
             var entity = _tenantDataContext.UserMsts
                 .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
-            return entity is null ? null : ConvertToModel(entity);
+            return entity is null ? null : ToModel(entity);
         }
 
         public int MaxUserId()
@@ -57,29 +77,31 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-
-        private UserMstModel ConvertToModel(UserMst itemData)
+        public void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList)
         {
-            return new UserMstModel(
-                itemData.HpId,
-                itemData.UserId,
-                itemData.JobCd,
-                itemData.ManagerKbn,
-                itemData.KaId,
-                itemData.KanaName ?? String.Empty,
-                itemData.Name,
-                itemData.Sname,
-                itemData.LoginId,
-                itemData.LoginPass,
-                itemData.MayakuLicenseNo ?? String.Empty,
-                itemData.StartDate,
-                itemData.EndDate,
-                itemData.SortNo,
-                itemData.IsDeleted,
-                itemData.RenkeiCd1 ?? String.Empty,
-                itemData.DrName
-              );
+
         }
 
+        private UserMstModel ToModel(UserMst u)
+        {
+            return new UserMstModel(
+                u.Id,
+                u.UserId,
+                u.JobCd,
+                u.ManagerKbn,
+                u.KaId,
+                u.KanaName ?? string.Empty,
+                u.Name ?? string.Empty,
+                u.Sname ?? string.Empty,
+                u.DrName ?? string.Empty,
+                u.LoginId ?? string.Empty,
+                u.LoginPass ?? string.Empty,
+                u.MayakuLicenseNo ?? string.Empty,
+                u.StartDate,
+                u.EndDate,
+                u.SortNo,
+                u.RenkeiCd1 ?? string.Empty,
+                u.IsDeleted);
+        }
     }
 }

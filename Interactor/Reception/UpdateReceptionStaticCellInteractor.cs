@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KaMst;
+using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.Reception;
 using Domain.Models.UketukeSbtMst;
@@ -15,18 +16,21 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
     private readonly IUserRepository _userRepository;
     private readonly IUketukeSbtMstRepository _uketukeSbtMstRepository;
     private readonly IKaMstRepository _kaMstRepository;
+    private readonly IPtCmtInfRepository _ptCmtInfRepository;
 
     public UpdateReceptionStaticCellInteractor(IReceptionRepository receptionRepository,
         IRaiinCmtInfRepository raiinCmtInfRepository,
         IUserRepository userRepository,
         IUketukeSbtMstRepository uketukeSbtMstRepository,
-        IKaMstRepository kaMstRepository)
+        IKaMstRepository kaMstRepository,
+        IPtCmtInfRepository ptCmtInfRepository)
     {
         _receptionRepository = receptionRepository;
         _raiinCmtInfRepository = raiinCmtInfRepository;
         _userRepository = userRepository;
         _uketukeSbtMstRepository = uketukeSbtMstRepository;
         _kaMstRepository = kaMstRepository;
+        _ptCmtInfRepository = ptCmtInfRepository;
     }
 
     public UpdateReceptionStaticCellOutputData Handle(UpdateReceptionStaticCellInputData input)
@@ -93,6 +97,10 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 return true;
             case nameof(ReceptionRowModel.RaiinRemark):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Remark, input.CellValue);
+                return true;
+            // Update or insert PtCmtInf
+            case nameof(ReceptionRowModel.PtComment):
+                _ptCmtInfRepository.Upsert(input.PtId, input.CellValue);
                 return true;
             default:
                 return false;

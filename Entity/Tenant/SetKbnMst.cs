@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -22,7 +21,7 @@ namespace Entity.Tenant
         /// セット区分
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SET_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbn { get; set; }
@@ -31,7 +30,7 @@ namespace Entity.Tenant
         /// セット区分枝番
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SET_KBN_EDA_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbnEdaNo { get; set; }
@@ -40,7 +39,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("GENERATION_ID", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }
@@ -51,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SET_KBN_NAME")]
         [MaxLength(60)]
-        public string SetKbnName { get; set; } = string.Empty;
+        public string? SetKbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療科コード
@@ -116,7 +115,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

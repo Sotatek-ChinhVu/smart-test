@@ -7,9 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="User\Delete\" />
-    <Folder Include="User\Update\" />
-    <Folder Include="User\Read\" />
+    <Compile Remove="User\Delete\**" />
+    <Compile Remove="User\Read\**" />
+    <Compile Remove="User\Update\**" />
+    <EmbeddedResource Remove="User\Delete\**" />
+    <EmbeddedResource Remove="User\Read\**" />
+    <EmbeddedResource Remove="User\Update\**" />
+    <None Remove="User\Delete\**" />
+    <None Remove="User\Read\**" />
+    <None Remove="User\Update\**" />
   </ItemGroup>
 
   <ItemGroup>

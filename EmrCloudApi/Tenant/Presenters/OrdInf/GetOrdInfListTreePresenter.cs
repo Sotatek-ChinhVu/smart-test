@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.MedicalExamination.OrdInfs;
-using UseCase.MedicalExamination.OrdInfs.GetListTrees;
+using EmrCloudApi.Tenant.Responses.OrdInfs;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace EmrCloudApi.Tenant.Presenters.OrdInfs
 {

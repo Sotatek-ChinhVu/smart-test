@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 区分コード
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("COLOR_CD")]
         [MaxLength(8)]
-        public string ColorCd { get; set; } = string.Empty;
+        public string? ColorCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

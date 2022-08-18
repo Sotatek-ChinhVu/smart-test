@@ -22,19 +22,17 @@ namespace Infrastructure.Repositories
             {
                 return new List<KarteInfModel>();
             }
-
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
         public List<KarteInfModel> GetList(long ptId, int hpId)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId).ToList();
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
 
             if (karteInfEntity == null)
             {
                 return new List<KarteInfModel>();
             }
-
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 

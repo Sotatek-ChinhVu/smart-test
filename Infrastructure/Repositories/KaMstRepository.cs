@@ -22,15 +22,23 @@ public class KaMstRepository : IKaMstRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public List<KaMstModel> GetList()
+    {
+        return _tenantDataContext.KaMsts
+            .Where(k => k.IsDeleted == DeleteTypes.None)
+            .OrderBy(k => k.SortNo).AsEnumerable()
+            .Select(k => ToModel(k)).ToList();
+    }
+
     private KaMstModel ToModel(KaMst k)
     {
         return new KaMstModel(
             k.Id,
             k.KaId,
             k.SortNo,
-            k.ReceKaCd,
-            k.KaSname,
-            k.KaName,
+            k.ReceKaCd ?? string.Empty,
+            k.KaSname ?? string.Empty,
+            k.KaName ?? string.Empty,
             k.IsDeleted);
     }
 }
