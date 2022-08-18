@@ -10,9 +10,8 @@ namespace Interactor.KarteFilter;
 public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 {
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
-
-    private int _hpId = TempIdentity.HpId;
-    private int _userId = TempIdentity.UserId;
+    private readonly int _hpId = TempIdentity.HpId;
+    private readonly int _userId = TempIdentity.UserId;
 
     public GetKarteFilterMstsInteractor(IKarteFilterMstRepository karteFilterMstRepository)
     {
@@ -28,35 +27,14 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 
             if (allKarteFilterMsts == null || allKarteFilterMsts.Count <= 0)
             {
-                return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.NoData);
+                return new GetKarteFilterOutputData(new (), GetKarteFilterStatus.NoData);
             }
 
-            var result = new List<GetKarteFilterMstModelOutputItem>();
-            foreach (var item in allKarteFilterMsts)
-            {
-                result.Add(new GetKarteFilterMstModelOutputItem(
-                       new GetKarteFilterDetailOutputItem(
-                            item.karteFilterDetailModel.HpId,
-                            item.karteFilterDetailModel.UserId,
-                            item.karteFilterDetailModel.FilterId,
-                            item.karteFilterDetailModel.BookMarkChecked,
-                            item.karteFilterDetailModel.ListHokenId,
-                            item.karteFilterDetailModel.ListKaId,
-                            item.karteFilterDetailModel.ListUserId
-                        ),
-                        item.HpId,
-                        item.UserId,
-                        item.FilterId,
-                        item.FilterName,
-                        item.AutoApply,
-                        item.IsDeleted
-                    ));
-            }
-            return new GetKarteFilterOutputData(result, GetKarteFilterStatus.Successed);
+            return new GetKarteFilterOutputData(allKarteFilterMsts, GetKarteFilterStatus.Successed);
         }
         catch (Exception)
         {
-            return new GetKarteFilterOutputData(new List<GetKarteFilterMstModelOutputItem>(), GetKarteFilterStatus.Error);
+            return new GetKarteFilterOutputData(new (), GetKarteFilterStatus.Error);
         }
     }
 }
