@@ -13,10 +13,16 @@ namespace UseCase.PatientInformation.GetById
 
         public long PtId { get; private set; }
 
-        public GetPatientInforByIdInputData(int hpId, long ptId)
+        public int SinDate { get; private set; }
+
+        public int RaiinNo { get; private set; }
+
+        public GetPatientInforByIdInputData(int hpId, long ptId, int sinDate, int raiinNo)
         {
             HpId = hpId;
             PtId = ptId;
+            SinDate = sinDate;
+            RaiinNo = raiinNo;
         }
     }
 }
