@@ -21,11 +21,6 @@ namespace EmrCloudApi.Tenant.Presenters.FlowSheet
         private string GetMessage(UpsertFlowSheetStatus status) => status switch
         {
             UpsertFlowSheetStatus.Success => ResponseMessage.UpsertFlowSheetSuccess,
-            UpsertFlowSheetStatus.InvalidPtId => ResponseMessage.UpsertFlowSheetInvalidPtId,
-            UpsertFlowSheetStatus.InvalidSinDate => ResponseMessage.UpsertFlowSheetInvalidSinDate,
-            UpsertFlowSheetStatus.InvalidRaiinNo => ResponseMessage.UpsertFlowSheetInvalidRaiinNo,
-            UpsertFlowSheetStatus.InvalidCmtKbn => ResponseMessage.UpsertFlowSheetInvalidCmtKbn,
-            UpsertFlowSheetStatus.InvalidTagNo => ResponseMessage.UpsertFlowSheetInvalidTagNo,
             UpsertFlowSheetStatus.UpdateNoSuccess => ResponseMessage.UpsertFlowSheetUpdateNoSuccess,
             _ => string.Empty
         };

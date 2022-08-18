@@ -11,31 +11,27 @@ namespace Interactor.FlowSheet
             _flowsheetRepository = repository;
         }
 
-        public UpsertFlowSheetOutputData Handle(UpsertFlowSheetInputData inputData)
+        public UpsertFlowSheetOutputData Handle(UpsertFlowSheetInputData inputDatas)
         {
-            if (inputData.RainNo <= 0)
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InvalidRaiinNo);
-            }
-            if (inputData.PtId <= 0)
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InvalidPtId);
-            }
-            if (inputData.SinDate <= 0)
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InvalidSinDate);
-            }
-            if (inputData.TagNo <= 0)
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InvalidTagNo);
-            }
-            if (inputData.CmtKbn <= 0)
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InvalidCmtKbn);
-            }
             try
             {
-                _flowsheetRepository.Upsert(inputData.RainNo, inputData.PtId, inputData.SinDate, inputData.TagNo, inputData.CmtKbn, inputData.Text, inputData.SeqNo);
+                _flowsheetRepository.Upsert(inputDatas.ToList().Select(i => new FlowSheetModel(
+                    i.PtId,
+                    i.SinDate,
+                    i.TagNo,
+                    "",
+                    i.RainNo,
+                    0,
+                    i.Text,
+                    0,
+                    false,
+                    false,
+                    false,
+                    i.TagSeqNo,
+                    i.CmtSeqNo,
+                    i.CmtKbn,
+                    new List<RaiinListInfModel>()
+                 )).ToList());
 
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.Success);
             }
