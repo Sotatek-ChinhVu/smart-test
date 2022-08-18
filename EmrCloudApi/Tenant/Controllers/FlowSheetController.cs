@@ -6,7 +6,6 @@ using EmrCloudApi.Tenant.Responses.FlowSheet;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.FlowSheet.GetList;
-using UseCase.FlowSheet.Upsert;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
