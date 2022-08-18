@@ -403,30 +403,6 @@ namespace Infrastructure.Repositories
 
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
         {
-            // Update Item Config
-            var userConf = _tenantDataContext.UserConfs.FirstOrDefault(c => c.HpId == TempIdentity.HpId && c.UserId == TempIdentity.UserId && c.GrpCd == 100004);
-            if (userConf == null)
-            {
-                userConf = new UserConf();
-                userConf.HpId = TempIdentity.HpId;
-                userConf.UserId = TempIdentity.UserId;
-                userConf.GrpCd = 100004;
-                userConf.GrpItemCd = 0;
-                userConf.GrpItemEdaNo = 0;
-                userConf.CreateDate = DateTime.UtcNow;
-                userConf.CreateId = TempIdentity.UserId;
-                userConf.CreateMachine = TempIdentity.ComputerName;
-                _tenantDataContextTracking.UserConfs.Add(userConf);
-            }
-            else
-            {
-                userConf.Val = 0;
-                userConf.Param = string.Empty;
-                userConf.UpdateDate = DateTime.UtcNow;
-                userConf.UpdateId = TempIdentity.UserId;
-                userConf.UpdateMachine = TempIdentity.ComputerName;
-            }    
-
             // Update IsAdopted Item TenMst
             var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == TempIdentity.HpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
 
