@@ -21,7 +21,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "FlowSheet")]
         public ActionResult<Response<GetListFlowSheetResponse>> GetListFlowSheet([FromQuery] GetListFlowSheetRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, false, 0, 0, false);
+            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, false, 0, 0);
             var output = _bus.Handle(input);
             var presenter = new GetListFlowSheetPresenter();
             presenter.Complete(output);
@@ -32,14 +32,13 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "Holiday")]
         public ActionResult<Response<GetListHolidayResponse>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false);
+            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo);
             var output = _bus.Handle(input);
             var presenter = new GetListHolidayPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListHolidayResponse>>(presenter.Result);
         }
-
         [HttpGet(ApiPath.GetList + "RaiinMst")]
         public ActionResult<Response<GetListRaiinMstResponse>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
@@ -49,26 +48,6 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListRaiinMstResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertFlowSheetResponse>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
-        {
-            var input = new UpsertFlowSheetInputData(inputData.Items.Select(i => new UpsertFlowSheetInputItem(
-                    i.RainNo,
-                    i.PtId,
-                    i.SinDate,
-                    i.TagNo,
-                    i.CmtKbn,
-                    i.Text,
-                    i.TagSeqNo,
-                    i.CmtSeqNo
-               )).ToList());
-            var output = _bus.Handle(input);
-            var presenter = new UpsertFlowSheetPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<UpsertFlowSheetResponse>>(presenter.Result);
         }
     }
 }

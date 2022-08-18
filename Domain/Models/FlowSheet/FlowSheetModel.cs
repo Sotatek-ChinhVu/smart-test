@@ -33,23 +33,28 @@
 
         public int SyosaisinKbn { get; private set; }
 
-        public string Comment { get; private set; }
+        public RaiinListCmtModel RaiinListCmt { get; private set; }
 
         public int Status { get; private set; }
 
         public bool IsContainsFile { get; private set; }
 
-        public bool IsNextOrder { get; private set; }
-
-        public bool IsToDayOdr { get; private set; }
-
-        public int RaiinListTagSeqNo { get; private set; }
-
-        public long RaiinListCmtSeqNo { get; private set; }
-
-        public int CmtKbn { get; private set; }
-
+        // Raiin List Detail && RaiinListInf (for dynamic column)
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
 
+        public FlowSheetModel(int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, int status, bool _isContainsFile, int tagNo, RaiinListCmtModel cmt, List<RaiinListInfModel> infs)
+        {
+            SinDate = sinDate;
+            FullLineOfKarte = fullLineOfKarte;
+            RaiinNo = raiinNo;
+            SyosaisinKbn = syosaisinKbn;
+            Status = status;
+            TagNo = tagNo;
+            RaiinListCmt = cmt;
+            RaiinListInfs = infs;
+            IsContainsFile = _isContainsFile;
+        }
+            IsToDayOdr = isToDayOdr;
+        }
     }
 }
