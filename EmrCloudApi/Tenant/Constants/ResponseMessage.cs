@@ -29,6 +29,9 @@
         //Reception controller
 
         //PtDisease controller
+        public static readonly string UpsertPtDiseaseSuccess = "Upsert value successfully.";
+        public static readonly string UpsertPtDiseaseFail = "Upsert value fail.";
+        public static readonly string UpsertPtDiseaseInputNoData = "Inpu no data.";
 
         //Insurance
 
