@@ -3,5 +3,15 @@
 public enum UpsertFlowSheetStatus
 {
     Success = 1,
-    UpdateNoSuccess
+    UpdateNoSuccess,
+    InputDataNoValid,
+    RainNoNoValid,
+    PtIdNoValid,
+    SinDateNoValid,
+    TagNoNoValid,
+    CmtKbnNoValid,
+    RainListCmtSeqNoNoValid,
+    RainListTagSeqNoNoValid,
+    PtIdNoExist,
+    RaiinNoExist
 }

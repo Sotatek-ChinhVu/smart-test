@@ -76,7 +76,7 @@ namespace Infrastructure.Repositories
                 if (GetCountraiinInf != null && GetCountraiinInf.Count > 0)
                 {
                     raiinCountString = GetCountraiinInf.Count.ToString() + "人";
-                }    
+                }
 
 
 
@@ -123,6 +123,12 @@ namespace Infrastructure.Repositories
                     firstDate,
                     raiinCountString);
             }
+        }
+
+        public bool CheckListId(List<long> ptIds)
+        {
+            var check = _tenantDataContext.PtInfs.Any(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
+            return check;
         }
 
 

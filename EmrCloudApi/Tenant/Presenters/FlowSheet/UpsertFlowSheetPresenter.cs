@@ -22,6 +22,16 @@ namespace EmrCloudApi.Tenant.Presenters.FlowSheet
         {
             UpsertFlowSheetStatus.Success => ResponseMessage.UpsertFlowSheetSuccess,
             UpsertFlowSheetStatus.UpdateNoSuccess => ResponseMessage.UpsertFlowSheetUpdateNoSuccess,
+            UpsertFlowSheetStatus.InputDataNoValid => ResponseMessage.UpsertFlowSheetInputDataNoValid,
+            UpsertFlowSheetStatus.RainNoNoValid => ResponseMessage.UpsertFlowSheetInvalidRaiinNo,
+            UpsertFlowSheetStatus.PtIdNoValid => ResponseMessage.UpsertFlowSheetInvalidPtId,
+            UpsertFlowSheetStatus.SinDateNoValid => ResponseMessage.UpsertFlowSheetInvalidSinDate,
+            UpsertFlowSheetStatus.TagNoNoValid => ResponseMessage.UpsertFlowSheetInvalidTagNo,
+            UpsertFlowSheetStatus.CmtKbnNoValid => ResponseMessage.UpsertFlowSheetInvalidCmtKbn,
+            UpsertFlowSheetStatus.RainListCmtSeqNoNoValid => ResponseMessage.UpsertFlowSheetInvalidRainCmtSeqNo,
+            UpsertFlowSheetStatus.RainListTagSeqNoNoValid => ResponseMessage.UpsertFlowSheetInvalidRainListTagSeqNo,
+            UpsertFlowSheetStatus.PtIdNoExist => ResponseMessage.UpsertFlowSheetPtIdNoExist,
+            UpsertFlowSheetStatus.RaiinNoExist => ResponseMessage.UpsertFlowSheetRainNoNoExist,
             _ => string.Empty
         };
     }

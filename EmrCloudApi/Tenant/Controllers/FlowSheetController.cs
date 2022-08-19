@@ -54,7 +54,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public ActionResult<Response<UpsertFlowSheetResponse>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
         {
-            var input = new UpsertFlowSheetInputData(inputData.Items.Select(i => new UpsertFlowSheetItemInputData(
+            var input = new UpsertFlowSheetInputData(inputData?.Items?.Select(i => new UpsertFlowSheetItemInputData(
                     i.RainNo,
                     i.PtId,
                     i.SinDate,
