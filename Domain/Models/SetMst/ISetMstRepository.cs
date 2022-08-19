@@ -4,5 +4,5 @@ public interface ISetMstRepository
 {
     IEnumerable<SetMstModel> GetList(int hpId, int setKbn, int setKbnEdaNo, string textSearch);
 
-    bool SaveSetMstModel(SetMstModel model, int userId, int sinDate);
+    bool SaveSetMstModel(SetMstModel setMstModel, int userId, int sinDate);
 }

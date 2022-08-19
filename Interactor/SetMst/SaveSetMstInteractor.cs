@@ -16,10 +16,6 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
     {
-        if (inputData.Level1 == 0)
-        {
-            return new SaveSetMstOutputData(SaveSetMstStatus.InvalidLevel1);
-        }
         try
         {
             var setMstModel = new SetMstModel(

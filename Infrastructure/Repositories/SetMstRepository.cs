@@ -52,10 +52,6 @@ public class SetMstRepository : ISetMstRepository
     public bool SaveSetMstModel(SetMstModel setMstModel, int userId, int sinDate)
     {
         bool status = false;
-        if (setMstModel.Level1 == 0)
-        {
-            return status;
-        }
         try
         {
             // Check SetMstModel is delete?

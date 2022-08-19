@@ -20,7 +20,6 @@ public class SaveSetMstPresenter : ISaveSetMstOutputPort
     {
         SaveSetMstStatus.Successed => ResponseMessage.Success,
         SaveSetMstStatus.Failed => ResponseMessage.Failed,
-        SaveSetMstStatus.InvalidLevel1 => ResponseMessage.InvalidLevel1,
         _ => string.Empty
     };
 }

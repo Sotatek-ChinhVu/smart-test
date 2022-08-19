@@ -18,6 +18,7 @@ public class SaveSetMstRequest
     public int GenerationId { get; set; } = 0;
 
     [Required]
+    [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "Level1 > 0")]
     public int Level1 { get; set; }
 
     public int Level2 { get; set; } = 0;
