@@ -19,7 +19,7 @@ namespace Domain.Models.InsuranceMst
             HokenMstData = new List<HokenMstModel>();
         }
 
-        public InsuranceMstModel(List<TokkiMstModel> listTokkiMstModel, Dictionary<int, string> hokenKogakuKbnDict, List<HokenMstModel> kohiHokenMstData, List<KantokuMstModel> kantokuMstData, List<ByomeiMstAftercareModel> byomeiMstAftercareData, List<HokenMstModel> hokenMstData)
+        public InsuranceMstModel(List<TokkiMstModel> listTokkiMstModel, Dictionary<int, string> hokenKogakuKbnDict, List<HokenMstModel> kohiHokenMstData, List<KantokuMstModel> kantokuMstData, List<ByomeiMstAftercareModel> byomeiMstAftercareData, List<HokenMstModel> hokenMstData, List<RoudouMstModel> roudouMst)
         {
             ListTokkiMstModel = listTokkiMstModel;
             HokenKogakuKbnDict = hokenKogakuKbnDict;
@@ -27,6 +27,7 @@ namespace Domain.Models.InsuranceMst
             KantokuMstData = kantokuMstData;
             ByomeiMstAftercareData = byomeiMstAftercareData;
             HokenMstData = hokenMstData;
+            RoudouMst = roudouMst;
         }
 
         public List<TokkiMstModel> ListTokkiMstModel { get; private set; }
@@ -40,6 +41,8 @@ namespace Domain.Models.InsuranceMst
         public List<ByomeiMstAftercareModel> ByomeiMstAftercareData { get; private set; }
 
         public List<HokenMstModel> HokenMstData { get; private set; }
+
+        public List<RoudouMstModel> RoudouMst { get; private set; }
 
     }
 }
