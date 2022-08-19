@@ -20,7 +20,7 @@ namespace Interactor.FlowSheet
         public UpsertFlowSheetOutputData Handle(UpsertFlowSheetInputData inputData)
         {
 
-            if (inputData == null || inputData.Items == null)
+            if (inputData.ToList().Count == 0)
             {
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.InputDataNoValid);
             }
