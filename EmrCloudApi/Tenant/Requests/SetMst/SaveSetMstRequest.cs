@@ -12,13 +12,14 @@ public class SaveSetMstRequest
     public int SetCd { get; set; } = 0;
 
     [Required]
-    [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
+    [RegularExpression(@"^[1-9|10]$", ErrorMessage = "{0} >= 1 and {0} <= 10")]
     public int SetKbn { get; set; }
 
     [Required]
-    [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
+    [RegularExpression(@"^[1-6]$", ErrorMessage = "{0} >= 1 and {0} <= 6")]
     public int SetKbnEdaNo { get; set; }
 
+    [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
     public int GenerationId { get; set; } = 0;
 
     [Required]
