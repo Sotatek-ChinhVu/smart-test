@@ -43,6 +43,7 @@
         public static readonly string GetSetListSinDate = "Invalid SinDate";
         public static readonly string GetSetListInvalidSetKbn = "Invalid SetKbn";
         public static readonly string GetSetListInvalidSetKbnEdaNo = "Invalid SetKbnEdaNo";
+        public static readonly string InvalidLevel1 = "Invalid Level1 (level1 > 0)";
         public static readonly string GetSetListNoData = "No Data";
         public static readonly string GetSetListSuccessed = "Successed";
 
