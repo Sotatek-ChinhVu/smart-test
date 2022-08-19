@@ -2,15 +2,19 @@
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages.Reception;
 using EmrCloudApi.Tenant.Presenters.Reception;
+using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Requests.VisitingList;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
+using EmrCloudApi.Tenant.Responses.VisitingList;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -44,6 +48,16 @@ public class VisitingController : ControllerBase
         var input = new GetReceptionSettingsInputData(req.UserId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpPost("SaveSettings")]
+    public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
+    {
+        var input = new SaveVisitingListSettingsInputData(req.UserId, req.Settings);
+        var output = _bus.Handle(input);
+        var presenter = new SaveVisitingListSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

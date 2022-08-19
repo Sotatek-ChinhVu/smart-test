@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN")]
         [MaxLength(2)]
-        public string Kbn { get; set; } = string.Empty;
+        public string? Kbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 収載日
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KEIKA")]
         [MaxLength(255)]
-        public string Keika { get; set; } = string.Empty;
+        public string? Keika { get; set; } = string.Empty;
 
         /// <summary>
         /// 備考
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(255)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 準先発
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(100)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価

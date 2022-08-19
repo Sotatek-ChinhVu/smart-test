@@ -9,7 +9,7 @@ namespace Domain.Models.PatientInfor
 {
     public interface IPatientInforRepository
     {
-        PatientInforModel? GetById(int hpId, long ptId);
+        PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
 

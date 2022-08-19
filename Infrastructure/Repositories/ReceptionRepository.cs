@@ -58,6 +58,40 @@ namespace Infrastructure.Repositories
             return GetReceptionRowModels(hpId, sinDate);
         }
 
+        public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
+        {
+            var result =  _tenantDataContext.RaiinInfs.Where
+                                (r =>
+                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
+                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
+            return result.Select(r => new ReceptionModel(
+                        r.HpId,
+                        r.PtId,
+                        r.SinDate,
+                        r.RaiinNo,
+                        r.OyaRaiinNo,
+                        r.HokenPid,
+                        r.SanteiKbn,
+                        r.Status,
+                        r.IsYoyaku,
+                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuId,
+                        r.UketukeSbt,
+                        r.UketukeTime ?? String.Empty,
+                        r.UketukeId,
+                        r.UketukeNo,
+                        r.SinStartTime,
+                        r.SinEndTime ?? String.Empty,
+                        r.KaikeiTime ?? String.Empty,
+                        r.KaikeiId,
+                        r.KaId,
+                        r.TantoId,
+                        r.SyosaisinKbn,
+                        r.JikanKbn
+                   )).ToList();
+
+        }
+
         private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate)
         {
             // 1. Prepare all the necessary collections for the join operation

@@ -29,7 +29,17 @@ namespace Interactor.PatientInfor
                 return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidPtId);
             }
 
-            var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId);
+            if (inputData.SinDate < 0)
+            {
+                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidSinDate);
+            }
+
+            if (inputData.RaiinNo < 0)
+            {
+                return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.InvalidRaiinNo);
+            }
+
+            var data = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
             if (data == null)
                 return new GetPatientInforByIdOutputData(null, GetPatientInforByIdStatus.DataNotExist);
             return new GetPatientInforByIdOutputData(data, GetPatientInforByIdStatus.Successed);

@@ -3,10 +3,13 @@ using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.KaMst;
+using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
+using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
@@ -35,10 +38,13 @@ using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
+using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.KaMst;
+using Interactor.KarteFilter;
 using Interactor.KarteInfs;
+using Interactor.MedicalExamination;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
@@ -59,12 +65,18 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
 using UseCase.GroupInf.GetList;
+using UseCase.InputItem.Search;
+using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.KaMst.GetList;
+using UseCase.KarteFilter.GetListKarteFilter;
+using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
+using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
@@ -85,7 +97,9 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.VisitingList.SaveSettings;
+using Interactor.VisitingList;
+using Domain.Models.VisitingListSetting;
 using EmrCloudApi.Realtime;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -122,6 +136,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
+            services.AddTransient<IKarteKbnMstRepository, KarteKbnMstRepository>();
+            services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<ISetMstRepository, SetMstRepository>();
             services.AddTransient<ISetGenerationMstRepository, SetGenerationMstRepository>();
             services.AddTransient<ISetKbnMstRepository, SetKbnMstRepository>();
@@ -135,8 +151,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
+            services.AddTransient<IInputItemRepository, InputItemRepository>();
+            services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -162,6 +181,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
 
+            // Visiting
+            busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
+
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
             //Karte
@@ -180,6 +202,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+
+            //Medical Examination
+            busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
 
             //Set
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
@@ -210,12 +235,21 @@ namespace EmrCloudApi.Configs.Dependency
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
+            // KarteFilter
+            busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
+
+            busBuilder.RegisterUseCase<SaveKarteFilterInputData, SaveKarteFilterMstsInteractor>();
+
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
+
+            //Input Item
+            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
