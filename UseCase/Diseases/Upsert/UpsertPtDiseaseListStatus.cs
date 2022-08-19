@@ -4,6 +4,9 @@
     {
         Success = 1,
         PtDiseaseListInputNoData = 2,
-        PtDiseaseListUpdateNoSuccess = 3
+        PtDiseaseListUpdateNoSuccess = 3,
+        PtDiseaseListInvalidTenkiKbn,
+        PtDiseaseListInvalidSikkanKbn,
+        PtDiseaseListInvalidNanByoCd,
     }
 }

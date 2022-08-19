@@ -14,6 +14,25 @@ namespace Interactor.Diseases
         {
             try
             {
+                var datas = inputData.ToList();
+                if (datas == null)
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
+                }
+
+                if (datas.Any(d => (d.TenkiKbn != 0 && d.TenkiKbn != 1 && d.TenkiKbn != 3 && d.TenkiKbn != 2 && d.TenkiKbn != 9)))
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn);
+                }
+                if (datas.Any(d => (d.SikkanKbn != 0 && d.SikkanKbn != 3 && d.SikkanKbn != 4 && d.SikkanKbn != 5 && d.SikkanKbn != 7 && d.SikkanKbn != 8)))
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn);
+                }
+                if (datas.Any(d => (d.NanByoCd != 0 && d.NanByoCd != 9)))
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd);
+                }
+
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 _diseaseRepository.Upsert(inputData.ptDiseaseModel.Select(i =>
                         new PtDiseaseModel(
