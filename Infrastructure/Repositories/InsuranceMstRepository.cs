@@ -87,7 +87,8 @@ namespace Infrastructure.Repositories
 
             // data combobox 9
             var dataHokenInfor = _tenantDataContext.PtHokenInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
-            var dataComboboxKantokuMst = new List<KantokuMstModel>();
+            List<KantokuMstModel>? dataComboboxKantokuMst = new List<KantokuMstModel>();
+
             if (dataHokenInfor != null &&
                 (dataHokenInfor.HokenKbn == 11 || dataHokenInfor.HokenKbn == 12 || dataHokenInfor.HokenKbn == 13))
             {
@@ -100,6 +101,10 @@ namespace Infrastructure.Repositories
                     dataComboboxKantokuMst = kantokuMsts;
                 }
             }
+            else
+            {
+               dataComboboxKantokuMst = kantokuMsts;
+            }    
 
             // data combobox 2 hokenKogakuKbnDict
             Dictionary<int, string> hokenKogakuKbnDict = new Dictionary<int, string>();
@@ -150,7 +155,12 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false));
+            var dataRoudouMst = RoudouMsts.Select(x => new RoudouMstModel(
+                                            x.RoudouCd,
+                                            x.RoudouName
+                                            )).ToList();
+
+            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false), dataRoudouMst);
         }
 
         private List<HokenMstModel> GetHokenMstList(int today, bool isKohi)
