@@ -16,7 +16,7 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
 
     public VisitingListSettingRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public void Save(List<UserConfModel> userConfModels, List<SystemConfModel> systemConfModels)
@@ -34,7 +34,7 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
         }
 
         var userId = confModels[0].UserId;
-        var existingConfigs = _tenantDataContext.UserConfs.AsTracking()
+        var existingConfigs = _tenantDataContext.UserConfs
             .Where(u => u.UserId == userId
                 && u.GrpCd >= UserConfCommon.GroupCodes.Font
                 && u.GrpCd <= UserConfCommon.GroupCodes.SelectTodoSetting).ToList();
@@ -77,7 +77,7 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
 
     private void ModifySystemConfs(List<SystemConfModel> confModels)
     {
-        var existingConfigs = _tenantDataContext.SystemConfs.AsTracking()
+        var existingConfigs = _tenantDataContext.SystemConfs
             .Where(s => s.GrpCd == SystemConfGroupCodes.ReceptionTimeColor
                 || s.GrpCd == SystemConfGroupCodes.ReceptionStatusColor).ToList();
         var configsToInsert = new List<SystemConf>();
