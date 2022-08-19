@@ -97,6 +97,9 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.VisitingList.SaveSettings;
+using Interactor.VisitingList;
+using Domain.Models.VisitingListSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -150,6 +153,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
+            services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -174,6 +178,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
+
+            // Visiting
+            busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
