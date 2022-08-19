@@ -33,7 +33,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.IsDeleted,
                                 inputData.IsGroup ? 1 : 0
                              );
-            if (_setMstRepository.SaveSetMstModel(setMstModel, _userId, inputData.SinDate))
+            if (_setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel))
             {
                 return new SaveSetMstOutputData(SaveSetMstStatus.Successed);
             }

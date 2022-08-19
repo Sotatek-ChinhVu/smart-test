@@ -49,7 +49,7 @@ public class SetMstRepository : ISetMstRepository
               ).ToList();
     }
 
-    public bool SaveSetMstModel(SetMstModel setMstModel, int userId, int sinDate)
+    public bool SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
         bool status = false;
         try
@@ -145,21 +145,20 @@ public class SetMstRepository : ISetMstRepository
                         level2.IsDeleted = 1;
                         level2.UpdateDate = DateTime.UtcNow;
                         level2.UpdateId = userId;
+                    }
 
-                        var listSetMstLevel3Deletes = listSetMstLevel3.Where(item => item.Level2 == level2.Level2).ToList();
-                        foreach (var level3 in listSetMstLevel3Deletes)
-                        {
-                            level3.IsDeleted = 1;
-                            level3.UpdateDate = DateTime.UtcNow;
-                            level3.UpdateId = userId;
-                        }
+                    foreach (var level3 in listSetMstLevel3)
+                    {
+                        level3.IsDeleted = 1;
+                        level3.UpdateDate = DateTime.UtcNow;
+                        level3.UpdateId = userId;
                     }
                 }
             }
             _tenantDataContext.SaveChanges();
             status = true;
         }
-        catch (Exception)
+        catch
         {
             return status;
         }
