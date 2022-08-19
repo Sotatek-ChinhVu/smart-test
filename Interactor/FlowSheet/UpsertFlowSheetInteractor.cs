@@ -15,7 +15,23 @@ namespace Interactor.FlowSheet
         {
             try
             {
-                var datas = inputData.ToList().Cast<dynamic>().ToList();
+                var datas = inputData.ToList().Select(i => new FlowSheetModel(
+                        i.SinDate,
+                        i.TagNo,
+                        "",
+                        i.RainNo,
+                        0,
+                        i.Text,
+                        0,
+                        true,
+                        true,
+                        true,
+                        new List<RaiinListInfModel>(),
+                        i.PtId,
+                        i.CmtKbn,
+                        0,
+                        0
+                    )).ToList();
                 _flowsheetRepository.Upsert(datas);
 
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.Success);

@@ -1,13 +1,9 @@
-﻿using Domain.Constant;
-using Domain.Models.FlowSheet;
+﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
-using Helper.Extendsions;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Collections.ObjectModel;
 
 namespace Infrastructure.Repositories
 {
@@ -59,16 +55,23 @@ namespace Infrastructure.Repositories
                 var text = data.karteInf == null ? string.Empty : data.karteInf.Text;
 
                 int tag = 0;
+                int rainListTagSeqNo = 0;
                 if (tags.Any(c => c.RaiinNo == raiinInf.RaiinNo))
                 {
-                    tag = tags.First(c => c.RaiinNo == raiinInf.RaiinNo).TagNo;
+                    var tagInf = tags.First(c => c.RaiinNo == raiinInf.RaiinNo);
+                    tag = tagInf.TagNo;
+                    rainListTagSeqNo = tagInf?.SeqNo ?? 0;
                 }
 
                 string comment = string.Empty;
+                long rainListCmtSeqNo = 0;
+                int cmtKbn = 0;
                 if (comments.Any(c => c.RaiinNo == raiinInf.RaiinNo))
                 {
                     var commentInf = comments.First(c => c.RaiinNo == raiinInf.RaiinNo);
                     comment = commentInf.Text ?? String.Empty;
+                    rainListCmtSeqNo = commentInf?.SeqNo ?? 0;
+                    cmtKbn = commentInf?.CmtKbn ?? 0;
                 }
 
                 var raiinListInfoModelList = raiinListInfs
@@ -78,7 +81,7 @@ namespace Infrastructure.Repositories
 
                 bool isContainsFile = raiinListInfoModelList.Any(r => r.RaiinListKbn == 4);
 
-                result.Add(new FlowSheetModel(raiinInf.SinDate, text, raiinInf.RaiinNo, raiinInf.SyosaisinKbn, raiinInf.Status, isContainsFile, tag, comment, raiinListInfoModelList, false, raiinInf.RaiinNo == raiinNo));
+                result.Add(new FlowSheetModel(raiinInf.SinDate, tag, text, raiinInf.RaiinNo, raiinInf.SyosaisinKbn, comment, raiinInf.Status, isContainsFile, false, raiinInf.RaiinNo == raiinNo, raiinListInfoModelList, raiinInf.PtId, cmtKbn, rainListCmtSeqNo, rainListTagSeqNo));
             }
             return result;
         }
@@ -104,15 +107,13 @@ namespace Infrastructure.Repositories
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName)).ToList();
         }
 
-        public void Upsert(List<dynamic> inpuDatas)
+        public void Upsert(List<FlowSheetModel> inpuDatas)
         {
             foreach (var inputData in inpuDatas)
             {
-                long rainNo = inputData.RainNo;
-                long cmtKbn = inputData.CmtKbn;
                 var raiinListCmt = _tenantTrackingDataContext.RaiinListCmts
                             .OrderByDescending(p => p.UpdateDate)
-                            .FirstOrDefault(p => p.RaiinNo == rainNo && p.CmtKbn == cmtKbn);
+                            .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.CmtKbn == inputData.CmtKbn);
 
                 if (raiinListCmt is null)
                 {
@@ -121,10 +122,10 @@ namespace Infrastructure.Repositories
                         HpId = 1,
                         PtId = inputData.PtId,
                         SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RainNo,
+                        RaiinNo = inputData.RaiinNo,
                         CmtKbn = inputData.CmtKbn,
                         SeqNo = inputData.RainListCmtSeqNo,
-                        Text = inputData.Text,
+                        Text = inputData.Comment,
                         CreateDate = DateTime.UtcNow,
                         CreateId = TempIdentity.UserId,
                         CreateMachine = TempIdentity.ComputerName
@@ -132,7 +133,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    raiinListCmt.Text = inputData.Text;
+                    raiinListCmt.Text = inputData.Comment;
                     raiinListCmt.UpdateDate = DateTime.UtcNow;
                     raiinListCmt.UpdateId = TempIdentity.UserId;
                     raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
@@ -140,7 +141,7 @@ namespace Infrastructure.Repositories
 
                 var raiinListTag = _tenantTrackingDataContext.RaiinListTags
                            .OrderByDescending(p => p.UpdateDate)
-                           .FirstOrDefault(p => p.RaiinNo == rainNo);
+                           .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
 
                 if (raiinListTag is null)
                 {
@@ -149,7 +150,7 @@ namespace Infrastructure.Repositories
                         HpId = 1,
                         PtId = inputData.PtId,
                         SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RainNo,
+                        RaiinNo = inputData.RaiinNo,
                         SeqNo = inputData.RainListTagSeqNo,
                         TagNo = inputData.TagNo,
                         CreateDate = DateTime.UtcNow,
