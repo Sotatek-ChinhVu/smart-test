@@ -112,11 +112,7 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.KofuDate,
                                         ptKohi1Item.TokusyuNo ?? string.Empty,
                                         ptKohi1Item.HokenSbtKbn,
-                                        ptKohi1Item.Houbetu ?? string.Empty,
-                                        ptKohi1Item.HokenNo,
-                                        ptKohi1Item.HokenEdaNo,
-                                        ptKohi1Item.PrefNo,
-                                        null
+                                        ptKohi1Item.Houbetu ?? string.Empty
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -131,11 +127,7 @@ namespace Infrastructure.Repositories
                                         ptKohi2Item.KofuDate,
                                         ptKohi2Item.TokusyuNo ?? string.Empty,
                                         ptKohi2Item.HokenSbtKbn,
-                                        ptKohi2Item.Houbetu ?? string.Empty,
-                                        ptKohi1Item.HokenNo,
-                                        ptKohi1Item.HokenEdaNo,
-                                        ptKohi1Item.PrefNo,
-                                        null
+                                        ptKohi2Item.Houbetu ?? string.Empty
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -150,11 +142,7 @@ namespace Infrastructure.Repositories
                                         ptKohi3Item.KofuDate,
                                         ptKohi3Item.TokusyuNo ?? string.Empty,
                                         ptKohi3Item.HokenSbtKbn,
-                                        ptKohi3Item.Houbetu ?? string.Empty,
-                                        ptKohi1Item.HokenNo,
-                                        ptKohi1Item.HokenEdaNo,
-                                        ptKohi1Item.PrefNo,
-                                        null
+                                        ptKohi3Item.Houbetu ?? string.Empty
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -169,11 +157,7 @@ namespace Infrastructure.Repositories
                                         ptKohi4Item.KofuDate,
                                         ptKohi4Item.TokusyuNo ?? string.Empty,
                                         ptKohi4Item.HokenSbtKbn,
-                                        ptKohi4Item.Houbetu ?? string.Empty,
-                                        ptKohi1Item.HokenNo,
-                                        ptKohi1Item.HokenEdaNo,
-                                        ptKohi1Item.PrefNo,
-                                        null
+                                        ptKohi4Item.Houbetu ?? string.Empty
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();

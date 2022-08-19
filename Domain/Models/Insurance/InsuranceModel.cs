@@ -76,7 +76,7 @@ namespace Domain.Models.InsuranceInfor
             JibaiHokenName = jibaiHokenName;
             JibaiHokenTanto = jibaiHokenTanto;
             JibaiHokenTel = jibaiHokenTel;
-            JibaiJyusyouDate = jibaiJyusyouDate; 
+            JibaiJyusyouDate = jibaiJyusyouDate;
         }
 
         public int HpId { get; private set; }

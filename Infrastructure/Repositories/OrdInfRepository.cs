@@ -45,60 +45,6 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int sinDate, bool isDeleted)
-        {
-            var result = new List<OrdInfModel>();
-
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.SinDate < sinDate && (isDeleted || odr.IsDeleted == 0)).Select(o => new OrdInfModel(
-                o.HpId, o.RaiinNo, o.RpNo, o.RpEdaNo, o.PtId, o.SinDate, o.HokenPid, o.OdrKouiKbn, o.RpName, o.InoutKbn, o.SikyuKbn, o.SyohoSbt, o.SanteiKbn, o.TosekiKbn, o.DaysCnt, o.SortNo, o.IsDeleted, o.Id, new List<OrdInfDetailModel>()
-                  )).ToList();
-
-            return allOdrInf;
-        }
-
-        public IEnumerable<OrdInfDetailModel> GetList(long ptId, int hpId)
-        {
-
-            var allOdrInfDetail = _tenantDataContext.OdrInfDetails.Where(odr => odr.PtId == ptId && odr.HpId == hpId).Select(o => new OrdInfDetailModel(
-                     o.HpId,
-                     o.RaiinNo,
-                     o.RpNo,
-                     o.RpEdaNo,
-                     o.RowNo,
-                     o.PtId,
-                     o.SinDate,
-                     o.SinKouiKbn,
-                     o.ItemCd,
-                     o.ItemName,
-                     o.Suryo,
-                     o.UnitName,
-                     o.UnitSBT,
-                     o.TermVal,
-                     o.KohatuKbn,
-                     o.SyohoKbn,
-                     o.SyohoLimitKbn,
-                     o.DrugKbn,
-                     o.YohoKbn,
-                     o.Kokuji1,
-                     o.Kokiji2,
-                     o.IsNodspRece,
-                     o.IpnCd,
-                     o.IpnName,
-                     o.JissiKbn,
-                     o.JissiDate,
-                     o.JissiId,
-                     o.JissiMachine,
-                     o.ReqCd,
-                     o.Bunkatu,
-                     o.CmtName,
-                     o.CmtOpt,
-                     o.FontColor,
-                     o.CommentNewline
-                  )).ToList();
-
-            return allOdrInfDetail;
-        }
-
         public OrdInfModel Read(int ordId)
         {
             throw new NotImplementedException();

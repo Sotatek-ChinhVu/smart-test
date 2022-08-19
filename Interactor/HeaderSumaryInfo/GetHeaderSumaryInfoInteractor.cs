@@ -1,29 +1,17 @@
-﻿using Domain.Models.Insurance;
-using Domain.Models.KensaInfDetail;
+﻿using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaMst;
-using Domain.Models.OrdInfs;
-using Domain.Models.PatientInfor;
 using Domain.Models.PtAlrgyDrug;
 using Domain.Models.PtAlrgyElse;
 using Domain.Models.PtAlrgyFood;
 using Domain.Models.PtCmtInf;
-using Domain.Models.PtFamily;
-using Domain.Models.PtFamilyReki;
 using Domain.Models.PtInfection;
 using Domain.Models.PtKioReki;
 using Domain.Models.PtOtcDrug;
 using Domain.Models.PtOtherDrug;
 using Domain.Models.PtPregnancy;
 using Domain.Models.PtSupple;
-using Domain.Models.RaiinCmtInf;
-using Domain.Models.Reception;
-using Domain.Models.RsvFrameMst;
-using Domain.Models.RsvGrpMst;
-using Domain.Models.RsvInfo;
-using Domain.Models.SanteiInfo;
 using Domain.Models.SeikaturekiInf;
 using Domain.Models.SummaryInf;
-using Domain.Models.TenMst;
 using Domain.Models.UserConfig;
 using Helper.Common;
 using Helper.Constants;
@@ -46,26 +34,13 @@ namespace Interactor.HeaderSumaryInfo
         private readonly IPtSuppleRepository _ptPtSuppleRepository;
         private readonly IPtPregnancyRepository _ptPregnancyRepository;
         private readonly IPtCmtInfRepository _ptCmtInfRepository;
-        private readonly IInsuranceRepository _insuranceRepository;
         private readonly ISeikaturekiInfRepository _seikaturekiInRepository;
-        private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
-        private readonly IPatientInforRepository _patientInfRepository;
         private readonly IKensaInfDetailRepository _kensaInfDetailRepository;
         private readonly IKensaMstRepository _kensaMstRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
         private readonly IUserConfigRepository _userConfigRepository;
-        private readonly IPtFamilyRepository _ptFamilyRepository;
-        private readonly IPtFamilyRekiRepository _ptFamilyRekiRepository;
-        private readonly ISanteiInfoRepository _santeiInfoRepository;
-        private readonly ITenMstRepository _tenMstRepository;
-        private readonly IOrdInfRepository _ordInfRepository;
-        private readonly IRsvInfoRepository _rsvInfoRepository;
-        private readonly IRsvFrameMstRepository _rsvFrameMstRepository;
-        private readonly IRsvGrpMstRepository _rsvGrpMstRepository;
-        private readonly IReceptionRepository _receptionRepository;
-        private Dictionary<string, string> _relationship = new Dictionary<string, string>();
 
-        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, IInsuranceRepository insuranceRepository, ISeikaturekiInfRepository seikaturekiInRepository, IRaiinCmtInfRepository raiinCmtInfRepository, IPatientInforRepository patientInfRepository, IKensaInfDetailRepository kensaInfDetailRepository, IKensaMstRepository kensaMstRepository, ISummaryInfRepository summaryInfRepository, IUserConfigRepository userConfigRepository, IPtFamilyRepository ptFamilyRepository, IPtFamilyRekiRepository ptFamilyRekiRepository, ISanteiInfoRepository santeiInfoRepository, ITenMstRepository tenMstRepository, IOrdInfRepository ordInfRepository, IRsvInfoRepository rsvInfoRepository, IRsvFrameMstRepository rsvFrameMstRepository, IRsvGrpMstRepository rsvGrpMstRepository, IReceptionRepository receptionRepository)
+        public GetHeaderSumaryInfoInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, ISeikaturekiInfRepository seikaturekiInRepository, IKensaInfDetailRepository kensaInfDetailRepository, IKensaMstRepository kensaMstRepository, ISummaryInfRepository summaryInfRepository, IUserConfigRepository userConfigRepository)
         {
             _ptAlrgryElseRepository = ptAlrgryElseRepository;
             _ptPtAlrgyFoodRepository = ptPtAlrgyFoodRepository;
@@ -77,23 +52,11 @@ namespace Interactor.HeaderSumaryInfo
             _ptPtSuppleRepository = ptPtSuppleRepository;
             _ptPregnancyRepository = ptPregnancyRepository;
             _ptCmtInfRepository = ptCmtInfRepository;
-            _insuranceRepository = insuranceRepository;
             _seikaturekiInRepository = seikaturekiInRepository;
-            _raiinCmtInfRepository = raiinCmtInfRepository;
-            _patientInfRepository = patientInfRepository;
             _kensaInfDetailRepository = kensaInfDetailRepository;
             _kensaMstRepository = kensaMstRepository;
             _summaryInfRepository = summaryInfRepository;
             _userConfigRepository = userConfigRepository;
-            _ptFamilyRekiRepository = ptFamilyRekiRepository;
-            _ptFamilyRepository = ptFamilyRepository;
-            _santeiInfoRepository = santeiInfoRepository;
-            _tenMstRepository = tenMstRepository;
-            _ordInfRepository = ordInfRepository;
-            _rsvInfoRepository = rsvInfoRepository;
-            _rsvFrameMstRepository = rsvFrameMstRepository;
-            _rsvGrpMstRepository = rsvGrpMstRepository;
-            _receptionRepository = receptionRepository;
         }
 
         public GetHeaderSumaryInfoOutputData Handle(GetHeaderSumaryInfoInputData inputData)
@@ -139,7 +102,7 @@ namespace Interactor.HeaderSumaryInfo
 
             foreach (char propertyCd in header1Property)
             {
-                var ptHeaderInfoModel = GetSummaryInfo(inputData.PtId, inputData.HpId, inputData.RainNo, inputData.SinDate, propertyCd.AsString(), infoType);
+                var ptHeaderInfoModel = GetSummaryInfo(inputData.PtId, inputData.HpId, inputData.SinDate, propertyCd.AsString(), infoType);
                 if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
                 {
                     if (infoType == InfoType.PtHeaderInfo || infoType == InfoType.SumaryInfo)
@@ -155,7 +118,7 @@ namespace Interactor.HeaderSumaryInfo
 
             foreach (char propertyCd in header2Property)
             {
-                var ptHeaderInfoModel = GetSummaryInfo(inputData.PtId, inputData.HpId, inputData.RainNo, inputData.SinDate, propertyCd.AsString(), infoType);
+                var ptHeaderInfoModel = GetSummaryInfo(inputData.PtId, inputData.HpId, inputData.SinDate, propertyCd.AsString(), infoType);
                 if (!string.IsNullOrEmpty(ptHeaderInfoModel.HeaderInfo))
                 {
                     _tempListHeader2InfoModels.Add(ptHeaderInfoModel);
@@ -203,7 +166,7 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        private PtInfNotificationItem GetSummaryInfo(long ptId, int hpId, long raiinNo, int sinDate, string propertyCd, InfoType infoType = InfoType.PtHeaderInfo)
+        private PtInfNotificationItem GetSummaryInfo(long ptId, int hpId, int sinDate, string propertyCd, InfoType infoType = InfoType.PtHeaderInfo)
         {
             PtInfNotificationItem ptHeaderInfoModel = new PtInfNotificationItem()
             {
@@ -212,25 +175,7 @@ namespace Interactor.HeaderSumaryInfo
 
             GetData(hpId, ptId, sinDate, propertyCd, ref ptHeaderInfoModel);
 
-            if (infoType == InfoType.PtHeaderInfo)
-            {
-                switch (propertyCd)
-                {
-                    case "C":
-                        GetPhoneNumber(hpId, ptId, ptHeaderInfoModel);
-                        //電話番号
-                        break;
-                    case "D":
-                        GetReceptionComment(ptId, hpId, raiinNo, sinDate, ptHeaderInfoModel);
-                        //受付コメント
-                        break;
-                    case "E":
-                        GetFamilyList(ptId, hpId, ptHeaderInfoModel);
-                        //家族歴
-                        break;
-                }
-            }
-            else if (infoType == InfoType.SumaryInfo)
+            if (infoType == InfoType.SumaryInfo)
             {
                 switch (propertyCd)
                 {
@@ -244,21 +189,6 @@ namespace Interactor.HeaderSumaryInfo
                         {
                             ptHeaderInfoModel.HeaderInfo = summaryInf.Text;
                         }
-                        break;
-                    case "D":
-                        //電話番号
-                        GetPhoneNumber(hpId, ptId, ptHeaderInfoModel);
-                        ptHeaderInfoModel.GrpItemCd = 13;
-                        break;
-                    case "E":
-                        //受付コメント
-                        GetReceptionComment(ptId, hpId, raiinNo, sinDate, ptHeaderInfoModel);
-                        ptHeaderInfoModel.GrpItemCd = 14;
-                        break;
-                    case "F":
-                        GetFamilyList(ptId, hpId, ptHeaderInfoModel);
-                        ptHeaderInfoModel.GrpItemCd = 15;
-                        //家族歴
                         break;
                 }
             }
@@ -286,29 +216,13 @@ namespace Interactor.HeaderSumaryInfo
                     // 服薬情報
                     GetInteraction(ptId, sinDate, ptHeaderInfoModel);
                     break;
-                case "5":
-                    //算定情報
-                    GetCalculationInfo(ptId, hpId, sinDate, ptHeaderInfoModel);
-                    break;
                 case "6":
                     //出産予定
                     GetReproductionInfo(ptId, hpId, sinDate, ptHeaderInfoModel);
                     break;
-                case "7":
-                    //予約情報
-                    GetReservationInf(hpId, ptId, ptHeaderInfoModel);
-                    break;
                 case "8":
                     //コメント
                     GetComment(ptId, hpId, ptHeaderInfoModel);
-                    break;
-                case "9":
-                    //住所
-                    GetAddress(hpId, ptId, ptHeaderInfoModel);
-                    break;
-                case "A":
-                    //保険情報
-                    GetInsuranceInfo(ptId, sinDate, hpId, ptHeaderInfoModel);
                     break;
                 case "B":
                     //生活歴
@@ -455,73 +369,6 @@ namespace Interactor.HeaderSumaryInfo
             ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
         }
 
-        private void GetCalculationInfo(long ptId, int hpId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 5;
-            ptHeaderInfoModel.HeaderName = "◆算定情報";
-            var listSanteiInfModels = GetCalculationInfo(ptId, hpId, sinDate).Where(u => u.DayCount > u.AlertDays);
-            var strHeaderInfo = new StringBuilder();
-
-            if (listSanteiInfModels != null)
-            {
-                foreach (var santeiInfomationModel in listSanteiInfModels)
-                {
-                    strHeaderInfo.Append(santeiInfomationModel.ItemName?.Trim() + "(" + santeiInfomationModel.KisanType + " " + CIUtil.SDateToShowSDate(santeiInfomationModel.LastOdrDate) + @"～　" + santeiInfomationModel.DayCountDisplay + ")" + Environment.NewLine);
-                }
-                ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-            }
-        }
-
-        public List<SanteiInfomationItem> GetCalculationInfo(long ptId, int hpId, int sinDate)
-        {
-            var santeiInfs = _santeiInfoRepository.GetList(hpId, ptId, sinDate);
-
-            var tenMsts = _tenMstRepository.GetList(hpId, sinDate);
-
-            // Query Santei inf code
-            var kensaTenMst = tenMsts;
-
-            var tenMstList = from santeiInf in santeiInfs
-                             join tenMst in kensaTenMst on santeiInf.ItemCd
-                                                    equals tenMst.SanteiItemCd into tenMstLeft
-                             from tenMst in tenMstLeft.DefaultIfEmpty()
-                             select new
-                             {
-                                 SanteiCd = santeiInf.ItemCd,
-                                 ItemCd = tenMst?.ItemCd ?? santeiInf.ItemCd
-                             };
-
-            var odrInfs = _ordInfRepository.GetList(ptId, hpId, sinDate, false);
-            var odrInfDetails = _ordInfRepository.GetList(ptId, hpId);
-
-            var listOdrInfs = from odrInfItem in odrInfs
-                              join odrInfDetailItem in odrInfDetails on new { odrInfItem.RaiinNo, odrInfItem.RpEdaNo, odrInfItem.RpNo } equals
-                                                                         new { odrInfDetailItem.RaiinNo, odrInfDetailItem.RpEdaNo, odrInfDetailItem.RpNo }
-                              join tenMstItem in tenMstList on odrInfDetailItem.ItemCd equals tenMstItem.ItemCd
-                              select new
-                              {
-                                  tenMstItem.SanteiCd,
-                                  OdrInf = odrInfItem,
-                                  OdrInfDetail = odrInfDetailItem,
-                              };
-
-
-            //Get last oder day by ItemCd
-            var listOrdInfomation = listOdrInfs.OrderByDescending(u => u.OdrInf.SinDate).GroupBy(o => o.SanteiCd).Select(g => g.First()).ToList(); //select distinct by ItemCd
-            var listOrdDetailInfomation = listOrdInfomation.Select(o => new { o.OdrInfDetail, o.SanteiCd }).ToList(); // only select OdrDetailInfo 
-
-            var santeiQuery = from santeiInfItem in santeiInfs
-                              join tenMstItem in tenMsts on santeiInfItem.ItemCd equals tenMstItem.ItemCd
-                              select new
-                              {
-                                  SanteiInf = santeiInfItem,
-                                  SnteiInfDetail = santeiInfItem.SanteiInfoDetailModel,
-                                  TenMst = tenMstItem
-                              };
-            var result = santeiQuery.Select(u => new SanteiInfomationItem(u.SanteiInf, u.SnteiInfDetail?.FirstOrDefault(), u.TenMst, listOrdDetailInfomation.FirstOrDefault(o => o.SanteiCd == u.SanteiInf.ItemCd)?.OdrInfDetail, sinDate)).OrderBy(t => t.ItemCd).ToList();
-            return result;
-        }
-
         private void GetReproductionInfo(long ptId, int hpId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 6;
@@ -568,49 +415,6 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        private void GetReservationInf(int hpId, long ptId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            int today = DateTime.Now.ToString("yyyyMMdd").AsInteger();
-            ptHeaderInfoModel.GrpItemCd = 7;
-            ptHeaderInfoModel.HeaderName = "■予約情報";
-            var listRsvInfModel = GetRsvInfoByRsvInf(hpId, ptId, today);
-            var listRaiinInfModel = _receptionRepository.GetList(hpId, ptId, today);
-            listRaiinInfModel = listRaiinInfModel.Where(u => !listRsvInfModel.Any(r => r.RaiinNo == u.RaiinNo)).ToList();
-            var strHeaderInfo = new StringBuilder();
-
-            foreach (var raiinInf in listRaiinInfModel)
-            {
-                listRsvInfModel.Add(new RsvInfItem(null, null, null, raiinInf));
-            }
-
-            if (listRsvInfModel.Count > 0)
-            {
-                listRsvInfModel = listRsvInfModel.OrderBy(u => u.SinDate).ToList();
-                foreach (var rsvInfModel in listRsvInfModel)
-                {
-                    if (rsvInfModel.RsvInf != null)
-                    {
-                        //formart for RsvInf
-                        string startTime = rsvInfModel.StartTime > 0 ? " " + CIUtil.TimeToShowTime(rsvInfModel.StartTime) + " " : " ";
-                        string rsvFrameName = string.IsNullOrEmpty(rsvInfModel.RsvFrameName) ? string.Empty : "[" + rsvInfModel.RsvFrameName + "]";
-                        strHeaderInfo.Append(CIUtil.SDateToShowSDate2(rsvInfModel.SinDate) + startTime + rsvInfModel.RsvGrpName + " " + rsvFrameName + Environment.NewLine);
-                    }
-                    else
-                    {
-                        //formart for raiinInf
-                        string kaName = string.IsNullOrEmpty(rsvInfModel?.RaiinInfModel?.KaSname) ? " " : " " + "[" + rsvInfModel.RaiinInfModel.KaSname + "]" + " ";
-                        strHeaderInfo.Append(CIUtil.SDateToShowSDate2(rsvInfModel?.SinDate ?? 0) + " "
-                                                        + FormatTime(rsvInfModel?.RaiinInfModel?.YoyakuTime ?? string.Empty)
-                                                        + kaName
-                                                        + rsvInfModel?.RaiinInfModel?.TatoName ?? string.Empty + " "
-                                                        + (!string.IsNullOrEmpty(rsvInfModel?.RaiinInfModel?.RaiinCmt) ? "(" + rsvInfModel.RaiinInfModel.RaiinCmt + ")" : string.Empty)
-                                                        + Environment.NewLine);
-                    }
-                }
-            }
-            ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-        }
-
         private void GetComment(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 8;
@@ -632,145 +436,6 @@ namespace Interactor.HeaderSumaryInfo
             return result;
         }
 
-        private void GetAddress(int hpId, long ptId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            var ptInfo = _patientInfRepository.GetById(hpId, ptId, false);
-            var _ptInfoItem = ptInfo == null ? null : new PtInfoItem(ptInfo);
-
-            ptHeaderInfoModel.GrpItemCd = 9;
-            ptHeaderInfoModel.HeaderName = "◆住所";
-            if (_ptInfoItem != null && !string.IsNullOrEmpty(_ptInfoItem.HomeAddress1 + _ptInfoItem.HomeAddress2))
-            {
-                ptHeaderInfoModel.HeaderInfo = _ptInfoItem.HomeAddress1 + " " + _ptInfoItem.HomeAddress2;
-            }
-        }
-
-        private void GetInsuranceInfo(long ptId, int sinDate, int hpId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 10;
-            ptHeaderInfoModel.HeaderName = "◆保険情報";
-            var listPtHokenInfoItem = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate, 28).ToList();
-            if (listPtHokenInfoItem?.Count == 0) return;
-            StringBuilder futanInfo = new StringBuilder();
-            StringBuilder kohiInf = new StringBuilder();
-
-            if (listPtHokenInfoItem?.Count > 0)
-            {
-                foreach (var ptHokenInfoModel in listPtHokenInfoItem)
-                {
-
-                    kohiInf?.Append(GetFutanInfo(ptHokenInfoModel.Kohi1));
-
-                    kohiInf?.Append(GetFutanInfo(ptHokenInfoModel.Kohi2));
-
-                    kohiInf?.Append(GetFutanInfo(ptHokenInfoModel.Kohi3));
-
-                    kohiInf?.Append(GetFutanInfo(ptHokenInfoModel.Kohi4));
-
-                    if (string.IsNullOrEmpty(kohiInf?.ToString()))
-                    {
-                        continue;
-                    }
-                    var strKohiInf = kohiInf?.ToString();
-                    strKohiInf = strKohiInf?.TrimEnd();
-                    strKohiInf = strKohiInf?.TrimEnd('　');
-                    strKohiInf = strKohiInf?.TrimEnd(',');
-                    futanInfo.Append(ptHokenInfoModel.HokenPid.ToString().PadLeft(3, '0') + ". ");
-                    futanInfo.Append(strKohiInf);
-                    futanInfo.Append(Environment.NewLine);
-                }
-            }
-            var strFutanInfo = futanInfo?.ToString().TrimEnd();
-            if (!string.IsNullOrEmpty(strFutanInfo?.Trim()))
-            {
-                ptHeaderInfoModel.HeaderInfo = strFutanInfo?.ToString() ?? String.Empty;
-            }
-        }
-
-        private string GetFutanInfo(KohiInfModel ptKohi)
-        {
-            var hokenMst = ptKohi?.HokenMstModel;
-            int gokenGaku = ptKohi?.GendoGaku ?? 0;
-            string futanInfo = string.Empty;
-
-            if (!string.IsNullOrEmpty(ptKohi?.FutansyaNo))
-            {
-                futanInfo += "[" + ptKohi.FutansyaNo + "]";
-            }
-            else
-            {
-                if (hokenMst == null)
-                {
-                    return string.Empty;
-                }
-                futanInfo += "[" + hokenMst.HoubetsuNumber + "]";
-            }
-
-            if (hokenMst == null && !string.IsNullOrEmpty(ptKohi?.FutansyaNo))
-            {
-                return futanInfo + "," + " ";
-            }
-            if (hokenMst?.FutanKbn == 0)
-            {
-                //負担なし
-                futanInfo += "0円";
-            }
-            else
-            {
-                if (hokenMst?.KaiLimitFutan > 0)
-                {
-                    if (hokenMst?.DayLimitFutan <= 0 && hokenMst?.MonthLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/回・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst?.KaiLimitFutan.AsString() + "円/回・";
-                    }
-                }
-
-                if (hokenMst?.DayLimitFutan > 0)
-                {
-                    if (hokenMst?.KaiLimitFutan <= 0 && hokenMst?.MonthLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/日・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst?.DayLimitFutan.AsString() + "円/日・";
-                    }
-                }
-
-                if (hokenMst?.DayLimitCount > 0)
-                {
-                    futanInfo = hokenMst?.DayLimitCount.AsString() + "回/日・";
-                }
-
-                if (hokenMst?.MonthLimitFutan > 0)
-                {
-                    if (hokenMst?.KaiLimitFutan <= 0 && hokenMst?.DayLimitFutan <= 0 && gokenGaku > 0)
-                    {
-                        futanInfo += gokenGaku.AsString() + "円/月・";
-                    }
-                    else
-                    {
-                        futanInfo += hokenMst?.MonthLimitFutan.AsString() + "円/月・";
-                    }
-                }
-
-                if (hokenMst?.MonthLimitCount > 0)
-                {
-                    futanInfo += hokenMst?.MonthLimitCount.AsString() + "回/月";
-                }
-            }
-            if (!string.IsNullOrEmpty(futanInfo))
-            {
-                futanInfo = futanInfo.TrimEnd('・');
-                futanInfo = futanInfo + "," + " ";
-            }
-            return futanInfo;
-        }
-
         private void GetLifeHistory(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
         {
             ptHeaderInfoModel.GrpItemCd = 11;
@@ -780,31 +445,6 @@ namespace Interactor.HeaderSumaryInfo
             if (seikaturekiInfModel != null)
             {
                 ptHeaderInfoModel.HeaderInfo = seikaturekiInfModel.Text;
-            }
-        }
-
-        private void GetPhoneNumber(int hpId, long ptId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 12;
-            ptHeaderInfoModel.HeaderName = "◆電話番号";
-
-            var ptInfo = _patientInfRepository.GetById(hpId, ptId, false);
-            var _ptInfoItem = ptInfo == null ? null : new PtInfoItem(ptInfo);
-
-            if (_ptInfoItem != null && !string.IsNullOrEmpty(_ptInfoItem.Tel1 + _ptInfoItem.Tel2))
-            {
-                ptHeaderInfoModel.HeaderInfo = _ptInfoItem.Tel1 + Environment.NewLine + _ptInfoItem.Tel2;
-            }
-        }
-
-        private void GetReceptionComment(long ptId, int hpId, long raiinNo, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 13;
-            ptHeaderInfoModel.HeaderName = "◆来院コメント";
-            var raiinCmtInf = _raiinCmtInfRepository.GetList(hpId, ptId, sinDate, raiinNo).FirstOrDefault();
-            if (raiinCmtInf != null)
-            {
-                ptHeaderInfoModel.HeaderInfo = raiinCmtInf.Text;
             }
         }
 
@@ -922,32 +562,6 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        //convert string to HH:mm
-        private string FormatTime(string time)
-        {
-            string result = string.Empty;
-            if (!string.IsNullOrEmpty(time))
-            {
-                if (time.Length > 4)
-                {
-                    result = time.Substring(0, 4);
-                }
-                else if (time.Length < 4)
-                {
-                    result = time.PadLeft(4, '0');
-                }
-                else
-                {
-                    result = time;
-                }
-                result = result.Insert(2, ":");
-            }
-            if (result == "00:00")
-            {
-                result = string.Empty;
-            }
-            return result;
-        }
 
         private List<PtInfNotificationItem> GetNotificationContent(int userId, int hpId, long ptId, int sinDate)
         {
@@ -1016,21 +630,10 @@ namespace Interactor.HeaderSumaryInfo
                     GetComment(ptId, hpId, ptInfNotificationModel);
                     ptInfNotificationModel.GrpItemCd = 6;
                     break;
-                case "7":
-                    //経過日数
-                    GetCalculationInfo(ptId, hpId, sinDate, ptInfNotificationModel);
-                    ptInfNotificationModel.HeaderName = "◆経過日数";
-                    ptInfNotificationModel.GrpItemCd = 7;
-                    break;
                 case "8":
                     //出産予定
                     GetReproductionInfo(ptId, hpId, sinDate, ptInfNotificationModel);
                     ptInfNotificationModel.GrpItemCd = 8;
-                    break;
-                case "9":
-                    //予約情報
-                    GetReservationInf(hpId, ptId, ptInfNotificationModel);
-                    ptInfNotificationModel.GrpItemCd = 9;
                     break;
                 case "0":
                     //検査結果速報
@@ -1072,120 +675,6 @@ namespace Interactor.HeaderSumaryInfo
             return null;
         }
 
-        private List<PtFamilyItem> GetFamilyListByPtId(long ptId, int hpId)
-        {
-
-            var ptFamilyRepo = _ptFamilyRepository.GetList(ptId, hpId);
-            var ptInfRepo = _patientInfRepository.GetById(ptId);
-
-            var ptFamilyRekis = _ptFamilyRekiRepository.GetList(hpId).OrderBy(u => u.SortNo);
-            var query =
-            (
-                from ptFamily in ptFamilyRepo
-                join ptInf in ptInfRepo on ptFamily.FamilyPtId equals ptInf.PtId into ptInfList
-                from ptInfItem in ptInfList.DefaultIfEmpty()
-                select new
-                {
-                    PtFamily = ptFamily,
-                    PtInf = ptInfItem,
-                    ListPtFamilyRekiInfo = ptFamilyRekis.Where(c => c.FamilyId == ptFamily.FamilyId).ToList()
-                }
-            );
-            return query.AsEnumerable().Select(data => new PtFamilyItem(data.PtFamily, data.PtInf)
-            {
-                ListPtFamilyRekiModel = data.ListPtFamilyRekiInfo == null
-                    ? new List<PtFamilyRekiItem>()
-                    : new List<PtFamilyRekiItem>(data.ListPtFamilyRekiInfo.Select(u => new PtFamilyRekiItem(u)))
-            }).ToList();
-
-        }
-
-        private void GetFamilyList(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 14;
-            ptHeaderInfoModel.HeaderName = "◆家族歴";
-
-            var ptFamilyList = GetFamilyListByPtId(ptId, hpId);
-            if (ptFamilyList != null)
-            {
-                var headerInfo = new StringBuilder();
-                foreach (var ptFamilyModel in ptFamilyList)
-                {
-                    SetDiseaseName(ptFamilyModel);
-                    if (!string.IsNullOrWhiteSpace(ptFamilyModel.DiseaseName))
-                    {
-                        if (!string.IsNullOrEmpty(headerInfo.ToString()))
-                        {
-                            headerInfo.Append(Environment.NewLine);
-                        }
-                        headerInfo.Append($"({GetRelationshipName(ptFamilyModel.ZokugaraCd)}){ptFamilyModel.DiseaseName}");
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(headerInfo.ToString()))
-                {
-                    ptHeaderInfoModel.HeaderInfo = headerInfo.ToString();
-                }
-            }
-        }
-
-        private void SetDiseaseName(PtFamilyItem ptFamilyModel)
-        {
-            var strDeaseName = new StringBuilder();
-            if (ptFamilyModel.ListPtFamilyRekiModel != null && ptFamilyModel.ListPtFamilyRekiModel.Count > 0)
-            {
-                foreach (var ptByomeiMode in ptFamilyModel.ListPtFamilyRekiModel)
-                {
-                    if (ptByomeiMode.IsDeleted == 0)
-                    {
-                        if (!string.IsNullOrEmpty(ptFamilyModel.DiseaseName))
-                        {
-                            strDeaseName.Append("・");
-                        }
-                        strDeaseName.Append(ptByomeiMode.Byomei);
-                    }
-                }
-            }
-            ptFamilyModel.DiseaseName = strDeaseName.ToString();
-        }
-
-        private string GetRelationshipName(string zokugaraCd)
-        {
-            var relationshipName = string.Empty;
-
-            if (_relationship == null)
-            {
-                _relationship = new Dictionary<string, string>()
-                {
-                    {nameof(Relationship.BR), "血縁"},
-                    {nameof(Relationship.MA), "配偶者"},
-                    {nameof(Relationship.FA), "父"},
-                    {nameof(Relationship.MO), "母"},
-
-                    {nameof(Relationship.GF1), "祖父(父方)"},
-                    {nameof(Relationship.GM1), "祖母(父方)"},
-                    {nameof(Relationship.GF2), "祖父(母方)"},
-                    {nameof(Relationship.GM2), "祖母(母方)"},
-
-                    {nameof(Relationship.SO), "息子"},
-                    {nameof(Relationship.DA), "娘"},
-                    {nameof(Relationship.BB), "兄"},
-                    {nameof(Relationship.LB), "弟"},
-
-                    {nameof(Relationship.BS), "姉"},
-                    {nameof(Relationship.LS), "妹"},
-                    {nameof(Relationship.GC), "孫"},
-                    {nameof(Relationship.OT), "非血縁"},
-                };
-            }
-
-            if (_relationship.Keys.Contains(zokugaraCd))
-            {
-                relationshipName = _relationship[zokugaraCd];
-            }
-
-            return relationshipName;
-        }
 
         private void SetForeground(UserConfigModel userConfigurationModel, List<PtInfNotificationItem> listHeader1InfoModels, List<PtInfNotificationItem> listHeader2InfoModels)
         {
@@ -1198,27 +687,5 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        public List<RsvInfItem> GetRsvInfoByRsvInf(int hpId, long ptId, int sinDate)
-        {
-            var rsvInfs = _rsvInfoRepository.GetList(hpId, ptId, sinDate);
-            var rsvFrmMsts = _rsvFrameMstRepository.GetList(hpId);
-
-            var rsvGrpMsts = _rsvGrpMstRepository.GetList(hpId);
-            var rsvDetailInfs = from rsvFrmMstItem in rsvFrmMsts
-                                join rsvGrpMstItem in rsvGrpMsts on rsvFrmMstItem.RsvGrpId equals rsvGrpMstItem.RsvGrpId
-                                select new
-                                {
-                                    RsvFrmMst = rsvFrmMstItem,
-                                    RsvGrpMst = rsvGrpMstItem
-                                };
-            var query = from rsvInfItem in rsvInfs
-                        select new
-                        {
-                            RsvInf = rsvInfItem,
-                            Detail = rsvDetailInfs.FirstOrDefault(c => c.RsvFrmMst.RsvFrameId == rsvInfItem.RsvFrameId),
-                        };
-            var result = query.AsEnumerable().Select(u => new RsvInfItem(u.RsvInf, (u.Detail == null ? null : u.Detail.RsvFrmMst), (u.Detail == null ? null : u.Detail.RsvGrpMst), null)).OrderBy(r => r.SinDate).ToList();
-            return result;
-        }
     }
 }

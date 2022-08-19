@@ -17,19 +17,13 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public PatientInforModel? GetById(int hpId, long ptId, bool isDeleted = true)
+        public PatientInforModel? GetById(int hpId, long ptId)
         {
-            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDelete != 1 || isDeleted)).FirstOrDefault();
+            var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
             if (itemData == null)
                 return null;
             else
                 return ConvertToModel(itemData);
-        }
-
-        public List<PatientInforModel> GetById(long ptId)
-        {
-            var itemDatas = _tenantDataContext.PtInfs.Where(x => x.PtId == ptId).ToList();
-            return itemDatas.Select(p => ConvertToModel(p)).ToList();
         }
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
@@ -500,9 +494,7 @@ namespace Infrastructure.Repositories
                 p.IsTester,
                 p.MainHokenPid,
                 memo,
-                lastVisitDate,
-                p.Setanusi ?? String.Empty
-                );
+                lastVisitDate);
         }
 
         private PatientInforModel ConvertToModel(PtInf itemData)
@@ -562,9 +554,7 @@ namespace Infrastructure.Repositories
                 itemData.IsTester,
                 itemData.MainHokenPid,
                 memo,
-                lastVisitDate,
-                itemData.Setanusi ?? String.Empty
-                );
+                lastVisitDate);
         }
     }
 }

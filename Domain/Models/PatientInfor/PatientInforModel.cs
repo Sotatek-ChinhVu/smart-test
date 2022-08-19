@@ -1,10 +1,16 @@
-﻿namespace Domain.Models.PatientInfor
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Domain.Models.PatientInfor
 {
     namespace Domain.Models.PatientInfor
     {
         public class PatientInforModel
         {
-            public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate, string setainusi)
+            public PatientInforModel(int hpId, long ptId, long referenceNo, long seqNo, long ptNum, string kanaName, string name, int sex, int birthday, int limitConsFlg, int isDead, int deathDate, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string mail, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, string memo, int lastVisitDate)
             {
                 HpId = hpId;
                 PtId = ptId;
@@ -45,7 +51,6 @@
                 MainHokenPid = mainHokenPid;
                 Memo = memo;
                 LastVisitDate = lastVisitDate;
-                Setainusi = setainusi;
             }
 
             public int LastVisitDate { get; private set; }
@@ -125,8 +130,6 @@
             public int MainHokenPid { get; private set; }
 
             public string Memo { get; private set; }
-
-            public string Setainusi { get; set; }
         }
     }
 }
