@@ -1,14 +1,10 @@
 ﻿using Domain.Models.User;
 using Entity.Tenant;
+using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -30,9 +26,14 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public void Delete(UserId userId)
+        public void Delete(int userId)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<UserMstModel> GetAll()
+        {
+            return _tenantDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
@@ -49,6 +50,12 @@ namespace Infrastructure.Repositories
             return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
+        public IEnumerable<UserMstModel> GetDoctorsList(int userId)
+        {
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).ToList();
+            return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
+        }
+
         public UserMstModel? GetByUserId(int userId)
         {
             var entity = _tenantDataContext.UserMsts
@@ -61,7 +68,7 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.UserMsts.Max(u => u.UserId);
         }
 
-        public UserMstModel Read(UserId userId)
+        public UserMstModel Read(int userId)
         {
             throw new NotImplementedException();
         }
@@ -70,7 +77,6 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-
         public void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList)
         {
 

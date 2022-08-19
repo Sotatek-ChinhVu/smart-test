@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Models.VisitingListSetting
@@ -56,6 +57,7 @@ namespace Domain.Models.VisitingListSetting
             Duration = duration;
         }
 
+        [JsonConstructor]
         public ReceptionTimeColorConfig(int duration, string color)
         {
             Duration = duration;
@@ -74,6 +76,7 @@ namespace Domain.Models.VisitingListSetting
             Status = status;
         }
 
+        [JsonConstructor]
         public ReceptionStatusColorConfig(int status, string color)
         {
             Status = status;
