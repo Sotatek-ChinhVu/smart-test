@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -53,6 +52,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("SEQ_NO")]
+        //[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEXT")]
         [MaxLength(200)]
-        public string Text { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -115,7 +115,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

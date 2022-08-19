@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("GENERATION_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GenerationId { get; set; }
@@ -85,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

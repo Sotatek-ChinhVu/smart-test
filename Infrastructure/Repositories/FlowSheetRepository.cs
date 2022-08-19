@@ -24,7 +24,8 @@ namespace Infrastructure.Repositories
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3);
             var karteInfs = _tenantDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
             var query = from raiinInf in raiinInfs
-                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj from karteInf in gj.DefaultIfEmpty()
+                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
+                        from karteInf in gj.DefaultIfEmpty()
                         select new
                         {
                             raiinInf,
@@ -35,7 +36,19 @@ namespace Infrastructure.Repositories
 
             var tags = _tenantDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId).ToList();
             var comments = _tenantDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId).ToList();
-            var raiinListInfs = _tenantDataContext.RaiinListInfs.Where(raiinInf => raiinInf.HpId == hpId && raiinInf.PtId == ptId);
+            var raiinListInfs =
+                from raiinListInf in _tenantDataContext.RaiinListInfs.Where(raiinInf => raiinInf.HpId == hpId && raiinInf.PtId == ptId)
+                join raiinListMst in _tenantDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                select new
+                {
+                    raiinListInf.RaiinNo,
+                    raiinListInf.GrpId,
+                    raiinListInf.KbnCd,
+                    raiinListInf.RaiinListKbn,
+                    raiinListMst.KbnName,
+                    raiinListMst.ColorCd
+                };
 
             List<FlowSheetModel> result = new();
             foreach (var data in dataList)
@@ -49,25 +62,21 @@ namespace Infrastructure.Repositories
                     tag = tags.First(c => c.RaiinNo == raiinInf.RaiinNo).TagNo;
                 }
 
-                RaiinListCmtModel commentModel;
+                string comment = string.Empty;
                 if (comments.Any(c => c.RaiinNo == raiinInf.RaiinNo))
                 {
                     var commentInf = comments.First(c => c.RaiinNo == raiinInf.RaiinNo);
-                    commentModel = new RaiinListCmtModel(commentInf.CmtKbn, commentInf.Text); 
-                }
-                else
-                {
-                    commentModel = new RaiinListCmtModel();
+                    comment = commentInf.Text ?? String.Empty;
                 }
 
                 var raiinListInfoModelList = raiinListInfs
-                    .Where(r => r.RaiinNo != raiinInf.RaiinNo)
-                    .Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn))
+                    .Where(r => r.RaiinNo == raiinInf.RaiinNo)
+                    .Select(r => new RaiinListInfModel(r.RaiinNo, r.GrpId, r.KbnCd, r.RaiinListKbn, r.KbnName, r.ColorCd ?? string.Empty))
                     .ToList();
 
                 bool isContainsFile = raiinListInfoModelList.Any(r => r.RaiinListKbn == 4);
 
-                result.Add(new FlowSheetModel(raiinInf.SinDate, text, raiinInf.RaiinNo, raiinInf.SyosaisinKbn, raiinInf.Status, isContainsFile, tag, commentModel, raiinListInfoModelList));
+                result.Add(new FlowSheetModel(raiinInf.SinDate, text, raiinInf.RaiinNo, raiinInf.SyosaisinKbn, raiinInf.Status, isContainsFile, tag, comment, raiinListInfoModelList, false, raiinInf.RaiinNo == raiinNo));
             }
             return result;
         }

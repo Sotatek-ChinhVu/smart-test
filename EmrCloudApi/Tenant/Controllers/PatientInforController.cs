@@ -26,6 +26,7 @@ using UseCase.InsuranceMst.Get;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using UseCase.SearchHokensyaMst.Get;
+using UseCase.PatientInfor.SearchAdvanced;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -42,7 +43,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(request.HpId, request.PtId);
+            var input = new GetPatientInforByIdInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
@@ -85,6 +86,16 @@ namespace EmrCloudApi.Tenant.Controllers
             present.Complete(output);
 
             return new ActionResult<Response<SearchPatientInforSimpleResponse>>(present.Result);
+        }
+
+        [HttpPost("SearchAdvanced")]
+        public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
+        {
+            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput);
+            var output = _bus.Handle(input);
+            var presenter = new SearchPatientInfoAdvancedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SearchPatientInfoAdvancedResponse>>(presenter.Result);
         }
 
         [HttpGet("GetListCalculationPatient")]

@@ -11,5 +11,7 @@
         bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt);
         bool UpdateTantoId(int hpId, long raiinNo, int tantoId);
         bool UpdateKaId(int hpId, long raiinNo, int kaId);
+        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
+
     }
 }
