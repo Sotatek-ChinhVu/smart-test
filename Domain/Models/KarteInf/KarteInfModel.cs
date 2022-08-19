@@ -2,7 +2,7 @@
 {
     public class KarteInfModel
     {
-        public KarteInfModel(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
+        public KarteInfModel(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText, DateTime createDate, DateTime updateDate)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -13,6 +13,8 @@
             Text = text;
             IsDeleted = isDeleted;
             RichText = richText;
+            CreateDate = createDate;
+            UpdateDate = updateDate;
         }
 
         public int HpId { get; private set; }
@@ -24,5 +26,7 @@
         public string Text { get; private set; }
         public int IsDeleted { get; private set; }
         public string RichText { get; private set; }
+        public DateTime CreateDate { get; private set; }
+        public DateTime UpdateDate { get; private set; }
     }
 }
