@@ -37,20 +37,16 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var result =
-                from groupPatient in _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
-                join groupDetailMst in _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0)
-                on groupPatient.GroupCode equals groupDetailMst.GrpCode
-                select new GroupInfModel
-                (
-                    groupPatient.HpId,
-                    groupPatient.PtId,
-                    groupPatient.GroupId,
-                    groupPatient.GroupCode ?? string.Empty,
-                    groupDetailMst.GrpCodeName
-                );
+            var dataPtGrpInfs = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
+                                .Select( x => new GroupInfModel(
+                                    hpId,
+                                    ptId,
+                                    x.GroupId,
+                                    x.GroupCode ?? string.Empty,
+                                    ""
+                                    )).ToList();
 
-            return result.ToList();
+            return dataPtGrpInfs;
         }
     }
 }
