@@ -21,6 +21,11 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
             UpsertPtDiseaseListStatus.Success => ResponseMessage.UpsertPtDiseaseSuccess,
             UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.UpsertPtDiseaseFail,
             UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.UpsertPtDiseaseInputNoData,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.UpsertPtDiseaseInvalidTenkiKbn,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.UpsertPtDiseaseInvalidSikkanKbn,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
+            UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
+            UpsertPtDiseaseListStatus.PtDiseaseHokenPIdNoExist => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
             _ => string.Empty
         };
     }

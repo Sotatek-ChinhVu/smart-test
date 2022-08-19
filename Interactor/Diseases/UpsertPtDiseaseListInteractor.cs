@@ -1,4 +1,6 @@
 ﻿using Domain.Models.Diseases;
+using Domain.Models.Insurance;
+using Domain.Models.PatientInfor;
 using UseCase.Diseases.Upsert;
 
 namespace Interactor.Diseases
@@ -6,9 +8,13 @@ namespace Interactor.Diseases
     public class UpsertPtDiseaseListInteractor : IUpsertPtDiseaseListInputPort
     {
         private readonly IPtDiseaseRepository _diseaseRepository;
-        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository)
+        private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IInsuranceRepository _insuranceInforRepository;
+        public UpsertPtDiseaseListInteractor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceInforRepository)
         {
             _diseaseRepository = diseaseRepository;
+            _patientInforRepository = patientInforRepository;
+            _insuranceInforRepository = insuranceInforRepository;
         }
         public UpsertPtDiseaseListOutputData Handle(UpsertPtDiseaseListInputData inputData)
         {
@@ -31,6 +37,14 @@ namespace Interactor.Diseases
                 if (datas.Any(d => (d.NanByoCd != 0 && d.NanByoCd != 9)))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd);
+                }
+                if (!_patientInforRepository.CheckListId(datas.Select(i => i.PtId).ToList()))
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist);
+                }
+                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).ToList()))
+                {
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist);
                 }
 
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);

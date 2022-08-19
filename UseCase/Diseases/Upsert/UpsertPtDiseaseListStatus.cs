@@ -8,5 +8,7 @@
         PtDiseaseListInvalidTenkiKbn,
         PtDiseaseListInvalidSikkanKbn,
         PtDiseaseListInvalidNanByoCd,
+        PtDiseasePtIdNoExist,
+        PtDiseaseHokenPIdNoExist,
     }
 }

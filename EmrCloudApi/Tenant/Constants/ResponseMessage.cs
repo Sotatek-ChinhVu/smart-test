@@ -35,7 +35,12 @@
         //PtDisease controller
         public static readonly string UpsertPtDiseaseSuccess = "Upsert value successfully.";
         public static readonly string UpsertPtDiseaseFail = "Upsert value fail.";
-        public static readonly string UpsertPtDiseaseInputNoData = "Inpu no data.";
+        public static readonly string UpsertPtDiseaseInputNoData = "Input no data.";
+        public static readonly string UpsertPtDiseaseInvalidTenkiKbn = "Invalid TenKiKbn.";
+        public static readonly string UpsertPtDiseaseInvalidSikkanKbn = "Invalid SikkanKbn.";
+        public static readonly string UpsertPtDiseaseInvalidNanByoCd = "Invalid NanByoCd.";
+        public static readonly string UpsertPtDiseasePtIdNoExist = "PtId no exist.";
+        public static readonly string UpsertPtDiseaseHokenPIdNoExist = "HokenPId no exist.";
 
         //Insurance
 

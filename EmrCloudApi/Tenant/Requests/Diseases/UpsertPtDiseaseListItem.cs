@@ -6,13 +6,14 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
     public class UpsertPtDiseaseListItem
     {
         [Required]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public long Id { get; set; }
 
         [Required]
         public long PtId { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
         public int SortNo { get; set; }
 
         [MaxLength(7)]
@@ -82,14 +83,14 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         public string Byomei { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
         public int StartDate { get; set; }
 
         [Required]
         public int TenkiKbn { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
         public int TenkiDate { get; set; }
 
         [Required]
@@ -106,27 +107,27 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         public string HosokuCmt { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int HokenPid { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int IsNodspRece { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int IsNodspKarte { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public long SeqNo { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int IsImportant { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{1} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int IsDeleted { get; set; }
     }
 }

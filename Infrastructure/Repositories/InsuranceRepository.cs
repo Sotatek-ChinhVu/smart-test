@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<InsuranceModel> GetInsuranceListById(int hpId, long ptId, int sinDate)
         {
-            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId ).OrderByDescending(x => x.HokenPid).ToList();
+            var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.HokenPid).ToList();
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None).ToList();
             var dataHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
             var joinQuery = from ptHokenPattern in dataHokenPatterList
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
                     string houbetu = string.Empty;
                     int futanRate = 0;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
-                    
+
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
@@ -205,6 +205,12 @@ namespace Infrastructure.Repositories
                 }
             }
             return result;
+        }
+
+        public bool CheckHokenPIdList(List<int> hokenPIds)
+        {
+            var check = _tenantDataContext.PtHokenPatterns.Any(p => hokenPIds.Contains(p.HokenPid) && p.IsDeleted != 1);
+            return check;
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi kohiInf, int hokenId)
