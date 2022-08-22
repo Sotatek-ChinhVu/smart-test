@@ -41,7 +41,7 @@ using Domain.Models.SystemConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
-using Domain.Models.UserConfig;
+using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -97,6 +97,7 @@ using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.RaiinFilterMst.GetList;
+using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
@@ -108,17 +109,14 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.SetMst.SaveSetMst;
 using UseCase.VisitingList.SaveSettings;
-using Interactor.VisitingList;
-using Domain.Models.VisitingListSetting;
-using UseCase.RaiinFilterMst.SaveList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -178,7 +176,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPtOtherDrugRepository, PtOtherDrugRepository>();
             services.AddTransient<IPtInfectionRepository, PtInfectionRepository>();
             services.AddTransient<IPtSuppleRepository, PtSuppleRepository>();
-            services.AddTransient<IUserConfigRepository, UserConfigRepository>();
+            services.AddTransient<IUserConfRepository, UserConfigRepository>();
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();

@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SystemConf;
-using Domain.Models.UserConfig;
+using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Entity.Tenant;
 using Helper.Common;
@@ -18,14 +18,14 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public void Save(List<UserConfigModel> userConfModels, List<SystemConfModel> systemConfModels)
+    public void Save(List<UserConfModel> userConfModels, List<SystemConfModel> systemConfModels)
     {
         ModifyUserConfs(userConfModels);
         ModifySystemConfs(systemConfModels);
         _tenantDataContext.SaveChanges();
     }
 
-    private void ModifyUserConfs(List<UserConfigModel> confModels)
+    private void ModifyUserConfs(List<UserConfModel> confModels)
     {
         if (confModels.Count == 0)
         {

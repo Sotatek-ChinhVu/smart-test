@@ -13,6 +13,46 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        // Format for param: yyyymmdd
+        public static DateTime IntToDate(int iDateTime)
+        {
+            var result = SDateToDateTime(iDateTime);
+            return result == null ? new DateTime() : result.Value;
+        }
+        public static DateTime? SDateToDateTime(int Ymd)
+        {
+            if (Ymd <= 0 || Ymd == 99999999)
+            {
+                return null;
+            }
+
+            try
+            {
+                // Padding zero first
+                string s = Ymd.ToString("D8");
+
+                // Then convert to date time
+                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        {
+            int result;
+            try
+            {
+                result = dateTime.ToString(format).AsInteger();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                result = 0;
+            }
+            return result;
+        }
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -257,19 +297,18 @@ namespace Helper.Common
             }
             DateTime dtBuf;
             int nYear = 0, nMonth = 0, nDay = 0;
-            {
-                //** 誕生日が1日でない⇒翌月1日に置き換え **
-                if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
-                {
-                    dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
-                    nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
-                }
-                //** 誕生日が1日⇒そのまま **
 
-                //年齢算出
-                SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
-                return (nYear >= nTgtAge);
+            //** 誕生日が1日でない⇒翌月1日に置き換え **
+            if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
+            {
+                dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
             }
+            //** 誕生日が1日⇒そのまま **
+
+            //年齢算出
+            SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
+            return (nYear >= nTgtAge);
         }
 
         public static int SDateToAge(int Ymd, int ToYmd)
@@ -284,12 +323,10 @@ namespace Helper.Common
             try
             {
                 WrkStr = Ymd.ToString("D8");
-                DateTime BirthDate = new DateTime();
-                DateTime ToDate = new DateTime();
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out BirthDate);
 
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime BirthDate);
                 WrkStr = ToYmd.ToString("D8");
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out ToDate);
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ToDate);
 
                 Age = ToDate.Year - BirthDate.Year;
 
@@ -308,15 +345,8 @@ namespace Helper.Common
             return Age;
         }
 
-        //西暦を表示用和暦(x yy/mm/dd)に変換
-        //Convert format yyyyymmdd to Japanese style x yy/mm/dd
-        public static string SDateToShowWDate(int ymd)
-        {
-            return SDateToShowWDate(ymd, WarekiFormat.Short);
-        }
-
         #region Convert Datetime Helpers (private)
-        private static string SDateToShowWDate(int ymd, WarekiFormat warekiFormat)
+        public static string SDateToShowWDate(int ymd, WarekiFormat warekiFormat = WarekiFormat.Short)
         {
             string workString;
 
@@ -758,65 +788,23 @@ namespace Helper.Common
         }
         #endregion
 
-        public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
+        public static string HourAndMinuteFormat(string value)
         {
-            int result = 0;
-            try
+            string sResult = "";
+            if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
             {
-                result = dateTime.ToString(format).AsInteger();
+                if (value.Length > 4)
+                {
+                    sResult = CIUtil.Copy(value, 1, 4);
+                }
+                else
+                {
+                    sResult = value;
+                }
+                sResult = sResult.PadLeft(4, '0');
+                sResult = sResult.Insert(2, ":");
             }
-            catch
-            {
-                return result;
-            }
-            return result;
-        }
-
-        // Format for param: yyyymmdd
-        public static DateTime IntToDate(int iDateTime)
-        {
-            var result = SDateToDateTime(iDateTime);
-            return result == null ? new DateTime() : result.Value;
-        }
-        public static DateTime? SDateToDateTime(int Ymd)
-        {
-            if (Ymd <= 0 || Ymd == 99999999)
-            {
-                return null;
-            }
-
-            try
-            {
-                // Padding zero first
-                string s = Ymd.ToString("D8");
-
-                // Then convert to date time
-                return DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.InvariantCulture);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public static double AsDouble(this Object inputObject)
-        {
-            double result;
-            if (double.TryParse(inputObject.AsString(), out result))
-            {
-                return result;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        //西暦を表示用和暦(x yy/mm/dd)に変換
-        //Convert format yyyyymmdd to Japanese style x yy/mm/dd
-        public static string SDateToShowWDate(int ymd)
-        {
-            return SDateToShowWDate(ymd, WarekiFormat.Short);
+            return sResult;
         }
 
         /// <summary>
@@ -1161,151 +1149,11 @@ namespace Helper.Common
                     return WYear + (MEIJI_START_YEAR - 1);
 
                 default:
-                    Exception exception = new Exception();
-                    throw exception;
+                    var ex = new Exception();
+                    throw ex;
             }
-        }
-
-        public static int GetSanteInfDayCount(int sinDate, int lastOdrDate, int alertTerm)
-        {
-            int targetDateInt = lastOdrDate;
-            if (targetDateInt == 0)
-            {
-                return 0;
-            }
-
-            int dayCount = 0;
-            // Current Date
-            DateTime nowDate = IntToDate(sinDate);
-            int nowDateInt = sinDate;
-            // Target Date
-            DateTime targetDate = IntToDate(targetDateInt);
-            // Calculate base on AlertTerm
-            switch (alertTerm)
-            {
-                case 2:
-                    if (targetDateInt < nowDateInt)
-                        dayCount = DaysBetween(targetDate, nowDate) + 1;
-                    else
-                        dayCount = DaysBetween(nowDate, targetDate) + 1;
-                    break;
-                case 3:
-                    //曜日を取得
-                    DayOfWeek day = targetDate.DayOfWeek;
-                    if (day != System.DayOfWeek.Sunday)
-                    {
-                        //日曜始まりの週でカウント
-                        int incDay = (int)day * -1;
-                        targetDate = targetDate.AddDays(incDay);
-                        _ = DateTimeToInt(targetDate);
-                    }
-                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
-
-                    break;
-                case 4:
-                    //月初から月単位でカウント
-                    int startDateint = targetDate.Year * 10000 + targetDate.Month * 100 + 1;
-                    DateTime startDate = IntToDate(startDateint);
-                    dayCount = MonthsBetween(startDate, nowDate) + 1;
-                    break;
-                case 5:
-                    dayCount = WeeksBetween(targetDate, nowDate) + 1;
-                    break;
-                case 6:
-                    dayCount = MonthsBetween(targetDate, nowDate) + 1;
-                    break;
-            }
-            if (dayCount < 0)
-            {
-                dayCount *= (-1);
-            }
-            return dayCount;
-        }
-
-        public static string TimeToShowTime(int TimeValue)
-        {
-            string Result = string.Empty;
-            string WrkStr = string.Empty;
-            if (TimeValue.ToString().Length > 4)
-                WrkStr = TimeValue.ToString("D6");
-
-            else
-                WrkStr = TimeValue.ToString("D4");
-            Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
-            return Result;
-        }
-
-        public static int DaysBetween(DateTime from, DateTime to)
-        {
-            return (int)(to - @from).TotalDays;
-        }
-
-        public static int WeeksBetween(DateTime fromDate, DateTime endDate)
-        {
-            return DaysBetween(fromDate, endDate) / 7;
-        }
-
-        public static int MonthsBetween(DateTime startDate, DateTime now)
-        {
-            int monthDiff = ((now.Year - startDate.Year) * 12) + (now.Month - startDate.Month);
-
-            if (monthDiff > 0 && startDate.Day > now.Day)
-            {
-                monthDiff--;
-            }
-            else if (monthDiff < 0 && startDate.Day < now.Day)
-            {
-                monthDiff++;
-            }
-            return monthDiff;
-        }
-
-        //西暦を表示用西暦(yyyy/mm/dd (ddd))に変換
-        //Convert format yyyymmdd to yyyy/mm/dd(//Convert format yyyymmdd to yyyy/mm/ddd)
-        public static string SDateToShowSDate2(int Ymd)
-        {
-            if (Ymd <= 0)
-            {
-                return string.Empty;
-            }
-
-            // Must use ja-JP culture info here
-            // We need format date time as 2019/12/08(月)
-            // instead of 2019/12/08(Mon)
-            // Omit this culture info will cause wrong date/time format
-            CultureInfo jaJP = new CultureInfo("ja-JP");
-
-            // Zero padding
-            string WrkStr = Ymd.ToString("D8");
-
-            if (DateTime.TryParseExact(WrkStr, "yyyyMMdd", jaJP, DateTimeStyles.None, out DateTime WrkDate))
-            {
-                return WrkDate.ToString("yyyy/MM/dd(ddd)", jaJP);
-            }
-
-            return string.Empty;
-        }
-
-        public static string HourAndMinuteFormat(string value)
-        {
-            string sResult = "";
-            if (!string.IsNullOrEmpty(value) && value.AsInteger() != 0)
-            {
-                if (value.Length > 4)
-                {
-                    sResult = CIUtil.Copy(value, 1, 4);
-                }
-                else
-                {
-                    sResult = value;
-                }
-                sResult = sResult.PadLeft(4, '0');
-                sResult = sResult.Insert(2, ":");
-            }
-            return sResult;
         }
     }
-
 
     public enum WarekiFormat
     {
@@ -1316,12 +1164,14 @@ namespace Helper.Common
 
     public struct WarekiYmd
     {
-        public string Ymd { get; set; }
-        public string GYmd { get; set; }
-        public string Gengo { get; set; }
-        public int GengoId { get; set; }
-        public int Year { get; set; }
-        public int Month { get; set; }
-        public int Day { get; set; }
+#pragma warning disable S1104 // Fields should not have public accessibility
+        public string Ymd;
+        public string GYmd;
+        public string Gengo;
+        public int GengoId;
+        public int Year;
+        public int Month;
+        public int Day;
+#pragma warning restore S1104 // Fields should not have public accessibility
     }
 }

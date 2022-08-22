@@ -11,7 +11,7 @@ using Domain.Models.PtPregnancy;
 using Domain.Models.PtSupple;
 using Domain.Models.SeikaturekiInf;
 using Domain.Models.SummaryInf;
-using Domain.Models.UserConfig;
+using Domain.Models.UserConf;
 using UseCase.SpecialNote.Get;
 
 namespace Interactor.SpecialNote
@@ -31,9 +31,8 @@ namespace Interactor.SpecialNote
         private readonly ISeikaturekiInfRepository _seikaturekiInRepository;
         private readonly IPhysicalInfoRepository _physicalRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
-        private readonly IUserConfigRepository _userConfigRepository;
 
-        public GetSpecialNoteInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, ISeikaturekiInfRepository seikaturekiInRepository, IPhysicalInfoRepository physicalRepository, ISummaryInfRepository summaryInfRepository, IUserConfigRepository userConfigRepository)
+        public GetSpecialNoteInteractor(IPtAlrgyElseRepository ptAlrgryElseRepository, IPtAlrgyFoodRepository ptPtAlrgyFoodRepository, IPtAlrgyDrugRepository ptPtAlrgyDrugRepository, IPtKioRekiRepository ptKioRekiRepository, IPtInfectionRepository ptInfectionRepository, IPtOtherDrugRepository ptOtherDrugRepository, IPtOtcDrugRepository ptPtOtcDrugRepository, IPtSuppleRepository ptPtSuppleRepository, IPtPregnancyRepository ptPregnancyRepository, IPtCmtInfRepository ptCmtInfRepository, ISeikaturekiInfRepository seikaturekiInRepository, IPhysicalInfoRepository physicalRepository, ISummaryInfRepository summaryInfRepository)
         {
             _ptAlrgryElseRepository = ptAlrgryElseRepository;
             _ptPtAlrgyFoodRepository = ptPtAlrgyFoodRepository;
@@ -48,7 +47,6 @@ namespace Interactor.SpecialNote
             _seikaturekiInRepository = seikaturekiInRepository;
             _physicalRepository = physicalRepository;
             _summaryInfRepository = summaryInfRepository;
-            _userConfigRepository = userConfigRepository;
         }
 
         public GetSpecialNoteOutputData Handle(GetSpecialNoteInputData inputData)

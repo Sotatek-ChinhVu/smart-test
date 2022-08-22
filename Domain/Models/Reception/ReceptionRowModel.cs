@@ -53,8 +53,6 @@ public class ReceptionRowModel
         GrpIdToDynamicCell = grpIds.ToDictionary(
             grpId => grpId,
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
-        KaSname = kaSname;
-        TatoName = tatoName;
     }
 
     public long PtId { get; private set; }
@@ -118,9 +116,6 @@ public class ReceptionRowModel
     // 資格確認結果
     public string ConfirmationResult { get; private set; }
 
-    public string KaSname { get; private set; }
-
-    public string TatoName { get; private set; }
     // Dynamic cells
     public Dictionary<int, DynamicCell> GrpIdToDynamicCell { get; private set; }
 

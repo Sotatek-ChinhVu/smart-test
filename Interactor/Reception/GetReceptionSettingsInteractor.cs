@@ -1,5 +1,5 @@
 ﻿using Domain.Models.SystemConf;
-using Domain.Models.UserConfig;
+using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Helper.Common;
 using Helper.Constants;
@@ -9,11 +9,11 @@ namespace Interactor.Reception;
 
 public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
 {
-    private readonly IUserConfigRepository _userConfRepository;
+    private readonly IUserConfRepository _userConfRepository;
     private readonly ISystemConfRepository _systemConfRepository;
 
     public GetReceptionSettingsInteractor(
-        IUserConfigRepository userConfRepository,
+        IUserConfRepository userConfRepository,
         ISystemConfRepository systemConfRepository)
     {
         _userConfRepository = userConfRepository;
@@ -34,7 +34,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
         int mouseWheel = 0;
         int kanFocus = 0;
         int selectToDoSetting = 0;
-        var userConfigs = _userConfRepository.GetListFT(userId, UserConfCommon.GroupCodes.Font, UserConfCommon.GroupCodes.SelectTodoSetting);
+        var userConfigs = _userConfRepository.GetList(userId, UserConfCommon.GroupCodes.Font, UserConfCommon.GroupCodes.SelectTodoSetting);
         foreach (var config in userConfigs)
         {
             switch (config.GrpCd)
