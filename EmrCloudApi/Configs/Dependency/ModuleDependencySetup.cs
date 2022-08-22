@@ -3,10 +3,13 @@ using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.KaMst;
+using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
+using Domain.Models.KarteKbnMst;
 using Domain.Models.KensaInfDetail;
 using Domain.Models.KensaMst;
 using Domain.Models.OrdInfs;
@@ -40,6 +43,7 @@ using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Domain.Models.UserConfig;
+using Domain.Models.VisitingListSetting;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -49,10 +53,13 @@ using Interactor.Diseases;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HeaderSumaryInfo;
+using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.KaMst;
+using Interactor.KarteFilter;
 using Interactor.KarteInfs;
+using Interactor.MedicalExamination;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
@@ -66,6 +73,7 @@ using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
+using Interactor.VisitingList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -74,10 +82,15 @@ using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
 using UseCase.GroupInf.GetList;
 using UseCase.HeaderSumaryInfo.Get;
+using UseCase.InputItem.Search;
+using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.KaMst.GetList;
+using UseCase.KarteFilter.GetListKarteFilter;
+using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
+using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
@@ -101,6 +114,7 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -135,6 +149,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
+            services.AddTransient<IKarteKbnMstRepository, KarteKbnMstRepository>();
+            services.AddTransient<IPatientGroupMstRepository, PatientGroupMstRepository>();
             services.AddTransient<ISetMstRepository, SetMstRepository>();
             services.AddTransient<ISetGenerationMstRepository, SetGenerationMstRepository>();
             services.AddTransient<ISetKbnMstRepository, SetKbnMstRepository>();
@@ -169,8 +185,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
+            services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
+            services.AddTransient<IInputItemRepository, InputItemRepository>();
+            services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -196,6 +215,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
 
+            // Visiting
+            busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
+
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
 
@@ -216,6 +238,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
+
+            //Medical Examination
+            busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
 
             //Set
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
@@ -246,6 +271,11 @@ namespace EmrCloudApi.Configs.Dependency
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
 
+            // KarteFilter
+            busBuilder.RegisterUseCase<GetKarteFilterInputData, GetKarteFilterMstsInteractor>();
+
+            busBuilder.RegisterUseCase<SaveKarteFilterInputData, SaveKarteFilterMstsInteractor>();
+
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
@@ -255,6 +285,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //HeaderSummaryInfo
             busBuilder.RegisterUseCase<GetHeaderSumaryInfoInputData, GetHeaderSumaryInfoInteractor>();
+
+            //Input Item
+            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

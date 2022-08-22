@@ -24,7 +24,8 @@ namespace Infrastructure.Repositories
             var raiinInfs = _tenantDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3);
             var karteInfs = _tenantDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
             var query = from raiinInf in raiinInfs
-                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj from karteInf in gj.DefaultIfEmpty()
+                        join karteInf in karteInfs on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
+                        from karteInf in gj.DefaultIfEmpty()
                         select new
                         {
                             raiinInf,
@@ -65,7 +66,7 @@ namespace Infrastructure.Repositories
                 if (comments.Any(c => c.RaiinNo == raiinInf.RaiinNo))
                 {
                     var commentInf = comments.First(c => c.RaiinNo == raiinInf.RaiinNo);
-                    comment = commentInf.Text; 
+                    comment = commentInf.Text ?? String.Empty;
                 }
 
                 var raiinListInfoModelList = raiinListInfs

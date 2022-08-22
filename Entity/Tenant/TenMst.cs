@@ -1737,7 +1737,7 @@ namespace Entity.Tenant
         [Column("SANTEI_ITEM_CD")]
         [MaxLength(10)]
         //[Index("TEN_MST_IDX02", 2)]
-        public string SanteiItemCd { get; set; } = string.Empty;
+        public string? SanteiItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定外区分

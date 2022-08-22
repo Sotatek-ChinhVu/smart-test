@@ -34,7 +34,11 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInformation
                 case GetPatientInforByIdStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
-                default:
+                case GetPatientInforByIdStatus.InvalidSinDate:
+                    Result.Message = ResponseMessage.InvalidSinDate;
+                    break;
+                case GetPatientInforByIdStatus.InvalidRaiinNo:
+                    Result.Message = ResponseMessage.InvalidRaiinNo;
                     break;
             }
 
