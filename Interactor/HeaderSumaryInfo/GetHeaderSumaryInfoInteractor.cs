@@ -166,35 +166,33 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        private PtInfNotificationItem GetSummaryInfo(long ptId, int hpId, int sinDate, string propertyCd, InfoType infoType = InfoType.PtHeaderInfo)
+        private SummaryTabItem? GetSummaryInfo(long ptId, int hpId, int sinDate, string propertyCd, InfoType infoType = InfoType.PtHeaderInfo)
         {
-            PtInfNotificationItem ptHeaderInfoModel = new PtInfNotificationItem()
-            {
-                PropertyColor = "000000" // default color
-            };
+            //SummaryTabItem ptHeaderInfoModel = new PtInfNotificationItem()
+            //{
+            //    PropertyColor = "000000" // default color
+            //};
 
-            GetData(hpId, ptId, sinDate, propertyCd, ref ptHeaderInfoModel);
+            //GetData(hpId, ptId, sinDate, propertyCd, ref ptHeaderInfoModel);
 
-            if (infoType == InfoType.SumaryInfo)
+            if (infoType == InfoType.SumaryInfo && propertyCd == "C")
             {
-                switch (propertyCd)
+                //サマリー
+                //ptHeaderInfoModel.GrpItemCd = 12;
+                //ptHeaderInfoModel.HeaderName = "◆サマリー";
+
+                var summaryInf = GetSummaryInf(hpId, ptId);
+                if (summaryInf != null && !string.IsNullOrEmpty(summaryInf.Text))
                 {
-                    case "C":
-                        //サマリー
-                        ptHeaderInfoModel.GrpItemCd = 12;
-                        ptHeaderInfoModel.HeaderName = "◆サマリー";
-
-                        var summaryInf = GetSummaryInf(hpId, ptId);
-                        if (summaryInf != null && !string.IsNullOrEmpty(summaryInf.Text))
-                        {
-                            ptHeaderInfoModel.HeaderInfo = summaryInf.Text;
-                        }
-                        break;
+                    //SummaryTabItem.HeaderInfo = summaryInf.Text;
+                    return new SummaryTabItem(summaryInf.Text);
                 }
             }
 
-            return ptHeaderInfoModel;
+            return null;
         }
+
+
 
         private void GetData(int hpId, long ptId, int sinDate, string propertyCd, ref PtInfNotificationItem ptHeaderInfoModel)
         {
@@ -231,221 +229,30 @@ namespace Interactor.HeaderSumaryInfo
             }
         }
 
-        private void GetDrugInfo(long ptId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
+        private ImportantNoteTabItem ImportantNoteTabItem(long ptId, int sinDate)
         {
-            ptHeaderInfoModel.GrpItemCd = 2;
-            ptHeaderInfoModel.HeaderName = "◆アレルギー";
-            var strHeaderInfo = new StringBuilder();
+            var listPtAlrgyElseItem = _ptAlrgryElseRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
+            var listPtAlrgyFoodItem = _ptPtAlrgyFoodRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
+            var listPtAlrgyDrugItem = _ptPtAlrgyDrugRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
 
-            var listPtAlrgyElseItem = _ptAlrgryElseRepository.GetList(ptId).Select(p => new PtAlrgyElseItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.PtAlrgyElse.SortNo).ToList();
-            var listPtAlrgyFoodItem = _ptPtAlrgyFoodRepository.GetList(ptId).Select(p => new PtAlrgyFoodItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.PtAlrgyFood.SortNo).ToList();
-            var listPtAlrgyDrugItem = _ptPtAlrgyDrugRepository.GetList(ptId).Select(p => new PtAlrgyDrugItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.PtAlrgyDrug.SortNo).ToList();
+            var listPtOtherDrugItem = _ptOtherDrugRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
+            var listPtOtcDrugItem = _ptPtOtcDrugRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
+            var listPtSuppleItem = _ptPtSuppleRepository.GetList(ptId).Where(ag => ConvertToDate(ag.StartDate, true) <= sinDate && ConvertToDate(ag.StartDate, false) >= sinDate).OrderBy(p => p.SortNo).ToList();
 
-
-            foreach (var ptAlrgyDrugModel in listPtAlrgyDrugItem)
-            {
-                if (!string.IsNullOrEmpty(ptAlrgyDrugModel?.DrugName))
-                {
-                    strHeaderInfo.Append(ptAlrgyDrugModel.DrugName);
-                    if (!string.IsNullOrEmpty(ptAlrgyDrugModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptAlrgyDrugModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-
-            foreach (var ptAlrgyFoodModel in listPtAlrgyFoodItem)
-            {
-                if (!string.IsNullOrEmpty(ptAlrgyFoodModel.FoodName))
-                {
-                    strHeaderInfo.Append(ptAlrgyFoodModel.FoodName);
-                    if (!string.IsNullOrEmpty(ptAlrgyFoodModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptAlrgyFoodModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-
-            foreach (var ptAlrgyElseModel in listPtAlrgyElseItem)
-            {
-                if (!string.IsNullOrEmpty(ptAlrgyElseModel.AlrgyName))
-                {
-                    strHeaderInfo.Append(ptAlrgyElseModel.AlrgyName);
-                    if (!string.IsNullOrEmpty(ptAlrgyElseModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptAlrgyElseModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-
-            ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-        }
-
-        private void GetPathologicalStatus(long ptId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 3;
-            ptHeaderInfoModel.HeaderName = "◆病歴";
             var listPtKioRekiItem = _ptKioRekiRepository.GetList(ptId);
             var listPtInfectionItem = _ptInfectionRepository.GetList(ptId);
-            var strHeaderInfo = new StringBuilder();
-            foreach (var ptKioRekiModel in listPtKioRekiItem)
-            {
-                if (!string.IsNullOrEmpty(ptKioRekiModel.Byomei))
-                {
-                    strHeaderInfo.Append(ptKioRekiModel.Byomei);
-                    if (!string.IsNullOrEmpty(ptKioRekiModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptKioRekiModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-            foreach (var ptInfectionModel in listPtInfectionItem)
-            {
-                if (!string.IsNullOrEmpty(ptInfectionModel.Byomei))
-                {
-                    strHeaderInfo.Append(ptInfectionModel.Byomei);
-                    if (!string.IsNullOrEmpty(ptInfectionModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptInfectionModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-            ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
+
+            return new ImportantNoteTabItem(listPtAlrgyFoodItem, listPtAlrgyElseItem, listPtAlrgyDrugItem, listPtKioRekiItem, listPtInfectionItem, listPtOtherDrugItem, listPtOtcDrugItem, listPtSuppleItem);
         }
-
-        private void GetInteraction(long ptId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
+        private PatientInfoTab PatientInfoTab(long ptId, int hpId, int sinDate)
         {
-            ptHeaderInfoModel.GrpItemCd = 4;
-            ptHeaderInfoModel.HeaderName = "◆服薬情報";
-
-            var listPtOtherDrugItem = _ptOtherDrugRepository.GetList(ptId).Select(p => new PtOtherDrugItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate).OrderBy(p => p.PtOtherDrug.SortNo).ToList();
-            var listPtOtcDrugItem = _ptPtOtcDrugRepository.GetList(ptId).Select(p => new PtOtcDrugItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
-                    .OrderBy(p => p.PtOtcDrug.SortNo);
-            var listPtSuppleModel = _ptPtSuppleRepository.GetList(ptId).Select(p => new PtSuppleItem(p)).Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
-                    .OrderBy(p => p.PtSupple.SortNo);
-            var strHeaderInfo = new StringBuilder();
-
-            foreach (var ptOtherDrugModel in listPtOtherDrugItem)
-            {
-                if (!string.IsNullOrEmpty(ptOtherDrugModel.DrugName))
-                {
-                    strHeaderInfo.Append(ptOtherDrugModel.DrugName);
-                    if (!string.IsNullOrEmpty(ptOtherDrugModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptOtherDrugModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-            foreach (var ptOtcDrugModel in listPtOtcDrugItem)
-            {
-                if (!string.IsNullOrEmpty(ptOtcDrugModel.TradeName))
-                {
-                    strHeaderInfo.Append(ptOtcDrugModel.TradeName);
-                    if (!string.IsNullOrEmpty(ptOtcDrugModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + ptOtcDrugModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-            foreach (var suppleModel in listPtSuppleModel)
-            {
-                if (!string.IsNullOrEmpty(suppleModel.IndexWord))
-                {
-                    strHeaderInfo.Append(suppleModel.IndexWord);
-                    if (!string.IsNullOrEmpty(suppleModel.Cmt))
-                    {
-                        strHeaderInfo.Append("／" + suppleModel.Cmt);
-                    }
-                    strHeaderInfo.Append(Environment.NewLine);
-                }
-            }
-            ptHeaderInfoModel.HeaderInfo = strHeaderInfo.ToString().TrimEnd(Environment.NewLine.ToCharArray());
-        }
-
-        private void GetReproductionInfo(long ptId, int hpId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 6;
-            ptHeaderInfoModel.HeaderName = "■出産予定";
-
-            var listPtPregnancyItems = _ptPregnancyRepository.GetList(ptId, hpId, sinDate).Select(p => new PtPregnancyItem(p)).ToList();
-            if (listPtPregnancyItems.Count > 0)
-            {
-                string GetSDateFromDateTime(DateTime? dateTime)
-                {
-                    if (dateTime == null)
-                    {
-                        return string.Empty;
-                    }
-                    return CIUtil.SDateToShowSDate(CIUtil.DateTimeToInt((DateTime)dateTime));
-                }
-
-                var ptPregnancyModel = listPtPregnancyItems.FirstOrDefault();
-                if (ptPregnancyModel?.PeriodDate != null)
-                {
-                    ptHeaderInfoModel.HeaderInfo += "月経日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDate) + ")" + " " + "/";
-                }
-                if (!string.IsNullOrEmpty(ptPregnancyModel?.PeriodWeek) && ptPregnancyModel.PeriodWeek != "0W0D")
-                {
-                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.PeriodWeek + ")" + " " + "/";
-                }
-                if (ptPregnancyModel?.PeriodDueDate != null)
-                {
-                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.PeriodDueDate) + ")" + " " + "/";
-                }
-                if (ptPregnancyModel?.OvulationDate != null)
-                {
-                    ptHeaderInfoModel.HeaderInfo += "排卵日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDate) + ")" + " " + "/";
-                }
-                if (!string.IsNullOrEmpty(ptPregnancyModel?.OvulationWeek) && ptPregnancyModel.OvulationWeek != "0W0D")
-                {
-                    ptHeaderInfoModel.HeaderInfo += "妊娠週(" + ptPregnancyModel.OvulationWeek + ")" + " " + "/";
-                }
-                if (ptPregnancyModel?.OvulationDueDate != null)
-                {
-                    ptHeaderInfoModel.HeaderInfo += "予定日(" + GetSDateFromDateTime(ptPregnancyModel.OvulationDueDate) + ")";
-                }
-                ptHeaderInfoModel.HeaderInfo = ptHeaderInfoModel.HeaderInfo.TrimEnd('/');
-            }
-        }
-
-        private void GetComment(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 8;
-            ptHeaderInfoModel.HeaderName = "■コメント";
-
-            var ptCmtInfModel = this.GetPtCmtInfo(ptId, hpId);
-
-            if (ptCmtInfModel != null && !string.IsNullOrEmpty(ptCmtInfModel.Text))
-            {
-                ptHeaderInfoModel.HeaderInfo += ptCmtInfModel.Text + Environment.NewLine;
-            }
-            ptHeaderInfoModel.HeaderInfo = ptHeaderInfoModel.HeaderInfo.TrimEnd(Environment.NewLine.ToCharArray());
-        }
-
-        private PtCmtInfModel? GetPtCmtInfo(long ptId, int hpId)
-        {
-            var result = _ptCmtInfRepository.GetList(ptId, hpId)
+            var listPtPregnancyItems = _ptPregnancyRepository.GetList(ptId, hpId, sinDate);
+            var ptCmtInfs = _ptCmtInfRepository.GetList(ptId, hpId)
                               .FirstOrDefault();
-            return result;
-        }
-
-        private void GetLifeHistory(long ptId, int hpId, PtInfNotificationItem ptHeaderInfoModel)
-        {
-            ptHeaderInfoModel.GrpItemCd = 11;
-            ptHeaderInfoModel.HeaderName = "■生活歴";
-
             var seikaturekiInfModel = _seikaturekiInRepository.GetList(ptId, hpId).FirstOrDefault();
-            if (seikaturekiInfModel != null)
-            {
-                ptHeaderInfoModel.HeaderInfo = seikaturekiInfModel.Text;
-            }
+            var listKensaInfDetailItem = GetListKensaInfDetailModel(hpId, ptId, sinDate);
+
+
         }
 
         private void GetPhysicalInfo(int hpId, long ptId, int sinDate, PtInfNotificationItem ptHeaderInfoModel)
@@ -542,12 +349,6 @@ namespace Interactor.HeaderSumaryInfo
             ).ToList();
 
             return result;
-        }
-
-        public SummaryInfModel? GetSummaryInf(int hpId, long ptId)
-        {
-            var summaryInf = _summaryInfRepository.GetList(hpId, ptId).FirstOrDefault();
-            return summaryInf;
         }
 
         private List<UserConfigModel> GetListUserConf(int hpId, int userId, int groupCd, bool fromLastestDb = false)
@@ -684,6 +485,39 @@ namespace Interactor.HeaderSumaryInfo
             if (ptHeaderInfoModel != null)
             {
                 ptHeaderInfoModel.PropertyColor = userConfigurationModel.Param;
+            }
+        }
+
+        private int ConvertToDate(int date, bool isStartDate)
+        {
+            if (isStartDate)
+            {
+                if (date.AsString().Count() == 8)
+                {
+                    //Format of StartDate is yyyymmdd
+                    return date;
+                }
+                else
+                {
+                    //Format of StartDate is yyyymm
+                    //Need to convert to yyyymm01
+                    return date * 100 + 1;
+                }
+            }
+
+            else
+            {
+                if (date.AsString().Count() == 8)
+                {
+                    //Format of EndDate is yyyymmdd
+                    return date;
+                }
+                else
+                {
+                    //Format of EndDate is yyyymm
+                    //Need to convert to yyyymm31
+                    return date * 100 + 31;
+                }
             }
         }
 
