@@ -2,7 +2,7 @@
 {
     public class UpsertPtDiseaseListInputItem
     {
-        public UpsertPtDiseaseListInputItem(long id, long ptId, int sortNo, string syusyokuCd1, string syusyokuCd2, string syusyokuCd3, string syusyokuCd4, string syusyokuCd5, string syusyokuCd6, string syusyokuCd7, string syusyokuCd8, string syusyokuCd9, string syusyokuCd10, string syusyokuCd11, string syusyokuCd12, string syusyokuCd13, string syusyokuCd14, string syusyokuCd15, string syusyokuCd16, string syusyokuCd17, string syusyokuCd18, string syusyokuCd19, string syusyokuCd20, string syusyokuCd21, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted)
+        public UpsertPtDiseaseListInputItem(long id, long ptId, int sortNo, string syusyokuCd1, string syusyokuCd2, string syusyokuCd3, string syusyokuCd4, string syusyokuCd5, string syusyokuCd6, string syusyokuCd7, string syusyokuCd8, string syusyokuCd9, string syusyokuCd10, string syusyokuCd11, string syusyokuCd12, string syusyokuCd13, string syusyokuCd14, string syusyokuCd15, string syusyokuCd16, string syusyokuCd17, string syusyokuCd18, string syusyokuCd19, string syusyokuCd20, string syusyokuCd21, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted, string byomeiCd)
         {
             Id = id;
             PtId = ptId;
@@ -42,6 +42,7 @@
             SeqNo = seqNo;
             IsImportant = isImportant;
             IsDeleted = isDeleted;
+            ByomeiCd = byomeiCd;
         }
 
         public long Id { get; private set; }
@@ -82,6 +83,7 @@
         public long SeqNo { get; private set; }
         public int IsImportant { get; private set; }
         public int IsDeleted { get; private set; }
+        public string ByomeiCd { get; private set; }
 
     }
 }

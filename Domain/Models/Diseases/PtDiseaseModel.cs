@@ -1,4 +1,7 @@
 ﻿using Domain.Constant;
+using Helper.Common;
+using Helper.Constants;
+using static Helper.Constants.PtDiseaseConst;
 
 namespace Domain.Models.Diseases
 {
@@ -67,6 +70,36 @@ namespace Domain.Models.Diseases
             Icd1022013 = icd1022013;
             HokenPid = hokenPid;
             HosokuCmt = hosokuCmt;
+        }
+
+        public ValidationStatus Validation()
+        {
+
+            if (!PtDiseaseConst.TenkiKbns.Values.Contains(TenkiKbn))
+            {
+                return ValidationStatus.InvalidTenkiKbn;
+            }
+            if (!PtDiseaseConst.SikkanKbns.Values.Contains(SikkanKbn))
+            {
+                return ValidationStatus.InvalidSikkanKbn;
+            }
+            if (!PtDiseaseConst.NanByoCds.Values.Contains(NanbyoCd))
+            {
+                return ValidationStatus.InvalidNanByoCd;
+            }
+            if (CIUtil.GetByteCountFromString(Byomei) > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
+            {
+                return ValidationStatus.InvalidFreeWord;
+            }
+            if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0)
+            {
+                return ValidationStatus.InvalidTenkiDateContinue;
+            }
+            if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate < StartDate)
+            {
+                return ValidationStatus.InvalidTekiDateAndStartDate;
+            }
+            return ValidationStatus.Valid;
         }
 
         public bool IsFreeWord

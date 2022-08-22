@@ -73,7 +73,8 @@ namespace EmrCloudApi.Tenant.Controllers
                     r.IsNodspKarte,
                     r.SeqNo,
                     r.IsImportant,
-                    r.IsDeleted
+                    r.IsDeleted,
+                    r.ByomeiCd
                 )).ToList());
             var output = _bus.Handle(input);
 

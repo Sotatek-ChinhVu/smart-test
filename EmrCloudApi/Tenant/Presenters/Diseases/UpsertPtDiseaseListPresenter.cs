@@ -18,14 +18,17 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
 
         private string GetMessage(UpsertPtDiseaseListStatus status) => status switch
         {
-            UpsertPtDiseaseListStatus.Success => ResponseMessage.UpsertPtDiseaseSuccess,
-            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.UpsertPtDiseaseFail,
-            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.UpsertPtDiseaseInputNoData,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.UpsertPtDiseaseInvalidTenkiKbn,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.UpsertPtDiseaseInvalidSikkanKbn,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
-            UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
-            UpsertPtDiseaseListStatus.PtDiseaseHokenPIdNoExist => ResponseMessage.UpsertPtDiseaseInvalidNanByoCd,
+            UpsertPtDiseaseListStatus.Success => ResponseMessage.UpsertPtDiseaseListSuccess,
+            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.UpsertPtDiseaseListFail,
+            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.UpsertPtDiseaseListInputNoData,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.UpsertPtDiseaseListInvalidTenkiKbn,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.UpsertPtDiseaseListInvalidSikkanKbn,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.UpsertPtDiseaseListInvalidNanByoCd,
+            UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist => ResponseMessage.UpsertPtDiseaseListPtIdNoExist,
+            UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist => ResponseMessage.UpsertPtDiseaseListHokenPIdNoExist,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord => ResponseMessage.UpsertPtDiseaseListInvalidFreeWord,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateContinue,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateAndStartDate,
             _ => string.Empty
         };
     }

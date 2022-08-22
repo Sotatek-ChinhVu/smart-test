@@ -2,6 +2,7 @@
 using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using UseCase.Diseases.Upsert;
+using static Helper.Constants.PtDiseaseConst;
 
 namespace Interactor.Diseases
 {
@@ -20,63 +21,59 @@ namespace Interactor.Diseases
         {
             try
             {
-                var datas = inputData.ToList();
-                if (datas == null)
+                if (inputData.ToList() == null)
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 }
 
-                if (datas.Any(d => (d.TenkiKbn != 0 && d.TenkiKbn != 1 && d.TenkiKbn != 3 && d.TenkiKbn != 2 && d.TenkiKbn != 9)))
+                var datas = inputData.ptDiseaseModel.Select(i => new PtDiseaseModel(
+                        0,
+                        i.PtId,
+                        i.SeqNo,
+                        i.ByomeiCd,
+                        i.SortNo,
+                        new List<string>() { i.SyusyokuCd1, i.SyusyokuCd2, i.SyusyokuCd3, i.SyusyokuCd4, i.SyusyokuCd5, i.SyusyokuCd6, i.SyusyokuCd7, i.SyusyokuCd8, i.SyusyokuCd9, i.SyusyokuCd10, i.SyusyokuCd11, i.SyusyokuCd12, i.SyusyokuCd13, i.SyusyokuCd14, i.SyusyokuCd15, i.SyusyokuCd16, i.SyusyokuCd17, i.SyusyokuCd18, i.SyusyokuCd19, i.SyusyokuCd20, i.SyusyokuCd21 },
+                        i.Byomei,
+                        i.StartDate,
+                        i.TenkiKbn,
+                        i.TenkiDate,
+                        i.SyubyoKbn,
+                        i.SikkanKbn,
+                        i.NanByoCd,
+                        i.IsNodspRece,
+                        i.IsNodspKarte,
+                        i.IsDeleted,
+                        i.Id,
+                        i.IsImportant,
+                        0,
+                        "",
+                        "",
+                        "",
+                        "",
+                        i.HokenPid,
+                        i.HosokuCmt
+                    )).ToList();
+
+                foreach (var data in datas)
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn);
+                    var status = data.Validation();
+                    if (status != ValidationStatus.Valid)
+                    {
+                        return new UpsertPtDiseaseListOutputData(ConvertStatus(status));
+                    }
                 }
-                if (datas.Any(d => (d.SikkanKbn != 0 && d.SikkanKbn != 3 && d.SikkanKbn != 4 && d.SikkanKbn != 5 && d.SikkanKbn != 7 && d.SikkanKbn != 8)))
-                {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn);
-                }
-                if (datas.Any(d => (d.NanByoCd != 0 && d.NanByoCd != 9)))
-                {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd);
-                }
+
                 if (!_patientInforRepository.CheckListId(datas.Select(i => i.PtId).ToList()))
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
                 if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).ToList()))
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseasePtIdNoExist);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
-
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
-                _diseaseRepository.Upsert(inputData.ptDiseaseModel.Select(i =>
-                        new PtDiseaseModel(
-                                0,
-                                i.PtId,
-                                i.SeqNo,
-                                "",
-                                i.SortNo,
-                                new List<string>() { i.SyusyokuCd1, i.SyusyokuCd2, i.SyusyokuCd3, i.SyusyokuCd4, i.SyusyokuCd5, i.SyusyokuCd6, i.SyusyokuCd7, i.SyusyokuCd8, i.SyusyokuCd9, i.SyusyokuCd10, i.SyusyokuCd11, i.SyusyokuCd12, i.SyusyokuCd13, i.SyusyokuCd14, i.SyusyokuCd15, i.SyusyokuCd16, i.SyusyokuCd17, i.SyusyokuCd18, i.SyusyokuCd19, i.SyusyokuCd20, i.SyusyokuCd21 },
-                                i.Byomei,
-                                i.StartDate,
-                                i.TenkiKbn,
-                                i.TenkiDate,
-                                i.SyubyoKbn,
-                                i.SikkanKbn,
-                                i.NanByoCd,
-                                i.IsNodspRece,
-                                i.IsNodspKarte,
-                                i.IsDeleted,
-                                i.Id,
-                                i.IsImportant,
-                                0,
-                                "",
-                                "",
-                                "",
-                                "",
-                                i.HokenPid,
-                                i.HosokuCmt
-                            )
-                    ).ToList());
+
+                _diseaseRepository.Upsert(datas);
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success);
             }
             catch
@@ -84,6 +81,23 @@ namespace Interactor.Diseases
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess);
             }
 
+        }
+
+        private UpsertPtDiseaseListStatus ConvertStatus(ValidationStatus status)
+        {
+            if (status == ValidationStatus.InvalidTenkiKbn)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn;
+            if (status == ValidationStatus.InvalidSikkanKbn)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn;
+            if (status == ValidationStatus.InvalidNanByoCd)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd;
+            if (status == ValidationStatus.InvalidFreeWord)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord;
+            if (status == ValidationStatus.InvalidTenkiDateContinue)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+            if (status == ValidationStatus.InvalidTekiDateAndStartDate)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+            return UpsertPtDiseaseListStatus.Success;
         }
     }
 }

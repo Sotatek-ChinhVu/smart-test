@@ -79,18 +79,22 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         [MaxLength(7)]
         public string SyusyokuCd21 { get; set; } = string.Empty;
 
+        [Required]
         [MaxLength(160)]
         public string Byomei { get; set; } = string.Empty;
 
+        [MaxLength(7)]
+        public string ByomeiCd { get; set; } = string.Empty;
+
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int StartDate { get; set; }
 
         [Required]
         public int TenkiKbn { get; set; }
 
         [Required]
-        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
+        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
         public int TenkiDate { get; set; }
 
         [Required]
@@ -111,11 +115,11 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         public int HokenPid { get; set; }
 
         [Required]
-        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
+        [Range(0, 1)]
         public int IsNodspRece { get; set; }
 
         [Required]
-        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
+        [Range(0, 1)]
         public int IsNodspKarte { get; set; }
 
         [Required]
@@ -123,11 +127,11 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         public long SeqNo { get; set; }
 
         [Required]
-        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
+        [Range(0, 1)]
         public int IsImportant { get; set; }
 
         [Required]
-        [RegularExpression(@"^[0-9]*$", ErrorMessage = "{0} >= 0")]
+        [Range(0, 1)]
         public int IsDeleted { get; set; }
     }
 }

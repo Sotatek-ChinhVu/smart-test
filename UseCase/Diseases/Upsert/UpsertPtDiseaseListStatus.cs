@@ -5,10 +5,13 @@
         Success = 1,
         PtDiseaseListInputNoData = 2,
         PtDiseaseListUpdateNoSuccess = 3,
+        PtDiseaseListPtIdNoExist,
+        PtDiseaseListHokenPIdNoExist,
         PtDiseaseListInvalidTenkiKbn,
         PtDiseaseListInvalidSikkanKbn,
         PtDiseaseListInvalidNanByoCd,
-        PtDiseasePtIdNoExist,
-        PtDiseaseHokenPIdNoExist,
+        PtDiseaseListInvalidFreeWord,
+        PtDiseaseListInvalidTenkiDateContinue,
+        PtDiseaseListInvalidTekiDateAndStartDate
     }
 }
