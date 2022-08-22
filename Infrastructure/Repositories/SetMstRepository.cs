@@ -73,7 +73,7 @@ public class SetMstRepository : ISetMstRepository
                 setMst.IsDeleted = 0;
 
                 // If SetMst is add new
-                if (setMstModel.SetCd == 0)
+                if (setMstModel.SetCd == 0 || _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(item => item.SetCd == setMstModel.SetCd) == null)
                 {
                     setMst.IsGroup = setMstModel.IsGroup;
                     if (setMst.SetName == null || setMst.SetName.Length == 0)
