@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories;
 
 public class PtKioReKiRepository : IPtKioRekiRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtKioReKiRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtKioRekiModel> GetList(long ptId)

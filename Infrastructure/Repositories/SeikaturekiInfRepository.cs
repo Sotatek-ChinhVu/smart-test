@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories;
 
 public class SeikaturekiInfRepository : ISeikaturekiInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public SeikaturekiInfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<SeikaturekiInfModel> GetList(long ptId, int hpId)

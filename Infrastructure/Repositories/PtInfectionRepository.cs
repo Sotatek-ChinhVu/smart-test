@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories;
 
 public class PtInfectionRepository : IPtInfectionRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtInfectionRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtInfectionModel> GetList(long ptId)

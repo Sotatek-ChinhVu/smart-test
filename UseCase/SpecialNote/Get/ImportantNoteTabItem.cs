@@ -6,13 +6,8 @@ using Domain.Models.PtKioReki;
 using Domain.Models.PtOtcDrug;
 using Domain.Models.PtOtherDrug;
 using Domain.Models.PtSupple;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace UseCase.HeaderSumaryInfo.Get
+namespace UseCase.SpecialNote.Get
 {
     public class ImportantNoteTabItem
     {

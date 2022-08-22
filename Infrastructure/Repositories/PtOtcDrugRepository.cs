@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories;
 
 public class PtOtcDrugRepository : IPtOtcDrugRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtOtcDrugRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtOtcDrugModel> GetList(long ptId)

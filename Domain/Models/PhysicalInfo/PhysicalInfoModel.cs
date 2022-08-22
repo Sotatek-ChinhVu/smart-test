@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.KensaMst
+﻿namespace Domain.Models.PhysicalInfo
 {
-    public class KensaMstModel
+    public class PhysicalInfoModel
     {
-        public KensaMstModel(int hpId, string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, int isDelete, int digit)
+        public PhysicalInfoModel(int hpId, string kensaItemCd, int kensaItemSeqNo, string centerCd, string kensaName, string kensaKana, string unit, int materialCd, int containerCd, string maleStd, string maleStdLow, string maleStdHigh, string femaleStd, string femaleStdLow, string femaleStdHigh, string formula, string oyaItemCd, int oyaItemSeqNo, long sortNo, string centerItemCd1, string centerItemCd2, int isDelete, int digit, List<KensaInfDetailModel>? kensaInfDetailModels)
         {
             HpId = hpId;
             KensaItemCd = kensaItemCd;
@@ -27,6 +27,7 @@
             CenterItemCd2 = centerItemCd2;
             IsDelete = isDelete;
             Digit = digit;
+            KensaInfDetailModels = kensaInfDetailModels;
         }
 
         public int HpId { get; private set; }
@@ -52,5 +53,7 @@
         public string CenterItemCd2 { get; private set; }
         public int IsDelete { get; private set; }
         public int Digit { get; private set; }
+        public bool IsReadOnly { get => !string.IsNullOrEmpty(Formula); }
+        public List<KensaInfDetailModel>? KensaInfDetailModels {get; private set;}
     }
 }

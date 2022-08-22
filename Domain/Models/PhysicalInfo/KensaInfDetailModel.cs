@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.KensaInfDetail
+﻿namespace Domain.Models.PhysicalInfo
 {
     public class KensaInfDetailModel
     {

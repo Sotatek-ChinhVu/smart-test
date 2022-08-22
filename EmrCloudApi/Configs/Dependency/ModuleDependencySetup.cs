@@ -10,12 +10,11 @@ using Domain.Models.KaMst;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
-using Domain.Models.KensaInfDetail;
-using Domain.Models.KensaMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
+using Domain.Models.PhysicalInfo;
 using Domain.Models.PtAlrgyDrug;
 using Domain.Models.PtAlrgyElse;
 using Domain.Models.PtAlrgyFood;
@@ -52,7 +51,6 @@ using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
-using Interactor.HeaderSumaryInfo;
 using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
@@ -71,6 +69,7 @@ using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
+using Interactor.SpecialNote;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using Interactor.VisitingList;
@@ -81,7 +80,6 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
 using UseCase.GroupInf.GetList;
-using UseCase.HeaderSumaryInfo.Get;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
@@ -109,6 +107,7 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.GetList;
+using UseCase.SpecialNote.Get;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -161,9 +160,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPtCmtInfRepository, PtCmtInfRepository>();
             services.AddTransient<IUketukeSbtDayInfRepository, UketukeSbtDayInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
-            services.AddTransient<IKensaMstRepository, KensaMstRepository>();
-            services.AddTransient<IKensaInfDetailRepository, KensaInfDetailRepository>();
-            services.AddTransient<IKensaInfDetailRepository, KensaInfDetailRepository>();
+            services.AddTransient<IPhysicalInfoRepository, PhysicalInfoRepository>();
             services.AddTransient<IPtAlrgyDrugRepository, PtAlrgyDrugRepository>();
             services.AddTransient<IPtAlrgyElseRepository, PtAlrgyElseRepository>();
             services.AddTransient<IPtAlrgyFoodRepository, PtAlrgyFoodRepository>();
@@ -283,8 +280,8 @@ namespace EmrCloudApi.Configs.Dependency
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
 
-            //HeaderSummaryInfo
-            busBuilder.RegisterUseCase<GetHeaderSumaryInfoInputData, GetHeaderSumaryInfoInteractor>();
+            //Special note
+            busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
 
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();

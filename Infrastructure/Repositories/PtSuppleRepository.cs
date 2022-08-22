@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories;
 
 public class PtSuppleRepository : IPtSuppleRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtSuppleRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtSuppleModel> GetList(long ptId)

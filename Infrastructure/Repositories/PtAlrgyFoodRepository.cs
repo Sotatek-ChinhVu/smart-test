@@ -6,26 +6,33 @@ namespace Infrastructure.Repositories;
 
 public class PtAlrgyFoodRepository : IPtAlrgyFoodRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtAlrgyFoodRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtAlrgyFoodModel> GetList(long ptId)
     {
-        var ptAlrgyFoods = _tenantDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).Select(x => new PtAlrgyFoodModel(
-              x.HpId,
-              x.PtId,
-              x.SeqNo,
-              x.SortNo,
-              x.AlrgyKbn ?? String.Empty,
-              x.StartDate,
-              x.EndDate,
-              x.Cmt ?? String.Empty,
-              x.IsDeleted
-            ));
-        return ptAlrgyFoods.ToList();
+        var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.ToList();
+        var ptAlrgyFoods = _tenantDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0).ToList();
+        var query = from ale in ptAlrgyFoods
+                    join mst in aleFoodKbns on ale.AlrgyKbn equals mst.FoodKbn
+                    select new PtAlrgyFoodModel
+                    (
+                          ale.HpId,
+                          ale.PtId,
+                          ale.SeqNo,
+                          ale.SortNo,
+                          ale.AlrgyKbn ?? String.Empty,
+                          ale.StartDate,
+                          ale.EndDate,
+                          ale.Cmt ?? String.Empty,
+                          ale.IsDeleted,
+                          mst.FoodName
+                    );
+
+        return query.ToList();
     }
 }

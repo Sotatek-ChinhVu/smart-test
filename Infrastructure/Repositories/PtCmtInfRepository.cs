@@ -8,11 +8,11 @@ namespace Infrastructure.Repositories;
 
 public class PtCmtInfRepository : IPtCmtInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtCmtInfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<PtCmtInfModel> GetList(long ptId, int hpId)
