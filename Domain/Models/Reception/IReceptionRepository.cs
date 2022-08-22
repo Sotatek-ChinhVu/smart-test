@@ -4,6 +4,7 @@
     {
         ReceptionModel? Get(long raiinNo);
         List<ReceptionRowModel> GetList(int hpId, int sinDate);
+        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
         bool UpdateStatus(int hpId, long raiinNo, int status);
         bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo);
         bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime);
@@ -11,7 +12,6 @@
         bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt);
         bool UpdateTantoId(int hpId, long raiinNo, int tantoId);
         bool UpdateKaId(int hpId, long raiinNo, int kaId);
-        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
-
+        bool CheckListNo(List<long> raininNos);
     }
 }

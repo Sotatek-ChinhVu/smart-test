@@ -341,6 +341,13 @@ namespace Helper.Common
             return Age;
         }
 
+        //西暦を表示用和暦(x yy/mm/dd)に変換
+        //Convert format yyyyymmdd to Japanese style x yy/mm/dd
+        public static string SDateToShowWDate(int ymd)
+        {
+            return SDateToShowWDate(ymd, WarekiFormat.Short);
+        }
+
         #region Convert Datetime Helpers (private)
         private static string SDateToShowWDate(int ymd, WarekiFormat warekiFormat = WarekiFormat.Short)
         {

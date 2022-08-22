@@ -1,14 +1,26 @@
-﻿using Domain.Models.RaiinListMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.FlowSheet
+﻿namespace Domain.Models.FlowSheet
 {
     public class FlowSheetModel
     {
+        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isContainsFile, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, int cmtKbn, long rainListCmtSeqNo, int rainListTagSeqNo)
+        {
+            SinDate = sinDate;
+            TagNo = tagNo;
+            FullLineOfKarte = fullLineOfKarte;
+            RaiinNo = raiinNo;
+            SyosaisinKbn = syosaisinKbn;
+            Comment = comment;
+            Status = status;
+            IsContainsFile = isContainsFile;
+            IsNextOrder = isNextOrder;
+            IsToDayOdr = isToDayOdr;
+            RaiinListInfs = raiinListInfs;
+            PtId = ptId;
+            CmtKbn = cmtKbn;
+            RainListCmtSeqNo = rainListCmtSeqNo;
+            RainListTagSeqNo = rainListTagSeqNo;
+        }
+
         public int SinDate { get; private set; }
 
         public int TagNo { get; private set; }
@@ -31,19 +43,13 @@ namespace Domain.Models.FlowSheet
 
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
 
-        public FlowSheetModel(int sinDate, string fullLineOfKarte, long raiinNo, int syosaisinKbn, int status, bool _isContainsFile, int tagNo, string cmt, List<RaiinListInfModel> infs, bool isNextOrder, bool isToDayOdr)
-        {
-            SinDate = sinDate;
-            FullLineOfKarte = fullLineOfKarte;
-            RaiinNo = raiinNo;
-            SyosaisinKbn = syosaisinKbn;
-            Status = status;
-            TagNo = tagNo;
-            Comment = cmt;
-            RaiinListInfs = infs;
-            IsContainsFile = _isContainsFile;
-            IsNextOrder = isNextOrder;
-            IsToDayOdr = isToDayOdr;
-        }
+        public long PtId { get; private set; }
+
+        public int CmtKbn { get; private set; }
+
+        public long RainListCmtSeqNo { get; private set; }
+
+        public int RainListTagSeqNo { get; private set; }
+
     }
 }
