@@ -79,6 +79,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.FlowSheet.GetList;
+using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
@@ -113,7 +114,11 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.SetMst.SaveSetMst;
 using UseCase.VisitingList.SaveSettings;
+using Interactor.VisitingList;
+using Domain.Models.VisitingListSetting;
+using UseCase.RaiinFilterMst.SaveList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -236,11 +241,12 @@ namespace EmrCloudApi.Configs.Dependency
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 
+            //SetMst
+            busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
+            busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
+
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
-
-            //Set
-            busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -250,6 +256,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinFilterMstListInputData, SaveRaiinFilterMstListInteractor>();
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
@@ -264,6 +271,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
+            busBuilder.RegisterUseCase<UpsertFlowSheetInputData, UpsertFlowSheetInteractor>();
 
             // UketukeSbtDayInf
             busBuilder.RegisterUseCase<GetReceptionInsuranceInputData, ReceptionInsuranceInteractor>();
