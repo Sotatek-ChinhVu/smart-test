@@ -176,7 +176,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IPtOtherDrugRepository, PtOtherDrugRepository>();
             services.AddTransient<IPtInfectionRepository, PtInfectionRepository>();
             services.AddTransient<IPtSuppleRepository, PtSuppleRepository>();
-            services.AddTransient<IUserConfRepository, UserConfigRepository>();
+            services.AddTransient<IUserConfRepository, UserConfRepository>();
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
             services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();

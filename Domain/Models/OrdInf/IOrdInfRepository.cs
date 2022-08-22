@@ -1,6 +1,4 @@
-﻿using Domain.Models.OrdInfDetails;
-
-namespace Domain.Models.OrdInfs
+﻿namespace Domain.Models.OrdInfs
 {
     public interface IOrdInfRepository
     {
@@ -13,7 +11,7 @@ namespace Domain.Models.OrdInfs
         void Delete(int ordId);
 
         IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted);
-        
+
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo);
     }
 }

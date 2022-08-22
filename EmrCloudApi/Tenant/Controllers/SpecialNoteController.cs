@@ -19,8 +19,8 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetSpecialNoteResponse>> GetList([FromQuery] SpecialNoteRequest request)
+        [HttpGet(ApiPath.Get)]
+        public ActionResult<Response<GetSpecialNoteResponse>> Get([FromQuery] SpecialNoteRequest request)
         {
             var input = new GetSpecialNoteInputData(request.HpId, request.PtId);
             var output = _bus.Handle(input);

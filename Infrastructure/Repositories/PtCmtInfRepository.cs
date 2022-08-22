@@ -18,7 +18,7 @@ public class PtCmtInfRepository : IPtCmtInfRepository
     public List<PtCmtInfModel> GetList(long ptId, int hpId)
     {
         var ptCmts = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(p => p.UpdateDate)
-.Select(x => new PtCmtInfModel(
+            .Select(x => new PtCmtInfModel(
                 x.HpId,
                 x.PtId,
                 x.SeqNo,
@@ -26,7 +26,7 @@ public class PtCmtInfRepository : IPtCmtInfRepository
                 x.IsDeleted,
                 x.Id
             ));
-        ;
+
         return ptCmts.ToList();
     }
 

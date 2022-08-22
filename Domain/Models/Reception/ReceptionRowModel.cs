@@ -115,7 +115,6 @@ public class ReceptionRowModel
     public string ConfirmationState { get; private set; }
     // 資格確認結果
     public string ConfirmationResult { get; private set; }
-
     // Dynamic cells
     public Dictionary<int, DynamicCell> GrpIdToDynamicCell { get; private set; }
 

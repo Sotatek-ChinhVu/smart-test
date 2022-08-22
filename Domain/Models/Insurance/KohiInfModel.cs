@@ -51,19 +51,31 @@ namespace Domain.Models.Insurance
         }
 
         public string FutansyaNo { get; private set; }
+
         public string JyukyusyaNo { get; private set; }
+
         public int HokenId { get; private set; }
+
         public int StartDate { get; private set; }
+
         public int EndDate { get; private set; }
+
         public int ConfirmDate { get; private set; }
+
         public int Rate { get; private set; }
+
         public int GendoGaku { get; private set; }
+
         public int SikakuDate { get; private set; }
+
         public int KofuDate { get; private set; }
+
         public string TokusyuNo { get; private set; }
+
         public int HokenSbtKbn { get; private set; }
+
         public string Houbetu { get; private set; }
-       
+
         public HokenMstModel HokenMstModel { get; private set; }
 
         public int HokenNo { get; private set; }

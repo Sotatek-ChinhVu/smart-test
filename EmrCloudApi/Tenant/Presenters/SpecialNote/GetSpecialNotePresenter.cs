@@ -32,7 +32,6 @@ namespace EmrCloudApi.Tenant.Presenters.SpecialNote
                     Result.Data = new GetSpecialNoteResponse(outputData.SummaryTab, outputData.ImportantNoteTab, outputData.PatientInfoTab);
                     break;
             }
-
         }
     }
 }

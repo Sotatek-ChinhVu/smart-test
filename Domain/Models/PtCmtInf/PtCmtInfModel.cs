@@ -19,6 +19,5 @@
         public int IsDeleted { get; private set; }
         public long Id { get; private set; }
 
-
     }
 }

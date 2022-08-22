@@ -14,6 +14,5 @@ namespace EmrCloudApi.Tenant.Responses.SpecialNote
         public SummaryTabItem? SummaryTab { get; private set; }
         public ImportantNoteTabItem? ImportantNoteTab { get; private set; }
         public PatientInfoTabItem? PatientInfoTabItem { get; private set; }
-
     }
 }
