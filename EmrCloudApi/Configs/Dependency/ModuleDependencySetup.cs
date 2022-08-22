@@ -102,6 +102,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.VisitingList.SaveSettings;
 using Interactor.VisitingList;
 using Domain.Models.VisitingListSetting;
+using UseCase.RaiinFilterMst.SaveList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -218,6 +219,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
+            busBuilder.RegisterUseCase<SaveRaiinFilterMstListInputData, SaveRaiinFilterMstListInteractor>();
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
