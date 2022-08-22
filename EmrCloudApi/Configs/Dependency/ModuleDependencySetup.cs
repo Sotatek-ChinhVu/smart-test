@@ -98,6 +98,7 @@ using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.SetMst.SaveSetMst;
 using UseCase.VisitingList.SaveSettings;
 using Interactor.VisitingList;
 using Domain.Models.VisitingListSetting;
@@ -202,11 +203,12 @@ namespace EmrCloudApi.Configs.Dependency
             //Group Inf
             busBuilder.RegisterUseCase<GetListGroupInfInputData, GroupInfInteractor>();
 
+            //SetMst
+            busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
+            busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
+
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
-
-            //Set
-            busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
