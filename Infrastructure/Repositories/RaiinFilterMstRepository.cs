@@ -68,7 +68,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
 
             var existingEntities = query.ToList();
             var sortsToInsert = new List<RaiinFilterSort>();
-            var mstVsSortsToInsert = new List<(RaiinFilterMst Mst, List<RaiinFilterSort> Sorts)>();
+            var mstWithSortsToInsert = new List<(RaiinFilterMst Mst, List<RaiinFilterSort> Sorts)>();
 
             foreach (var mstModel in mstModels)
             {
@@ -93,9 +93,11 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 }
                 else
                 {
+                    var tempFilterId = 0;
                     var mst = new RaiinFilterMst
                     {
                         HpId = TempIdentity.HpId,
+                        FilterId = tempFilterId,
                         SortNo = mstModel.SortNo,
                         FilterName = mstModel.FilterName,
                         SelectKbn = mstModel.SelectKbn,
@@ -105,24 +107,24 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                         CreateMachine = TempIdentity.ComputerName
                     };
                     // Create RaiinFilterSort entities with temporary FilterId = 0
-                    var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(0, sortModel)).ToList();
+                    var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(tempFilterId, sortModel)).ToList();
 
-                    mstVsSortsToInsert.Add(new(mst, sorts));
+                    mstWithSortsToInsert.Add(new(mst, sorts));
                 }
             }
 
             // Insert msts
-            var mstsToInsert = mstVsSortsToInsert.Select(x => x.Mst);
+            var mstsToInsert = mstWithSortsToInsert.Select(x => x.Mst);
             _tenantDataContext.RaiinFilterMsts.AddRange(mstsToInsert);
             _tenantDataContext.SaveChanges();
             // Insert related sorts
             // After SaveChanges called FilterId of RaiinFilterMst is populated
             // so we can set FilterId for the related RaiinFilterSort entities here
-            foreach (var item in mstVsSortsToInsert)
+            foreach (var (mst, sorts) in mstWithSortsToInsert)
             {
-                foreach (var sort in item.Sorts)
+                foreach (var sort in sorts)
                 {
-                    sort.FilterId = item.Mst.FilterId;
+                    sort.FilterId = mst.FilterId;
                     sortsToInsert.Add(sort);
                 }
             }
