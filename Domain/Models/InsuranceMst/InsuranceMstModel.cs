@@ -17,6 +17,7 @@ namespace Domain.Models.InsuranceMst
             KantokuMstData = new List<KantokuMstModel>();
             ByomeiMstAftercareData = new List<ByomeiMstAftercareModel>();
             HokenMstData = new List<HokenMstModel>();
+            RoudouMst = new List<RoudouMstModel>();
         }
 
         public InsuranceMstModel(List<TokkiMstModel> listTokkiMstModel, Dictionary<int, string> hokenKogakuKbnDict, List<HokenMstModel> kohiHokenMstData, List<KantokuMstModel> kantokuMstData, List<ByomeiMstAftercareModel> byomeiMstAftercareData, List<HokenMstModel> hokenMstData, List<RoudouMstModel> roudouMst)

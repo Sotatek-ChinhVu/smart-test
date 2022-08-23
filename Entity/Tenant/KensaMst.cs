@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_NAME")]
         [MaxLength(120)]
-        public string KensaName { get; set; } = string.Empty;
+        public string? KensaName { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称

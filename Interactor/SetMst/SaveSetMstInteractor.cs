@@ -33,15 +33,16 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.IsDeleted,
                                 inputData.IsGroup ? 1 : 0
                              );
-            if (_setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel))
+            var resultData = _setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel);
+            if (resultData != null)
             {
-                return new SaveSetMstOutputData(SaveSetMstStatus.Successed);
+                return new SaveSetMstOutputData(resultData, SaveSetMstStatus.Successed);
             }
-            return new SaveSetMstOutputData(SaveSetMstStatus.Failed);
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.Failed);
         }
         catch (Exception)
         {
-            return new SaveSetMstOutputData(SaveSetMstStatus.Failed);
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.Failed);
         }
     }
 }
