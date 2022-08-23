@@ -11,7 +11,7 @@ public class UserConfRepository : IUserConfRepository
 
     public UserConfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
@@ -24,6 +24,6 @@ public class UserConfRepository : IUserConfRepository
     private UserConfModel ToModel(UserConf u)
     {
         return new UserConfModel(u.UserId, u.GrpCd,
-            u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param);
+            u.GrpItemCd, u.GrpItemEdaNo, u.Val, u.Param ?? String.Empty);
     }
 }

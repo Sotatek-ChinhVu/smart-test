@@ -28,97 +28,97 @@ namespace Infrastructure.Repositories
         {
             var listTenMstModels = new List<InputItemModel>();
 
-                string sBigKeyword = keyword.ToUpper()
-               .Replace("ｧ", "ｱ")
-               .Replace("ｨ", "ｲ")
-               .Replace("ｩ", "ｳ")
-               .Replace("ｪ", "ｴ")
-               .Replace("ｫ", "ｵ")
-               .Replace("ｬ", "ﾔ")
-               .Replace("ｭ", "ﾕ")
-               .Replace("ｮ", "ﾖ")
-               .Replace("ｯ", "ﾂ");
-               var queryResult = _tenantDataContext.TenMsts.Where(t =>
-                                   t.ItemCd.StartsWith(keyword)
-                                   || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   ||
-                                     (!String.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+            string sBigKeyword = keyword.ToUpper()
+           .Replace("ｧ", "ｱ")
+           .Replace("ｨ", "ｲ")
+           .Replace("ｩ", "ｳ")
+           .Replace("ｪ", "ｴ")
+           .Replace("ｫ", "ｵ")
+           .Replace("ｬ", "ﾔ")
+           .Replace("ｭ", "ﾕ")
+           .Replace("ｮ", "ﾖ")
+           .Replace("ｯ", "ﾂ");
+            var queryResult = _tenantDataContext.TenMsts.Where(t =>
+                                t.ItemCd.StartsWith(keyword)
+                                || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                  (!String.IsNullOrEmpty(t.KanaName2) && t.KanaName2.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
 
-                                   || (
-                                     !String.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   || (
-                                     !String.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   ||
-                                   (!String.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   ||
-                                   (!String.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   || (
-                                     !String.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                     .Replace("ｨ", "ｲ")
-                                     .Replace("ｩ", "ｳ")
-                                     .Replace("ｪ", "ｴ")
-                                     .Replace("ｫ", "ｵ")
-                                     .Replace("ｬ", "ﾔ")
-                                     .Replace("ｭ", "ﾕ")
-                                     .Replace("ｮ", "ﾖ")
-                                     .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
-                                   ||
-                                   (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
+                                || (
+                                  !String.IsNullOrEmpty(t.KanaName3) && t.KanaName3.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (
+                                  !String.IsNullOrEmpty(t.KanaName4) && t.KanaName4.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (!String.IsNullOrEmpty(t.KanaName5) && t.KanaName5.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (!String.IsNullOrEmpty(t.KanaName6) && t.KanaName6.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                || (
+                                  !String.IsNullOrEmpty(t.KanaName7) && t.KanaName7.ToUpper()
+                                  .Replace("ｧ", "ｱ")
+                                  .Replace("ｨ", "ｲ")
+                                  .Replace("ｩ", "ｳ")
+                                  .Replace("ｪ", "ｴ")
+                                  .Replace("ｫ", "ｵ")
+                                  .Replace("ｬ", "ﾔ")
+                                  .Replace("ｭ", "ﾕ")
+                                  .Replace("ｮ", "ﾖ")
+                                  .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
+                                ||
+                                (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
 
 
@@ -380,18 +380,18 @@ namespace Infrastructure.Repositories
                                                            item.TenMst.ItemCd,
                                                            item.TenMst.RousaiKbn,
                                                            item.TenMst.KanaName1 ?? string.Empty,
-                                                           item.TenMst.Name,
-                                                           item.TenMst.KohatuKbn,
-                                                           item.TenMst.MadokuKbn,
-                                                           item.TenMst.KouseisinKbn,
-                                                           item.TenMst.OdrUnitName ?? string.Empty,
-                                                           item.TenMst.EndDate,
-                                                           item.TenMst.DrugKbn,
-                                                           item.TenMst.MasterSbt,
-                                                           item.TenMst.BuiKbn,
-                                                           item.TenMst.IsAdopted,
-                                                           item.tenKN != null ? item.tenKN.Ten : item.TenMst.Ten,
-                                                           item.TenMst.TenId,
+                                                           item.TenMst?.Name ?? string.Empty,
+                                                           item.TenMst?.KohatuKbn ?? 0,
+                                                           item.TenMst?.MadokuKbn ?? 0,
+                                                           item.TenMst?.KouseisinKbn ?? 0,
+                                                           item.TenMst?.OdrUnitName ?? string.Empty,
+                                                           item.TenMst?.EndDate ?? 0,
+                                                           item.TenMst?.DrugKbn ?? 0,
+                                                           item.TenMst?.MasterSbt ?? string.Empty,
+                                                           item.TenMst?.BuiKbn ?? 0,
+                                                           item.TenMst?.IsAdopted ?? 0,
+                                                           item.tenKN != null ? item.tenKN.Ten : (item.TenMst?.Ten ?? 0),
+                                                           item.TenMst?.TenId ?? 0,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty
                                                             );
