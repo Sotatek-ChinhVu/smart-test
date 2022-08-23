@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.JsonSetting;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -26,6 +27,16 @@ public class JsonSettingController : ControllerBase
         var input = new GetJsonSettingInputData(req.UserId, req.Key);
         var output = _bus.Handle(input);
         var presenter = new GetJsonSettingPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Upsert)]
+    public ActionResult<Response<UpsertJsonSettingResponse>> Upsert([FromBody] UpsertJsonSettingRequest req)
+    {
+        var input = new UpsertJsonSettingInputData(req.Setting);
+        var output = _bus.Handle(input);
+        var presenter = new UpsertJsonSettingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
