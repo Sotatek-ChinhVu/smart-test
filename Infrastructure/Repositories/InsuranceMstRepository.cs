@@ -1,8 +1,8 @@
 ﻿using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Extendsions;
-using Infrastructure.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -103,8 +103,8 @@ namespace Infrastructure.Repositories
             }
             else
             {
-               dataComboboxKantokuMst = kantokuMsts;
-            }    
+                dataComboboxKantokuMst = kantokuMsts;
+            }
 
             // data combobox 2 hokenKogakuKbnDict
             Dictionary<int, string> hokenKogakuKbnDict = new Dictionary<int, string>();

@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace Helper.Extendsions
+
 {
     [Serializable()]
     /// <summary>Provides an implementation of the <see cref="INotifyPropertyChanged"/> interface. </summary>
@@ -16,7 +17,7 @@ namespace Helper.Extendsions
         /// <param name="oldValue">A reference to the backing field of the property. </param>
         /// <param name="newValue">The new value. </param>
         /// <returns>True if the property has changed. </returns>
-        public bool Set<T>(ref T oldValue, T newValue, [CallerMemberName] String propertyName = "")
+        public bool Set<T>(ref T oldValue, T newValue, [CallerMemberName] String? propertyName = null)
         {
             return Set(propertyName, ref oldValue, newValue);
         }
@@ -50,7 +51,7 @@ namespace Helper.Extendsions
         /// <param name="oldValue">A reference to the backing field of the property. </param>
         /// <param name="newValue">The new value. </param>
         /// <returns>True if the property has changed. </returns>
-        public virtual bool Set<T>(String propertyName, ref T oldValue, T newValue)
+        public virtual bool Set<T>(String? propertyName, ref T oldValue, T newValue)
         {
             if (Equals(oldValue, newValue))
                 return false;
@@ -133,9 +134,9 @@ namespace Helper.Extendsions
 #endif
         public static string GetPropertyName<TProperty>(Expression<Func<TProperty>> expression)
         {
-            if (expression.Body is UnaryExpression expression1)
-                return ((MemberExpression)(expression1.Operand)).Member.Name;
-            return ((MemberExpression)expression.Body).Member.Name;
+            return expression.Body is UnaryExpression
+                ? ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name
+                : ((MemberExpression)expression.Body).Member.Name;
         }
 
         /// <summary>Returns the property name of the property specified in the given lambda (e.g. GetPropertyName(i => i.MyProperty)). </summary>
@@ -147,9 +148,9 @@ namespace Helper.Extendsions
 #endif
         public static string GetPropertyName<TClass>(Expression<Func<TClass, object>> expression)
         {
-            if (expression.Body is UnaryExpression expression1)
-                return ((MemberExpression)(expression1.Operand)).Member.Name;
-            return ((MemberExpression)expression.Body).Member.Name;
+            return expression.Body is UnaryExpression
+                ? ((MemberExpression)(((UnaryExpression)expression.Body).Operand)).Member.Name
+                : ((MemberExpression)expression.Body).Member.Name;
         }
 
     }

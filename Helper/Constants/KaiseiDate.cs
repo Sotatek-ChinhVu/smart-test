@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Constants
+﻿namespace Helper.Constants
 {
     public static class KaiseiDate
     {
@@ -61,6 +55,5 @@ namespace Infrastructure.Constants
 
         public const int d20060401 = 20060401;
         public const int m200604 = 200604;
-
     }
 }

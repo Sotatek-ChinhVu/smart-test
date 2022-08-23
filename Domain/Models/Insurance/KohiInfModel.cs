@@ -75,7 +75,7 @@ namespace Domain.Models.Insurance
         public int HokenSbtKbn { get; private set; }
 
         public string Houbetu { get; private set; }
-       
+
         public HokenMstModel HokenMstModel { get; private set; }
 
         public int HokenNo { get; private set; }

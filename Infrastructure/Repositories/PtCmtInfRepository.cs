@@ -8,11 +8,26 @@ namespace Infrastructure.Repositories;
 
 public class PtCmtInfRepository : IPtCmtInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantNoTrackingDataContext _tenantDataContext;
 
     public PtCmtInfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+    }
+
+    public List<PtCmtInfModel> GetList(long ptId, int hpId)
+    {
+        var ptCmts = _tenantDataContext.PtCmtInfs.Where(x => x.PtId == ptId && x.HpId == hpId && x.IsDeleted == 0).OrderByDescending(p => p.UpdateDate)
+            .Select(x => new PtCmtInfModel(
+                x.HpId,
+                x.PtId,
+                x.SeqNo,
+                x.Text ?? String.Empty,
+                x.IsDeleted,
+                x.Id
+            ));
+
+        return ptCmts.ToList();
     }
 
     public void Upsert(long ptId, string text)
