@@ -103,6 +103,9 @@ using UseCase.VisitingList.SaveSettings;
 using Interactor.VisitingList;
 using Domain.Models.VisitingListSetting;
 using UseCase.RaiinFilterMst.SaveList;
+using Domain.Models.JsonSetting;
+using UseCase.JsonSetting.Get;
+using Interactor.JsonSetting;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -157,6 +160,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
+            services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -247,6 +251,9 @@ namespace EmrCloudApi.Configs.Dependency
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
+
+            // JsonSetting
+            busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
