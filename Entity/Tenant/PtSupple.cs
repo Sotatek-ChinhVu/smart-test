@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("INDEX_CD")]
-        public string IndexCd { get; set; } = string.Empty;
+        public string? IndexCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 索引語
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INDEX_WORD")]
         [MaxLength(200)]
-        public string IndexWord { get; set; } = string.Empty;
+        public string? IndexWord { get; set; } = string.Empty;
 
         /// <summary>
         /// 開始日
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

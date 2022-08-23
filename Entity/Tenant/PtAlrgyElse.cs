@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ALRGY_NAME")]
         [MaxLength(100)]
-        public string AlrgyName { get; set; } = string.Empty;
+        public string? AlrgyName { get; set; } = string.Empty;
 
         /// <summary>
         /// 発症日
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
