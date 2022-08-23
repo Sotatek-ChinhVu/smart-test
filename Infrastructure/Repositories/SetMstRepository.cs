@@ -49,9 +49,8 @@ public class SetMstRepository : ISetMstRepository
               ).ToList();
     }
 
-    public bool SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
+    public SetMstModel? SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
-        bool status = false;
         try
         {
             // Check SetMstModel is delete?
@@ -156,13 +155,26 @@ public class SetMstRepository : ISetMstRepository
                 }
             }
             _tenantDataContext.SaveChanges();
-            status = true;
+            return new SetMstModel(
+                    setMst.HpId,
+                    setMst.SetCd,
+                    setMst.SetKbn,
+                    setMst.SetKbnEdaNo,
+                    setMst.GenerationId,
+                    setMst.Level1,
+                    setMst.Level2,
+                    setMst.Level3,
+                    setMst.SetName ?? String.Empty,
+                    setMst.WeightKbn,
+                    setMst.Color,
+                    setMst.IsDeleted,
+                    setMst.IsGroup
+                );
         }
         catch
         {
-            return status;
+            return null;
         }
-        return status;
     }
 
     // GetGenerationId by hpId and sindate
