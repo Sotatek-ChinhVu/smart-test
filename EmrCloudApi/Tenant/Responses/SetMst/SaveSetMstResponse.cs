@@ -1,10 +1,13 @@
-﻿namespace EmrCloudApi.Tenant.Responses.SetMst;
+﻿using Domain.Models.SetMst;
+
+namespace EmrCloudApi.Tenant.Responses.SetMst;
 
 public class SaveSetMstResponse
 {
-    public SaveSetMstResponse(bool status)
+    public SaveSetMstResponse(SetMstModel? setMstModel)
     {
-        Status = status;
+        this.setMstModel = setMstModel;
     }
-    public bool Status { get; private set; } = false;
+
+    public SetMstModel? setMstModel { get; private set; }
 }
