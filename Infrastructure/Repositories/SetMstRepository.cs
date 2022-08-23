@@ -63,7 +63,15 @@ public class SetMstRepository : ISetMstRepository
                                                                             && item.SetKbnEdaNo == setKbnEdaNo
                                                                             && item.GenerationId == setMstModel.GenerationId
                                                                             && item.IsDeleted != 1);
-            oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
+
+            if (oldSetMst == null && setMstModel.SetCd != 0)
+            {
+                return null;
+            }
+            else
+            {
+                oldSetMst = oldSetMst != null ? oldSetMst : new SetMst();
+            }
             var setMst = ConvertSetMstModelToSetMst(oldSetMst, setMstModel, userId);
 
             if (!isDelete)
