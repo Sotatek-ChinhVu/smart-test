@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TRADE_NAME")]
         [MaxLength(200)]
-        public string TradeName { get; set; } = string.Empty;
+        public string? TradeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 開始日
@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

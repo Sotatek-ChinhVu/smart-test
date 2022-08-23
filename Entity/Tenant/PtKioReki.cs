@@ -46,14 +46,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI_CD")]
         [MaxLength(7)]
-        public string ByomeiCd { get; set; } = string.Empty;
+        public string? ByomeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病態コード
         /// 
         /// </summary>
         [Column("BYOTAI_CD")]
-        public string ByotaiCd { get; set; } = string.Empty;
+        public string? ByotaiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(400)]
-        public string Byomei { get; set; } = string.Empty;
+        public string? Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 発症時期
@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
