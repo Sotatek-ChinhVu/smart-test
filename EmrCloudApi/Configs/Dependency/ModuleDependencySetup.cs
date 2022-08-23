@@ -103,6 +103,9 @@ using UseCase.VisitingList.SaveSettings;
 using Interactor.VisitingList;
 using Domain.Models.VisitingListSetting;
 using UseCase.RaiinFilterMst.SaveList;
+using UseCase.DrugInfor.Get;
+using Interactor.DrugInfor;
+using Domain.Models.DrugInfor;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -157,6 +160,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
+            services.AddTransient<IDrugInforRepository, DrugInforRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -254,6 +258,9 @@ namespace EmrCloudApi.Configs.Dependency
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+
+            //DrugInfor
+            busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

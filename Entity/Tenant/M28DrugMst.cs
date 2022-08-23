@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KANA2")]
         [MaxLength(100)]
-        public string DrugKana2 { get; set; } = string.Empty;
+        public string? DrugKana2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
@@ -115,7 +115,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YORYO_JYURYO_UNIT")]
         [MaxLength(20)]
-        public string YoryoJyuryoUnit { get; set; } = string.Empty;
+        public string? YoryoJyuryoUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分量・力価/用量・重量比
@@ -130,7 +130,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIRIKI_YORYO_UNIT")]
         [MaxLength(40)]
-        public string SeirikiYoryoUnit { get; set; } = string.Empty;
+        public string? SeirikiYoryoUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 製造販売承認メーカーコード
@@ -138,7 +138,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAKER_CD")]
         [MaxLength(4)]
-        public string MakerCd { get; set; } = string.Empty;
+        public string? MakerCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 製造販売承認メーカー
@@ -146,7 +146,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAKER_NAME")]
         [MaxLength(40)]
-        public string MakerName { get; set; } = string.Empty;
+        public string? MakerName { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬剤区分コード
@@ -186,7 +186,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DOKUYAKU_FLG")]
         [MaxLength(1)]
-        public string DokuyakuFlg { get; set; } = string.Empty;
+        public string? DokuyakuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 劇薬フラグ
@@ -194,7 +194,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("GEKIYAKU_FLG")]
         [MaxLength(1)]
-        public string GekiyakuFlg { get; set; } = string.Empty;
+        public string? GekiyakuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 麻薬フラグ
@@ -202,7 +202,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAYAKU_FLG")]
         [MaxLength(1)]
-        public string MayakuFlg { get; set; } = string.Empty;
+        public string? MayakuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 向精神薬フラグ
@@ -210,7 +210,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOSEISINYAKU_FLG")]
         [MaxLength(1)]
-        public string KoseisinyakuFlg { get; set; } = string.Empty;
+        public string? KoseisinyakuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 覚醒剤フラグ
@@ -218,7 +218,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KAKUSEIZAI_FLG")]
         [MaxLength(1)]
-        public string KakuseizaiFlg { get; set; } = string.Empty;
+        public string? KakuseizaiFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 覚醒剤原料フラグ
@@ -226,7 +226,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KAKUSEIZAI_GENRYO_FLG")]
         [MaxLength(1)]
-        public string KakuseizaiGenryoFlg { get; set; } = string.Empty;
+        public string? KakuseizaiGenryoFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 生物由来製品フラグ
@@ -234,7 +234,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUTU_FLG")]
         [MaxLength(1)]
-        public string SeibutuFlg { get; set; } = string.Empty;
+        public string? SeibutuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 特定生物由来製品フラグ
@@ -242,7 +242,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SP_SEIBUTU_FLG")]
         [MaxLength(1)]
-        public string SpSeibutuFlg { get; set; } = string.Empty;
+        public string? SpSeibutuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 後発品フラグ
@@ -250,7 +250,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHATU_FLG")]
         [MaxLength(1)]
-        public string KohatuFlg { get; set; } = string.Empty;
+        public string? KohatuFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価
@@ -289,7 +289,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YAKKA_SYUSAI_DATE")]
         [MaxLength(8)]
-        public string YakkaSyusaiDate { get; set; } = string.Empty;
+        public string? YakkaSyusaiDate { get; set; } = string.Empty;
 
         /// <summary>
         /// 経過措置期限日付
@@ -297,7 +297,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KEIKASOTI_DATE")]
         [MaxLength(8)]
-        public string KeikasotiDate { get; set; } = string.Empty;
+        public string? KeikasotiDate { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表医薬品コード
@@ -337,7 +337,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HAIGO_FLG")]
         [MaxLength(1)]
-        public string HaigoFlg { get; set; } = string.Empty;
+        public string? HaigoFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表医薬品名決定フラグ
@@ -346,7 +346,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAIN_DRUG_NAME_FLG")]
         [MaxLength(1)]
-        public string MainDrugNameFlg { get; set; } = string.Empty;
+        public string? MainDrugNameFlg { get; set; } = string.Empty;
 
     }
 }
