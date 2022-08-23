@@ -102,6 +102,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.VisitingList.SaveSettings;
 using Interactor.VisitingList;
 using Domain.Models.VisitingListSetting;
+using UseCase.SetMst.ReorderSetMstList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -206,6 +207,7 @@ namespace EmrCloudApi.Configs.Dependency
             //SetMst
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
+            busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstListInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

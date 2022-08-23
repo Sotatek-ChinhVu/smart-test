@@ -196,4 +196,35 @@ public class SetMstRepository : ISetMstRepository
         setMst.UpdateId = userId;
         return setMst;
     }
+
+    public bool ReorderSetMst(int userId, List<SetMstModel> setMstModels)
+    {
+        bool status = false;
+        try
+        {
+            int setKbn = setMstModels.FirstOrDefault()?.SetKbn ?? 0;
+            int setKbnEdaNo = setMstModels.FirstOrDefault()?.SetKbnEdaNo ?? 0;
+            int hpId = setMstModels.FirstOrDefault()?.HpId ?? 1;
+            var listOldSetMsts = _tenantDataContext.SetMsts.Where(model => model.SetKbn == setKbn && model.SetKbnEdaNo == setKbnEdaNo && model.HpId == hpId && model.IsDeleted != 1).ToList();
+            foreach (var setModel in setMstModels)
+            {
+                var oldSetMst = listOldSetMsts.FirstOrDefault(mst => mst.SetCd == setModel.SetCd && mst.GenerationId == setModel.GenerationId);
+                if (oldSetMst != null)
+                {
+                    oldSetMst.Level1 = setModel.Level1;
+                    oldSetMst.Level2 = setModel.Level2;
+                    oldSetMst.Level3 = setModel.Level3;
+                    oldSetMst.UpdateId = userId;
+                    oldSetMst.UpdateDate = DateTime.UtcNow;
+                }
+            }
+            _tenantDataContext.SaveChanges();
+            status = true;
+        }
+        catch
+        {
+            return status;
+        }
+        return status;
+    }
 }

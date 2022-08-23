@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.SetMst;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.ReorderSetMstList;
 using UseCase.SetMst.SaveSetMst;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -42,6 +43,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<SaveSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Reorder)]
+        public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
+        {
+            var input = new ReorderSetMstInputData(request.SetMstLists);
+            var output = _bus.Handle(input);
+
+            var presenter = new ReorderSetMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
         }
     }
 }
