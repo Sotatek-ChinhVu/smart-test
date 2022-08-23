@@ -1,18 +1,23 @@
-﻿using UseCase.SpecialNote.Get;
+﻿using Domain.Models.SpecialNote.ImportantNote;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
+using UseCase.SpecialNote.Get;
 
 namespace EmrCloudApi.Tenant.Responses.SpecialNote
 {
     public class GetSpecialNoteResponse
     {
-        public GetSpecialNoteResponse(SummaryTabItem? summaryTab, ImportantNoteTabItem? importantNoteTab, PatientInfoTabItem? patientInfoTabItem)
+        public GetSpecialNoteResponse(SummaryInfModel summaryTab, ImportantNoteModel importantNoteTab, PatientInfoModel patientInfoTab)
         {
             SummaryTab = summaryTab;
             ImportantNoteTab = importantNoteTab;
-            PatientInfoTabItem = patientInfoTabItem;
+            PatientInfoTab = patientInfoTab;
         }
 
-        public SummaryTabItem? SummaryTab { get; private set; }
-        public ImportantNoteTabItem? ImportantNoteTab { get; private set; }
-        public PatientInfoTabItem? PatientInfoTabItem { get; private set; }
+        public SummaryInfModel SummaryTab { get; private set; }
+
+        public ImportantNoteModel ImportantNoteTab { get; private set; }
+
+        public PatientInfoModel PatientInfoTab { get; private set; }
     }
 }

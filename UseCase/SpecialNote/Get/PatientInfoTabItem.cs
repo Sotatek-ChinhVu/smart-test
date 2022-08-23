@@ -1,7 +1,5 @@
-﻿using Domain.Models.PhysicalInfo;
-using Domain.Models.PtCmtInf;
-using Domain.Models.PtPregnancy;
-using Domain.Models.SeikaturekiInf;
+﻿using Domain.Models.PtCmtInf;
+using Domain.Models.SpecialNote.PatientInfo;
 
 namespace UseCase.SpecialNote.Get
 {

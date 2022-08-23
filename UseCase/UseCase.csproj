@@ -19,6 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="SpecialNote\Get\ImportantNoteTabItem.cs" />
+    <Compile Remove="SpecialNote\Get\PatientInfoTabItem.cs" />
+    <Compile Remove="SpecialNote\Get\SummaryTabItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 

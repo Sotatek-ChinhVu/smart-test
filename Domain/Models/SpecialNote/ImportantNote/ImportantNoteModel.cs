@@ -1,10 +1,8 @@
-﻿using Domain.Models.SpecialNote.ImportantNote;
-
-namespace UseCase.SpecialNote.Get
+﻿namespace Domain.Models.SpecialNote.ImportantNote
 {
-    public class ImportantNoteTabItem
+    public class ImportantNoteModel
     {
-        public ImportantNoteTabItem(List<PtAlrgyFoodModel> alrgyFoodItems, List<PtAlrgyElseModel> alrgyElseItems, List<PtAlrgyDrugModel> alrgyDrugItems, List<PtKioRekiModel> kioRekiItems, List<PtInfectionModel> infectionsItems, List<PtOtherDrugModel> otherDrugItems, List<PtOtcDrugModel> otcDrugItems, List<PtSuppleModel> suppleItems)
+        public ImportantNoteModel(List<PtAlrgyFoodModel> alrgyFoodItems, List<PtAlrgyElseModel> alrgyElseItems, List<PtAlrgyDrugModel> alrgyDrugItems, List<PtKioRekiModel> kioRekiItems, List<PtInfectionModel> infectionsItems, List<PtOtherDrugModel> otherDrugItems, List<PtOtcDrugModel> otcDrugItems, List<PtSuppleModel> suppleItems)
         {
             AlrgyFoodItems = alrgyFoodItems;
             AlrgyElseItems = alrgyElseItems;
@@ -14,6 +12,18 @@ namespace UseCase.SpecialNote.Get
             OtherDrugItems = otherDrugItems;
             OtcDrugItems = otcDrugItems;
             SuppleItems = suppleItems;
+        }
+
+        public ImportantNoteModel()
+        {
+            AlrgyFoodItems = new List<PtAlrgyFoodModel>();
+            AlrgyElseItems = new List<PtAlrgyElseModel>();
+            AlrgyDrugItems = new List<PtAlrgyDrugModel>();
+            KioRekiItems = new List<PtKioRekiModel>();
+            InfectionsItems = new List<PtInfectionModel>();
+            OtherDrugItems = new List<PtOtherDrugModel>();
+            OtcDrugItems = new List<PtOtcDrugModel>();
+            SuppleItems = new List<PtSuppleModel>();
         }
 
         //Aglrgy
