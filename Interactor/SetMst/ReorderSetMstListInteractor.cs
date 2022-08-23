@@ -32,6 +32,12 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                         int level2 = 1;
                         foreach (var itemLevel2 in itemLevel1.Childrens)
                         {
+                            // if level1 -> level2 => failed
+                            if (itemLevel2.Level2 == 0 && level2 != 0)
+                            {
+                                return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
+                            }
+
                             listSetMst.Add(convertInputDataToModel(itemLevel2, level1, level2, 0));
 
                             // if item of level2 has childrens, set level3 for SetMstModel
@@ -40,6 +46,12 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                                 int level3 = 1;
                                 foreach (var itemLevel3 in itemLevel2.Childrens)
                                 {
+                                    // in same level1, if level2 -> level3 => failed
+                                    if (itemLevel3.Level1 == level1 && itemLevel3.Level2 != 0 && itemLevel3.Level3 == 0 && level3 != 0)
+                                    {
+                                        return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
+                                    }
+
                                     listSetMst.Add(convertInputDataToModel(itemLevel3, level1, level2, 3));
                                     level3++;
 
