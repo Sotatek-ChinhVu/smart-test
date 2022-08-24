@@ -33,6 +33,17 @@
         //Reception controller
 
         //PtDisease controller
+        public static readonly string UpsertPtDiseaseListSuccess = "Upsert value successfully.";
+        public static readonly string UpsertPtDiseaseListFail = "Upsert value fail.";
+        public static readonly string UpsertPtDiseaseListInputNoData = "Input no data.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiKbn = "Invalid TenKiKbn.";
+        public static readonly string UpsertPtDiseaseListInvalidSikkanKbn = "Invalid SikkanKbn.";
+        public static readonly string UpsertPtDiseaseListInvalidNanByoCd = "Invalid NanByoCd.";
+        public static readonly string UpsertPtDiseaseListPtIdNoExist = "PtId no exist.";
+        public static readonly string UpsertPtDiseaseListHokenPIdNoExist = "HokenPId no exist.";
+        public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
 
         //Insurance
 

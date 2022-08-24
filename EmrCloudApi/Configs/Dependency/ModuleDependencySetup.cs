@@ -1,4 +1,4 @@
-using Domain.CalculationInf;
+﻿using Domain.CalculationInf;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.FlowSheet;
@@ -70,6 +70,7 @@ using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.Diseases.Upsert;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -279,6 +280,9 @@ namespace EmrCloudApi.Configs.Dependency
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+
+            // Disease
+            busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();

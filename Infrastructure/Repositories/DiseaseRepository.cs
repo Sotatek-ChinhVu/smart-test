@@ -1,30 +1,27 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Domain.Models.Diseases;
-using PostgreDataContext;
-using Infrastructure.Interfaces;
+﻿using Domain.Constant;
 using Domain.Enum;
-using Domain.Constant;
+using Domain.Models.Diseases;
 using Entity.Tenant;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
     public class DiseaseRepository : IPtDiseaseRepository
     {
         private const string FREE_WORD = "0000999";
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
         public DiseaseRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public List<PtDiseaseModel>  GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
+        public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
         {
-            var ptByomeiListQueryable = _tenantDataContext.PtByomeis
+            var ptByomeiListQueryable = _tenantNoTrackingDataContext.PtByomeis
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
@@ -32,7 +29,7 @@ namespace Infrastructure.Repositories
 
             var ptByomeiList = ptByomeiListQueryable.ToList();
 
-            var byomeiMstQuery = _tenantDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+            var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
 
             var byomeiMstList = (from ptByomei in ptByomeiListQueryable
@@ -99,10 +96,101 @@ namespace Infrastructure.Repositories
                         icd102013,
                         icd1012013,
                         icd1022013,
-                        ptByomei.HokenPid);
+                        ptByomei.HokenPid,
+                        ptByomei.HosokuCmt ?? string.Empty
+                        );
                 result.Add(ptDiseaseModel);
             }
             return result;
+        }
+
+        public void Upsert(List<PtDiseaseModel> inputDatas)
+        {
+            foreach (var inputData in inputDatas)
+            {
+                if (inputData.IsDeleted == DeleteTypes.Deleted)
+                {
+                    var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+                    if (ptByomei != null)
+                    {
+                        ptByomei.IsDeleted = DeleteTypes.Deleted;
+                    }
+                }
+                else
+                {
+                    var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+
+                    if (ptByomei != null)
+                    {
+                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+
+                        ptByomei.IsDeleted = DeleteTypes.Deleted;
+                        ptByomei.UpdateId = TempIdentity.UserId;
+                        ptByomei.UpdateDate = DateTime.UtcNow;
+                        ptByomei.UpdateMachine = TempIdentity.ComputerName;
+                    }
+                    else
+                    {
+                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+                    }
+                }
+            }
+
+            _tenantTrackingDataContext.SaveChanges();
+        }
+
+        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model)
+        {
+            var syusyokuCd = model.SyusyokuCd;
+
+            return new PtByomei
+            {
+                HpId = TempIdentity.HpId,
+                PtId = model.PtId,
+                ByomeiCd = model.ByomeiCd,
+                SortNo = model.SortNo,
+                SyusyokuCd1 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd1"],
+                SyusyokuCd2 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd2"],
+                SyusyokuCd3 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd3"],
+                SyusyokuCd4 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd4"],
+                SyusyokuCd5 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd5"],
+                SyusyokuCd6 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd6"],
+                SyusyokuCd7 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd7"],
+                SyusyokuCd8 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd8"],
+                SyusyokuCd9 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd9"],
+                SyusyokuCd10 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd10"],
+                SyusyokuCd11 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd11"],
+                SyusyokuCd12 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd12"],
+                SyusyokuCd13 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd13"],
+                SyusyokuCd14 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd14"],
+                SyusyokuCd15 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd15"],
+                SyusyokuCd16 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd16"],
+                SyusyokuCd17 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd17"],
+                SyusyokuCd18 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd18"],
+                SyusyokuCd19 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd19"],
+                SyusyokuCd20 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd20"],
+                SyusyokuCd21 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd21"],
+                Byomei = model.Byomei,
+                StartDate = model.StartDate,
+                TenkiKbn = model.TenkiKbn == TenkiKbnConst.InMonth ? TenkiKbnConst.Cured : model.TenkiKbn,
+                TenkiDate = model.TenkiDate,
+                SyubyoKbn = model.SyubyoKbn,
+                SikkanKbn = model.SikkanKbn,
+                NanByoCd = model.NanbyoCd,
+                HosokuCmt = model.HosokuCmt,
+                HokenPid = model.HokenPid,
+                TogetuByomei = model.TenkiKbn == TenkiKbnConst.InMonth ? 1 : 0,
+                IsNodspRece = model.IsNodspRece,
+                IsNodspKarte = model.IsNodspKarte,
+                CreateId = TempIdentity.UserId,
+                CreateMachine = TempIdentity.ComputerName,
+                CreateDate = DateTime.UtcNow,
+                SeqNo = model.SeqNo,
+                IsImportant = model.IsImportant,
+                UpdateId = TempIdentity.UserId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateMachine = TempIdentity.ComputerName
+            };
         }
 
         private List<string> SyusyokuCdToList(PtByomei ptByomei)
