@@ -24,7 +24,7 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                 foreach (var itemLevel1 in reorderSetMstInputData.SetMstLists)
                 {
                     // set level1 for SetMstModel
-                    listSetMst.Add(convertInputDataToModel(itemLevel1, level1, 0, 0));
+                    listSetMst.Add(ConvertInputDataToModel(itemLevel1, level1, 0, 0));
 
                     // if item of level1 has childrens, set level2 for SetMstModel
                     if (itemLevel1.Childrens != null)
@@ -33,12 +33,12 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                         foreach (var itemLevel2 in itemLevel1.Childrens)
                         {
                             // if level1 -> level2 => failed
-                            if (itemLevel2.Level2 == 0 && level2 != 0)
+                            if (itemLevel2.Level2 == 0)
                             {
                                 return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
                             }
 
-                            listSetMst.Add(convertInputDataToModel(itemLevel2, level1, level2, 0));
+                            listSetMst.Add(ConvertInputDataToModel(itemLevel2, level1, level2, 0));
 
                             // if item of level2 has childrens, set level3 for SetMstModel
                             if (itemLevel2.Childrens != null)
@@ -47,12 +47,12 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                                 foreach (var itemLevel3 in itemLevel2.Childrens)
                                 {
                                     // in same level1, if level2 -> level3 => failed
-                                    if (itemLevel3.Level1 == level1 && itemLevel3.Level2 != 0 && itemLevel3.Level3 == 0 && level3 != 0)
+                                    if (itemLevel3.Level1 == level1 && itemLevel3.Level2 != 0 && itemLevel3.Level3 == 0)
                                     {
                                         return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
                                     }
 
-                                    listSetMst.Add(convertInputDataToModel(itemLevel3, level1, level2, 3));
+                                    listSetMst.Add(ConvertInputDataToModel(itemLevel3, level1, level2, 3));
                                     level3++;
 
                                     // if item of level3 has childrens, return failed
@@ -80,7 +80,7 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
         }
     }
 
-    private SetMstModel convertInputDataToModel(ReorderSetMstInputItem inputItem, int level1, int level2, int level3)
+    private SetMstModel ConvertInputDataToModel(ReorderSetMstInputItem inputItem, int level1, int level2, int level3)
     {
         return new SetMstModel(
                 _hpId,
