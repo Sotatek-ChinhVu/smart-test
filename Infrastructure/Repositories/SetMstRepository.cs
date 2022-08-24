@@ -30,6 +30,11 @@ public class SetMstRepository : ISetMstRepository
             return new List<SetMstModel>();
         }
 
+        var listSetCd = setEntities.Select(item => item.SetCd).ToList();
+        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != null).ToList();
+        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != null).ToList();
+        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listSetCd.Contains(item.SetCd)).ToList();
+
         return setEntities.Select(s =>
                 new SetMstModel(
                     s.HpId,
@@ -44,9 +49,14 @@ public class SetMstRepository : ISetMstRepository
                     s.WeightKbn,
                     s.Color,
                     s.IsDeleted,
-                    s.IsGroup
-                )
-              ).ToList();
+                    s.IsGroup,
+                    new SetMstTooltipModel(
+                            listByomeis.Where(item => item.SetCd == s.SetCd).Select(item => item.Byomei ?? String.Empty).ToList(),
+                            listOrders.Where(item => item.SetCd == s.SetCd).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList(),
+                            listKarteNames.Where(item => item.SetCd == s.SetCd).Select(item => item.Text ?? String.Empty).ToList()
+                        )
+                    )
+                ).ToList();
     }
 
     public SetMstModel? SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
@@ -176,7 +186,8 @@ public class SetMstRepository : ISetMstRepository
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
-                    setMst.IsGroup
+                    setMst.IsGroup,
+                    null
                 );
         }
         catch

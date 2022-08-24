@@ -46,13 +46,13 @@ namespace Entity.Tenant
         /// テキスト
         /// </summary>
         [Column("TEXT")]
-        public string Text { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// リッチテキスト
         /// </summary>
         [Column("RICH_TEXT")]
-        public byte[] RichText { get; set; } = default!;
+        public byte[]? RichText { get; set; } = default!;
 
         /// <summary>
         /// 削除区分
