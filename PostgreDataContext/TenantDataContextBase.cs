@@ -113,6 +113,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PiProductInf>().HasKey(e => new { e.PiIdFull, e.PiId, e.Branch, e.Jpn });
             modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.YjCd });
             modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
+            modelBuilder.Entity<PathConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo, e.SeqNo });
         }
 
         public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;

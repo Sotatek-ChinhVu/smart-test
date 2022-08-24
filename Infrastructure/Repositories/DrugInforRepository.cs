@@ -44,16 +44,26 @@ namespace Infrastructure.Repositories
                        item.tenItem.ItemCd == itemCd);
             }
 
+            // get PicZai PicHou
+            var pathPicZai = "";
+            var pathPicHou = "";
+            var pathConf = _tenantDataContext.PathConfs
+                .FirstOrDefault(p => p.GrpCd == 5);
+            if (pathConf != null)
+            {
+
+            }
+
             var result = joinQuery.AsEnumerable().Select(d => new DrugInforModel(
-                                                        d.tenItem != null ? d.tenItem.Name : string.Empty,
+                                                        d.tenItem != null ? (d.tenItem.Name ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? d.drugInf.GenericName : string.Empty,
-                                                        d.drugInf != null ? d.drugInf.Unit : string.Empty,
-                                                        d.drugInf != null ? d.drugInf.Marketer : string.Empty,
-                                                        d.drugInf != null ? d.drugInf.Vender : string.Empty,
+                                                        d.drugInf != null ? (d.drugInf.Unit ?? string.Empty) : string.Empty,
+                                                        d.drugInf != null ? (d.drugInf.Marketer ?? string.Empty) : string.Empty,
+                                                        d.drugInf != null ? (d.drugInf.Vender ?? string.Empty) : string.Empty,
                                                         d.tenItem != null ? d.tenItem.KohatuKbn : 0,
                                                         d.tenItem != null ? d.tenItem.Ten : 0,
                                                         d.tenItem != null ? (d.tenItem.ReceUnitName ?? string.Empty) : string.Empty,
-                                                        d.m34DrugInfoMain != null ? d.m34DrugInfoMain.Mark : string.Empty
+                                                        d.m34DrugInfoMain != null ? (d.m34DrugInfoMain.Mark ?? string.Empty) : string.Empty
                                                     )).FirstOrDefault();
             if (result != null)
             {

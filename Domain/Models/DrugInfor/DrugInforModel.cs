@@ -8,7 +8,7 @@ namespace Domain.Models.DrugInfor
 {
     public class DrugInforModel
     {
-        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark)
+        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark, string pathPicZai, string pathPicHou)
         {
             Name = name;
             GenericName = genericName;
@@ -19,6 +19,8 @@ namespace Domain.Models.DrugInfor
             Ten = ten;
             ReceUnitName = receUnitName;
             Mark = mark;
+            PathPicZai = pathPicZai;
+            PathPicHou = pathPicHou;
         }
 
         public string Name { get; private set; }
@@ -38,6 +40,10 @@ namespace Domain.Models.DrugInfor
         public string ReceUnitName { get; private set; }
 
         public string Mark { get; private set; }
+
+        public string PathPicZai { get; private set; }
+
+        public string PathPicHou { get; private set; }
 
         public string KohatuKbnName
         {
