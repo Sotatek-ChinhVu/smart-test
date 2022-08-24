@@ -1,5 +1,6 @@
 ﻿using Helper.Extendsions;
 using System.Globalization;
+using System.Text;
 
 namespace Helper.Common
 {
@@ -1152,6 +1153,13 @@ namespace Helper.Common
                     var ex = new Exception();
                     throw ex;
             }
+        }
+
+        public static int GetByteCountFromString(string str)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            return Encoding.GetEncoding("shift_jis").GetByteCount(str);
         }
     }
 

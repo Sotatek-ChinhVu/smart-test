@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
                     string houbetu = string.Empty;
                     int futanRate = 0;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == item.HpId && x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
-                    
+
                     if (hokenMst != null)
                     {
                         houbetu = hokenMst.Houbetu;
@@ -205,6 +205,12 @@ namespace Infrastructure.Repositories
                 }
             }
             return result;
+        }
+
+        public bool CheckHokenPIdList(List<int> hokenPIds)
+        {
+            var check = _tenantDataContext.PtHokenPatterns.Any(p => hokenPIds.Contains(p.HokenPid) && p.IsDeleted != 1);
+            return check;
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi kohiInf, int hokenId)

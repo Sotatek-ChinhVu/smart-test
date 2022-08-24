@@ -70,6 +70,7 @@ using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
+using UseCase.Diseases.Upsert;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -275,6 +276,9 @@ namespace EmrCloudApi.Configs.Dependency
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+
+            // Disease
+            busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

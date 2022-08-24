@@ -131,7 +131,6 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
         {
             long ptNum = keyword.AsLong();
