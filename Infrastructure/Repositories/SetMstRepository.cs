@@ -187,7 +187,11 @@ public class SetMstRepository : ISetMstRepository
                     setMst.Color,
                     setMst.IsDeleted,
                     setMst.IsGroup,
-                    null
+                    new SetMstTooltipModel(
+                            new(),
+                            new List<OrderTooltipModel>(),
+                            new()
+                        )
                 );
         }
         catch

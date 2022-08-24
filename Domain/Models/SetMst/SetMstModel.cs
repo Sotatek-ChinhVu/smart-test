@@ -2,7 +2,7 @@
 
 public class SetMstModel
 {
-    public SetMstModel(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int isGroup, SetMstTooltipModel? setMstTooltip)
+    public SetMstModel(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int isGroup, SetMstTooltipModel setMstTooltip)
     {
         HpId = hpId;
         SetCd = setCd;
@@ -33,5 +33,5 @@ public class SetMstModel
     public int Color { get; private set; }
     public int IsDeleted { get; private set; }
     public int IsGroup { get; private set; }
-    public SetMstTooltipModel? SetMstTooltip { get; private set; }
+    public SetMstTooltipModel SetMstTooltip { get; private set; }
 }
