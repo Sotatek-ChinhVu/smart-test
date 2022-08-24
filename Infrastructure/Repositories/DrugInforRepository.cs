@@ -1,4 +1,6 @@
-﻿using Domain.Models.DrugInfor;
+﻿using Domain.Constant;
+using Domain.Models.DrugInfor;
+using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -43,16 +45,20 @@ namespace Infrastructure.Repositories
                        item =>
                        item.tenItem.ItemCd == itemCd);
             }
-
-            // get PicZai PicHou
-            var pathPicZai = "";
-            var pathPicHou = "";
-            var pathConf = _tenantDataContext.PathConfs
-                .FirstOrDefault(p => p.GrpCd == 5);
-            if (pathConf != null)
+            var item = joinQuery.AsEnumerable().FirstOrDefault();
+            string YJCode = "";
+            if (item != null && item.tenItem != null)
             {
-
+                YJCode = item.tenItem.YjCd ?? string.Empty;
             }
+
+            // get pic zaikei
+            var picZaikei = GetImageDefault(YJCode, itemCd, PicImageConstant.PicZaikei);
+
+            // get pic housou
+            var picHousou = GetImageDefault(YJCode, itemCd, PicImageConstant.PicHousou);
+
+
 
             var result = joinQuery.AsEnumerable().Select(d => new DrugInforModel(
                                                         d.tenItem != null ? (d.tenItem.Name ?? string.Empty) : string.Empty,
@@ -63,7 +69,9 @@ namespace Infrastructure.Repositories
                                                         d.tenItem != null ? d.tenItem.KohatuKbn : 0,
                                                         d.tenItem != null ? d.tenItem.Ten : 0,
                                                         d.tenItem != null ? (d.tenItem.ReceUnitName ?? string.Empty) : string.Empty,
-                                                        d.m34DrugInfoMain != null ? (d.m34DrugInfoMain.Mark ?? string.Empty) : string.Empty
+                                                        d.m34DrugInfoMain != null ? (d.m34DrugInfoMain.Mark ?? string.Empty) : string.Empty,
+                                                        picZaikei,
+                                                        picHousou
                                                     )).FirstOrDefault();
             if (result != null)
             {
@@ -71,8 +79,110 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                return new DrugInforModel("", "", "", "", "", 0, 0, "", "");
+                return new DrugInforModel();
             }
+        }
+
+        private string GetImageDefault(string yjCode, string itemCd, int imageType)
+        {
+            string defaultImgPic = string.Empty;
+
+            // get PicZai PicHou
+            var defaultPic = "";
+            var pathConf = _tenantDataContext.PathConfs
+                .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
+            if (pathConf != null)
+            {
+                if(imageType == 0)
+                {
+                    defaultPic = pathConf.Path + @"\zaikei\";
+                }
+                else
+                {
+                    defaultPic = pathConf.Path + @"\housou\";
+                }
+            }
+            else
+            {
+
+                if (imageType == 0)
+                {
+                    defaultPic = PathConstant.DrugImageServerPath + @"\zaikei\";
+                }
+                else
+                {
+                    defaultPic = PathConstant.DrugImageServerPath + @"\housou\";
+                }
+            }
+
+            // Get Custom PicZai PicHou
+            var customPathPic = "";
+            var customPathConf = _tenantDataContext.PathConfs
+                .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeCustomDefault);
+
+            if (customPathConf != null)
+            {
+                if (imageType == 0)
+                {
+                    customPathPic = customPathConf.Path + @"\zaikei\";
+                }
+                else
+                {
+                    customPathPic = customPathConf.Path + @"\housou\";
+                }
+            }
+            else
+            {
+                if (imageType == 0)
+                {
+                    customPathPic = PathConstant.DrugImageServerPath + @"\zaikei\";
+                }
+                else
+                {
+                    customPathPic = PathConstant.DrugImageServerPath + @"\housou\";
+                }
+            }
+
+
+            // PicZaikei
+            // get other Image PicZai
+            var listPic = new List<string>();
+            var otherImagePic = _tenantDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
+            if (otherImagePic != null)
+            {
+                defaultImgPic = defaultPic + otherImagePic.FileName ?? string.Empty;
+            }
+            else
+            {
+                var _picStr = " ABCDEFGHIJZ";
+                for (int i = 0; i < _picStr.Length - 1; i++)
+                {
+                    if (!String.IsNullOrEmpty(yjCode))
+                    {
+                        string imgFile = (defaultPic + yjCode + _picStr[i]).Trim() + ".jpg";
+                        if (CIUtil.IsFileExisting(imgFile))
+                        {
+                            listPic.Add(imgFile);
+                        }
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(yjCode))
+                {
+                    string customImage = customPathPic + yjCode + "Z.jpg";
+                    if (CIUtil.IsFileExisting(customImage))
+                    {
+                        listPic.Add(customImage);
+                    }
+                }
+
+                if (listPic.Count > 0)
+                {
+                    // Image default 
+                    defaultImgPic = listPic[0] ?? string.Empty;
+                }
+            }
+            return defaultImgPic;
         }
     }
 }

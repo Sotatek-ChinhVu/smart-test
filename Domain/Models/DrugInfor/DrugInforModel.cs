@@ -23,6 +23,21 @@ namespace Domain.Models.DrugInfor
             PathPicHou = pathPicHou;
         }
 
+        public DrugInforModel()
+        {
+            Name = "";
+            GenericName = "";
+            Unit = "";
+            Maker = "";
+            Vender = "";
+            KohatuKbn = 0;
+            Ten = 0;
+            ReceUnitName = "";
+            Mark = "";
+            PathPicZai = "";
+            PathPicHou = "";
+        }
+
         public string Name { get; private set; }
 
         public string GenericName { get; private set; }

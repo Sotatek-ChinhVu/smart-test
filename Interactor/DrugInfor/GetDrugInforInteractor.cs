@@ -21,17 +21,17 @@ namespace Interactor.DrugInfor
 
             if (inputData.HpId <= 0)
             {
-                return new GetDrugInforOutputData(new DrugInforModel("", "", "", "", "", 0, 0, "", ""), GetDrugInforStatus.InValidHpId);
+                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidHpId);
             }
 
             if (inputData.SinDate <= 0)
             {
-                return new GetDrugInforOutputData(new DrugInforModel("", "", "", "", "", 0, 0, "", ""), GetDrugInforStatus.InValidSindate);
+                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidSindate);
             }
 
             if (String.IsNullOrEmpty(inputData.ItemCd))
             {
-                return new GetDrugInforOutputData(new DrugInforModel("", "", "", "", "", 0, 0, "", ""), GetDrugInforStatus.InValidItemCd);
+                return new GetDrugInforOutputData(new DrugInforModel(), GetDrugInforStatus.InValidItemCd);
             }
 
             var data = _drugInforRepository.GetDrugInfor(inputData.HpId, inputData.SinDate, inputData.ItemCd);
