@@ -160,7 +160,7 @@ namespace Infrastructure.Repositories
                                             x.RoudouName
                                             )).ToList();
 
-            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false), dataRoudouMst);
+            return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false), dataRoudouMst, allHokenMst);
         }
 
         private List<HokenMstModel> GetHokenMstList(int today, bool isKohi)
