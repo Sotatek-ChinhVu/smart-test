@@ -31,8 +31,8 @@ public class SetMstRepository : ISetMstRepository
         }
 
         var listSetCd = setEntities.Select(item => item.SetCd).ToList();
-        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != null).ToList();
-        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != null).ToList();
+        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != String.Empty).ToList();
+        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != String.Empty).ToList();
         var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listSetCd.Contains(item.SetCd)).ToList();
 
         return setEntities.Select(s =>
