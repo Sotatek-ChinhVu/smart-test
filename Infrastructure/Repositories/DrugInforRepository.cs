@@ -2,6 +2,7 @@
 using Domain.Models.DrugInfor;
 using Helper.Common;
 using Infrastructure.Interfaces;
+using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,12 @@ namespace Infrastructure.Repositories
     public class DrugInforRepository : IDrugInforRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public DrugInforRepository(ITenantProvider tenantProvider)
+        private readonly IConfiguration _configuration;
+
+        public DrugInforRepository(ITenantProvider tenantProvider, IConfiguration configuration)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _configuration = configuration;
         }
 
         public DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd)
@@ -87,6 +91,8 @@ namespace Infrastructure.Repositories
         {
             string defaultImgPic = string.Empty;
 
+            string pathServerDefault = _configuration["PathImageDrugFolder"];
+
             // get PicZai PicHou
             var defaultPic = "";
             var pathConf = _tenantDataContext.PathConfs
@@ -107,11 +113,11 @@ namespace Infrastructure.Repositories
 
                 if (imageType == 0)
                 {
-                    defaultPic = PathConstant.DrugImageServerPath + @"\zaikei\";
+                    defaultPic = pathServerDefault + @"/zaikei/";
                 }
                 else
                 {
-                    defaultPic = PathConstant.DrugImageServerPath + @"\housou\";
+                    defaultPic = pathServerDefault + @"/housou/";
                 }
             }
 
@@ -135,11 +141,11 @@ namespace Infrastructure.Repositories
             {
                 if (imageType == 0)
                 {
-                    customPathPic = PathConstant.DrugImageServerPath + @"\zaikei\";
+                    customPathPic = pathServerDefault + @"/zaikei/";
                 }
                 else
                 {
-                    customPathPic = PathConstant.DrugImageServerPath + @"\housou\";
+                    customPathPic = pathServerDefault + @"/housou/";
                 }
             }
 
@@ -181,6 +187,11 @@ namespace Infrastructure.Repositories
                     // Image default 
                     defaultImgPic = listPic[0] ?? string.Empty;
                 }
+                else
+                {
+                    //Image default Empty
+                    defaultImgPic = _configuration["DefaultImageDrugEmpty"];
+                }    
             }
             return defaultImgPic;
         }
