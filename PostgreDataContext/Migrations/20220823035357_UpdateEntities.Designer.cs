@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostgreDataContext;
@@ -11,9 +12,10 @@ using PostgreDataContext;
 namespace PostgreDataContext.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    partial class TenantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20220823035357_UpdateEntities")]
+    partial class UpdateEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4868,26 +4870,6 @@ namespace PostgreDataContext.Migrations
                     b.HasKey("HpId");
 
                     b.ToTable("JOB_MST ");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.JsonSetting", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
-
-                    b.Property<string>("Key")
-                        .HasColumnType("text")
-                        .HasColumnName("KEY");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("VALUE");
-
-                    b.HasKey("UserId", "Key");
-
-                    b.ToTable("JSON_SETTING");
                 });
 
             modelBuilder.Entity("Entity.Tenant.KacodeMst", b =>
