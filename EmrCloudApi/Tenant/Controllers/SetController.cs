@@ -48,13 +48,27 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Reorder)]
         public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
         {
-            var input = new ReorderSetMstInputData(request.SetMstLists);
+            var input = new ReorderSetMstInputData(ConvertToReorderSetMstInputItem(request.DragSetMstItem), ConvertToReorderSetMstInputItem(request.DropSetMstItem));
             var output = _bus.Handle(input);
 
             var presenter = new ReorderSetMstPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
+        }
+
+        private ReorderSetMstInputItem ConvertToReorderSetMstInputItem(ReorderSetMstRequestItem request)
+        {
+            return new ReorderSetMstInputItem(
+                    request.HpId,
+                    request.SetCd,
+                    request.SetKbn,
+                    request.SetKbnEdaNo,
+                    request.GenerationId,
+                    request.Level1,
+                    request.Level2,
+                    request.Level3
+                );
         }
     }
 }

@@ -17,57 +17,11 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
     {
         try
         {
-            if (reorderSetMstInputData.SetMstLists != null)
+            if (reorderSetMstInputData.DragSetMstItem != null && reorderSetMstInputData.DropSetMstItem != null)
             {
-                List<SetMstModel> listSetMst = new();
-                int level1 = 1;
-                foreach (var itemLevel1 in reorderSetMstInputData.SetMstLists)
-                {
-                    // set level1 for SetMstModel
-                    listSetMst.Add(ConvertInputDataToModel(itemLevel1, level1, 0, 0));
-
-                    // if item of level1 has childrens, set level2 for SetMstModel
-                    if (itemLevel1.Childrens != null)
-                    {
-                        int level2 = 1;
-                        foreach (var itemLevel2 in itemLevel1.Childrens)
-                        {
-                            // if level1 -> level2 => failed
-                            if (itemLevel2.Level2 == 0)
-                            {
-                                return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
-                            }
-
-                            listSetMst.Add(ConvertInputDataToModel(itemLevel2, level1, level2, 0));
-
-                            // if item of level2 has childrens, set level3 for SetMstModel
-                            if (itemLevel2.Childrens != null)
-                            {
-                                int level3 = 1;
-                                foreach (var itemLevel3 in itemLevel2.Childrens)
-                                {
-                                    // in same level1, if level2 -> level3 => failed
-                                    if (itemLevel3.Level1 == level1 && itemLevel3.Level2 != 0 && itemLevel3.Level3 == 0)
-                                    {
-                                        return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
-                                    }
-
-                                    listSetMst.Add(ConvertInputDataToModel(itemLevel3, level1, level2, 3));
-                                    level3++;
-
-                                    // if item of level3 has childrens, return failed
-                                    if (itemLevel3.Childrens?.Count() > 0)
-                                    {
-                                        return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
-                                    }
-                                }
-                            }
-                            level2++;
-                        }
-                    }
-                    level1++;
-                }
-                if (_setMstRepository.ReorderSetMst(_userId, listSetMst))
+                var setMstModelDragItem = ConvertInputDataToModel(reorderSetMstInputData.DragSetMstItem);
+                var setMstModelDropItem = ConvertInputDataToModel(reorderSetMstInputData.DropSetMstItem);
+                if (_setMstRepository.ReorderSetMst(_userId, setMstModelDragItem, setMstModelDropItem))
                 {
                     return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
                 }
@@ -80,7 +34,7 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
         }
     }
 
-    private SetMstModel ConvertInputDataToModel(ReorderSetMstInputItem inputItem, int level1, int level2, int level3)
+    private SetMstModel ConvertInputDataToModel(ReorderSetMstInputItem inputItem)
     {
         return new SetMstModel(
                 _hpId,
@@ -88,12 +42,12 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
                 inputItem.SetKbn,
                 inputItem.SetKbnEdaNo,
                 inputItem.GenerationId,
-                level1,
-                level2,
-                level3,
-                inputItem.SetName,
-                inputItem.WeightKbn,
-                inputItem.Color,
+                inputItem.Level1,
+                inputItem.Level2,
+                inputItem.Level3,
+                String.Empty,
+                0,
+                0,
                 0,
                 0
             );

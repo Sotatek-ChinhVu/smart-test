@@ -19,7 +19,7 @@ namespace EmrCloudApi.Tenant.Presenters.SetMst
         private string GetMessage(ReorderSetMstStatus status) => status switch
         {
             ReorderSetMstStatus.Successed => ResponseMessage.Success,
-            ReorderSetMstStatus.Failed => ResponseMessage.Failed,
+            ReorderSetMstStatus.Failed => ResponseMessage.InvalidLevel,
             ReorderSetMstStatus.InvalidLevel => ResponseMessage.InvalidLevel,
             _ => string.Empty
         };
