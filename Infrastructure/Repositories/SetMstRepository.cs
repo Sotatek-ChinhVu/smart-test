@@ -413,7 +413,7 @@ public class SetMstRepository : ISetMstRepository
             }
             else
             {
-                if (listSetMsts.Count(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && dragItem.Level3 > 0) > 0)
+                if (listSetMsts.Count(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0) > 0)
                 {
                     return false;
                 }
