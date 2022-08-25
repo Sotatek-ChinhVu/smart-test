@@ -1161,6 +1161,116 @@ namespace Helper.Common
 
             return Encoding.GetEncoding("shift_jis").GetByteCount(str);
         }
+
+        public static double AsDouble(this Object inputObject)
+        {
+            double result;
+            if (double.TryParse(inputObject.AsString(), out result))
+            {
+                return result;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        /// <summary>
+        /// 西暦を和暦数値（元号ID+YYMMDD）に変換
+        /// </summary>
+        /// <param name="ymd">西暦</param>
+        /// <returns></returns>
+        public static int SDateToWDate(int ymd)
+        {
+            int ret = 0;
+            string retDate = SDateToShowWDate(ymd);
+
+            if (retDate.Length == 10)
+            {
+                ret = ObjectExtendsion.StrToIntDef
+                        (_GengoId(retDate.Substring(0, 1)) +
+                         retDate.Substring(2, 2) +
+                         retDate.Substring(5, 2) +
+                         retDate.Substring(8, 2), 0);
+            }
+
+            return ret;
+
+            #region Local Method
+            string _GengoId(string gengo)
+            {
+                string gengoId = "";
+
+                switch (gengo)
+                {
+                    case "明":
+                        gengoId = "1";
+                        break;
+                    case "大":
+                        gengoId = "2";
+                        break;
+                    case "昭":
+                        gengoId = "3";
+                        break;
+                    case "平":
+                        gengoId = "4";
+                        break;
+                    default:
+                        gengoId = "5";
+                        break;
+                }
+
+                return gengoId;
+            }
+            #endregion
+        }
+
+        public static string FormatTimeHHmmss(string sTime)
+        {
+            if (string.IsNullOrWhiteSpace(sTime))
+            {
+                return string.Empty;
+            }
+
+            if (sTime.Length > 6)
+            {
+                return string.Empty;
+            }
+
+            // HHmm or Hmm
+            // eg: 
+            // input 2 (2minutes) => 0002 => 000200
+            // input 23 (23minutes) => 0023 => 002300
+            // input 935 (9h35min) => 0935 => 093500
+            // input 1237 (12h37) => 1237 => 123700
+            if (sTime.Length <= 4)
+            {
+                sTime = sTime.PadLeft(4, '0').PadRight(6, '0');
+            }
+            else // Hmmss
+            {
+                // eg:
+                // input 41521 (4h15m21s) => 041521
+                // input 161101(16h11m01s) => 161101
+                sTime = sTime.PadLeft(6, '0');
+            }
+            string sHour = Copy(sTime, 1, 2);
+            if (sHour.AsInteger() < 0 || sHour.AsInteger() >= 24)
+            {
+                return string.Empty;
+            }
+            string sMin = Copy(sTime, 3, 2);
+            if (sMin.AsInteger() < 0 || sMin.AsInteger() >= 60)
+            {
+                return string.Empty;
+            }
+            string sSec = Copy(sTime, 5, 2);
+            if (sSec.AsInteger() < 0 || sSec.AsInteger() >= 60)
+            {
+                return string.Empty;
+            }
+            return sTime;
+        }
+
     }
 
     public enum WarekiFormat

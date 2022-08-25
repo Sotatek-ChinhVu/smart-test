@@ -2,7 +2,7 @@
 {
     public class OdrInfItem
     {
-        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails)
+        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -32,7 +32,7 @@
         public int SinDate { get; private set; }
         public int HokenPid { get; private set; }
         public int OdrKouiKbn { get; private set; }
-        public string? RpName { get; private set; }
+        public string RpName { get; private set; }
         public int InoutKbn { get; private set; }
         public int SikyuKbn { get; private set; }
         public int SyohoSbt { get; private set; }

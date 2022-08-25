@@ -5,7 +5,6 @@ using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
-using UseCase.MedicalExamination;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -61,7 +60,7 @@ namespace Interactor.MedicalExamination
 
 
             var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
-                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             var pageTotal = query.Count();
@@ -75,7 +74,7 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-        
+
             var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = hokens.FirstOrDefault();
 
@@ -104,7 +103,7 @@ namespace Interactor.MedicalExamination
                                 c.UpdateDate,
                                 c.IsDeleted)
             ).ToList())
-                                                             select karteGrp);    
+                                                             select karteGrp);
 
                 List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
               .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo)

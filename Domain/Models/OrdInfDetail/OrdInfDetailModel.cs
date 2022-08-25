@@ -1,4 +1,9 @@
-﻿namespace Domain.Models.OrdInfDetails
+﻿using Helper.Common;
+using Helper.Constants;
+using Helper.Extendsions;
+using static Helper.Constants.TodayOrderConst;
+
+namespace Domain.Models.OrdInfDetails
 {
     public class OrdInfDetailModel
     {
@@ -10,10 +15,10 @@
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
         public int SinKouiKbn { get; private set; }
-        public string? ItemCd { get; private set; }
-        public string? ItemName { get; private set; }
+        public string ItemCd { get; private set; }
+        public string ItemName { get; private set; }
         public double Suryo { get; private set; }
-        public string? UnitName { get; private set; }
+        public string UnitName { get; private set; }
         public int UnitSbt { get; private set; }
         public double TermVal { get; private set; }
         public int KohatuKbn { get; private set; }
@@ -21,23 +26,30 @@
         public int SyohoLimitKbn { get; private set; }
         public int DrugKbn { get; private set; }
         public int YohoKbn { get; private set; }
-        public string? Kokuji1 { get; private set; }
-        public string? Kokuji2 { get; private set; }
+        public string Kokuji1 { get; private set; }
+        public string Kokuji2 { get; private set; }
         public int IsNodspRece { get; private set; }
-        public string? IpnCd { get; private set; }
-        public string? IpnName { get; private set; }
+        public string IpnCd { get; private set; }
+        public string IpnName { get; private set; }
         public int JissiKbn { get; private set; }
-        public DateTime? JissiDate { get; private set; }
+        public DateTime JissiDate { get; private set; }
         public int JissiId { get; private set; }
-        public string? JissiMachine { get; private set; }
-        public string? ReqCd { get; private set; }
-        public string? Bunkatu { get; private set; }
-        public string? CmtName { get; private set; }
-        public string? CmtOpt { get; private set; }
-        public string? FontColor { get; private set; }
+        public string JissiMachine { get; private set; }
+        public string ReqCd { get; private set; }
+        public string Bunkatu { get; private set; }
+        public string CmtName { get; private set; }
+        public string CmtOpt { get; private set; }
+        public string FontColor { get; private set; }
         public int CommentNewline { get; private set; }
+        public string MasterSbt { get; private set; }
+        public int InOutKbn { get; private set; }
+        public double Yakka { get; private set; }
+        public bool IsGetPriceInYakka { get; private set; }
+        public double Ten { get; private set; }
+        public int RefillSetting { get; private set; }
+        public int CmtCol1 { get; private set; }
 
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string? itemCd, string? itemName, double suryo, string? unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string? kokuji1, string? kokuji2, int isNodspRece, string? ipnCd, string? ipnName, int jissiKbn, DateTime? jissiDate, int jissiId, string? jissiMachine, string? reqCd, string? bunkatu, string? cmtName, string? cmtOpt, string? fontColor, int commentNewline)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -75,6 +87,243 @@
             CmtOpt = cmtOpt;
             FontColor = fontColor;
             CommentNewline = commentNewline;
+            MasterSbt = masterSbt;
+            InOutKbn = inOutKbn;
+            Yakka = yakka;
+            IsGetPriceInYakka = isGetPriceInYakka;
+            RefillSetting = refillSetting;
+            CmtCol1 = cmtCol1;
+        }
+
+        public bool IsSpecialItem
+        {
+            get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
+        }
+
+        public bool IsDrugUsage
+        {
+            get => YohoKbn > 0 || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai;
+        }
+
+        public bool IsDrug
+        {
+            get => (SinKouiKbn == 20 && DrugKbn > 0) || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai
+                || (SinKouiKbn == 20 && ItemCd.StartsWith("Z"));
+        }
+
+        public bool IsInjection
+        {
+            get => SinKouiKbn == 30;
+        }
+
+        public bool Is820Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment820Pattern);
+
+        public bool Is830Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment830Pattern);
+
+        public bool Is831Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment831Pattern);
+
+        public bool Is850Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment850Pattern);
+
+        public bool Is851Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment851Pattern);
+
+        public bool Is852Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment852Pattern);
+
+        public bool Is853Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment853Pattern);
+
+        public bool Is840Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment840Pattern) && ItemCd != ItemCdConst.GazoDensibaitaiHozon;
+
+        public bool Is842Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment842Pattern);
+
+        public bool Is880Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment880Pattern);
+
+        public bool IsShohoComment => SinKouiKbn == 100;
+
+        public bool IsShohoBiko => SinKouiKbn == 101;
+
+        public bool IsStandardUsage
+        {
+            get => YohoKbn == 1 || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai;
+        }
+
+        public bool IsInjectionUsage
+        {
+            get => (SinKouiKbn >= 31 && SinKouiKbn <= 34) || (SinKouiKbn == 30 && ItemCd.StartsWith("Z") && MasterSbt == "S");
+        }
+
+        public bool IsSuppUsage
+        {
+            get => YohoKbn == 2;
+        }
+
+        public string DisplayedUnit
+        {
+            get => Suryo.AsDouble() != 0 ? UnitName.AsString() : "";
+        }
+
+        public string DisplayedQuantity
+        {
+            get
+            {
+                // If item don't have UniName => No quantity displayed
+                if (string.IsNullOrEmpty(DisplayedUnit))
+                {
+                    return string.Empty;
+                }
+                return Suryo.AsDouble() != 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu ? Suryo.AsDouble().AsString() : "";
+            }
+        }
+
+        public double Price
+        {
+            get
+            {
+                if (InOutKbn == 1 && IsGetPriceInYakka && SyohoKbn == 3 && Yakka > 0)
+                {
+                    return Yakka;
+                }
+                return Ten;
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return string.IsNullOrEmpty(ItemCd) &&
+                       string.IsNullOrEmpty(ItemName.Trim()) &&
+                       SinKouiKbn == 0;
+            }
+        }
+
+        public TodayOrdValidationStatus Validation()
+        {
+            if ((IsDrug || IsInjection) && !IsSpecialItem)
+            {
+                return TodayOrdValidationStatus.InvalidSpecialDetailItem;
+            }
+
+            if (IsStandardUsage || IsInjectionUsage)
+            {
+                return TodayOrdValidationStatus.InvalidUsage;
+            }
+
+            if (IsSuppUsage)
+            {
+                return TodayOrdValidationStatus.InvalidSuppUsage;
+            }
+
+            if (!string.IsNullOrWhiteSpace(DisplayedUnit))
+            {
+                if (string.IsNullOrEmpty(DisplayedQuantity))
+                {
+                    return TodayOrdValidationStatus.InvalidQuantityUnit;
+                }
+                else if (Suryo > 0 && (Price > 0 && Suryo * Price > 999999999))
+                {
+                    return TodayOrdValidationStatus.InvalidPrice;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(DisplayedUnit) && (YohoKbn == 1 && Suryo > 999))
+            {
+                return TodayOrdValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull;
+            }
+
+            if (ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu && (Suryo == 0 && string.IsNullOrWhiteSpace(Bunkatu)))
+            {
+                return TodayOrdValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu;
+            }
+
+            if (ItemCd == ItemCdConst.Con_Refill && Suryo > RefillSetting)
+            {
+                return TodayOrdValidationStatus.InvalidSuryoOfReffill;
+            }
+
+            if (Is840Cmt && (CmtCol1 > 0 && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName))))
+            {
+                return TodayOrdValidationStatus.InvalidCmt840;
+            }
+
+            if (Is842Cmt)
+            {
+                if (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName))
+                {
+                    return TodayOrdValidationStatus.InvalidCmt842;
+                }
+                else if (!string.IsNullOrEmpty(CmtOpt) && CmtOpt.Length > 38)
+                {
+                    return TodayOrdValidationStatus.InvalidCmt842CmtOptMoreThan38;
+                }
+            }
+
+            if (Is830Cmt)
+            {
+                string fullSpace = @"　";
+
+                if (string.IsNullOrEmpty(CmtOpt) && CmtOpt != fullSpace)
+                {
+                    return TodayOrdValidationStatus.InvalidCmt830CmtOpt;
+                }
+                else if (!string.IsNullOrEmpty(CmtOpt) && CmtOpt.Length > 38)
+                {
+                    return TodayOrdValidationStatus.InvalidCmt830CmtOptMoreThan38;
+                }
+            }
+
+            if (Is831Cmt && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName)))
+            {
+                return TodayOrdValidationStatus.InvalidCmt831;
+            }
+
+            if (Is850Cmt)
+            {
+                string cmtOpt = OdrUtil.GetCmtOpt850(CmtOpt, ItemName);
+                if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
+                {
+                    if (CmtName.Contains("日"))
+                    {
+                        return TodayOrdValidationStatus.InvalidCmt850Date;
+                    }
+                    else
+                    {
+                        return TodayOrdValidationStatus.InvalidCmt850OtherDate;
+                    }
+                }
+            }
+
+            if (Is851Cmt)
+            {
+                string cmtOpt = OdrUtil.GetCmtOpt851(CmtOpt);
+                if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
+                {
+                    return TodayOrdValidationStatus.InvalidCmt851;
+                }
+            }
+
+            if (Is852Cmt)
+            {
+                string cmtOpt = OdrUtil.GetCmtOpt852(CmtOpt);
+                if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
+                {
+                    return TodayOrdValidationStatus.InvalidCmt852;
+                }
+            }
+
+            if (Is853Cmt)
+            {
+                string cmtOpt = OdrUtil.GetCmtOpt853(CmtOpt, SinDate);
+                if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
+                {
+                    return TodayOrdValidationStatus.InvalidCmt853;
+                }
+            }
+
+            if (Is880Cmt && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName)))
+            {
+                return TodayOrdValidationStatus.InvalidCmt880;
+            }
+
+            return TodayOrdValidationStatus.Valid;
         }
     }
 }

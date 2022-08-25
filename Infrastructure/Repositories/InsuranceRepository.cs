@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, bool allowDisplayDeleted)
+        public IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, bool allowDisplayDeleted)
         {
             bool isAllHoken = true;
             bool isHoken = true;   //HokenKbn: 1,2
