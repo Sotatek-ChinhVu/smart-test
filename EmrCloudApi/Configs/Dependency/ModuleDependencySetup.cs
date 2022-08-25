@@ -110,6 +110,10 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using Domain.Models.JsonSetting;
+using Interactor.JsonSetting;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
 using UseCase.DrugInfor.Get;
 using Interactor.DrugInfor;
 using Domain.Models.DrugInfor;
@@ -177,6 +181,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
+            services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
         }
 
@@ -270,6 +275,10 @@ namespace EmrCloudApi.Configs.Dependency
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
+
+            // JsonSetting
+            busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
+            busBuilder.RegisterUseCase<UpsertJsonSettingInputData, UpsertJsonSettingInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();
