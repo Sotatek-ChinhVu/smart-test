@@ -277,7 +277,7 @@ public class SetMstRepository : ISetMstRepository
             if (dragItem.Level1 > dropItem.Level1)
             {
                 var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dropItem.Level1 && mst.Level1 < dragItem.Level1).ToList();
-                LevelUp(1, userId, listUpdateLevel1);
+                LevelDown(1, userId, listUpdateLevel1);
 
                 foreach (var item in listDragItem)
                 {
@@ -289,7 +289,7 @@ public class SetMstRepository : ISetMstRepository
             else if (dragItem.Level1 < dropItem.Level1)
             {
                 var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1 && mst.Level1 <= dropItem.Level1).ToList();
-                LevelDown(1, userId, listUpdateLevel1);
+                LevelUp(1, userId, listUpdateLevel1);
 
                 foreach (var item in listDragItem)
                 {
@@ -318,10 +318,10 @@ public class SetMstRepository : ISetMstRepository
                 return false;
             }
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-            LevelUp(3, userId, listUpdateLevel3);
+            LevelDown(3, userId, listUpdateLevel3);
 
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1).ToList();
-            LevelDown(1, userId, listUpdateLevel1);
+            LevelUp(1, userId, listUpdateLevel1);
 
             dragItem.Level1 = dropItem.Level1;
             dragItem.Level2 = dropItem.Level2;
@@ -343,7 +343,7 @@ public class SetMstRepository : ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1)
             {
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > 0 && mst.Level2 < dragItem.Level2).ToList();
-                LevelUp(2, userId, listDropUpdateLevel2);
+                LevelDown(2, userId, listDropUpdateLevel2);
 
                 var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDragItem)
@@ -357,7 +357,7 @@ public class SetMstRepository : ISetMstRepository
             {
                 List<SetMst> listDropUpdateLevel2 = new();
                 listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
-                LevelUp(2, userId, listDropUpdateLevel2);
+                LevelDown(2, userId, listDropUpdateLevel2);
 
                 var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDragUpdate)
@@ -378,7 +378,7 @@ public class SetMstRepository : ISetMstRepository
                 if (dragItem.Level2 > dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dropItem.Level2 && mst.Level2 < dragItem.Level2).ToList();
-                    LevelUp(2, userId, listUpdateLevel2);
+                    LevelDown(2, userId, listUpdateLevel2);
 
                     foreach (var item in listDragUpdateLevel2)
                     {
@@ -390,7 +390,7 @@ public class SetMstRepository : ISetMstRepository
                 else if (dragItem.Level2 < dropItem.Level2)
                 {
                     var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2 && mst.Level2 <= dropItem.Level2).ToList();
-                    LevelDown(2, userId, listUpdateLevel2);
+                    LevelUp(2, userId, listUpdateLevel2);
 
                     foreach (var item in listDragUpdateLevel2)
                     {
@@ -411,10 +411,10 @@ public class SetMstRepository : ISetMstRepository
                     return false;
                 }
                 var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-                LevelUp(3, userId, listUpdateLevel3);
+                LevelDown(3, userId, listUpdateLevel3);
 
                 var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
-                LevelDown(2, userId, listDragUpdateLevel2);
+                LevelUp(2, userId, listDragUpdateLevel2);
 
                 dragItem.Level1 = dropItem.Level1;
                 dragItem.Level2 = dropItem.Level2;
@@ -437,13 +437,13 @@ public class SetMstRepository : ISetMstRepository
         if (dropItem.Level2 == 0)
         {
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
-            LevelDown(3, userId, listUpdateLevel3);
+            LevelUp(3, userId, listUpdateLevel3);
 
             var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
-            LevelUp(2, userId, listUpdateLevel2);
+            LevelDown(2, userId, listUpdateLevel2);
 
-            dragItem.Level1 = 1;
-            dragItem.Level2 = 0;
+            dragItem.Level1 = dropItem.Level1;
+            dragItem.Level2 = 1;
             dragItem.Level3 = 0;
             dragItem.UpdateDate = DateTime.UtcNow;
             dragItem.UpdateId = userId;
@@ -453,7 +453,7 @@ public class SetMstRepository : ISetMstRepository
             if (dragItem.Level1 == dropItem.Level1 && dragItem.Level2 == dropItem.Level2)
             {
                 var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
-                LevelUp(3, userId, listUpdateLevel3);
+                LevelDown(3, userId, listUpdateLevel3);
                 dragItem.Level3 = 1;
                 dragItem.UpdateId = userId;
                 dragItem.UpdateDate = DateTime.UtcNow;
@@ -461,7 +461,7 @@ public class SetMstRepository : ISetMstRepository
             else
             {
                 var listDragUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
-                LevelUp(3, userId, listDragUpdateLevel3);
+                LevelDown(3, userId, listDragUpdateLevel3);
 
                 var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
                 LevelDown(3, userId, listDropUpdateLevel3);
@@ -480,7 +480,7 @@ public class SetMstRepository : ISetMstRepository
                 if (dragItem.Level3 > dropItem.Level3)
                 {
                     var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > dropItem.Level3 && mst.Level3 < dragItem.Level3).ToList();
-                    LevelUp(3, userId, listDropUpdateLevel3);
+                    LevelDown(3, userId, listDropUpdateLevel3);
 
                     dragItem.Level3 = dropItem.Level3 + 1;
                     dragItem.UpdateDate = DateTime.UtcNow;
@@ -489,7 +489,7 @@ public class SetMstRepository : ISetMstRepository
                 else if (dragItem.Level3 < dropItem.Level3)
                 {
                     var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3 && mst.Level3 <= dropItem.Level3).ToList();
-                    LevelDown(3, userId, listDropUpdateLevel3);
+                    LevelUp(3, userId, listDropUpdateLevel3);
 
                     dragItem.Level3 = dropItem.Level3 + 1;
                     dragItem.UpdateDate = DateTime.UtcNow;
@@ -514,7 +514,7 @@ public class SetMstRepository : ISetMstRepository
         {
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0 && mst.Level1 < dragItem.Level1).ToList();
             var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
-            LevelUp(1, userId, listUpdateLevel1);
+            LevelDown(1, userId, listUpdateLevel1);
             foreach (var item in listDragUpdate)
             {
                 item.Level1 = 1;
@@ -525,10 +525,10 @@ public class SetMstRepository : ISetMstRepository
         else if (dragItem.Level2 > 0 && dragItem.Level3 == 0)
         {
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
-            LevelUp(1, userId, listUpdateLevel1);
+            LevelDown(1, userId, listUpdateLevel1);
 
             var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
-            LevelUp(2, userId, listUpdateLevel2);
+            LevelDown(2, userId, listUpdateLevel2);
 
             var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
             // level3 => level2
@@ -553,9 +553,9 @@ public class SetMstRepository : ISetMstRepository
             var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
             var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
 
-            LevelUp(1, userId, listUpdateLevel1);
+            LevelDown(1, userId, listUpdateLevel1);
 
-            LevelDown(3, userId, listUpdateLevel3);
+            LevelUp(3, userId, listUpdateLevel3);
 
             dragItem.Level1 = 1;
             dragItem.Level2 = 0;
@@ -565,7 +565,7 @@ public class SetMstRepository : ISetMstRepository
         }
         return true;
     }
-    private void LevelUp(int level, int userId, List<SetMst> listUpdate)
+    private void LevelDown(int level, int userId, List<SetMst> listUpdate)
     {
         foreach (var item in listUpdate)
         {
@@ -586,7 +586,7 @@ public class SetMstRepository : ISetMstRepository
         }
     }
 
-    private void LevelDown(int level, int userId, List<SetMst> listUpdate)
+    private void LevelUp(int level, int userId, List<SetMst> listUpdate)
     {
         foreach (var item in listUpdate)
         {
