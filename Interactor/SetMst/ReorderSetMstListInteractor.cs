@@ -39,9 +39,9 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
         return new SetMstModel(
                 _hpId,
                 inputItem.SetCd,
-                inputItem.SetKbn,
-                inputItem.SetKbnEdaNo,
-                inputItem.GenerationId,
+                0,
+                0,
+                0,
                 inputItem.Level1,
                 inputItem.Level2,
                 inputItem.Level3,

@@ -62,9 +62,6 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ReorderSetMstInputItem(
                     request.HpId,
                     request.SetCd,
-                    request.SetKbn,
-                    request.SetKbnEdaNo,
-                    request.GenerationId,
                     request.Level1,
                     request.Level2,
                     request.Level3

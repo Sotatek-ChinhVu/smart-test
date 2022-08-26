@@ -222,9 +222,8 @@ public class SetMstRepository : ISetMstRepository
         bool status = false;
         try
         {
-            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == setMstModelDragItem.SetKbn && mst.SetKbnEdaNo == setMstModelDragItem.SetKbnEdaNo && mst.HpId == setMstModelDragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
-            var dragItem = listSetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDragItem.SetCd && mst.GenerationId == setMstModelDragItem.GenerationId);
-            var dropItem = listSetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDropItem.SetCd && mst.GenerationId == setMstModelDropItem.GenerationId);
+            var dragItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDragItem.SetCd && mst.HpId == setMstModelDragItem.HpId);
+            var dropItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDropItem.SetCd && mst.HpId == setMstModelDropItem.HpId);
 
             // if dragItem is not exist
             if (dragItem == null)
@@ -232,17 +231,32 @@ public class SetMstRepository : ISetMstRepository
                 return status;
             }
             // if dragItem input is diffirent dragItem in database
-            else if (dragItem.Level1 == setMstModelDragItem.Level1 && dragItem.Level2 == setMstModelDragItem.Level2 && dragItem.Level3 == setMstModelDragItem.Level3)
+            else if (dragItem.Level1 != setMstModelDragItem.Level1 || dragItem.Level2 != setMstModelDragItem.Level2 || dragItem.Level3 != setMstModelDragItem.Level3)
             {
                 return status;
             }
             // if dropItem input is not exist
-            else if (dropItem == null && setMstModelDropItem.Level1 > 0)
+            else if (dropItem == null && setMstModelDropItem.SetCd != 0)
             {
                 return status;
             }
+
+            // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
+            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+
             if (dropItem != null)
             {
+                // if dragItem SetKbnEdaNo diffirent dropItem SetKbnEdaNo or dragItem SetKbn different dropItem SetKbn
+                if (dragItem.SetKbnEdaNo != dropItem.SetKbnEdaNo || dragItem.SetKbn != dropItem.SetKbn)
+                {
+                    return status;
+                }
+                // if dropItem input is diffirent dragItem in database
+                else if (dropItem.Level1 != setMstModelDropItem.Level1 || dropItem.Level2 != setMstModelDropItem.Level2 || dropItem.Level3 != setMstModelDropItem.Level3)
+                {
+                    return status;
+                }
+
                 // if dragItem is level1
                 if (dragItem.Level2 == 0 && dragItem.Level3 == 0)
                 {
@@ -261,7 +275,7 @@ public class SetMstRepository : ISetMstRepository
                     status = DragItemIsLevel3(dragItem, dropItem, userId, listSetMsts);
                 }
             }
-            else if (setMstModelDropItem.Level1 == 0)
+            else if (setMstModelDropItem.SetCd == 0)
             {
                 status = DragItemWithDropItemIsLevel0(dragItem, userId, listSetMsts);
             }
@@ -537,13 +551,12 @@ public class SetMstRepository : ISetMstRepository
             LevelDown(1, userId, listUpdateLevel1);
 
             var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
-            var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+            var listDragUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0).ToList();
 
             LevelUp(2, userId, listUpdateLevel2);
 
             // level3 => level2
-            var listLevel2New = listDragUpdate.Where(mst => mst.Level3 > 0).ToList();
-            foreach (var levelNew in listLevel2New)
+            foreach (var levelNew in listDragUpdateLevel3)
             {
                 levelNew.Level1 = 1;
                 levelNew.Level2 = levelNew.Level3;
