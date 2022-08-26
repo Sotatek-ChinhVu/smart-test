@@ -4,12 +4,14 @@ namespace UseCase.SetMst.ReorderSetMstList;
 
 public class ReorderSetMstInputData : IInputData<ReorderSetMstOutputData>
 {
-    public ReorderSetMstInputData(ReorderSetMstInputItem dragSetMstItem, ReorderSetMstInputItem dropSetMstItem)
+    public ReorderSetMstInputData(int hpId, int dragSetCd, int dropSetCd)
     {
-        DragSetMstItem = dragSetMstItem;
-        DropSetMstItem = dropSetMstItem;
+        HpId = hpId;
+        DragSetCd = dragSetCd;
+        DropSetCd = dropSetCd;
     }
 
-    public ReorderSetMstInputItem DragSetMstItem { get; private set; }
-    public ReorderSetMstInputItem DropSetMstItem { get; private set; }
+    public int HpId { get; private set; }
+    public int DragSetCd { get; private set; }
+    public int DropSetCd { get; private set; }
 }

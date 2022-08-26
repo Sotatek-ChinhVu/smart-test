@@ -217,26 +217,21 @@ public class SetMstRepository : ISetMstRepository
         return setMst;
     }
 
-    public bool ReorderSetMst(int userId, SetMstModel setMstModelDragItem, SetMstModel setMstModelDropItem)
+    public bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
     {
         bool status = false;
         try
         {
-            var dragItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDragItem.SetCd && mst.HpId == setMstModelDragItem.HpId);
-            var dropItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDropItem.SetCd && mst.HpId == setMstModelDropItem.HpId);
+            var dragItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
+            var dropItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
 
             // if dragItem is not exist
             if (dragItem == null)
             {
                 return status;
             }
-            // if dragItem input is diffirent dragItem in database
-            else if (dragItem.Level1 != setMstModelDragItem.Level1 || dragItem.Level2 != setMstModelDragItem.Level2 || dragItem.Level3 != setMstModelDragItem.Level3)
-            {
-                return status;
-            }
             // if dropItem input is not exist
-            else if (dropItem == null && setMstModelDropItem.SetCd != 0)
+            else if (dropItem == null && setCdDropItem != 0)
             {
                 return status;
             }
@@ -248,11 +243,6 @@ public class SetMstRepository : ISetMstRepository
             {
                 // if dragItem SetKbnEdaNo diffirent dropItem SetKbnEdaNo or dragItem SetKbn different dropItem SetKbn
                 if (dragItem.SetKbnEdaNo != dropItem.SetKbnEdaNo || dragItem.SetKbn != dropItem.SetKbn)
-                {
-                    return status;
-                }
-                // if dropItem input is diffirent dragItem in database
-                else if (dropItem.Level1 != setMstModelDropItem.Level1 || dropItem.Level2 != setMstModelDropItem.Level2 || dropItem.Level3 != setMstModelDropItem.Level3)
                 {
                     return status;
                 }
@@ -275,7 +265,7 @@ public class SetMstRepository : ISetMstRepository
                     status = DragItemIsLevel3(dragItem, dropItem, userId, listSetMsts);
                 }
             }
-            else if (setMstModelDropItem.SetCd == 0)
+            else if (setCdDropItem == 0)
             {
                 status = DragItemWithDropItemIsLevel0(dragItem, userId, listSetMsts);
             }

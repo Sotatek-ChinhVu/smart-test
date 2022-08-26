@@ -6,7 +6,6 @@ namespace Interactor.SetMst;
 
 public class ReorderSetMstListInteractor : IReorderSetMstInputPort
 {
-    private readonly int _hpId = TempIdentity.HpId;
     private readonly int _userId = TempIdentity.UserId;
     private readonly ISetMstRepository _setMstRepository;
     public ReorderSetMstListInteractor(ISetMstRepository setMstRepository)
@@ -17,11 +16,9 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
     {
         try
         {
-            if (reorderSetMstInputData.DragSetMstItem != null && reorderSetMstInputData.DropSetMstItem != null)
+            if (reorderSetMstInputData.DragSetCd != 0)
             {
-                var setMstModelDragItem = ConvertInputDataToModel(reorderSetMstInputData.DragSetMstItem);
-                var setMstModelDropItem = ConvertInputDataToModel(reorderSetMstInputData.DropSetMstItem);
-                if (_setMstRepository.ReorderSetMst(_userId, setMstModelDragItem, setMstModelDropItem))
+                if (_setMstRepository.ReorderSetMst(_userId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
                 {
                     return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
                 }
@@ -32,24 +29,5 @@ public class ReorderSetMstListInteractor : IReorderSetMstInputPort
         {
             return new ReorderSetMstOutputData(ReorderSetMstStatus.Failed);
         }
-    }
-
-    private SetMstModel ConvertInputDataToModel(ReorderSetMstInputItem inputItem)
-    {
-        return new SetMstModel(
-                _hpId,
-                inputItem.SetCd,
-                0,
-                0,
-                0,
-                inputItem.Level1,
-                inputItem.Level2,
-                inputItem.Level3,
-                String.Empty,
-                0,
-                0,
-                0,
-                0
-            );
     }
 }
