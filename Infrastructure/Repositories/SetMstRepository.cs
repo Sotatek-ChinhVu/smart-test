@@ -226,11 +226,18 @@ public class SetMstRepository : ISetMstRepository
             var dragItem = listSetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDragItem.SetCd && mst.GenerationId == setMstModelDragItem.GenerationId);
             var dropItem = listSetMsts.FirstOrDefault(mst => mst.SetCd == setMstModelDropItem.SetCd && mst.GenerationId == setMstModelDropItem.GenerationId);
 
+            // if dragItem is not exist
             if (dragItem == null)
             {
                 return status;
             }
-            if (dropItem == null && setMstModelDropItem.Level1 > 0)
+            // if dragItem input is diffirent dragItem in database
+            else if (dragItem.Level1 == setMstModelDragItem.Level1 && dragItem.Level2 == setMstModelDragItem.Level2 && dragItem.Level3 == setMstModelDragItem.Level3)
+            {
+                return status;
+            }
+            // if dropItem input is not exist
+            else if (dropItem == null && setMstModelDropItem.Level1 > 0)
             {
                 return status;
             }
@@ -313,7 +320,7 @@ public class SetMstRepository : ISetMstRepository
                 return false;
             }
             // if level1 has children => return false
-            if (listDragItem.Count(item => item.Level2 > 0) > 0)
+            if (listDragItem?.Count(item => item.Level2 > 0) > 0)
             {
                 return false;
             }
@@ -355,8 +362,7 @@ public class SetMstRepository : ISetMstRepository
             }
             else
             {
-                List<SetMst> listDropUpdateLevel2 = new();
-                listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
+                var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
                 LevelDown(2, userId, listDropUpdateLevel2);
 
                 var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
@@ -406,14 +412,14 @@ public class SetMstRepository : ISetMstRepository
             }
             else
             {
-                if (listSetMsts.Count(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0) > 0)
+                if (listSetMsts?.Count(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0) > 0)
                 {
                     return false;
                 }
-                var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
+                var listUpdateLevel3 = listSetMsts?.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList() ?? new();
                 LevelDown(3, userId, listUpdateLevel3);
 
-                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
+                var listDragUpdateLevel2 = listSetMsts?.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
 
                 dragItem.Level1 = dropItem.Level1;
