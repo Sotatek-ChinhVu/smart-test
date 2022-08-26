@@ -73,6 +73,23 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtKohi>().HasKey(r => new { r.HpId, r.PtId, r.HokenId, r.SeqNo });
             modelBuilder.Entity<KarteKbnMst>().HasKey(o => new { o.HpId, o.KarteKbn });
             modelBuilder.Entity<PtGrpInf>().HasKey(r => new { r.HpId, r.GroupId, r.GroupCode, r.SeqNo });
+            modelBuilder.Entity<PtSanteiConf>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<KensaInfDetail>().HasKey(r => new { r.HpId, r.PtId, r.IraiCd, r.SeqNo });
+            modelBuilder.Entity<KensaMst>().HasKey(r => new { r.HpId, r.KensaItemCd, r.KensaItemSeqNo });
+            modelBuilder.Entity<PtAlrgyDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtAlrgyElse>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtAlrgyFood>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtInfection>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtKioReki>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtOtcDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtOtherDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtPregnancy>().HasKey(r => new { r.Id, r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtSupple>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<RsvFrameMst>().HasKey(r => new { r.HpId, r.RsvFrameId });
+            modelBuilder.Entity<RsvGrpMst>().HasKey(r => new { r.HpId, r.RsvGrpId });
+            modelBuilder.Entity<RsvInf>().HasKey(r => new { r.HpId, r.RsvFrameId, r.SinDate, r.StartTime, r.RaiinNo });
+            modelBuilder.Entity<TenMst>().HasKey(r => new { r.HpId, r.ItemCd, r.StartDate });
+            modelBuilder.Entity<UserConf>().HasKey(r => new { r.HpId, r.UserId, r.GrpCd, r.GrpItemEdaNo });
             modelBuilder.Entity<RaiinListCmt>().HasKey(r => new { r.HpId, r.RaiinNo, r.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(r => new { r.HpId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RaiinListInf>().HasKey(r => new { r.HpId, r.PtId, r.SinDate, r.RaiinNo, r.GrpId, r.RaiinListKbn });
@@ -88,12 +105,15 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteFilterDetail>().HasKey(e => new { e.HpId, e.UserId, e.FilterId, e.FilterItemCd, e.FilterEdaNo });
             modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId});
             modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
+            modelBuilder.Entity<JsonSetting>().HasKey(e => new { e.UserId, e.Key });
             modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
             modelBuilder.Entity<TenMst>().HasKey(e => new { e.HpId, e.ItemCd, e.StartDate });
             modelBuilder.Entity<KensaMst>().HasKey(e => new { e.HpId, e.KensaItemCd, e.KensaItemSeqNo });
             modelBuilder.Entity<RaiinListCmt>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
         }
+
+        public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
 
         public DbSet<ColumnSetting> ColumnSettings { get; set; } = default!;
 

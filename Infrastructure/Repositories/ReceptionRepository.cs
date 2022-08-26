@@ -1,4 +1,3 @@
-using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
@@ -60,7 +59,7 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
-            var result =  _tenantDataContext.RaiinInfs.Where
+            var result = _tenantDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
                                  (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
@@ -90,6 +89,12 @@ namespace Infrastructure.Repositories
                         r.JikanKbn
                    )).ToList();
 
+        }
+
+        public bool CheckListNo(List<long> raininNos)
+        {
+            var check = _tenantDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            return check;
         }
 
         private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate)
@@ -253,7 +258,21 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
                 dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd ?? string.Empty)).ToList(),
-                sinDate
+                sinDate,
+                // Fields needed to create Hoken name
+                r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
+                r.relatedPtHokenPattern?.StartDate ?? 0,
+                r.relatedPtHokenPattern?.EndDate ?? 0,
+                r.relatedPtHokenPattern?.HokenSbtCd ?? CommonConstants.InvalidId,
+                r.relatedPtHokenPattern?.HokenKbn ?? CommonConstants.InvalidId,
+                r.ptKohi1?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi1?.Houbetu ?? string.Empty,
+                r.ptKohi2?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi2?.Houbetu ?? string.Empty,
+                r.ptKohi3?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi3?.Houbetu ?? string.Empty,
+                r.ptKohi4?.HokenSbtKbn ?? CommonConstants.InvalidId,
+                r.ptKohi4?.Houbetu ?? string.Empty
             )).ToList();
 
             return models;

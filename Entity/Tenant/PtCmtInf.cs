@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("TEXT")]
-        public string Text { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

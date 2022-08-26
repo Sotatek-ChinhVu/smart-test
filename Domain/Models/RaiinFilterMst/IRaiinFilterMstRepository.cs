@@ -3,4 +3,6 @@
 public interface IRaiinFilterMstRepository
 {
     List<RaiinFilterMstModel> GetList();
+
+    void SaveList(List<RaiinFilterMstModel> mstModels);
 }

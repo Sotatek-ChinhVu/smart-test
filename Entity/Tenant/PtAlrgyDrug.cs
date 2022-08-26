@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 医薬品名称
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_NAME")]
         [MaxLength(100)]
-        public string DrugName { get; set; } = string.Empty;
+        public string? DrugName { get; set; } = string.Empty;
 
         /// <summary>
         /// 発症日
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
