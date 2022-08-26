@@ -114,6 +114,9 @@ using Domain.Models.JsonSetting;
 using Interactor.JsonSetting;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
+using Domain.Models.UsageTreeSet;
+using Interactor.UsageTreeSet;
+using UseCase.UsageTreeSet.GetTree;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -179,6 +182,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
+            services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -288,6 +292,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
+
+            //UsageTreeSet
+            busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
