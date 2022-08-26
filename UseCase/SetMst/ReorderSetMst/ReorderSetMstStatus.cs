@@ -1,4 +1,4 @@
-﻿namespace UseCase.SetMst.ReorderSetMstList;
+﻿namespace UseCase.SetMst.ReorderSetMst;
 
 public enum ReorderSetMstStatus : byte
 {

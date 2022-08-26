@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.SetMst.ReorderSetMstList;
+namespace UseCase.SetMst.ReorderSetMst;
 
 public class ReorderSetMstInputData : IInputData<ReorderSetMstOutputData>
 {

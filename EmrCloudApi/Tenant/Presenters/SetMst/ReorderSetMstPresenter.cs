@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetMst;
-using UseCase.SetMst.ReorderSetMstList;
+using UseCase.SetMst.ReorderSetMst;
 
 namespace EmrCloudApi.Tenant.Presenters.SetMst
 {
@@ -19,7 +19,7 @@ namespace EmrCloudApi.Tenant.Presenters.SetMst
         private string GetMessage(ReorderSetMstStatus status) => status switch
         {
             ReorderSetMstStatus.Successed => ResponseMessage.Success,
-            ReorderSetMstStatus.Failed => ResponseMessage.InvalidLevel,
+            ReorderSetMstStatus.Failed => ResponseMessage.Failed,
             ReorderSetMstStatus.InvalidLevel => ResponseMessage.InvalidLevel,
             _ => string.Empty
         };

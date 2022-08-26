@@ -6,7 +6,7 @@ using EmrCloudApi.Tenant.Responses.SetMst;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetMst.GetList;
-using UseCase.SetMst.ReorderSetMstList;
+using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 
 namespace EmrCloudApi.Tenant.Controllers
