@@ -20,11 +20,12 @@ public class FileController : ControllerBase
     public async Task<Response<string>> UploadAsync([FromQuery] string fileName)
     {
         var accessUrl = await _amazonS3Service.UploadAnObjectAsync(fileName, Request.Body);
-        if (accessUrl is null)
+        if (string.IsNullOrEmpty(accessUrl))
         {
             return new Response<string>
             {
                 Status = 0,
+                Data = string.Empty,
                 Message = ResponseMessage.Failed
             };
         }
