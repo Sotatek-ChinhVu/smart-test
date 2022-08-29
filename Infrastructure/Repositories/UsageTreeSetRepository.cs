@@ -23,10 +23,10 @@ namespace Infrastructure.Repositories
             return generation?.GenerationId ?? 0;
         }
 
-        public List<ListSetMstModel> GetTanSetInfs(int hpId, int setUsageKbn, int GenerationId)
+        public List<ListSetMstModel> GetTanSetInfs(int hpId, int setUsageKbn, int generationId)
         {
             IQueryable<ListSetMst> list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
-                                                        && x.GenerationId == GenerationId
+                                                        && x.GenerationId == generationId
                                                         && x.IsDeleted == 0
                                                         && x.SetKbn == setUsageKbn);
 
@@ -47,12 +47,35 @@ namespace Infrastructure.Repositories
                                                         x.CmtOpt)).ToList();
         }
 
-        public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int GenerationId)
+        public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int generationId)
         {
             IQueryable<ListSetMst> list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
-                                                        && x.GenerationId == GenerationId
+                                                        && x.GenerationId == generationId
                                                         && x.IsDeleted == 0
                                                         && usageContains.Contains(x.SetKbn));
+
+            return list.Select(x => new ListSetMstModel(x.HpId,
+                                                        x.GenerationId,
+                                                        x.SetName,
+                                                        x.ItemCd,
+                                                        x.IsTitle,
+                                                        x.SetKbn,
+                                                        x.SelectType,
+                                                        x.Suryo,
+                                                        x.Level1,
+                                                        x.Level2,
+                                                        x.Level3,
+                                                        x.Level4,
+                                                        x.Level5,
+                                                        x.CmtName,
+                                                        x.CmtOpt)).ToList();
+        }
+
+        public List<ListSetMstModel> GetAllTanSetInfs(int hpId,int generationId)
+        {
+            IQueryable<ListSetMst> list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
+                                                        && x.GenerationId == generationId
+                                                        && x.IsDeleted == 0);
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,

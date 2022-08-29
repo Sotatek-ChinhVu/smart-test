@@ -1,12 +1,15 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.InputItem;
+﻿using EmrCloudApi.Tenant.Presenters.InputItem;
+using EmrCloudApi.Tenant.Presenters.UsageTreeSet;
 using EmrCloudApi.Tenant.Requests.InputItem;
+using EmrCloudApi.Tenant.Requests.UsageTreeSet;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.InputItem;
+using EmrCloudApi.Tenant.Responses.UsageTreeSetResponse;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
+using UseCase.UsageTreeSet.GetTree;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -39,6 +42,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpdateAdoptedInputItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpGet("GetListUsageTreeSet")]
+        public ActionResult<Response<GetUsageTreeSetListResponse>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
+        {
+            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.SetUsageKbn);
+            var output = _bus.Handle(input);
+            var present = new GetUsageTreeSetListPresenter();
+            present.Complete(output);
+            return new ActionResult<Response<GetUsageTreeSetListResponse>>(present.Result);
         }
     }
 }

@@ -20,31 +20,35 @@ namespace Interactor.UsageTreeSet
         public GetUsageTreeSetOutputData Handle(GetUsageTreeSetInputData inputData)
         {
             if (inputData.HpId < 0)
-                return new GetUsageTreeSetOutputData(null, GetUsageTreeStatus.InvalidHpId);
+                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidHpId);
 
             if (inputData.SinDate < 0)
-                return new GetUsageTreeSetOutputData(null, GetUsageTreeStatus.InvalidSinDate);
+                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidSinDate);
 
             if (inputData.SetUsageKbn < 0)
-                return new GetUsageTreeSetOutputData(null, GetUsageTreeStatus.InvalidUsageKbn);
+                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidUsageKbn);
 
             int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
 
             var lstUsage = new List<ListSetMstModel>();
 
-            if (_usageDrug.Contains(inputData.SetUsageKbn) || _usageInject.Contains(inputData.SetUsageKbn))
-            {
-                if (_usageDrug.Contains(inputData.SetUsageKbn))
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId);
-                else
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId);
-            }
-            else if (_listMedicalManagement.Contains(inputData.SetUsageKbn))
-                lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId);
+            if (inputData.SetUsageKbn == 0)
+                lstUsage = _usageTreeSetRepository.GetAllTanSetInfs(inputData.HpId, generationId);
             else
-                lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, inputData.SetUsageKbn, generationId);
-
-            //Level 1
+            {
+                if (_usageDrug.Contains(inputData.SetUsageKbn) || _usageInject.Contains(inputData.SetUsageKbn))
+                {
+                    if (_usageDrug.Contains(inputData.SetUsageKbn))
+                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId);
+                    else
+                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId);
+                }
+                else if (_listMedicalManagement.Contains(inputData.SetUsageKbn))
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId);
+                else
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, inputData.SetUsageKbn, generationId);
+            }
+            
             var lstUsageLevel1 = lstUsage.Where(
                 item => item.Level1 > 0 &&
                 item.Level2 == 0 &&
@@ -69,7 +73,7 @@ namespace Interactor.UsageTreeSet
                 usageList.Add(usageModel);
             }
             if (usageList.Count == 0)
-                return new GetUsageTreeSetOutputData(null, GetUsageTreeStatus.DataNotFound);
+                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.DataNotFound);
 
             return new GetUsageTreeSetOutputData(usageList, GetUsageTreeStatus.Successed);
         }
