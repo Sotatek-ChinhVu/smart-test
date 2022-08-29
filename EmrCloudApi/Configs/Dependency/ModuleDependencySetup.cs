@@ -1,4 +1,4 @@
-using Domain.CalculationInf;
+﻿using Domain.CalculationInf;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -35,6 +35,7 @@ using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
+using EmrCloudApi.Services;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -113,6 +114,12 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.SetMst.ReorderSetMst;
+using Domain.Models.JsonSetting;
+using Interactor.JsonSetting;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
+using EmrCloudApi.Realtime;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -129,6 +136,8 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITenantProvider, TenantProvider>();
+            services.AddTransient<IWebSocketService, WebSocketService>();
+            services.AddTransient<IAmazonS3Service, AmazonS3Service>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -178,6 +187,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
+            services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -230,6 +240,7 @@ namespace EmrCloudApi.Configs.Dependency
             //SetMst
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
+            busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -270,6 +281,10 @@ namespace EmrCloudApi.Configs.Dependency
             // ColumnSetting
             busBuilder.RegisterUseCase<SaveColumnSettingListInputData, SaveColumnSettingListInteractor>();
             busBuilder.RegisterUseCase<GetColumnSettingListInputData, GetColumnSettingListInteractor>();
+
+            // JsonSetting
+            busBuilder.RegisterUseCase<GetJsonSettingInputData, GetJsonSettingInteractor>();
+            busBuilder.RegisterUseCase<UpsertJsonSettingInputData, UpsertJsonSettingInteractor>();
 
             // Reception Same Visit
             busBuilder.RegisterUseCase<GetReceptionSameVisitInputData, GetReceptionSameVisitInteractor>();

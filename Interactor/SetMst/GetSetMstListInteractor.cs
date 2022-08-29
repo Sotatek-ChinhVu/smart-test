@@ -50,18 +50,57 @@ namespace Interactor.SetMst
             if (topNodes?.Any() != true) { return result; }
             foreach (var item in topNodes)
             {
-                var node = new GetSetMstListOutputItem
-                (item.HpId, item.SetCd, item.SetKbn, item.SetKbnEdaNo, item.GenerationId, item.Level1, item.Level2, item.Level3, item.SetName, item.WeightKbn, item.Color, item.IsGroup, datas?.Where(c => c.Level1 == item.Level1 && c.Level2 != 0 && c.Level3 == 0)?
-                                .Select(c => new GetSetMstListOutputItem
-                                (c.HpId, c.SetCd, c.SetKbn, c.SetKbnEdaNo, c.GenerationId, c.Level1, c.Level2, c.Level3, c.SetName, c.WeightKbn, c.Color, c.IsGroup, datas.Where(m => m.Level3 != 0 && m.Level1 == item.Level1 && m.Level2 == c.Level2)?
-                                    .Select(c => new GetSetMstListOutputItem
-                                    (c.HpId, c.SetCd, c.SetKbn, c.SetKbnEdaNo, c.GenerationId, c.Level1, c.Level2, c.Level3, c.SetName, c.WeightKbn, c.Color, c.IsGroup, new List<GetSetMstListOutputItem>()
-                                    )).ToList()
-                                )).ToList()
-                );
-                result.Add(node);
-            }
-            return result;
+                var node = new GetSetMstListOutputItem(
+                    item.HpId,
+                    item.SetCd,
+                    item.SetKbn,
+                    item.SetKbnEdaNo,
+                    item.GenerationId,
+                    item.Level1,
+                    item.Level2,
+                    item.Level3,
+                    item.SetName,
+                    item.WeightKbn,
+                    item.Color,
+                    item.IsGroup,
+                    datas?.Where(c => c.Level1 == item.Level1 && c.Level2 != 0 && c.Level3 == 0)?
+                            .Select(c => new GetSetMstListOutputItem(
+                                c.HpId,
+                                c.SetCd,
+                                c.SetKbn,
+                                c.SetKbnEdaNo,
+                                c.GenerationId,
+                                c.Level1,
+                                c.Level2,
+                                c.Level3,
+                                c.SetName,
+                                c.WeightKbn,
+                                c.Color,
+                                c.IsGroup,
+                                datas.Where(m => m.Level3 != 0 && m.Level1 == item.Level1 && m.Level2 == c.Level2)?
+                                    .Select(c => new GetSetMstListOutputItem(
+                                        c.HpId,
+                                        c.SetCd,
+                                        c.SetKbn,
+                                        c.SetKbnEdaNo,
+                                        c.GenerationId,
+                                        c.Level1,
+                                        c.Level2,
+                                        c.Level3,
+                                        c.SetName,
+                                        c.WeightKbn,
+                                        c.Color,
+                                        c.IsGroup,
+                                        new List<GetSetMstListOutputItem>(),
+                                        c.SetMstTooltip
+                                    )).ToList(),
+                                    c.SetMstTooltip
+                            )).ToList(),
+                            item.SetMstTooltip
+                    );
+                    result.Add(node);
+                }
+                return result;
         }
 
     }
