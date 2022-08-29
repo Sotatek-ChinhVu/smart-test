@@ -513,7 +513,7 @@ namespace Infrastructure.Repositories
 
             for (int i = 0; i < level; i++)
             {
-                title = "　" + title;
+                title = "\u3000" + title;
             }
             var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString(), new DrugDetailModel());
 
