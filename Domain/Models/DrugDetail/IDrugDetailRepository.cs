@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Domain.Models.DrugDetail
 {
-    internal class IDrugDetailRepository
+    public interface IDrugDetailRepository
     {
+        public IEnumerable<DrugMenuItemModel> GetDrugMenu(int hpId, int sinDate, string itemCd);
     }
 }
