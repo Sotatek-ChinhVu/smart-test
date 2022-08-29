@@ -36,4 +36,17 @@ public class FileController : ControllerBase
             Message = ResponseMessage.Success
         };
     }
+
+    [HttpGet("Exists")]
+    public async Task<Response<bool>> ExistsAsync([FromQuery] string key)
+    {
+        var exists = await _amazonS3Service.ObjectExistsAsync(key);
+
+        return new Response<bool>
+        {
+            Status = exists ? 1 : 0,
+            Data = exists,
+            Message = exists ? ResponseMessage.Success : ResponseMessage.NotFound
+        };
+    }
 }
