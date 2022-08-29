@@ -1,4 +1,7 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.SpecialNote.ImportantNote;
+using Domain.Models.SpecialNote.PatientInfo;
+using Domain.Models.SpecialNote.SummaryInf;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
 using UseCase.SpecialNote.Get;
@@ -13,7 +16,7 @@ namespace EmrCloudApi.Tenant.Presenters.SpecialNote
         {
             Result = new Response<GetSpecialNoteResponse>()
             {
-                Data = new GetSpecialNoteResponse(null, null, null),
+                Data = new GetSpecialNoteResponse(new SummaryInfModel(), new ImportantNoteModel(), new PatientInfoModel()),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
