@@ -111,6 +111,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.SetMst.ReorderSetMst;
 using Domain.Models.JsonSetting;
 using Interactor.JsonSetting;
 using UseCase.JsonSetting.Get;
@@ -233,6 +234,7 @@ namespace EmrCloudApi.Configs.Dependency
             //SetMst
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
+            busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

@@ -80,13 +80,14 @@
 
         //RaiinKubun controller
 
-        //Set
+        //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
         public static readonly string GetSetListSinDate = "Invalid SinDate";
         public static readonly string GetSetListInvalidSetKbn = "Invalid SetKbn";
         public static readonly string GetSetListInvalidSetKbnEdaNo = "Invalid SetKbnEdaNo";
         public static readonly string GetSetListNoData = "No Data";
         public static readonly string GetSetListSuccessed = "Successed";
+        public static readonly string InvalidLevel = "Invalid Level, can't move";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
