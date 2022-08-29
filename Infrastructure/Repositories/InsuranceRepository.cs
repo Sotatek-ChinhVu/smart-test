@@ -101,7 +101,8 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.JibaiHokenName,
                                 ptHokenInf.JibaiHokenTanto,
                                 ptHokenInf.JibaiHokenTel,
-                                ptHokenInf.JibaiJyusyouDate
+                                ptHokenInf.JibaiJyusyouDate,
+                                ptHokenPattern.HokenMemo
                             };
             var itemList = joinQuery.ToList();
 
@@ -198,7 +199,8 @@ namespace Infrastructure.Repositories
                         item.JibaiHokenName,
                         item.JibaiHokenTanto,
                         item.JibaiHokenTel,
-                        item.JibaiJyusyouDate
+                        item.JibaiJyusyouDate,
+                        item.HokenMemo
                     );
 
                     result.Add(insuranceModel);
