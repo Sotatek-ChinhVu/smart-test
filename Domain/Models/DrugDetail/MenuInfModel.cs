@@ -8,7 +8,7 @@ namespace Domain.Models.DrugDetail
 {
     public class MenuInfModel
     {
-        public MenuInfModel(string drugMenuName, string rawDrugMenuName, int level, int seqNo, int dbLevel, string menuName)
+        public MenuInfModel(string drugMenuName, string rawDrugMenuName, int level, int seqNo, int dbLevel, string menuName, DrugDetailModel detailInfor)
         {
             DrugMenuName = drugMenuName;
             RawDrugMenuName = rawDrugMenuName;
@@ -16,6 +16,7 @@ namespace Domain.Models.DrugDetail
             SeqNo = seqNo;
             DbLevel = dbLevel;
             MenuName = menuName;
+            DetailInfor = detailInfor;
         }
 
         public MenuInfModel()
@@ -26,6 +27,7 @@ namespace Domain.Models.DrugDetail
             SeqNo = 0;
             DbLevel = 0;
             MenuName = "";
+            DetailInfor = new DrugDetailModel();
         }
 
         public string DrugMenuName { get; private set; }
@@ -39,5 +41,7 @@ namespace Domain.Models.DrugDetail
         public int DbLevel { get; private set; }
 
         public string MenuName { get; private set; }
+
+        public DrugDetailModel DetailInfor { get; set; }
     }
 }

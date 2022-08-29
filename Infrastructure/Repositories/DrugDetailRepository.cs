@@ -23,15 +23,25 @@ namespace Infrastructure.Repositories
         {
             var yjCode = "";
             var drugName = "";
-
-            var drugInf = _tenantDataContext.TenMsts.Where(
+            var quetyTenMsts = _tenantDataContext.TenMsts.Where(
                      item => item.HpId == hpId && new[] { 20, 30 }.Contains(item.SinKouiKbn)
                      && item.StartDate <= sinDate && item.EndDate >= sinDate && item.ItemCd == itemCd
-                     ).FirstOrDefault();
-            if(drugInf != null)
+                     ).ToList();
+
+            var queryDrugInfs = _tenantDataContext.PiProductInfs.ToList();
+            var queryM28DrugMsts = _tenantDataContext.M28DrugMst.ToList();
+            //Join
+            var joinQueryDrugInf = from m28DrugMst in queryM28DrugMsts
+                            join tenItem in quetyTenMsts
+                            on m28DrugMst.KikinCd equals tenItem.ItemCd
+                            join drugInfor in queryDrugInfs
+                            on m28DrugMst.YjCd equals drugInfor.YjCd
+                            select new { drugInfor, tenItem };
+            var drugInf = joinQueryDrugInf.FirstOrDefault();
+            if (drugInf != null && drugInf.drugInfor != null)
             {
-                yjCode = drugInf.YjCd ?? string.Empty;
-                drugName = drugInf.Name ?? string.Empty;
+                yjCode = drugInf.drugInfor != null ? drugInf.drugInfor.YjCd ?? string.Empty : string.Empty;
+                drugName = drugInf.tenItem != null ? drugInf.tenItem.Name ?? string.Empty : string.Empty;
             }
 
             // create drug item
@@ -39,14 +49,14 @@ namespace Infrastructure.Repositories
             List<DrugMenuItemModel> drugMenuItems = new List<DrugMenuItemModel>();
 
             //Root
-            var newModelInfFirst = new MenuInfModel("医薬品情報", "", 0, 0, 0, "");
+            var newModelInfFirst = new MenuInfModel("医薬品情報", "", 0, 0, 0, "", new DrugDetailModel());
             var newModelItem = new MenuItemModel(newModelInfFirst, new List<MenuInfModel>());
             DrugMenuItemModel rootMenu = new DrugMenuItemModel(newModelItem, new DrugDetailModel());
             drugMenuItems.Add(rootMenu);
 
             var piInfDetailCollection = _tenantDataContext.PiInfDetails.ToList(); //PI_INF_DETAIL
 
-            var piProductInfCollections = _tenantDataContext.PiProductInfs.Where(pi => pi.YjCd == yjCode).ToList();
+            var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).ToList();
 
             //Kikaku
             var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
@@ -87,7 +97,7 @@ namespace Infrastructure.Repositories
             }
 
             //Last
-            var newModelInfLast = new MenuInfModel("患者向け情報", "", 0, 0, 0, "");
+            var newModelInfLast = new MenuInfModel("患者向け情報", "", 0, 0, 0, "", new DrugDetailModel());
             var newModelItemLast = new MenuItemModel(newModelInfLast, new List<MenuInfModel>());
             DrugMenuItemModel lastMenu = new DrugMenuItemModel(newModelItemLast, new DrugDetailModel());
             drugMenuItems.Add(lastMenu);
@@ -96,7 +106,7 @@ namespace Infrastructure.Repositories
 
 
             //適応病名
-            var newModelInfTekyoByomeiMenu = new MenuInfModel("適応病名", "", 0, 0, 0, "");
+            var newModelInfTekyoByomeiMenu = new MenuInfModel("適応病名", "", 0, 0, 0, "", new DrugDetailModel());
             var newModelItemTekyoByomeiMenu = new MenuItemModel(newModelInfTekyoByomeiMenu, new List<MenuInfModel>());
             DrugMenuItemModel tekyoByomeiMenu = new DrugMenuItemModel(newModelItemTekyoByomeiMenu, new DrugDetailModel());
             drugMenuItems.Add(tekyoByomeiMenu);
@@ -108,92 +118,102 @@ namespace Infrastructure.Repositories
                 {
 
                     int selectedIndex = drugMenuItems[0].MenuItem.Childrens.IndexOf(drugMenuItems[i].MenuItem.Menu);
-                    if (selectedIndex >= 0)
+                    var itemDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
+                    drugMenuItems[i].DetailInfor = itemDetail;
+
+                    if(drugMenuItems[i].MenuItem.Childrens.Count > 0)
                     {
-                        // Show Product Infor
-                        var piInfCollection = _tenantDataContext.PiInfs.ToList();
-                        var joinQuery = from piInf in piInfCollection
-                                        join piProduct in piProductInfCollections
-                                        on piInf.PiId equals piProduct.PiId
-                                        select new
-                                        {
-                                            ProductInfo = piProduct,
-                                            PiInfo = piInf
-                                        };
-                        var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
-                                                                         j.ProductInfo.ProductName,
-                                                                         j.PiInfo.PreparationName ?? string.Empty,
-                                                                         j.ProductInfo.Unit,
-                                                                         j.ProductInfo.Maker,
-                                                                         j.ProductInfo.Vender)).FirstOrDefault();
-                        var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
-                        var itemDetail = new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
-                        drugMenuItems[i].DetailInfor = itemDetail;
-                    }
-                    else
-                    {
-                        int indexInLevel0 = drugMenuItems.IndexOf(drugMenuItems[i]);
-                        if (indexInLevel0 == 0)
+                        foreach (var item in drugMenuItems[i].MenuItem.Childrens)
                         {
-                            // Show Product Infor
-                            var piInfCollection = _tenantDataContext.PiInfs.ToList();
-                            var joinQuery = from piInf in piInfCollection
-                                            join piProduct in piProductInfCollections
-                                            on piInf.PiId equals piProduct.PiId
-                                            select new
-                                            {
-                                                ProductInfo = piProduct,
-                                                PiInfo = piInf
-                                            };
-                            var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
-                                                                             j.ProductInfo.ProductName,
-                                                                             j.PiInfo.PreparationName ?? string.Empty,
-                                                                             j.ProductInfo.Unit,
-                                                                             j.ProductInfo.Maker,
-                                                                             j.ProductInfo.Vender)).FirstOrDefault();
-                            var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
-                            var itemDetail = new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
-                            drugMenuItems[i].DetailInfor = itemDetail;
+                            var itemChildrentDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
+                            item.DetailInfor = itemChildrentDetail;
                         }
-                        else if (indexInLevel0 == 1)
-                        {
-                            // show kajamuke
-
-                            var m34DrugInfMainRepo = _tenantDataContext.M34DrugInfoMains.Where(m => m.YjCd == yjCode).ToList();
-
-                            //YakuInf 
-                            var yakuInf = GetYakuModel(m34DrugInfMainRepo);
-
-                            //FukuInf
-                            var fukuInf = GetFukuModels(m34DrugInfMainRepo);
-
-                            //Syoki
-                            var syokiInf = GetSyokiModel(m34DrugInfMainRepo);
-
-                            // Sougo 
-                            var sougoInf = GetSougoModels(m34DrugInfMainRepo);
-
-                            // ChuiInf
-                            var chuiInf = GetChuiModels(m34DrugInfMainRepo);
-
-                            var itemDetail = new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 1, yakuInf ?? new YakuModel(), fukuInf, syokiInf ?? new SyokiModel(), sougoInf, chuiInf, 0, new List<TenMstByomeiModel>());
-                            drugMenuItems[i].DetailInfor = itemDetail;
-                        }
-                        else
-                        {
-                            // MdbByomei
-                            var mdbByomei = GetTenMstByomeiModels(itemCd);
-
-                            var itemDetail = new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 1, mdbByomei);
-                            drugMenuItems[i].DetailInfor = itemDetail;
-                        }
-                    }
-
+                    }    
                 }
             }
 
 
             return drugMenuItems;
+        }
+
+        private DrugDetailModel GetDetail(int selectedIndex,string drugName, string itemCd, string yjCode, List<DrugMenuItemModel> listDrugMenu, DrugMenuItemModel drugMenuItem, List<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, List<PiInfDetail> piInfDetailCollection)
+        {
+            if (selectedIndex >= 0)
+            {
+                // Show Product Infor
+                var piInfCollection = _tenantDataContext.PiInfs.ToList();
+                var joinQuery = from piInf in piInfCollection
+                                join piProduct in piProductInfCollections
+                                on piInf.PiId equals piProduct.PiId
+                                select new
+                                {
+                                    ProductInfo = piProduct,
+                                    PiInfo = piInf
+                                };
+                var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
+                                                                 j.ProductInfo.ProductName,
+                                                                 j.PiInfo.PreparationName ?? string.Empty,
+                                                                 j.ProductInfo.Unit ?? string.Empty,
+                                                                 j.ProductInfo.Maker,
+                                                                 j.ProductInfo.Vender ?? string.Empty)).FirstOrDefault();
+                var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
+                return new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
+            }
+            else
+            {
+                int indexInLevel0 = listDrugMenu.IndexOf(drugMenuItem);
+                if (indexInLevel0 == 0)
+                {
+                    // Show Product Infor
+                    var piInfCollection = _tenantDataContext.PiInfs.ToList();
+                    var joinQuery = from piInf in piInfCollection
+                                    join piProduct in piProductInfCollections
+                                    on piInf.PiId equals piProduct.PiId
+                                    select new
+                                    {
+                                        ProductInfo = piProduct,
+                                        PiInfo = piInf
+                                    };
+                    var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
+                                                                     j.ProductInfo.ProductName,
+                                                                     j.PiInfo.PreparationName ?? string.Empty,
+                                                                     j.ProductInfo.Unit ?? string.Empty,
+                                                                     j.ProductInfo.Maker,
+                                                                     j.ProductInfo.Vender ?? string.Empty)).FirstOrDefault();
+                    var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
+                    return new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
+                }
+                else if (indexInLevel0 == 1)
+                {
+                    // show kajamuke
+
+                    var m34DrugInfMainRepo = _tenantDataContext.M34DrugInfoMains.Where(m => m.YjCd == yjCode).ToList();
+
+                    //YakuInf 
+                    var yakuInf = GetYakuModel(m34DrugInfMainRepo);
+
+                    //FukuInf
+                    var fukuInf = GetFukuModels(m34DrugInfMainRepo);
+
+                    //Syoki
+                    var syokiInf = GetSyokiModel(m34DrugInfMainRepo);
+
+                    // Sougo 
+                    var sougoInf = GetSougoModels(m34DrugInfMainRepo);
+
+                    // ChuiInf
+                    var chuiInf = GetChuiModels(m34DrugInfMainRepo);
+
+                    return new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 1, yakuInf ?? new YakuModel(), fukuInf, syokiInf ?? new SyokiModel(), sougoInf, chuiInf, 0, new List<TenMstByomeiModel>());
+                }
+                else
+                {
+                    // MdbByomei
+                    var mdbByomei = GetTenMstByomeiModels(itemCd);
+
+                    return new DrugDetailModel(0, 0, "", new SyohinModel(), new List<DrugMenuItemModel>(), new List<DrugMenuItemModel>(), 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 1, mdbByomei);
+                }
+            }
         }
 
         private YakuModel? GetYakuModel(List<M34DrugInfoMain> m34DrugInfMainRepo)
@@ -432,7 +452,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch != "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, ""), new List<MenuInfModel>()), new DrugDetailModel()))
+                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", new DrugDetailModel()), new List<MenuInfModel>()), new DrugDetailModel()))
                                     .OrderBy(mn => mn.MenuItem.Menu.SeqNo).ToList();
                 return listMenuItem;
 
@@ -454,7 +474,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch == "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, ""), new List<MenuInfModel>()), new DrugDetailModel()))
+                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", new DrugDetailModel()), new List<MenuInfModel>()), new DrugDetailModel()))
                                     .OrderBy(mn => mn.MenuItem.Menu.SeqNo).ToList();
                 return listMenuItem;
             }
@@ -495,7 +515,7 @@ namespace Infrastructure.Repositories
             {
                 title = "　" + title;
             }
-            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString());
+            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString(), new DrugDetailModel());
 
             rootItem.MenuItem.Childrens.Add(menuItemChildren);
         }
