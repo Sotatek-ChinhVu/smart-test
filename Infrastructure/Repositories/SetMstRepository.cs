@@ -619,4 +619,191 @@ public class SetMstRepository : ISetMstRepository
             item.UpdateId = userId;
         }
     }
+
+    public bool PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
+    {
+        bool status = false;
+        try
+        {
+            var copyItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
+            var pasteItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdPasteItem && mst.HpId == hpId);
+
+            if (copyItem == null)
+            {
+                return status;
+            }
+
+            // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
+            var listSetMsts = _tenantNoTrackingDataContext.SetMsts.Where(mst => mst.SetKbn == copyItem.SetKbn && mst.SetKbnEdaNo == copyItem.SetKbnEdaNo && mst.HpId == copyItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            if (pasteItem != null)
+            {
+                int levelCopyItem = GetLevelItem(copyItem);
+                int levelPasteItem = GetLevelItem(pasteItem);
+                if (levelCopyItem + levelPasteItem > 3)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (levelPasteItem == 1)
+                    {
+                        // get index for paste
+                        var lastItemLevel2 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 > 0 && item.Level3 == 0).OrderByDescending(item => item.Level2).FirstOrDefault();
+                        int indexPaste = (lastItemLevel2 != null ? lastItemLevel2.Level2 : 0) + 1;
+                        status = PasteItem(indexPaste, userId, copyItem, pasteItem, listSetMsts);
+                    }
+                    else if (levelPasteItem == 2)
+                    {
+
+                    }
+                    status = true;
+                }
+            }
+
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    private bool PasteItem(int indexPaste, int userId, SetMst copyItem, SetMst pasteItem, List<SetMst> listSetMsts)
+    {
+        bool status = false;
+        try
+        {
+            // paste SetMst to list super set
+            List<SetMst> listCopyItems = new();
+            List<SetMst> listPasteItems = new();
+            switch (GetLevelItem(copyItem))
+            {
+                case 1:
+                    listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1).ToList();
+                    // Convert SetMst copy to SetMst paste
+                    foreach (var item in listCopyItems)
+                    {
+                        SetMst setMst = item.DeepClone();
+                        listPasteItems.Add(setMst);
+                    }
+                    break;
+                case 2:
+                    listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2).ToList();
+                    // Convert SetMst copy to SetMst paste
+                    foreach (var item in listCopyItems)
+                    {
+                        SetMst setMst = item.DeepClone();
+                        listPasteItems.Add(setMst);
+                    }
+                    break;
+                case 3:
+                    listCopyItems = listSetMsts.Where(item => item.Level1 == copyItem.Level1 && item.Level2 == copyItem.Level2 && item.Level3 == copyItem.Level3).ToList();
+                    // Convert SetMst copy to SetMst paste
+                    foreach (var item in listCopyItems)
+                    {
+                        SetMst setMst = item.DeepClone();
+                        listPasteItems.Add(setMst);
+                    }
+                    break;
+                default:
+                    return status;
+            }
+
+            foreach (var item in listPasteItems)
+            {
+                item.SetCd = 0;
+                item.CreateDate = DateTime.UtcNow;
+                item.CreateId = userId;
+                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateId = userId;
+            }
+
+            _tenantDataContext.SetMsts.AddRange(listPasteItems);
+            _tenantDataContext.SaveChanges();
+
+            // get paste content item
+            Dictionary<SetMst, SetMst> dictionarySetMstMap = new();
+            foreach (var item in listCopyItems)
+            {
+                var pasteItemToMap = listPasteItems.FirstOrDefault(item => item.Level1 == pasteItem.Level1 && item.Level2 == pasteItem.Level2 && item.Level3 == pasteItem.Level3);
+                dictionarySetMstMap.Add(item, pasteItemToMap ?? new SetMst());
+            }
+
+            var listCopySetCds = listCopyItems.Select(item => item.SetCd).ToList();
+            var listPasteSetCds = listPasteItems.Select(item => item.SetCd).ToList();
+
+            // Order Inf
+            var listCopySetOrderInfs = _tenantDataContext.SetOdrInf.Where(item => listCopySetCds.Contains(item.SetCd)).ToList();
+            var listPasteSetOrderInfs = new List<SetOdrInf>();
+            foreach (var item in listCopySetOrderInfs)
+            {
+                SetOdrInf odrInf = item.DeepClone();
+                odrInf.CreateDate = DateTime.UtcNow;
+                odrInf.CreateId = userId;
+                odrInf.UpdateDate = DateTime.UtcNow;
+                odrInf.UpdateId = userId;
+
+            }
+
+
+
+            // Set level for item 
+            switch (GetLevelItem(copyItem))
+            {
+                case 1:
+                    foreach (var setMst in listPasteItems)
+                    {
+                        setMst.Level1 = indexPaste;
+                        setMst.Level2 = copyItem.Level2;
+                        setMst.Level3 = copyItem.Level3;
+                    }
+                    break;
+                case 2:
+                    foreach (var setMst in listPasteItems)
+                    {
+                        setMst.Level1 = pasteItem.Level1;
+                        setMst.Level2 = indexPaste;
+                        setMst.Level3 = copyItem.Level3;
+                    }
+                    break;
+                case 3:
+                    foreach (var setMst in listPasteItems)
+                    {
+                        setMst.Level1 = pasteItem.Level1;
+                        setMst.Level2 = pasteItem.Level2;
+                        setMst.Level3 = indexPaste;
+                    }
+                    break;
+                default:
+                    return status;
+            }
+            _tenantDataContext.SaveChanges();
+            status = true;
+        }
+        catch
+        {
+            return status;
+        }
+        return status;
+    }
+
+    private int GetLevelItem(SetMst setMst)
+    {
+        int level = 0;
+        if (setMst.Level2 == 0 && setMst.Level3 == 0)
+        {
+            level = 1;
+        }
+        else if (setMst.Level2 > 0 && setMst.Level3 == 1)
+        {
+            level = 2;
+        }
+        else if (setMst.Level3 > 0)
+        {
+            level = 3;
+        }
+        return level;
+    }
+
+
 }
