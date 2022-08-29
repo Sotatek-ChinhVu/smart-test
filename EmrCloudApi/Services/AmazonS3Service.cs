@@ -23,7 +23,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _tenantProvider = tenantProvider;
     }
 
-    public async Task<string?> UploadAnObjectAsync(string fileName, Stream stream)
+    public async Task<string> UploadAnObjectAsync(string fileName, Stream stream)
     {
         try
         {
@@ -35,11 +35,11 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             };
 
             var response = await _s3Client.PutObjectAsync(request);
-            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : null;
+            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
         }
         catch (AmazonS3Exception)
         {
-            return null;
+            return string.Empty;
         }
     }
 

@@ -2,5 +2,5 @@
 
 public interface IAmazonS3Service
 {
-    Task<string?> UploadAnObjectAsync(string fileName, Stream stream);
+    Task<string> UploadAnObjectAsync(string fileName, Stream stream);
 }
