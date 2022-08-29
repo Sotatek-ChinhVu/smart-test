@@ -4870,6 +4870,26 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("JOB_MST ");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.JsonSetting", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID");
+
+                    b.Property<string>("Key")
+                        .HasColumnType("text")
+                        .HasColumnName("KEY");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("VALUE");
+
+                    b.HasKey("UserId", "Key");
+
+                    b.ToTable("JSON_SETTING");
+                });
+
             modelBuilder.Entity("Entity.Tenant.KacodeMst", b =>
                 {
                     b.Property<string>("ReceKaCd")
@@ -5695,10 +5715,10 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    b.Property<int>("FilterEdaNo")
+                    b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("FILTER_EDA_NO")
-                        .HasColumnOrder(5);
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(2);
 
                     b.Property<long>("FilterId")
                         .HasColumnType("bigint")
@@ -5710,22 +5730,21 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("FILTER_ITEM_CD")
                         .HasColumnOrder(4);
 
+                    b.Property<int>("FilterEdaNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("FILTER_EDA_NO")
+                        .HasColumnOrder(5);
+
                     b.Property<string>("Param")
-                        .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
                         .HasColumnName("PARAM");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("USER_ID")
-                        .HasColumnOrder(2);
 
                     b.Property<int>("Val")
                         .HasColumnType("integer")
                         .HasColumnName("VAL");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "UserId", "FilterId", "FilterItemCd", "FilterEdaNo");
 
                     b.ToTable("KARTE_FILTER_DETAIL");
                 });
@@ -5736,6 +5755,19 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("USER_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<long>("FilterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("FILTER_ID")
+                        .HasColumnOrder(3);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FilterId"));
 
                     b.Property<int>("AutoApply")
                         .HasColumnType("integer")
@@ -5753,14 +5785,6 @@ namespace PostgreDataContext.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<long>("FilterId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("FILTER_ID")
-                        .HasColumnOrder(3);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FilterId"));
 
                     b.Property<string>("FilterName")
                         .IsRequired()
@@ -5789,12 +5813,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("USER_ID")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "UserId", "FilterId");
 
                     b.ToTable("KARTE_FILTER_MST");
                 });
@@ -5933,6 +5952,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("KarteKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("KARTE_KBN")
+                        .HasColumnOrder(2);
+
                     b.Property<int>("CanImg")
                         .HasColumnType("integer")
                         .HasColumnName("CAN_IMG");
@@ -5946,6 +5970,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("CREATE_ID");
 
                     b.Property<string>("CreateMachine")
+                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
@@ -5953,11 +5978,6 @@ namespace PostgreDataContext.Migrations
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
-
-                    b.Property<int>("KarteKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("KARTE_KBN")
-                        .HasColumnOrder(2);
 
                     b.Property<string>("KbnName")
                         .IsRequired()
@@ -5984,11 +6004,12 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_ID");
 
                     b.Property<string>("UpdateMachine")
+                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "KarteKbn");
 
                     b.ToTable("KARTE_KBN_MST");
                 });
@@ -6345,20 +6366,28 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<string>("KensaItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("KENSA_ITEM_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("KensaItemSeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("KENSA_ITEM_SEQ_NO")
+                        .HasColumnOrder(3);
+
                     b.Property<string>("CenterCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("CENTER_CD");
 
                     b.Property<string>("CenterItemCd1")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("CENTER_ITEM_CD1");
 
                     b.Property<string>("CenterItemCd2")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("CENTER_ITEM_CD2");
@@ -6385,25 +6414,21 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("DIGIT");
 
                     b.Property<string>("FemaleStd")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("FEMALE_STD");
 
                     b.Property<string>("FemaleStdHigh")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("FEMALE_STD_HIGH");
 
                     b.Property<string>("FemaleStdLow")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("FEMALE_STD_LOW");
 
                     b.Property<string>("Formula")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("FORMULA");
@@ -6412,20 +6437,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETE");
 
-                    b.Property<string>("KensaItemCd")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("KENSA_ITEM_CD")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("KensaItemSeqNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("KENSA_ITEM_SEQ_NO")
-                        .HasColumnOrder(3);
-
                     b.Property<string>("KensaKana")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("KENSA_KANA");
@@ -6437,19 +6449,16 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KENSA_NAME");
 
                     b.Property<string>("MaleStd")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("MALE_STD");
 
                     b.Property<string>("MaleStdHigh")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("MALE_STD_HIGH");
 
                     b.Property<string>("MaleStdLow")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("MALE_STD_LOW");
@@ -6459,7 +6468,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("MATERIAL_CD");
 
                     b.Property<string>("OyaItemCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("OYA_ITEM_CD");
@@ -6473,7 +6481,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SORT_NO");
 
                     b.Property<string>("Unit")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("UNIT");
@@ -6491,7 +6498,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "KensaItemCd", "KensaItemSeqNo");
 
                     b.ToTable("KENSA_MST");
                 });
@@ -14473,6 +14480,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(2);
+
                     b.Property<int>("CmtKbn")
                         .HasColumnType("integer")
                         .HasColumnName("CMT_KBN")
@@ -14499,11 +14511,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID");
 
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO")
-                        .HasColumnOrder(2);
-
                     b.Property<long>("SeqNo")
                         .HasColumnType("bigint")
                         .HasColumnName("SEQ_NO");
@@ -14513,7 +14520,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SIN_DATE");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("TEXT");
@@ -14531,7 +14537,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "RaiinNo", "CmtKbn");
 
                     b.HasIndex(new[] { "HpId", "RaiinNo", "CmtKbn", "IsDeleted" }, "RAIIN_LIST_CMT_UKEY01");
 
@@ -14545,8 +14551,17 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("GrpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("KbnCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("KBN_CD")
+                        .HasColumnOrder(3);
+
                     b.Property<string>("ColorCd")
-                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
                         .HasColumnName("COLOR_CD");
@@ -14564,19 +14579,9 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
-                    b.Property<int>("GrpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_ID")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
-
-                    b.Property<int>("KbnCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("KBN_CD")
-                        .HasColumnOrder(3);
 
                     b.Property<string>("KbnName")
                         .IsRequired()
@@ -14601,7 +14606,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "GrpId", "KbnCd");
 
                     b.HasIndex(new[] { "HpId", "GrpId", "KbnCd", "IsDeleted" }, "RAIIN_LIST_DETAIL_IDX01");
 
@@ -14745,34 +14750,34 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    b.Property<int>("GrpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_ID")
-                        .HasColumnOrder(5);
-
-                    b.Property<int>("KbnCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("KBN_CD");
-
                     b.Property<long>("PtId")
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID")
                         .HasColumnOrder(2);
 
-                    b.Property<int>("RaiinListKbn")
+                    b.Property<int>("SinDate")
                         .HasColumnType("integer")
-                        .HasColumnName("RAIIN_LIST_KBN")
-                        .HasColumnOrder(6);
+                        .HasColumnName("SIN_DATE")
+                        .HasColumnOrder(3);
 
                     b.Property<long>("RaiinNo")
                         .HasColumnType("bigint")
                         .HasColumnName("RAIIN_NO")
                         .HasColumnOrder(4);
 
-                    b.Property<int>("SinDate")
+                    b.Property<int>("GrpId")
                         .HasColumnType("integer")
-                        .HasColumnName("SIN_DATE")
-                        .HasColumnOrder(3);
+                        .HasColumnName("GRP_ID")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("RaiinListKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("RAIIN_LIST_KBN")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("KbnCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("KBN_CD");
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -14787,7 +14792,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "GrpId", "RaiinListKbn");
 
                     b.ToTable("RAIIN_LIST_INF");
                 });
@@ -14937,6 +14942,14 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("GrpId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_ID")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GrpId"));
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -14949,14 +14962,6 @@ namespace PostgreDataContext.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("GrpId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_ID")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GrpId"));
 
                     b.Property<string>("GrpName")
                         .IsRequired()
@@ -14985,7 +14990,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "GrpId");
 
                     b.HasIndex(new[] { "HpId", "GrpId", "IsDeleted" }, "RAIIN_LIST_MST_IDX01");
 
@@ -14995,12 +15000,19 @@ namespace PostgreDataContext.Migrations
             modelBuilder.Entity("Entity.Tenant.RaiinListTag", b =>
                 {
                     b.Property<int>("HpId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HpId"));
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -15023,16 +15035,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("PT_ID");
 
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("SeqNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SEQ_NO")
-                        .HasColumnOrder(3);
-
                     b.Property<int>("SinDate")
                         .HasColumnType("integer")
                         .HasColumnName("SIN_DATE");
@@ -15054,7 +15056,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "RaiinNo", "SeqNo");
 
                     b.HasIndex(new[] { "HpId", "RaiinNo", "IsDeleted" }, "RAIIN_LIST_TAG_UKEY01");
 
@@ -19919,6 +19921,14 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("GenerationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("GENERATION_ID")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GenerationId"));
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -19931,14 +19941,6 @@ namespace PostgreDataContext.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("GenerationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("GENERATION_ID")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GenerationId"));
 
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
@@ -19961,7 +19963,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "GenerationId");
 
                     b.ToTable("SET_GENERATION_MST");
                 });
@@ -20077,12 +20079,24 @@ namespace PostgreDataContext.Migrations
             modelBuilder.Entity("Entity.Tenant.SetKbnMst", b =>
                 {
                     b.Property<int>("HpId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HpId"));
+                    b.Property<int>("SetKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_KBN")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SetKbnEdaNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_KBN_EDA_NO")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("GenerationId")
+                        .HasColumnType("integer")
+                        .HasColumnName("GENERATION_ID")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -20101,11 +20115,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("DOC_CD");
 
-                    b.Property<int>("GenerationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("GENERATION_ID")
-                        .HasColumnOrder(4);
-
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
@@ -20114,18 +20123,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("KA_CD");
 
-                    b.Property<int>("SetKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("SET_KBN")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("SetKbnEdaNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SET_KBN_EDA_NO")
-                        .HasColumnOrder(3);
-
                     b.Property<string>("SetKbnName")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("SET_KBN_NAME");
@@ -20143,7 +20141,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "SetKbn", "SetKbnEdaNo", "GenerationId");
 
                     b.ToTable("SET_KBN_MST");
                 });
@@ -20151,12 +20149,17 @@ namespace PostgreDataContext.Migrations
             modelBuilder.Entity("Entity.Tenant.SetMst", b =>
                 {
                     b.Property<int>("HpId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HpId"));
+                    b.Property<int>("SetCd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("SET_CD")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SetCd"));
 
                     b.Property<int>("Color")
                         .HasColumnType("integer")
@@ -20199,14 +20202,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("LEVEL3");
 
-                    b.Property<int>("SetCd")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("SET_CD")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SetCd"));
-
                     b.Property<int>("SetKbn")
                         .HasColumnType("integer")
                         .HasColumnName("SET_KBN");
@@ -20216,7 +20211,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SET_KBN_EDA_NO");
 
                     b.Property<string>("SetName")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("SET_NAME");
@@ -20238,7 +20232,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("WEIGHT_KBN");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "SetCd");
 
                     b.ToTable("SET_MST");
                 });
@@ -23276,85 +23270,81 @@ namespace PostgreDataContext.Migrations
             modelBuilder.Entity("Entity.Tenant.TenMst", b =>
                 {
                     b.Property<int>("HpId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HpId"));
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(3);
 
                     b.Property<int>("AgeCheck")
                         .HasColumnType("integer")
                         .HasColumnName("AGE_CHECK");
 
                     b.Property<string>("AgekasanCd1")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("AGEKASAN_CD1");
 
                     b.Property<string>("AgekasanCd2")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("AGEKASAN_CD2");
 
                     b.Property<string>("AgekasanCd3")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("AGEKASAN_CD3");
 
                     b.Property<string>("AgekasanCd4")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("AGEKASAN_CD4");
 
                     b.Property<string>("AgekasanMax1")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MAX1");
 
                     b.Property<string>("AgekasanMax2")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MAX2");
 
                     b.Property<string>("AgekasanMax3")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MAX3");
 
                     b.Property<string>("AgekasanMax4")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MAX4");
 
                     b.Property<string>("AgekasanMin1")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MIN1");
 
                     b.Property<string>("AgekasanMin2")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MIN2");
 
                     b.Property<string>("AgekasanMin3")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MIN3");
 
                     b.Property<string>("AgekasanMin4")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("AGEKASAN_MIN4");
@@ -23388,7 +23378,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("CD_EDANO");
 
                     b.Property<string>("CdKbn")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("CD_KBN");
@@ -23454,7 +23443,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("CNV_TERM_VAL");
 
                     b.Property<string>("CnvUnitName")
-                        .IsRequired()
                         .HasMaxLength(24)
                         .HasColumnType("character varying(24)")
                         .HasColumnName("CNV_UNIT_NAME");
@@ -23565,7 +23553,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("IGAKUKANRI");
 
                     b.Property<string>("IpnNameCd")
-                        .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
                         .HasColumnName("IPN_NAME_CD");
@@ -23598,13 +23585,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_NOSEARCH");
 
-                    b.Property<string>("ItemCd")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("ITEM_CD")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("JibiAgeKasan")
                         .HasColumnType("integer")
                         .HasColumnName("JIBI_AGE_KASAN");
@@ -23626,43 +23606,36 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("JITUDAY_COUNT");
 
                     b.Property<string>("KanaName1")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME1");
 
                     b.Property<string>("KanaName2")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME2");
 
                     b.Property<string>("KanaName3")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME3");
 
                     b.Property<string>("KanaName4")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME4");
 
                     b.Property<string>("KanaName5")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME5");
 
                     b.Property<string>("KanaName6")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME6");
 
                     b.Property<string>("KanaName7")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("KANA_NAME7");
@@ -23692,7 +23665,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KENSA_FUKUSU_SANTEI");
 
                     b.Property<string>("KensaItemCd")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("KENSA_ITEM_CD");
@@ -23738,13 +23710,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KOHYO_JUN");
 
                     b.Property<string>("Kokuji1")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("KOKUJI1");
 
                     b.Property<string>("Kokuji2")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("KOKUJI2");
@@ -23762,7 +23732,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KOKUJI_EDA_NO");
 
                     b.Property<string>("KokujiKbn")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("KOKUJI_KBN");
@@ -23814,7 +23783,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("MASUI_KBN");
 
                     b.Property<string>("MaxAge")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("MAX_AGE");
@@ -23836,7 +23804,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("MAX_TEN");
 
                     b.Property<string>("MinAge")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("MIN_AGE");
@@ -23856,7 +23823,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("ODR_TERM_VAL");
 
                     b.Property<string>("OdrUnitName")
-                        .IsRequired()
                         .HasMaxLength(24)
                         .HasColumnType("character varying(24)")
                         .HasColumnName("ODR_UNIT_NAME");
@@ -23868,25 +23834,21 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("RECE_NAME");
 
                     b.Property<string>("ReceUnitCd")
-                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("RECE_UNIT_CD");
 
                     b.Property<string>("ReceUnitName")
-                        .IsRequired()
                         .HasMaxLength(24)
                         .HasColumnType("character varying(24)")
                         .HasColumnName("RECE_UNIT_NAME");
 
                     b.Property<string>("RenkeiCd1")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("RENKEI_CD1");
 
                     b.Property<string>("RenkeiCd2")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("RENKEI_CD2");
@@ -23896,7 +23858,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("ROUSAI_KBN");
 
                     b.Property<string>("RyosyuName")
-                        .IsRequired()
                         .HasMaxLength(240)
                         .HasColumnType("character varying(240)")
                         .HasColumnName("RYOSYU_NAME");
@@ -23910,7 +23871,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SANSO_KBN");
 
                     b.Property<string>("SanteiItemCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("SANTEI_ITEM_CD");
@@ -23991,17 +23951,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("SISI_KBN");
 
-                    b.Property<int>("StartDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_DATE")
-                        .HasColumnOrder(3);
-
                     b.Property<int>("SuryoRoundupKbn")
                         .HasColumnType("integer")
                         .HasColumnName("SURYO_ROUNDUP_KBN");
 
                     b.Property<string>("SyohinKanren")
-                        .IsRequired()
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)")
                         .HasColumnName("SYOHIN_KANREN");
@@ -24011,7 +23965,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SYOTI_NYUYOJI_KBN");
 
                     b.Property<string>("SyukeiSaki")
-                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("SYUKEI_SAKI");
@@ -24033,7 +23986,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("TEN_ID");
 
                     b.Property<string>("TenKbnNo")
-                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("character varying(30)")
                         .HasColumnName("TEN_KBN_NO");
@@ -24071,13 +24023,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("TYOONPA_NAISI_KBN");
 
                     b.Property<string>("TyuCd")
-                        .IsRequired()
                         .HasMaxLength(4)
                         .HasColumnType("character varying(4)")
                         .HasColumnName("TYU_CD");
 
                     b.Property<string>("TyuSeq")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("TYU_SEQ");
@@ -24100,13 +24050,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.Property<string>("YakkaCd")
-                        .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
                         .HasColumnName("YAKKA_CD");
 
                     b.Property<string>("YjCd")
-                        .IsRequired()
                         .HasMaxLength(12)
                         .HasColumnType("character varying(12)")
                         .HasColumnName("YJ_CD");
@@ -24127,7 +24075,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("ZOUEI_KBN");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "ItemCd", "StartDate");
 
                     b.ToTable("TEN_MST");
                 });
@@ -26301,8 +26249,24 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<string>("YakkaCd")
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("YAKKA_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(4);
+
                     b.Property<string>("Biko")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("BIKO");
@@ -26334,25 +26298,16 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_NOTARGET");
 
-                    b.Property<string>("ItemCd")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("ITEM_CD")
-                        .HasColumnOrder(3);
-
                     b.Property<int>("JunSenpatu")
                         .HasColumnType("integer")
                         .HasColumnName("JUN_SENPATU");
 
                     b.Property<string>("Kbn")
-                        .IsRequired()
                         .HasMaxLength(2)
                         .HasColumnType("character varying(2)")
                         .HasColumnName("KBN");
 
                     b.Property<string>("Keika")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("KEIKA");
@@ -26363,17 +26318,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(255)")
                         .HasColumnName("SEIBUN");
 
-                    b.Property<int>("StartDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_DATE")
-                        .HasColumnOrder(4);
-
                     b.Property<int>("SyusaiDate")
                         .HasColumnType("integer")
                         .HasColumnName("SYUSAI_DATE");
 
                     b.Property<string>("UnitName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("UNIT_NAME");
@@ -26395,14 +26344,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("YAKKA");
 
-                    b.Property<string>("YakkaCd")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
-                        .HasColumnName("YAKKA_CD")
-                        .HasColumnOrder(2);
-
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "YakkaCd", "ItemCd", "StartDate");
 
                     b.ToTable("YAKKA_SYUSAI_MST");
                 });

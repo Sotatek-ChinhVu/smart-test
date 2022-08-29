@@ -1,4 +1,5 @@
 using EmrCloudApi.Configs.Dependency;
+using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -2,15 +2,10 @@
 using Domain.Models.CalculationInf;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class CalculationInfRepository: ICalculationInfRepository
+    public class CalculationInfRepository : ICalculationInfRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public CalculationInfRepository(ITenantProvider tenantProvider)
@@ -21,7 +16,7 @@ namespace Infrastructure.Repositories
         public IEnumerable<CalculationInfModel> GetListDataCalculationInf(int hpId, long ptId)
         {
             var dataCalculation = _tenantDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
-                .Select( x => new CalculationInfModel(
+                .Select(x => new CalculationInfModel(
                         x.HpId,
                         x.PtId,
                         x.KbnNo,

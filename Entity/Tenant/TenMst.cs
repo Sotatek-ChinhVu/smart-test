@@ -72,7 +72,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MASTER_SBT")]
         [MaxLength(1)]
-        public string MasterSbt { get; set; } = string.Empty;
+        public string? MasterSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 診療行為区分
@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NAME")]
         [MaxLength(240)]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// カナ名称１
@@ -152,7 +152,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_NAME")]
         [MaxLength(240)]
-        public string ReceName { get; set; } = string.Empty;
+        public string? ReceName { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数識別

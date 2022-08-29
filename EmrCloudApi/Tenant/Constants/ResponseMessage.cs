@@ -33,6 +33,17 @@
         //Reception controller
 
         //PtDisease controller
+        public static readonly string UpsertPtDiseaseListSuccess = "Upsert value successfully.";
+        public static readonly string UpsertPtDiseaseListFail = "Upsert value fail.";
+        public static readonly string UpsertPtDiseaseListInputNoData = "Input no data.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiKbn = "Invalid TenKiKbn.";
+        public static readonly string UpsertPtDiseaseListInvalidSikkanKbn = "Invalid SikkanKbn.";
+        public static readonly string UpsertPtDiseaseListInvalidNanByoCd = "Invalid NanByoCd.";
+        public static readonly string UpsertPtDiseaseListPtIdNoExist = "PtId no exist.";
+        public static readonly string UpsertPtDiseaseListHokenPIdNoExist = "HokenPId no exist.";
+        public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
 
         //Insurance
 
@@ -69,13 +80,14 @@
 
         //RaiinKubun controller
 
-        //Set
+        //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
         public static readonly string GetSetListSinDate = "Invalid SinDate";
         public static readonly string GetSetListInvalidSetKbn = "Invalid SetKbn";
         public static readonly string GetSetListInvalidSetKbnEdaNo = "Invalid SetKbnEdaNo";
         public static readonly string GetSetListNoData = "No Data";
         public static readonly string GetSetListSuccessed = "Successed";
+        public static readonly string InvalidLevel = "Invalid Level, can't move";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
@@ -106,6 +118,16 @@
 
         //Flowsheet
         public static readonly string UpsertFlowSheetSuccess = "Upsert value successfully.";
+        public static readonly string UpsertFlowSheetInvalidPtId = "PtId must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate is no valid.";
+        public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
+        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn is no valid.";
+        public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo is no valid";
+        public static readonly string UpsertFlowSheetInvalidRainCmtSeqNo = "RainCmtSeqNo must be greater than or equal 0.";
+        public static readonly string UpsertFlowSheetInvalidRainListTagSeqNo = "RainListTagSeqNo must be greater than or equal 0.";
         public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
+        public static readonly string UpsertFlowSheetInputDataNoValid = "Input data no valid.";
+        public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
+        public static readonly string UpsertFlowSheetPtIdNoExist = "PtId No Exist.";
     }
 }
