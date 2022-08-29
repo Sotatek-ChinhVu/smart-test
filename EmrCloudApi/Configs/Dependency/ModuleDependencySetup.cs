@@ -34,6 +34,7 @@ using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
+using EmrCloudApi.Services;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -130,6 +131,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<ITenantProvider, TenantProvider>();
+            services.AddTransient<IAmazonS3Service, AmazonS3Service>();
         }
 
         private void SetupRepositories(IServiceCollection services)

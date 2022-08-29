@@ -11,6 +11,8 @@ namespace Infrastructure.Interfaces
     {
         string GetConnectionString();
 
+        string GetTenantId();
+
         TenantNoTrackingDataContext GetNoTrackingDataContext();
 
         TenantDataContext GetTrackingTenantDataContext();
