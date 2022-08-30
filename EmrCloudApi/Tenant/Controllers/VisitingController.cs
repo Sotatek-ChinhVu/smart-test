@@ -1,14 +1,20 @@
-﻿using Domain.Models.Reception;
+﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Messages.Reception;
 using EmrCloudApi.Tenant.Presenters.Reception;
+using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Requests.VisitingList;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
+using EmrCloudApi.Tenant.Responses.VisitingList;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Reception.GetList;
+using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -17,15 +23,17 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly ILogger<VisitingController> _logger;
-    public VisitingController(UseCaseBus bus, ILogger<VisitingController> logger)
+    private readonly IWebSocketService _webSocketService;
+
+    public VisitingController(UseCaseBus bus,
+        IWebSocketService webSocketService)
     {
         _bus = bus;
-        _logger = logger;
+        _webSocketService = webSocketService;
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<List<ReceptionRowModel>>> GetList([FromQuery] GetReceptionListRequest request)
+    public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
         var input = new GetReceptionListInputData(request.HpId, request.SinDate);
         var output = _bus.Handle(input);
@@ -34,23 +42,55 @@ public class VisitingController : ControllerBase
         return Ok(presenter.Result);
     }
 
+    [HttpGet(ApiPath.Get + "Settings")]
+    public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
+    {
+        var input = new GetReceptionSettingsInputData(req.UserId);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionSettingsPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpPost("SaveSettings")]
+    public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
+    {
+        var input = new SaveVisitingListSettingsInputData(req.UserId, req.Settings);
+        var output = _bus.Handle(input);
+        var presenter = new SaveVisitingListSettingsPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
     [HttpPut(ApiPath.Update + "StaticCell")]
-    public ActionResult<Response<UpdateReceptionStaticCellResponse>> UpdateStaticCell([FromBody] UpdateReceptionStaticCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
         var input = new UpdateReceptionStaticCellInputData(
             req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue);
         var output = _bus.Handle(input);
+        if (output.Status == UpdateReceptionStaticCellStatus.Success)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionStaticCell,
+                new UpdateReceptionStaticCellMessage(input.RaiinNo, input.CellName, input.CellValue));
+        }
+
         var presenter = new UpdateReceptionStaticCellPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPut(ApiPath.Update + "DynamicCell")]
-    public ActionResult<Response<UpdateReceptionDynamicCellResponse>> UpdateDynamicCell([FromBody] UpdateReceptionDynamicCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
         var input = new UpdateReceptionDynamicCellInputData(
             req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd);
         var output = _bus.Handle(input);
+        if (output.Status == UpdateReceptionDynamicCellStatus.Success)
+        {
+            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionDynamicCell,
+                new UpdateReceptionDynamicCellMessage(input.RaiinNo, input.GrpId, input.KbnCd));
+        }
+
         var presenter = new UpdateReceptionDynamicCellPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "PARAM")]
         [MaxLength(300)]
-        public string Param { get; set; } = string.Empty;
+        public string? Param { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

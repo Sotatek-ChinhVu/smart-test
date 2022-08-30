@@ -11,7 +11,7 @@ namespace EmrCalculateApi.Implementation
         public EmrLogger(ILogger<EmrLogger> logger, ITenantProvider tenantProvider)
         {
             _logger = logger;
-            _tenantInfo =tenantProvider.GetTenantInfo();
+            _tenantInfo = tenantProvider.GetTenantInfo();
         }
 
         public void WriteLogEnd(object className, string functionName, string message)

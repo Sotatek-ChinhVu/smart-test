@@ -1,5 +1,4 @@
-﻿using Domain.Common;
-using Helper.Common;
+﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 
@@ -11,9 +10,12 @@ public class ReceptionRowModel
         long ptNum, string kanaName, string name, int sex, int birthday, string yoyakuTime,
         string rsvFrameName, int uketukeSbtId, string uketukeTime, string sinStartTime,
         string sinEndTime, string kaikeiTime, string raiinCmt, string ptComment,
-        int tantoId, int kaId, int lastVisitDate, string sname, string raiinRemark,
-        int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells,
-        int sinDate, UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
+        int tantoId, int kaId, int lastVisitDate, int firstVisitDate, string sname, string raiinRemark,
+        int confirmationState, string confirmationResult, List<int> grpIds, List<DynamicCell> dynamicCells, int sinDate,
+        int hokenPid, int hokenStartDate, int hokenEndDate, int hokenSbtCd, int hokenKbn,
+        int kohi1HokenSbtKbn, string kohi1Houbetu, int kohi2HokenSbtKbn, string kohi2Houbetu,
+        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu,
+        UserConfCommon.DateTimeFormart dateTimeFormart = UserConfCommon.DateTimeFormart.JapaneseCalendar)
     {
         RaiinNo = raiinNo;
         PtId = ptId;
@@ -37,10 +39,13 @@ public class ReceptionRowModel
         KaikeiTime = kaikeiTime;
         RaiinCmt = raiinCmt;
         PtComment = ptComment;
-        HokenPatternName = "TODO";
+        HokenPatternName = GetHokenName(hokenPid, hokenStartDate, hokenEndDate, hokenSbtCd, hokenKbn,
+            kohi1HokenSbtKbn, kohi1Houbetu, kohi2HokenSbtKbn, kohi2Houbetu,
+            kohi3HokenSbtKbn, kohi3Houbetu, kohi4HokenSbtKbn, kohi4Houbetu);
         TantoId = tantoId;
         KaId = kaId;
         LastVisitDate = CIUtil.SDateToShowWDate2(lastVisitDate);
+        FirstVisitDate = CIUtil.SDateToShowWDate2(firstVisitDate);
         Sname = sname;
         RaiinRemark = raiinRemark;
         ConfirmationState = GetConfirmationStateText(confirmationState);
@@ -101,6 +106,7 @@ public class ReceptionRowModel
     public int KaId { get; private set; }
     // 前回来院
     public string LastVisitDate { get; private set; }
+    public string FirstVisitDate { get; private set; }
     // 主治医
     public string Sname { get; private set; }
     // 備考
@@ -150,4 +156,186 @@ public class ReceptionRowModel
         99 => "確認完了",
         _ => string.Empty
     };
+
+    private string GetHokenName(int hokenPid, int hokenStartDate, int hokenEndDate, int hokenSbtCd, int hokenKbn,
+        int kohi1HokenSbtKbn, string kohi1Houbetu, int kohi2HokenSbtKbn, string kohi2Houbetu,
+        int kohi3HokenSbtKbn, string kohi3Houbetu, int kohi4HokenSbtKbn, string kohi4Houbetu)
+    {
+        if (hokenPid == CommonConstants.InvalidId)
+        {
+            return string.Empty;
+        }
+
+        string hokenName = hokenPid.ToString().PadLeft(3, '0') + ". ";
+        if (IsExpirated())
+        {
+            hokenName = "×" + hokenName;
+        }
+
+        string prefix = string.Empty;
+        string postfix = string.Empty;
+        if (hokenSbtCd == 0)
+        {
+            switch (hokenKbn)
+            {
+                case 0:
+                    hokenName += "自費";
+                    break;
+                case 11:
+                    hokenName += "労災（短期給付）";
+                    break;
+                case 12:
+                    hokenName += "労災（傷病年金）";
+                    break;
+                case 13:
+                    hokenName += "労災（アフターケア）";
+                    break;
+                case 14:
+                    hokenName += "自賠責";
+                    break;
+                default:
+                    break;
+            }
+        }
+        else
+        {
+            if (hokenSbtCd < 0)
+            {
+                return hokenName;
+            }
+
+            string subHokenSbtCd = hokenSbtCd.ToString().PadRight(3, '0');
+            int firstNum = Int32.Parse(subHokenSbtCd[0].ToString());
+            int secondNum = Int32.Parse(subHokenSbtCd[1].ToString());
+            int thirNum = Int32.Parse(subHokenSbtCd[2].ToString());
+            switch (firstNum)
+            {
+                case 1:
+                    hokenName += "社保";
+                    break;
+                case 2:
+                    hokenName += "国保";
+                    break;
+                case 3:
+                    hokenName += "後期";
+                    break;
+                case 4:
+                    hokenName += "退職";
+                    break;
+                case 5:
+                    hokenName += "公費";
+                    break;
+            }
+
+            if (secondNum > 0)
+            {
+                if (thirNum == 1)
+                {
+                    prefix += "単独";
+                }
+                else
+                {
+                    prefix += thirNum + "併";
+                }
+
+                if (kohi1HokenSbtKbn != CommonConstants.InvalidId)
+                {
+                    if (!string.IsNullOrEmpty(postfix))
+                    {
+                        postfix += "+";
+                    }
+                    if (kohi1HokenSbtKbn != 2)
+                    {
+                        postfix += kohi1Houbetu;
+                    }
+                    else
+                    {
+                        postfix += "マル長";
+                    }
+                }
+                if (kohi2HokenSbtKbn != CommonConstants.InvalidId)
+                {
+                    if (!string.IsNullOrEmpty(postfix))
+                    {
+                        postfix += "+";
+                    }
+                    if (kohi2HokenSbtKbn != 2)
+                    {
+                        postfix += kohi2Houbetu;
+                    }
+                    else
+                    {
+                        postfix += "マル長";
+                    }
+                }
+                if (kohi3HokenSbtKbn != CommonConstants.InvalidId)
+                {
+                    if (!string.IsNullOrEmpty(postfix))
+                    {
+                        postfix += "+";
+                    }
+                    if (kohi3HokenSbtKbn != 2)
+                    {
+                        postfix += kohi3Houbetu;
+                    }
+                    else
+                    {
+                        postfix += "マル長";
+                    }
+                }
+                if (kohi4HokenSbtKbn != CommonConstants.InvalidId)
+                {
+                    if (!string.IsNullOrEmpty(postfix))
+                    {
+                        postfix += "+";
+                    }
+                    if (kohi4HokenSbtKbn != 2)
+                    {
+                        postfix += kohi4Houbetu;
+                    }
+                    else
+                    {
+                        postfix += "マル長";
+                    }
+                }
+            }
+        }
+
+        if (!string.IsNullOrEmpty(postfix))
+        {
+            hokenName = hokenName + prefix + "(" + postfix + ")";
+        }
+        else
+        {
+            hokenName = hokenName + prefix;
+        }
+
+        string sBuff = "";
+        if (hokenStartDate > 0)
+        {
+            sBuff = string.Format("{0, -11}", CIUtil.SDateToShowWDate(hokenStartDate));
+        }
+        else
+        {
+            sBuff = string.Format("{0, -11}", " ");
+        }
+
+        sBuff += " ～ ";
+
+        if (hokenEndDate > 0 && hokenEndDate < 99999999)
+        {
+            sBuff += string.Format("{0, -11}", CIUtil.SDateToShowWDate(hokenEndDate));
+        }
+        else
+        {
+            sBuff += string.Format("{0, -11}", " ");
+        }
+
+        return hokenName + " " + sBuff;
+
+        bool IsExpirated()
+        {
+            return !(hokenStartDate <= SinDate && hokenEndDate >= SinDate);
+        }
+    }
 }

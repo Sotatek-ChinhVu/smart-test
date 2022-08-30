@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// "規格毎の情報の場合、「001」からの連番になる
         /// 添付文書単位の情報の場合、「999」をセット"
         /// </summary>
-        //[Key]
+        [Key]
         [Column("BRANCH", Order = 2)]
         [MaxLength(3)]
         public string Branch { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// JPNコード
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("JPN", Order = 3)]
         [MaxLength(6)]
         public string Jpn { get; set; } = string.Empty;
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 

@@ -56,6 +56,11 @@ namespace EmrCalculateApi.Futan.Models
         {
             get
             {
+                if (PtHokenInf.HokensyaNo == null)
+                {
+                    return false;
+                }
+
                 return
                     PtHokenInf.HokenKbn == HokenKbn.Kokho &&
                     PtHokenInf.HokensyaNo.Substring(PtHokenInf.HokensyaNo.Length - 4, 1) == "3";
@@ -67,6 +72,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public bool IsKokPrefIn(int prefNo)
         {
+            if (PtHokenInf.HokensyaNo == null)
+            {
+                return false;
+            }
+
             return
                 PtHokenInf.HokenKbn == HokenKbn.Kokho &&
                 PtHokenInf.HokensyaNo.Substring(PtHokenInf.HokensyaNo.Length - 6, 2) == prefNo.ToString();
@@ -102,7 +112,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string Houbetu
         {
-            get { return PtHokenInf.Houbetu; }
+            get { return PtHokenInf.Houbetu ?? string.Empty; }
         }
 
         /// <summary>

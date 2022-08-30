@@ -7,5 +7,8 @@
         public const string Update = "Update";
         public const string Upsert = "Upsert";
         public const string UpsertList = "UpsertList";
+        public const string SaveList = "SaveList";
+        public const string Save = "Save";
+        public const string Reorder = "Reorder";
     }
 }

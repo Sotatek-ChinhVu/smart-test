@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RSV_FRAME_NAME")]
         [MaxLength(60)]
-        public string RsvFrameName { get; set; } = string.Empty;
+        public string? RsvFrameName { get; set; } = string.Empty;
 
         /// <summary>
         /// 担当医ID
