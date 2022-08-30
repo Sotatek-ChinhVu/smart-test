@@ -1,6 +1,7 @@
-using Domain.CalculationInf;
+﻿using Domain.CalculationInf;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
+using Domain.Models.DrugDetail;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
 using Domain.Models.InputItem;
@@ -42,6 +43,7 @@ using Infrastructure.Repositories.SpecialNote;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
+using Interactor.DrugDetail;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.InputItem;
@@ -72,6 +74,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
+using UseCase.DrugDetail;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -183,6 +186,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
+            services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
         }
 
@@ -294,6 +298,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
+
+            // Drug Infor - Data Menu and Detail 
+            busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
