@@ -33,7 +33,7 @@ namespace Interactor.ReceptionInsurance
                 return new GetReceptionInsuranceOutputData(new List<ReceptionInsuranceModel>(), GetReceptionInsuranceStatus.InvalidHpId);
             }
 
-            var data = _receptionInsuranceRepository.GetReceptionInsurance(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var data = _receptionInsuranceRepository.GetReceptionInsurance(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsShowExpiredReception);
 
             return new GetReceptionInsuranceOutputData(data.ToList(), GetReceptionInsuranceStatus.Successed);
         }
