@@ -16,6 +16,54 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
     {
+        if (inputData.SinDate <= 150000101 && inputData.SinDate > 30000000)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSindate);
+        }
+        else if (inputData.SetCd < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetCd);
+        }
+        else if (inputData.SetKbn < 1 && inputData.SetKbn > 10)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetKbn);
+        }
+        else if (inputData.SetKbnEdaNo < 1 && inputData.SetKbnEdaNo > 6)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetKbnEdaNo);
+        }
+        else if (inputData.GenerationId < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidGenarationId);
+        }
+        else if (inputData.Level1 <= 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel1);
+        }
+        else if (inputData.Level2 < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel2);
+        }
+        else if (inputData.Level3 < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidLevel3);
+        }
+        else if (inputData.SetName.Length > 60)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSetName);
+        }
+        else if (inputData.WeightKbn < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidWeightKbn);
+        }
+        else if (inputData.Color < 0)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidColor);
+        }
+        else if (inputData.IsDeleted < 0 && inputData.IsDeleted > 1)
+        {
+            return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidIsDeleted);
+        }
         try
         {
             var setMstModel = new SetMstModel(
