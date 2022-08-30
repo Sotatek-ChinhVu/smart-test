@@ -56,6 +56,12 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public bool CheckExistOrder(long rpNo, long rpEdaNo)
+        {
+            var check = _tenantDataContext.OdrInfs.Any(o => o.RpNo == rpNo && o.RpEdaNo == rpEdaNo);
+            return check;
+        }
+
         private OrdInfModel ConvertToModel(OdrInf ordInf, List<OdrInfDetail>? ordInfDetails)
         {
             return new OrdInfModel(ordInf.HpId,
@@ -122,6 +128,7 @@ namespace Infrastructure.Repositories
                             0,
                             0,
                             false,
+                            0,
                             0,
                             0
                 );

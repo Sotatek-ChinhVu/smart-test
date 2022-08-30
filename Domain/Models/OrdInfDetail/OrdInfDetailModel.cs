@@ -49,7 +49,7 @@ namespace Domain.Models.OrdInfDetails
         public int RefillSetting { get; private set; }
         public int CmtCol1 { get; private set; }
 
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1)
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -93,6 +93,7 @@ namespace Domain.Models.OrdInfDetails
             IsGetPriceInYakka = isGetPriceInYakka;
             RefillSetting = refillSetting;
             CmtCol1 = cmtCol1;
+            Ten = ten;
         }
 
         public bool IsSpecialItem
@@ -197,19 +198,14 @@ namespace Domain.Models.OrdInfDetails
 
         public TodayOrdValidationStatus Validation()
         {
-            if ((IsDrug || IsInjection) && !IsSpecialItem)
+            if (!TodayOrderConst.KohatuKbns.Values.Contains(KohatuKbn))
             {
-                return TodayOrdValidationStatus.InvalidSpecialDetailItem;
+                return TodayOrdValidationStatus.InvalidKohatuKbn;
             }
 
-            if (IsStandardUsage || IsInjectionUsage)
+            if (!TodayOrderConst.KohatuKbns.Values.Contains(KohatuKbn))
             {
-                return TodayOrdValidationStatus.InvalidUsage;
-            }
-
-            if (IsSuppUsage)
-            {
-                return TodayOrdValidationStatus.InvalidSuppUsage;
+                return TodayOrdValidationStatus.InvalidDrugKbn;
             }
 
             if (!string.IsNullOrWhiteSpace(DisplayedUnit))

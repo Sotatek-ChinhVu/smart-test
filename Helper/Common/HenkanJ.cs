@@ -11,16 +11,38 @@ namespace Helper.Common
 
         public static string HankToZen(string fullWidth)
         {
-            StringBuilder sb = new StringBuilder(256);
-            LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH, fullWidth, -1, sb, sb.Capacity);
-            return sb.ToString();
+            try
+            {
+                StringBuilder sb = new StringBuilder(256);
+                LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH, fullWidth, -1, sb, sb.Capacity);
+                //This function does not convert \ → ￥
+                //Replace by hand
+                sb = sb.Replace("\\", "￥");
+                //Win7の仕様変更（結合できない濁点[゛]が[?]に変換される）
+                sb = sb.Replace("゛", "?");
+                //Win7の仕様変更（結合できない半濁点[゜]が[?]に変換される）
+                sb = sb.Replace("゜", "?");
+
+                return sb.ToString();
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         public static string ZenToHank(string halfWidth)
         {
-            StringBuilder sb = new StringBuilder(256);
-            LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_FULLWIDTH, halfWidth, -1, sb, sb.Capacity);
-            return sb.ToString();
+            try
+            {
+                StringBuilder sb = new StringBuilder(256);
+                LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_FULLWIDTH, halfWidth, -1, sb, sb.Capacity);
+                return sb.ToString();
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]

@@ -6,6 +6,8 @@ using Domain.Models.GroupInf;
 using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
+using Domain.Models.IpnKasanExcludeItem;
+using Domain.Models.IpnMinYakkaMst;
 using Domain.Models.KaMst;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
@@ -29,6 +31,7 @@ using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemConf;
+using Domain.Models.SystemGenerationConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
@@ -84,6 +87,7 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
+using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
@@ -174,6 +178,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
+            services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
+            services.AddTransient<IIpnMinYakaMstRepository, IpnMinYakaMstRepository>();
+            services.AddTransient<IIpnKasanExcludeRepository, IpnKasanExcludeRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -279,6 +286,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
+
+            //Validation TodayOrder
+            busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
