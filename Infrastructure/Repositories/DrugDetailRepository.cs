@@ -3,15 +3,10 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class DrugDetailRepository: IDrugDetailRepository
+    public class DrugDetailRepository : IDrugDetailRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public DrugDetailRepository(ITenantProvider tenantProvider)
@@ -32,11 +27,11 @@ namespace Infrastructure.Repositories
             var queryM28DrugMsts = _tenantDataContext.M28DrugMst.ToList();
             //Join
             var joinQueryDrugInf = from m28DrugMst in queryM28DrugMsts
-                            join tenItem in quetyTenMsts
-                            on m28DrugMst.KikinCd equals tenItem.ItemCd
-                            join drugInfor in queryDrugInfs
-                            on m28DrugMst.YjCd equals drugInfor.YjCd
-                            select new { drugInfor, tenItem };
+                                   join tenItem in quetyTenMsts
+                                   on m28DrugMst.KikinCd equals tenItem.ItemCd
+                                   join drugInfor in queryDrugInfs
+                                   on m28DrugMst.YjCd equals drugInfor.YjCd
+                                   select new { drugInfor, tenItem };
             var drugInf = joinQueryDrugInf.FirstOrDefault();
             if (drugInf != null && drugInf.drugInfor != null)
             {
@@ -121,14 +116,14 @@ namespace Infrastructure.Repositories
                     var itemDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
                     drugMenuItems[i].DetailInfor = itemDetail;
 
-                    if(drugMenuItems[i].MenuItem.Childrens.Count > 0)
+                    if (drugMenuItems[i].MenuItem.Childrens.Count > 0)
                     {
                         foreach (var item in drugMenuItems[i].MenuItem.Childrens)
                         {
                             var itemChildrentDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
                             item.DetailInfor = itemChildrentDetail;
                         }
-                    }    
+                    }
                 }
             }
 
@@ -136,7 +131,7 @@ namespace Infrastructure.Repositories
             return drugMenuItems;
         }
 
-        private DrugDetailModel GetDetail(int selectedIndex,string drugName, string itemCd, string yjCode, List<DrugMenuItemModel> listDrugMenu, DrugMenuItemModel drugMenuItem, List<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, List<PiInfDetail> piInfDetailCollection)
+        private DrugDetailModel GetDetail(int selectedIndex, string drugName, string itemCd, string yjCode, List<DrugMenuItemModel> listDrugMenu, DrugMenuItemModel drugMenuItem, List<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, List<PiInfDetail> piInfDetailCollection)
         {
             if (selectedIndex >= 0)
             {
@@ -243,7 +238,7 @@ namespace Infrastructure.Repositories
                                newArCode.FukusayoCmt
                            };
 
-            var model = yakuJoin.Take(1).AsEnumerable().Select(m => new YakuModel( 
+            var model = yakuJoin.Take(1).AsEnumerable().Select(m => new YakuModel(
                                                                     m.Form,
                                                                     m.Color,
                                                                     m.Mark,
@@ -284,7 +279,7 @@ namespace Infrastructure.Repositories
                             {
                                 sarSumptom.FukusayoInitCmt
                             };
-            var model = syokiJoin.Take(1).AsEnumerable().Select(y => new SyokiModel(y.FukusayoInitCmt) ).FirstOrDefault();
+            var model = syokiJoin.Take(1).AsEnumerable().Select(y => new SyokiModel(y.FukusayoInitCmt)).FirstOrDefault();
 
             return model;
         }
@@ -299,7 +294,7 @@ namespace Infrastructure.Repositories
                             join interactionPatCode in m34InteractionPatCodeRepo
                             on interactionPat.InteractionPatCd equals interactionPatCode.InteractionPatCd
                             select new { interactionPatCode.InteractionPatCmt };
-            var models = sougoJoin.AsEnumerable().Select(s => new SougoModel(s.InteractionPatCmt) ).ToList();
+            var models = sougoJoin.AsEnumerable().Select(s => new SougoModel(s.InteractionPatCmt)).ToList();
             return models;
 
         }
@@ -354,7 +349,7 @@ namespace Infrastructure.Repositories
                                 ItemCd = tekioByomei.ItemCd,
                                 SByomei = byomeiMst.Sbyomei
                             };
-            var list = joinQuery.AsEnumerable().Select(j => new TenMstByomeiModel(j.ItemCd,  j.SByomei)).OrderBy(item => item.Byomei).ToList();
+            var list = joinQuery.AsEnumerable().Select(j => new TenMstByomeiModel(j.ItemCd, j.SByomei)).OrderBy(item => item.Byomei).ToList();
             return list;
         }
 
