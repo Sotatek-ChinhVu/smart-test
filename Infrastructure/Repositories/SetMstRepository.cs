@@ -252,7 +252,7 @@ public class SetMstRepository : ISetMstRepository
             }
 
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
-            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1 && mst.GenerationId == dragItem.GenerationId).ToList();
 
             if (dropItem != null)
             {
