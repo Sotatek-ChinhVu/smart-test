@@ -1,8 +1,10 @@
-﻿namespace UseCase.SetMst.GetList
+﻿using Domain.Models.SetMst;
+
+namespace UseCase.SetMst.GetList
 {
     public class GetSetMstListOutputItem
     {
-        public GetSetMstListOutputItem(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isGroup, List<GetSetMstListOutputItem>? childrens)
+        public GetSetMstListOutputItem(int hpId, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isGroup, List<GetSetMstListOutputItem>? childrens, SetMstTooltipModel? setMstTooltip)
         {
             HpId = hpId;
             SetCd = setCd;
@@ -17,6 +19,7 @@
             Color = color;
             IsGroup = isGroup;
             Childrens = childrens;
+            SetMstTooltip = setMstTooltip;
         }
 
         public int HpId { get; private set; }
@@ -32,5 +35,6 @@
         public int Color { get; private set; }
         public int IsGroup { get; private set; }
         public List<GetSetMstListOutputItem>? Childrens { get; private set; }
+        public SetMstTooltipModel? SetMstTooltip { get; private set; }
     }
 }
