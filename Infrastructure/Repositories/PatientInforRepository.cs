@@ -1,6 +1,7 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
+using Helper.Extension;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extendsions;

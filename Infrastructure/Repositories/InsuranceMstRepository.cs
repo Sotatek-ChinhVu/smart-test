@@ -2,7 +2,7 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extendsions;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -87,7 +87,7 @@ namespace Infrastructure.Repositories
 
             // data combobox 9
             var dataHokenInfor = _tenantDataContext.PtHokenInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId);
-            List<KantokuMstModel>? dataComboboxKantokuMst = new List<KantokuMstModel>();
+            List<KantokuMstModel> dataComboboxKantokuMst;
 
             if (dataHokenInfor != null &&
                 (dataHokenInfor.HokenKbn == 11 || dataHokenInfor.HokenKbn == 12 || dataHokenInfor.HokenKbn == 13))
