@@ -43,6 +43,24 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
     }
 
+    public async Task<bool> ObjectExistsAsync(string key)
+    {
+        try
+        {
+            var response = await _s3Client.GetObjectAsync(_options.BucketName, key);
+            return response.HttpStatusCode == HttpStatusCode.OK;
+        }
+        catch (AmazonS3Exception e)
+        {
+            if (e.StatusCode == HttpStatusCode.NotFound)
+            {
+                return false;
+            }
+
+            throw;
+        }
+    }
+
     public void Dispose()
     {
         _s3Client.Dispose();
