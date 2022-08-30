@@ -45,154 +45,154 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI_CD")]
         [MaxLength(7)]
-        public string ByomeiCd { get; set; } = string.Empty;
+        public string? ByomeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１
         /// </summary>
         [Column("SYUSYOKU_CD1")]
         [MaxLength(7)]
-        public string SyusyokuCd1 { get; set; } = string.Empty;
+        public string? SyusyokuCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード２
         /// </summary>
         [Column("SYUSYOKU_CD2")]
         [MaxLength(7)]
-        public string SyusyokuCd2 { get; set; } = string.Empty;
+        public string? SyusyokuCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード３
         /// </summary>
         [Column("SYUSYOKU_CD3")]
         [MaxLength(7)]
-        public string SyusyokuCd3 { get; set; } = string.Empty;
+        public string? SyusyokuCd3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード４
         /// </summary>
         [Column("SYUSYOKU_CD4")]
         [MaxLength(7)]
-        public string SyusyokuCd4 { get; set; } = string.Empty;
+        public string? SyusyokuCd4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード５
         /// </summary>
         [Column("SYUSYOKU_CD5")]
         [MaxLength(7)]
-        public string SyusyokuCd5 { get; set; } = string.Empty;
+        public string? SyusyokuCd5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード６
         /// </summary>
         [Column("SYUSYOKU_CD6")]
         [MaxLength(7)]
-        public string SyusyokuCd6 { get; set; } = string.Empty;
+        public string? SyusyokuCd6 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード７
         /// </summary>
         [Column("SYUSYOKU_CD7")]
         [MaxLength(7)]
-        public string SyusyokuCd7 { get; set; } = string.Empty;
+        public string? SyusyokuCd7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード８
         /// </summary>
         [Column("SYUSYOKU_CD8")]
         [MaxLength(7)]
-        public string SyusyokuCd8 { get; set; } = string.Empty;
+        public string? SyusyokuCd8 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード９
         /// </summary>
         [Column("SYUSYOKU_CD9")]
         [MaxLength(7)]
-        public string SyusyokuCd9 { get; set; } = string.Empty;
+        public string? SyusyokuCd9 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１０
         /// </summary>
         [Column("SYUSYOKU_CD10")]
         [MaxLength(7)]
-        public string SyusyokuCd10 { get; set; } = string.Empty;
+        public string? SyusyokuCd10 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１１
         /// </summary>
         [Column("SYUSYOKU_CD11")]
         [MaxLength(7)]
-        public string SyusyokuCd11 { get; set; } = string.Empty;
+        public string? SyusyokuCd11 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１２
         /// </summary>
         [Column("SYUSYOKU_CD12")]
         [MaxLength(7)]
-        public string SyusyokuCd12 { get; set; } = string.Empty;
+        public string? SyusyokuCd12 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１３
         /// </summary>
         [Column("SYUSYOKU_CD13")]
         [MaxLength(7)]
-        public string SyusyokuCd13 { get; set; } = string.Empty;
+        public string? SyusyokuCd13 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１４
         /// </summary>
         [Column("SYUSYOKU_CD14")]
         [MaxLength(7)]
-        public string SyusyokuCd14 { get; set; } = string.Empty;
+        public string? SyusyokuCd14 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１５
         /// </summary>
         [Column("SYUSYOKU_CD15")]
         [MaxLength(7)]
-        public string SyusyokuCd15 { get; set; } = string.Empty;
+        public string? SyusyokuCd15 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１６
         /// </summary>
         [Column("SYUSYOKU_CD16")]
         [MaxLength(7)]
-        public string SyusyokuCd16 { get; set; } = string.Empty;
+        public string? SyusyokuCd16 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１７
         /// </summary>
         [Column("SYUSYOKU_CD17")]
         [MaxLength(7)]
-        public string SyusyokuCd17 { get; set; } = string.Empty;
+        public string? SyusyokuCd17 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１８
         /// </summary>
         [Column("SYUSYOKU_CD18")]
         [MaxLength(7)]
-        public string SyusyokuCd18 { get; set; } = string.Empty;
+        public string? SyusyokuCd18 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード１９
         /// </summary>
         [Column("SYUSYOKU_CD19")]
         [MaxLength(7)]
-        public string SyusyokuCd19 { get; set; } = string.Empty;
+        public string? SyusyokuCd19 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード２０
         /// </summary>
         [Column("SYUSYOKU_CD20")]
         [MaxLength(7)]
-        public string SyusyokuCd20 { get; set; } = string.Empty;
+        public string? SyusyokuCd20 { get; set; } = string.Empty;
 
         /// <summary>
         /// 修飾語コード２１
         /// </summary>
         [Column("SYUSYOKU_CD21")]
         [MaxLength(7)]
-        public string SyusyokuCd21 { get; set; } = string.Empty;
+        public string? SyusyokuCd21 { get; set; } = string.Empty;
 
         /// <summary>
         /// 病名
@@ -200,7 +200,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(160)]
-        public string Byomei { get; set; } = string.Empty;
+        public string? Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 主病名区分
@@ -238,7 +238,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOSOKU_CMT")]
         [MaxLength(80)]
-        public string HosokuCmt { get; set; } = string.Empty;
+        public string? HosokuCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// レセプト非表示区分

@@ -30,6 +30,11 @@ public class SetMstRepository : ISetMstRepository
             return new List<SetMstModel>();
         }
 
+        var listSetCd = setEntities.Select(item => item.SetCd).ToList();
+        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != String.Empty).ToList();
+        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != String.Empty).ToList();
+        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listSetCd.Contains(item.SetCd)).ToList();
+
         return setEntities.Select(s =>
                 new SetMstModel(
                     s.HpId,
@@ -44,9 +49,14 @@ public class SetMstRepository : ISetMstRepository
                     s.WeightKbn,
                     s.Color,
                     s.IsDeleted,
-                    s.IsGroup
-                )
-              ).ToList();
+                    s.IsGroup,
+                    new SetMstTooltipModel(
+                            listByomeis.Where(item => item.SetCd == s.SetCd).Select(item => item.Byomei ?? String.Empty).ToList(),
+                            listOrders.Where(item => item.SetCd == s.SetCd).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList(),
+                            listKarteNames.Where(item => item.SetCd == s.SetCd).Select(item => item.Text ?? String.Empty).ToList()
+                        )
+                    )
+                ).ToList();
     }
 
     public SetMstModel? SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
@@ -176,7 +186,12 @@ public class SetMstRepository : ISetMstRepository
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
-                    setMst.IsGroup
+                    setMst.IsGroup,
+                    new SetMstTooltipModel(
+                            new(),
+                            new List<OrderTooltipModel>(),
+                            new()
+                        )
                 );
         }
         catch
@@ -215,5 +230,408 @@ public class SetMstRepository : ISetMstRepository
         setMst.UpdateDate = DateTime.UtcNow;
         setMst.UpdateId = userId;
         return setMst;
+    }
+
+    public bool ReorderSetMst(int userId, int hpId, int setCdDragItem, int setCdDropItem)
+    {
+        bool status = false;
+        try
+        {
+            var dragItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDragItem && mst.HpId == hpId);
+            var dropItem = _tenantDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdDropItem && mst.HpId == hpId);
+
+            // if dragItem is not exist
+            if (dragItem == null)
+            {
+                return status;
+            }
+            // if dropItem input is not exist
+            else if (dropItem == null && setCdDropItem != 0)
+            {
+                return status;
+            }
+
+            // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
+            var listSetMsts = _tenantDataContext.SetMsts.Where(mst => mst.SetKbn == dragItem.SetKbn && mst.SetKbnEdaNo == dragItem.SetKbnEdaNo && mst.HpId == dragItem.HpId && mst.Level1 > 0 && mst.IsDeleted != 1).ToList();
+
+            if (dropItem != null)
+            {
+                // if dragItem SetKbnEdaNo diffirent dropItem SetKbnEdaNo or dragItem SetKbn different dropItem SetKbn
+                if (dragItem.SetKbnEdaNo != dropItem.SetKbnEdaNo || dragItem.SetKbn != dropItem.SetKbn)
+                {
+                    return status;
+                }
+
+                // if dragItem is level1
+                if (dragItem.Level2 == 0 && dragItem.Level3 == 0)
+                {
+                    status = DragItemIsLevel1(dragItem, dropItem, userId, listSetMsts);
+                }
+
+                // if dragItem is level2
+                else if (dragItem.Level2 > 0 && dragItem.Level3 == 0)
+                {
+                    status = DragItemIsLevel2(dragItem, dropItem, userId, listSetMsts);
+                }
+
+                // if dragItem is level 3
+                else if (dragItem.Level3 > 0)
+                {
+                    status = DragItemIsLevel3(dragItem, dropItem, userId, listSetMsts);
+                }
+            }
+            else if (setCdDropItem == 0)
+            {
+                status = DragItemWithDropItemIsLevel0(dragItem, userId, listSetMsts);
+            }
+
+            _tenantDataContext.SaveChanges();
+        }
+        catch
+        {
+            return status;
+        }
+        return status;
+    }
+
+    private bool DragItemIsLevel1(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
+    {
+        var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
+        // if drop item is level 1
+        if (dropItem.Level2 == 0 && dropItem.Level3 == 0)
+        {
+            if (dragItem.Level1 > dropItem.Level1)
+            {
+                var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dropItem.Level1 && mst.Level1 < dragItem.Level1).ToList();
+                LevelDown(1, userId, listUpdateLevel1);
+
+                foreach (var item in listDragItem)
+                {
+                    item.Level1 = dropItem.Level1 + 1;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = userId;
+                }
+            }
+            else if (dragItem.Level1 < dropItem.Level1)
+            {
+                var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1 && mst.Level1 <= dropItem.Level1).ToList();
+                LevelUp(1, userId, listUpdateLevel1);
+
+                foreach (var item in listDragItem)
+                {
+                    item.Level1 = dropItem.Level1 + 1;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = userId;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        // if drop item is level 2
+        else if (dropItem.Level2 > 0 && dropItem.Level3 == 0)
+        {
+            // if same level1 => return false
+            if (dragItem.Level1 == dropItem.Level1)
+            {
+                return false;
+            }
+            // if level1 has children => return false
+            if (listDragItem?.Count(item => item.Level2 > 0) > 0)
+            {
+                return false;
+            }
+            var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
+            LevelDown(3, userId, listUpdateLevel3);
+
+            var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > dragItem.Level1).ToList();
+            LevelUp(1, userId, listUpdateLevel1);
+
+            dragItem.Level1 = dropItem.Level1;
+            dragItem.Level2 = dropItem.Level2;
+            dragItem.Level3 = 1;
+        }
+        // if drop item is level 3 return false
+        else if (dropItem.Level3 > 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private bool DragItemIsLevel2(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
+    {
+        // if dropItem is level1
+        if (dropItem.Level2 == 0)
+        {
+            if (dragItem.Level1 == dropItem.Level1)
+            {
+                var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > 0 && mst.Level2 < dragItem.Level2).ToList();
+                LevelDown(2, userId, listDropUpdateLevel2);
+
+                var listDragItem = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+                foreach (var item in listDragItem)
+                {
+                    item.Level2 = 1;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = userId;
+                }
+            }
+            else
+            {
+                var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
+                LevelDown(2, userId, listDropUpdateLevel2);
+
+                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
+                LevelUp(2, userId, listDragUpdateLevel2);
+
+                var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+                foreach (var item in listDrag)
+                {
+                    item.Level1 = dropItem.Level1;
+                    item.Level2 = 1;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = userId;
+                }
+            }
+        }
+        // if dropItem is level2
+        else if (dropItem.Level2 > 0 && dropItem.Level3 == 0)
+        {
+            if (dragItem.Level1 == dropItem.Level1)
+            {
+                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+                if (dragItem.Level2 > dropItem.Level2)
+                {
+                    var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dropItem.Level2 && mst.Level2 < dragItem.Level2).ToList();
+                    LevelDown(2, userId, listUpdateLevel2);
+
+                    foreach (var item in listDragUpdateLevel2)
+                    {
+                        item.Level2 = dropItem.Level2 + 1;
+                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateId = userId;
+                    }
+                }
+                else if (dragItem.Level2 < dropItem.Level2)
+                {
+                    var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2 && mst.Level2 <= dropItem.Level2).ToList();
+                    LevelUp(2, userId, listUpdateLevel2);
+
+                    foreach (var item in listDragUpdateLevel2)
+                    {
+                        item.Level2 = dropItem.Level2 + 1;
+                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateId = userId;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (listSetMsts?.Count(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0) > 0)
+                {
+                    return false;
+                }
+                var listUpdateLevel3 = listSetMsts?.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList() ?? new();
+                LevelDown(3, userId, listUpdateLevel3);
+
+                var listDragUpdateLevel2 = listSetMsts?.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
+                LevelUp(2, userId, listDragUpdateLevel2);
+
+                dragItem.Level1 = dropItem.Level1;
+                dragItem.Level2 = dropItem.Level2;
+                dragItem.Level3 = 1;
+                dragItem.UpdateDate = DateTime.UtcNow;
+                dragItem.UpdateId = userId;
+            }
+        }
+        // if dropItem is level3 => return false
+        else if (dropItem.Level3 > 0)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    private bool DragItemIsLevel3(SetMst dragItem, SetMst dropItem, int userId, List<SetMst> listSetMsts)
+    {
+        // if dropItem is level1 
+        if (dropItem.Level2 == 0)
+        {
+            var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
+            LevelUp(3, userId, listUpdateLevel3);
+
+            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList();
+            LevelDown(2, userId, listUpdateLevel2);
+
+            dragItem.Level1 = dropItem.Level1;
+            dragItem.Level2 = 1;
+            dragItem.Level3 = 0;
+            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateId = userId;
+        }
+        else if (dropItem.Level2 > 0 && dropItem.Level3 == 0)
+        {
+            if (dragItem.Level1 == dropItem.Level1 && dragItem.Level2 == dropItem.Level2)
+            {
+                var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
+                LevelDown(3, userId, listUpdateLevel3);
+                dragItem.Level3 = 1;
+                dragItem.UpdateId = userId;
+                dragItem.UpdateDate = DateTime.UtcNow;
+            }
+            else
+            {
+                var listDragUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
+                LevelUp(3, userId, listDragUpdateLevel3);
+
+                var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > 0).ToList();
+                LevelDown(3, userId, listDropUpdateLevel3);
+
+                dragItem.Level1 = dropItem.Level1;
+                dragItem.Level2 = dropItem.Level2;
+                dragItem.Level3 = 1;
+                dragItem.UpdateDate = DateTime.UtcNow;
+                dragItem.UpdateId = userId;
+            }
+        }
+        else if (dropItem.Level3 > 0)
+        {
+            if (dragItem.Level1 == dropItem.Level1 && dragItem.Level2 == dropItem.Level2)
+            {
+                if (dragItem.Level3 > dropItem.Level3)
+                {
+                    var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 == dropItem.Level2 && mst.Level3 > dropItem.Level3 && mst.Level3 < dragItem.Level3).ToList();
+                    LevelDown(3, userId, listDropUpdateLevel3);
+
+                    dragItem.Level3 = dropItem.Level3 + 1;
+                    dragItem.UpdateDate = DateTime.UtcNow;
+                    dragItem.UpdateId = userId;
+                }
+                else if (dragItem.Level3 < dropItem.Level3)
+                {
+                    var listDropUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3 && mst.Level3 <= dropItem.Level3).ToList();
+                    LevelUp(3, userId, listDropUpdateLevel3);
+
+                    dragItem.Level3 = dropItem.Level3 + 1;
+                    dragItem.UpdateDate = DateTime.UtcNow;
+                    dragItem.UpdateId = userId;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private bool DragItemWithDropItemIsLevel0(SetMst dragItem, int userId, List<SetMst> listSetMsts)
+    {
+        if (dragItem.Level2 == 0)
+        {
+            var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0 && mst.Level1 < dragItem.Level1).ToList();
+            var listDragUpdate = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1).ToList();
+            LevelDown(1, userId, listUpdateLevel1);
+            foreach (var item in listDragUpdate)
+            {
+                item.Level1 = 1;
+                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateId = userId;
+            }
+        }
+        else if (dragItem.Level2 > 0 && dragItem.Level3 == 0)
+        {
+            var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
+            LevelDown(1, userId, listUpdateLevel1);
+
+            var listUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList();
+            var listDragUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > 0).ToList();
+
+            LevelUp(2, userId, listUpdateLevel2);
+
+            // level3 => level2
+            foreach (var levelNew in listDragUpdateLevel3)
+            {
+                levelNew.Level1 = 1;
+                levelNew.Level2 = levelNew.Level3;
+                levelNew.Level3 = 0;
+                levelNew.UpdateDate = DateTime.UtcNow;
+                levelNew.UpdateId = userId;
+            }
+
+            // level2 => level1
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateId = userId;
+        }
+        else if (dragItem.Level2 > 0 && dragItem.Level3 > 0)
+        {
+            var listUpdateLevel1 = listSetMsts.Where(mst => mst.Level1 > 0).ToList();
+            var listUpdateLevel3 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2 && mst.Level3 > dragItem.Level3).ToList();
+
+            LevelDown(1, userId, listUpdateLevel1);
+
+            LevelUp(3, userId, listUpdateLevel3);
+
+            dragItem.Level1 = 1;
+            dragItem.Level2 = 0;
+            dragItem.Level3 = 0;
+            dragItem.UpdateDate = DateTime.UtcNow;
+            dragItem.UpdateId = userId;
+        }
+        return true;
+    }
+    private void LevelDown(int level, int userId, List<SetMst> listUpdate)
+    {
+        foreach (var item in listUpdate)
+        {
+            switch (level)
+            {
+                case 1:
+                    item.Level1 = item.Level1 + 1;
+                    break;
+                case 2:
+                    item.Level2 = item.Level2 + 1;
+                    break;
+                case 3:
+                    item.Level3 = item.Level3 + 1;
+                    break;
+            }
+            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateId = userId;
+        }
+    }
+
+    private void LevelUp(int level, int userId, List<SetMst> listUpdate)
+    {
+        foreach (var item in listUpdate)
+        {
+            switch (level)
+            {
+                case 1:
+                    item.Level1 = item.Level1 - 1;
+                    break;
+                case 2:
+                    item.Level2 = item.Level2 - 1;
+                    break;
+                case 3:
+                    item.Level3 = item.Level3 - 1;
+                    break;
+            }
+            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateId = userId;
+        }
     }
 }

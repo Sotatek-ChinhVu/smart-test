@@ -67,7 +67,7 @@ namespace Interactor.SpecialNote
             var seikaturekiInfItem = _patientInfoRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault();
             var listPhysicalItems = _patientInfoRepository.GetPhysicalList(hpId, ptId);
 
-            return new PatientInfoModel(ptPregnancyItem ?? new PtPregnancyModel(), ptCmtInfItem ?? new PtCmtInfModel(), seikaturekiInfItem ?? new SeikaturekiInfModel(), listPhysicalItems ?? new List<PhysicalInfoModel>());
+            return new PatientInfoModel(ptPregnancyItem ?? new PtPregnancyModel(), ptCmtInfItem ?? new PtCmtInfModel(), seikaturekiInfItem ?? new SeikaturekiInfModel(), listPhysicalItems);
         }
         #endregion
     }

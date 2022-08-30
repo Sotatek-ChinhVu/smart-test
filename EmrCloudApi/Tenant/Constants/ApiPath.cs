@@ -10,5 +10,6 @@
         public const string SaveList = "SaveList";
         public const string Save = "Save";
         public const string Validate = "Validate";
+        public const string Reorder = "Reorder";
     }
 }
