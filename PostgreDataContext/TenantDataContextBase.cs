@@ -113,6 +113,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinListTag>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
             modelBuilder.Entity<SetOdrInf>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.Id });
             modelBuilder.Entity<SetOdrInfDetail>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo });
+            modelBuilder.Entity<SetKarteInf>().HasKey(e => new { e.HpId, e.SetCd, e.KarteKbn, e.SeqNo});
+            modelBuilder.Entity<SetByomei>().HasKey(e => new { e.Id, e.HpId, e.SetCd, e.SeqNo});
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
