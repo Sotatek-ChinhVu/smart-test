@@ -8,6 +8,6 @@ namespace Domain.Models.ReceptionInsurance
 {
     public interface IReceptionInsuranceRepository
     {
-        public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate);
+        public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception);
     }
 }
