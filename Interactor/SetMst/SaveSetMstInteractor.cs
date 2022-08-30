@@ -32,7 +32,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.Color,
                                 inputData.IsDeleted,
                                 inputData.IsGroup ? 1 : 0,
-                                null
+                                new SetMstTooltipModel()
                              );
             var resultData = _setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel);
             if (resultData != null)
