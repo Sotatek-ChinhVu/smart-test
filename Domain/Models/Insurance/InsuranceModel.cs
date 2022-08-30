@@ -3,13 +3,13 @@ using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
-using Helper.Extendsions;
+using Helper.Extension;
 
 namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate)
+        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string hokenMemo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -77,6 +77,7 @@ namespace Domain.Models.InsuranceInfor
             JibaiHokenTanto = jibaiHokenTanto;
             JibaiHokenTel = jibaiHokenTel;
             JibaiJyusyouDate = jibaiJyusyouDate;
+            HokenMemo = hokenMemo;
         }
 
         public InsuranceModel(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
@@ -147,6 +148,7 @@ namespace Domain.Models.InsuranceInfor
             JibaiHokenTanto = string.Empty;
             JibaiHokenTel = string.Empty;
             JibaiJyusyouDate = 0;
+            HokenMemo = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -290,6 +292,9 @@ namespace Domain.Models.InsuranceInfor
         public string JibaiHokenTel { get; private set; }
 
         public int JibaiJyusyouDate { get; private set; }
+
+        public string HokenMemo { get; private set; }
+
 
         private string GetHokenName()
         {

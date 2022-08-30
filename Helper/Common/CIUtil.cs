@@ -1,4 +1,4 @@
-﻿using Helper.Extendsions;
+using Helper.Extension;
 using System.Globalization;
 using System.Text;
 
@@ -20,6 +20,7 @@ namespace Helper.Common
             var result = SDateToDateTime(iDateTime);
             return result == null ? new DateTime() : result.Value;
         }
+
         public static DateTime? SDateToDateTime(int Ymd)
         {
             if (Ymd <= 0 || Ymd == 99999999)
@@ -40,6 +41,114 @@ namespace Helper.Common
                 return null;
             }
         }
+
+        /// <summary>
+        /// 四捨五入
+        /// </summary>
+        /// <param name="value">値</param>
+        /// <param name="digit">桁数</param>
+        /// <returns></returns>
+        public static int RoundInt(double value, int digit)
+        {
+            if (digit == 0)
+            {
+                return (int)Math.Round(value, MidpointRounding.AwayFromZero);
+            }
+            else
+            {
+                int wrkRate = Math.Abs(digit) * 10;
+                return (int)Math.Round(value / wrkRate, MidpointRounding.AwayFromZero) * wrkRate;
+            }
+        }
+
+        //西暦(yyyymmdd)から年齢を計算する
+        //Calculate age from yyyymmdd format
+        public static int SDateToAge(int Ymd, int ToYmd)
+        {
+            if (Ymd <= 0 || ToYmd <= 0)
+            {
+                return -1;
+            }
+            string WrkStr;
+            int Age;
+
+            try
+            {
+                WrkStr = Ymd.ToString("D8");
+                DateTime BirthDate = new DateTime();
+                DateTime ToDate = new DateTime();
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out BirthDate);
+
+                WrkStr = ToYmd.ToString("D8");
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out ToDate);
+
+                Age = ToDate.Year - BirthDate.Year;
+
+                if (BirthDate.Month > ToDate.Month)
+                    Age = Age - 1;
+
+                if ((BirthDate.Month == ToDate.Month) &&
+                    (BirthDate.Day > ToDate.Day))
+                    Age = Age - 1;
+            }
+            catch
+            {
+                Age = -1;
+            }
+
+            return Age;
+        }
+
+        public static bool Is70Zenki_20per(int nBirthYmd, int nSinYmd)
+        {
+            //《2014年05月改正 前期高齢者の負担割合(1割->2割)》
+            const int Con70KaiseiDay_20per = 20140501;   //改正日
+            const int Con70Birth_20per = 19440402;   //誕生日が昭和19年4月2日以降は2割負担
+            return (nBirthYmd >= Con70Birth_20per) && (nSinYmd >= Con70KaiseiDay_20per);
+        }
+
+        public static bool AgeChk(int nBirthYmd, int nSinYmd, int nTgtAge)
+        {
+            if (nBirthYmd == 0)
+            {
+                return false;
+            }
+            DateTime dtBuf;
+            int nYear = 0, nMonth = 0, nDay = 0;
+            {
+                //** 誕生日が1日でない⇒翌月1日に置き換え **
+                if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
+                {
+                    dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                    nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
+                }
+                //** 誕生日が1日⇒そのまま **
+
+                //年齢算出
+                SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
+                return (nYear >= nTgtAge);
+            }
+        }
+
+        public static bool IsStudent(int BirthDay, int Sinday)
+        {
+            int nEnterSchoolDate;
+            //就学日を取得する
+            if (((BirthDay % 10000) >= 402) && ((BirthDay % 10000) <= 1231))
+            {
+                // 4/2 ～ 12/31生まれ
+                nEnterSchoolDate = (BirthDay / 10000 + 7) * 10000 + 401;
+            }
+            else
+            {
+                // 1/1 ～ 4/1生まれ
+                nEnterSchoolDate = (BirthDay / 10000 + 6) * 10000 + 401;
+            }
+
+            //比較対象日と比較する
+            return (Sinday >= nEnterSchoolDate);
+        }
+
         public static int DateTimeToInt(DateTime dateTime, string format = DateTimeFormat.yyyyMMdd)
         {
             int result;
@@ -54,6 +163,7 @@ namespace Helper.Common
             }
             return result;
         }
+
         public static string Copy(string input, int index, int lengthToCopy)
         {
             if (input == null) return string.Empty;
@@ -261,89 +371,6 @@ namespace Helper.Common
         {
             return SDateToShowWDate(ymd, WarekiFormat.Full);
 
-        }
-
-        public static bool IsStudent(int BirthDay, int Sinday)
-        {
-            int nEnterSchoolDate;
-            //就学日を取得する
-            if (((BirthDay % 10000) >= 402) && ((BirthDay % 10000) <= 1231))
-            {
-                // 4/2 ～ 12/31生まれ
-                nEnterSchoolDate = (BirthDay / 10000 + 7) * 10000 + 401;
-            }
-            else
-            {
-                // 1/1 ～ 4/1生まれ
-                nEnterSchoolDate = (BirthDay / 10000 + 6) * 10000 + 401;
-            }
-
-            //比較対象日と比較する
-            return (Sinday >= nEnterSchoolDate);
-        }
-
-        public static bool Is70Zenki_20per(int nBirthYmd, int nSinYmd)
-        {
-            //《2014年05月改正 前期高齢者の負担割合(1割->2割)》
-            const int Con70KaiseiDay_20per = 20140501;   //改正日
-            const int Con70Birth_20per = 19440402;   //誕生日が昭和19年4月2日以降は2割負担
-            return (nBirthYmd >= Con70Birth_20per) && (nSinYmd >= Con70KaiseiDay_20per);
-        }
-
-        public static bool AgeChk(int nBirthYmd, int nSinYmd, int nTgtAge)
-        {
-            if (nBirthYmd == 0)
-            {
-                return false;
-            }
-            DateTime dtBuf;
-            int nYear = 0, nMonth = 0, nDay = 0;
-
-            //** 誕生日が1日でない⇒翌月1日に置き換え **
-            if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
-            {
-                dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
-                nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
-            }
-            //** 誕生日が1日⇒そのまま **
-
-            //年齢算出
-            SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
-            return (nYear >= nTgtAge);
-        }
-
-        public static int SDateToAge(int Ymd, int ToYmd)
-        {
-            if (Ymd <= 0 || ToYmd <= 0)
-            {
-                return -1;
-            }
-            string WrkStr;
-            int Age;
-
-            try
-            {
-                WrkStr = Ymd.ToString("D8");
-
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime BirthDate);
-                WrkStr = ToYmd.ToString("D8");
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ToDate);
-
-                Age = ToDate.Year - BirthDate.Year;
-
-                if (BirthDate.Month > ToDate.Month)
-                    Age = Age - 1;
-
-                if ((BirthDate.Month == ToDate.Month) &&
-                    (BirthDate.Day > ToDate.Day))
-                    Age = Age - 1;
-            }
-            catch
-            {
-                Age = -1;
-            }
-
-            return Age;
         }
 
         #region Convert Datetime Helpers (private)

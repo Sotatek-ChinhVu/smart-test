@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// 添付文書
         /// N ○ 枝番号
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "BRANCH", Order = 2)]
         public string Branch { get; set; } = string.Empty;
 
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// JPN
         /// N ○ ＪＰＮコード
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "JPN", Order = 3)]
         public string Jpn { get; set; } = string.Empty;
 
@@ -114,7 +114,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("GENERIC_NAME")]
         [MaxLength(120)]
-        public string GenericName { get; set; } = string.Empty;
+        public string? GenericName { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名(欧名)
@@ -158,8 +158,8 @@ namespace Entity.Tenant
         /// 製造中止フラグ
         /// </summary>
         [Column("IS_STOPED")]
-        public string IsStoped { get; set; } = string.Empty;
-
+        public string? IsStoped { get; set; } = string.Empty;
+        
         /// <summary>
         /// 製造中止日または経過措置日
         /// 製造中止_経過措置日

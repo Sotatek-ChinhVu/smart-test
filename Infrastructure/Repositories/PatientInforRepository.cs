@@ -1,6 +1,7 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
+using Helper.Extension;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extendsions;
@@ -177,12 +178,24 @@ namespace Infrastructure.Repositories
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
         {
             long ptNum = keyword.AsLong();
+            var ptInfWithLastVisitDate =
+                from p in _tenantDataContext.PtInfs
+                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword)))
+                select new
+                {
+                    ptInf = p,
+                    lastVisitDate = (
+                        from r in _tenantDataContext.RaiinInfs
+                        where r.HpId == TempIdentity.HpId
+                            && r.PtId == p.PtId
+                            && r.Status >= RaiinState.TempSave
+                            && r.IsDeleted == DeleteTypes.None
+                        orderby r.SinDate descending
+                        select r.SinDate
+                    ).FirstOrDefault()
+                };
 
-            var ptInfList = _tenantDataContext.PtInfs
-                .Where(p => p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword))))
-                .ToList();
-
-            return ptInfList.Select(p => ConvertToModel(p)).ToList();
+            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
         public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input)
@@ -641,68 +654,6 @@ namespace Infrastructure.Repositories
                 p.PrimaryDoctor,
                 p.IsTester,
                 p.MainHokenPid,
-                memo,
-                lastVisitDate,
-                0,
-                "");
-        }
-
-        private PatientInforModel ConvertToModel(PtInf itemData)
-        {
-            //Get ptMemo
-            string memo = string.Empty;
-            PtMemo? ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == itemData.PtId).FirstOrDefault();
-            if (ptMemo != null)
-            {
-                memo = ptMemo.Memo ?? string.Empty;
-            }
-
-            //Get lastVisitDate
-            int lastVisitDate = 0;
-            RaiinInf? raiinInf = _tenantDataContext.RaiinInfs.Where(r => r.PtId == itemData.PtId).OrderByDescending(r => r.SinDate).FirstOrDefault();
-            if (raiinInf != null)
-            {
-                lastVisitDate = raiinInf.SinDate;
-            }
-
-            return new PatientInforModel(
-                itemData.HpId,
-                itemData.PtId,
-                itemData.ReferenceNo,
-                itemData.SeqNo,
-                itemData.PtNum,
-                itemData.KanaName,
-                itemData.Name,
-                itemData.Sex,
-                itemData.Birthday,
-                itemData.LimitConsFlg,
-                itemData.IsDead,
-                itemData.DeathDate,
-                itemData.HomePost ?? string.Empty,
-                itemData.HomeAddress1 ?? string.Empty,
-                itemData.HomeAddress2 ?? string.Empty,
-                itemData.Tel1 ?? string.Empty,
-                itemData.Tel2 ?? string.Empty,
-                itemData.Mail ?? string.Empty,
-                itemData.Setanusi ?? string.Empty,
-                itemData.Zokugara ?? string.Empty,
-                itemData.Job ?? string.Empty,
-                itemData.RenrakuName ?? string.Empty,
-                itemData.RenrakuPost ?? string.Empty,
-                itemData.RenrakuAddress1 ?? string.Empty,
-                itemData.RenrakuAddress2 ?? string.Empty,
-                itemData.RenrakuTel ?? string.Empty,
-                itemData.RenrakuMemo ?? string.Empty,
-                itemData.OfficeName ?? string.Empty,
-                itemData.OfficePost ?? string.Empty,
-                itemData.OfficeAddress1 ?? string.Empty,
-                itemData.OfficeAddress2 ?? string.Empty,
-                itemData.OfficeTel ?? string.Empty,
-                itemData.OfficeMemo ?? string.Empty,
-                itemData.IsRyosyoDetail,
-                itemData.PrimaryDoctor,
-                itemData.IsTester,
-                itemData.MainHokenPid,
                 memo,
                 lastVisitDate,
                 0,

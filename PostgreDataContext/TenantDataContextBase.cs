@@ -115,6 +115,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.YjCd });
             modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
             modelBuilder.Entity<PathConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo, e.SeqNo });
+            modelBuilder.Entity<PiInfDetail>().HasKey(e => new { e.PiId, e.Branch, e.Jpn, e.SeqNo });
+            modelBuilder.Entity<M34FormCode>().HasKey(e => new { e.FormCd });
+            modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
+            modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

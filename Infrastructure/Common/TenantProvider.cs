@@ -1,4 +1,5 @@
-﻿using Infrastructure.Interfaces;
+﻿using Helper.Constants;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
@@ -25,6 +26,11 @@ namespace Infrastructure.CommonDB
             return _configuration["TenantDbSample"];
         }
 
+        public string GetTenantId()
+        {
+            return TempIdentity.TenantId;
+        }
+
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
             return new TenantNoTrackingDataContext(GetConnectionString());
@@ -33,6 +39,11 @@ namespace Infrastructure.CommonDB
         public TenantDataContext GetTrackingTenantDataContext()
         {
             return new TenantDataContext(GetConnectionString());
+        }
+
+        public string GetTenantInfo()
+        {
+            return "Tenant1";
         }
     }
 }
