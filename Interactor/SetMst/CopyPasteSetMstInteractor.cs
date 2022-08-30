@@ -23,11 +23,11 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
         }
         else if (inputData.CopySetCd <= 0)
         {
-            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidCopySetCdId);
+            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidCopySetCd);
         }
         else if (inputData.PasteSetCd < 0)
         {
-            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidPasteSetCdId);
+            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidPasteSetCd);
         }
         try
         {

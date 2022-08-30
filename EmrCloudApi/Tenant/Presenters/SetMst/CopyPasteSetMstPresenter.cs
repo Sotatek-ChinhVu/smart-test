@@ -21,8 +21,8 @@ namespace EmrCloudApi.Tenant.Presenters.SetMst
             CopyPasteSetMstStatus.Successed => ResponseMessage.Success,
             CopyPasteSetMstStatus.Failed => ResponseMessage.Failed,
             CopyPasteSetMstStatus.InvalidLevel => ResponseMessage.InvalidLevel,
-            CopyPasteSetMstStatus.InvalidCopySetCdId => ResponseMessage.InvalidLevel,
-            CopyPasteSetMstStatus.InvalidPasteSetCdId => ResponseMessage.InvalidLevel,
+            CopyPasteSetMstStatus.InvalidCopySetCd => ResponseMessage.InvalidLevel,
+            CopyPasteSetMstStatus.InvalidPasteSetCd => ResponseMessage.InvalidLevel,
             CopyPasteSetMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             CopyPasteSetMstStatus.InvalidUserId => ResponseMessage.InvalidUserId,
             _ => string.Empty
