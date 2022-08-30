@@ -28,12 +28,13 @@ namespace Infrastructure.Repositories
             var queryItems = _tenantDataContext.TenMsts.Where(
                      item => item.HpId == hpId && new[] { 20, 30 }.Contains(item.SinKouiKbn)
                      && item.StartDate <= sinDate && item.EndDate >= sinDate
-                     ).ToList();
+                     );
 
-            var queryDrugInfs = _tenantDataContext.PiProductInfs.ToList();
-            var queryM28DrugMsts = _tenantDataContext.M28DrugMst.ToList();
-            var queryM34DrugInfoMains = _tenantDataContext.M34DrugInfoMains.ToList();
-            //Join
+            var queryDrugInfs = _tenantDataContext.PiProductInfs.AsQueryable();
+            var queryM28DrugMsts = _tenantDataContext.M28DrugMst.AsQueryable();
+            var queryM34DrugInfoMains = _tenantDataContext.M34DrugInfoMains.AsQueryable();
+
+            ////Join
             var joinQuery = from m28DrugMst in queryM28DrugMsts
                             join tenItem in queryItems
                             on m28DrugMst.KikinCd equals tenItem.ItemCd
@@ -66,7 +67,7 @@ namespace Infrastructure.Repositories
 
             var result = joinQuery.AsEnumerable().Select(d => new DrugInforModel(
                                                         d.tenItem != null ? (d.tenItem.Name ?? string.Empty) : string.Empty,
-                                                        d.drugInf != null ? d.drugInf.GenericName : string.Empty,
+                                                        d.drugInf != null ? (d.drugInf.GenericName ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.Unit ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.Marketer ?? string.Empty) : string.Empty,
                                                         d.drugInf != null ? (d.drugInf.Vender ?? string.Empty) : string.Empty,
