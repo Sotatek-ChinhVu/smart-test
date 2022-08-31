@@ -3,6 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -28,25 +29,42 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted)
         {
-            var result = new List<OrdInfModel>();
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0)).ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
+            var hpId = allOdrInf?.FirstOrDefault()?.HpId ?? 0;
 
-            foreach (var rpOdrInf in allOdrInf)
-            {
-                var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
-                    .ToList();
-                var ordInf = ConvertToModel(rpOdrInf);
-                result.Add(ordInf);
-            }
-            return result;
+            return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
         }
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo)
         {
-            var result = new List<OrdInfModel>();
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && o.RaiinNo == raiinNo)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && odr.RaiinNo == raiinNo).ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && odr.RaiinNo == raiinNo)?.ToList();
+
+            return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
+        }
+
+
+
+        public bool CheckExistOrder(long rpNo, long rpEdaNo)
+        {
+            var check = _tenantDataContext.OdrInfs.Any(o => o.RpNo == rpNo && o.RpEdaNo == rpEdaNo);
+            return check;
+        }
+
+        private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId)
+        {
+            var result = new List<OrdInfModel>();
+            var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId);
+            var kensaMsts = _tenantDataContext.KensaMsts.Where(t => t.HpId == hpId);
+            var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId);
+            var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId);
+            var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId);
+
+            if (!(allOdrInf?.Count > 0))
+            {
+                return result;
+            }
 
             foreach (var rpOdrInf in allOdrInf)
             {
@@ -55,6 +73,11 @@ namespace Infrastructure.Repositories
                 var userConfUserInput = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 3 && p.GrpItemEdaNo == 0);
                 var userConfTimeInput = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 4 && p.GrpItemEdaNo == 0);
                 var userConfDrugPrice = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 5 && p.GrpItemEdaNo == 0);
+                var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+                var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
+                var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+                var kensaIrai = checkKensaIrai?.Val ?? 0;
+
 
                 var displaySetName = userConfSetName != null ? userConfSetName.Val : UserConfCommon.GetDefaultValue(202, 2);
                 var displayUserInput = userConfUserInput != null ? userConfUserInput.Val : UserConfCommon.GetDefaultValue(202, 3);
@@ -68,30 +91,38 @@ namespace Infrastructure.Repositories
                     int count = 0;
                     foreach (var odrInfDetail in odrInfDetails)
                     {
-                        var tenMst = _tenantDataContext.TenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd && t.StartDate <= odrInfDetail.SinDate && t.EndDate >= odrInfDetail.SinDate && odrInfDetail.HpId == t.HpId);
+                        var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd && t.StartDate <= odrInfDetail.SinDate && t.EndDate >= odrInfDetail.SinDate);
+                        var ten = tenMst?.Ten ?? 0;
+
+                        var kensaMst = tenMst == null ? null : kensaMsts.Where(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo).FirstOrDefault();
+
                         var alternationIndex = count % 2;
-                        var BunkatuKoui = 0;
+                        var bunkatuKoui = 0;
                         if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
                         {
                             var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
                             if (usage != null)
                             {
-                                BunkatuKoui = usage.SinKouiKbn;
+                                bunkatuKoui = usage.SinKouiKbn;
                             }
                         }
+
+                        var yakka = yakkas.Where(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnName).FirstOrDefault()?.Yakka ?? 0;
+
+                        var isGetPriceInYakka = IsGetPriceInYakka(tenMst, odrInfDetail.HpId, odrInfDetail.SinDate, ipnKasanExcludes, ipnKasanExcludeItems);
+
+                        int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
+                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex);
+                        odrDetailModels.Add(odrInfDetailModel);
                         count++;
                     }
                 }
                 var ordInf = ConvertToModel(rpOdrInf, displaySetName, displayUserInput, displayTimeInput, displayDrugPrice);
+                ordInf.OrdInfDetails.AddRange(odrDetailModels);
                 result.Add(ordInf);
             }
-            return result;
-        }
 
-        public bool CheckExistOrder(long rpNo, long rpEdaNo)
-        {
-            var check = _tenantDataContext.OdrInfs.Any(o => o.RpNo == rpNo && o.RpEdaNo == rpEdaNo);
-            return check;
+            return result;
         }
 
         private OrdInfModel ConvertToModel(OdrInf ordInf, int displaySetName = 0, int displayUserInput = 0, int displayTimeInput = 0, int displayDrugPrice = 0)
@@ -124,7 +155,7 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail)
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex)
         {
             return new OrdInfDetailModel(
                             ordInfDetail.HpId,
@@ -162,13 +193,86 @@ namespace Infrastructure.Repositories
                             ordInfDetail.FontColor ?? string.Empty,
                             ordInfDetail.CommentNewline,
                             "",
+                            inOutKbn,
+                            yakka,
+                            isGetPriceInYakka,
                             0,
                             0,
-                            false,
-                            0,
-                            0,
-                            0
+                            ten,
+                            bunkatuKoui,
+                            alternationIndex,
+                            kensaGaichu
                 );
+        }
+
+        private bool IsGetPriceInYakka(TenMst? tenMst, int hpId, int sinDate, IQueryable<IpnKasanExclude> ipnKasanExcludes, IQueryable<IpnKasanExcludeItem> ipnKasanExcludeItems)
+        {
+            if (tenMst == null) return false;
+
+            var ipnKasanExclude = ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+            var ipnKasanExcludeItem = ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+            return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        private int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
+        {
+            if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
+                   string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
+                   odrInfDetail?.SinKouiKbn == 0)
+            {
+                return KensaGaichuTextConst.NONE;
+            }
+
+            if (odrInfDetail?.SinKouiKbn == 61 || odrInfDetail?.SinKouiKbn == 64)
+            {
+                bool kensaCondition;
+                if (kensaIraiCondition == 0)
+                {
+                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                }
+                else
+                {
+                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                }
+
+                if (kensaCondition && inOutKbn == 1)
+                {
+                    int kensaSetting = kensaIrai;
+                    if (kensaMst == null)
+                    {
+                        if (kensaSetting > 0)
+                        {
+                            return KensaGaichuTextConst.GAICHU_NONE;
+                        }
+                    }
+                    else if (string.IsNullOrEmpty(kensaMst.CenterItemCd1)
+                        && string.IsNullOrEmpty(kensaMst.CenterItemCd2) && kensaSetting > 1)
+                    {
+                        return KensaGaichuTextConst.GAICHU_NOT_SET;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(odrInfDetail?.ItemName) && string.IsNullOrEmpty(odrInfDetail.ItemCd))
+            {
+                if (inOutKbn == 1 && (odrKouiKbn >= 20 && odrKouiKbn <= 23) || odrKouiKbn == 28)
+                {
+                    if (odrInfDetail.IsNodspRece == 0)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_ON;
+                    }
+                }
+                else
+                {
+                    if (odrInfDetail.IsNodspRece == 1)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_OFF;
+                    }
+                }
+            }
+            return KensaGaichuTextConst.NONE;
         }
 
         public OrdInfModel Read(int ordId)

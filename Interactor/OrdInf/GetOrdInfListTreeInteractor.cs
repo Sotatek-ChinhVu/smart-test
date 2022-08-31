@@ -84,11 +84,24 @@ namespace Interactor.OrdInfs
                             od.CmtName,
                             od.CmtName,
                             od.FontColor,
-                            od.CommentNewline
+                            od.CommentNewline,
+                            od.Yakka,
+                            od.IsGetPriceInYakka,
+                            od.Ten,
+                            od.BunkatuKoui,
+                            od.AlternationIndex,
+                            od.KensaGaichu
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
-                        .ToList()))
+                        .ToList(),
+                         o.CreateDate,
+                         o.CreateId,
+                         o.DisplaySetName,
+                         o.DisplayUserInput,
+                         o.DisplayTimeInput,
+                         o.DisplayDrugPrice
+                        ))
                     .OrderBy(odr => odr.OdrKouiKbn)
                     .ThenBy(odr => odr.RpNo)
                     .ThenBy(odr => odr.RpEdaNo)

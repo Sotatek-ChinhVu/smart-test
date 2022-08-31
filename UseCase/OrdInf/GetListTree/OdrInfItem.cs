@@ -2,7 +2,7 @@
 {
     public class OdrInfItem
     {
-        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails)
+        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, int groupOdrKouiKbn, List<OdrInfDetailItem> odrDetails, DateTime createDate, int createId, int displaySetName, int displayUserInput, int displayTimeInput, int displayDrugPrice)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -23,7 +23,14 @@
             Id = id;
             GroupOdrKouiKbn = groupOdrKouiKbn;
             OdrDetails = odrDetails;
+            CreateDate = createDate;
+            CreateId = createId;
+            DisplaySetName = displaySetName;
+            DisplayUserInput = displayUserInput;
+            DisplayTimeInput = displayTimeInput;
+            DisplayDrugPrice = displayDrugPrice;
         }
+
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public long RpNo { get; private set; }
@@ -43,5 +50,11 @@
         public long Id { get; private set; }
         public int GroupOdrKouiKbn { get; private set; }
         public List<OdrInfDetailItem> OdrDetails { get; private set; }
+        public DateTime CreateDate { get; private set; }
+        public int CreateId { get; private set; }
+        public int DisplaySetName { get; private set; }
+        public int DisplayUserInput { get; private set; }
+        public int DisplayTimeInput { get; private set; }
+        public int DisplayDrugPrice { get; private set; }
     }
 }
