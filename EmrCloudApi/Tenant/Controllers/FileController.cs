@@ -50,4 +50,15 @@ public class FileController : ControllerBase
             Message = exists ? ResponseMessage.Success : ResponseMessage.NotFound
         };
     }
+
+    [HttpGet("Exists")]
+    public async Task<Response<List<string>>> Get([FromQuery] string key)
+    {
+        var exists = await _amazonS3Service.GetListObjectAsync(key);
+
+        return new Response<List<string>>
+        {
+            Data = exists,
+        };
+    }
 }
