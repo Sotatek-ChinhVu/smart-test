@@ -1,5 +1,6 @@
 using EmrCalculateApi.Futan;
 using EmrCalculateApi.Implementation;
+using EmrCalculateApi.Implementation.IkaCalculate;
 using EmrCalculateApi.Interface;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -19,7 +20,9 @@ services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 services.AddScoped<ITenantProvider, TenantProvider>();
 services.AddScoped<ISystemConfigProvider, SystemConfigProvider>();
 services.AddScoped<IEmrLogger, EmrLogger>();
+
 services.AddScoped<IFutanCalculate, FutanCalculate>();
+services.AddScoped<IIkaCalculate, IkaCalculate>();
 
 var app = builder.Build();
 
