@@ -84,16 +84,16 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     {
         List<string> listObjects = new();
 
-        ListObjectsRequest listRequest = new ListObjectsRequest
+        var listRequest = new ListObjectsV2Request
         {
             BucketName = _options.BucketName,
         };
 
-        ListObjectsResponse listResponse;
+        ListObjectsV2Response listResponse;
         do
         {
             // Get a list of objects
-            listResponse = await _s3Client.ListObjectsAsync(listRequest);
+            listResponse = await _s3Client.ListObjectsV2Async(listRequest);
             foreach (S3Object obj in listResponse.S3Objects)
             {
                 var objectResponse = await _s3Client.GetObjectAsync(new GetObjectRequest { 
@@ -104,9 +104,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                 objectResponse.ResponseStream.Read(bytes, 0, bytes.Length);
                 var response = Encoding.UTF8.GetString(bytes);
             }
-
-            // Set the marker property
-            listRequest.Marker = listResponse.NextMarker;
+            listRequest.ContinuationToken = listResponse.NextContinuationToken;
         } while (listResponse.IsTruncated);
 
         return listObjects;
