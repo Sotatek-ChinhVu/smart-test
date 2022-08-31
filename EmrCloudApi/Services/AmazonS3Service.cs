@@ -6,6 +6,7 @@ using EmrCloudApi.Configs.Options;
 using Infrastructure.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Net;
+using System.Text;
 
 namespace EmrCloudApi.Services;
 
@@ -77,5 +78,37 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     private string GetAccessUrl(string key)
     {
         return $"{_options.BaseAccessUrl}/{key}";
+    }
+
+    public async Task<List<string>> GetListObjectAsync(string key)
+    {
+        List<string> listObjects = new();
+
+        ListObjectsRequest listRequest = new ListObjectsRequest
+        {
+            BucketName = _options.BucketName,
+        };
+
+        ListObjectsResponse listResponse;
+        do
+        {
+            // Get a list of objects
+            listResponse = await _s3Client.ListObjectsAsync(listRequest);
+            foreach (S3Object obj in listResponse.S3Objects)
+            {
+                var objectResponse = await _s3Client.GetObjectAsync(new GetObjectRequest { 
+                    BucketName = obj.BucketName,
+                    Key = obj.Key,
+                });
+                var bytes = new byte[objectResponse.ResponseStream.Length];
+                objectResponse.ResponseStream.Read(bytes, 0, bytes.Length);
+                var response = Encoding.UTF8.GetString(bytes);
+            }
+
+            // Set the marker property
+            listRequest.Marker = listResponse.NextMarker;
+        } while (listResponse.IsTruncated);
+
+        return listObjects;
     }
 }
