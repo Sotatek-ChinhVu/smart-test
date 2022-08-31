@@ -122,6 +122,7 @@ using UseCase.JsonSetting.Upsert;
 using EmrCloudApi.Realtime;
 using UseCase.KohiHokenMst.Get;
 using Interactor.KohiHokenMst;
+using UseCase.User.GetByLoginId;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -200,6 +201,7 @@ namespace EmrCloudApi.Configs.Dependency
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
+            busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
