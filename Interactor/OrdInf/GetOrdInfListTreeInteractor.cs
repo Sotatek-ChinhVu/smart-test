@@ -100,7 +100,8 @@ namespace Interactor.OrdInfs
                          o.DisplaySetName,
                          o.DisplayUserInput,
                          o.DisplayTimeInput,
-                         o.DisplayDrugPrice
+                         o.DisplayDrugPrice,
+                         o.CreateName
                         ))
                     .OrderBy(odr => odr.OdrKouiKbn)
                     .ThenBy(odr => odr.RpNo)

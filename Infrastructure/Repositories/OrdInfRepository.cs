@@ -74,6 +74,7 @@ namespace Infrastructure.Repositories
                 var userConfTimeInput = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 4 && p.GrpItemEdaNo == 0);
                 var userConfDrugPrice = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 5 && p.GrpItemEdaNo == 0);
                 var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+                var createName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.UserId == rpOdrInf.CreateId)?.Sname ?? string.Empty;
                 var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
                 var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
                 var kensaIrai = checkKensaIrai?.Val ?? 0;
@@ -117,7 +118,7 @@ namespace Infrastructure.Repositories
                         count++;
                     }
                 }
-                var ordInf = ConvertToModel(rpOdrInf, displaySetName, displayUserInput, displayTimeInput, displayDrugPrice);
+                var ordInf = ConvertToModel(rpOdrInf, displaySetName, displayUserInput, displayTimeInput, displayDrugPrice, createName);
                 ordInf.OrdInfDetails.AddRange(odrDetailModels);
                 result.Add(ordInf);
             }
@@ -125,7 +126,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private OrdInfModel ConvertToModel(OdrInf ordInf, int displaySetName = 0, int displayUserInput = 0, int displayTimeInput = 0, int displayDrugPrice = 0)
+        private OrdInfModel ConvertToModel(OdrInf ordInf, int displaySetName = 0, int displayUserInput = 0, int displayTimeInput = 0, int displayDrugPrice = 0, string createName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -151,7 +152,8 @@ namespace Infrastructure.Repositories
                         displaySetName,
                         displayUserInput,
                         displayTimeInput,
-                        displayDrugPrice
+                        displayDrugPrice,
+                        createName
                    );
         }
 

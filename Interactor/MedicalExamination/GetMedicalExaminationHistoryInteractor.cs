@@ -222,7 +222,8 @@ namespace Interactor.MedicalExamination
                                 rpOdrInf.DisplaySetName,
                                 rpOdrInf.DisplayUserInput,
                                 rpOdrInf.DisplayTimeInput,
-                                rpOdrInf.DisplayDrugPrice
+                                rpOdrInf.DisplayDrugPrice,
+                                rpOdrInf.CreateName
                              );
 
                             group.OdrInfs.Add(odrModel);

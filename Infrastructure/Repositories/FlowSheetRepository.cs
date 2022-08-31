@@ -107,9 +107,9 @@ namespace Infrastructure.Repositories
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName)).ToList();
         }
 
-        public void Upsert(List<FlowSheetModel> inpuDatas)
+        public void Upsert(List<FlowSheetModel> inputDatas)
         {
-            foreach (var inputData in inpuDatas)
+            foreach (var inputData in inputDatas)
             {
                 var raiinListCmt = _tenantTrackingDataContext.RaiinListCmts
                             .OrderByDescending(p => p.UpdateDate)
