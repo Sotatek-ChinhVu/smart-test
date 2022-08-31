@@ -22,10 +22,17 @@ namespace Domain.Models.OrdInfs
         public int SortNo { get; private set; }
         public int IsDeleted { get; private set; }
         public long Id { get; private set; }
+        public DateTime CreateDate { get; private set; }
+        public int CreateId { get; private set; }
+        public int DisplaySetName { get; private set; }
+        public int DisplayUserInput { get; private set; }
+        public int DisplayTimeInput { get; private set; }
+        public int DisplayDrugPrice { get; private set; }
+
         public GroupKoui GroupKoui { get; private set; }
         public List<OrdInfDetailModel> OrdInfDetails { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails)
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, int displaySetName, int displayUserInput, int displayTimeInput, int displayDrugPrice)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -47,6 +54,12 @@ namespace Domain.Models.OrdInfs
             Id = id;
             GroupKoui = GroupKoui.From(odrKouiKbn);
             OrdInfDetails = ordInfDetails;
+            CreateDate = createDate;
+            CreateId = createId;
+            DisplaySetName = displaySetName;
+            DisplayUserInput = displayUserInput;
+            DisplayTimeInput = displayTimeInput;
+            DisplayDrugPrice = displayDrugPrice;
         }
     }
 }
