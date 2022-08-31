@@ -257,5 +257,92 @@ namespace Infrastructure.Repositories
                                 .OrderBy(item => item.HokensyaNo).Skip(pageIndex).Take(pageCount);
             return listDataPaging;
         }
+
+        public HokenMstModel GetHokenMstByFutansyaNo(int hpId, int sinDate, string futansyaNo)
+        {
+            var hospitalInfo = _tenantDataContext.HpInfs
+                .Where(p => p.HpId == hpId)
+                .OrderByDescending(p => p.StartDate)
+                .FirstOrDefault();
+
+            int prefCd = 0;
+            if (hospitalInfo != null)
+            {
+                prefCd = hospitalInfo.PrefNo;
+            }
+
+            string kohiHobetu = string.Empty;
+            if(futansyaNo.Length == 8)
+            {
+                kohiHobetu = futansyaNo.Substring(0, 2);
+            }
+
+            List<HokenMstModel> list = new List<HokenMstModel>();
+
+            IQueryable<HokenMst> query;
+
+            query = _tenantDataContext.HokenMsts.Where(kohiInf =>
+                (kohiInf.HokenSbtKbn == 2 || kohiInf.HokenSbtKbn == 5 || kohiInf.HokenSbtKbn == 6 || kohiInf.HokenSbtKbn == 7)
+                && kohiInf.StartDate < sinDate
+                && kohiInf.EndDate > sinDate
+                && (kohiInf.PrefNo == prefCd || kohiInf.PrefNo == 0 || kohiInf.IsOtherPrefValid == 1)
+                && (string.IsNullOrEmpty(kohiHobetu) || kohiInf.Houbetu == kohiHobetu));
+
+            List<HokenMst> entities = query
+                .OrderBy(entity => entity.HpId)
+                .ThenBy(entity => entity.HokenNo)
+                .ThenBy(entity => entity.SortNo)
+                .ThenBy(entity => entity.HokenSbtKbn)
+                .ThenBy(entity => entity.StartDate)
+                .ToList();
+
+            entities?.ForEach(h =>
+            {
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, ""));
+            });
+
+            // Get KohiMst
+            if (futansyaNo.Length == 8)
+            {
+                string digit1 = futansyaNo[0].AsString();
+                string digit2 = futansyaNo[1].AsString();
+                string digit3 = futansyaNo[2].AsString();
+                string digit4 = futansyaNo[3].AsString();
+                string digit5 = futansyaNo[4].AsString();
+                string digit6 = futansyaNo[5].AsString();
+                string digit7 = futansyaNo[6].AsString();
+                string digit8 = futansyaNo[7].AsString();
+                var defHokenNo = _tenantDataContext.DefHokenNos.Where(x => x.HpId == hpId
+                                                                                && x.Digit1 == digit1
+                                                                                && x.Digit2 == digit2
+                                                                                && (x.Digit3 == null || x.Digit3.Trim() == "" || x.Digit3 == digit3)
+                                                                                && (x.Digit4 == null || x.Digit4.Trim() == "" || x.Digit4 == digit4)
+                                                                                && (x.Digit5 == null || x.Digit5.Trim() == "" || x.Digit5 == digit5)
+                                                                                && (x.Digit6 == null || x.Digit6.Trim() == "" || x.Digit6 == digit6)
+                                                                                && (x.Digit7 == null || x.Digit7.Trim() == "" || x.Digit7 == digit7)
+                                                                                && (x.Digit8 == null || x.Digit8.Trim() == "" || x.Digit8 == digit8)
+                                                                                && x.IsDeleted != 1)
+                                                           .OrderBy(x => x.SortNo).FirstOrDefault();
+                if (defHokenNo != null)
+                {
+                    var kohiHokenMst = list.FirstOrDefault(x => x.HokenNo == defHokenNo.HokenNo && x.HokenEdaNo == defHokenNo.HokenEdaNo);
+                    if (kohiHokenMst != null)
+                    {
+                        return kohiHokenMst;
+                    }
+                }
+                else
+                {
+                    var kohiHokenMst = list.FirstOrDefault();
+                    if (kohiHokenMst != null)
+                    {
+                        return kohiHokenMst;
+                    }
+                }
+            }
+
+            return new HokenMstModel();
+
+        }
     }
 }
