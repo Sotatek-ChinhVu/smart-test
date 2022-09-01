@@ -119,7 +119,11 @@ namespace Interactor.OrdInfs
                 foreach (var item in allOdrInfs)
                 {
                     var modelValidation = item.Validation();
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid) dicValidation.Add(count, modelValidation);
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid)
+                    {
+                        dicValidation.Add(count, modelValidation);
+                        continue;
+                    }
 
                     var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
                     if (!check) dicValidation.Add(count, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));

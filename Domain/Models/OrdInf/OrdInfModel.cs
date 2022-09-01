@@ -1,5 +1,4 @@
 ﻿using Domain.Models.OrdInfDetails;
-using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using static Helper.Constants.TodayOrderConst;
@@ -91,6 +90,79 @@ namespace Domain.Models.OrdInfs
 
         public KeyValuePair<int, TodayOrdValidationStatus> Validation()
         {
+
+            #region Validate common
+            if (Id < 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidId);
+            }
+            if (HpId <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidHpId);
+            }
+            if (RaiinNo <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
+            }
+            if (RpNo <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidRpNo);
+            }
+            if (RpEdaNo <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
+            }
+            if (PtId <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidPtId);
+            }
+            if (SinDate <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidSinDate);
+            }
+            if (HokenPid <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidHokenPId);
+            }
+            if (RpName.Length > 240)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidRpName);
+            }
+            if (InoutKbn != 0 && InoutKbn != 1)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidInoutKbn);
+            }
+            if (SikyuKbn != 0 && SikyuKbn != 1)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidSikyuKbn);
+            }
+            if (SyohoSbt != 0 && SyohoSbt != 1 && SyohoSbt != 2)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidSyohoSbt);
+            }
+            if (SanteiKbn != 0 && SanteiKbn != 1 && SanteiKbn != 2)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidSanteiKbn);
+            }
+            if (TosekiKbn != 0 && TosekiKbn != 1 && TosekiKbn != 2)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidTosekiKbn);
+            }
+            if (DaysCnt < 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidDaysCnt);
+            }
+            if (SortNo <= 0)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidSortNo);
+            }
+            if (IsDeleted != 0 && IsDeleted != 1 && IsDeleted != 2)
+            {
+                return new(-1, TodayOrdValidationStatus.InvalidIsDeleted);
+            }
+            #endregion
+
+            #region Validate business
             if (!TodayOrderConst.OdrKouiKbns.Values.Contains(OdrKouiKbn))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidOdrKouiKbn);
@@ -256,6 +328,8 @@ namespace Domain.Models.OrdInfs
                     count++;
                 }
             }
+            #endregion
+
             return new(-1, TodayOrdValidationStatus.Valid);
         }
     }

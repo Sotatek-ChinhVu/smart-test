@@ -128,6 +128,126 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case TodayOrderConst.TodayOrdValidationStatus.InvalidDrugKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidDrugKbn));
                         break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidId:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidId));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHpId:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHpId));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRaiinNo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRaiinNo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpNo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRpNo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpEdaNo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRpEdaNo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidPtId:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidPtId));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSinDate:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSinDate));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHokenPId:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHokenPId));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpName:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRpName));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidInoutKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidInoutKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSikyuKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSikyuKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoSbt:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSyohoSbt));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSanteiKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSanteiKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTosekiKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidTosekiKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidDaysCnt:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidDaysCnt));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSortNo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSortNo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRowNo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRowNo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSinKouiKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSinKouiKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidItemCd:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidItemCd));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidItemName:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidItemName));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryo:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryo));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidUnitName:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUnitName));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidUnitSbt:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUnitSbt));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTermVal:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidTermVal));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSyohoKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoLimitKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSyohoLimitKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidYohoKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidYohoKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIsNodspRece:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIsNodspRece));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIpnCd:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIpnCd));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIpnName:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIpnName));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidJissiKbn));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiId:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidJissiId));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiMachine:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidJissiMachine));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidReqCd:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidReqCd));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidBunkatuLength:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidBunkatuLength));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmtName:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmtName));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmtOpt:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmtOpt));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidFontColor:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidFontColor));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCommentNewline:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCommentNewline));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIsDeleted:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIsDeleted));
+                        break;
                     default:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, -1, -1, string.Empty));
                         break;
