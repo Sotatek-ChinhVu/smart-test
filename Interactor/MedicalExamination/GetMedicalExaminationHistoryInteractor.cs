@@ -59,7 +59,6 @@ namespace Interactor.MedicalExamination
             bool allowDisplayDeleted = karteDeleteHistory > 0;
             #endregion
 
-
             var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
                         join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
