@@ -57,25 +57,12 @@ namespace Infrastructure.Repositories
             return GetReceptionRowModels(hpId, sinDate);
         }
 
-        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int deleteCondition)
+        public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
             var result = _tenantDataContext.RaiinInfs.Where
                                 (r =>
-                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3);
-
-            if(deleteCondition == 0)
-            {
-                result = result.Where(r => r.IsDeleted == DeleteTypes.None);
-            }
-            else if (deleteCondition == 1)
-            {
-                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
-            }
-            else
-            {
-                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
-            }
-
+                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
+                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
             return result.Select(r => new ReceptionModel(
                         r.HpId,
                         r.PtId,
@@ -100,7 +87,8 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn
-                   )).AsEnumerable();
+                   )).ToList();
+
         }
 
         public bool CheckListNo(List<long> raininNos)
