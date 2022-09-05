@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.IpnMinYakkaMst
+﻿namespace Domain.Models.OrdInf
 {
     public class IpnMinYakkaMstModel
     {

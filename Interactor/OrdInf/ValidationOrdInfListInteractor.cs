@@ -1,6 +1,4 @@
 ﻿using Domain.Models.InputItem;
-using Domain.Models.IpnKasanExcludeItem;
-using Domain.Models.IpnMinYakkaMst;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemGenerationConf;
@@ -14,15 +12,11 @@ namespace Interactor.OrdInfs
         private readonly IOrdInfRepository _ordInfRepository;
         private readonly IInputItemRepository _inputItemRepository;
         private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
-        private readonly IIpnMinYakaMstRepository _ipnMinYakaMstRepository;
-        private readonly IIpnKasanExcludeRepository _ipnKasanExcludeRepository;
-        public ValidationOrdInfListInteractor(IOrdInfRepository ordInfRepository, IInputItemRepository inputItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IIpnMinYakaMstRepository ipnMinYakaMstRepository, IIpnKasanExcludeRepository ipnKasanExcludeRepository)
+        public ValidationOrdInfListInteractor(IOrdInfRepository ordInfRepository, IInputItemRepository inputItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository)
         {
             _ordInfRepository = ordInfRepository;
             _inputItemRepository = inputItemRepository;
             _systemGenerationConfRepository = systemGenerationConfRepository;
-            _ipnMinYakaMstRepository = ipnMinYakaMstRepository;
-            _ipnKasanExcludeRepository = ipnKasanExcludeRepository;
         }
 
         public ValidationOrdInfListOutputData Handle(ValidationOrdInfListInputData inputDatas)
@@ -61,9 +55,8 @@ namespace Interactor.OrdInfs
                         {
                             var inputItem = itemDetail == null ? null : _inputItemRepository.GetTenMst(itemDetail.HpId, itemDetail.SinDate, itemDetail?.ItemCd ?? string.Empty);
                             var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(itemDetail.HpId, 2002, 0, itemDetail?.SinDate ?? 0, 999);
-                            var ipnMinYakaMst = inputItem == null ? null : _ipnMinYakaMstRepository.FindIpnMinYakkaMst(itemDetail?.HpId ?? 0, inputItem.IpnNameCd, itemDetail?.SinDate ?? 0);
-                            var isCheckIpnKasanExclude = _ipnKasanExcludeRepository.CheckIsGetYakkaPrice(itemDetail?.HpId ?? 0, inputItem, itemDetail?.SinDate ?? 0);
-
+                            var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(itemDetail?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, itemDetail?.SinDate ?? 0);
+                            var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(itemDetail?.HpId ?? 0, inputItem, itemDetail?.SinDate ?? 0);
 
                             var ordInfDetail = new OrdInfDetailModel(
                                         itemDetail?.HpId ?? 0,

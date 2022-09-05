@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.OrdInfs
+﻿using Domain.Models.InputItem;
+using Domain.Models.OrdInf;
+
+namespace Domain.Models.OrdInfs
 {
     public interface IOrdInfRepository
     {
@@ -15,5 +18,9 @@
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo);
 
         bool CheckExistOrder(long rpNo, long rpEdaNo);
+
+        bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate);
+
+        IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
     }
 }

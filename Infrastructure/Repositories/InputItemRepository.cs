@@ -416,11 +416,11 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public InputItemModel? GetTenMst(int hpId, int sinDate, string itemCd)
+        public InputItemModel GetTenMst(int hpId, int sinDate, string itemCd)
         {
             var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
 
-            return tenMst == null ? null : new InputItemModel(
+            return new InputItemModel(
                 tenMst?.HpId ?? 0,
                 tenMst?.ItemCd ?? string.Empty,
                 tenMst?.RousaiKbn ?? 0,

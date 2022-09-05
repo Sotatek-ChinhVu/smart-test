@@ -1,4 +1,6 @@
-﻿using Domain.Models.OrdInfDetails;
+﻿using Domain.Models.InputItem;
+using Domain.Models.OrdInf;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
@@ -54,6 +56,41 @@ namespace Infrastructure.Repositories
                 result.Add(ordInf);
             }
             return result;
+        }
+
+        public bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate)
+        {
+            if (tenMst == null) return false;
+            var ipnKasanExclude = _tenantDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+            var ipnKasanExcludeItem = _tenantDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        public IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate)
+        {
+            var yakkaMst = _tenantDataContext.IpnMinYakkaMsts.Where(p =>
+                  p.HpId == hpId &&
+                  p.StartDate <= sinDate &&
+                  p.EndDate >= sinDate &&
+                  p.IpnNameCd == ipnNameCd)
+              .FirstOrDefault();
+
+            if (yakkaMst != null)
+            {
+                return new IpnMinYakkaMstModel(
+                        yakkaMst.Id,
+                        yakkaMst.HpId,
+                        yakkaMst.IpnNameCd,
+                        yakkaMst.StartDate,
+                        yakkaMst.EndDate,
+                        yakkaMst.Yakka,
+                        yakkaMst.SeqNo,
+                        yakkaMst.IsDeleted
+                    );
+            }
+
+            return new IpnMinYakkaMstModel(0, 0, string.Empty, 0, 0, 0, 0, 0);
         }
 
         public bool CheckExistOrder(long rpNo, long rpEdaNo)

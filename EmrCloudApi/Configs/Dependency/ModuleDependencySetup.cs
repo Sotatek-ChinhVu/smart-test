@@ -7,8 +7,6 @@ using Domain.Models.GroupInf;
 using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
-using Domain.Models.IpnKasanExcludeItem;
-using Domain.Models.IpnMinYakkaMst;
 using Domain.Models.KaMst;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
@@ -193,8 +191,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
-            services.AddTransient<IIpnMinYakaMstRepository, IpnMinYakaMstRepository>();
-            services.AddTransient<IIpnKasanExcludeRepository, IpnKasanExcludeRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

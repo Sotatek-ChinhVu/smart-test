@@ -6,6 +6,6 @@
 
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem);
 
-        public InputItemModel? GetTenMst(int hpId, int sinDate, string itemCd);
+        public InputItemModel GetTenMst(int hpId, int sinDate, string itemCd);
     }
 }
