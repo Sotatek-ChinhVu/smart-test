@@ -6,7 +6,6 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Net;
-using System.Text;
 
 namespace Infrastructure.Services;
 

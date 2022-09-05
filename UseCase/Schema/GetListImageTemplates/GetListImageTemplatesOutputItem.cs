@@ -1,8 +1,8 @@
-﻿namespace UseCase.Schema.GetListImages
+﻿namespace UseCase.Schema.GetListImageTemplates
 {
-    public class GetListImageOutputItem
+    public class GetListImageTemplatesOutputItem
     {
-        public GetListImageOutputItem(string folderName, List<string> listItems)
+        public GetListImageTemplatesOutputItem(string folderName, List<string> listItems)
         {
             FolderName = folderName;
             ListItems = listItems;
