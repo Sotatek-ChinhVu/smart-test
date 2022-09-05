@@ -1,6 +1,6 @@
-﻿using EmrCloudApi.Services;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCloudApi.Tenant.Controllers;
