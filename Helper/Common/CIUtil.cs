@@ -1182,44 +1182,6 @@ namespace Helper.Common
             }
         }
 
-
-        public static bool IsFileExisting(string fileName, int timeout = 5000)
-        {
-            bool isTimeOut = false;
-            return IsFileExistingWithReason(fileName, ref isTimeOut, timeout);
-        }
-
-        public static bool IsFileExistingWithReason(string fileName, ref bool isTimeOut, int timeout = 5000)
-        {
-            try
-            {
-                bool exists = true;
-                isTimeOut = false;
-                Thread checkThread = new Thread
-                (
-                    new ThreadStart(delegate ()
-                    {
-                        exists = File.Exists(fileName);
-                    })
-                );
-
-                checkThread.Start();
-                // Timeout 5 seconds
-                bool completed = checkThread.Join(timeout);
-                if (!completed)
-                {
-                    exists = false;
-                    isTimeOut = true;
-                }
-
-                return exists;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         public static int GetByteCountFromString(string str)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
