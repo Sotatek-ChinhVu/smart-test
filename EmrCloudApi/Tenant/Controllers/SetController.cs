@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
@@ -55,6 +56,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Paste)]
+        public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+        {
+            var input = new CopyPasteSetMstInputData(request.HpId, request.UserId, request.CopySetCd, request.PasteSetCd);
+            var output = _bus.Handle(input);
+
+            var presenter = new CopyPasteSetMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result);
         }
     }
 }
