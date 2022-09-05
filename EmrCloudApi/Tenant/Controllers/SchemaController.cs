@@ -20,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetListImageTemplatesResponse>> GetList([FromQuery] GetListImageTemplatesRequest request)
+        public ActionResult<Response<GetListImageTemplatesResponse>> GetList()
         {
             var input = new GetListImageTemplatesInputData();
             var output = _bus.Handle(input);
