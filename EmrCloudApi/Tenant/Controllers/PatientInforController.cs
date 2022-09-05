@@ -27,6 +27,10 @@ using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.KohiHokenMst.Get;
+using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
+using EmrCloudApi.Tenant.Responses.KohiHokenMst;
+using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -145,5 +149,19 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<SearchHokensyaMstResponse>>(presenter.Result);
         }
+
+
+        [HttpGet("GetHokenMstByFutansyaNo")]
+        public ActionResult<Response<GetKohiHokenMstResponse>> GetHokenMstByFutansyaNo([FromQuery] GetKohiHokenMstRequest request)
+        {
+            var input = new GetKohiHokenMstInputData(request.HpId, request.SinDate, request.FutansyaNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetKohiHokenMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
+        }
+
     }
 }

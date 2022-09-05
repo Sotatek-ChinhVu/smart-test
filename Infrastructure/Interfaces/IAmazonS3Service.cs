@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Services;
+﻿namespace Infrastructure.Interfaces;
 
 public interface IAmazonS3Service
 {
