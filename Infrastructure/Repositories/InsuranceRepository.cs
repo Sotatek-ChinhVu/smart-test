@@ -2,6 +2,7 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -291,7 +292,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, bool allowDisplayDeleted)
+        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, int deleteCondition)
         {
             bool isAllHoken = true;
             bool isHoken = true;   //HokenKbn: 1,2
@@ -301,13 +302,25 @@ namespace Infrastructure.Repositories
 
             var result = _tenantDataContext.PtHokenPatterns.Where
                                 (
-                                    p => p.HpId == hpId && p.PtId == ptId && (p.IsDeleted == 0 || allowDisplayDeleted) &&
+                                    p => p.HpId == hpId && p.PtId == ptId &&
                                         (
                                             isAllHoken ||
                                             isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
                                             isJihi && p.HokenKbn == 0 ||
                                             isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
-                                            isJibai && p.HokenKbn == 14)).ToList();
+                                            isJibai && p.HokenKbn == 14));
+            if (deleteCondition == 0)
+            {
+                result = result.Where(r => r.IsDeleted == DeleteTypes.None);
+            }
+            else if (deleteCondition == 1)
+            {
+                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
+            }
+            else
+            {
+                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+            }
 
             return result.Select(r => new InsuranceModel(
                         r.HpId,
@@ -322,7 +335,7 @@ namespace Infrastructure.Repositories
                         r.Kohi3Id,
                         r.Kohi4Id,
                         r.StartDate,
-                        r.EndDate)).ToList();
+                        r.EndDate)).AsEnumerable();
         }
     }
 }

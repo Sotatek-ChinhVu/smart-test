@@ -4,7 +4,7 @@
     {
         ReceptionModel? Get(long raiinNo);
         List<ReceptionRowModel> GetList(int hpId, int sinDate);
-        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
+        IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int deleteCondition);
         bool UpdateStatus(int hpId, long raiinNo, int status);
         bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo);
         bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime);
