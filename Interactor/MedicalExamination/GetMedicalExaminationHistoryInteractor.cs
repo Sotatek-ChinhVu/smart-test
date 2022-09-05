@@ -219,10 +219,6 @@ namespace Interactor.MedicalExamination
                                 ).ToList(),
                                 rpOdrInf.CreateDate,
                                 rpOdrInf.CreateId,
-                                rpOdrInf.DisplaySetName,
-                                rpOdrInf.DisplayUserInput,
-                                rpOdrInf.DisplayTimeInput,
-                                rpOdrInf.DisplayDrugPrice,
                                 rpOdrInf.CreateName
                              );
 

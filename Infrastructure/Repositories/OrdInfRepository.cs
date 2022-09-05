@@ -2,7 +2,6 @@
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -61,15 +60,6 @@ namespace Infrastructure.Repositories
             var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId);
             var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId);
 
-            var userConfSetName = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 2 && p.GrpItemEdaNo == 0);
-            var userConfUserInput = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 3 && p.GrpItemEdaNo == 0);
-            var userConfTimeInput = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 4 && p.GrpItemEdaNo == 0);
-            var userConfDrugPrice = _tenantDataContext.UserConfs.FirstOrDefault(p => p.GrpCd == 202 && p.GrpItemCd == 5 && p.GrpItemEdaNo == 0);
-
-            var displaySetName = userConfSetName != null ? userConfSetName.Val : UserConfCommon.GetDefaultValue(202, 2);
-            var displayUserInput = userConfUserInput != null ? userConfUserInput.Val : UserConfCommon.GetDefaultValue(202, 3);
-            var displayTimeInput = userConfTimeInput != null ? userConfTimeInput.Val : UserConfCommon.GetDefaultValue(202, 4);
-            var displayDrugPrice = userConfDrugPrice != null ? userConfDrugPrice.Val : UserConfCommon.GetDefaultValue(202, 5);
             var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
             var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
@@ -84,7 +74,7 @@ namespace Infrastructure.Repositories
             foreach (var rpOdrInf in allOdrInf)
             {
                 var odrDetailModels = new List<OrdInfDetailModel>();
-          
+
                 var createName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.UserId == rpOdrInf.CreateId)?.Sname ?? string.Empty;
                 var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
                     .ToList();
@@ -120,7 +110,7 @@ namespace Infrastructure.Repositories
                         count++;
                     }
                 }
-                var ordInf = ConvertToModel(rpOdrInf, displaySetName, displayUserInput, displayTimeInput, displayDrugPrice, createName);
+                var ordInf = ConvertToModel(rpOdrInf, createName);
                 ordInf.OrdInfDetails.AddRange(odrDetailModels);
                 result.Add(ordInf);
             }
@@ -128,7 +118,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        private OrdInfModel ConvertToModel(OdrInf ordInf, int displaySetName = 0, int displayUserInput = 0, int displayTimeInput = 0, int displayDrugPrice = 0, string createName = "")
+        private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -151,10 +141,6 @@ namespace Infrastructure.Repositories
                         new List<OrdInfDetailModel>(),
                         ordInf.CreateDate,
                         ordInf.CreateId,
-                        displaySetName,
-                        displayUserInput,
-                        displayTimeInput,
-                        displayDrugPrice,
                         createName
                    );
         }

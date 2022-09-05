@@ -97,10 +97,6 @@ namespace Interactor.OrdInfs
                         .ToList(),
                          o.CreateDate,
                          o.CreateId,
-                         o.DisplaySetName,
-                         o.DisplayUserInput,
-                         o.DisplayTimeInput,
-                         o.DisplayDrugPrice,
                          o.CreateName
                         ))
                     .OrderBy(odr => odr.OdrKouiKbn)
