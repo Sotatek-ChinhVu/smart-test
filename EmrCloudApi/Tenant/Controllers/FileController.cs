@@ -51,14 +51,16 @@ public class FileController : ControllerBase
         };
     }
 
-    [HttpGet("Exists")]
+    [HttpGet("GetAll")]
     public async Task<Response<List<string>>> Get([FromQuery] string key)
     {
         var exists = await _amazonS3Service.GetListObjectAsync(key);
 
         return new Response<List<string>>
         {
-            Data = exists,
+            Status = exists != null ? 1 : 0,
+            Data = exists ?? new List<string>(),
+            Message = exists != null ? ResponseMessage.Success : ResponseMessage.NotFound
         };
     }
 }
