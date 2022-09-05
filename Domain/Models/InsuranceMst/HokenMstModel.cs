@@ -20,6 +20,24 @@
             PrefactureName = prefactureName;
         }
 
+        public HokenMstModel()
+        {
+            HpId = 0;
+            PrefNo = 0;
+            HokenNo = 0;
+            HokenSbtKbn = 0;
+            HokenKohiKbn = 0;
+            Houbetu = string.Empty;
+            HokenName = string.Empty;
+            HokenNameCd = string.Empty;
+            HokenEdaNo = 0;
+            StartDate = 0;
+            EndDate = 0;
+            IsOtherPrefValid = 0;
+            HokenSname = string.Empty;
+            PrefactureName = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public int PrefNo { get; private set; }
