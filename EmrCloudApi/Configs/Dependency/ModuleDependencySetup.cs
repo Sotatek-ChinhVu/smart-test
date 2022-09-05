@@ -122,6 +122,7 @@ using UseCase.JsonSetting.Upsert;
 using EmrCloudApi.Realtime;
 using UseCase.KohiHokenMst.Get;
 using Interactor.KohiHokenMst;
+using UseCase.SetMst.CopyPasteSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -243,6 +244,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
+            busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

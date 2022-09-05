@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RP_NAME")]
         [MaxLength(240)]
-        public string RpName { get; set; } = string.Empty;
+        public string? RpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 院内院外区分
