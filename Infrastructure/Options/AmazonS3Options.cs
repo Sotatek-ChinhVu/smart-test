@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Configs.Options;
+﻿namespace Infrastructure.Options;
 
 public class AmazonS3Options
 {
