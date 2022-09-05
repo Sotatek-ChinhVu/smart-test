@@ -24,8 +24,10 @@ namespace Domain.Models.OrdInfs
         public long Id { get; private set; }
         public GroupKoui GroupKoui { get; private set; }
         public List<OrdInfDetailModel> OrdInfDetails { get; private set; }
+        public DateTime UpdateDate { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails)
+
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime updateDate)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -47,6 +49,7 @@ namespace Domain.Models.OrdInfs
             Id = id;
             GroupKoui = GroupKoui.From(odrKouiKbn);
             OrdInfDetails = ordInfDetails;
+            UpdateDate = updateDate;
         }
     }
 }

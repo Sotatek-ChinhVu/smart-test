@@ -39,6 +39,9 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.InvalidPageSize:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidPageSize;
                     break;
+                case GetMedicalExaminationHistoryStatus.InvalidDeleteCondition:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidDeleteCondition;
+                    break;
             }
         }
     }

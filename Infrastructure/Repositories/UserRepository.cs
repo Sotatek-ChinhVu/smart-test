@@ -3,7 +3,6 @@ using Entity.Tenant;
 using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -52,7 +51,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).ToList();
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 

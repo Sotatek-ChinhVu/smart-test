@@ -24,110 +24,110 @@ namespace Infrastructure.Repositories
             var dataHokenCheck = _tenantDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None);
             var dataPtInf = _tenantDataContext.PtInfs.Where(pt => pt.HpId == hpId && pt.PtId == ptId && pt.IsDelete == DeleteStatus.None);
             var joinQuery = from ptHokenPattern in dataHokenPatterList
-                join ptHokenInf in dataHokenInf on
-                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
-                    new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } //into ptHokenInfs from ptHokenInf in ptHokenInfs.DefaultIfEmpty()
-                join ptKohi1 in dataKohi on
-                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
-                    new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId } into datakohi1
-                from ptKohi1 in datakohi1.DefaultIfEmpty()
-                join ptKohi2 in dataKohi on
-                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi2Id } equals
-                    new { ptKohi2.HpId, ptKohi2.PtId, Kohi2Id = ptKohi2.HokenId } into datakohi2
-                from ptKohi2 in datakohi2.DefaultIfEmpty()
-                join ptKohi3 in dataKohi on
-                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi3Id } equals
-                    new { ptKohi3.HpId, ptKohi3.PtId, Kohi3Id = ptKohi3.HokenId } into datakohi3
-                from ptKohi3 in datakohi3.DefaultIfEmpty()
-                join ptKohi4 in dataKohi on
-                    new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi4Id } equals
-                    new { ptKohi4.HpId, ptKohi4.PtId, Kohi4Id = ptKohi4.HokenId } into datakohi4
-                from ptKohi4 in datakohi4.DefaultIfEmpty()
-                from ptInf in dataPtInf
-                select new
-                {
-                    ptHokenPattern.HpId,
-                    ptHokenPattern.PtId,
-                    ptHokenPattern.HokenId,
-                    ptHokenPattern.SeqNo,
-                    ptHokenInf.HokenNo,
-                    ptHokenInf.HokenEdaNo,
-                    ptHokenPattern.HokenSbtCd,
-                    ptHokenPattern.HokenPid,
-                    ptHokenPattern.HokenKbn,
-                    ptHokenPattern.Kohi1Id,
-                    ptHokenPattern.Kohi2Id,
-                    ptHokenPattern.Kohi3Id,
-                    ptHokenPattern.Kohi4Id,
-                    ptHokenInf = ptHokenInf,
-                    ptHokenInf.HokensyaNo,
-                    ptHokenInf.Kigo,
-                    ptHokenInf.Bango,
-                    ptHokenInf.EdaNo,
-                    ptHokenInf.HonkeKbn,
-                    ptHokenInf.StartDate,
-                    ptHokenInf.EndDate,
-                    ptHokenInf.SikakuDate,
-                    ptHokenInf.KofuDate,
-                    ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.FirstOrDefault(x => x.HpId == ptHokenPattern.HpId && x.PtId == ptHokenPattern.PtId && x.HokenId == ptHokenPattern.HokenId),
-                    ptHokenCheckOfHokenPattern = dataHokenCheck
-                        .Where(x => x.HokenId == ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
-                        .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
-                    ptHokenCheckOfKohi1 = dataHokenCheck
-                        .Where(x => x.HokenId == ptHokenPattern.Kohi1Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
-                        .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
-                    ptHokenCheckOfKohi2 = dataHokenCheck
-                        .Where(x => x.HokenId == ptHokenPattern.Kohi2Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
-                        .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
-                    ptHokenCheckOfKohi3 = dataHokenCheck
-                        .Where(x => x.HokenId == ptHokenPattern.Kohi3Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
-                        .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
-                    ptHokenCheckOfKohi4 = dataHokenCheck
-                        .Where(x => x.HokenId == ptHokenPattern.Kohi4Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
-                        .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
-                    ptKohi1,
-                    ptKohi2,
-                    ptKohi3,
-                    ptKohi4,
-                    hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptHokenInf.HokenNo && h.HokenEdaNo == ptHokenInf.HokenEdaNo),
-                    hokenMst1 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi1.HokenNo && h.HokenEdaNo == ptKohi1.HokenEdaNo),
-                    hokenMst2 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi2.HokenNo && h.HokenEdaNo == ptKohi2.HokenEdaNo),
-                    hokenMst3 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi3.HokenNo && h.HokenEdaNo == ptKohi3.HokenEdaNo),
-                    hokenMst4 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi4.HokenNo && h.HokenEdaNo == ptKohi4.HokenEdaNo),
-                    ptHokenInf.KogakuKbn,
-                    ptHokenInf.TasukaiYm,
-                    ptHokenInf.TokureiYm1,
-                    ptHokenInf.TokureiYm2,
-                    ptHokenInf.GenmenKbn,
-                    ptHokenInf.GenmenRate,
-                    ptHokenInf.GenmenGaku,
-                    ptHokenInf.SyokumuKbn,
-                    ptHokenInf.KeizokuKbn,
-                    ptHokenInf.Tokki1,
-                    ptHokenInf.Tokki2,
-                    ptHokenInf.Tokki3,
-                    ptHokenInf.Tokki4,
-                    ptHokenInf.Tokki5,
-                    ptHokenInf.RousaiKofuNo,
-                    ptHokenInf.RousaiRoudouCd,
-                    KenkoKanriBango = ptHokenInf.RousaiKofuNo,
-                    ptHokenInf.RousaiSaigaiKbn,
-                    ptHokenInf.RousaiKantokuCd,
-                    ptHokenInf.RousaiSyobyoDate,
-                    ptHokenInf.RyoyoStartDate,
-                    ptHokenInf.RyoyoEndDate,
-                    ptHokenInf.RousaiSyobyoCd,
-                    ptHokenInf.RousaiJigyosyoName,
-                    ptHokenInf.RousaiPrefName,
-                    ptHokenInf.RousaiCityName,
-                    ptHokenInf.RousaiReceCount,
-                    ptHokenInf.JibaiHokenName,
-                    ptHokenInf.JibaiHokenTanto,
-                    ptHokenInf.JibaiHokenTel,
-                    ptHokenInf.JibaiJyusyouDate,
-                    ptInf.Birthday,
-                    ptHokenPattern.HokenMemo
-                };
+                            join ptHokenInf in dataHokenInf on
+                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
+                                new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId } //into ptHokenInfs from ptHokenInf in ptHokenInfs.DefaultIfEmpty()
+                            join ptKohi1 in dataKohi on
+                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi1Id } equals
+                                new { ptKohi1.HpId, ptKohi1.PtId, Kohi1Id = ptKohi1.HokenId } into datakohi1
+                            from ptKohi1 in datakohi1.DefaultIfEmpty()
+                            join ptKohi2 in dataKohi on
+                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi2Id } equals
+                                new { ptKohi2.HpId, ptKohi2.PtId, Kohi2Id = ptKohi2.HokenId } into datakohi2
+                            from ptKohi2 in datakohi2.DefaultIfEmpty()
+                            join ptKohi3 in dataKohi on
+                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi3Id } equals
+                                new { ptKohi3.HpId, ptKohi3.PtId, Kohi3Id = ptKohi3.HokenId } into datakohi3
+                            from ptKohi3 in datakohi3.DefaultIfEmpty()
+                            join ptKohi4 in dataKohi on
+                                new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.Kohi4Id } equals
+                                new { ptKohi4.HpId, ptKohi4.PtId, Kohi4Id = ptKohi4.HokenId } into datakohi4
+                            from ptKohi4 in datakohi4.DefaultIfEmpty()
+                            from ptInf in dataPtInf
+                            select new
+                            {
+                                ptHokenPattern.HpId,
+                                ptHokenPattern.PtId,
+                                ptHokenPattern.HokenId,
+                                ptHokenPattern.SeqNo,
+                                ptHokenInf.HokenNo,
+                                ptHokenInf.HokenEdaNo,
+                                ptHokenPattern.HokenSbtCd,
+                                ptHokenPattern.HokenPid,
+                                ptHokenPattern.HokenKbn,
+                                ptHokenPattern.Kohi1Id,
+                                ptHokenPattern.Kohi2Id,
+                                ptHokenPattern.Kohi3Id,
+                                ptHokenPattern.Kohi4Id,
+                                ptHokenInf = ptHokenInf,
+                                ptHokenInf.HokensyaNo,
+                                ptHokenInf.Kigo,
+                                ptHokenInf.Bango,
+                                ptHokenInf.EdaNo,
+                                ptHokenInf.HonkeKbn,
+                                ptHokenInf.StartDate,
+                                ptHokenInf.EndDate,
+                                ptHokenInf.SikakuDate,
+                                ptHokenInf.KofuDate,
+                                ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.FirstOrDefault(x => x.HpId == ptHokenPattern.HpId && x.PtId == ptHokenPattern.PtId && x.HokenId == ptHokenPattern.HokenId),
+                                ptHokenCheckOfHokenPattern = dataHokenCheck
+                                    .Where(x => x.HokenId == ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
+                                ptHokenCheckOfKohi1 = dataHokenCheck
+                                    .Where(x => x.HokenId == ptHokenPattern.Kohi1Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
+                                ptHokenCheckOfKohi2 = dataHokenCheck
+                                    .Where(x => x.HokenId == ptHokenPattern.Kohi2Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
+                                ptHokenCheckOfKohi3 = dataHokenCheck
+                                    .Where(x => x.HokenId == ptHokenPattern.Kohi3Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
+                                ptHokenCheckOfKohi4 = dataHokenCheck
+                                    .Where(x => x.HokenId == ptHokenPattern.Kohi4Id && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault(),
+                                ptKohi1,
+                                ptKohi2,
+                                ptKohi3,
+                                ptKohi4,
+                                hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptHokenInf.HokenNo && h.HokenEdaNo == ptHokenInf.HokenEdaNo),
+                                hokenMst1 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi1.HokenNo && h.HokenEdaNo == ptKohi1.HokenEdaNo),
+                                hokenMst2 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi2.HokenNo && h.HokenEdaNo == ptKohi2.HokenEdaNo),
+                                hokenMst3 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi3.HokenNo && h.HokenEdaNo == ptKohi3.HokenEdaNo),
+                                hokenMst4 = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == ptKohi4.HokenNo && h.HokenEdaNo == ptKohi4.HokenEdaNo),
+                                ptHokenInf.KogakuKbn,
+                                ptHokenInf.TasukaiYm,
+                                ptHokenInf.TokureiYm1,
+                                ptHokenInf.TokureiYm2,
+                                ptHokenInf.GenmenKbn,
+                                ptHokenInf.GenmenRate,
+                                ptHokenInf.GenmenGaku,
+                                ptHokenInf.SyokumuKbn,
+                                ptHokenInf.KeizokuKbn,
+                                ptHokenInf.Tokki1,
+                                ptHokenInf.Tokki2,
+                                ptHokenInf.Tokki3,
+                                ptHokenInf.Tokki4,
+                                ptHokenInf.Tokki5,
+                                ptHokenInf.RousaiKofuNo,
+                                ptHokenInf.RousaiRoudouCd,
+                                KenkoKanriBango = ptHokenInf.RousaiKofuNo,
+                                ptHokenInf.RousaiSaigaiKbn,
+                                ptHokenInf.RousaiKantokuCd,
+                                ptHokenInf.RousaiSyobyoDate,
+                                ptHokenInf.RyoyoStartDate,
+                                ptHokenInf.RyoyoEndDate,
+                                ptHokenInf.RousaiSyobyoCd,
+                                ptHokenInf.RousaiJigyosyoName,
+                                ptHokenInf.RousaiPrefName,
+                                ptHokenInf.RousaiCityName,
+                                ptHokenInf.RousaiReceCount,
+                                ptHokenInf.JibaiHokenName,
+                                ptHokenInf.JibaiHokenTanto,
+                                ptHokenInf.JibaiHokenTel,
+                                ptHokenInf.JibaiJyusyouDate,
+                                ptInf.Birthday,
+                                ptHokenPattern.HokenMemo
+                            };
             var itemList = joinQuery.ToList();
 
             List<InsuranceModel> result = new List<InsuranceModel>();
@@ -313,13 +313,9 @@ namespace Infrastructure.Repositories
             {
                 result = result.Where(r => r.IsDeleted == DeleteTypes.None);
             }
-            else if (deleteCondition == 1)
-            {
-                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
-            }
             else
             {
-                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+                result = result.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
             }
 
             return result.Select(r => new InsuranceModel(

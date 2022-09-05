@@ -1,5 +1,6 @@
 ﻿using Domain.Models.KarteInfs;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Text;
@@ -25,9 +26,22 @@ namespace Infrastructure.Repositories
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
-        public List<KarteInfModel> GetList(long ptId, int hpId)
+        public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId).AsEnumerable();
+
+            if (deleteCondition == 0)
+            {
+                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None);
+            }
+            else if (deleteCondition == 1)
+            {
+                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
+            }
+            else
+            {
+                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+            }
 
             if (karteInfEntity == null)
             {
