@@ -51,19 +51,53 @@ namespace Infrastructure.Repositories
                        item.tenItem.ItemCd == itemCd);
             }
             var item = joinQuery.AsEnumerable().FirstOrDefault();
-            string YJCode = "";
+            string yjCode = "";
             if (item != null && item.tenItem != null)
             {
-                YJCode = item.tenItem.YjCd ?? string.Empty;
+                yjCode = item.tenItem.YjCd ?? string.Empty;
             }
 
-            // get pic zaikei
-            var picZaikei = GetImageDefault(YJCode, itemCd, PicImageConstant.PicZaikei);
+            // piczai pichou
+            string pathServerDefault = _configuration["PathImageDrugFolder"];
+            var pathConf = _tenantDataContext.PathConfs
+                .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
 
-            // get pic housou
-            var picHousou = GetImageDefault(YJCode, itemCd, PicImageConstant.PicHousou);
+            // PicZai
+            var defaultPicZai = "";
+            var otherPicZai = "";
+            var defaultPicHou = "";
+            var otherPicHou = "";
+            if (pathConf != null)
+            {
+                defaultPicZai = pathConf.Path + @"/zaikei/";
+                defaultPicHou = pathConf.Path + @"/housou/";
+            }
+            else
+            {
 
+                defaultPicZai = pathServerDefault + @"/zaikei/";
+                defaultPicHou = pathServerDefault + @"/housou/";
+            }
+            var customPathPicZai = "";
+            var customPathPicHou = "";
+            var customPathConf = _tenantDataContext.PathConfs.FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeCustomDefault);
+            if (customPathConf != null)
+            {
+                customPathPicZai = customPathConf.Path + @"/zaikei/";
+                customPathPicHou = customPathConf.Path + @"/housou/";
+            }
+            else
+            {
+                customPathPicZai = pathServerDefault + @"/zaikei/";
+                customPathPicHou = pathServerDefault + @"/housou/";
+            }
 
+            var otherImagePic = _tenantDataContext.PiImages.FirstOrDefault(pi => pi.ItemCd == itemCd && pi.ImageType == PicImageConstant.PicZaikei);
+            if (otherImagePic != null)
+            {
+                otherPicZai = defaultPicZai + otherImagePic.FileName ?? string.Empty;
+                otherPicHou = defaultPicHou + otherImagePic.FileName ?? string.Empty;
+            }
 
             var result = joinQuery.AsEnumerable().Select(d => new DrugInforModel(
                                                         d.tenItem != null ? (d.tenItem.Name ?? string.Empty) : string.Empty,
@@ -75,8 +109,15 @@ namespace Infrastructure.Repositories
                                                         d.tenItem != null ? d.tenItem.Ten : 0,
                                                         d.tenItem != null ? (d.tenItem.ReceUnitName ?? string.Empty) : string.Empty,
                                                         d.m34DrugInfoMain != null ? (d.m34DrugInfoMain.Mark ?? string.Empty) : string.Empty,
-                                                        picZaikei,
-                                                        picHousou
+                                                        yjCode,
+                                                        "",
+                                                        "",
+                                                        defaultPicZai,
+                                                        customPathPicZai,
+                                                        otherPicZai,
+                                                        defaultPicHou,
+                                                        customPathPicHou,
+                                                        otherPicHou
                                                     )).FirstOrDefault();
             if (result != null)
             {
@@ -100,7 +141,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefault(p => p.GrpCd == PicImageConstant.GrpCodeDefault);
             if (pathConf != null)
             {
-                if(imageType == 0)
+                if (imageType == 0)
                 {
                     defaultPic = pathConf.Path + @"\zaikei\";
                 }
@@ -192,7 +233,7 @@ namespace Infrastructure.Repositories
                 {
                     //Image default Empty
                     defaultImgPic = _configuration["DefaultImageDrugEmpty"];
-                }    
+                }
             }
             return defaultImgPic;
         }

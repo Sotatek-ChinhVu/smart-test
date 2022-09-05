@@ -8,7 +8,7 @@ namespace Domain.Models.DrugInfor
 {
     public class DrugInforModel
     {
-        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark, string pathPicZai, string pathPicHou)
+        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark, string yjCode, string pathPicZai, string pathPicHou, string defaultPathPicZai, string customPathPicZai, string otherPicZai, string defaultPathPicHou, string customPathPicHou, string otherPicHou)
         {
             Name = name;
             GenericName = genericName;
@@ -19,8 +19,15 @@ namespace Domain.Models.DrugInfor
             Ten = ten;
             ReceUnitName = receUnitName;
             Mark = mark;
+            YjCode = yjCode;
             PathPicZai = pathPicZai;
             PathPicHou = pathPicHou;
+            DefaultPathPicZai = defaultPathPicZai;
+            CustomPathPicZai = customPathPicZai;
+            OtherPicZai = otherPicZai;
+            DefaultPathPicHou = defaultPathPicHou;
+            CustomPathPicHou = customPathPicHou;
+            OtherPicHou = otherPicHou;
         }
 
         public DrugInforModel()
@@ -34,8 +41,15 @@ namespace Domain.Models.DrugInfor
             Ten = 0;
             ReceUnitName = "";
             Mark = "";
+            YjCode = "";
             PathPicZai = "";
             PathPicHou = "";
+            DefaultPathPicZai = "";
+            CustomPathPicZai = "";
+            OtherPicZai = "";
+            DefaultPathPicHou = "";
+            CustomPathPicHou = "";
+            OtherPicHou = "";
         }
 
         public string Name { get; private set; }
@@ -56,9 +70,23 @@ namespace Domain.Models.DrugInfor
 
         public string Mark { get; private set; }
 
-        public string PathPicZai { get; private set; }
+        public string YjCode { get; private set; }
 
-        public string PathPicHou { get; private set; }
+        public string PathPicZai { get; set; }
+
+        public string PathPicHou { get; set; }
+
+        public string DefaultPathPicZai { get; set; }
+
+        public string CustomPathPicZai { get; set; }
+
+        public string OtherPicZai { get; set; }
+
+        public string DefaultPathPicHou { get; set; }
+
+        public string CustomPathPicHou { get; set; }
+
+        public string OtherPicHou { get; set; }
 
         public string KohatuKbnName
         {

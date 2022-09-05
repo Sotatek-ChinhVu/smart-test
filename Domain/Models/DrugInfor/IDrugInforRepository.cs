@@ -8,6 +8,6 @@ namespace Domain.Models.DrugInfor
 {
     public interface IDrugInforRepository
     {
-        public DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd);
+        DrugInforModel GetDrugInfor(int hpId, int sinDate, string itemCd);
     }
 }
