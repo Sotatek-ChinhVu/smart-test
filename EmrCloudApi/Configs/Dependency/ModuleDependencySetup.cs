@@ -36,7 +36,7 @@ using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
-using EmrCloudApi.Services;
+using Infrastructure.Services;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -122,6 +122,9 @@ using Interactor.JsonSetting;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
 using EmrCloudApi.Realtime;
+using UseCase.KohiHokenMst.Get;
+using Interactor.KohiHokenMst;
+using UseCase.SetMst.CopyPasteSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -244,6 +247,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSetMstListInputData, GetSetMstListInteractor>();
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
+            busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
@@ -304,6 +308,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
+
+            // Get HokenMst by FutansyaNo
+            busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

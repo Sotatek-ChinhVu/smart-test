@@ -11,5 +11,6 @@
         public const string Save = "Save";
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
+        public const string Paste = "Paste";
     }
 }

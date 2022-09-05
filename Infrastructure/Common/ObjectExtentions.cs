@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Common;
+﻿namespace Infrastructure.Common;
 
 public static class ObjectExtentions
 {
