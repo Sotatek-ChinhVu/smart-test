@@ -1,13 +1,13 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using EmrCloudApi.Common;
-using EmrCloudApi.Configs.Options;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Net;
 
-namespace EmrCloudApi.Services;
+namespace Infrastructure.Services;
 
 public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 {
