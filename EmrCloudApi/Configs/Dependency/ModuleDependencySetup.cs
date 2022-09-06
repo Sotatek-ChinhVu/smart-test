@@ -123,6 +123,8 @@ using EmrCloudApi.Realtime;
 using UseCase.KohiHokenMst.Get;
 using Interactor.KohiHokenMst;
 using UseCase.SetMst.CopyPasteSetMst;
+using Interactor.Schema;
+using UseCase.Schema.SaveImage;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -308,6 +310,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Get HokenMst by FutansyaNo
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
+
+            // Schema
+            busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
