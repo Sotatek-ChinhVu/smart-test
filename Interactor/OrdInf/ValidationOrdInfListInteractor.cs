@@ -139,7 +139,6 @@ namespace Interactor.OrdInfs
                     if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
                     {
                         dicValidation.Add(count, modelValidation);
-                        continue;
                     }
 
                     count++;
