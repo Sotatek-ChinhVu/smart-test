@@ -31,8 +31,15 @@ public class SaveImageInteractor : ISaveImageInputPort
             if (!string.IsNullOrEmpty(input.OldImage))
             {
                 string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", "");
-                var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
-                if (!isDelete)
+                if (_amazonS3Service.ObjectExistsAsync(key).Result)
+                {
+                    var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
+                    if (!isDelete)
+                    {
+                        return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
+                    }
+                }
+                else
                 {
                     return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
                 }
@@ -46,7 +53,7 @@ public class SaveImageInteractor : ISaveImageInputPort
             {
                 return new SaveImageOutputData(SaveImageStatus.InvalidFileImage);
             }
-            
+
             string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
             var resUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
             return new SaveImageOutputData(resUpload.Result, SaveImageStatus.Successed);
