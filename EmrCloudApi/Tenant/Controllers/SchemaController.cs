@@ -20,9 +20,9 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Save)]
-        public ActionResult<Response<SaveImageResponse>> Save([FromBody] SaveImageRequest request)
+        public ActionResult<Response<SaveImageResponse>> Save([FromQuery] SaveImageRequest request)
         {
-            var input = new SaveImageInputData(request.OldImage, request.FileName, request.StreamImage);
+            var input = new SaveImageInputData(request.PtId, request.OldImage, Request.Body);
             var output = _bus.Handle(input);
 
             var presenter = new SaveImagePresenter();

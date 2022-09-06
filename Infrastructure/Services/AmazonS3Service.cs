@@ -25,13 +25,19 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
     public async Task<string> UploadAnObjectAsync(string subFolder, string fileName, Stream stream)
     {
+        var memoryStream = await stream.ToMemoryStreamAsync();
+        return await UploadAnObjectAsync(subFolder, fileName, memoryStream);
+    }
+
+    public async Task<string> UploadAnObjectAsync(string subFolder, string fileName, MemoryStream memoryStream)
+    {
         try
         {
             var request = new PutObjectRequest
             {
                 BucketName = _options.BucketName,
                 Key = GetUniqueKey(subFolder, fileName),
-                InputStream = await stream.ToMemoryStreamAsync(),
+                InputStream = memoryStream,
             };
 
             var response = await _s3Client.PutObjectAsync(request);
@@ -90,16 +96,11 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         try
         {
             var response = await _s3Client.DeleteObjectAsync(_options.BucketName, key);
-            return response.HttpStatusCode == HttpStatusCode.OK;
+            return Convert.ToBoolean(response.DeleteMarker);
         }
-        catch (AmazonS3Exception e)
+        catch (AmazonS3Exception)
         {
-            if (e.StatusCode == HttpStatusCode.NotFound)
-            {
-                return false;
-            }
-
-            throw;
+            return false;
         }
     }
 }

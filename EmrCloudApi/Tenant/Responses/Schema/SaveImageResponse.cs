@@ -2,10 +2,10 @@
 
 public class SaveImageResponse
 {
-    public SaveImageResponse(string data)
+    public SaveImageResponse(string urlImage)
     {
-        Data = data;
+        UrlImage = urlImage;
     }
 
-    public string Data { get; private set; }
+    public string UrlImage { get; private set; }
 }

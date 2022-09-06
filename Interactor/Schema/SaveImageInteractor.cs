@@ -1,4 +1,5 @@
 ﻿using Helper.Constants;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -17,26 +18,42 @@ public class SaveImageInteractor : ISaveImageInputPort
         _options = optionsAccessor.Value;
     }
 
-    public SaveImageOutputData Handle(SaveImageInputData inputData)
+    public SaveImageOutputData Handle(SaveImageInputData input)
     {
         try
         {
-            var subFolder = CommonConstants.SubFolderKarte;
-            if (!string.IsNullOrEmpty(inputData.OldImage))
+            if (input.PtId <= 0)
             {
-                string key = inputData.OldImage.Replace(_options.BaseAccessUrl + "/", "");
-                var resDelete = _amazonS3Service.DeleteObjectAsync(key);
-                resDelete.Wait();
+                return new SaveImageOutputData(SaveImageStatus.InvalidPtId);
             }
-            var resUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, inputData.FileName, inputData.StreamImage);
-            resUpload.Wait();
 
+            // Delete old image
+            if (!string.IsNullOrEmpty(input.OldImage))
+            {
+                string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", "");
+                var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
+                if (!isDelete)
+                {
+                    return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
+                }
+            }
 
-            return new SaveImageOutputData(string.Empty, SaveImageStatus.Successed);
+            // Insert new image
+            var memoryStream = input.StreamImage.ToMemoryStreamAsync().Result;
+            var subFolder = CommonConstants.SubFolderKarte;
+
+            if (memoryStream.Length <= 0)
+            {
+                return new SaveImageOutputData(SaveImageStatus.InvalidFileImage);
+            }
+            
+            string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
+            var resUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
+            return new SaveImageOutputData(resUpload.Result, SaveImageStatus.Successed);
         }
         catch (Exception)
         {
-            return new SaveImageOutputData(string.Empty, SaveImageStatus.Failed);
+            return new SaveImageOutputData(SaveImageStatus.Failed);
         }
     }
 }

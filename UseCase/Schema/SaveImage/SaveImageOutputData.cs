@@ -10,6 +10,12 @@ public class SaveImageOutputData : IOutputData
         Status = status;
     }
 
+    public SaveImageOutputData(SaveImageStatus status)
+    {
+        UrlImage = string.Empty;
+        Status = status;
+    }
+
     public string UrlImage { get; private set; }
     public SaveImageStatus Status { get; private set; }
 }

@@ -4,14 +4,13 @@ namespace UseCase.Schema.SaveImage;
 
 public class SaveImageInputData : IInputData<SaveImageOutputData>
 {
-    public SaveImageInputData(string oldImage, string fileName, Stream streamImage)
+    public SaveImageInputData(long ptId, string oldImage, Stream streamImage)
     {
+        PtId = ptId;
         OldImage = oldImage;
-        FileName = fileName;
         StreamImage = streamImage;
     }
-
+    public long PtId { get; private set; }
     public string OldImage { get; private set; }
-    public string FileName { get; private set; }
     public Stream StreamImage { get; private set; }
 }

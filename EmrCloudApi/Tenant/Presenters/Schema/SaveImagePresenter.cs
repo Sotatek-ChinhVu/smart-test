@@ -20,6 +20,9 @@ public class SaveImagePresenter
     {
         SaveImageStatus.Successed => ResponseMessage.Success,
         SaveImageStatus.Failed => ResponseMessage.Failed,
+        SaveImageStatus.InvalidOldImage => ResponseMessage.InvalidOldImage,
+        SaveImageStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+        SaveImageStatus.InvalidFileImage => ResponseMessage.InvalidFileImage,
         _ => string.Empty
     };
 }
