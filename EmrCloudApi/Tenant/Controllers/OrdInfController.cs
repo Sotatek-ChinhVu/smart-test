@@ -90,7 +90,8 @@ namespace EmrCloudApi.Tenant.Controllers
                             od.CmtOpt,
                             od.FontColor,
                             od.CommentNewline
-                        )).ToList()
+                        )).ToList(),
+                        o.Status
                     )
                ).ToList());
             var output = _bus.Handle(input);

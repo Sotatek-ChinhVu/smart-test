@@ -210,5 +210,7 @@
         public static readonly string TodayOrdInvalidHpId = "HpId must more than 0";
         public static readonly string TodayOrdInvalidBunkatuLength = "Length of Bunkatu must lest than 10 or equal 10";
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
+        public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
+        public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
     }
 }

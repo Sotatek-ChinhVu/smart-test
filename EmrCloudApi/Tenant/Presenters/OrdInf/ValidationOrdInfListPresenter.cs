@@ -248,6 +248,12 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case TodayOrderConst.TodayOrdValidationStatus.InvalidIsDeleted:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIsDeleted));
                         break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdInsertedExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidInsertedExist));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUpdatedNoExist));
+                        break;
                     default:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, -1, -1, string.Empty));
                         break;

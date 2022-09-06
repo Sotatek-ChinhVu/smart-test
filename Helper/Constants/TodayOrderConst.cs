@@ -78,6 +78,8 @@
             InvalidCmtOpt,
             InvalidFontColor,
             InvalidCommentNewline,
+            InvalidTodayOrdInsertedExist,
+            InvalidTodayOrdUpdatedNoExist,
             Valid
         };
 

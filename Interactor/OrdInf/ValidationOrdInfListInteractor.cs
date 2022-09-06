@@ -25,8 +25,32 @@ namespace Interactor.OrdInfs
             {
                 var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
+                var inputDataList = inputDatas.ToList();
 
-                foreach (var item in inputDatas.ToList())
+                var count = 0;
+                foreach (var item in inputDataList)
+                {
+                    var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
+                    if (!check && item.Status == 1)
+                    {
+                        dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                    }
+                    else if (check && item.Status == 0)
+                    {
+                        dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
+                    }
+
+                    var checkObjs = inputDataList.Where(o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
+                    var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                    if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
+                    {
+                        dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                    }
+
+                    count++;
+                }
+
+                foreach (var item in inputDataList)
                 {
                     var ordInf = new OrdInfModel(
                             item.HpId,
@@ -108,21 +132,14 @@ namespace Interactor.OrdInfs
                     allOdrInfs.Add(ordInf);
                 }
 
-                var count = 0;
+                count = 0;
                 foreach (var item in allOdrInfs)
                 {
                     var modelValidation = item.Validation();
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid)
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
                     {
                         dicValidation.Add(count, modelValidation);
                         continue;
-                    }
-
-                    var checkObjs = allOdrInfs.Where( o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
-                    var positionOrd = allOdrInfs.FindIndex(o => o == checkObjs.LastOrDefault());
-                    if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
-                    {
-                           dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
                     }
 
                     count++;
