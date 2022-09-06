@@ -118,8 +118,12 @@ namespace Interactor.OrdInfs
                         continue;
                     }
 
-                    var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
-                    if (!check) dicValidation.Add(count, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                    var checkObjs = allOdrInfs.Where( o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
+                    var positionOrd = allOdrInfs.FindIndex(o => o == checkObjs.LastOrDefault());
+                    if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
+                    {
+                           dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                    }
 
                     count++;
                 }

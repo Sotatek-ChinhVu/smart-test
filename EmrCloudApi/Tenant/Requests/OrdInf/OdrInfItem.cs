@@ -20,6 +20,7 @@
         public int DaysCnt { get; set; }
         public int SortNo { get; set; }
         public int IsDeleted { get; set; }
+        public int flag { get; set; }
         public List<OdrInfDetailItem> OdrDetails { get; set; } = new();
     }
 }
