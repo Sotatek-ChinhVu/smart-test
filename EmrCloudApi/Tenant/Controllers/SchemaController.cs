@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.Schema;
-using EmrCloudApi.Tenant.Requests.Schema;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using Microsoft.AspNetCore.Mvc;
