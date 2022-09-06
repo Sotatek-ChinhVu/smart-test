@@ -136,10 +136,12 @@ namespace Infrastructure.Repositories
                 {
                     string houbetu = string.Empty;
                     int futanRate = 0;
+                    int futanKbn = 0;
                     if (item.hokenMst != null)
                     {
                         houbetu = item.hokenMst.Houbetu;
                         futanRate = item.hokenMst.FutanRate;
+                        futanKbn = item.hokenMst.FutanKbn;
                     }
 
                     int rousaiTenkiSinkei = 0;
@@ -219,7 +221,8 @@ namespace Infrastructure.Repositories
                         item.JibaiHokenTanto,
                         item.JibaiHokenTel,
                         item.JibaiJyusyouDate,
-                        item.HokenMemo
+                        item.HokenMemo,
+                        futanKbn
                     );
 
                     result.Add(insuranceModel);
