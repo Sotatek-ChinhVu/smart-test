@@ -57,12 +57,9 @@ namespace Interactor.MedicalExamination
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidDeleteCondition);
             }
 
-            #region hard value
-            int karteDeleteHistory = 1;
-            bool allowDisplayDeleted = karteDeleteHistory > 0;
-            #endregion
+            bool allowDisplayDeleted = inputData.KarteDeleteHistory > 0;
 
-            var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
+            var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory)
                         join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
