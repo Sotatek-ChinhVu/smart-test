@@ -2,7 +2,6 @@
 
 public static class FunctionCodes
 {
-    // Visiting
-    public const string UpdateReceptionStaticCell = "UpdateReceptionStaticCell";
-    public const string UpdateReceptionDynamicCell = "UpdateReceptionDynamicCell";
+    public const string UpdateReceptionInfo = "UpdateReceptionInfo";
+    public const string UpdatePatientInfo = "UpdatePatientInfo";
 }
