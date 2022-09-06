@@ -1,4 +1,4 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -22,7 +22,7 @@ public class GetListImageTemplatesInteractor : IGetListImageTemplatesInputPort
         List<GetListImageTemplatesOutputItem> listFolders = new();
         List<string> listImageItems = new();
         List<string> listFolderItems = new();
-        var response = _amazonS3Service.GetListObjectAsync(SchemaConst.Schema);
+        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.Schema);
         response.Wait();
         var listDatas = response.Result;
         foreach (var item in listDatas)
