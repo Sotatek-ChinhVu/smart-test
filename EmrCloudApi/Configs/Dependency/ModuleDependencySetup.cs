@@ -122,6 +122,8 @@ using UseCase.JsonSetting.Upsert;
 using EmrCloudApi.Realtime;
 using UseCase.KohiHokenMst.Get;
 using Interactor.KohiHokenMst;
+using UseCase.Schema.GetListImageTemplates;
+using Interactor.Schema;
 using UseCase.SetMst.CopyPasteSetMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -308,6 +310,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Get HokenMst by FutansyaNo
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
+
+            // Schema
+            busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
