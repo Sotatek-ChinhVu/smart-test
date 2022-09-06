@@ -1,11 +1,9 @@
 ﻿using Helper.Constants;
 
-namespace EmrCloudApi.Tenant.Requests.Reception;
+namespace EmrCloudApi.Tenant.Messages;
 
-public class GetReceptionListRequest
+public class CommonMessage
 {
-    public int HpId { get; set; }
-    public int SinDate { get; set; }
     public long RaiinNo { get; set; } = CommonConstants.InvalidId;
     public long PtId { get; set; } = CommonConstants.InvalidId;
 }

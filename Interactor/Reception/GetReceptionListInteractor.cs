@@ -23,7 +23,7 @@ public class GetReceptionListInteractor : IGetReceptionListInputPort
             return new GetReceptionListOutputData(GetReceptionListStatus.InvalidSinDate);
         }
 
-        var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate);
+        var receptionInfos = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId);
         CheckNameDuplicate(receptionInfos);
         return new GetReceptionListOutputData(GetReceptionListStatus.Success, receptionInfos);
     }
