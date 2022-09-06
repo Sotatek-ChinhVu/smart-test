@@ -66,7 +66,7 @@
             TermVal = termVal;
             KohatuKbn = kohatuKbn;
             SyohoKbn = syohoKbn;
-            SyohoLimitKbn = syohoKbn;
+            SyohoLimitKbn = syohoLimitKbn;
             DrugKbn = drugKbn;
             YohoKbn = yohoKbn;
             Kokuji1 = kokuji1;

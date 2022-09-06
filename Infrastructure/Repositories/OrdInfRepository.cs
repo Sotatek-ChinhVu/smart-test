@@ -100,7 +100,7 @@ namespace Infrastructure.Repositories
                             }
                         }
 
-                        var yakka = yakkas.Where(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnName).FirstOrDefault()?.Yakka ?? 0;
+                        var yakka = yakkas.Where(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnCd).FirstOrDefault()?.Yakka ?? 0;
 
                         var isGetPriceInYakka = IsGetPriceInYakka(tenMst, odrInfDetail.HpId, odrInfDetail.SinDate, ipnKasanExcludes, ipnKasanExcludeItems);
 
