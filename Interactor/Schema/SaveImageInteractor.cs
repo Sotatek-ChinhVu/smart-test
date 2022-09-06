@@ -24,10 +24,12 @@ public class SaveImageInteractor : ISaveImageInputPort
             var subFolder = CommonConstants.SubFolderKarte;
             if (!string.IsNullOrEmpty(inputData.OldImage))
             {
-                string key = _options.AwsAccessKeyId.
-                var response = _amazonS3Service.GetListObjectAsync(SchemaConst.Schema);
-                response.Wait();
+                string key = inputData.OldImage.Replace(_options.BaseAccessUrl + "/", "");
+                var resDelete = _amazonS3Service.DeleteObjectAsync(key);
+                resDelete.Wait();
             }
+            var resUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, inputData.FileName, inputData.StreamImage);
+            resUpload.Wait();
 
 
             return new SaveImageOutputData(string.Empty, SaveImageStatus.Successed);
