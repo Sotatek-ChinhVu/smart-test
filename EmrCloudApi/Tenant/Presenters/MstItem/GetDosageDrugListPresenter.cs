@@ -1,10 +1,10 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.InputItem;
-using UseCase.InputItem.GetDosageDrugList;
+using EmrCloudApi.Tenant.Responses.MstItem;
+using UseCase.MstItem.GetDosageDrugList;
 using UseCase.InputItem.Search;
 
-namespace EmrCloudApi.Tenant.Presenters.InputItem
+namespace EmrCloudApi.Tenant.Presenters.MstItem
 {
     public class GetDosageDrugListPresenter : IGetDosageDrugListOutputPort
     {

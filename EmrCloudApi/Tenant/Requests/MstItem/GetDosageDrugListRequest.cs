@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.InputItem
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem
 {
     public class GetDosageDrugListRequest
     {

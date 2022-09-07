@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.MstItem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,5 @@ namespace Domain.Models.InputItem
         public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired);
 
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem);
-
-        List<DosageDrugModel> GetDosages(List<string> yjCds);
     }
 }

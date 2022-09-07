@@ -1,16 +1,10 @@
 ﻿using Domain.Constant;
 using Domain.Models.InputItem;
-using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -419,22 +413,6 @@ namespace Infrastructure.Repositories
             _tenantDataContextTracking.SaveChanges();
 
             return true;
-        }
-
-        public List<DosageDrugModel> GetDosages(List<string> yjCds)
-        {
-            var result = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd));
-            return result == null ? new List<DosageDrugModel>() : result.Select(
-                    r => new DosageDrugModel(
-                            r.YoukaiekiCd,
-                            r.DoeiCd,
-                            r.DgurKbn,
-                            r.KikakiUnit,
-                            r.YakkaiUnit,
-                            r.RikikaRate,
-                            r.RikikaUnit,
-                            r.YoukaiekiCd
-                   )).ToList();
         }
     }
 }

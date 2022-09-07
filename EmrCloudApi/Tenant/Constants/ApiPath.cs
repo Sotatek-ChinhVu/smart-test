@@ -12,7 +12,7 @@
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
 
-        //Input Item
+        //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
     }
 }

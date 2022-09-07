@@ -1,6 +1,6 @@
-﻿using Domain.Models.InputItem;
+﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Tenant.Responses.InputItem
+namespace EmrCloudApi.Tenant.Responses.MstItem
 {
     public class GetDosageDrugListResponse
     {

@@ -1,18 +1,13 @@
-﻿using Domain.Models.InputItem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.InputItem.GetDosageDrugList;
+﻿using Domain.Models.MstItem;
+using UseCase.MstItem.GetDosageDrugList;
 
-namespace Interactor.InputItem
+namespace Interactor.MstItem
 {
     public class GetDosageDrugListInteractor : IGetDosageDrugListInputPort
     {
-        private readonly IInputItemRepository _inputItemRepository;
+        private readonly IMstItemRepository _inputItemRepository;
 
-        public GetDosageDrugListInteractor(IInputItemRepository inputItemRepository)
+        public GetDosageDrugListInteractor(IMstItemRepository inputItemRepository)
         {
             _inputItemRepository = inputItemRepository;
         }
