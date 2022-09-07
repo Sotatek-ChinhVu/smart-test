@@ -16,7 +16,7 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceList
 
                 Data = new GetInsuranceListResponse()
                 {
-                    ListData = output.ListData
+                    Data = output.Data
                 },
                 Status = (byte)output.Status,
             };

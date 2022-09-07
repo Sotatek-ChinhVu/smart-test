@@ -116,7 +116,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0)
+                                        new HokenMstModel(0, 0),
+                                        sinDate
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -135,7 +136,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0)
+                                        new HokenMstModel(0, 0),
+                                        sinDate
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -154,7 +156,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0)
+                                        new HokenMstModel(0, 0),
+                                        sinDate
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -173,14 +176,15 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0)
+                                        new HokenMstModel(0, 0),
+                                        sinDate
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
 
             var listDataJoin = query.AsEnumerable().ToList();
 
-            if (listDataJoin.Count() > 0)
+            if (listDataJoin.Any())
             {
                 foreach (var item in listDataJoin)
                 {
