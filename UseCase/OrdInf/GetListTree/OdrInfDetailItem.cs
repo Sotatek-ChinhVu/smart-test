@@ -2,7 +2,7 @@
 {
     public class OdrInfDetailItem
     {
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string? itemCd, string? itemName, double suryo, string? unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string? kokuji1, string? kokuji2, int isNodspRece, string? ipnCd, string? ipnName, int jissiKbn, DateTime? jissiDate, int jissiId, string? jissiMachine, string? reqCd, string? bunkatu, string? cmtName, string? cmtOpt, string? fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string? itemCd, string? itemName, double suryo, string? unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string? kokuji1, string? kokuji2, int isNodspRece, string? ipnCd, string? ipnName, int jissiKbn, DateTime? jissiDate, int jissiId, string? jissiMachine, string? reqCd, string? bunkatu, string? cmtName, string? cmtOpt, string? fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -44,6 +44,9 @@
             BunkatuKoui = bunkatuKoui;
             AlternationIndex = alternationIndex;
             KensaGaichu = kensaGaichu;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
         }
 
         public int HpId { get; private set; }
@@ -86,5 +89,8 @@
         public int BunkatuKoui { get; private set; }
         public int AlternationIndex { get; private set; }
         public int KensaGaichu { get; private set; }
+        public double OdrTermVal { get; private set; }
+        public double CnvTermVal { get; private set; }
+        public string YjCd { get; private set; }
     }
 }

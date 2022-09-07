@@ -214,7 +214,10 @@ namespace Interactor.MedicalExamination
                                         od.Ten,
                                         od.BunkatuKoui,
                                         od.AlternationIndex,
-                                        od.KensaGaichu
+                                        od.KensaGaichu,
+                                        od.OdrTermVal,
+                                        od.CnvTermVal,
+                                        od.YjCd
                                 )
                                 ).ToList(),
                                 rpOdrInf.CreateDate,
