@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.Insurance
+﻿namespace Domain.Models.Insurance
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -27,6 +21,8 @@ namespace Domain.Models.Insurance
             HokenNo = hokenNo;
             HokenEdaNo = hokenEdaNo;
             PrefNo = prefNo;
+            SinDate = sinDate;
+            ConfirmDateList = confirmDateList;
         }
 
         public KohiInfModel()
@@ -48,7 +44,11 @@ namespace Domain.Models.Insurance
             HokenNo = 0;
             HokenEdaNo = 0;
             PrefNo = 0;
+            SinDate = 0;
+            ConfirmDateList = new List<ConfirmDateModel>();
         }
+
+        public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public string FutansyaNo { get; private set; }
 
@@ -84,5 +84,14 @@ namespace Domain.Models.Insurance
 
         public int PrefNo { get; private set; }
 
+        public int SinDate { get; private set; }
+
+        public bool IsExpirated
+        {
+            get
+            {
+                return !(StartDate <= SinDate && EndDate >= SinDate);
+            }
+        }
     }
 }

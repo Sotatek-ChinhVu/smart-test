@@ -125,6 +125,7 @@ using Interactor.KohiHokenMst;
 using UseCase.Schema.GetListImageTemplates;
 using Interactor.Schema;
 using UseCase.SetMst.CopyPasteSetMst;
+using UseCase.User.GetByLoginId;
 using UseCase.InputItem.GetDosageDrugList;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -204,6 +205,7 @@ namespace EmrCloudApi.Configs.Dependency
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
+            busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
