@@ -2,7 +2,7 @@
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int hpId, int prefNo, int hokenNo, int hokenSbtKbn, int hokenKohiKbn, string houbetu, string hokenName, string hokenNameCd, int hokenEdaNo, int startDate, int endDate, int isOtherPrefValid, string hokenSname, string prefactureName, int receKisai)
+        public HokenMstModel(int hpId, int prefNo, int hokenNo, int hokenSbtKbn, int hokenKohiKbn, string houbetu, string hokenName, string hokenNameCd, int hokenEdaNo, int startDate, int endDate, int isOtherPrefValid, string hokenSname, string prefactureName, int receKisai, int futanKbn)
         {
             HpId = hpId;
             PrefNo = prefNo;
@@ -19,6 +19,7 @@
             HokenSname = hokenSname;
             PrefactureName = prefactureName;
             ReceKisai = receKisai;
+            FutanKbn = futanKbn;
         }
 
         public HokenMstModel()
@@ -38,6 +39,7 @@
             HokenSname = string.Empty;
             PrefactureName = string.Empty;
             ReceKisai = 0;
+            FutanKbn = 0;
         }
 
         public int HpId { get; private set; }
@@ -69,6 +71,8 @@
         public string PrefactureName { get; private set; }
 
         public int ReceKisai { get; private set; }
+
+        public int FutanKbn { get; private set; }
 
         public string DisplayTextMaster { get => SetTextMaster(); }
 
