@@ -52,9 +52,9 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId)
         {
-            return GetReceptionRowModels(hpId, sinDate);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
         }
 
         public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -97,7 +97,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -123,10 +123,23 @@ namespace Infrastructure.Repositories
             // Uketuke
             var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
-            // 2. Perform the join operation
+            // 2. Filter collections by parameters
+            var filteredRaiinInfs = raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            if (raiinNo != CommonConstants.InvalidId)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);
+            }
+
+            var filteredPtInfs = ptInfs;
+            if (ptId != CommonConstants.InvalidId)
+            {
+                filteredPtInfs = filteredPtInfs.Where(x => x.PtId == ptId);
+            }
+
+            // 3. Perform the join operation
             var raiinQuery =
-                from raiinInf in raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate)
-                join ptInf in ptInfs on
+                from raiinInf in filteredRaiinInfs
+                join ptInf in filteredPtInfs on
                     new { raiinInf.HpId, raiinInf.PtId } equals
                     new { ptInf.HpId, ptInf.PtId }
                 join raiinCmtInfComment in raiinCmtInfs.Where(x => x.CmtKbn == CmtKbns.Comment) on

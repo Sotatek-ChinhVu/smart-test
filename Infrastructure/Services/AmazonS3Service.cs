@@ -1,13 +1,13 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using EmrCloudApi.Common;
-using EmrCloudApi.Configs.Options;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Net;
 
-namespace EmrCloudApi.Services;
+namespace Infrastructure.Services;
 
 public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 {
@@ -77,5 +77,30 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     private string GetAccessUrl(string key)
     {
         return $"{_options.BaseAccessUrl}/{key}";
+    }
+
+    public async Task<List<string>> GetListObjectAsync(string prefix)
+    {
+        List<string> listObjects = new();
+
+        var listRequest = new ListObjectsV2Request
+        {
+            BucketName = _options.BucketName,
+            Prefix = prefix
+        };
+
+        ListObjectsV2Response listResponse;
+        do
+        {
+            // Get a list of objects
+            listResponse = await _s3Client.ListObjectsV2Async(listRequest);
+            foreach (S3Object obj in listResponse.S3Objects)
+            {
+                listObjects.Add(obj.Key);
+            }
+            listRequest.ContinuationToken = listResponse.NextContinuationToken;
+        } while (listResponse.IsTruncated);
+
+        return listObjects;
     }
 }

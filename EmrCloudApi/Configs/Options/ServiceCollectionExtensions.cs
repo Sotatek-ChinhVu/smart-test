@@ -1,4 +1,6 @@
-﻿namespace EmrCloudApi.Configs.Options;
+﻿using Infrastructure.Options;
+
+namespace EmrCloudApi.Configs.Options;
 
 public static class ServiceCollectionExtensions
 {
