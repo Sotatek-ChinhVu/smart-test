@@ -5,7 +5,6 @@ using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
-using UseCase.MedicalExamination;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -75,7 +74,7 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-        
+
             var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = hokens.ListInsurance.FirstOrDefault();
 
@@ -104,7 +103,7 @@ namespace Interactor.MedicalExamination
                                 c.UpdateDate,
                                 c.IsDeleted)
             ).ToList())
-                                                             select karteGrp);    
+                                                             select karteGrp);
 
                 List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
               .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo)
@@ -209,9 +208,21 @@ namespace Interactor.MedicalExamination
                                         od.CmtName,
                                         od.CmtName,
                                         od.FontColor,
-                                        od.CommentNewline
+                                        od.CommentNewline,
+                                        od.Yakka,
+                                        od.IsGetPriceInYakka,
+                                        od.Ten,
+                                        od.BunkatuKoui,
+                                        od.AlternationIndex,
+                                        od.KensaGaichu,
+                                        od.OdrTermVal,
+                                        od.CnvTermVal,
+                                        od.YjCd
                                 )
-                                ).ToList()
+                                ).ToList(),
+                                rpOdrInf.CreateDate,
+                                rpOdrInf.CreateId,
+                                rpOdrInf.CreateName
                              );
 
                             group.OdrInfs.Add(odrModel);
