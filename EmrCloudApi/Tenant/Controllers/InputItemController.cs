@@ -1,5 +1,4 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.DrugDetail;
+﻿using EmrCloudApi.Tenant.Presenters.DrugDetail;
 using EmrCloudApi.Tenant.Presenters.InputItem;
 using EmrCloudApi.Tenant.Requests.DrugDetail;
 using EmrCloudApi.Tenant.Requests.InputItem;
