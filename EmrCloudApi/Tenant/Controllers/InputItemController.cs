@@ -9,6 +9,7 @@ using EmrCloudApi.Tenant.Responses.InputItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
+using UseCase.InputItem.GetDosageDrugList;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
 
@@ -55,6 +56,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDrugDetailResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetDosageDrugList)]
+        public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
+        {
+            var input = new GetDosageDrugListInputData(request.YjCds);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDosageDrugListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
     }
 }

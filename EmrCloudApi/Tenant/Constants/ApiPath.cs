@@ -11,5 +11,8 @@
         public const string Save = "Save";
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
+
+        //Input Item
+        public const string GetDosageDrugList = "GetDosageDrugList";
     }
 }
