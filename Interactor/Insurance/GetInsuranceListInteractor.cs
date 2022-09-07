@@ -19,17 +19,25 @@ namespace Interactor.Insurance
 
         public GetInsuranceListByIdOutputData Handle(GetInsuranceListInputData inputData)
         {
-            if (inputData.PtId < 0)
-            {
-                return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidPtId);
-            }
             if (inputData.HpId < 0)
             {
-                return new GetInsuranceListByIdOutputData(new List<InsuranceModel>(), GetInsuranceListStatus.InvalidHpId);
+                return new GetInsuranceListByIdOutputData(new InsuranceDataModel(), GetInsuranceListStatus.InvalidHpId);
+            }
+
+
+            if (inputData.PtId < 0)
+            {
+                return new GetInsuranceListByIdOutputData(new InsuranceDataModel(), GetInsuranceListStatus.InvalidPtId);
+            }
+
+
+            if (inputData.SinDate < 0)
+            {
+                return new GetInsuranceListByIdOutputData(new InsuranceDataModel(), GetInsuranceListStatus.InvalidSinDate);
             }
 
             var data = _insuranceResponsitory.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            return new GetInsuranceListByIdOutputData(data.ToList(), GetInsuranceListStatus.Successed);
+            return new GetInsuranceListByIdOutputData(data, GetInsuranceListStatus.Successed);
         }
     }
 }
