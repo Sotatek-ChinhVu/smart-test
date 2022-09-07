@@ -73,6 +73,8 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
+            var allOdrInfs = _ordInfRepository
+             .GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon);
 
             var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = hokens.FirstOrDefault();
@@ -103,13 +105,15 @@ namespace Interactor.MedicalExamination
             ).ToList())
                                                              select karteGrp);
 
-                List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
-              .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo, inputData.DeleteConditon)
-                                                    .OrderBy(odr => odr.OdrKouiKbn)
-                                                    .ThenBy(odr => odr.RpNo)
-                                                    .ThenBy(odr => odr.RpEdaNo)
-                                                    .ThenBy(odr => odr.SortNo)
-                                                    .ToList();
+                var odrInfListByRaiinNo = allOdrInfs
+                .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(
+                       o => o.ChangeOdrDetail(o.OrdInfDetails.Where(od => od.RaiinNo == historyKarteOdrRaiin.RaiinNo).
+                ToList()));
+                odrInfListByRaiinNo = odrInfListByRaiinNo.OrderBy(odr => odr.OdrKouiKbn)
+                                      .ThenBy(odr => odr.RpNo)
+                                      .ThenBy(odr => odr.RpEdaNo)
+                                      .ThenBy(odr => odr.SortNo)
+                                      .ToList();
 
                 // Find By Hoken
                 List<int> hokenPidList = odrInfListByRaiinNo.GroupBy(odr => odr.HokenPid).Select(grp => grp.Key).ToList();

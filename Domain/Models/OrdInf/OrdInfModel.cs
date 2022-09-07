@@ -51,5 +51,10 @@ namespace Domain.Models.OrdInfs
             OrdInfDetails = ordInfDetails;
             UpdateDate = updateDate;
         }
+        public OrdInfModel ChangeOdrDetail(List<OrdInfDetailModel> ordInfDetails)
+        {
+            OrdInfDetails = ordInfDetails;
+            return this;
+        }
     }
 }

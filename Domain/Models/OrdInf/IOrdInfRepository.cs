@@ -12,6 +12,6 @@
 
         IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted);
 
-        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo, int deleteCondition);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition);
     }
 }
