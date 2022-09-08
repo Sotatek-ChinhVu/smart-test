@@ -70,13 +70,16 @@ public class VisitingController : ControllerBase
         var output = _bus.Handle(input);
         switch (output.Status)
         {
-            case UpdateReceptionStaticCellStatus.ReceptionUpdated:
-            case UpdateReceptionStaticCellStatus.ReceptionCmtUpdated:
-                await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionInfo,
+            case UpdateReceptionStaticCellStatus.RaiinInfUpdated:
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
+                    new CommonMessage { RaiinNo = input.RaiinNo });
+                break;
+            case UpdateReceptionStaticCellStatus.RaiinCmtUpdated:
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
                     new CommonMessage { RaiinNo = input.RaiinNo });
                 break;
             case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
-                await _webSocketService.SendMessageAsync(FunctionCodes.UpdatePatientInfo,
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
                     new CommonMessage { PtId = input.PtId });
                 break;
         }
@@ -94,7 +97,7 @@ public class VisitingController : ControllerBase
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionInfo,
+            await _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
                 new CommonMessage { RaiinNo = input.RaiinNo });
         }
 
