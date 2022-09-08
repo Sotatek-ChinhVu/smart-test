@@ -8,15 +8,18 @@ namespace Infrastructure.Repositories
 {
     public class KarteInfRepository : IKarteInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
+
         public KarteInfRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<KarteInfModel> GetList(long ptId, long rainNo, long sinDate, bool isDeleted)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
+            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.RaiinNo == rainNo && k.SinDate == sinDate && (isDeleted || k.IsDeleted == 0)).ToList();
 
             if (karteInfEntity == null)
             {
@@ -27,7 +30,7 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, int hpId)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
+            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
 
             if (karteInfEntity == null)
             {
@@ -51,6 +54,44 @@ namespace Infrastructure.Repositories
                 itemData.CreateDate,
                 itemData.UpdateDate
                 );
+        }
+
+        public bool SaveImageKarteImgTemp(KarteImgInfModel model)
+        {
+            bool status = false;
+            try
+            {
+                var karteImgInf = _tenantTrackingDataContext.KarteImgInfs.FirstOrDefault(item => item.HpId == model.HpId && item.RaiinNo == 0 && item.PtId == model.PtId && item.FileName.Equals(model.OldFileName));
+
+                if (karteImgInf == null)
+                {
+                    karteImgInf = new KarteImgInf();
+                    karteImgInf.HpId = model.HpId;
+                    karteImgInf.RaiinNo = model.RaiinNo;
+                    karteImgInf.FileName = model.FileName;
+                    karteImgInf.PtId = model.PtId;
+                    _tenantTrackingDataContext.KarteImgInfs.Add(karteImgInf);
+                }
+                else
+                {
+                    if (model.FileName != String.Empty)
+                    {
+                        karteImgInf.RaiinNo = model.RaiinNo;
+                        karteImgInf.FileName = model.FileName;
+                    }
+                    else
+                    {
+                        _tenantTrackingDataContext.KarteImgInfs.Remove(karteImgInf);
+                    }
+                }
+                _tenantTrackingDataContext.SaveChanges();
+                status = true;
+                return status;
+            }
+            catch (Exception)
+            {
+                return status;
+            }
         }
     }
 }

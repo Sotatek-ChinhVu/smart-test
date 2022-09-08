@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.KarteInfs;
+using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -11,11 +12,13 @@ public class SaveImageInteractor : ISaveImageInputPort
 {
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly AmazonS3Options _options;
+    private readonly IKarteInfRepository _setKbnMstRepository;
 
-    public SaveImageInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service)
+    public SaveImageInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
+        _setKbnMstRepository = setKbnMstRepository;
     }
 
     public SaveImageOutputData Handle(SaveImageInputData input)
@@ -30,7 +33,7 @@ public class SaveImageInteractor : ISaveImageInputPort
             // Delete old image
             if (!string.IsNullOrEmpty(input.OldImage))
             {
-                string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", "");
+                string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", String.Empty);
                 if (_amazonS3Service.ObjectExistsAsync(key).Result)
                 {
                     var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
@@ -38,6 +41,13 @@ public class SaveImageInteractor : ISaveImageInputPort
                     {
                         return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
                     }
+                    _setKbnMstRepository.SaveImageKarteImgTemp(new KarteImgInfModel(
+                            input.HpId,
+                            input.PtId,
+                            input.RaiinNo,
+                            String.Empty,
+                            key
+                        ));
                 }
                 else
                 {
@@ -55,8 +65,16 @@ public class SaveImageInteractor : ISaveImageInputPort
             }
 
             string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
-            var resUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
-            return new SaveImageOutputData(resUpload.Result, SaveImageStatus.Successed);
+            var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
+            var linkImage = responseUpload.Result;
+            _setKbnMstRepository.SaveImageKarteImgTemp(new KarteImgInfModel(
+                            input.HpId,
+                            input.PtId,
+                            input.RaiinNo,
+                            linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
+                            input.OldImage.Replace(_options.BaseAccessUrl + "/", String.Empty)
+                        ));
+            return new SaveImageOutputData(linkImage, SaveImageStatus.Successed);
         }
         catch (Exception)
         {
