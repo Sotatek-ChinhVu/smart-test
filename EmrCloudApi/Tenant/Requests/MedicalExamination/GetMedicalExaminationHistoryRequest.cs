@@ -7,5 +7,6 @@
         public int SinDate { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
+        public long FilterId { get; set; }
     }
 }

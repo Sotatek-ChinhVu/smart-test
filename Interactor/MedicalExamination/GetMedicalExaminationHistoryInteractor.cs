@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.KaMst;
+using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
@@ -19,7 +20,8 @@ namespace Interactor.MedicalExamination
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
         private readonly IKaMstRepository _kaRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository)
+        private readonly IKarteFilterMstRepository _karteFilterMstRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -28,6 +30,7 @@ namespace Interactor.MedicalExamination
             _insuranceRepository = insuranceRepository;
             _userRepository = userRepository;
             _kaRepository = kaRepository;
+            _karteFilterMstRepository = karteFilterMstRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -52,11 +55,16 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidPageSize);
             }
+            if (inputData.FilterId <= 0)
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidFilterId);
+            }
 
             #region hard value
             int karteDeleteHistory = 1;
             bool allowDisplayDeleted = karteDeleteHistory > 0;
             #endregion
+
 
 
             var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)

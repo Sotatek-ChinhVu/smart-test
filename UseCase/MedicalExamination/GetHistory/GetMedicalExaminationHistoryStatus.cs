@@ -9,5 +9,6 @@
         InvalidSinDate = 4,
         InvalidPageSize = 5,
         NoData = 6,
+        InvalidFilterId = 7
     }
 }

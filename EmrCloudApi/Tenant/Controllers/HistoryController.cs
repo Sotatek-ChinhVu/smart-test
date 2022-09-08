@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, request.HpId, request.SinDate, request.PageIndex, request.PageSize);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, request.HpId, request.SinDate, request.PageIndex, request.PageSize, request.FilterId);
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();

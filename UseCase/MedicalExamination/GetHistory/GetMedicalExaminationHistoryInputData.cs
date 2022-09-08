@@ -9,14 +9,16 @@ namespace UseCase.MedicalExamination.GetHistory
         public int SinDate { get; private set; }
         public int PageIndex { get; private set; }
         public int PageSize { get; private set; }
+        public long FilterId { get; private set; }
 
-        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int pageIndex, int pageSize)
+        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int pageIndex, int pageSize, long filterId)
         {
             PtId = ptId;
             HpId = hpId;
             SinDate = sinDate;
             PageIndex = pageIndex;
             PageSize = pageSize;
+            FilterId = filterId;
         }
     }
 }

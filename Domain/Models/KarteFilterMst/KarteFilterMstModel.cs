@@ -30,4 +30,63 @@ public class KarteFilterMstModel
 
     public KarteFilterDetailModel KarteFilterDetailModel { get; private set; }
 
+    public bool OnlyBookmark
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
+            return KarteFilterDetailModel.BookMarkChecked;
+        }
+    }
+
+    public bool AllDepartment
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId .Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
+
+            return KarteFilterDetailModel.ListKaId.Count > 0;
+        }
+    }
+
+    public List<int> FilterWithListDepartmentCode
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return new List<int>();
+            return KarteFilterDetailModel.ListKaId;
+        }
+    }
+
+    public bool AllDoctor
+    {
+        get
+        {
+
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+
+            return KarteFilterDetailModel.ListUserId.Count > 0;
+        }
+    }
+
+    public List<int> FilterWithListDoctorCode
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return new List<int>();
+
+            return KarteFilterDetailModel.ListUserId;
+        }
+    }
+
+    public bool AllHoken
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+
+            return KarteFilterDetailModel.ListHokenId.Count > 0;
+        }
+    }
+
 }

@@ -39,6 +39,9 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.InvalidPageSize:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidPageSize;
                     break;
+                case GetMedicalExaminationHistoryStatus.InvalidFilterId:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidFilterId;
+                    break;
             }
         }
     }
