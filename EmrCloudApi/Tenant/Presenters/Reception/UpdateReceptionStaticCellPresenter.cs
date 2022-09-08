@@ -19,8 +19,8 @@ public class UpdateReceptionStaticCellPresenter : IUpdateReceptionStaticCellOutp
 
     private string GetMessage(UpdateReceptionStaticCellStatus status) => status switch
     {
-        UpdateReceptionStaticCellStatus.ReceptionUpdated
-        or UpdateReceptionStaticCellStatus.ReceptionCmtUpdated
+        UpdateReceptionStaticCellStatus.RaiinInfUpdated
+        or UpdateReceptionStaticCellStatus.RaiinCmtUpdated
         or UpdateReceptionStaticCellStatus.PatientCmtUpdated => ResponseMessage.UpdateReceptionStaticCellSuccess,
         UpdateReceptionStaticCellStatus.InvalidHpId => ResponseMessage.UpdateReceptionStaticCellInvalidHpId,
         UpdateReceptionStaticCellStatus.InvalidSinDate => ResponseMessage.UpdateReceptionStaticCellInvalidSinDate,
@@ -31,8 +31,8 @@ public class UpdateReceptionStaticCellPresenter : IUpdateReceptionStaticCellOutp
 
     private bool IsSuccess(UpdateReceptionStaticCellStatus status) => status switch
     {
-        UpdateReceptionStaticCellStatus.ReceptionUpdated
-        or UpdateReceptionStaticCellStatus.ReceptionCmtUpdated
+        UpdateReceptionStaticCellStatus.RaiinInfUpdated
+        or UpdateReceptionStaticCellStatus.RaiinCmtUpdated
         or UpdateReceptionStaticCellStatus.PatientCmtUpdated => true,
         _ => false
     };
