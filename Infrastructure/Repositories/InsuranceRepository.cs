@@ -173,10 +173,10 @@ namespace Infrastructure.Repositories
                         item.Kohi2Id,
                         item.Kohi3Id,
                         item.Kohi4Id,
-                        item.HokensyaNo,
+                        item.HokensyaNo ?? string.Empty,
                         item.Kigo,
                         item.Bango,
-                        item.EdaNo,
+                        item.EdaNo ?? string.Empty,
                         item.HonkeKbn,
                         item.StartDate,
                         item.EndDate,
@@ -226,7 +226,7 @@ namespace Infrastructure.Repositories
                         item.JibaiHokenTanto,
                         item.JibaiHokenTel,
                         item.JibaiJyusyouDate,
-                        item.HokenMemo,
+                        item.HokenMemo ?? string.Empty,
                         futanKbn,
                         confirmDateList.Where(c => c.HokenGrp == 1 && c.HokenId == item.HokenId)
                                        .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
