@@ -1,3 +1,4 @@
+using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
@@ -50,6 +51,174 @@ namespace Infrastructure.Repositories
                     receptionEntity.SyosaisinKbn,
                     receptionEntity.JikanKbn
                 );
+        }
+
+        public void Insert(ReceptionSaveDto dto)
+        {
+            var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
+            executionStrategy.Execute(() =>
+            {
+                using var transaction = _tenantDataContext.Database.BeginTransaction();
+
+                // Insert RaiinInf
+                var raiinInf = CreateNewRaiinInf(dto.Reception);
+                _tenantDataContext.RaiinInfs.Add(raiinInf);
+                _tenantDataContext.SaveChanges();
+
+                if (raiinInf.OyaRaiinNo == 0)
+                {
+                    raiinInf.OyaRaiinNo = raiinInf.RaiinNo;
+                }
+
+                // Insert RaiinCmtInf
+                if (!string.IsNullOrWhiteSpace(dto.ReceptionComment))
+                {
+                    var raiinCmtInf = CreateNewRaiinCmtInf(raiinInf, dto.ReceptionComment);
+                    _tenantDataContext.RaiinCmtInfs.Add(raiinCmtInf);
+                }
+
+                // Insert RaiinKbnInfs
+                var raiinKbnInfs = dto.KubunInfs
+                    .Where(model => model.KbnCd != CommonConstants.KbnCdDeleteFlag)
+                    .Select(dto => CreateNewRaiinKbnInf(dto, raiinInf));
+                _tenantDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
+
+                // Update insurances and diseases
+                AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
+                UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
+                _tenantDataContext.SaveChanges();
+
+                transaction.Commit();
+            });
+
+            #region Helper methods
+
+            RaiinInf CreateNewRaiinInf(ReceptionModel model)
+            {
+                return new RaiinInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = model.PtId,
+                    SinDate = model.SinDate,
+                    OyaRaiinNo = model.OyaRaiinNo,
+                    HokenPid = model.HokenPid,
+                    SanteiKbn = model.SanteiKbn,
+                    Status = model.Status,
+                    IsYoyaku = model.IsYoyaku,
+                    YoyakuTime = model.YoyakuTime,
+                    YoyakuId = model.YoyakuId,
+                    UketukeSbt = model.UketukeSbt,
+                    UketukeTime = model.UketukeTime,
+                    UketukeId = model.UketukeId,
+                    UketukeNo = model.UketukeNo,
+                    SinStartTime = model.SinStartTime,
+                    SinEndTime = model.SinEndTime,
+                    KaikeiTime = model.KaikeiTime,
+                    KaikeiId = model.KaikeiId,
+                    KaId = model.KaId,
+                    TantoId = model.TantoId,
+                    SyosaisinKbn = model.SyosaisinKbn,
+                    JikanKbn = model.JikanKbn,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            RaiinCmtInf CreateNewRaiinCmtInf(RaiinInf raiinInf, string text)
+            {
+                return new RaiinCmtInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = raiinInf.PtId,
+                    SinDate = raiinInf.SinDate,
+                    RaiinNo = raiinInf.RaiinNo,
+                    CmtKbn = CmtKbns.Comment,
+                    Text = text,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            RaiinKbnInf CreateNewRaiinKbnInf(RaiinKbnInfDto dto, RaiinInf raiinInf)
+            {
+                return new RaiinKbnInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = raiinInf.PtId,
+                    SinDate = raiinInf.SinDate,
+                    RaiinNo = raiinInf.RaiinNo,
+                    GrpId = dto.GrpId,
+                    KbnCd = dto.KbnCd,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            #endregion
+        }
+
+        private void AddInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId)
+        {
+            var hokenIds = insurances.Select(i => i.HokenId).Distinct();
+            var latestPtHokenChecks = (
+                from phc in _tenantDataContext.PtHokenChecks.AsTracking()
+                where phc.HpId == TempIdentity.HpId
+                    && phc.PtID == ptId
+                    && hokenIds.Contains(phc.HokenId)
+                    && phc.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
+                    && phc.IsDeleted == DeleteTypes.None
+                group phc by phc.HokenId into phcGroup
+                select phcGroup.OrderByDescending(x => x.CheckDate).FirstOrDefault()
+            ).ToList();
+
+            var newPhcs = new List<PtHokenCheck>();
+            foreach (var insurance in insurances)
+            {
+                var latestPhc = latestPtHokenChecks.Find(x => x.HokenId == insurance.HokenId);
+                if (latestPhc is not null && latestPhc.CheckDate.ToUniversalTime() != insurance.UtcCheckDate)
+                {
+                    newPhcs.Add(new PtHokenCheck
+                    {
+                        HpId = TempIdentity.HpId,
+                        PtID = ptId,
+                        HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
+                        HokenId = insurance.HokenId,
+                        CheckDate = insurance.UtcCheckDate,
+                        CheckCmt = string.Empty,
+                        CheckId = TempIdentity.UserId,
+                        CheckMachine = TempIdentity.ComputerName,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName
+                    });
+                }
+            }
+            _tenantDataContext.PtHokenChecks.AddRange(newPhcs);
+        }
+
+        private void UpdateDiseaseTenkis(IEnumerable<DiseaseDto> diseases, long ptId)
+        {
+            var ptByomeiIds = diseases.Select(d => d.Id);
+            var ptByomeis = _tenantDataContext.PtByomeis.AsTracking()
+                .Where(x => x.HpId == TempIdentity.HpId && x.PtId == ptId && ptByomeiIds.Contains(x.Id))
+                .ToList();
+
+            foreach (var disease in diseases)
+            {
+                var ptByomei = ptByomeis.Find(x => x.Id == disease.Id);
+                if (ptByomei is not null
+                    && (ptByomei.TenkiKbn != disease.TenkiKbn || ptByomei.TenkiDate != disease.TenkiDate))
+                {
+                    ptByomei.TenkiKbn = disease.TenkiKbn;
+                    ptByomei.TenkiDate = disease.TenkiDate;
+                    ptByomei.UpdateDate = DateTime.UtcNow;
+                    ptByomei.UpdateId = TempIdentity.UserId;
+                    ptByomei.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
         }
 
         public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId)
