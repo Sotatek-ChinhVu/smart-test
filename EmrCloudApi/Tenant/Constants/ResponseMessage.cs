@@ -102,7 +102,7 @@
         public static readonly string InvalidLevel1 = "Invalid Level1, Level1 > 0";
         public static readonly string InvalidLevel2 = "Invalid Level2, Level2 >= 0";
         public static readonly string InvalidLevel3 = "Invalid Level3, Level3 >= 0";
-        public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 80";
+        public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 60";
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
 
