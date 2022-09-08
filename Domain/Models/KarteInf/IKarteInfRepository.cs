@@ -6,6 +6,6 @@
 
         List<KarteInfModel> GetList(long ptId, int hpId);
 
-        bool SaveImageKarteImgTemp(KarteImgInfModel model);
+        bool SaveListImageKarteImgTemp(List<KarteImgInfModel> listModel);
     }
 }

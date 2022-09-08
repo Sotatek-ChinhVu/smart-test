@@ -30,6 +30,8 @@ public class SaveImageInteractor : ISaveImageInputPort
                 return new SaveImageOutputData(SaveImageStatus.InvalidPtId);
             }
 
+            List<KarteImgInfModel> listImageSaveTemps = new();
+
             // Delete old image
             if (!string.IsNullOrEmpty(input.OldImage))
             {
@@ -41,7 +43,7 @@ public class SaveImageInteractor : ISaveImageInputPort
                     {
                         return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
                     }
-                    _setKbnMstRepository.SaveImageKarteImgTemp(new KarteImgInfModel(
+                    listImageSaveTemps.Add(new KarteImgInfModel(
                             input.HpId,
                             input.PtId,
                             input.RaiinNo,
@@ -67,13 +69,14 @@ public class SaveImageInteractor : ISaveImageInputPort
             string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
             var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
             var linkImage = responseUpload.Result;
-            _setKbnMstRepository.SaveImageKarteImgTemp(new KarteImgInfModel(
-                            input.HpId,
-                            input.PtId,
-                            input.RaiinNo,
-                            linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
-                            input.OldImage.Replace(_options.BaseAccessUrl + "/", String.Empty)
-                        ));
+            listImageSaveTemps.Add(new KarteImgInfModel(
+                                input.HpId,
+                                input.PtId,
+                                input.RaiinNo,
+                                linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
+                                String.Empty
+                              ));
+            _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
             return new SaveImageOutputData(linkImage, SaveImageStatus.Successed);
         }
         catch (Exception)
