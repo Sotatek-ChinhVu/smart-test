@@ -93,7 +93,8 @@ namespace Interactor.OrdInfs
                             od.KensaGaichu,
                             od.OdrTermVal,
                             od.CnvTermVal,
-                            od.YjCd
+                            od.YjCd,
+                            od.MasterSbt
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
