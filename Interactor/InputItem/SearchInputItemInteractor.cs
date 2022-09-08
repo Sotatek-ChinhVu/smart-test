@@ -33,9 +33,9 @@ namespace Interactor.InputItem
                 return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidSindate);
             }
 
-            if (inputData.StartIndex < 0)
+            if (inputData.PageIndex <= 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidStartIndex);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPageIndex);
             }
 
             if (inputData.PageCount <= 0)
@@ -53,7 +53,7 @@ namespace Interactor.InputItem
                 return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPointTo);
             }
 
-            var data = _inputItemRepository.SearchDataInputItem(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.StartIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
+            var data = _inputItemRepository.SearchDataInputItem(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
 
             return new SearchInputItemOutputData(data.ToList(), SearchInputItemStatus.Successed);
         }
