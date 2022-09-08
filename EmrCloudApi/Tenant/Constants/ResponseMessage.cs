@@ -92,8 +92,8 @@
         public static readonly string InvalidUserId = "Invalid UserId, can't move";
         public static readonly string InvalidCopySetCd = "Invalid CopySetCd, CopySetCd >= 0";
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
-        public static readonly string InvalidDragSetCd = "Invalid DragSetCd, CopySetCd >= 0";
-        public static readonly string InvalidDropSetCd = "Invalid DropSetCd, CopySetCd > 0";
+        public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
+        public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
         public static readonly string InvalidSetCd = "Invalid SetCd, SetCd >= 0";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";

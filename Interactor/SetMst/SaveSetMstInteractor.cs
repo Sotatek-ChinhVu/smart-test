@@ -16,7 +16,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
 
     public SaveSetMstOutputData Handle(SaveSetMstInputData inputData)
     {
-        if (inputData.SinDate <= 150000101 && inputData.SinDate > 30000000)
+        if (inputData.SinDate <= 15000101 && inputData.SinDate > 30000000)
         {
             return new SaveSetMstOutputData(null, SaveSetMstStatus.InvalidSindate);
         }
