@@ -12,7 +12,7 @@ namespace UseCase.InputItem.Search
         InValidHpId = 2,
         InValidKeyword = 3,
         InvalidSindate = 4,
-        InvalidStartIndex = 5,
+        InvalidPageIndex = 5,
         InvalidPageCount = 6,
         InvalidKouiKbn = 7,
         InvalidPointFrom = 8,
