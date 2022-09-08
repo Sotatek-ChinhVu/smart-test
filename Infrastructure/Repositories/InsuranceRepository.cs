@@ -133,6 +133,8 @@ namespace Infrastructure.Repositories
             var listHokenInf = new List<HokenInfModel>();
             var listKohi = new List<KohiInfModel>();
 
+            var confirmDateList = _tenantDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0).ToList();
+
             if (itemList.Count > 0)
             {
                 foreach (var item in itemList)
@@ -181,10 +183,10 @@ namespace Infrastructure.Repositories
                         item.SikakuDate,
                         item.KofuDate,
                         confirmDate: GetConfirmDate(item.ptHokenCheckOfHokenPattern),
-                        kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate),
-                        kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate),
-                        kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate),
-                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate),
+                        kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, confirmDateList),
+                        kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, confirmDateList),
+                        kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, confirmDateList),
+                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, confirmDateList),
                         item.KogakuKbn,
                         item.TasukaiYm,
                         item.TokureiYm1,
@@ -225,7 +227,10 @@ namespace Infrastructure.Repositories
                         item.JibaiHokenTel,
                         item.JibaiJyusyouDate,
                         item.HokenMemo,
-                        futanKbn
+                        futanKbn,
+                        confirmDateList.Where(c => c.HokenGrp == 1 && c.HokenId == item.HokenId)
+                                       .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
+                                       .ToList()
                     );
                     if(!listHokenIdUsed.Contains(item.HokenId))
                     {
@@ -360,7 +365,11 @@ namespace Infrastructure.Repositories
                                         item.HokenEdaNo,
                                         item.PrefNo, 
                                         new HokenMstModel(0, 0), 
-                                        sinDate));
+                                        sinDate,
+                                        confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == item.HokenId)
+                                                       .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
+                                                       .ToList())
+                        );
                 }
             }
 
@@ -373,7 +382,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private KohiInfModel GetKohiInfModel(PtKohi kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate)
+        private KohiInfModel GetKohiInfModel(PtKohi kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<PtHokenCheck> confirmDateList)
         {
             if (kohiInf == null)
             {
@@ -397,7 +406,11 @@ namespace Infrastructure.Repositories
                 kohiInf.HokenEdaNo,
                 kohiInf.PrefNo,
                 GetHokenMstModel(hokenMst),
-                sinDate);
+                sinDate,
+                confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == kohiInf.HokenId)
+                               .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
+                               .ToList()
+                );
         }
 
         private HokenMstModel GetHokenMstModel(HokenMst? hokenMst)
