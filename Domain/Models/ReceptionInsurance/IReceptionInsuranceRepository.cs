@@ -9,5 +9,7 @@ namespace Domain.Models.ReceptionInsurance
     public interface IReceptionInsuranceRepository
     {
         public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception);
+
+        bool CheckPatternExpried(int hpId, long ptId, int sinDate, int hokenId);
     }
 }
