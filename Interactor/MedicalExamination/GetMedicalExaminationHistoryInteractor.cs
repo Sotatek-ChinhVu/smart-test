@@ -77,7 +77,7 @@ namespace Interactor.MedicalExamination
             #region Odr
         
             var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            var hokenFirst = hokens.FirstOrDefault();
+            var hokenFirst = hokens.ListInsurance.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
@@ -121,7 +121,7 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hoken = hokens.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hoken = hokens.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
                     var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
