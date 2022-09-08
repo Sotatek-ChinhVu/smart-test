@@ -30,8 +30,8 @@ namespace EmrCloudApi.Tenant.Presenters.InputItem
                 case SearchInputItemStatus.InvalidSindate:
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
-                case SearchInputItemStatus.InvalidStartIndex:
-                    Result.Message = ResponseMessage.InvalidStartIndex;
+                case SearchInputItemStatus.InvalidPageIndex:
+                    Result.Message = ResponseMessage.InvalidPageIndex;
                     break;
                 case SearchInputItemStatus.InvalidPageCount:
                     Result.Message = ResponseMessage.InvalidPageCount;
