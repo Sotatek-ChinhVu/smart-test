@@ -30,6 +30,14 @@ public class KarteFilterMstModel
 
     public KarteFilterDetailModel KarteFilterDetailModel { get; private set; }
 
+    public bool IsAutoApply
+    {
+        get
+        {
+            return FilterId > 0 && (AutoApply == 1);
+        }
+    }
+
     public bool OnlyBookmark
     {
         get
@@ -45,7 +53,7 @@ public class KarteFilterMstModel
         {
             if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId .Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
 
-            return KarteFilterDetailModel.ListKaId.Count > 0;
+            return KarteFilterDetailModel.ListKaId.Contains(0);
         }
     }
 
@@ -65,7 +73,7 @@ public class KarteFilterMstModel
 
             if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
 
-            return KarteFilterDetailModel.ListUserId.Count > 0;
+            return KarteFilterDetailModel.ListUserId.Contains(0);
         }
     }
 
@@ -85,7 +93,44 @@ public class KarteFilterMstModel
         {
             if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
 
-            return KarteFilterDetailModel.ListHokenId.Count > 0;
+            return KarteFilterDetailModel.ListHokenId.Contains(0);
+        }
+    }
+    public bool IsHoken
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+            var allDepartmentSetting = KarteFilterDetailModel.ListHokenId.Where(h => h == 1)?.FirstOrDefault();
+            return allDepartmentSetting != null;
+        }
+    }
+    public bool IsJihi
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+
+            return KarteFilterDetailModel.ListHokenId.Contains(2);
+        }
+    }
+    public bool IsRosai
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+
+            return KarteFilterDetailModel.ListHokenId.Contains(3);
+        }
+    }
+
+    public bool IsJibai
+    {
+        get
+        {
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.UserId <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
+
+            return KarteFilterDetailModel.ListHokenId.Contains(4);
         }
     }
 
