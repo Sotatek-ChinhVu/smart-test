@@ -21,7 +21,7 @@ public class ByomeiController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
     {
-        var input = new DiseaseSearchInputData(request.IsSyusyoku, request.Keyword, request.PageIndex, request.PageCount);
+        var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.Keyword, request.PageIndex, request.PageCount);
         var output = _bus.Handle(input);
 
         var presenter = new DiseaseSearchPresenter();

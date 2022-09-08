@@ -2,7 +2,11 @@
 
 public class DiseaseSearchRequest
 {
-    public bool IsSyusyoku { get; set; } = false;
+    public bool IsPrefix { get; set; } = false;
+
+    public bool IsByomei { get; set; } = false;
+
+    public bool IsSuffix { get; set; } = false;
 
     public string Keyword { get; set; } = String.Empty;
 

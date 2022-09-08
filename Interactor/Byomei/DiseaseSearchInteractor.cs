@@ -24,7 +24,7 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
             {
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageIndex);
             }
-            var listData = _byomeiRepository.DiseaseSearch(inputData.IsSyusyoku, inputData.Keyword, inputData.PageIndex, inputData.PageCount);
+            var listData = _byomeiRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.Keyword, inputData.PageIndex, inputData.PageCount);
             return new DiseaseSearchOutputData(listData, DiseaseSearchStatus.Successed);
         }
         catch (Exception)

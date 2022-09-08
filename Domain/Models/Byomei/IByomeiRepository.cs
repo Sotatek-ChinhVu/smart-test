@@ -2,5 +2,5 @@
 
 public interface IByomeiRepository
 {
-    List<ByomeiMstModel> DiseaseSearch(bool isSyusyoku, string keyword, int pageIndex, int pageCount);
+    List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount);
 }
