@@ -128,7 +128,6 @@ namespace Infrastructure.Repositories
                                 ptHokenPattern.HokenMemo
                             };
             var itemList = joinQuery.ToList();
-            var listHokenIdUsed = new List<int>();
             List<InsuranceModel> listInsurance = new List<InsuranceModel>();
             var listHokenInf = new List<HokenInfModel>();
             var listKohi = new List<KohiInfModel>();
@@ -232,15 +231,11 @@ namespace Infrastructure.Repositories
                                        .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
                                        .ToList()
                     );
-                    if(!listHokenIdUsed.Contains(item.HokenId))
-                    {
-                        listHokenIdUsed.Add(item.HokenId);
-                    }
                     listInsurance.Add(insuranceModel);
                 }
             }
 
-            var hokenInfs = _tenantDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId && !listHokenIdUsed.Contains(h.HokenId))
+            var hokenInfs = _tenantDataContext.PtHokenInfs.Where(h => h.HpId == hpId && h.PtId == ptId)
                             .OrderByDescending(x => x.HokenId).ToList();
             if (hokenInfs.Count > 0)
             {
