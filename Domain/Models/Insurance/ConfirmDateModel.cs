@@ -20,7 +20,7 @@ namespace Domain.Models.Insurance
 
         public string CheckComment { get; private set; }
 
-        public DateTime ConfirmDate { get; private set; }
+        public int ConfirmDate { get; private set; }
 
         public ConfirmDateModel(int hokenGrp, int hokenId, long seqNo, int checkId, string checkMachine, string checkComment, DateTime confirmDate)
         {
@@ -30,7 +30,7 @@ namespace Domain.Models.Insurance
             CheckId = checkId;
             CheckMachine = checkMachine;
             CheckComment = checkComment;
-            ConfirmDate = confirmDate;
+            ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
         }
     }
 }
