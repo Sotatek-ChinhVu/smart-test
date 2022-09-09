@@ -30,7 +30,7 @@ namespace Interactor.OrdInfs
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
             var allOdrInfs = _ordInfRepository
-                    .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
+                    .GetList(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
                     .Select(o => new OdrInfItem(
                         o.HpId,
                         o.RaiinNo,
@@ -120,7 +120,8 @@ namespace Interactor.OrdInfs
             }
 
             var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
-            foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
+ 
+            Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
             {
                 var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title ");
                 // Find By Group
@@ -139,7 +140,7 @@ namespace Interactor.OrdInfs
                     .ToList();
                 if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
                 {
-                    foreach (var groupOdrInf in groupOdrInfs)
+                    Parallel.ForEach(groupOdrInfs, groupOdrInf =>
                     {
                         var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
                                                 && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
@@ -156,10 +157,10 @@ namespace Interactor.OrdInfs
                             group.OdrInfs.Add(rpOdrInf);
                         }
                         groupHoken.GroupOdrItems.Add(group);
-                    }
+                    });
                 }
                 tree.GroupHokens.Add(groupHoken);
-            }
+            });
 
             return tree;
         }

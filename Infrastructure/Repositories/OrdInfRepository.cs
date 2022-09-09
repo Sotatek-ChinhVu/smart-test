@@ -26,11 +26,10 @@ namespace Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted)
+        public IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
-            var hpId = allOdrInf?.FirstOrDefault()?.HpId ?? 0;
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate)?.ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
 
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
         }
@@ -42,8 +41,6 @@ namespace Infrastructure.Repositories
 
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
         }
-
-
 
         public bool CheckExistOrder(long rpNo, long rpEdaNo)
         {
@@ -75,32 +72,33 @@ namespace Infrastructure.Repositories
             {
                 var odrDetailModels = new List<OrdInfDetailModel>();
 
-                var createName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.UserId == rpOdrInf.CreateId)?.Sname ?? string.Empty;
+                var createName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.UserId == rpOdrInf.CreateId && u.HpId == hpId)?.Sname ?? string.Empty;
                 var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
                     .ToList();
 
                 if (odrInfDetails?.Count > 0)
                 {
                     int count = 0;
+                    var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
+
                     foreach (var odrInfDetail in odrInfDetails)
                     {
                         var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd && t.StartDate <= odrInfDetail.SinDate && t.EndDate >= odrInfDetail.SinDate);
                         var ten = tenMst?.Ten ?? 0;
 
-                        var kensaMst = tenMst == null ? null : kensaMsts.Where(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo).FirstOrDefault();
+                        var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
 
                         var alternationIndex = count % 2;
                         var bunkatuKoui = 0;
                         if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
                         {
-                            var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
                             if (usage != null)
                             {
                                 bunkatuKoui = usage.SinKouiKbn;
                             }
                         }
 
-                        var yakka = yakkas.Where(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnCd).FirstOrDefault()?.Yakka ?? 0;
+                        var yakka = yakkas.FirstOrDefault(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
 
                         var isGetPriceInYakka = IsGetPriceInYakka(tenMst, odrInfDetail.HpId, odrInfDetail.SinDate, ipnKasanExcludes, ipnKasanExcludeItems);
 
@@ -202,9 +200,9 @@ namespace Infrastructure.Repositories
         {
             if (tenMst == null) return false;
 
-            var ipnKasanExclude = ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            var ipnKasanExclude = ipnKasanExcludes.FirstOrDefault(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate);
 
-            var ipnKasanExcludeItem = ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            var ipnKasanExcludeItem = ipnKasanExcludeItems.FirstOrDefault(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate);
 
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
