@@ -23,15 +23,21 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _tenantProvider = tenantProvider;
     }
 
-    public async Task<string> UploadAnObjectAsync(string fileName, Stream stream)
+    public async Task<string> UploadAnObjectAsync(string subFolder, string fileName, Stream stream)
+    {
+        var memoryStream = await stream.ToMemoryStreamAsync();
+        return await UploadAnObjectAsync(subFolder, fileName, memoryStream);
+    }
+
+    public async Task<string> UploadAnObjectAsync(string subFolder, string fileName, MemoryStream memoryStream)
     {
         try
         {
             var request = new PutObjectRequest
             {
                 BucketName = _options.BucketName,
-                Key = GetUniqueKey(fileName),
-                InputStream = await stream.ToMemoryStreamAsync(),
+                Key = GetUniqueKey(subFolder, fileName),
+                InputStream = memoryStream,
             };
 
             var response = await _s3Client.PutObjectAsync(request);
@@ -66,17 +72,36 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _s3Client.Dispose();
     }
 
-    private string GetUniqueKey(string fileName)
+    private string GetUniqueKey(string subFolder, string fileName)
     {
         var tenantId = _tenantProvider.GetTenantId();
+        var prefix = "tenants/" + tenantId;
+        if (!string.IsNullOrEmpty(subFolder))
+        {
+            prefix += ("/" + subFolder);
+        }
+
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         var extension = Path.GetExtension(fileName);
-        return $"{tenantId}/{fileNameWithoutExtension}-{Guid.NewGuid()}{extension}";
+        return $"{prefix}/{fileNameWithoutExtension}-{Guid.NewGuid()}{extension}";
     }
 
     private string GetAccessUrl(string key)
     {
         return $"{_options.BaseAccessUrl}/{key}";
+    }
+
+    public async Task<bool> DeleteObjectAsync(string key)
+    {
+        try
+        {
+            var response = await _s3Client.DeleteObjectAsync(_options.BucketName, key);
+            return Convert.ToBoolean(response.DeleteMarker);
+        }
+        catch (AmazonS3Exception)
+        {
+            return false;
+        }
     }
 
     public async Task<List<string>> GetListObjectAsync(string prefix)
