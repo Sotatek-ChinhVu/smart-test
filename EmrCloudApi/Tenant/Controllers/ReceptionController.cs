@@ -17,6 +17,7 @@ using UseCase.Core.Sync;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
 using UseCase.Reception.Insert;
+using UseCase.Reception.Update;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 
@@ -54,6 +55,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<InsertReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Update)]
+        public ActionResult<Response<UpdateReceptionResponse>> Update([FromBody] UpdateReceptionRequest request)
+        {
+            var input = new UpdateReceptionInputData(request.Dto);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateReceptionPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateReceptionResponse>>(presenter.Result);
         }
 
         [HttpGet("GetPatientRaiinKubun")]

@@ -111,6 +111,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.Insert;
+using UseCase.Reception.Update;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
 using UseCase.ReceptionInsurance.Get;
@@ -220,6 +221,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
             busBuilder.RegisterUseCase<InsertReceptionInputData, InsertReceptionInteractor>();
+            busBuilder.RegisterUseCase<UpdateReceptionInputData, UpdateReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();

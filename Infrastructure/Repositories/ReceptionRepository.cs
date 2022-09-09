@@ -160,6 +160,136 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
+        public bool Update(ReceptionSaveDto dto)
+        {
+            var raiinInf = _tenantDataContext.RaiinInfs.AsTracking()
+                .FirstOrDefault(r => r.HpId == TempIdentity.HpId
+                    && r.PtId == dto.Reception.PtId
+                    && r.SinDate == dto.Reception.SinDate
+                    && r.RaiinNo == dto.Reception.RaiinNo
+                    && r.IsDeleted == DeleteTypes.None);
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            UpdateRaiinInfIfChanged(raiinInf, dto.Reception);
+            UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
+            SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
+            // Update insurances and diseases
+            AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
+            UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
+
+            _tenantDataContext.SaveChanges();
+            return true;
+
+            #region Helper methods
+
+            void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
+            {
+                // Detect changes
+                if (entity.OyaRaiinNo != model.OyaRaiinNo
+                    || entity.KaId != model.KaId
+                    || entity.UketukeSbt != model.UketukeSbt
+                    || entity.UketukeNo != model.UketukeNo
+                    || entity.TantoId != model.TantoId)
+                {
+                    entity.OyaRaiinNo = model.OyaRaiinNo;
+                    entity.KaId = model.KaId;
+                    entity.UketukeSbt = model.UketukeSbt;
+                    entity.UketukeNo = model.UketukeNo;
+                    entity.TantoId = model.TantoId;
+                    entity.UpdateDate = DateTime.UtcNow;
+                    entity.UpdateId = TempIdentity.UserId;
+                    entity.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
+
+            void UpsertRaiinCmtInf(RaiinInf raiinInf, string text)
+            {
+                var raiinCmtInf = _tenantDataContext.RaiinCmtInfs.AsTracking()
+                   .FirstOrDefault(x => x.HpId == TempIdentity.HpId
+                        && x.RaiinNo == raiinInf.RaiinNo
+                        && x.CmtKbn == CmtKbns.Comment
+                        && x.IsDelete == DeleteTypes.None);
+                if (raiinCmtInf is null)
+                {
+                    _tenantDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
+                    {
+                        HpId = TempIdentity.HpId,
+                        PtId = raiinInf.PtId,
+                        SinDate = raiinInf.SinDate,
+                        RaiinNo = raiinInf.RaiinNo,
+                        CmtKbn = CmtKbns.Comment,
+                        Text = text,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName
+                    });
+                }
+                else if (raiinCmtInf.Text != text)
+                {
+                    raiinCmtInf.Text = text;
+                    raiinCmtInf.UpdateDate = DateTime.UtcNow;
+                    raiinCmtInf.UpdateId = TempIdentity.UserId;
+                    raiinCmtInf.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
+
+            void SaveRaiinKbnInfs(RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+            {
+                var existingEntities = _tenantDataContext.RaiinKbnInfs.AsTracking()
+                    .Where(x => x.HpId == TempIdentity.HpId
+                        && x.PtId == raiinInf.PtId
+                        && x.SinDate == raiinInf.SinDate
+                        && x.RaiinNo == raiinInf.RaiinNo
+                        && x.IsDelete == DeleteTypes.None)
+                    .ToList();
+
+                foreach (var kbnInfDto in kbnInfDtos)
+                {
+                    var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
+                    if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
+                    {
+                        if (existingEntity is not null)
+                        {
+                            // Soft-delete
+                            existingEntity.IsDelete = DeleteTypes.Deleted;
+                        }
+                    }
+                    else
+                    {
+                        if (existingEntity is null)
+                        {
+                            // Insert
+                            _tenantDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            {
+                                HpId = TempIdentity.HpId,
+                                PtId = raiinInf.PtId,
+                                SinDate = raiinInf.SinDate,
+                                RaiinNo = raiinInf.RaiinNo,
+                                GrpId = kbnInfDto.GrpId,
+                                KbnCd = kbnInfDto.KbnCd,
+                                CreateDate = DateTime.UtcNow,
+                                CreateId = TempIdentity.UserId,
+                                CreateMachine = TempIdentity.ComputerName
+                            });
+                        }
+                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                        {
+                            // Update
+                            existingEntity.KbnCd = kbnInfDto.KbnCd;
+                            existingEntity.UpdateDate = DateTime.UtcNow;
+                            existingEntity.UpdateId = TempIdentity.UserId;
+                            existingEntity.UpdateMachine = TempIdentity.ComputerName;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+        }
+
         private void AddInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId)
         {
             var hokenIds = insurances.Select(i => i.HokenId).Distinct();

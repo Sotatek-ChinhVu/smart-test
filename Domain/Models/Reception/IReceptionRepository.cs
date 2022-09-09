@@ -4,6 +4,7 @@
     {
         ReceptionModel? Get(long raiinNo);
         void Insert(ReceptionSaveDto dto);
+        bool Update(ReceptionSaveDto dto);
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
         List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
         bool UpdateStatus(int hpId, long raiinNo, int status);
