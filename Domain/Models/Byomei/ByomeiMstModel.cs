@@ -2,31 +2,31 @@
 
 public class ByomeiMstModel
 {
-    public ByomeiMstModel(string byomeiCd, string byomeiCdDisplay, string sbyomei, string kanaName1, string sikkanDisplay, string nanByoDisplay, string icd10Display, string icd102013Display)
+    public ByomeiMstModel(string byomeiCd, string byomeiType, string sbyomei, string kanaName1, string sikkan, string nanByo, string icd10, string icd102013)
     {
         ByomeiCd = byomeiCd;
-        ByomeiCdDisplay = byomeiCdDisplay;
+        ByomeiType = byomeiType;
         Sbyomei = sbyomei;
         KanaName1 = kanaName1;
-        SikkanDisplay = sikkanDisplay;
-        NanByoDisplay = nanByoDisplay;
-        Icd10Display = icd10Display;
-        Icd102013Display = icd102013Display;
+        Sikkan = sikkan;
+        NanByo = nanByo;
+        Icd10 = icd10;
+        Icd102013 = icd102013;
     }
 
     public string ByomeiCd { get; private set; }
 
-    public string ByomeiCdDisplay { get; private set; }
+    public string ByomeiType { get; private set; }
 
     public string Sbyomei { get; private set; }
 
     public string KanaName1 { get; private set; }
 
-    public string SikkanDisplay { get; private set; }
+    public string Sikkan { get; private set; }
 
-    public string NanByoDisplay { get; private set; }
+    public string NanByo { get; private set; }
 
-    public string Icd10Display { get; private set; }
+    public string Icd10 { get; private set; }
 
-    public string Icd102013Display { get; private set; }
+    public string Icd102013 { get; private set; }
 }

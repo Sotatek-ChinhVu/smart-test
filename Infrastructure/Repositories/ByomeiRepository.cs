@@ -160,12 +160,12 @@ public class ByomeiRepository : IByomeiRepository
 
         if (listDatas != null)
         {
-            listByomeies = listDatas.Select(mst => convertToByomeiMstModel(mst)).ToList();
+            listByomeies = listDatas.Select(mst => ConvertToByomeiMstModel(mst)).ToList();
         }
         return listByomeies;
     }
 
-    private ByomeiMstModel convertToByomeiMstModel(ByomeiMst mst)
+    private ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
     {
         return new ByomeiMstModel(
                 mst.ByomeiCd,
