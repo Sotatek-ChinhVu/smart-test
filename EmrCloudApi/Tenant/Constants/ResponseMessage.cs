@@ -94,6 +94,18 @@
         public static readonly string InvalidUserId = "Invalid UserId, can't move";
         public static readonly string InvalidCopySetCd = "Invalid CopySetCd, CopySetCd >= 0";
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
+        public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
+        public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
+        public static readonly string InvalidSetCd = "Invalid SetCd, SetCd >= 0";
+        public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
+        public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
+        public static readonly string InvalidGenarationId = "Invalid GenarationId, GenarationId >= 0";
+        public static readonly string InvalidLevel1 = "Invalid Level1, Level1 > 0";
+        public static readonly string InvalidLevel2 = "Invalid Level2, Level2 >= 0";
+        public static readonly string InvalidLevel3 = "Invalid Level3, Level3 >= 0";
+        public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 60";
+        public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
+        public static readonly string InvalidColor = "Invalid Color, Color >= 0";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
