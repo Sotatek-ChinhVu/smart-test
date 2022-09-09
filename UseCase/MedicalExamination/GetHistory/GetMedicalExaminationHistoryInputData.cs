@@ -7,7 +7,6 @@ namespace UseCase.MedicalExamination.GetHistory
         public long PtId { get; private set; }
         public int HpId { get; private set; }
         public int UserId { get; private set; }
-        public int UserId { get; private set; }
         public int SinDate { get; private set; }
         public int PageIndex { get; private set; }
         public int PageSize { get; private set; }
