@@ -268,6 +268,51 @@ namespace Infrastructure.Repositories
             return KensaGaichuTextConst.NONE;
         }
 
+
+        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted)
+        {
+            var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0));
+            return result.Select(
+                    r => new ApproveInfModel(
+                            r.Id,
+                            r.HpId,
+                            r.PtId,
+                            r.SinDate,
+                            r.RaiinNo,
+                            r.SeqNo,
+                            r.IsDeleted,
+                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
+                        )
+                );
+        }
+
+        private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
+        {
+            string result = string.Empty;
+            string info = string.Empty;
+
+            string docName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            if (!string.IsNullOrEmpty(docName))
+            {
+                info += docName;
+            }
+
+            string approvalDateTime = string.Empty;
+            if (updateDate != null && updateDate.Value != DateTime.MinValue)
+            {
+                approvalDateTime = " " + updateDate.Value.ToString("yyyy/MM/dd HH:mm");
+            }
+
+            info += approvalDateTime;
+
+            if (!string.IsNullOrEmpty(info))
+            {
+                result += "（承認: " + info + "）";
+            }
+
+            return result;
+        }
+
         public OrdInfModel Read(int ordId)
         {
             throw new NotImplementedException();

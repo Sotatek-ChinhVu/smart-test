@@ -6,12 +6,15 @@ namespace UseCase.MedicalExamination.GetHistory
     {
         public long PtId { get; private set; }
         public int HpId { get; private set; }
+        public int UserId { get; private set; }
+        public int UserId { get; private set; }
         public int SinDate { get; private set; }
         public int PageIndex { get; private set; }
         public int PageSize { get; private set; }
         public long FilterId { get; private set; }
+        public int IsShowApproval { get; private set; }
 
-        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int pageIndex, int pageSize, long filterId)
+        public GetMedicalExaminationHistoryInputData(long ptId, int hpId, int sinDate, int pageIndex, int pageSize, long filterId, int userId, int isShowApproval)
         {
             PtId = ptId;
             HpId = hpId;
@@ -19,6 +22,8 @@ namespace UseCase.MedicalExamination.GetHistory
             PageIndex = pageIndex;
             PageSize = pageSize;
             FilterId = filterId;
+            UserId = userId;
+            IsShowApproval = isShowApproval;
         }
     }
 }

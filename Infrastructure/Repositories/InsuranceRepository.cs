@@ -232,7 +232,7 @@ namespace Infrastructure.Repositories
                                        .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
                                        .ToList()
                     );
-                    if(!listHokenIdUsed.Contains(item.HokenId))
+                    if (!listHokenIdUsed.Contains(item.HokenId))
                     {
                         listHokenIdUsed.Add(item.HokenId);
                     }
@@ -348,23 +348,23 @@ namespace Infrastructure.Repositories
                                     .Where(x => x.HokenId == item.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
                                     .OrderByDescending(x => x.CheckDate).FirstOrDefault();
                     listKohi.Add(new KohiInfModel(
-                                        item.FutansyaNo ?? string.Empty, 
-                                        item.JyukyusyaNo ?? string.Empty, 
-                                        item.HokenId, 
-                                        item.StartDate, 
-                                        item.EndDate, 
-                                        GetConfirmDate(ptHokenCheckOfKohi), 
-                                        item.Rate, 
-                                        item.GendoGaku, 
-                                        item.SikakuDate, 
-                                        item.KofuDate, 
-                                        item.TokusyuNo ?? string.Empty, 
-                                        item.HokenSbtKbn, 
-                                        item.Houbetu ?? string.Empty, 
-                                        item.HokenNo, 
+                                        item.FutansyaNo ?? string.Empty,
+                                        item.JyukyusyaNo ?? string.Empty,
+                                        item.HokenId,
+                                        item.StartDate,
+                                        item.EndDate,
+                                        GetConfirmDate(ptHokenCheckOfKohi),
+                                        item.Rate,
+                                        item.GendoGaku,
+                                        item.SikakuDate,
+                                        item.KofuDate,
+                                        item.TokusyuNo ?? string.Empty,
+                                        item.HokenSbtKbn,
+                                        item.Houbetu ?? string.Empty,
+                                        item.HokenNo,
                                         item.HokenEdaNo,
-                                        item.PrefNo, 
-                                        new HokenMstModel(0, 0), 
+                                        item.PrefNo,
+                                        new HokenMstModel(0, 0),
                                         sinDate,
                                         confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == item.HokenId)
                                                        .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
@@ -444,13 +444,8 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, bool allowDisplayDeleted)
+        public IEnumerable<InsuranceModel> GetListPokenPattern(int hpId, long ptId, bool allowDisplayDeleted, bool isAllHoken = true, bool isHoken = true, bool isJihi = true, bool isRosai = true, bool isJibai = true)
         {
-            bool isAllHoken = true;
-            bool isHoken = true;   //HokenKbn: 1,2
-            bool isJihi = true;     //HokenKbn: 0
-            bool isRosai = true;   //HokenKbn: 11,12,13 
-            bool isJibai = true;   //HokenKbn: 14
 
             var result = _tenantDataContext.PtHokenPatterns.Where
                                 (

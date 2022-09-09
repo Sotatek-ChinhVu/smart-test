@@ -22,6 +22,7 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionSameVisit;
@@ -198,6 +199,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
+            services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

@@ -47,17 +47,17 @@ public class KarteFilterMstModel
         }
     }
 
-    public bool AllDepartment
+    public bool IsAllDepartment
     {
         get
         {
-            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId .Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId.Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
 
             return KarteFilterDetailModel.ListKaId.Contains(0);
         }
     }
 
-    public List<int> FilterWithListDepartmentCode
+    public List<int> ListDepartmentCode
     {
         get
         {
@@ -66,7 +66,7 @@ public class KarteFilterMstModel
         }
     }
 
-    public bool AllDoctor
+    public bool IsAllDoctor
     {
         get
         {
@@ -77,7 +77,7 @@ public class KarteFilterMstModel
         }
     }
 
-    public List<int> FilterWithListDoctorCode
+    public List<int> ListDoctorCode
     {
         get
         {
@@ -87,7 +87,7 @@ public class KarteFilterMstModel
         }
     }
 
-    public bool AllHoken
+    public bool IsAllHoken
     {
         get
         {
