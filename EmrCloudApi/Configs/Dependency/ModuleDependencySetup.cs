@@ -73,6 +73,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
+using Interactor.SupperSetDetail;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using Interactor.VisitingList;
@@ -123,6 +124,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
+using UseCase.SupperSetDetail.GetSetByomeiList;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -322,6 +324,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Schema
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+
+            // SupperSetDetail
+            busBuilder.RegisterUseCase<GetSetByomeiListInputData, GetSetByomeiListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

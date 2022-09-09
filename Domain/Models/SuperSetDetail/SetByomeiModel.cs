@@ -2,7 +2,7 @@
 
 public class SetByomeiModel
 {
-    public SetByomeiModel(bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, List<PrefixSuffixModel> prefixSuffixList)
+    public SetByomeiModel(bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList)
     {
         IsSyobyoKbn = isSyobyoKbn;
         SikkanKbn = sikkanKbn;
@@ -12,6 +12,7 @@ public class SetByomeiModel
         IsDspRece = isDspRece;
         IsDspKarte = isDspKarte;
         ByomeiCmt = byomeiCmt;
+        ByomeiCd = byomeiCd;
         PrefixSuffixList = prefixSuffixList;
     }
 
@@ -30,6 +31,8 @@ public class SetByomeiModel
     public bool IsDspKarte { get; private set; }
 
     public string ByomeiCmt { get; private set; }
+
+    public string ByomeiCd { get; private set; }
 
     public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
 }

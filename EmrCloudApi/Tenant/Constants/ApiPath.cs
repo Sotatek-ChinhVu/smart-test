@@ -9,8 +9,11 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+
+        // SupperSet
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
+        public const string GetSetByomeiList = "GetSetByomeiList";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";

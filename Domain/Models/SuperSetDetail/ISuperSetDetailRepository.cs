@@ -2,5 +2,5 @@
 
 public interface ISuperSetDetailRepository
 {
-    List<SetByomeiModel> GetSetByoMeis(int hpId, int setCd);
+    List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd);
 }
