@@ -169,18 +169,18 @@ public class ByomeiRepository : IByomeiRepository
     {
         return new ByomeiMstModel(
                 mst.ByomeiCd,
-                convertByomeiCdDisplay(mst.ByomeiCd),
+                ConvertByomeiCdDisplay(mst.ByomeiCd),
                 mst.Sbyomei ?? String.Empty,
                 mst.KanaName1 ?? String.Empty,
-                convertSikkanDisplay(mst.SikkanCd),
+                ConvertSikkanDisplay(mst.SikkanCd),
                 mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
-                convertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                convertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
+                ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
+                ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
             );
     }
 
     /// Get the ByomeiCdDisplay depend on ByomeiCd
-    private string convertByomeiCdDisplay(string byomeiCd)
+    private string ConvertByomeiCdDisplay(string byomeiCd)
     {
         string result = "";
 
@@ -209,7 +209,7 @@ public class ByomeiRepository : IByomeiRepository
     }
 
     /// Get the SikkanCd for display
-    private string convertSikkanDisplay(int SikkanCd)
+    private string ConvertSikkanDisplay(int SikkanCd)
     {
         string sikkanDisplay = "";
         switch (SikkanCd)
@@ -237,7 +237,7 @@ public class ByomeiRepository : IByomeiRepository
     }
 
     /// Get the Icd10Display depend on Icd101 and Icd102
-    private string convertIcd10Display(string icd101, string icd102)
+    private string ConvertIcd10Display(string icd101, string icd102)
     {
         string result = icd101;
         if (!string.IsNullOrWhiteSpace(result))
@@ -255,7 +255,7 @@ public class ByomeiRepository : IByomeiRepository
     }
 
     /// Get the Icd10Display depend on Icd1012013 and Icd1022013
-    private string convertIcd102013Display(string icd1012013, string icd1022013)
+    private string ConvertIcd102013Display(string icd1012013, string icd1022013)
     {
         string rs = icd1012013;
         if (!string.IsNullOrWhiteSpace(rs))
