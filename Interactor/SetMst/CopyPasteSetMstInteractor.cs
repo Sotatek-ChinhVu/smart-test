@@ -35,7 +35,7 @@ public class CopyPasteSetMstInteractor : ICopyPasteSetMstInputPort
             {
                 return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.Successed);
             }
-            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.Failed);
+            return new CopyPasteSetMstOutputData(CopyPasteSetMstStatus.InvalidLevel);
         }
         catch
         {
