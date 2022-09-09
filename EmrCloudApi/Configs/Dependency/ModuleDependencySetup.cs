@@ -7,10 +7,12 @@ using Domain.Models.GroupInf;
 using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
+using Domain.Models.JsonSetting;
 using Domain.Models.KaMst;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
+using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
@@ -30,16 +32,18 @@ using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemConf;
+using Domain.Models.SystemGenerationConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
-using Infrastructure.Services;
+using EmrCloudApi.Realtime;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
+using Infrastructure.Services;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
@@ -49,10 +53,13 @@ using Interactor.GrpInf;
 using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
+using Interactor.JsonSetting;
 using Interactor.KaMst;
 using Interactor.KarteFilter;
 using Interactor.KarteInfs;
+using Interactor.KohiHokenMst;
 using Interactor.MedicalExamination;
+using Interactor.MstItem;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
@@ -62,6 +69,7 @@ using Interactor.RaiinKubunMst;
 using Interactor.Reception;
 using Interactor.ReceptionInsurance;
 using Interactor.ReceptionSameVisit;
+using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
@@ -82,12 +90,17 @@ using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
 using UseCase.KaMst.GetList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
+using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MstItem.GetDosageDrugList;
 using UseCase.OrdInfs.GetListTrees;
+using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
@@ -103,28 +116,24 @@ using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
+using UseCase.Schema.GetListImageTemplates;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
+using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
+using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.SetMst.ReorderSetMst;
-using Domain.Models.JsonSetting;
-using Interactor.JsonSetting;
-using UseCase.JsonSetting.Get;
-using UseCase.JsonSetting.Upsert;
-using EmrCloudApi.Realtime;
-using UseCase.KohiHokenMst.Get;
-using Interactor.KohiHokenMst;
-using UseCase.Schema.GetListImageTemplates;
-using Interactor.Schema;
-using UseCase.SetMst.CopyPasteSetMst;
+using Domain.Models.Byomei;
+using UseCase.Byomei.DiseaseSearch;
+using Interactor.Byomei;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -193,6 +202,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
+            services.AddTransient<IByomeiRepository, ByomeiRepository>();
+            services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
+            services.AddTransient<IMstItemRepository, MstItemRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -203,6 +215,7 @@ namespace EmrCloudApi.Configs.Dependency
             //User
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
+            busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -301,9 +314,11 @@ namespace EmrCloudApi.Configs.Dependency
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+            busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
@@ -313,6 +328,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Schema
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+
+            //Validation TodayOrder
+            busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

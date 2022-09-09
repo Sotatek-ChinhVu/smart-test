@@ -2,10 +2,16 @@
 
 public enum UpdateReceptionStaticCellStatus
 {
-    UnknownError = 0,
-    Success = 1,
+    RaiinInfNotFound = 0,
+    RaiinInfUpdated,
+    RaiinCmtUpdated,
+    PatientCmtUpdated,
     InvalidHpId,
     InvalidSinDate,
     InvalidRaiinNo,
     InvalidPtId,
+    InvalidUketukeSbtId,
+    InvalidTantoId,
+    InvalidKaId,
+    InvalidCellName
 }

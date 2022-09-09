@@ -76,15 +76,15 @@ namespace Interactor.MedicalExamination
             var allOdrInfs = _ordInfRepository
              .GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon);
 
-            var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            var hokenFirst = hokens.FirstOrDefault();
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
                 var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
 
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst?.DisplayRateOnly ?? string.Empty, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
 
@@ -120,8 +120,8 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hoken = hokens.FirstOrDefault(c => c.HokenId == hokenPid);
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
                     .GroupBy(odr => new
@@ -208,11 +208,24 @@ namespace Interactor.MedicalExamination
                                         od.CmtName,
                                         od.CmtName,
                                         od.FontColor,
-                                        od.CommentNewline
-                                    )
-                               ).ToList(),
-                              rpOdrInf.UpdateDate,
-                              rpOdrInf.IsDeleted
+                                        od.CommentNewline,
+                                        od.Yakka,
+                                        od.IsGetPriceInYakka,
+                                        od.Ten,
+                                        od.BunkatuKoui,
+                                        od.AlternationIndex,
+                                        od.KensaGaichu,
+                                        od.OdrTermVal,
+                                        od.CnvTermVal,
+                                        od.YjCd,
+                                        od.MasterSbt
+                                )
+                                ).ToList(),
+                                rpOdrInf.CreateDate,
+                                rpOdrInf.CreateId,
+                                rpOdrInf.CreateName,
+                                rpOdrInf.UpdateDate,
+                                rpOdrInf.IsDeleted
                              );
 
                             group.OdrInfs.Add(odrModel);

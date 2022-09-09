@@ -11,19 +11,29 @@ public class UpdateReceptionStaticCellPresenter : IUpdateReceptionStaticCellOutp
 
     public void Complete(UpdateReceptionStaticCellOutputData outputData)
     {
-        Result.Data = new UpdateReceptionStaticCellResponse(outputData.Status == UpdateReceptionStaticCellStatus.Success);
+        var success = IsSuccess(outputData.Status);
+        Result.Data = new UpdateReceptionStaticCellResponse(success);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
 
     private string GetMessage(UpdateReceptionStaticCellStatus status) => status switch
     {
-        UpdateReceptionStaticCellStatus.UnknownError => ResponseMessage.UpdateReceptionStaticCellUnknownError,
-        UpdateReceptionStaticCellStatus.Success => ResponseMessage.UpdateReceptionStaticCellSuccess,
+        UpdateReceptionStaticCellStatus.RaiinInfUpdated
+        or UpdateReceptionStaticCellStatus.RaiinCmtUpdated
+        or UpdateReceptionStaticCellStatus.PatientCmtUpdated => ResponseMessage.UpdateReceptionStaticCellSuccess,
         UpdateReceptionStaticCellStatus.InvalidHpId => ResponseMessage.UpdateReceptionStaticCellInvalidHpId,
         UpdateReceptionStaticCellStatus.InvalidSinDate => ResponseMessage.UpdateReceptionStaticCellInvalidSinDate,
         UpdateReceptionStaticCellStatus.InvalidRaiinNo => ResponseMessage.UpdateReceptionStaticCellInvalidRaiinNo,
         UpdateReceptionStaticCellStatus.InvalidPtId => ResponseMessage.UpdateReceptionStaticCellInvalidPtId,
-        _ => string.Empty
+        _ => ResponseMessage.UpdateReceptionStaticCellUnknownError
+    };
+
+    private bool IsSuccess(UpdateReceptionStaticCellStatus status) => status switch
+    {
+        UpdateReceptionStaticCellStatus.RaiinInfUpdated
+        or UpdateReceptionStaticCellStatus.RaiinCmtUpdated
+        or UpdateReceptionStaticCellStatus.PatientCmtUpdated => true,
+        _ => false
     };
 }
