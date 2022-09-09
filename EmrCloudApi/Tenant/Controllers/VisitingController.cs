@@ -2,11 +2,14 @@
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.Reception;
+using EmrCloudApi.Tenant.Presenters.ReceptionVisiting;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Requests.ReceptionVisiting;
 using EmrCloudApi.Tenant.Requests.VisitingList;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
+using EmrCloudApi.Tenant.Responses.ReceptionVisiting;
 using EmrCloudApi.Tenant.Responses.VisitingList;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -14,6 +17,7 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.ReceptionVisiting.Get;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -42,6 +46,15 @@ public class VisitingController : ControllerBase
         return Ok(presenter.Result);
     }
 
+    [HttpGet(ApiPath.Get + "GetReceptionVisiting")]
+    public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
+    {
+        var input = new GetReceptionVisitingInputData(request.HpId, request.PtId, request.SinDate);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionVisitingPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
     [HttpGet(ApiPath.Get + "Settings")]
     public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
