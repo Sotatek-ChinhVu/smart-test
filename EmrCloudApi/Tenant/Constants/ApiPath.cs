@@ -11,9 +11,11 @@
         public const string Save = "Save";
 
         // SupperSet
+        public const string Validate = "Validate";
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
         public const string GetSetByomeiList = "GetSetByomeiList";
+        public const string DiseaseSearch = "DiseaseSearch";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
