@@ -326,7 +326,10 @@ namespace Infrastructure.Repositories
                                             item.JibaiJyusyouDate,
                                             isHaveHokenMst,
                                             hokenMstSubNumber,
-                                            item.Houbetu ?? string.Empty
+                                            item.Houbetu ?? string.Empty,
+                                            confirmDateList.Where(c => c.HokenGrp == 1 && c.HokenId == item.HokenId)
+                                                           .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
+                                                           .ToList()
                                             );
 
                     listHokenInf.Add(itemHokenInf);

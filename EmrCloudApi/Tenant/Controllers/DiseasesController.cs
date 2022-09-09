@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.Diseases;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.Byomei;
 using EmrCloudApi.Tenant.Presenters.Diseases;
 using EmrCloudApi.Tenant.Requests.Byomei;
@@ -43,27 +44,8 @@ namespace EmrCloudApi.Tenant.Controllers
                     r.Id,
                     r.PtId,
                     r.SortNo,
-                    r.SyusyokuCd1,
-                    r.SyusyokuCd2,
-                    r.SyusyokuCd3,
-                    r.SyusyokuCd4,
-                    r.SyusyokuCd5,
-                    r.SyusyokuCd6,
-                    r.SyusyokuCd7,
-                    r.SyusyokuCd8,
-                    r.SyusyokuCd9,
-                    r.SyusyokuCd10,
-                    r.SyusyokuCd11,
-                    r.SyusyokuCd12,
-                    r.SyusyokuCd13,
-                    r.SyusyokuCd14,
-                    r.SyusyokuCd15,
-                    r.SyusyokuCd16,
-                    r.SyusyokuCd17,
-                    r.SyusyokuCd18,
-                    r.SyusyokuCd19,
-                    r.SyusyokuCd20,
-                    r.SyusyokuCd21,
+                    r.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                    r.SuffixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
                     r.Byomei,
                     r.StartDate,
                     r.TenkiKbn,
