@@ -71,7 +71,10 @@ namespace Interactor.OrdInfs
                             item.SortNo,
                             item.IsDeleted,
                             item.Id,
-                            new List<OrdInfDetailModel>()
+                            new List<OrdInfDetailModel>(),
+                            DateTime.MinValue,
+                            0,
+                            ""
                         );
                     if (item != null)
                     {
@@ -123,7 +126,13 @@ namespace Interactor.OrdInfs
                                         isCheckIpnKasanExclude,
                                         refillSetting,
                                         inputItem?.CmtCol1 ?? 0,
-                                        inputItem?.Ten ?? 0
+                                        inputItem?.Ten ?? 0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        ""
                                     );
                             ordInf.OrdInfDetails.Add(ordInfDetail);
                         }
