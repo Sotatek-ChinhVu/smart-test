@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
             _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int startIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public IEnumerable<InputItemModel> SearchDataInputItem(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<InputItemModel>();
 
@@ -117,7 +117,7 @@ namespace Infrastructure.Repositories
 
 
 
-            var yakkaSyusaiMstList = _tenantDataContext.YakkaSyusaiMsts.ToList();
+            var yakkaSyusaiMstList = _tenantDataContext.YakkaSyusaiMsts.AsQueryable();
             if (kouiKbn > 0)
             {
                 //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
@@ -257,7 +257,7 @@ namespace Infrastructure.Repositories
             {
                 queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
 
-                yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate).ToList();
+                yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
             }
             else
             {
@@ -327,41 +327,37 @@ namespace Infrastructure.Repositories
             // Query 点数 for KN% item
             var tenMstQuery = _tenantDataContext.TenMsts.Where(item => item.HpId == hpId
                                                                                        && item.StartDate <= sinDate
-                                                                                       && item.EndDate >= sinDate).ToList();
-            var queryResultList = queryResult.AsEnumerable().ToList();
+                                                                                       && item.EndDate >= sinDate);
+            var kensaMstQuery = _tenantDataContext.KensaMsts.AsQueryable();
 
-            var kensaMstQuery = _tenantDataContext.KensaMsts.ToList();
-
-            var queryKNTensu = from tenKN in queryResultList
+            var queryKNTensu = from tenKN in queryResult
                                join ten in tenMstQuery on new { tenKN.SanteiItemCd } equals new { SanteiItemCd = ten.ItemCd }
                                where tenKN.ItemCd.StartsWith("KN")
                                select new { tenKN.ItemCd, ten.Ten };
 
-
-            var tenJoinYakkaSyusai = from ten in queryResultList
+            var tenJoinYakkaSyusai = from ten in queryResult
                                      join yakkaSyusaiMstItem in yakkaSyusaiMstList
                                      on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
                                      from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
                                      select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
             var sinKouiCollection = new SinkouiCollection();
 
-            var queryFinal = from ten in tenJoinYakkaSyusai
-                             join kouiKbnItem in sinKouiCollection
+            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
+                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
                              on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
                              from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
-                             join tenKN in queryKNTensu
+                             join tenKN in queryKNTensu.AsEnumerable()
                              on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
 
                              select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN };
-
-            var queryJoinWithKensa = from q in queryFinal
-                                     join k in kensaMstQuery
+            var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
+                                     join k in kensaMstQuery.AsEnumerable()
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
 
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip(startIndex).Take(pageCount);
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1)*pageCount).Take(pageCount);
             var listTenMstData = listTenMst.ToList();
             if (listTenMstData != null && listTenMstData.Count > 0)
             {

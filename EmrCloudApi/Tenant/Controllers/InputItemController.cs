@@ -27,7 +27,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SearchInputItem")]
         public ActionResult<Response<SearchInputItemResponse>> SearchInputItem([FromBody] SearchInputItemRequest request)
         {
-            var input = new SearchInputItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.StartIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, request.HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired);
+            var input = new SearchInputItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, request.HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired);
             var output = _bus.Handle(input);
             var presenter = new SearchInputItemPresenter();
             presenter.Complete(output);

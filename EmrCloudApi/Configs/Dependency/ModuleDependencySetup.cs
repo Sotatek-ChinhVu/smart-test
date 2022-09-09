@@ -131,6 +131,9 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using Domain.Models.Byomei;
+using UseCase.Byomei.DiseaseSearch;
+using Interactor.Byomei;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -199,6 +202,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
+            services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
         }
@@ -314,6 +318,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
+            busBuilder.RegisterUseCase<DiseaseSearchInputData, DiseaseSearchInteractor>();
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
