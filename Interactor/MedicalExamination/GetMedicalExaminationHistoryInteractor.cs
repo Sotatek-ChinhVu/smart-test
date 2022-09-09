@@ -60,7 +60,7 @@ namespace Interactor.MedicalExamination
 
 
             var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
-                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             var pageTotal = query.Count();
@@ -75,15 +75,15 @@ namespace Interactor.MedicalExamination
             #endregion
             #region Odr
 
-            var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            var hokenFirst = hokens.ListInsurance.FirstOrDefault();
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
                 var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
 
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst?.DisplayRateOnly ?? string.Empty, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
@@ -120,8 +120,8 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hoken = hokens.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
                     .GroupBy(odr => new

@@ -1,5 +1,4 @@
-﻿using Domain.Constant;
-using Domain.Models.InputItem;
+﻿using Domain.Models.InputItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -383,7 +382,9 @@ namespace Infrastructure.Repositories
                                                            item.tenKN != null ? item.tenKN.Ten : (item.TenMst?.Ten ?? 0),
                                                            item.TenMst?.TenId ?? 0,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
-                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty
+                                                           item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
+                                                          item.TenMst?.CmtCol1 ?? 0,
+                                                          item.TenMst?.IpnNameCd ?? string.Empty
                                                             );
                     listTenMstModels.Add(newItemModel);
                 }
@@ -409,6 +410,34 @@ namespace Infrastructure.Repositories
             _tenantDataContextTracking.SaveChanges();
 
             return true;
+        }
+
+        public InputItemModel GetTenMst(int hpId, int sinDate, string itemCd)
+        {
+            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCd && t.StartDate <= sinDate && t.EndDate >= sinDate);
+
+            return new InputItemModel(
+                tenMst?.HpId ?? 0,
+                tenMst?.ItemCd ?? string.Empty,
+                tenMst?.RousaiKbn ?? 0,
+                tenMst?.KanaName1 ?? string.Empty,
+                tenMst?.Name ?? string.Empty,
+                tenMst?.KohatuKbn ?? 0,
+                tenMst?.MadokuKbn ?? 0,
+                tenMst?.KouseisinKbn ?? 0,
+                tenMst?.OdrUnitName ?? string.Empty,
+                tenMst?.EndDate ?? 0,
+                tenMst?.DrugKbn ?? 0,
+                tenMst?.MasterSbt ?? string.Empty,
+                tenMst?.BuiKbn ?? 0,
+                tenMst?.IsAdopted ?? 0,
+                tenMst?.Ten ?? 0,
+                tenMst?.TenId ?? 0,
+                "",
+                "",
+                tenMst?.CmtCol1 ?? 0,
+                tenMst?.IpnNameCd ?? string.Empty
+            );
         }
     }
 }

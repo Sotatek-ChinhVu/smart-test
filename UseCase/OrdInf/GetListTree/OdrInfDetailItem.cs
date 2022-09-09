@@ -58,10 +58,10 @@
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
         public int SinKouiKbn { get; private set; }
-        public string? ItemCd { get; private set; }
-        public string? ItemName { get; private set; }
+        public string ItemCd { get; private set; }
+        public string ItemName { get; private set; }
         public double Suryo { get; private set; }
-        public string? UnitName { get; private set; }
+        public string UnitName { get; private set; }
         public int UnitSbt { get; private set; }
         public double TermVal { get; private set; }
         public int KohatuKbn { get; private set; }
@@ -69,20 +69,20 @@
         public int SyohoLimitKbn { get; private set; }
         public int DrugKbn { get; private set; }
         public int YohoKbn { get; private set; }
-        public string? Kokuji1 { get; private set; }
-        public string? Kokuji2 { get; private set; }
+        public string Kokuji1 { get; private set; }
+        public string Kokuji2 { get; private set; }
         public int IsNodspRece { get; private set; }
-        public string? IpnCd { get; private set; }
-        public string? IpnName { get; private set; }
+        public string IpnCd { get; private set; }
+        public string IpnName { get; private set; }
         public int JissiKbn { get; private set; }
-        public DateTime? JissiDate { get; private set; }
+        public DateTime JissiDate { get; private set; }
         public int JissiId { get; private set; }
-        public string? JissiMachine { get; private set; }
-        public string? ReqCd { get; private set; }
-        public string? Bunkatu { get; private set; }
-        public string? CmtName { get; private set; }
-        public string? CmtOpt { get; private set; }
-        public string? FontColor { get; private set; }
+        public string JissiMachine { get; private set; }
+        public string ReqCd { get; private set; }
+        public string Bunkatu { get; private set; }
+        public string CmtName { get; private set; }
+        public string CmtOpt { get; private set; }
+        public string FontColor { get; private set; }
         public int CommentNewline { get; private set; }
         public double Yakka { get; private set; }
         public bool IsGetPriceInYakka { get; private set; }
