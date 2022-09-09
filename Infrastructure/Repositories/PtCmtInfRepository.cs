@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
@@ -32,7 +33,7 @@ public class PtCmtInfRepository : IPtCmtInfRepository
 
     public void Upsert(long ptId, string text)
     {
-        var ptCmt = _tenantDataContext.PtCmtInfs
+        var ptCmt = _tenantDataContext.PtCmtInfs.AsTracking()
             .OrderByDescending(p => p.UpdateDate)
             .FirstOrDefault(p => p.PtId == ptId);
         if (ptCmt is null)

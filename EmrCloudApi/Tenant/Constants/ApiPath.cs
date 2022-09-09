@@ -11,6 +11,7 @@
         public const string Save = "Save";
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
+        public const string DiseaseSearch = "DiseaseSearch";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";

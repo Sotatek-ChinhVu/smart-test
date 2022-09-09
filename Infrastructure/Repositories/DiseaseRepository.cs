@@ -72,7 +72,7 @@ namespace Infrastructure.Repositories
                         icd1022013 = byomeiMst.Icd1022013;
                     }
                 }
-                PtDiseaseModel ptDiseaseModel = new(
+                PtDiseaseModel ptDiseaseModel = new PtDiseaseModel(
                         ptByomei.HpId,
                         ptByomei.PtId,
                         ptByomei.SeqNo,
@@ -141,35 +141,34 @@ namespace Infrastructure.Repositories
 
         private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model)
         {
-            var syusyokuCd = model.SyusyokuCd;
-
+            var preSuffixList = model.PrefixSuffixList;
             return new PtByomei
             {
                 HpId = TempIdentity.HpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,
                 SortNo = model.SortNo,
-                SyusyokuCd1 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd1"],
-                SyusyokuCd2 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd2"],
-                SyusyokuCd3 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd3"],
-                SyusyokuCd4 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd4"],
-                SyusyokuCd5 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd5"],
-                SyusyokuCd6 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd6"],
-                SyusyokuCd7 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd7"],
-                SyusyokuCd8 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd8"],
-                SyusyokuCd9 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd9"],
-                SyusyokuCd10 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd10"],
-                SyusyokuCd11 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd11"],
-                SyusyokuCd12 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd12"],
-                SyusyokuCd13 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd13"],
-                SyusyokuCd14 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd14"],
-                SyusyokuCd15 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd15"],
-                SyusyokuCd16 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd16"],
-                SyusyokuCd17 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd17"],
-                SyusyokuCd18 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd18"],
-                SyusyokuCd19 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd19"],
-                SyusyokuCd20 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd20"],
-                SyusyokuCd21 = syusyokuCd == null ? String.Empty : syusyokuCd["SyusyokuCd21"],
+                SyusyokuCd1 = preSuffixList.Count > 0 ? preSuffixList[0].Code : string.Empty,
+                SyusyokuCd2 = preSuffixList.Count > 1 ? preSuffixList[1].Code : string.Empty,
+                SyusyokuCd3 = preSuffixList.Count > 2 ? preSuffixList[2].Code : string.Empty,
+                SyusyokuCd4 = preSuffixList.Count > 3 ? preSuffixList[3].Code : string.Empty,
+                SyusyokuCd5 = preSuffixList.Count > 4 ? preSuffixList[4].Code : string.Empty,
+                SyusyokuCd6 = preSuffixList.Count > 5 ? preSuffixList[5].Code : string.Empty,
+                SyusyokuCd7 = preSuffixList.Count > 6 ? preSuffixList[6].Code : string.Empty,
+                SyusyokuCd8 = preSuffixList.Count > 7 ? preSuffixList[7].Code : string.Empty,
+                SyusyokuCd9 = preSuffixList.Count > 8 ? preSuffixList[8].Code : string.Empty,
+                SyusyokuCd10 = preSuffixList.Count > 9 ? preSuffixList[9].Code : string.Empty,
+                SyusyokuCd11 = preSuffixList.Count > 10 ? preSuffixList[10].Code : string.Empty,
+                SyusyokuCd12 = preSuffixList.Count > 11 ? preSuffixList[11].Code : string.Empty,
+                SyusyokuCd13 = preSuffixList.Count > 12 ? preSuffixList[12].Code : string.Empty,
+                SyusyokuCd14 = preSuffixList.Count > 13 ? preSuffixList[13].Code : string.Empty,
+                SyusyokuCd15 = preSuffixList.Count > 14 ? preSuffixList[14].Code : string.Empty,
+                SyusyokuCd16 = preSuffixList.Count > 15 ? preSuffixList[15].Code : string.Empty,
+                SyusyokuCd17 = preSuffixList.Count > 16 ? preSuffixList[16].Code : string.Empty,
+                SyusyokuCd18 = preSuffixList.Count > 17 ? preSuffixList[17].Code : string.Empty,
+                SyusyokuCd19 = preSuffixList.Count > 18 ? preSuffixList[18].Code : string.Empty,
+                SyusyokuCd20 = preSuffixList.Count > 19 ? preSuffixList[19].Code : string.Empty,
+                SyusyokuCd21 = preSuffixList.Count > 20 ? preSuffixList[20].Code : string.Empty,
                 Byomei = model.Byomei,
                 StartDate = model.StartDate,
                 TenkiKbn = model.TenkiKbn == TenkiKbnConst.InMonth ? TenkiKbnConst.Cured : model.TenkiKbn,
@@ -193,9 +192,9 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private List<string> SyusyokuCdToList(PtByomei ptByomei)
+        private List<PrefixSuffixModel> SyusyokuCdToList(PtByomei ptByomei)
         {
-            return new List<string>()
+            List<string> codeList = new List<string>()
             {
                 ptByomei.SyusyokuCd1 ?? string.Empty,
                 ptByomei.SyusyokuCd2 ?? string.Empty,
@@ -219,6 +218,27 @@ namespace Infrastructure.Repositories
                 ptByomei.SyusyokuCd20 ?? string.Empty,
                 ptByomei.SyusyokuCd21 ?? string.Empty
             };
+            codeList = codeList.Where(c => c != string.Empty).ToList();
+
+            if (codeList.Count == 0)
+            {
+                return new List<PrefixSuffixModel>();
+            }
+
+            var byomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
+
+            List<PrefixSuffixModel> result = new List<PrefixSuffixModel>();
+            foreach (var code in codeList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(b => b.ByomeiCd == code);
+                if (byomeiMst == null)
+                {
+                    continue;
+                }
+                result.Add(new PrefixSuffixModel(code, byomeiMst.Byomei ?? string.Empty));
+            }
+
+            return result;
         }
     }
 }

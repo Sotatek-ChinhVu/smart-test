@@ -878,7 +878,7 @@ public class SetMstRepository : ISetMstRepository
     private int CountLevelItem(SetMst setMst, List<SetMst> setMsts)
     {
         int count = 1;
-        var listSamelevel = new List<SetMst>();
+        List<SetMst> listSamelevel;
 
         switch (GetLevelItem(setMst))
         {
