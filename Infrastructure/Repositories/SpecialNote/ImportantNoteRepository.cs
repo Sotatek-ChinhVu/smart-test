@@ -1,5 +1,7 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
+using Entity.Tenant;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -71,7 +73,7 @@ namespace Infrastructure.Repositories.SpecialNote
                               mst.FoodName
                         );
 
-            return query.ToList();  
+            return query.ToList();
         }
 
         public List<PtInfectionModel> GetInfectionList(long ptId)
@@ -159,5 +161,18 @@ namespace Infrastructure.Repositories.SpecialNote
             ));
             return ptSupples.ToList();
         }
+        public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
+        {
+            List<FoodAlrgyKbnModel> m12FoodAlrgies = new List<FoodAlrgyKbnModel>();
+            int i = 0;
+            var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.Select(x => new FoodAlrgyKbnModel()
+            {
+                FoodKbn = x.FoodKbn,
+                FoodName = x.FoodName,
+                IsDrugAdditives = int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
+            }).ToList();
+            return aleFoodKbns;
+        }
     }
 }
+

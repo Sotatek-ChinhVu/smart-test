@@ -303,6 +303,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
+            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();

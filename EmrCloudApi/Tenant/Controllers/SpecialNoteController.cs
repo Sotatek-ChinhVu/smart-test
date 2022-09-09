@@ -30,5 +30,17 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetSpecialNoteResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.GetList + "FoodAlrgy")]
+        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy([FromQuery] FoodAlrgyMasterDataRequest request)
+        {
+            var input = new GetFoodAlrgyInputData();
+            var output = _bus.Handle(input);
+
+            var presenter = new FoodAlrgyMasterDataPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
+        }
     }
 }
