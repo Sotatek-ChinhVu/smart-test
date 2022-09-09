@@ -13,7 +13,7 @@ namespace Domain.Models.OrdInfs
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInfModel> GetList(long ptId, long raiinNo, int sinDate, bool isDeleted);
+        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted);
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo);
 

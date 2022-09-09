@@ -217,7 +217,8 @@ namespace Interactor.MedicalExamination
                                         od.KensaGaichu,
                                         od.OdrTermVal,
                                         od.CnvTermVal,
-                                        od.YjCd
+                                        od.YjCd,
+                                        od.MasterSbt
                                 )
                                 ).ToList(),
                                 rpOdrInf.CreateDate,

@@ -33,7 +33,7 @@ namespace Interactor.OrdInfs
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
             var allOdrInfs = _ordInfRepository
-                    .GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
+                    .GetList(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
                     .Select(o => new OdrInfItem(
                         o.HpId,
                         o.RaiinNo,
@@ -96,7 +96,8 @@ namespace Interactor.OrdInfs
                             od.KensaGaichu,
                             od.OdrTermVal,
                             od.CnvTermVal,
-                            od.YjCd
+                            od.YjCd,
+                            od.MasterSbt
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
@@ -123,7 +124,8 @@ namespace Interactor.OrdInfs
             }
 
             var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
-            foreach (var hokenId in hokenOdrInfs.Select(h => h?.HokenPid))
+
+            Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
             {
                 var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
                 var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
@@ -143,7 +145,7 @@ namespace Interactor.OrdInfs
                     .ToList();
                 if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
                 {
-                    foreach (var groupOdrInf in groupOdrInfs)
+                    Parallel.ForEach(groupOdrInfs, groupOdrInf =>
                     {
                         var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
                                                 && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
@@ -153,17 +155,14 @@ namespace Interactor.OrdInfs
                                                 && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
                                                 && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
                                             .ToList();
-                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
 
-                        foreach (OdrInfItem rpOdrInf in rpOdrInfs)
-                        {
-                            group.OdrInfs.Add(rpOdrInf);
-                        }
+                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
+                        group.OdrInfs.AddRange(rpOdrInfs);
                         groupHoken.GroupOdrItems.Add(group);
-                    }
+                    });
                 }
                 tree.GroupHokens.Add(groupHoken);
-            }
+            });
 
             return tree;
         }
