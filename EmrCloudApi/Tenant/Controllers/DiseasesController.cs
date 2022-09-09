@@ -1,10 +1,14 @@
 ﻿using Domain.Models.Diseases;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.Byomei;
 using EmrCloudApi.Tenant.Presenters.Diseases;
+using EmrCloudApi.Tenant.Requests.Byomei;
 using EmrCloudApi.Tenant.Requests.Diseases;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.Byomei;
 using EmrCloudApi.Tenant.Responses.Diseases;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.Byomei.DiseaseSearch;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
@@ -64,6 +68,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.DiseaseSearch)]
+        public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
+        {
+            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.Keyword, request.PageIndex, request.PageCount);
+            var output = _bus.Handle(input);
+
+            var presenter = new DiseaseSearchPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
         }
     }
 }
