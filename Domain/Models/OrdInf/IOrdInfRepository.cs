@@ -13,13 +13,13 @@ namespace Domain.Models.OrdInfs
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted);
-
         bool CheckExistOrder(long rpNo, long rpEdaNo);
 
         bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
+
+        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted);
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition);
     }

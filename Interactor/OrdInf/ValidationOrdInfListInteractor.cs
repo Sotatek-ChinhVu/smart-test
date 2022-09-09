@@ -74,7 +74,8 @@ namespace Interactor.OrdInfs
                             new List<OrdInfDetailModel>(),
                             DateTime.MinValue,
                             0,
-                            ""
+                            "",
+                            DateTime.MinValue
                         );
                     if (item != null)
                     {

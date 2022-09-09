@@ -36,10 +36,24 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo)
+        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && o.RaiinNo == raiinNo)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && odr.RaiinNo == raiinNo)?.ToList();
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId)?.ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10)?.ToList();
+
+            if (deleteCondition == 0)
+            {
+                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None).ToList();
+            }
+            else if (deleteCondition == 1)
+            {
+                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted).ToList();
+            }
+            else
+            {
+                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
+            }
+
             var sindateMin = allOdrInf?.Min(o => o.SinDate) ?? 0;
             var sindateMax = allOdrInf?.Max(o => o.SinDate) ?? 0;
 
@@ -182,7 +196,8 @@ namespace Infrastructure.Repositories
                         new List<OrdInfDetailModel>(),
                         ordInf.CreateDate,
                         ordInf.CreateId,
-                        createName
+                        createName,
+                        ordInf.UpdateDate
                    );
         }
 
