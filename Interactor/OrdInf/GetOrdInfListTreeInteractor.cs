@@ -120,7 +120,7 @@ namespace Interactor.OrdInfs
             }
 
             var tree = new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.Successed);
- 
+
             Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
             {
                 var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, "Hoken title ");
@@ -150,12 +150,9 @@ namespace Interactor.OrdInfs
                                                 && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
                                                 && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
                                             .ToList();
-                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
 
-                        foreach (OdrInfItem rpOdrInf in rpOdrInfs)
-                        {
-                            group.OdrInfs.Add(rpOdrInf);
-                        }
+                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
+                        group.OdrInfs.AddRange(rpOdrInfs);
                         groupHoken.GroupOdrItems.Add(group);
                     });
                 }

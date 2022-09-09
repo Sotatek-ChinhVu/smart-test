@@ -31,7 +31,8 @@ namespace Infrastructure.Repositories
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate)?.ToList();
             var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
 
-            return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
+            var result = ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId);
+            return result;
         }
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, long raiinNo)
@@ -92,10 +93,7 @@ namespace Infrastructure.Repositories
                         var bunkatuKoui = 0;
                         if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
                         {
-                            if (usage != null)
-                            {
-                                bunkatuKoui = usage.SinKouiKbn;
-                            }
+                                bunkatuKoui = usage?.SinKouiKbn ?? 0;
                         }
 
                         var yakka = yakkas.FirstOrDefault(p => p.StartDate <= odrInfDetail.SinDate && p.EndDate >= odrInfDetail.SinDate && p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
