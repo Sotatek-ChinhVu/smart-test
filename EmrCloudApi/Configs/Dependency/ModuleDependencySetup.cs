@@ -31,6 +31,7 @@ using Domain.Models.SetMst;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.SuperSetDetail;
 using Domain.Models.SystemConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
@@ -198,6 +199,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
+            services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
