@@ -77,14 +77,14 @@ namespace Interactor.MedicalExamination
                             (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)))
                         join raiinListTag in _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, true)
                         on raiinInf.RaiinNo equals raiinListTag.RaiinNo
-                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted, karteFilter.IsAllHoken, karteFilter.IsHoken, karteFilter.IsJihi, karteFilter.IsRosai, karteFilter.IsJibai)
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted, karteFilter.IsAllHoken, karteFilter.IsHoken, karteFilter.IsJihi, karteFilter.IsRosai, karteFilter.IsJibai)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             }
             else
             {
                 query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
-                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             }
@@ -100,8 +100,8 @@ namespace Interactor.MedicalExamination
             #endregion
             #region Odr
 
-            var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            var hokenFirst = hokens.ListInsurance.FirstOrDefault();
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
             var raiinListTags = _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false).ToList();
 
@@ -156,8 +156,8 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hoken = hokens.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
                     .GroupBy(odr => new
@@ -252,7 +252,8 @@ namespace Interactor.MedicalExamination
                                         od.KensaGaichu,
                                         od.OdrTermVal,
                                         od.CnvTermVal,
-                                        od.YjCd
+                                        od.YjCd,
+                                        od.MasterSbt
                                 )
                                 ).ToList(),
                                 rpOdrInf.CreateDate,
