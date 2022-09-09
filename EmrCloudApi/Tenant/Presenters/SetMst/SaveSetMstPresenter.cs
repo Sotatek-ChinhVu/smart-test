@@ -20,6 +20,17 @@ public class SaveSetMstPresenter : ISaveSetMstOutputPort
     {
         SaveSetMstStatus.Successed => ResponseMessage.Success,
         SaveSetMstStatus.Failed => ResponseMessage.Failed,
+        SaveSetMstStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
+        SaveSetMstStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
+        SaveSetMstStatus.InvalidSetKbn => ResponseMessage.InvalidSetKbn,
+        SaveSetMstStatus.InvalidSetKbnEdaNo => ResponseMessage.InvalidSetKbnEdaNo,
+        SaveSetMstStatus.InvalidGenarationId => ResponseMessage.InvalidGenarationId,
+        SaveSetMstStatus.InvalidLevel1 => ResponseMessage.InvalidLevel1,
+        SaveSetMstStatus.InvalidLevel2 => ResponseMessage.InvalidLevel2,
+        SaveSetMstStatus.InvalidLevel3 => ResponseMessage.InvalidLevel3,
+        SaveSetMstStatus.InvalidSetName => ResponseMessage.InvalidSetName,
+        SaveSetMstStatus.InvalidWeightKbn => ResponseMessage.InvalidWeightKbn,
+        SaveSetMstStatus.InvalidColor => ResponseMessage.InvalidColor,
         _ => string.Empty
     };
 }

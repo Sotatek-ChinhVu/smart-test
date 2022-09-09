@@ -103,7 +103,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<UserConf>().HasKey(e => new { e.HpId, e.UserId, e.GrpCd, e.GrpItemCd, e.GrpItemEdaNo });
             modelBuilder.Entity<SystemConf>().HasKey(e => new { e.HpId, e.GrpCd, e.GrpEdaNo });
             modelBuilder.Entity<KarteFilterDetail>().HasKey(e => new { e.HpId, e.UserId, e.FilterId, e.FilterItemCd, e.FilterEdaNo });
-            modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId});
+            modelBuilder.Entity<KarteFilterMst>().HasKey(e => new { e.HpId, e.UserId, e.FilterId });
             modelBuilder.Entity<ColumnSetting>().HasKey(e => new { e.UserId, e.TableName, e.ColumnName });
             modelBuilder.Entity<JsonSetting>().HasKey(e => new { e.UserId, e.Key });
             modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
@@ -121,6 +121,11 @@ namespace PostgreDataContext
             modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
             modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
             modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
+            modelBuilder.Entity<SystemGenerationConf>().HasKey(e => new { e.HpId, e.GrpEdaNo, e.GrpCd, e.Id });
+            modelBuilder.Entity<IpnMinYakkaMst>().HasKey(e => new { e.HpId, e.Id, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
+            modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.HpId, e.StartDate, e.ItemCd });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

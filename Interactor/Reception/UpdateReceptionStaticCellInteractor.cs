@@ -64,16 +64,16 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             // Update RaiinInf
             case nameof(ReceptionRowModel.Status):
                 var success = _receptionRepository.UpdateStatus(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeNo):
                 success = _receptionRepository.UpdateUketukeNo(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeTime):
                 success = _receptionRepository.UpdateUketukeTime(input.HpId, input.RaiinNo, input.CellValue);
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.SinStartTime):
                 success = _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue);
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeSbtId):
                 var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(int.Parse(input.CellValue));
                 if (uketukeSbt is null)
@@ -81,7 +81,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                     return UpdateReceptionStaticCellStatus.InvalidUketukeSbtId;
                 }
                 success = _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbt.KbnId);
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.TantoId):
                 var tanto = _userRepository.GetByUserId(int.Parse(input.CellValue));
                 if (tanto is null)
@@ -89,7 +89,7 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                     return UpdateReceptionStaticCellStatus.InvalidTantoId;
                 }
                 success = _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId);
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.KaId):
                 var ka = _kaMstRepository.GetByKaId(int.Parse(input.CellValue));
                 if (ka is null)
@@ -97,14 +97,14 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                     return UpdateReceptionStaticCellStatus.InvalidKaId;
                 }
                 success = _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, ka.KaId);
-                return GetReceptionInfoUpdateStatus(success);
+                return GetRaiinInfUpdateStatus(success);
             // Update or insert RaiinCmtInf
             case nameof(ReceptionRowModel.RaiinCmt):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Comment, input.CellValue);
-                return UpdateReceptionStaticCellStatus.ReceptionCmtUpdated;
+                return UpdateReceptionStaticCellStatus.RaiinCmtUpdated;
             case nameof(ReceptionRowModel.RaiinRemark):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Remark, input.CellValue);
-                return UpdateReceptionStaticCellStatus.ReceptionCmtUpdated;
+                return UpdateReceptionStaticCellStatus.RaiinCmtUpdated;
             // Update or insert PtCmtInf
             case nameof(ReceptionRowModel.PtComment):
                 _ptCmtInfRepository.Upsert(input.PtId, input.CellValue);
@@ -113,9 +113,9 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
                 return UpdateReceptionStaticCellStatus.InvalidCellName;
         }
 
-        UpdateReceptionStaticCellStatus GetReceptionInfoUpdateStatus(bool success)
+        UpdateReceptionStaticCellStatus GetRaiinInfUpdateStatus(bool success)
         {
-            return success ? UpdateReceptionStaticCellStatus.ReceptionUpdated : UpdateReceptionStaticCellStatus.ReceptionNotFound;
+            return success ? UpdateReceptionStaticCellStatus.RaiinInfUpdated : UpdateReceptionStaticCellStatus.RaiinInfNotFound;
         }
     }
 
