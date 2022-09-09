@@ -53,10 +53,10 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public void Insert(ReceptionSaveDto dto)
+        public long Insert(ReceptionSaveDto dto)
         {
             var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
-            executionStrategy.Execute(() =>
+            return executionStrategy.Execute(() =>
             {
                 using var transaction = _tenantDataContext.Database.BeginTransaction();
 
@@ -89,6 +89,7 @@ namespace Infrastructure.Repositories
                 _tenantDataContext.SaveChanges();
 
                 transaction.Commit();
+                return raiinInf.RaiinNo;
             });
 
             #region Helper methods

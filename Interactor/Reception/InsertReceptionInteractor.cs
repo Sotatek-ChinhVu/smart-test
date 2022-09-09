@@ -14,7 +14,7 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
 
     public InsertReceptionOutputData Handle(InsertReceptionInputData input)
     {
-        _receptionRepository.Insert(input.Dto);
-        return new InsertReceptionOutputData(InsertReceptionStatus.Success);
+        var raiinNo = _receptionRepository.Insert(input.Dto);
+        return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
     }
 }

@@ -1,4 +1,6 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Realtime;
+using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
@@ -28,9 +30,12 @@ namespace EmrCloudApi.Tenant.Controllers
     public class ReceptionController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public ReceptionController(UseCaseBus bus)
+    private readonly IWebSocketService _webSocketService;
+
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.Get)]
@@ -46,10 +51,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Insert)]
-        public ActionResult<Response<InsertReceptionResponse>> Insert([FromBody] InsertReceptionRequest request)
+        public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
         {
             var input = new InsertReceptionInputData(request.Dto);
             var output = _bus.Handle(input);
+            if (output.Status == InsertReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
+            }
 
             var presenter = new InsertReceptionPresenter();
             presenter.Complete(output);
@@ -58,10 +68,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Update)]
-        public ActionResult<Response<UpdateReceptionResponse>> Update([FromBody] UpdateReceptionRequest request)
+        public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
         {
             var input = new UpdateReceptionInputData(request.Dto);
             var output = _bus.Handle(input);
+            if (output.Status == UpdateReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+            }
 
             var presenter = new UpdateReceptionPresenter();
             presenter.Complete(output);

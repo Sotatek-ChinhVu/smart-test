@@ -3,7 +3,7 @@
     public interface IReceptionRepository
     {
         ReceptionModel? Get(long raiinNo);
-        void Insert(ReceptionSaveDto dto);
+        long Insert(ReceptionSaveDto dto);
         bool Update(ReceptionSaveDto dto);
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
         List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
