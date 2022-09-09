@@ -15,6 +15,7 @@
         public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
         public static readonly string InvalidItemCd = "Invalid ItemCd";
+        public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
 
         //Common
@@ -22,6 +23,7 @@
         public static readonly string Success = "Success";
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
+        public static readonly string InputDataNull = "Input data is null";
 
 
         public static readonly string CreateUserInvalidName = "Please input user name";
@@ -89,6 +91,9 @@
         public static readonly string GetSetListNoData = "No Data";
         public static readonly string GetSetListSuccessed = "Successed";
         public static readonly string InvalidLevel = "Invalid Level, can't move";
+        public static readonly string InvalidUserId = "Invalid UserId, can't move";
+        public static readonly string InvalidCopySetCd = "Invalid CopySetCd, CopySetCd >= 0";
+        public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";

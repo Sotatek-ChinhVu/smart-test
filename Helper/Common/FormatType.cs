@@ -1,4 +1,4 @@
-﻿using Helper.Extendsions;
+﻿using Helper.Extension;
 
 namespace Helper.Common
 {

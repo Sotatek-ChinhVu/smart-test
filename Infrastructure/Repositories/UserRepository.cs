@@ -63,6 +63,13 @@ namespace Infrastructure.Repositories
             return entity is null ? null : ToModel(entity);
         }
 
+        public UserMstModel? GetByLoginId(string loginId)
+        {
+            var entity = _tenantDataContext.UserMsts
+                .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
+            return entity is null ? null : ToModel(entity);
+        }
+
         public int MaxUserId()
         {
             return _tenantDataContext.UserMsts.Max(u => u.UserId);

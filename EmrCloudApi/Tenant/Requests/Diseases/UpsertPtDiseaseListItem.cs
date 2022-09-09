@@ -16,68 +16,9 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
         public int SortNo { get; set; }
 
-        [MaxLength(7)]
-        public string SyusyokuCd1 { get; set; } = string.Empty;
+        public List<PrefixSuffixRequest> PrefixList { get; set; } = new List<PrefixSuffixRequest>();
 
-        [MaxLength(7)]
-        public string SyusyokuCd2 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd3 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd4 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd5 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd6 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd7 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd8 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd9 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd10 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd11 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd12 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd13 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd14 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd15 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd16 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd17 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd18 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd19 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd20 { get; set; } = string.Empty;
-
-        [MaxLength(7)]
-        public string SyusyokuCd21 { get; set; } = string.Empty;
+        public List<PrefixSuffixRequest> SuffixList { get; set; } = new List<PrefixSuffixRequest>();
 
         [Required]
         [MaxLength(160)]
@@ -133,5 +74,12 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
         [Required]
         [Range(0, 1)]
         public int IsDeleted { get; set; }
+    }
+
+    public class PrefixSuffixRequest
+    {
+        public string Code { get; set; } = string.Empty;
+
+        public string Name { get; set; } = string.Empty;
     }
 }

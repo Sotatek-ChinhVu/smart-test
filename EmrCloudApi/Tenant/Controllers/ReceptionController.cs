@@ -61,7 +61,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetReceptionInsurance")]
         public ActionResult<Response<ReceptionInsuranceResponse>> GetReceptionInsurance([FromQuery] ReceptionInsuranceRequest request)
         {
-            var input = new GetReceptionInsuranceInputData(request.HpId, request.PtId, request.SinDate);
+            var input = new GetReceptionInsuranceInputData(request.HpId, request.PtId, request.SinDate, request.IsShowExpiredReception);
             var output = _bus.Handle(input);
 
             var presenter = new ReceptionInsurancePresenter();

@@ -111,6 +111,16 @@ namespace PostgreDataContext
             modelBuilder.Entity<KensaMst>().HasKey(e => new { e.HpId, e.KensaItemCd, e.KensaItemSeqNo });
             modelBuilder.Entity<RaiinListCmt>().HasKey(e => new { e.HpId, e.RaiinNo, e.CmtKbn });
             modelBuilder.Entity<RaiinListTag>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
+            modelBuilder.Entity<SetOdrInf>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.Id });
+            modelBuilder.Entity<SetOdrInfDetail>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo });
+            modelBuilder.Entity<SetKarteInf>().HasKey(e => new { e.HpId, e.SetCd, e.KarteKbn, e.SeqNo});
+            modelBuilder.Entity<SetByomei>().HasKey(e => new { e.Id, e.HpId, e.SetCd, e.SeqNo});
+            modelBuilder.Entity<PiInfDetail>().HasKey(e => new { e.PiId, e.Branch, e.Jpn, e.SeqNo });
+            modelBuilder.Entity<PiProductInf>().HasKey(e => new { e.PiId, e.Branch, e.Jpn });
+            modelBuilder.Entity<M34FormCode>().HasKey(e => new { e.FormCd });
+            modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
+            modelBuilder.Entity<M34IndicationCode>().HasKey(e => new { e.KonoCd });
+            modelBuilder.Entity<M34ArCode>().HasKey(e => new { e.FukusayoCd });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
