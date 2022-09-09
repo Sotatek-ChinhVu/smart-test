@@ -55,6 +55,12 @@ namespace Infrastructure.Repositories
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
+        public IEnumerable<UserMstModel> GetDoctorsList(List<int>? userIds)
+        {
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && (userIds != null && userIds.Contains(d.UserId))).AsEnumerable();
+            return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
+        }
+
         public UserMstModel? GetByUserId(int userId)
         {
             var entity = _tenantDataContext.UserMsts

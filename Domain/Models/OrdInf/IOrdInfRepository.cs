@@ -21,6 +21,6 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted);
 
-        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long>? raiinNos);
     }
 }

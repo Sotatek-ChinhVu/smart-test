@@ -57,12 +57,12 @@ namespace Infrastructure.Repositories
             return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
         }
 
-        public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
+        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
             var result = _tenantDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
-                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
+                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2)));
             return result.Select(r => new ReceptionModel(
                         r.HpId,
                         r.PtId,
@@ -87,7 +87,7 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn
-                   )).ToList();
+                   ));
 
         }
 

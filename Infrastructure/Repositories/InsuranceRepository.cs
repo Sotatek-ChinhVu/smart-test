@@ -346,23 +346,23 @@ namespace Infrastructure.Repositories
                                     .Where(x => x.HokenId == item.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
                                     .OrderByDescending(x => x.CheckDate).FirstOrDefault();
                     listKohi.Add(new KohiInfModel(
-                                        item.FutansyaNo ?? string.Empty, 
-                                        item.JyukyusyaNo ?? string.Empty, 
-                                        item.HokenId, 
-                                        item.StartDate, 
-                                        item.EndDate, 
-                                        GetConfirmDate(ptHokenCheckOfKohi), 
-                                        item.Rate, 
-                                        item.GendoGaku, 
-                                        item.SikakuDate, 
-                                        item.KofuDate, 
-                                        item.TokusyuNo ?? string.Empty, 
-                                        item.HokenSbtKbn, 
-                                        item.Houbetu ?? string.Empty, 
-                                        item.HokenNo, 
+                                        item.FutansyaNo ?? string.Empty,
+                                        item.JyukyusyaNo ?? string.Empty,
+                                        item.HokenId,
+                                        item.StartDate,
+                                        item.EndDate,
+                                        GetConfirmDate(ptHokenCheckOfKohi),
+                                        item.Rate,
+                                        item.GendoGaku,
+                                        item.SikakuDate,
+                                        item.KofuDate,
+                                        item.TokusyuNo ?? string.Empty,
+                                        item.HokenSbtKbn,
+                                        item.Houbetu ?? string.Empty,
+                                        item.HokenNo,
                                         item.HokenEdaNo,
-                                        item.PrefNo, 
-                                        new HokenMstModel(0, 0), 
+                                        item.PrefNo,
+                                        new HokenMstModel(0, 0),
                                         sinDate,
                                         confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == item.HokenId)
                                                        .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
@@ -458,7 +458,7 @@ namespace Infrastructure.Repositories
                                             isHoken && (p.HokenKbn == 1 || p.HokenKbn == 2) ||
                                             isJihi && p.HokenKbn == 0 ||
                                             isRosai && (p.HokenKbn == 11 || p.HokenKbn == 12 || p.HokenKbn == 13) ||
-                                            isJibai && p.HokenKbn == 14)).ToList();
+                                            isJibai && p.HokenKbn == 14));
 
             return result.Select(r => new InsuranceModel(
                         r.HpId,
@@ -473,7 +473,7 @@ namespace Infrastructure.Repositories
                         r.Kohi3Id,
                         r.Kohi4Id,
                         r.StartDate,
-                        r.EndDate)).ToList();
+                        r.EndDate));
         }
     }
 }
