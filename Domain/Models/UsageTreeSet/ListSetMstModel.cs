@@ -23,8 +23,8 @@
 
         public int HpId { get; private set; }
         public int GenerationId { get; private set; }
-        public string? SetName { get; private set; }
-        public string? ItemCd { get; private set; }
+        public string SetName { get; private set; }
+        public string ItemCd { get; private set; }
         public int IsTitle { get; private set; }
         public int SetKbn { get; private set; }
         public int SelectType { get; private set; }
@@ -34,8 +34,8 @@
         public int Level3 { get; private set; }
         public int Level4 { get; private set; }
         public int Level5 { get; private set; }
-        public string? CmtName { get; private set; }
-        public string? CmtOpt { get; private set; }
+        public string CmtName { get; private set; }
+        public string CmtOpt { get; private set; }
         public int Level { get; set; }
 
         public bool HasChildItems
@@ -46,6 +46,6 @@
             }
         }
 
-        public IEnumerable<ListSetMstModel>? Childrens { get; set; }
+        public IEnumerable<ListSetMstModel> Childrens { get; set; } = new List<ListSetMstModel>();
     }
 }

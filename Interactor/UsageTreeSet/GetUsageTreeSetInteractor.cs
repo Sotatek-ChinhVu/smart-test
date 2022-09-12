@@ -9,7 +9,7 @@ namespace Interactor.UsageTreeSet
         private readonly IUsageTreeSetRepository _usageTreeSetRepository;
 
         private readonly List<int> _usageDrug = new List<int>() { 21, 22, 23 };
-        private readonly List<int> _usageInject = new List<int>() { 28, 31, 32, 33, 34 };//AIN-4152
+        private readonly List<int> _usageInject = new List<int>() { 28, 31, 32, 33, 34 };
         private readonly List<int> _listMedicalManagement = new List<int> { 11, 12, 13 };
 
         public GetUsageTreeSetInteractor(IUsageTreeSetRepository usageTreeSetRepository)
@@ -81,7 +81,7 @@ namespace Interactor.UsageTreeSet
         private void LoadSubLevel(int level, ListSetMstModel usageModel, List<ListSetMstModel> listSetMst)
         {
             if (level == 1 || level > 5) return;
-            List<ListSetMstModel> subLevel = null;
+            List<ListSetMstModel> subLevel = new List<ListSetMstModel>();
             //
             switch (level)
             {

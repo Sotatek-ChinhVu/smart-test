@@ -32,8 +32,8 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
-                                                        x.SetName,
-                                                        x.ItemCd,
+                                                        x.SetName ?? string.Empty,
+                                                        x.ItemCd ?? string.Empty,
                                                         x.IsTitle,
                                                         x.SetKbn,
                                                         x.SelectType,
@@ -43,8 +43,8 @@ namespace Infrastructure.Repositories
                                                         x.Level3,
                                                         x.Level4,
                                                         x.Level5,
-                                                        x.CmtName,
-                                                        x.CmtOpt)).ToList();
+                                                        x.CmtName ?? string.Empty,
+                                                        x.CmtOpt ?? string.Empty)).ToList();
         }
 
         public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int generationId)
@@ -56,8 +56,8 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
-                                                        x.SetName,
-                                                        x.ItemCd,
+                                                        x.SetName ?? string.Empty,
+                                                        x.ItemCd ?? string.Empty,
                                                         x.IsTitle,
                                                         x.SetKbn,
                                                         x.SelectType,
@@ -67,8 +67,8 @@ namespace Infrastructure.Repositories
                                                         x.Level3,
                                                         x.Level4,
                                                         x.Level5,
-                                                        x.CmtName,
-                                                        x.CmtOpt)).ToList();
+                                                        x.CmtName ?? string.Empty,
+                                                        x.CmtOpt ?? string.Empty)).ToList();
         }
 
         public List<ListSetMstModel> GetAllTanSetInfs(int hpId,int generationId)
@@ -79,8 +79,8 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
-                                                        x.SetName,
-                                                        x.ItemCd,
+                                                        x.SetName ?? string.Empty,
+                                                        x.ItemCd ?? string.Empty,
                                                         x.IsTitle,
                                                         x.SetKbn,
                                                         x.SelectType,
@@ -90,8 +90,8 @@ namespace Infrastructure.Repositories
                                                         x.Level3,
                                                         x.Level4,
                                                         x.Level5,
-                                                        x.CmtName,
-                                                        x.CmtOpt)).ToList();
+                                                        x.CmtName ?? string.Empty,
+                                                        x.CmtOpt ?? string.Empty)).ToList();
         }
     }
 }
