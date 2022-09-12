@@ -12,7 +12,7 @@
 
         IEnumerable<UserMstModel> GetDoctorsList(int userId);
 
-        IEnumerable<UserMstModel> GetDoctorsList(List<int>? userIds);
+        IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
 
         IEnumerable<UserMstModel> GetAll();
 

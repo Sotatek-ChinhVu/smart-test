@@ -68,20 +68,22 @@ namespace Interactor.MedicalExamination
 
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
             var raiinNos = rainInfs?.Select(r => r.RaiinNo).ToList();
+            var tantoIds = rainInfs?.Select(r => r.TantoId).ToList();
+            var kaIds = rainInfs?.Select(r => r.TantoId).ToList();
 
             #region karte
             List<KarteKbnMstModel> allkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
-            List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).OrderBy(c => c.KarteKbn).ToList();
+            List<KarteInfModel> allkarteInfs = raiinNos == null ? new List<KarteInfModel>() : _karteInfRepository.GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-            var allOdrInfs = _ordInfRepository
-             .GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos);
+            var allOdrInfs = raiinNos == null ? new List<OrdInfModel>() : _ordInfRepository
+             .GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).ToList();
 
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
-            var doctors = _userRepository.GetDoctorsList(rainInfs?.Select(r => r.TantoId).ToList()).ToList();
-            var kaMsts = _kaRepository.GetByKaIds(rainInfs?.Select(r => r.KaId).ToList()).ToList();
+            var doctors = tantoIds == null ? new List<UserMstModel>() : _userRepository.GetDoctorsList(tantoIds).ToList();
+            var kaMsts = kaIds == null ? new List<KaMstModel>() : _kaRepository.GetByKaIds(kaIds).ToList();
 
             if (!(rainInfs?.Count > 0))
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData);
@@ -245,7 +247,6 @@ namespace Interactor.MedicalExamination
                 });
                 historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
             });
-
 
             var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed);
 

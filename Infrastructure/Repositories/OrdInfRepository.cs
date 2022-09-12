@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long>? raiinNos)
+        public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (raiinNos != null && raiinNos.Contains(o.RaiinNo)))?.ToList();
             var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && (raiinNos != null && raiinNos.Contains(odr.RaiinNo)))?.ToList();

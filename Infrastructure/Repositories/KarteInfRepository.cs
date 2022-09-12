@@ -26,9 +26,9 @@ namespace Infrastructure.Repositories
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
-        public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long>? raiinNos)
+        public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && (raiinNos != null && raiinNos.Contains(k.RaiinNo))).AsEnumerable();
+            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
 
             if (deleteCondition == 0)
             {
