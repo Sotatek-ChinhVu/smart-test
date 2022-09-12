@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.SpecialNote.Get
+namespace UseCase.MstItem.GetFoodAlrgy
 {
     public interface IGetFoodAlrgyOutputPort : IOutputPort<GetFoodAlrgyOutputData>
     {

@@ -17,7 +17,5 @@
         List<PtInfectionModel> GetInfectionList(long ptId);
 
         List<PtKioRekiModel> GetKioRekiList(long ptId);
-        List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
-
     }
 }

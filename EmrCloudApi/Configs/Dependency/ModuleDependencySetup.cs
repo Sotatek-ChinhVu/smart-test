@@ -98,6 +98,7 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;

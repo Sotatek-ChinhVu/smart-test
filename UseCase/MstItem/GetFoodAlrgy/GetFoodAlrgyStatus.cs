@@ -1,4 +1,4 @@
-﻿namespace UseCase.SpecialNote.Get
+﻿namespace UseCase.MstItem.GetFoodAlrgy
 {
     public enum GetFoodAlrgyStatus : byte
     {

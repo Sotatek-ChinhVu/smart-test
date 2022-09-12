@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
-using UseCase.SpecialNote.Get;
+using UseCase.MstItem.GetFoodAlrgy;
 
 namespace EmrCloudApi.Tenant.Presenters.SpecialNote
 {
@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Presenters.SpecialNote
                     break;
                 case GetFoodAlrgyStatus.Successed:
                     Result.Message = ResponseMessage.Success;
-                    Result.Data = new GetFoodAlrgyMasterDataResponse(outputData.FoodAlrgy);
+                    Result.Data = new GetFoodAlrgyMasterDataResponse(outputData.FoodAlrgies);
                     break;
             }
         }

@@ -1,19 +1,19 @@
-﻿using Domain.Models.SpecialNote.ImportantNote;
+﻿using Domain.Models.MstItem;
 
 namespace EmrCloudApi.Tenant.Responses.SpecialNote
 {
     public class GetFoodAlrgyMasterDataResponse
     {
-        public FoodAlrgyMasterData FoodAlrgyMasterData { get; set; }
+        public List<FoodAlrgyKbnModel> FoodAlrgyKbnModels { get; set; }
 
         public GetFoodAlrgyMasterDataResponse()
         {
-            FoodAlrgyMasterData = new FoodAlrgyMasterData(new List<FoodAlrgyKbnModel>());
+            FoodAlrgyKbnModels = new List<FoodAlrgyKbnModel>();
         }
 
-        public GetFoodAlrgyMasterDataResponse(FoodAlrgyMasterData foodAlrgyMasterData)
+        public GetFoodAlrgyMasterDataResponse(List<FoodAlrgyKbnModel> foodAlrgyKbnModels)
         {
-            FoodAlrgyMasterData = foodAlrgyMasterData;
+            FoodAlrgyKbnModels = foodAlrgyKbnModels;
         }
     }
 }
