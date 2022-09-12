@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.ReceptionInsurance;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -107,6 +108,8 @@ namespace Infrastructure.Repositories
         public bool CheckPatternExpried(int hpId, long ptId, int sinDate, int hokenId)
         {
             var result = false;
+            //hungdm - gán
+            var hokenPid = 0;
             var hokenInf = _tenantDataContext.PtHokenInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenId);
             if (hokenInf != null)
             {
@@ -213,7 +216,7 @@ namespace Infrastructure.Repositories
                         case 2:
                             if (itemSelected != null)
                             {
-                                if (!IsValidAgeCheck())
+                                if (!IsValidAgeCheck(sinDate, hokenPid))
                                 {
                                     return false;
                                 }
@@ -308,42 +311,64 @@ namespace Infrastructure.Repositories
 
         }
 
-        private bool checkAge()
+        private bool IsValidHokenMstDate(int startDate, int endDate, int sinDate)
         {
-            var validPattern =_tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
-                                                                !pattern.IsExpirated &&
-                                                                !pattern.IsAddNew &&
-                                                                !pattern.IsEmptyHoken &&
-                                                                pattern.HokenInf.IsShahoOrKokuho &&
-                                                                !(pattern.HokenInf.HokensyaNo.Length == 8
-                                                                    && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99"))));
+            int HokenStartDate = startDate;
+            int HokenEndDate = endDate;
+            // 期限切れﾁｪｯｸ(有効保険の場合のみ)
+            if ((HokenStartDate <= sinDate || HokenStartDate == 0)
+                && (HokenEndDate >= sinDate || HokenEndDate == 0))
+            {
+                if (startDate > sinDate)
+                {
+                    return false;
+                }
+                if (endDate < sinDate)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
 
-            validPattern = validPattern.Where(pattern => pattern.HokenPid == SelectedHokenPattern.HokenPid);
+        private bool IsValidAgeCheck(int sinDate, int hokenPid)
+        {
+            var validPattern = _tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
+                                                                (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate) &&
+                                                                 //pattern.HokenInf.IsShahoOrKokuho &&
+                                                                 //!(pattern.HokenInf.HokensyaNo.Length == 8
+                                                                 // && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99")))
+                                                                    );
+
+
+            validPattern = validPattern.Where(pattern => pattern.HokenPid == hokenPid);
 
             if (validPattern == null || validPattern.Count() == 0)
             {
                 return true;
             }
 
-            string checkParam = SystemConfig.Instance.CheckAgeParam;
+            string checkParam = GetSettingParam(1005);
             var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             int invalidAgeCheck = 0;
+            //PatientInf.Birthday
+            int patientInfBirthDay = 0;
+
             foreach (var param in splittedParam)
             {
-                int ageCheck = param.Trim().AsInteger();
+                int ageCheck = Int32.Parse(param.Trim());
                 if (ageCheck == 0) continue;
 
                 foreach (var pattern in validPattern)
                 {
-                    int confirmDate = pattern.HokenInf.ConfirmDate;
-                    if (!IsValidAgeCheckConfirm(ageCheck, pattern.HokenInf.ConfirmDate))
+                    //confirmDate =pattern.HokenInf.ConfirmDate
+                    int confirmDate = 0;
+                    if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
                     {
-                        if (invalidAgeCheck <= ageCheck)
-                        {
-                            invalidAgeCheck = ageCheck;
-                        }
+                        invalidAgeCheck = ageCheck;
                     }
                 }
             }
@@ -351,7 +376,7 @@ namespace Infrastructure.Repositories
             if (invalidAgeCheck != 0)
             {
                 string cardName;
-                int age = CIUtil.SDateToAge(PatientInf.Birthday, Sinday);
+                int age = CIUtil.SDateToAge(patientInfBirthDay, sinDate);
                 if (age >= 70)
                 {
                     cardName = "高齢受給者証";
@@ -360,22 +385,70 @@ namespace Infrastructure.Repositories
                 {
                     cardName = "保険証";
                 }
-                EmrDialogMessage messageDldCst = new EmrDialogMessage(EmrMessageType.mChk00080,
-                    new string[] { $"{invalidAgeCheck}歳となりました。", cardName },
-                    new string[] { "無視する", "戻る" }, 0);
-                var messageCallback = Messenger.Default.SendAsync(messageDldCst);
-                if (messageCallback.Result.Success)
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate)
+        {
+            if (isExpirated)
+            {
+                return true;
+            }
+            if (hokenInfIsJihi || hokenInfIsNoHoken || hokenInfIsExpirated)
+            {
+                return true;
+            }
+            // 主保険・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
+            // check main hoken, apply for new hoken only
+            int HokenConfirmDate = hokenInfConfirmDate;
+            int ConfirmHokenYM = Int32.Parse(CIUtil.Copy(HokenConfirmDate.ToString(), 1, 6));
+            int SinYM = Int32.Parse(CIUtil.Copy(sinDate.ToString(), 1, 6));
+            if (HokenConfirmDate == 0
+                || SinYM != ConfirmHokenYM)
+            {
+                if (SelectedHokenInf.IsAddNew || (SelectedHokenInf.IsAddHokenCheck && SelectedHokenInf.HokenChecks.Count <= 0))
                 {
-                    var dialogCallback = messageCallback.Result.Result;
-                    if (dialogCallback.ResultIndex == 1)
-                    {
-                        return false;
-                    }
+                    PtHokenCheckModel hokenCheck = CreateHokenCheckModel(1, SelectedHokenInf.HokenId);
+                    SelectedHokenInf.AddConfirmDate(hokenCheck);
                 }
                 else
                 {
+
                     return false;
                 }
+            }
+            return true;
+        }
+
+        private string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "")
+        {
+            var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            //Fix comment 894 (duong.vu)
+            //Return value in DB if and only if Param is not null or white space
+            if (systemConf != null && !string.IsNullOrWhiteSpace(systemConf.Param))
+            {
+                return systemConf.Param;
+            }
+            return defaultParam;
+        }
+
+        private bool IsValidAgeCheckConfirm(int ageCheck, int confirmDate, int patientInfBirthDay, int sinDate)
+        {
+            int birthDay = patientInfBirthDay;
+            // 但し、2日生まれ以降の場合は翌月１日を誕生日とする。
+            if (CIUtil.Copy(birthDay.ToString(), 7, 2) != "01")
+            {
+                int firstDay = birthDay / 100 * 100 + 1;
+                int nextMonth = CIUtil.DateTimeToInt(CIUtil.IntToDate(firstDay).AddMonths(1));
+                birthDay = nextMonth;
+            }
+
+            if (CIUtil.AgeChk(birthDay, sinDate, ageCheck)
+                && !CIUtil.AgeChk(birthDay, confirmDate, ageCheck))
+            {
+                return false;
             }
             return true;
         }
