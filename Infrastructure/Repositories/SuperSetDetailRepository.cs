@@ -16,11 +16,12 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd)
+    public SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate)
     {
         return new SuperSetDetailModel(
                 GetSetByomeiList(hpId, setCd),
-                GetSetKarteInfModel(hpId, setCd)
+                GetSetKarteInfModel(hpId, setCd),
+                GetSetOrdInfModel(hpId, setCd, sindate)
             );
     }
 
@@ -115,5 +116,31 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
+    #endregion
+
+    #region  
+    private List<SetOrdInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate)
+    {
+        var allSetOdrInfs = _tenantNoTrackingDataContext.SetOdrInf.Where(order => order.HpId == hpId && order.SetCd == setCd && order.IsDeleted != 1)?.ToList();
+        var allSetOdrInfDetails = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(detail => detail.HpId == hpId && detail.SetCd == setCd)?.ToList();
+        var result = new List<SetOrdInfModel>();
+
+        var itemCds = allSetOdrInfDetails?.Select(detail => detail.ItemCd);
+        var ipnCds = allSetOdrInfDetails?.Select(detail => detail.IpnCd);
+        var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
+        var kensaMsts = _tenantDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
+        var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMax && t.EndDate >= sinDateMax) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
+        var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
+        var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
+
+        var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+        var kensaIrai = checkKensaIrai?.Val ?? 0;
+        var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+        var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
+
+
+
+        return result;
+    }
     #endregion
 }
