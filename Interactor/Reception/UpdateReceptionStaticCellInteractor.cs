@@ -52,58 +52,70 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
             return new UpdateReceptionStaticCellOutputData(UpdateReceptionStaticCellStatus.InvalidPtId);
         }
 
-        var status = UpdateStaticCell(input) ? UpdateReceptionStaticCellStatus.Success : UpdateReceptionStaticCellStatus.UnknownError;
+        var status = UpdateStaticCell(input);
         return new UpdateReceptionStaticCellOutputData(status);
     }
 
-    private bool UpdateStaticCell(UpdateReceptionStaticCellInputData input)
+    private UpdateReceptionStaticCellStatus UpdateStaticCell(UpdateReceptionStaticCellInputData input)
     {
         string pascalCaseCellName = FirstCharToUpper(input.CellName);
         switch (pascalCaseCellName)
         {
             // Update RaiinInf
             case nameof(ReceptionRowModel.Status):
-                return _receptionRepository.UpdateStatus(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
+                var success = _receptionRepository.UpdateStatus(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeNo):
-                return _receptionRepository.UpdateUketukeNo(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
+                success = _receptionRepository.UpdateUketukeNo(input.HpId, input.RaiinNo, int.Parse(input.CellValue));
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeTime):
-                return _receptionRepository.UpdateUketukeTime(input.HpId, input.RaiinNo, input.CellValue);
+                success = _receptionRepository.UpdateUketukeTime(input.HpId, input.RaiinNo, input.CellValue);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.SinStartTime):
-                return _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue);
+                success = _receptionRepository.UpdateSinStartTime(input.HpId, input.RaiinNo, input.CellValue);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.UketukeSbtId):
                 var uketukeSbt = _uketukeSbtMstRepository.GetByKbnId(int.Parse(input.CellValue));
                 if (uketukeSbt is null)
                 {
-                    return false;
+                    return UpdateReceptionStaticCellStatus.InvalidUketukeSbtId;
                 }
-                return _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbt.KbnId);
+                success = _receptionRepository.UpdateUketukeSbt(input.HpId, input.RaiinNo, uketukeSbt.KbnId);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.TantoId):
                 var tanto = _userRepository.GetByUserId(int.Parse(input.CellValue));
                 if (tanto is null)
                 {
-                    return false;
+                    return UpdateReceptionStaticCellStatus.InvalidTantoId;
                 }
-                return _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId);
+                success = _receptionRepository.UpdateTantoId(input.HpId, input.RaiinNo, tanto.UserId);
+                return GetRaiinInfUpdateStatus(success);
             case nameof(ReceptionRowModel.KaId):
                 var ka = _kaMstRepository.GetByKaId(int.Parse(input.CellValue));
                 if (ka is null)
                 {
-                    return false;
+                    return UpdateReceptionStaticCellStatus.InvalidKaId;
                 }
-                return _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, ka.KaId);
+                success = _receptionRepository.UpdateKaId(input.HpId, input.RaiinNo, ka.KaId);
+                return GetRaiinInfUpdateStatus(success);
             // Update or insert RaiinCmtInf
             case nameof(ReceptionRowModel.RaiinCmt):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Comment, input.CellValue);
-                return true;
+                return UpdateReceptionStaticCellStatus.RaiinCmtUpdated;
             case nameof(ReceptionRowModel.RaiinRemark):
                 _raiinCmtInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, CmtKbns.Remark, input.CellValue);
-                return true;
+                return UpdateReceptionStaticCellStatus.RaiinCmtUpdated;
             // Update or insert PtCmtInf
             case nameof(ReceptionRowModel.PtComment):
                 _ptCmtInfRepository.Upsert(input.PtId, input.CellValue);
-                return true;
+                return UpdateReceptionStaticCellStatus.PatientCmtUpdated;
             default:
-                return false;
+                return UpdateReceptionStaticCellStatus.InvalidCellName;
+        }
+
+        UpdateReceptionStaticCellStatus GetRaiinInfUpdateStatus(bool success)
+        {
+            return success ? UpdateReceptionStaticCellStatus.RaiinInfUpdated : UpdateReceptionStaticCellStatus.RaiinInfNotFound;
         }
     }
 

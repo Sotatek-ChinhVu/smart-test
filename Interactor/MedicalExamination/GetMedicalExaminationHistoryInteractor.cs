@@ -5,7 +5,6 @@ using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Domain.Models.User;
-using UseCase.MedicalExamination;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -61,7 +60,7 @@ namespace Interactor.MedicalExamination
 
 
             var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, karteDeleteHistory)
-                        join ptHokenPattern in _insuranceRepository.GetListPokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
             var pageTotal = query.Count();
@@ -75,16 +74,16 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-        
-            var hokens = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-            var hokenFirst = hokens.FirstOrDefault();
+
+            var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
+            var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
             foreach (var raiinInf in rainInfs)
             {
                 var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
 
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst?.DisplayRateOnly ?? string.Empty, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
@@ -104,7 +103,7 @@ namespace Interactor.MedicalExamination
                                 c.UpdateDate,
                                 c.IsDeleted)
             ).ToList())
-                                                             select karteGrp);    
+                                                             select karteGrp);
 
                 List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
               .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo)
@@ -121,8 +120,8 @@ namespace Interactor.MedicalExamination
 
                 foreach (int hokenPid in hokenPidList)
                 {
-                    var hoken = hokens.FirstOrDefault(c => c.HokenId == hokenPid);
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? String.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
                     .GroupBy(odr => new
@@ -209,9 +208,22 @@ namespace Interactor.MedicalExamination
                                         od.CmtName,
                                         od.CmtName,
                                         od.FontColor,
-                                        od.CommentNewline
+                                        od.CommentNewline,
+                                        od.Yakka,
+                                        od.IsGetPriceInYakka,
+                                        od.Ten,
+                                        od.BunkatuKoui,
+                                        od.AlternationIndex,
+                                        od.KensaGaichu,
+                                        od.OdrTermVal,
+                                        od.CnvTermVal,
+                                        od.YjCd,
+                                        od.MasterSbt
                                 )
-                                ).ToList()
+                                ).ToList(),
+                                rpOdrInf.CreateDate,
+                                rpOdrInf.CreateId,
+                                rpOdrInf.CreateName
                              );
 
                             group.OdrInfs.Add(odrModel);

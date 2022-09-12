@@ -8,5 +8,5 @@ public class SaveKarteFilterInputData : IInputData<SaveKarteFilterOutputData>
     {
         SaveKarteFilterMstModelInputs = saveKarteFilterMstModelInputItems;
     }
-    public List<SaveKarteFilterMstInputItem> SaveKarteFilterMstModelInputs { get; private set; } = new List<SaveKarteFilterMstInputItem>();
+    public List<SaveKarteFilterMstInputItem> SaveKarteFilterMstModelInputs { get; private set; }
 }

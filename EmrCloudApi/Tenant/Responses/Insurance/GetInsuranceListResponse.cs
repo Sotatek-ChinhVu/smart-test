@@ -5,6 +5,6 @@ namespace EmrCloudApi.Tenant.Responses.InsuranceList
 {
     public class GetInsuranceListResponse
     {
-        public List<InsuranceModel> ListData { get; set; } = new List<InsuranceModel>();
+        public InsuranceDataModel Data { get; set; } = new InsuranceDataModel();
     }
 }
