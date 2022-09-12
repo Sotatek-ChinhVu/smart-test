@@ -148,6 +148,11 @@
         public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
         public static readonly string UpsertFlowSheetPtIdNoExist = "PtId No Exist.";
 
+        // Schema
+        public static readonly string InvalidOldImage = "Invalid old image.";
+        public static readonly string InvalidFileImage = "File image is not null.";
+
+
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";

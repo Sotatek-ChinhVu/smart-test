@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("COLOR")]
         [MaxLength(20)]
-        public string Color { get; set; } = string.Empty;
+        public string? Color { get; set; } = string.Empty;
 
         /// <summary>
         /// 本体記号
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MARK")]
         [MaxLength(20)]
-        public string Mark { get; set; } = string.Empty;
+        public string? Mark { get; set; } = string.Empty;
 
         /// <summary>
         /// 効能効果コード
@@ -50,14 +50,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("FUKUSAYO_CD")]
-        public string FukusayoCd { get; set; } = string.Empty;
+        public string? FukusayoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 副作用初期症状コード
         /// 
         /// </summary>
         [Column("FUKUSAYO_INIT_CD")]
-        public string FukusayoInitCd { get; set; } = string.Empty;
+        public string? FukusayoInitCd { get; set; } = string.Empty;
 
     }
 }

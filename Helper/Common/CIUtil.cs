@@ -1298,4 +1298,5 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
+
 }
