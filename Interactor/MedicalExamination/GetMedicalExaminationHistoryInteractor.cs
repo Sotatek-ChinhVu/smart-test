@@ -99,16 +99,17 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             #endregion
             #region Odr
-
+            var raiinNos = rainInfs.Select(r => r.RaiinNo).ToList();
+            var sinDates = rainInfs.Select(r => r.SinDate).ToList();
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
-            var raiinListTags = _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false).ToList();
+            var raiinListTags = _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos).ToList();
 
             IEnumerable<ApproveInfModel>? approveInfs = null;
             if (inputData.IsShowApproval == 1 || inputData.IsShowApproval == 2)
             {
-                approveInfs = _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2);
+                approveInfs = _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
             }
 
             foreach (var raiinInf in rainInfs)

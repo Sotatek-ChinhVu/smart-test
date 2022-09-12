@@ -22,6 +22,7 @@ namespace Domain.Models.OrdInfs
         bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
-        IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted);
+
+        IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long>? raiinNos);
     }
 }
