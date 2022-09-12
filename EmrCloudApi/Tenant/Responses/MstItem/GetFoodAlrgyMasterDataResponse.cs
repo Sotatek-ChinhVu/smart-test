@@ -1,6 +1,6 @@
 ﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Tenant.Responses.SpecialNote
+namespace EmrCloudApi.Tenant.Responses.MstItem
 {
     public class GetFoodAlrgyMasterDataResponse
     {

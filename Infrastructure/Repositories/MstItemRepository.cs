@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
                 FoodKbn = x.FoodKbn,
                 FoodName = x.FoodName,
                 IsDrugAdditives = int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
-            }).ToList();
+            }).OrderBy(x=>x.FoodKbn).ToList();
             return aleFoodKbns;
         }
     }

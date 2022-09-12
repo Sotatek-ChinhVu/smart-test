@@ -1,11 +1,8 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.MstItem;
-using EmrCloudApi.Tenant.Presenters.SpecialNote;
 using EmrCloudApi.Tenant.Requests.MstItem;
-using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
-using EmrCloudApi.Tenant.Responses.SpecialNote;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;

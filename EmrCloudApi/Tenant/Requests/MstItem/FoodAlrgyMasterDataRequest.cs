@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.SpecialNote
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem
 {
     public class FoodAlrgyMasterDataRequest
     {
