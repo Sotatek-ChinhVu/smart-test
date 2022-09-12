@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
-            var karteInfEntity = _tenantDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
+            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
 
             if (deleteCondition == 0)
             {
