@@ -31,6 +31,7 @@ using Domain.Models.SetMst;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
+using Domain.Models.SuperSetDetail;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.UketukeSbtDayInf;
@@ -73,6 +74,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
+using Interactor.SupperSetDetail;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using Interactor.VisitingList;
@@ -124,6 +126,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
+using UseCase.SupperSetDetail.SupperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -219,6 +222,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
+            services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -346,6 +350,9 @@ namespace EmrCloudApi.Configs.Dependency
             // Schema
             busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+
+            // SupperSetDetail
+            busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
