@@ -82,8 +82,8 @@ namespace Interactor.MedicalExamination
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
-            var doctors = tantoIds == null ? new List<UserMstModel>() : _userRepository.GetDoctorsList(tantoIds).ToList();
-            var kaMsts = kaIds == null ? new List<KaMstModel>() : _kaRepository.GetByKaIds(kaIds).ToList();
+            var doctors = tantoIds == null ? new List<UserMstModel>() : _userRepository.GetDoctorsList(tantoIds)?.ToList();
+            var kaMsts = kaIds == null ? new List<KaMstModel>() : _kaRepository.GetByKaIds(kaIds)?.ToList();
 
             if (!(rainInfs?.Count > 0))
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData);
@@ -91,8 +91,8 @@ namespace Interactor.MedicalExamination
             Parallel.ForEach(rainInfs, raiinInf =>
             {
 
-                var doctorFirst = doctors.FirstOrDefault(d => d.UserId == raiinInf.TantoId);
-                var kaMst = kaMsts.FirstOrDefault(k => k.KaId == raiinInf.KaId);
+                var doctorFirst = doctors?.FirstOrDefault(d => d.UserId == raiinInf.TantoId);
+                var kaMst = kaMsts?.FirstOrDefault(k => k.KaId == raiinInf.KaId);
 
                 var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst?.DisplayRateOnly ?? string.Empty, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 

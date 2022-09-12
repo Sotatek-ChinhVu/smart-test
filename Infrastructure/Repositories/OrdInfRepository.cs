@@ -38,8 +38,8 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (raiinNos != null && raiinNos.Contains(o.RaiinNo)))?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && (raiinNos != null && raiinNos.Contains(odr.RaiinNo)))?.ToList();
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && raiinNos.Contains(o.RaiinNo))?.ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
 
             if (deleteCondition == 0)
             {
@@ -104,6 +104,12 @@ namespace Infrastructure.Repositories
         private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId, int sinDateMin, int sinDateMax)
         {
             var result = new List<OrdInfModel>();
+
+            if (!(allOdrInf?.Count > 0))
+            {
+                return result;
+            }
+
             var itemCds = allOdrInfDetails?.Select(od => od.ItemCd ?? string.Empty);
             var ipnCds = allOdrInfDetails?.Select(od => od.IpnCd ?? string.Empty);
             var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
@@ -116,12 +122,6 @@ namespace Infrastructure.Repositories
             var kensaIrai = checkKensaIrai?.Val ?? 0;
             var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
-
-
-            if (!(allOdrInf?.Count > 0))
-            {
-                return result;
-            }
 
             var odrInfs = from odrInf in allOdrInf
                           join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId)
