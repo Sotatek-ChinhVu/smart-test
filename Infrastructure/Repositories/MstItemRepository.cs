@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             var result = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd));
             return result == null ? new List<DosageDrugModel>() : result.Select(
                     r => new DosageDrugModel(
-                            r.YoukaiekiCd,
+                            r.YjCd,
                             r.DoeiCd,
                             r.DgurKbn,
                             r.KikakiUnit,
