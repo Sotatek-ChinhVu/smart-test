@@ -2,6 +2,6 @@
 {
     public interface IMaxmoneyReposiory
     {
-        List<MaxMoneyModel> GetListMaxMoney(long ptId, int hpId);
+        List<LimitListModel> GetListLimitModel(long ptId, int hpId);
     }
 }

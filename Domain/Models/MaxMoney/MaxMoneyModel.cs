@@ -1,49 +1,43 @@
-﻿using Helper.Common;
-using Helper.Extension;
-
-namespace Domain.Models.MaxMoney
+﻿namespace Domain.Models.MaxMoney
 {
     public class MaxMoneyModel
     {
-        public MaxMoneyModel(int hokenPid, string sortKey, long raiinNo, int futanGaku, int totalGaku, string biko, int isDeleted)
+        public MaxMoneyModel(int kohiId, int gendoGaku, int remainGendoGaku, int rate, string houbetu, string hokenName, int sinDateYM, int futanKbn, int monthLimitFutan, int isLimitListSum, string displaySinDateYM)
         {
-            HokenPid = hokenPid;
-            SortKey = sortKey;
-            RaiinNo = raiinNo;
-            FutanGaku = futanGaku;
-            TotalGaku = totalGaku;
-            Biko = biko;
-            IsDeleted = isDeleted;
-            TotalMoney = totalMoney;
+            KohiId = kohiId;
+            GendoGaku = gendoGaku;
+            RemainGendoGaku = remainGendoGaku;
+            Rate = rate;
+            Houbetu = houbetu;
+            HokenName = hokenName;
+            SinDateYM = sinDateYM;
+            FutanKbn = futanKbn;
+            MonthLimitFutan = monthLimitFutan;
+            IsLimitListSum = isLimitListSum;
+            DisplaySinDateYM = displaySinDateYM;
         }
-
-        public long Id { get; private set; }
         public int KohiId { get; private set; }
-        public int SinDate { get; private set; }
-        public int SinDateY
+        public int GendoGaku { get; private set; }
+        public int RemainGendoGaku { get; private set; }
+        public int Rate { get; private set; }
+        public string Houbetu { get; private set; }
+        public string HokenName { get; private set; }
+        public int SinDateYM { get; private set; }
+        public int FutanKbn { get; private set; }
+        public int MonthLimitFutan { get; private set; }
+        public int IsLimitListSum { get; private set; }
+        public string DisplaySinDateYM { get; private set; }
+        public bool IsLimitMaxMoney
         {
-            get => CIUtil.Copy(SinDate.AsString(), 1, 4).AsInteger();
+            get => FutanKbn == 1 && MonthLimitFutan == 0;
         }
-
-        public int SinDateM
+        public string HeaderText
         {
-            get => CIUtil.Copy(SinDate.AsString(), 5, 2).AsInteger();
+            get => Houbetu + " " + HokenName;
         }
-
-        public int SinDateD
+        public bool IsToltalGakuDisplay
         {
-            get => CIUtil.Copy(SinDate.AsString(), 7, 2).AsInteger();
-        }
-        public int HokenPid { get; private set; }
-        public string SortKey { get; private set; }
-        public long RaiinNo { get; private set; }
-        public int FutanGaku { get; private set; }
-        public int TotalGaku { get; private set; }
-        public string Biko { get; private set; }
-        public int IsDeleted { get; private set; }
-        public string Code
-        {
-            get => (RaiinNo == 0) ? "他院分" : string.Empty;
+            get => IsLimitListSum == 1;
         }
     }
 }

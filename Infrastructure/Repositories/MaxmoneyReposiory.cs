@@ -12,13 +12,13 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantDataContext;
         }
 
-        public List<MaxMoneyModel> GetListMaxMoney(long ptId, int hpId)
+        public List<LimitListModel> GetListLimitModel(long ptId, int hpId)
         {
             var maxMoneys = _tenantDataContext.LimitListInfs.Where(u => u.HpId == hpId
                                                                    && u.PtId == ptId)
                                                                    .OrderBy(u => u.SortKey)
                                                                    .ToList();
-            return maxMoneys.Select(u => new MaxMoneyModel(u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko,u.IsDeleted)).ToList();
+            return maxMoneys.Select(u => new LimitListModel(u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko,u.IsDeleted,u.sort)).ToList();
         }
     }
 }
