@@ -74,7 +74,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public ActionResult<Response<GetSuperSetDetailResponse>> GetSetByomeiList([FromQuery] GetSuperSetDetailRequest request)
     {
-        var input = new GetSupperSetDetailInputData(request.HpId, request.SetCd);
+        var input = new GetSupperSetDetailInputData(request.HpId, request.SetCd, request.Sindate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailPresenter();
