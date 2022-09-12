@@ -138,6 +138,18 @@ using UseCase.Schema.SaveImage;
 using Domain.Models.Byomei;
 using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
+using UseCase.SetMst.ReorderSetMst;
+using Domain.Models.JsonSetting;
+using Interactor.JsonSetting;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
+using EmrCloudApi.Realtime;
+using UseCase.KohiHokenMst.Get;
+using Interactor.KohiHokenMst;
+using UseCase.SetMst.CopyPasteSetMst;
+using UseCase.DrugInfor.Get;
+using Interactor.DrugInfor;
+using Domain.Models.DrugInfor;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -209,6 +221,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
+            services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
         }
 
@@ -327,6 +340,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
+
+            //DrugInfor
+            busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
 
             // Get HokenMst by FutansyaNo
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
