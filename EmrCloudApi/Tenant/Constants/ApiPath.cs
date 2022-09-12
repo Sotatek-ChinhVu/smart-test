@@ -9,9 +9,12 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+
+        // SupperSet
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
+        public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
 
         //Mst Item
