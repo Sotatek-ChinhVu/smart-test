@@ -1,16 +1,20 @@
 ﻿using EmrCloudApi.Tenant.Presenters.DrugDetail;
+using EmrCloudApi.Tenant.Presenters.DrugInfor;
 using EmrCloudApi.Tenant.Presenters.InputItem;
 using EmrCloudApi.Tenant.Requests.DrugDetail;
+using EmrCloudApi.Tenant.Requests.DrugInfor;
 using EmrCloudApi.Tenant.Presenters.UsageTreeSet;
 using EmrCloudApi.Tenant.Requests.InputItem;
 using EmrCloudApi.Tenant.Requests.UsageTreeSet;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.DrugDetail;
+using EmrCloudApi.Tenant.Responses.DrugInfor;
 using EmrCloudApi.Tenant.Responses.InputItem;
 using EmrCloudApi.Tenant.Responses.UsageTreeSetResponse;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
+using UseCase.DrugInfor.Get;
 using UseCase.InputItem.Search;
 using UseCase.InputItem.UpdateAdopted;
 using UseCase.UsageTreeSet.GetTree;
@@ -46,6 +50,18 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpdateAdoptedInputItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
+        }
+
+        [HttpGet("GetDrugInf")]
+        public ActionResult<Response<GetDrugInforResponse>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
+        {
+            var input = new GetDrugInforInputData(request.HpId, request.SinDate, request.ItemCd);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDrugInforPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDrugInforResponse>>(presenter.Result);
         }
 
         [HttpGet("GetMenuDataAndDetail")]
