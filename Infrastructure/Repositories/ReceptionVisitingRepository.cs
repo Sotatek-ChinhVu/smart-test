@@ -235,46 +235,28 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listDataRaiinInf)
                 {
-                    string hokenPidName = "";
-                    string kaName = "";
-                    string doctorName = "";
-                    string timePeriod = "";
+                    string TantoId = "";
                     string yoyakuInfo = "";
-                    if (listHokenData.Count > 0)
-                    {
-                        var hokenModel = listHokenData.FirstOrDefault(u => u.PtId == item.PtId && u.RaiinNo == item.RaiinNo);
-                        hokenPidName = hokenModel?.HokenName ?? string.Empty;
-                    }
-
-                    if (_departments != null)
-                    {
-                        var tempKaMst = _departments.Find(p => p.KaId == item.KaId);
-                        kaName = tempKaMst == null ? string.Empty : (tempKaMst.KaName ?? string.Empty);
-                    }
+                    string YoyakuTime = "";
 
 
                     if (_doctors != null)
                     {
                         var tempDoctor = _doctors.Find(dr => dr.UserId == item.TantoId);
-                        doctorName = tempDoctor == null ? string.Empty : (tempDoctor.Name ?? string.Empty);
+                        TantoId = tempDoctor == null ? string.Empty : (tempDoctor.Name ?? string.Empty);
                     }
 
-                    if (_timePeriodModels != null)
-                    {
-                        var timePeriodModel = _timePeriodModels.Find(tp => tp.KbnId == item.UketukeSbt);
-                        timePeriod = timePeriodModel == null ? string.Empty : timePeriodModel.KbnName;
-                    }
-                    yoyakuInfo = GetYoyaku(listDataRaiinInf, item.OyaRaiinNo, kaName) ?? string.Empty;
+                   
+
+                    yoyakuInfo = GetYoyaku(listDataRaiinInf, item.OyaRaiinNo) ?? string.Empty;
                     var itemModelDorai = new ReceptionVisitingModel(
                                             item.PtId,
                                             item.UketukeNo,
-                                            kaName,
-                                            hokenPidName,
+                                            item.KaId,
                                             item.UketukeTime ?? String.Empty,
                                             item.Status,
-                                            timePeriod,
-                                            yoyakuInfo,
-                                            doctorName
+                                            item.YoyakuId,
+                                            item.TantoId
                                          );
 
                     listVisitingModel.Add(itemModelDorai);
@@ -286,7 +268,7 @@ namespace Infrastructure.Repositories
             return listVisitingModel;
         }
 
-        private string GetYoyaku(List<RaiinInf> listDoraiModel, long yoyakuNo, string kaName)
+        private string GetYoyaku(List<RaiinInf> listDoraiModel, long yoyakuNo)
         {
             string ConvertTimeToString(string uketsukeTime)
             {
@@ -306,7 +288,7 @@ namespace Infrastructure.Repositories
             {
                 return string.Empty;
             }
-            return tempModel.UketukeNo.ToString() + ". " + kaName + " " + ConvertTimeToString(tempModel.UketukeTime ?? string.Empty);
+            return tempModel.UketukeNo.ToString() + " " + ConvertTimeToString(tempModel.UketukeTime ?? string.Empty);
         }
     }
 }

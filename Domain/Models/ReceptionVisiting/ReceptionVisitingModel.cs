@@ -8,35 +8,29 @@ namespace Domain.Models.ReceptionVisitingModel
 {
     public class ReceptionVisitingModel
     {
-        public ReceptionVisitingModel(long ptId, int uketukeNo, string kaName, string hokenPidName, string uketukeTime, int status, string timePeriod, string yoyakuInfo, string doctorName)
+        public ReceptionVisitingModel(long ptId, int uketukeNo, int kaId, string uketukeTime, int status, int yokakuId, int tantoId)
         {
             PtId = ptId;
             UketukeNo = uketukeNo;
-            KaName = kaName;
-            HokenPidName = hokenPidName;
+            KaId = kaId;
             UketukeTime = uketukeTime;
             Status = status;
-            TimePeriod = timePeriod;
-            YoyakuInfo = yoyakuInfo;
-            DoctorName = doctorName;
+            YoyakuId = yokakuId;
+            TanToId = tantoId;
         }
 
         public long PtId { get; private set; }
 
         public int UketukeNo { get; private set; }
 
-        public string KaName { get; private set; }
-
-        public string HokenPidName { get; private set; }
+        public int KaId { get; private set; }
 
         public string UketukeTime { get; private set; }
 
         public int Status { get; private set; }
 
-        public string TimePeriod { get; private set; }
+        public int YoyakuId { get; private set; }
 
-        public string YoyakuInfo { get; private set; }
-
-        public string DoctorName { get; private set; }
+        public int TanToId { get; private set; }
     }
 }
