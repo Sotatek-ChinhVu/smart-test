@@ -104,19 +104,19 @@ namespace Interactor.MedicalExamination
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
 
-            var raiinListTags = _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos).ToList();
+            var raiinListTags = (sinDates == null || raiinNos == null) ? new List<RaiinListTagModel>() : _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos)?.ToList();
 
             IEnumerable<ApproveInfModel>? approveInfs = null;
             if (inputData.IsShowApproval == 1 || inputData.IsShowApproval == 2)
             {
-                approveInfs = _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
+                approveInfs = raiinNos == null ? new List<ApproveInfModel>() : _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
             }
 
             foreach (var raiinInf in rainInfs)
             {
                 var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
-                var raiinTag = raiinListTags.FirstOrDefault(r => r.RaiinNo == raiinInf.RaiinNo && r.SinDate == raiinInf.SinDate);
+                var raiinTag = raiinListTags?.FirstOrDefault(r => r.RaiinNo == raiinInf.RaiinNo && r.SinDate == raiinInf.SinDate);
                 var approveInf = approveInfs?.FirstOrDefault(a => a.RaiinNo == raiinInf.RaiinNo);
 
                 var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, raiinTag?.TagNo ?? 0, approveInf?.DisplayApprovalInfo ?? string.Empty, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());

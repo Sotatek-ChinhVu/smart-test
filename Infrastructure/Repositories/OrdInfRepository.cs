@@ -309,9 +309,9 @@ namespace Infrastructure.Repositories
             return KensaGaichuTextConst.NONE;
         }
 
-        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long>? raiinNos)
+        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
         {
-            var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && (raiinNos != null && raiinNos.Contains(a.RaiinNo)));
+            var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
             return result.Select(
                     r => new ApproveInfModel(
                             r.Id,
