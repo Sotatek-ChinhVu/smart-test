@@ -9,7 +9,7 @@ using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
-using UseCase.SupperSetDetail.GetSetByomeiList;
+using UseCase.SupperSetDetail.SupperSetDetail;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -71,15 +71,15 @@ public class SetController : ControllerBase
         return new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.GetSetByomeiList)]
-    public ActionResult<Response<GetSetByomeiListResponse>> GetSetByomeiList([FromQuery] GetSetByomeiListRequest request)
+    [HttpGet(ApiPath.GetSuperSetDetail)]
+    public ActionResult<Response<GetSuperSetDetailResponse>> GetSetByomeiList([FromQuery] GetSuperSetDetailRequest request)
     {
-        var input = new GetSetByomeiListInputData(request.HpId, request.SetCd);
+        var input = new GetSupperSetDetailInputData(request.HpId, request.SetCd);
         var output = _bus.Handle(input);
 
-        var presenter = new GetSetByomeiListPresenter();
+        var presenter = new GetSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetSetByomeiListResponse>>(presenter.Result);
+        return new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result);
     }
 }

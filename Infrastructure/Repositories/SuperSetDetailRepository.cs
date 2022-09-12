@@ -15,7 +15,16 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
+    public SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd)
+    {
+        return new SuperSetDetailModel(
+                GetSetByomeiList(hpId, setCd),
+                new List<SetKarteInfModel>()
+            );
+    }
+
+    #region GetSetByomeiList
+    private List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
     {
         var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1).ToList();
 
@@ -91,4 +100,6 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             };
         return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
     }
+
+    #endregion
 }
