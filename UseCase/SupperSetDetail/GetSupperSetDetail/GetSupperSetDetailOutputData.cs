@@ -9,7 +9,7 @@ public class GetSupperSetDetailOutputData : IOutputData
     {
         SuperSetDetailModel = new SuperSetDetailModel(
                                                         new List<SetByomeiModel>(),
-                                                        new List<SetKarteInfModel>()
+                                                        new SetKarteInfModel(0, 0, string.Empty)
                                                     );
         Status = status;
     }
