@@ -126,7 +126,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
-using UseCase.SupperSetDetail.GetSetByomeiList;
+using UseCase.SupperSetDetail.SupperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -336,7 +336,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
             // SupperSetDetail
-            busBuilder.RegisterUseCase<GetSetByomeiListInputData, GetSetByomeiListInteractor>();
+            busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

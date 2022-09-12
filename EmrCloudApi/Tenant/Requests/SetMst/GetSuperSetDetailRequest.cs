@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.SetMst;
 
-public class GetSetByomeiListRequest
+public class GetSuperSetDetailRequest
 {
     public int HpId { get; set; }
     public int SetCd { get; set; }

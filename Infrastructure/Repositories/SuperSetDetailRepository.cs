@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Text;
 
 namespace Infrastructure.Repositories;
 
@@ -15,7 +16,16 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
+    public SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd)
+    {
+        return new SuperSetDetailModel(
+                GetSetByomeiList(hpId, setCd),
+                GetSetKarteInfModel(hpId, setCd)
+            );
+    }
+
+    #region GetSetByomeiList
+    private List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
     {
         var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1).ToList();
 
@@ -91,4 +101,19 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             };
         return codeLists?.Where(c => c != string.Empty).ToList() ?? new List<string>();
     }
+
+    #endregion
+
+    #region GetSetKarteInfModelList
+    private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
+    {
+        var setKarteInf = _tenantNoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1) ?? new SetKarteInf();
+        return new SetKarteInfModel(
+                setKarteInf.HpId,
+                setKarteInf.SetCd,
+                setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)
+            );
+    }
+
+    #endregion
 }
