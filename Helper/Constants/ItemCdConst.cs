@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Constant
+﻿namespace Helper.Constants
 {
-    public class ItemCdConst
+    public static class ItemCdConst
     {
         /// <summary>
         /// 初再診
@@ -21,6 +15,16 @@ namespace Domain.Constant
         /// 分割調剤
         /// </summary>
         public const string Con_TouyakuOrSiBunkatu = "@BUNKATU";
+
+        /// <summary>
+        /// リフィル
+        /// </summary>
+        public const string Con_Refill = "@REFILL";
+
+        /// <summary>
+        /// 情報通信機器
+        /// </summary>
+        public const string Con_Jouhou = "@JOUHOU";
 
         #region 初診関連
 
@@ -45,6 +49,14 @@ namespace Domain.Constant
         /// 初診（同一日２科目）
         /// </summary>
         public const string Syosin2Rousai = "101110040";
+        /// <summary>
+        /// 初診料（情報通信機器を用いた場合）
+        /// </summary>
+        public const string SyosinJouhou = "111014210";
+        /// <summary>
+        /// 初診料（同一日複数科受診時の２科目）（情報通信機器を用いた場合）
+        /// </summary>
+        public const string Syosin2Jouhou = "111014510";
         #endregion
 
         #region 初診関連-時間外加算
@@ -181,6 +193,39 @@ namespace Domain.Constant
         /// 医科外来等感染症対策実施加算シリーズ自動算定設定コード
         /// </summary>
         public const string KansenTaisaku = "111014070";
+        /// <summary>
+        /// 外来感染対策向上加算（初診）
+        /// </summary>
+        public const string SyosinKansenKojo = "111014870";
+        /// <summary>
+        /// 外来感染対策向上加算取消し
+        /// </summary>
+        public const string KansenKojoCancel = "X100007";
+        /// <summary>
+        /// 連携強化加算（初診）
+        /// </summary>
+        public const string SyosinRenkeiKyoka = "111014970";
+        /// <summary>
+        /// 連携強化加算取消し
+        /// </summary>
+        public const string RenkeiKyokaCancel = "X100008";
+        /// <summary>
+        /// サーベイランス強化加算（初診）
+        /// </summary>
+        public const string SyosinSurveillance = "111015070";
+        /// <summary>
+        /// サーベイランス強化加算取消し
+        /// </summary>
+        public const string SurveillanceCancel = "X100009";
+        /// <summary>
+        /// 電子的保健医療情報活用加算（初診）
+        /// </summary>
+        public const string SyosinDensiHoken = "111015170";
+        /// <summary>
+        /// 電子的保健医療情報活用加算（初診）（診療情報等の取得が困難等）
+        /// </summary>
+        public const string SyosinDensiHokenKonnan = "111015270";
+
         #endregion
 
         #region 再診関連
@@ -224,6 +269,18 @@ namespace Domain.Constant
         /// 同日電話等再診料（３０年３月以前継続）
         /// </summary>
         public const string SaisinDenwaDojituKeizoku = "112023450";
+        /// <summary>
+        /// 再診料（情報通信機器を用いた場合）
+        /// </summary>
+        public const string SaisinJouhou = "112024210";
+        /// <summary>
+        /// 同日再診料（情報通信機器）
+        /// </summary>
+        public const string SaisinJouhouDojitu = "112024950";
+        /// <summary>
+        /// 再診料（同一日複数科受診時の２科目）（情報通信機器
+        /// </summary>
+        public const string Saisin2Jouhou = "112025210";
         #endregion
 
         #region 再診関連-時間外加算
@@ -410,6 +467,18 @@ namespace Domain.Constant
         /// 二類感染症患者入院診療加算（電話等再診料・診療報酬上臨時的取扱）
         /// </summary>
         public const string Saisin2RuiKansen = "112024170";
+        /// <summary>
+        /// 外来感染対策向上加算（再診）
+        /// </summary>
+        public const string SaisinKansenKojo = "112024370";
+        /// <summary>
+        /// 連携強化加算（再診）
+        /// </summary>
+        public const string SaisinRenkeiKyoka = "112024470";
+        /// <summary>
+        /// サーベイランス強化加算（再診）
+        /// </summary>
+        public const string SaisinSurveillance = "112024570";
         #endregion
 
         /// <summary>
@@ -440,6 +509,47 @@ namespace Domain.Constant
         /// 小児かかりつけ診療料（処方箋を交付しない）再診時
         /// </summary>
         public const string IgakuSyouniKakaritukeSaisinKofuNasi = "113020010";
+        /// <summary>
+        /// 小児かかりつけ診療料１
+        /// </summary>
+        public const string IgakuSyouniKakarituke1 = "@134001";
+        /// <summary>
+        /// 小児かかりつけ診療料１（処方箋を交付）初診時	
+        /// </summary>
+        public const string IgakuSyouniKakarituke1SyosinKofuAri = "113037210";
+        /// <summary>
+        /// 小児かかりつけ診療料１（処方箋を交付しない）初診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke1SyosinKofuNasi = "113037410";
+        /// <summary>
+        /// 小児かかりつけ診療料１（処方箋を交付）再診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke1SaisinKofuAri = "113037310";
+        /// <summary>
+        /// 小児かかりつけ診療料１（処方箋を交付しない）再診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke1SaisinKofuNasi = "113037510";
+        /// <summary>
+        /// 小児かかりつけ診療料２
+        /// </summary>
+        public const string IgakuSyouniKakarituke2 = "@134002";
+        /// <summary>
+        /// 小児かかりつけ診療料２（処方箋を交付）初診時	
+        /// </summary>
+        public const string IgakuSyouniKakarituke2SyosinKofuAri = "113037610";
+        /// <summary>
+        /// 小児かかりつけ診療料２（処方箋を交付しない）初診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke2SyosinKofuNasi = "113037810";
+        /// <summary>
+        /// 小児かかりつけ診療料２（処方箋を交付）再診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke2SaisinKofuAri = "113037710";
+        /// <summary>
+        /// 小児かかりつけ診療料２（処方箋を交付しない）再診時
+        /// </summary>
+        public const string IgakuSyouniKakarituke2SaisinKofuNasi = "113037910";
+
 
         /// <summary>
         /// 時間外加算（初診）（小児かかりつけ診療料）
@@ -537,7 +647,10 @@ namespace Domain.Constant
         /// 小児科外来診療料（処方箋を交付しない）初診時
         /// </summary>
         public const string IgakuSyouniGairaiSyosinKofuNasi = "113003710";
-
+        /// <summary>
+        /// ※時間外に緊急投与の必要が有ったため院内処方した
+        /// </summary>
+        public const string IgakuSyouniGairaiJikangaiComment = "@00006";
         /// <summary>
         /// 乳幼児時間外加算（初診）（小児科外来診療料）
         /// </summary>
@@ -880,15 +993,24 @@ namespace Domain.Constant
         /// </summary>
         public const string IgakuJyudoZensoku2_6 = "113008170";
         #endregion
+
         /// <summary>
         /// 皮膚科特定疾患療養指導料（Ⅰ）
         /// </summary>
         public const string SiHifuToku1 = "113000910";
+        /// <summary>
+        /// 皮膚科特定疾患指導管理料（１）（情報通信機器）
+        /// </summary>
+        public const string SiHifuToku1JyohoTusin = "113034510";
 
         /// <summary>
         /// 皮膚科特定疾患療養指導料（Ⅱ）
         /// </summary>
         public const string SiHifuToku2 = "113002310";
+        /// <summary>
+        /// 皮膚科特定疾患指導管理料（２）（情報通信機器）
+        /// </summary>
+        public const string SiHifuToku2JyohoTusin = "113034610";
 
         /// <summary>
         /// オンライン医学管理料
@@ -899,6 +1021,10 @@ namespace Domain.Constant
         /// 特定疾患療養管理料（診療所）
         /// </summary>
         public const string IgakuTokusitu = "113001810";
+        /// <summary>
+        /// 特定疾患療養管理料（診療所・情報通信機器）
+        /// </summary>
+        public const string IgakuTokusitu1 = "113034010";
         /// <summary>
         /// 特定薬剤治療管理料１
         /// </summary>
@@ -932,6 +1058,7 @@ namespace Domain.Constant
         #endregion
 
         #region 医学管理関連-生活習慣病管理料
+        #region ～2022/3/31
         /// <summary>
         /// 生活習慣病管理料（処方箋を交付）（脂質異常症を主病）
         /// </summary>
@@ -956,6 +1083,21 @@ namespace Domain.Constant
         /// 生活習慣病管理料（処方箋を交付しない）（高血圧症を主病）
         /// </summary>
         public const string IgakuSeikatuKofuNasiKouketuatu = "113004010";
+        #endregion
+        #region 2022/4/1～
+        /// <summary>
+        /// 生活習慣病管理料（脂質異常症を主病）
+        /// </summary>
+        public const string IgakuSeikatuSisitu = "113041710";
+        /// <summary>
+        /// 生活習慣病管理料（高血圧症を主病）
+        /// </summary>
+        public const string IgakuSeikatuKouketuatu = "113041810";
+        /// <summary>
+        /// 生活習慣病管理料（糖尿病を主病）
+        /// </summary>
+        public const string IgakuSeikatuTounyou = "113041910";
+        #endregion
         #endregion
 
         #region 医学管理関連-外来リハビリテーション診療料
@@ -988,6 +1130,161 @@ namespace Domain.Constant
         /// 施設基準不適合減算（医学管理等）（１００分の７０）
         /// </summary>
         public const string IgakuSisetuKijyun = "113023770";
+
+        /// <summary>
+        /// 外来感染対策向上加算（医学管理等）
+        /// </summary>
+        public const string IgakuKansenKojo = "113033790";
+        /// <summary>
+        /// 連携強化加算（医学管理等）
+        /// </summary>
+        public const string IgakuRenkeiKyoka = "113033890";
+        /// <summary>
+        /// サーベイランス強化加算（医学管理等）
+        /// </summary>
+        public const string IgakuSurveillance = "113033990";
+
+        #region 外来腫瘍化学療法診療料
+        /// <summary>
+        /// 外来腫瘍化学療法診療料１（抗悪性腫瘍剤を投与）
+        /// </summary>
+        public const string IgakuGairaiSyuyo1 = "113038010";
+        /// <summary>
+        /// 外来腫瘍化学療法診療料１（抗悪性腫瘍剤投与その他必要な治療管理）
+        /// </summary>
+        public const string IgakuGairaiSyuyo1Sonota = "113038110";
+        /// <summary>
+        /// 外来腫瘍化学療法診療料２（抗悪性腫瘍剤を投与）
+        /// </summary>
+        public const string IgakuGairaiSyuyo2 = "113038210";
+        /// <summary>
+        /// 外来腫瘍化学療法診療料２（抗悪性腫瘍剤投与その他必要な治療管理）
+        /// </summary>
+        public const string IgakuGairaiSyuyo2Sonota = "113038310";
+
+        /// <summary>
+        /// 小児加算（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoSyoni = "113041470";
+        /// <summary>
+        /// 連携充実加算（外来腫瘍化学療法診療料１・イ）
+        /// </summary>
+        public const string IgakuGairaiSyuyoRenkeiJujitu = "113041570";
+        /// <summary>
+        /// バイオ後続品導入初期加算（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoBio = "113041670";
+
+
+        /// <summary>
+        /// 時間外加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoJikangaiSyosin = "113038570";
+        /// <summary>
+        /// 休日加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoKyujituSyosin = "113038670";
+        /// <summary>
+        /// 深夜加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoSinyaSyosin = "113038770";
+        /// <summary>
+        /// 時間外特例医療機関加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoJikangaiTokuSyosin = "113038970";
+        /// <summary>
+        /// 乳幼児加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyosin = "113038470";
+        /// <summary>
+        /// 乳幼児時間外加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuJikangaiSyosin = "113038870";
+        /// <summary>
+        /// 乳幼児休日加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuKyujituSyosin = "113043670";
+        /// <summary>
+        /// 乳幼児深夜加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSinyaSyosin = "113043770";
+        /// <summary>
+        /// 乳幼児時間外特例医療機関加算（初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuJikangaiTokuSyosin = "113039070";
+        /// <summary>
+        /// 乳幼児夜間加算（小児科初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniYakanSyosin = "113039170";
+        /// <summary>
+        /// 乳幼児休日加算（小児科初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniKyujituSyosin = "113039270";
+        /// <summary>
+        /// 乳幼児深夜加算（小児科初診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniSinyaSyosin = "113039370";
+
+        /// <summary>
+        /// 時間外加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoJikangaiSaisin = "113039570";
+        /// <summary>
+        /// 休日加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoKyujituSaisin = "113039670";
+        /// <summary>
+        /// 深夜加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoSinyaSaisin = "113039770";
+        /// <summary>
+        /// 時間外特例医療機関加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoJikangaiTokuSaisin = "113039970";
+        /// <summary>
+        /// 乳幼児加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSaisin = "113039470";
+        /// <summary>
+        /// 乳幼児時間外加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuJikangaiSaisin = "113039870";
+        /// <summary>
+        /// 乳幼児休日加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuKyujituSaisin = "113043870";
+        /// <summary>
+        /// 乳幼児深夜加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSinyaSaisin = "113043970";
+        /// <summary>
+        /// 乳幼児時間外特例医療機関加算（再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuJikangaiTokuSaisin = "113040070";
+        /// <summary>
+        /// 乳幼児夜間加算（小児科再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniYakanSaisin = "113040170";
+        /// <summary>
+        /// 乳幼児休日加算（小児科再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniKyujituSaisin = "113040270";
+        /// <summary>
+        /// 乳幼児深夜加算（小児科再診）（外来腫瘍化学療法診療料）
+        /// </summary>
+        public const string IgakuGairaiSyuyoNyuSyouniSinyaSaisin = "113040370";
+        #endregion
+
+        #region アレルギー性鼻炎免疫療法治療管理料
+        /// <summary>
+        /// アレルギー性鼻炎免疫療法治療管理料（１月目）
+        /// </summary>
+        public const string IgakuBienMeneki1 = "113036810";
+        /// <summary>
+        /// アレルギー性鼻炎免疫療法治療管理料（２月目以降）
+        /// </summary>
+        public const string IgakuBienMeneki2 = "113036910";
+        #endregion
 
         #region 情報通信機器
 
@@ -1059,6 +1356,10 @@ namespace Domain.Constant
 
         #region 乳幼児育児栄養指導料
         public const string SiIkuji = "111000470";
+        /// <summary>
+        /// 乳幼児育児栄養指導料（情報通信機器）
+        /// </summary>
+        public const string SiIkujiJyohoTusin = "113037110";
         #endregion
 
         #region 在宅関連
@@ -1360,6 +1661,19 @@ namespace Domain.Constant
         /// 医科外来等感染症対策実施加算（在宅医療）
         /// </summary>
         public const string ZaiKansenTaisaku = "114051070";
+
+        /// <summary>
+        /// 外来感染対策向上加算（医学管理等）
+        /// </summary>
+        public const string ZaitakuKansenKojo = "114055090";
+        /// <summary>
+        /// 連携強化加算（医学管理等）
+        /// </summary>
+        public const string ZaitakuRenkeiKyoka = "114055190";
+        /// <summary>
+        /// サーベイランス強化加算（医学管理等）
+        /// </summary>
+        public const string ZaitakuSurveillance = "114055290";
         #endregion
 
         #region 検査関連
@@ -1380,7 +1694,7 @@ namespace Domain.Constant
         /// </summary>
         public const string KensaMarumeSeika8_9 = "@60011";
         /// <summary>
-        /// 生化学検査（Ｉ）（８・９項目）
+        /// 生化学検査（Ｉ）（１０項目以上）
         /// </summary>
         public const string KensaMarumeSeika10 = "@60012";
         #endregion
@@ -1493,6 +1807,19 @@ namespace Domain.Constant
         /// 悪性腫瘍組織検査（処理が複雑なもの）（３項目）
         /// </summary>
         public const string KensaMarumeAkuseiFukuzatu3 = "@60091";
+
+        /// <summary>
+        /// 悪性腫瘍遺伝子検査１（２項目）
+        /// </summary>
+        public const string KensaMarumeAkuseiKetueki1_2 = "@60101";
+        /// <summary>
+        /// 悪性腫瘍遺伝子検査１（３項目）
+        /// </summary>
+        public const string KensaMarumeAkuseiKetueki1_3 = "@60102";
+        /// <summary>
+        /// 悪性腫瘍遺伝子検査２（２項目）
+        /// </summary>
+        public const string KensaMarumeAkuseiKetueki2_2 = "@60103";
         #endregion
 
         #endregion
@@ -1549,6 +1876,14 @@ namespace Domain.Constant
         /// </summary>        
         public const string KensaSARSInfulItakugai = "160224850";
         public const string KensaSARSInfulItakugai20211231 = "160229750";
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・ＲＳウイルス核酸同時検出（検査委託） 
+        /// </summary>
+        public const string KensaSARSRsVirusItaku = "160234550";
+        /// <summary>
+        /// ＳＡＲＳ－ＣｏＶ－２・ＲＳウイルス核酸同時検出（検査委託以外） 
+        /// </summary>
+        public const string KensaSARSRsVirusItakuIgai = "160234650";
 
         /// <summary>
         /// ウイルス・細菌核酸多項目同時検出（検査委託）
@@ -1945,23 +2280,47 @@ namespace Domain.Constant
 
         /// <summary>
         /// 処方箋料（その他）
+        /// 2022/04 ～
+        /// 処方箋料（リフィル以外・その他）
         /// </summary>
         public const string TouyakuSyohosenSonota = "120002910";
         /// <summary>
         /// 処方箋料（向精神薬多剤投与）
+        /// 2022/04 ～
+        /// 処方箋料（リフィル以外・向精神薬多剤投与）
         /// </summary>
         public const string TouyakuSyohosenKouSei = "120003710";
         /// <summary>
         /// 処方箋料（７種類以上内服薬又は向精神薬長期処方）
         /// 2020/04 ~　
         /// 処方箋料（７種類以上内服薬）
+        /// 2022/04 ～
+        /// 処方箋料（リフィル以外・７種類以上内服薬）
         /// </summary>
         public const string TouyakuSyohosenNaifukuKousei = "120002710";
         /// <summary>
         /// 2020/04 ~
         /// 処方箋料（向精神薬長期処方）
+        /// 2022/04 ～
+        /// 処方箋料（リフィル以外・向精神薬長期処方）
         /// </summary>
         public const string TouyakuSyohosenKouseiChoki = "120004610";
+        /// <summary>
+        /// 処方箋料（リフィル処方箋・その他）
+        /// </summary>
+        public const string TouyakuSyohosenSonotaRefill = "120005010";
+        /// <summary>
+        /// 処方箋料（リフィル処方箋・向精神薬多剤投与）
+        /// </summary>
+        public const string TouyakuSyohosenKouSeiRefill = "120004710";
+        /// <summary>
+        /// 処方箋料（リフィル処方箋・７種類以上内服薬）
+        /// </summary>
+        public const string TouyakuSyohosenNaifukuKouseiRefill = "120004810";
+        /// <summary>
+        /// 処方箋料（リフィル処方箋・向精神薬長期処方）
+        /// </summary>
+        public const string TouyakuSyohosenKouseiChokiRefill = "120004910";
         /// <summary>
         /// 処方せん料取消し
         /// </summary>
@@ -2080,6 +2439,14 @@ namespace Domain.Constant
         #endregion
 
         /// <summary>
+        /// 皮内、皮下及び筋肉内注射
+        /// </summary>
+        public const string ChusyaHikaKin = "130000510";
+        /// <summary>
+        /// 静脈内注射
+        /// </summary>
+        public const string ChusyaJyomyaku = "130003510";
+        /// <summary>
         /// 自己注射
         /// </summary>
         public const string ChusyaJikocyu = "@30024";
@@ -2114,9 +2481,14 @@ namespace Domain.Constant
         /// </summary>
         public const string SonotaTuuinSeisin20Kasan = "180020570";
         /// <summary>
-        /// 児童思春期精神科専門管理加算（１６歳未満）
+        /// 児童思春期精神科専門管理加算（１６歳未満）～2022/3/31
+        /// 児童思春期精神科専門管理加算（１６歳未満）（２年以内）2022/4/1～
         /// </summary>
         public const string SonotaJidoSisyunkiKasan16 = "180047270";
+        /// <summary>
+        /// 児童思春期精神科専門管理加算（１６歳未満）（（１）以外）
+        /// </summary>
+        public const string SonotaJidoSisyunkiKasan16_Sonota = "180067870";
         /// <summary>
         /// 児童思春期精神科専門管理加算（２０歳未満）
         /// </summary>
@@ -2147,6 +2519,19 @@ namespace Domain.Constant
         /// </summary>
         public const string SonotaKansenTaisaku = "180064870";
 
+        /// <summary>
+        /// 外来感染対策向上加算（精神科訪問看護・指導料）
+        /// </summary>
+        public const string SonotaKansenKojo = "180068770";
+        /// <summary>
+        /// 連携強化加算（精神科訪問看護・指導料）
+        /// </summary>
+        public const string SonotaRenkeiKyoka = "180072670";
+        /// <summary>
+        /// サーベイランス強化加算（精神科訪問看護・指導料）
+        /// </summary>
+        public const string SonotaSurveillance = "180072770";
+
         #region 救急医療管理加算１（診療報酬上臨時的取扱）
         /// <summary>
         /// 救急医療管理加算１（診療報酬上臨時的取扱）（外来診療）
@@ -2168,7 +2553,14 @@ namespace Domain.Constant
         /// 救急医療管理加算１（診療報酬上臨時的取扱）（外来・中和抗体薬）
         /// </summary>
         public const string SonotaKyukyuIryoKanriKasanRinjiGairaiCyuwa = "180065950";
-
+        /// <summary>
+        /// 乳幼児加算（救急医療管理加算・臨時的取扱）（外来診療・往診等）
+        /// </summary>
+        public const string SonotaKyukyuIryoKanriKasanRinjiNyuyojiKasan = "180066170";
+        /// <summary>
+        /// 小児加算（救急医療管理加算・臨時的取扱）（外来診療・往診等）
+        /// </summary>
+        public const string SonotaKyukyuIryoKanriKasanRinjiSyoniKasan = "180066270";
         #endregion
 
         #endregion
@@ -2244,7 +2636,11 @@ namespace Domain.Constant
         /// 腰部固定帯加算（固定用伸縮性包帯）
         /// </summary>
         public const string SyotiKeibuKoteitaiKasan = "140052610";
-
+        /// <summary>
+        /// 耳鼻咽喉科乳幼児処置加算の追加
+        /// </summary>
+        public const string SyotiJibiNyuyojiKasan = "140061990";
+        public const string SyotiJibiNyuyojiKasanCancel = "X100010";
         #endregion
 
         #region 手術
@@ -2329,6 +2725,81 @@ namespace Domain.Constant
         /// 創外固定器加算
         /// </summary>
         public const string SyujyutuSougaiKoteikiSiyoKasan = "150266970";
+
+        #region 体外受精・顕微受精管理料
+        /// <summary>
+        /// 体外受精・顕微受精管理料（体外受精）
+        /// </summary>
+        public const string SyujyutuTaigaiJusei = "150433010";
+        /// <summary>
+        /// 体外受精・顕微受精管理料（顕微受精）（１個）
+        /// </summary>
+        public const string SyujyutuKenbiJusei1 = "150433110";
+        /// <summary>
+        /// 体外受精・顕微受精管理料（顕微受精）（２個から５個まで）
+        /// </summary>
+        public const string SyujyutuKenbiJusei2_5 = "150433210";
+        /// <summary>
+        /// 体外受精・顕微受精管理料（顕微受精）（６個から９個まで）
+        /// </summary>
+        public const string SyujyutuKenbiJusei6_9 = "150433310";
+        /// <summary>
+        /// 体外受精・顕微受精管理料（顕微受精）（１０個以上）
+        /// </summary>
+        public const string SyujyutuKenbiJusei10 = "150433410";
+        /// <summary>
+        /// 体外受精及び顕微受精同時実施管理料（１個）
+        /// </summary>
+        public const string SyujyutuJuseiDouji1 = "150436630";
+        /// <summary>
+        /// 体外受精及び顕微受精同時実施管理料（２個から５個まで）
+        /// </summary>
+        public const string SyujyutuJuseiDouji2_5 = "150436830";
+        /// <summary>
+        /// 体外受精及び顕微受精同時実施管理料（６個から９個まで）
+        /// </summary>
+        public const string SyujyutuJuseiDouji6_9 = "150436930";
+        /// <summary>
+        /// 体外受精及び顕微受精同時実施管理料（１０個以上）
+        /// </summary>
+        public const string SyujyutuJuseiDouji10 = "150436730";
+        #endregion
+        #region 受精卵・胚培養管理料
+        /// <summary>
+        /// 受精卵・胚培養管理料（１個）
+        /// </summary>
+        public const string SyujyutuJuseiranHaiBaiyo1 = "150434110";
+        /// <summary>
+        /// 受精卵・胚培養管理料（２個から５個まで）
+        /// </summary>
+        public const string SyujyutuJuseiranHaiBaiyo2_5 = "150434210";
+        /// <summary>
+        /// 受精卵・胚培養管理料（６個から９個まで）
+        /// </summary>
+        public const string SyujyutuJuseiranHaiBaiyo6_9 = "150434310";
+        /// <summary>
+        /// 受精卵・胚培養管理料（１０個以上）
+        /// </summary>
+        public const string SyujyutuJuseiranHaiBaiyo10 = "150434410";
+        #endregion
+        #region 胚凍結保存管理料（胚凍結保存管理料（導入時））
+        /// <summary>
+        /// 胚凍結保存管理料（胚凍結保存管理料（導入時））（１個）
+        /// </summary>
+        public const string SyujyutuHaiHozonDonyu1 = "150434910";
+        /// <summary>
+        /// 胚凍結保存管理料（胚凍結保存管理料（導入時））（２個から５個）
+        /// </summary>
+        public const string SyujyutuHaiHozonDonyu2_5 = "150435010";
+        /// <summary>
+        /// 胚凍結保存管理料（胚凍結保存管理料（導入時））（６個から９個）
+        /// </summary>
+        public const string SyujyutuHaiHozonDonyu6_9 = "150435110";
+        /// <summary>
+        /// 胚凍結保存管理料（胚凍結保存管理料・導入時・１０個以上）
+        /// </summary>
+        public const string SyujyutuHaiHozonDonyu10 = "150435210";
+        #endregion
 
         #endregion
 
@@ -2557,6 +3028,23 @@ namespace Domain.Constant
         /// ２つ目の診療科（再診料）；
         /// </summary>
         public const string CommentSaisin2Kame = "830100003";
+        /// <summary>
+        /// オンライン診療の適切な実施に関する指針に沿った適切な診療である（初診料）
+        /// </summary>
+        public const string CommentOnlineSinryoSyosin = "820100990";
+        /// <summary>
+        /// オンライン診療の適切な実施に関する指針に沿った適切な処方である（初診料）
+        /// </summary>
+        public const string CommentOnlineSyohoSyosin = "820100816";
+        /// <summary>
+        /// オンライン診療の適切な実施に関する指針に沿った適切な診療である（再診料）
+        /// </summary>
+        public const string CommentOnlineSinryoSaisin = "820100817";
+        /// <summary>
+        /// オンライン診療の適切な実施に関する指針に沿った適切な処方である（再診料）
+        /// </summary>
+        public const string CommentOnlineSyohoSaisin = "820100818";
+
         public const string CommentMasterCdStart = "CO";
 
         public const string Comment840Pattern = "840";
@@ -2570,6 +3058,9 @@ namespace Domain.Constant
         public const string Comment850Pattern = "850";
         public const string Comment851Pattern = "851";
         public const string Comment852Pattern = "852";
+
+        public const string Comment853Pattern = "853";
+        public const string Comment880Pattern = "880";
         /// <summary>
         /// 単純撮影（撮影部位）胸部（肩を除く）
         /// </summary>
@@ -2662,6 +3153,7 @@ namespace Domain.Constant
                     {
                         ItemCdConst.Syosin,
                         ItemCdConst.SyosinCorona,
+                        ItemCdConst.SyosinJouhou,
                         ItemCdConst.Saisin,
                         ItemCdConst.SaisinDenwa,
                         ItemCdConst.SaisinDojitu,
@@ -2678,7 +3170,9 @@ namespace Domain.Constant
                         ItemCdConst.SaisinRousai,
                         ItemCdConst.SaisinDenwaRousai,
                         ItemCdConst.SaisinDojituRousai,
-                        ItemCdConst.SaisinDenwaDojituRousai
+                        ItemCdConst.SaisinDenwaDojituRousai,
+                        ItemCdConst.SaisinJouhou,
+                        ItemCdConst.SaisinJouhouDojitu
                     };
     }
 }

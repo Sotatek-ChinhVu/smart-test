@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM")]
         [MaxLength(300)]
-        public string Param { get; set; } = string.Empty;
+        public string? Param { get; set; } = string.Empty;
 
         /// <summary>
         /// 備考
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時

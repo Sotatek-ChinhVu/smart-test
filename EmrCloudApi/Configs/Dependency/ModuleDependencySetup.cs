@@ -32,6 +32,7 @@ using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SystemConf;
+using Domain.Models.SystemGenerationConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.User;
@@ -99,6 +100,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.OrdInfs.GetListTrees;
+using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
@@ -129,6 +131,7 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.Schema.SaveImage;
 using Domain.Models.Byomei;
 using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
@@ -204,6 +207,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<IByomeiRepository, ByomeiRepository>();
+            services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
         }
@@ -328,7 +332,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             // Schema
+            busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+
+            //Validation TodayOrder
+            busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
 
             //UsageTreeSet
             busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();

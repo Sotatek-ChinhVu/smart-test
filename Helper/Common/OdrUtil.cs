@@ -1,5 +1,6 @@
-﻿
+﻿using Helper.Extendsions;
 using Helper.Extension;
+using System.Globalization;
 
 namespace Helper.Common
 {
@@ -249,6 +250,178 @@ namespace Helper.Common
             }
 
             return result;
+        }
+
+        public static string GetCmtOpt850(string input, string itemName)
+        {
+            string cmtOpt = string.Empty;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return cmtOpt;
+            }
+
+            if (string.IsNullOrWhiteSpace(itemName))
+            {
+                return cmtOpt;
+            }
+
+            string halfSizeValue = HenkanJ.ZenToHank(input);
+            if (itemName.Contains("日"))
+            {
+                if (halfSizeValue.AsInteger() != 0 && halfSizeValue.Length == 7)
+                {
+                    string formatDate = string.Format("{0}.{1}.{2}.{3}",
+                        CIUtil.Copy(halfSizeValue, 1, 1),
+                        CIUtil.Copy(halfSizeValue, 2, 2),
+                        CIUtil.Copy(halfSizeValue, 4, 2),
+                        CIUtil.Copy(halfSizeValue, 6, 2));
+                    int tempConvertDate = CIUtil.ShowWDateToSDate(formatDate);
+                    if (tempConvertDate == 0)
+                    {
+                        return cmtOpt;
+                    }
+                    return HenkanJ.HankToZen(halfSizeValue);
+                }
+                else
+                {
+                    int intDateValue = CIUtil.ShowWDateToSDate(halfSizeValue);
+                    if (intDateValue == 0 || intDateValue > 99999999)
+                    {
+                        return cmtOpt;
+                    }
+                    cmtOpt = HenkanJ.HankToZen(CIUtil.SDateToWDate(intDateValue).AsString());
+                    return cmtOpt;
+                }
+            }
+            else
+            {
+                if (halfSizeValue.AsInteger() != 0 && halfSizeValue.Length == 5)
+                {
+                    string formatDate = string.Format("{0}.{1}.{2}.{3}",
+                        CIUtil.Copy(halfSizeValue, 1, 1),
+                        CIUtil.Copy(halfSizeValue, 2, 2),
+                        CIUtil.Copy(halfSizeValue, 4, 2),
+                        "01");
+                    int tempConvertDate = CIUtil.ShowWDateToSDate(formatDate);
+                    if (tempConvertDate == 0)
+                    {
+                        return cmtOpt;
+                    }
+                    return halfSizeValue;
+                }
+                else
+                {
+                    string daySuffix = "01";
+                    if (halfSizeValue.Contains("."))
+                    {
+                        daySuffix = "." + daySuffix;
+                    }
+                    int intDateValue = CIUtil.ShowWDateToSDate(halfSizeValue + daySuffix);
+                    if (intDateValue == 0 || intDateValue > 99999999)
+                    {
+                        return cmtOpt;
+                    }
+                    string strDateValue = CIUtil.SDateToWDate(intDateValue).AsString();
+                    cmtOpt = CIUtil.Copy(strDateValue, 1, strDateValue.Length - 2);
+                    return cmtOpt;
+                }
+            }
+        }
+
+        public static string GetCmtOpt851(string input)
+        {
+            string cmtOpt = string.Empty;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return cmtOpt;
+            }
+
+            string halfSizeValue = HenkanJ.ZenToHank(input);
+            int intConvertValue;
+            if (!int.TryParse(halfSizeValue, out intConvertValue))
+            {
+                return cmtOpt;
+            }
+
+            if (intConvertValue >= 2400)
+            {
+                return cmtOpt;
+            }
+
+            halfSizeValue = intConvertValue.AsString();
+
+            string convertTimeFormat = CIUtil.FormatTimeHHmmss(halfSizeValue);
+            if (string.IsNullOrEmpty(convertTimeFormat))
+            {
+                return cmtOpt;
+            }
+
+            return HenkanJ.HankToZen(halfSizeValue.PadLeft(4, '0'));
+        }
+
+        public static string GetCmtOpt852(string input)
+        {
+            string cmtOpt = string.Empty;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return cmtOpt;
+            }
+
+            string halfSizeValue = HenkanJ.ZenToHank(input);
+            int intConvertValue;
+            if (!int.TryParse(halfSizeValue, out intConvertValue))
+            {
+                return cmtOpt;
+            }
+
+            if (intConvertValue > 99999)
+            {
+                return cmtOpt;
+            }
+
+            return HenkanJ.HankToZen(intConvertValue.AsString().PadLeft(5, '0'));
+        }
+
+        public static string GetCmtOpt853(string input, int sinDate = 0)
+        {
+            string cmtOpt = string.Empty;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return cmtOpt;
+            }
+
+            input = CIUtil.Copy(input.PadLeft(6, '0'), 1, 6);
+            string halfSizeValue = HenkanJ.ZenToHank(input);
+            string day = CIUtil.Copy(halfSizeValue, 1, 2);
+            string time = CIUtil.Copy(halfSizeValue, 3, 4);
+            int intConvertValue;
+            int intConvertDay;
+
+            if (!int.TryParse(day, out intConvertDay))
+            {
+                return cmtOpt;
+            }
+
+            if (!int.TryParse(time, out intConvertValue))
+            {
+                return cmtOpt;
+            }
+            int countDay = 31;
+
+            if (sinDate > 0)
+            {
+                DateTime.TryParseExact(sinDate.AsString(), "yyyyMMdd",
+                CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date);
+
+                countDay = DateTime.DaysInMonth(date.Year, date.Month);
+            }
+
+            if (intConvertValue >= 2400 || intConvertDay < 1 || intConvertDay > countDay)
+            {
+                return cmtOpt;
+            }
+
+            return HenkanJ.HankToZen(halfSizeValue.PadLeft(6, '0'));
         }
     }
 
