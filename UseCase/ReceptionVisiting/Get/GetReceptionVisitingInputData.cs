@@ -9,18 +9,12 @@ namespace UseCase.ReceptionVisiting.Get
 {
     public class GetReceptionVisitingInputData : IInputData<GetReceptionVisitingOutputData>
     {
-        public GetReceptionVisitingInputData(int hpId, long ptId, int sinDate)
+        public GetReceptionVisitingInputData(long raiinNo)
         {
-            HpId = hpId;
-            PtId = ptId;
-            SinDate = sinDate;
+            RaiinNo = raiinNo;
         }
 
-        public int HpId { get; private set; }
-
-        public long PtId { get; private set; }
-
-        public int SinDate { get; private set; }
+        public long RaiinNo { get; private set; }
 
     }
 }

@@ -49,7 +49,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "ReceptionVisiting")]
     public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
-        var input = new GetReceptionVisitingInputData(request.HpId, request.PtId, request.SinDate);
+        var input = new GetReceptionVisitingInputData(request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);

@@ -8,6 +8,6 @@ namespace Domain.Models.ReceptionVisitingModel
 {
     public interface IReceptionVisitingRepository
     {
-        public IEnumerable<ReceptionVisitingModel> GetReceptionVisiting(int hpId, long ptId, int sinDate);
+        IEnumerable<ReceptionVisitingModel> GetReceptionVisiting(long raiinNo);
     }
 }

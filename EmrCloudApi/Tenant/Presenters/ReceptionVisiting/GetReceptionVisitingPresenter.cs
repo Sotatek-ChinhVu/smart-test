@@ -21,9 +21,7 @@ namespace EmrCloudApi.Tenant.Presenters.ReceptionVisiting
         private string GetMessage(GetReceptionVisitingStatus status) => status switch
         {
             GetReceptionVisitingStatus.Success => ResponseMessage.Success,
-            GetReceptionVisitingStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-            GetReceptionVisitingStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-            GetReceptionVisitingStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+            GetReceptionVisitingStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
             _ => string.Empty
         };
     }
