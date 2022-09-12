@@ -16,5 +16,6 @@
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
+        public const string SearchOTC = "SearchOTC";
     }
 }

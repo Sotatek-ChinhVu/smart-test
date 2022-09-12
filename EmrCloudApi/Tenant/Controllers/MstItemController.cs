@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.SearchOTC;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,6 +31,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SearchOTC)]
+        public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
+        {
+            var input = new SearchOTCInputData(request.SearchValue,request.PageIndex,request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchOTCPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
         }
     }
 }
