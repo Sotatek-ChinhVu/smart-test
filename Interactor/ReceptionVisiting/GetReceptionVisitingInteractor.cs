@@ -28,9 +28,9 @@ namespace Interactor.ReceptionVisiting
             var listData = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);
             if (listData == null || listData.Count == 0)
             {
-                return new GetReceptionVisitingOutputData(listData.ToList(), GetReceptionVisitingStatus.NoData);
+                return new GetReceptionVisitingOutputData(new(), GetReceptionVisitingStatus.NoData);
             }
-            return new GetReceptionVisitingOutputData(listData.ToList(), GetReceptionVisitingStatus.Success);
+            return new GetReceptionVisitingOutputData(listData, GetReceptionVisitingStatus.Success);
         }
     }
 }

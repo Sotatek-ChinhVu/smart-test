@@ -22,8 +22,14 @@ namespace Infrastructure.Repositories
         }
         public List<ReceptionVisitingModel> GetReceptionVisiting(long raiinNo)
         {
-            var listDataRaiinInf = _tenantDataContext.RaiinInfs.Where(x => x.RaiinNo == raiinNo).Select(x => new ReceptionVisitingModel(
-                x.PtId, x.UketukeId, x.KaId, x.UketukeTime ?? String.Empty, x.Status, x.YoyakuId, x.TantoId)).ToList();
+            var listDataRaiinInf = _tenantDataContext.RaiinInfs
+                .Where(x => x.RaiinNo == raiinNo)
+                .Select(x => new ReceptionVisitingModel(
+                x.PtId, 
+                x.UketukeId, 
+                x.KaId, x.UketukeTime ?? String.Empty, 
+                x.Status, x.YoyakuId, x.TantoId))
+                .ToList();
             return listDataRaiinInf;
         }
 
