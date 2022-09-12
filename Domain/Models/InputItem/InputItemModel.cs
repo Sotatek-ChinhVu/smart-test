@@ -1,15 +1,11 @@
 ﻿using Domain.Constant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Helper.Constants;
 
 namespace Domain.Models.InputItem
 {
     public class InputItemModel
     {
-        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2)
+        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -29,6 +25,8 @@ namespace Domain.Models.InputItem
             KensaMstCenterItemCd1 = kensaMstCenterItemCd1;
             KensaMstCenterItemCd2 = kensaMstCenterItemCd2;
             IsAdopted = isAdopted;
+            CmtCol1 = cmtCol1;
+            IpnNameCd = ipnNameCd;
         }
 
         public int HpId { get; private set; }
@@ -66,6 +64,10 @@ namespace Domain.Models.InputItem
         public string KensaMstCenterItemCd1 { get; private set; }
 
         public string KensaMstCenterItemCd2 { get; private set; }
+
+        public int CmtCol1 { get; private set; }
+        public string IpnNameCd { get; private set; }
+
 
         public string RousaiKbnDisplay
         {
@@ -136,7 +138,7 @@ namespace Domain.Models.InputItem
         {
             get
             {
-                if(!String.IsNullOrEmpty(KensaMstCenterItemCd1) && !String.IsNullOrEmpty(KensaMstCenterItemCd2))
+                if (!String.IsNullOrEmpty(KensaMstCenterItemCd1) && !String.IsNullOrEmpty(KensaMstCenterItemCd2))
                 {
                     return string.Format("{0}/{1}", KensaMstCenterItemCd1, KensaMstCenterItemCd1);
                 }

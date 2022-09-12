@@ -2,9 +2,9 @@
 
 public enum UpdateReceptionStaticCellStatus
 {
-    ReceptionNotFound = 0,
-    ReceptionUpdated,
-    ReceptionCmtUpdated,
+    RaiinInfNotFound = 0,
+    RaiinInfUpdated,
+    RaiinCmtUpdated,
     PatientCmtUpdated,
     InvalidHpId,
     InvalidSinDate,

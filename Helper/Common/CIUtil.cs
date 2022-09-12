@@ -75,12 +75,10 @@ namespace Helper.Common
             try
             {
                 WrkStr = Ymd.ToString("D8");
-                DateTime BirthDate = new DateTime();
-                DateTime ToDate = new DateTime();
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out BirthDate);
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime BirthDate);
 
                 WrkStr = ToYmd.ToString("D8");
-                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out ToDate);
+                DateTime.TryParseExact(WrkStr, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime ToDate);
 
                 Age = ToDate.Year - BirthDate.Year;
 
@@ -115,19 +113,17 @@ namespace Helper.Common
             }
             DateTime dtBuf;
             int nYear = 0, nMonth = 0, nDay = 0;
+            //** 誕生日が1日でない⇒翌月1日に置き換え **
+            if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
             {
-                //** 誕生日が1日でない⇒翌月1日に置き換え **
-                if (Copy(nBirthYmd.ToString(), 7, 2).AsInteger() != 1)
-                {
-                    dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
-                    nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
-                }
-                //** 誕生日が1日⇒そのまま **
-
-                //年齢算出
-                SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
-                return (nYear >= nTgtAge);
+                dtBuf = DateTime.ParseExact(((nBirthYmd / 100) * 100 + 1).ToString(), "yyyyMMdd", CultureInfo.InvariantCulture);
+                nBirthYmd = dtBuf.AddMonths(1).ToString("yyyyMMdd", CultureInfo.InvariantCulture).AsInteger();
             }
+            //** 誕生日が1日⇒そのまま **
+
+            //年齢算出
+            SDateToDecodeAge(nBirthYmd, nSinYmd, ref nYear, ref nMonth, ref nDay);
+            return (nYear >= nTgtAge);
         }
 
         public static bool IsStudent(int BirthDay, int Sinday)
@@ -1188,6 +1184,99 @@ namespace Helper.Common
 
             return Encoding.GetEncoding("shift_jis").GetByteCount(str);
         }
+
+        public static int SDateToWDate(int ymd)
+        {
+            int ret = 0;
+            string retDate = SDateToShowWDate(ymd);
+
+            if (retDate.Length == 10)
+            {
+                ret = ObjectExtension.StrToIntDef
+                        (_GengoId(retDate.Substring(0, 1)) +
+                         retDate.Substring(2, 2) +
+                         retDate.Substring(5, 2) +
+                         retDate.Substring(8, 2), 0);
+            }
+
+            return ret;
+
+            #region Local Method
+            string _GengoId(string gengo)
+            {
+                string gengoId = "";
+
+                switch (gengo)
+                {
+                    case "明":
+                        gengoId = "1";
+                        break;
+                    case "大":
+                        gengoId = "2";
+                        break;
+                    case "昭":
+                        gengoId = "3";
+                        break;
+                    case "平":
+                        gengoId = "4";
+                        break;
+                    default:
+                        gengoId = "5";
+                        break;
+                }
+
+                return gengoId;
+            }
+            #endregion
+        }
+
+        public static string FormatTimeHHmmss(string sTime)
+        {
+            if (string.IsNullOrWhiteSpace(sTime))
+            {
+                return string.Empty;
+            }
+
+            if (sTime.Length > 6)
+            {
+                return string.Empty;
+            }
+
+            // HHmm or Hmm
+            // eg: 
+            // input 2 (2minutes) => 0002 => 000200
+            // input 23 (23minutes) => 0023 => 002300
+            // input 935 (9h35min) => 0935 => 093500
+            // input 1237 (12h37) => 1237 => 123700
+            if (sTime.Length <= 4)
+            {
+                sTime = sTime.PadLeft(4, '0').PadRight(6, '0');
+            }
+            else // Hmmss
+            {
+                // eg:
+                // input 41521 (4h15m21s) => 041521
+                // input 161101(16h11m01s) => 161101
+                sTime = sTime.PadLeft(6, '0');
+            }
+            string sHour = Copy(sTime, 1, 2);
+            if (sHour.AsInteger() < 0 || sHour.AsInteger() >= 24)
+            {
+                return string.Empty;
+            }
+            string sMin = Copy(sTime, 3, 2);
+            if (sMin.AsInteger() < 0 || sMin.AsInteger() >= 60)
+            {
+                return string.Empty;
+            }
+            string sSec = Copy(sTime, 5, 2);
+            if (sSec.AsInteger() < 0 || sSec.AsInteger() >= 60)
+            {
+                return string.Empty;
+            }
+            return sTime;
+        }
+
     }
 
     public enum WarekiFormat
@@ -1209,4 +1298,5 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
+
 }
