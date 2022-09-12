@@ -2,14 +2,14 @@
 
 public class SuperSetDetailModel
 {
-    public SuperSetDetailModel(List<SetByomeiModel> setByomeiList, SetKarteInfModel setKarteInfList)
+    public SuperSetDetailModel(List<SetByomeiModel> setByomeiList, SetKarteInfModel setKarteInf)
     {
         SetByomeiList = setByomeiList;
-        SetKarteInfList = setKarteInfList;
+        SetKarteInf = setKarteInf;
     }
 
     public List<SetByomeiModel> SetByomeiList { get; private set; }
 
-    public SetKarteInfModel SetKarteInfList { get; private set; }
+    public SetKarteInfModel SetKarteInf{ get; private set; }
 
 }
