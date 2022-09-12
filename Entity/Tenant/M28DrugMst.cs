@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KANA2")]
         [MaxLength(100)]
-        public string DrugKana2 { get; set; } = string.Empty;
+        public string? DrugKana2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
