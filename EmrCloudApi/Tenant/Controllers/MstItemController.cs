@@ -31,5 +31,16 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
+        [HttpPost(ApiPath.SearchSupplement)]
+        public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
+        {
+            var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchSupplementPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
+        }
     }
 }

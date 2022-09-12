@@ -333,6 +333,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
+            busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
