@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.InsuranceInfor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,6 @@ namespace Domain.Models.ReceptionInsurance
     {
         public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception);
 
-        bool CheckPatternExpried(int hpId, long ptId, int sinDate, int hokenId);
+        bool CheckPatternExpried(InsuranceModel itemInsurance);
     }
 }

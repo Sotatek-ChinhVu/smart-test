@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using Domain.Models.ReceptionInsurance;
 using Entity.Tenant;
 using Helper.Common;
@@ -105,241 +106,187 @@ namespace Infrastructure.Repositories
             return listData;
         }
 
-        public bool CheckPatternExpried(int hpId, long ptId, int sinDate, int hokenId)
+        public bool CheckPatternExpried(InsuranceModel itemInsurance)
         {
             var result = false;
-            //hungdm - gán
-            var hokenPid = 0;
-            var hokenInf = _tenantDataContext.PtHokenInfs.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenId);
-            if (hokenInf != null)
+
+            if (itemInsurance != null)
             {
-                var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == hokenInf.HokenId);
-                var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == hokenInf.HokenNo && h.HokenEdaNo == hokenInf.HokenEdaNo);
-                var dataHokenCheck = _tenantDataContext.PtHokenChecks.FirstOrDefault(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenId == hokenInf.HokenId);
-                string houbetu = string.Empty;
-                int futanRate = 0;
-                int futanKbn = 0;
-                int isHaveHokenMst = 0;
-                int hokenMstSubNumber = 0;
-                if (hokenMst != null)
+                switch (itemInsurance.HokenKbn)
                 {
-                    houbetu = hokenMst.Houbetu;
-                    futanRate = hokenMst.FutanRate;
-                    futanKbn = hokenMst.FutanKbn;
-                    isHaveHokenMst = 1;
-                    hokenMstSubNumber = hokenMst.HokenSbtKbn;
-                }
+                    // 自費
+                    case 0:
+                        // ignore
+                        break;
+                    // 社保
+                    case 1:
+                    // 国保
+                    case 2:
+                        if (!IsValidAgeCheck(itemInsurance.SinDate, itemInsurance.HokenPid))
+                        {
+                            return false;
+                        }
+                        if (!IsValidConfirmDateHoken(itemInsurance.SinDate, itemInsurance.IsExpirated, itemInsurance.IsJihi, itemInsurance.IsNoHoken, itemInsurance.IsExpirated, itemInsurance.ConfirmDate))
+                        {
+                            return false;
+                        }
 
-                var tenkiSenkei = 0;
-                var tenkiTenki = 0;
-                var tenkiEndDate = 0;
-                if (ptRousaiTenkis != null)
-                {
-                    tenkiSenkei = ptRousaiTenkis.Sinkei;
-                    tenkiTenki = ptRousaiTenkis.Tenki;
-                    tenkiEndDate = ptRousaiTenkis.EndDate;
-                }
-                var itemSelected = new HokenInfModel(
-                                        hpId,
-                                        ptId,
-                                        hokenInf.HokenId,
-                                        hokenInf.SeqNo,
-                                        hokenInf.HokenNo,
-                                        hokenInf.HokenEdaNo,
-                                        hokenInf.HokenKbn,
-                                        hokenInf.HokensyaNo ?? string.Empty,
-                                        hokenInf.Kigo ?? string.Empty,
-                                        hokenInf.Bango ?? string.Empty,
-                                        hokenInf.EdaNo ?? string.Empty,
-                                        hokenInf.HonkeKbn,
-                                        hokenInf.StartDate,
-                                        hokenInf.EndDate,
-                                        hokenInf.SikakuDate,
-                                        hokenInf.KofuDate,
-                                        GetConfirmDateHokenInf(dataHokenCheck),
-                                        hokenInf.KogakuKbn,
-                                        hokenInf.TasukaiYm,
-                                        hokenInf.TokureiYm1,
-                                        hokenInf.TokureiYm2,
-                                        hokenInf.GenmenKbn,
-                                        hokenInf.GenmenRate,
-                                        hokenInf.GenmenGaku,
-                                        hokenInf.SyokumuKbn,
-                                        hokenInf.KeizokuKbn,
-                                        hokenInf.Tokki1 ?? string.Empty,
-                                        hokenInf.Tokki2 ?? string.Empty,
-                                        hokenInf.Tokki3 ?? string.Empty,
-                                        hokenInf.Tokki4 ?? string.Empty,
-                                        hokenInf.Tokki5 ?? string.Empty,
-                                        hokenInf.RousaiKofuNo ?? string.Empty,
-                                        nenkinBango: NenkinBango(hokenInf.RousaiKofuNo),
-                                        hokenInf.RousaiRoudouCd ?? string.Empty,
-                                        hokenInf.RousaiKofuNo ?? string.Empty,
-                                        hokenInf.RousaiSaigaiKbn,
-                                        hokenInf.RousaiKantokuCd ?? string.Empty,
-                                        hokenInf.RousaiSyobyoDate,
-                                        hokenInf.RyoyoStartDate,
-                                        hokenInf.RyoyoEndDate,
-                                        hokenInf.RousaiSyobyoCd ?? string.Empty,
-                                        hokenInf.RousaiJigyosyoName ?? string.Empty,
-                                        hokenInf.RousaiPrefName ?? string.Empty,
-                                        hokenInf.RousaiCityName ?? string.Empty,
-                                        hokenInf.RousaiReceCount,
-                                        tenkiSenkei,
-                                        tenkiTenki,
-                                        tenkiEndDate,
-                                        houbetu,
-                                        futanRate,
-                                        futanKbn,
-                                        sinDate,
-                                        hokenInf.JibaiHokenName ?? string.Empty,
-                                        hokenInf.JibaiHokenTanto ?? string.Empty,
-                                        hokenInf.JibaiHokenTel ?? string.Empty,
-                                        hokenInf.JibaiJyusyouDate,
-                                        isHaveHokenMst,
-                                        hokenMstSubNumber,
-                                        hokenInf.Houbetu ?? string.Empty
-                                        );
-                // Check
-                if (itemSelected != null)
-                {
-                    var isValidExpiredPattern = itemSelected.IsExpirated;
-                    switch (itemSelected.HokenKbn)
-                    {
-                        // 自費
-                        case 0:
-                            // ignore
-                            break;
-                        // 社保
-                        case 1:
-                        // 国保
-                        case 2:
-                            if (itemSelected != null)
-                            {
-                                if (!IsValidAgeCheck(sinDate, hokenPid))
-                                {
-                                    return false;
-                                }
-                                if (!IsValidConfirmDateHoken())
-                                {
-                                    return false;
-                                }
-
-                                if (!IsValidHokenMstDate())
-                                {
-                                    return false;
-                                }
-                            }
-                            if (SelectedKohi1 != null && !SelectedKohi1.IsEmptyModel)
-                            {
-                                if (!IsValidConfirmDateKohi1())
-                                {
-                                    return false;
-                                }
-
-                                if (!IsValidMasterDateKohi1())
-                                {
-                                    return false;
-                                }
-                            }
-                            if (SelectedKohi2 != null && !SelectedKohi2.IsEmptyModel)
-                            {
-                                if (!IsValidConfirmDateKohi2())
-                                {
-                                    return false;
-                                }
-
-                                if (!IsValidMasterDateKohi2())
-                                {
-                                    return false;
-                                }
-                            }
-                            if (SelectedKohi3 != null && !SelectedKohi3.IsEmptyModel)
-                            {
-                                if (!IsValidConfirmDateKohi3())
-                                {
-                                    return false;
-                                }
-
-                                if (!IsValidMasterDateKohi3())
-                                {
-                                    return false;
-                                }
-                            }
-                            if (SelectedKohi4 != null && !SelectedKohi4.IsEmptyModel)
-                            {
-                                if (!IsValidConfirmDateKohi4())
-                                {
-                                    return false;
-                                }
-
-                                if (!IsValidMasterDateKohi4())
-                                {
-                                    return false;
-                                }
-                            }
-                            if (!_isValidExpiredPattern())
+                        if (!IsValidHokenMstDate(itemInsurance.HokenInfStartDate, itemInsurance.HokenInfEndDate, itemInsurance.SinDate, itemInsurance.IsHaveHokenMst, itemInsurance.HokenMstStartDate, itemInsurance.HokenMstEndDate))
+                        {
+                            return false;
+                        }
+                        if (!itemInsurance.IsEmptyKohi1)
+                        {
+                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi1.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
                             {
                                 return false;
                             }
-                            return HasElderHoken();
-                        // 労災(短期給付)
-                        case 11:
-                        // 労災(傷病年金)
-                        case 12:
-                        // アフターケア
-                        case 13:
-                        // 自賠責
-                        case 14:
-                            if (!_isValidExpiredPattern())
+
+                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi1, itemInsurance.SinDate))
                             {
                                 return false;
                             }
-                            if (!AutoConfirmRousaiJibai())
+                        }
+                        if (!itemInsurance.IsEmptyKohi2)
+                        {
+                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi2.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
                             {
                                 return false;
                             }
-                            break;
-                    }
+
+                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi2, itemInsurance.SinDate))
+                            {
+                                return false;
+                            }
+                        }
+                        if (!itemInsurance.IsEmptyKohi3)
+                        {
+                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi3.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
+                            {
+                                return false;
+                            }
+
+                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi3, itemInsurance.SinDate))
+                            {
+                                return false;
+                            }
+                        }
+                        if (!itemInsurance.IsEmptyKohi4)
+                        {
+                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi4.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
+                            {
+                                return false;
+                            }
+
+                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi4, itemInsurance.SinDate))
+                            {
+                                return false;
+                            }
+                        }
+                        if (!itemInsurance.IsExpirated)
+                        {
+                            return false;
+                        }
+                        return HasElderHoken(itemInsurance.SinDate, itemInsurance.HpId, itemInsurance.PtId, itemInsurance.PatientInfBirthday);
+                    // 労災(短期給付)
+                    case 11:
+                    // 労災(傷病年金)
+                    case 12:
+                    // アフターケア
+                    case 13:
+                    // 自賠責
+                    case 14:
+                        if (!itemInsurance.IsExpirated)
+                        {
+                            return false;
+                        }
+                        break;
                 }
-
-
-
-
             }
             return result;
-
         }
 
-        private bool IsValidHokenMstDate(int startDate, int endDate, int sinDate)
+
+        private bool HasElderHoken(int sinDate, int hpId, long ptId, int ptInfBirthday)
         {
-            int HokenStartDate = startDate;
-            int HokenEndDate = endDate;
-            // 期限切れﾁｪｯｸ(有効保険の場合のみ)
-            if ((HokenStartDate <= sinDate || HokenStartDate == 0)
-                && (HokenEndDate >= sinDate || HokenEndDate == 0))
+            if (sinDate >= 20080401)
             {
-                if (startDate > sinDate)
+                var listHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+
+                if (listHokenPatterns != null && listHokenPatterns.Count > 0)
                 {
-                    return false;
-                }
-                if (endDate < sinDate)
-                {
-                    return false;
+                    var patternHokenOnly = listHokenPatterns.Where(pattern => pattern.IsDeleted == 0 && (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate));
+                    var listHokenInfs = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                    int age = CIUtil.SDateToAge(ptInfBirthday, sinDate);
+
+                    // hoken exist in at least 1 pattern
+                    var inUsedHokens = listHokenInfs.Where(hoken => hoken.HokenId > 0 && hoken.IsDeleted == 0 && (hoken.StartDate <= sinDate && hoken.EndDate >= sinDate)
+                                                                && patternHokenOnly.Any(pattern => pattern.HokenId == hoken.HokenId));
+
+                    var elderHokenQuery = inUsedHokens.Where(hoken => hoken.EndDate >= sinDate
+                                                                        && hoken.HokensyaNo != null && hoken.HokensyaNo != ""
+                                                                        && hoken.HokensyaNo.Length == 8 && hoken.HokensyaNo.StartsWith("39"));
+
+                    if (elderHokenQuery != null)
+                    {
+                        if (age >= 75 && !elderHokenQuery.Any())
+                        {
+                            return false;
+                        }
+                        else if (age < 65 && elderHokenQuery.Any())
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
-
             return true;
         }
+
+
+        private bool IsValidConfirmDateKohi(int kohiConfirmDate, int sinDate, bool patternIsExpirated)
+        {
+            int Kouhi1ConfirmDate = kohiConfirmDate;
+            int ConfirmKohi1YM = Int32.Parse(CIUtil.Copy(Kouhi1ConfirmDate.ToString(), 1, 6));
+            int SinYM = Int32.Parse(CIUtil.Copy(sinDate.ToString(), 1, 6));
+            if (Kouhi1ConfirmDate == 0
+                || SinYM != ConfirmKohi1YM)
+            {
+
+                if (patternIsExpirated)
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsValidMasterDateKohi1(KohiInfModel itemKohi, int sinDate)
+        {
+            if (!itemKohi.IsHaveKohiMst) return true;
+            if (itemKohi.HokenMstModel.StartDate > sinDate)
+            {
+                return false;
+            }
+            if (itemKohi.HokenMstModel.EndDate < sinDate)
+            {
+                return false;
+            }
+            return true;
+        }
+
+
 
 
         private bool IsValidAgeCheck(int sinDate, int hokenPid)
         {
             var validPattern = _tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
-                                                                (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate) &&
-                                                                 //pattern.HokenInf.IsShahoOrKokuho &&
-                                                                 //!(pattern.HokenInf.HokensyaNo.Length == 8
-                                                                 // && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99")))
+                                                                (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate)
+                                                                    //&&
+                                                                    //pattern.HokenInf.IsShahoOrKokuho &&
+                                                                    //!(pattern.HokenInf.HokensyaNo.Length == 8
+                                                                    // && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99")))
                                                                     );
 
 
@@ -408,17 +355,34 @@ namespace Infrastructure.Repositories
             if (HokenConfirmDate == 0
                 || SinYM != ConfirmHokenYM)
             {
-                if (SelectedHokenInf.IsAddNew || (SelectedHokenInf.IsAddHokenCheck && SelectedHokenInf.HokenChecks.Count <= 0))
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsValidHokenMstDate(int startDate, int endDate, int sinDate, bool isHaveHokenMst, int hokenMstStartDate, int hokenMstEndDate)
+        {
+            int HokenStartDate = startDate;
+            int HokenEndDate = endDate;
+            // 期限切れﾁｪｯｸ(有効保険の場合のみ)
+            if ((HokenStartDate <= sinDate || HokenStartDate == 0)
+                && (HokenEndDate >= sinDate || HokenEndDate == 0))
+            {
+                if (!isHaveHokenMst)
                 {
-                    PtHokenCheckModel hokenCheck = CreateHokenCheckModel(1, SelectedHokenInf.HokenId);
-                    SelectedHokenInf.AddConfirmDate(hokenCheck);
+                    return true;
                 }
-                else
+                if (hokenMstStartDate > sinDate)
+                {
+                    return false;
+                }
+                if (hokenMstEndDate < sinDate)
                 {
 
                     return false;
                 }
             }
+
             return true;
         }
 
