@@ -1,9 +1,11 @@
-﻿using Domain.Models.ReceptionVisitingModel;
+﻿using Domain.Models.KarteInfs;
+using Domain.Models.ReceptionVisitingModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UseCase.KarteInfs.GetLists;
 using UseCase.ReceptionVisiting.Get;
 
 namespace Interactor.ReceptionVisiting
@@ -22,9 +24,12 @@ namespace Interactor.ReceptionVisiting
             {
                 return new GetReceptionVisitingOutputData(new List<ReceptionVisitingModel>(), GetReceptionVisitingStatus.InvalidRaiinNo);
             }
-
-            var listData = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);
             
+            var listData = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);
+            if (listData == null || listData.Count == 0)
+            {
+                return new GetReceptionVisitingOutputData(listData.ToList(), GetReceptionVisitingStatus.NoData);
+            }
             return new GetReceptionVisitingOutputData(listData.ToList(), GetReceptionVisitingStatus.Success);
         }
     }

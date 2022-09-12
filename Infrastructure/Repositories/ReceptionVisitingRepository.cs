@@ -20,31 +20,11 @@ namespace Infrastructure.Repositories
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
-        public IEnumerable<ReceptionVisitingModel> GetReceptionVisiting(long raiinNo)
+        public List<ReceptionVisitingModel> GetReceptionVisiting(long raiinNo)
         {
-            var listDataRaiinInf = _tenantDataContext.RaiinInfs.Where(x => x.RaiinNo == raiinNo).ToList();
-
-            var listVisitingModel = new List<ReceptionVisitingModel>();
-            if (listDataRaiinInf.Count > 0)
-            {
-                foreach (var item in listDataRaiinInf)
-                {
-                    var itemModelDorai = new ReceptionVisitingModel(
-                                            item.PtId,
-                                            item.UketukeNo,
-                                            item.KaId,
-                                            item.UketukeTime ?? String.Empty,
-                                            item.Status,
-                                            item.YoyakuId,
-                                            item.TantoId
-                                         );
-
-                    listVisitingModel.Add(itemModelDorai);
-                }
-
-            }
-
-            return listVisitingModel;
+            var listDataRaiinInf = _tenantDataContext.RaiinInfs.Where(x => x.RaiinNo == raiinNo).Select(x => new ReceptionVisitingModel(
+                x.PtId, x.UketukeId, x.KaId, x.UketukeTime ?? String.Empty, x.Status, x.YoyakuId, x.TantoId)).ToList();
+            return listDataRaiinInf;
         }
 
     }
