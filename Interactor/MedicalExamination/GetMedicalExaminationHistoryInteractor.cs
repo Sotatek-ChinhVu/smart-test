@@ -114,7 +114,6 @@ namespace Interactor.MedicalExamination
 
             foreach (var raiinInf in rainInfs)
             {
-
                 var doctorFirst = _userRepository.GetDoctorsList(raiinInf.TantoId).FirstOrDefault(c => c.UserId == raiinInf.TantoId);
                 var kaMst = _kaRepository.GetByKaId(raiinInf.KaId);
                 var raiinTag = raiinListTags.FirstOrDefault(r => r.RaiinNo == raiinInf.RaiinNo && r.SinDate == raiinInf.SinDate);
