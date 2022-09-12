@@ -2,7 +2,7 @@
 {
     public class MaxMoneyModel
     {
-        public MaxMoneyModel(int kohiId, int gendoGaku, int remainGendoGaku, int rate, string houbetu, string hokenName, int sinDateYM, int futanKbn, int monthLimitFutan, int isLimitListSum, string displaySinDateYM)
+       public MaxMoneyModel(int kohiId, int gendoGaku, int remainGendoGaku, int rate, string houbetu, string hokenName, int sinDateYM, int futanKbn, int monthLimitFutan, int isLimitListSum, string displaySinDateYM, IEnumerable<LimitListModel> listLimits)
         {
             KohiId = kohiId;
             GendoGaku = gendoGaku;
@@ -15,7 +15,9 @@
             MonthLimitFutan = monthLimitFutan;
             IsLimitListSum = isLimitListSum;
             DisplaySinDateYM = displaySinDateYM;
+            ListLimits = listLimits;
         }
+
         public int KohiId { get; private set; }
         public int GendoGaku { get; private set; }
         public int RemainGendoGaku { get; private set; }
@@ -39,5 +41,6 @@
         {
             get => IsLimitListSum == 1;
         }
+        public IEnumerable<LimitListModel> ListLimits { get;private set; }
     }
 }

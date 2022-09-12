@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
                                                                    && u.PtId == ptId)
                                                                    .OrderBy(u => u.SortKey)
                                                                    .ToList();
-            return maxMoneys.Select(u => new LimitListModel(u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko,u.IsDeleted,u.sort)).ToList();
+            return maxMoneys.Select(u => new LimitListModel(u.Id,u.KohiId,u.SinDate,u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko ?? string.Empty,u.IsDeleted)).ToList();
         }
     }
 }

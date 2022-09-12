@@ -22,6 +22,12 @@ namespace Interactor.MaxMoney
                 return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidHpId);
 
             var listLimit = _maxmoneyReposiory.GetListLimitModel(inputData.PtId, inputData.HpId);
+            if (listLimit != null)
+                listLimit = listLimit.Where(x => x.KohiId == inputData.HokenKohiId
+                                    && x.SinDateM == inputData.SinDateM
+                                    && x.SinDateY == inputData.SinDateY).ToList();
+            else
+                listLimit = new List<LimitListModel>();
 
             if (inputData.Rate == 0)
             {
@@ -41,12 +47,17 @@ namespace Interactor.MaxMoney
             int gendoGaku = inputData.GendoGaku;
             string headerText = inputData.HoubetsuNumber + " " + inputData.HokenName;
             bool isToltalGakuDisplay = inputData.IsLimitListSum == 1;
-            int remainGendoGaku = inputData.RemainGendoGaku;
+            int remainGendoGaku = 0;
 
             CalculateSort(listLimit);
-            CalculateTotalMoney(listLimit, isLimitMaxMoney,);
 
-            return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.Successed);
+            CalculateTotalMoney(listLimit, isLimitMaxMoney, gendoGaku,ref remainGendoGaku);
+
+            MaxMoneyModel result = new MaxMoneyModel(kohiId, gendoGaku, remainGendoGaku, rate, inputData.HoubetsuNumber
+                , inputData.HokenName, sinDateYM, inputData.FutanKbn, inputData.MonthLimitFutan, inputData.IsLimitListSum,
+                displaySinDateYM, listLimit);
+
+            return new GetMaxMoneyOutputData(result, GetMaxMoneyStatus.Successed);
         }
 
         private void CalculateSort(List<LimitListModel> listLimits)
@@ -59,7 +70,7 @@ namespace Interactor.MaxMoney
             }
         }
 
-        public void CalculateTotalMoney(List<LimitListModel> listLimits, bool isLimitMaxMoney , ref int remainGendoGaku)
+        public void CalculateTotalMoney(List<LimitListModel> listLimits, bool isLimitMaxMoney ,int gendoGaku, ref int remainGendoGaku)
         {
             int total = 0;
             foreach (var model in listLimits.OrderBy(u => u.Sort))
@@ -67,9 +78,9 @@ namespace Interactor.MaxMoney
                 total += model.FutanGaku;
                 model.TotalMoney = total;
             }
-            if (!isLimitMaxMoney)
+            if (!isLimitMaxMoney && listLimits.Count != 0)
             {
-                remainGendoGaku = GendoGaku - MaxMoneys.GetFilteredDataCollection().Max(u => u.TotalMoney);
+                remainGendoGaku = gendoGaku - listLimits.Max(u => u.TotalMoney);
             }
         }
     }

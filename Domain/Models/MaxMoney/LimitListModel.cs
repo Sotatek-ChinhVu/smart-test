@@ -5,8 +5,11 @@ namespace Domain.Models.MaxMoney
 {
     public class LimitListModel
     {
-        public LimitListModel(int hokenPid, string sortKey, long raiinNo, int futanGaku, int totalGaku, string biko, int isDeleted)
+        public LimitListModel(long id, int kohiId, int sinDate, int hokenPid, string sortKey, long raiinNo, int futanGaku, int totalGaku, string biko, int isDeleted)
         {
+            Id = id;
+            KohiId = kohiId;
+            SinDate = sinDate;
             HokenPid = hokenPid;
             SortKey = sortKey;
             RaiinNo = raiinNo;
@@ -41,6 +44,7 @@ namespace Domain.Models.MaxMoney
         public string Biko { get; private set; }
         public int IsDeleted { get; private set; }
         public int Sort { get; set; }
+        public int TotalMoney { get; set; }
         public string Code
         {
             get => (RaiinNo == 0) ? "他院分" : string.Empty;

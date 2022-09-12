@@ -138,6 +138,9 @@ using UseCase.Schema.SaveImage;
 using Domain.Models.Byomei;
 using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
+using Domain.Models.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoney;
+using Interactor.MaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -210,6 +213,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
+            services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -341,6 +345,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
 
+            //Maxmoney
+            busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
