@@ -32,6 +32,7 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
+                                                        x.SetId,
                                                         x.SetName ?? string.Empty,
                                                         x.ItemCd ?? string.Empty,
                                                         x.IsTitle,
@@ -56,6 +57,7 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
+                                                        x.SetId,
                                                         x.SetName ?? string.Empty,
                                                         x.ItemCd ?? string.Empty,
                                                         x.IsTitle,
@@ -79,6 +81,7 @@ namespace Infrastructure.Repositories
 
             return list.Select(x => new ListSetMstModel(x.HpId,
                                                         x.GenerationId,
+                                                        x.SetId,
                                                         x.SetName ?? string.Empty,
                                                         x.ItemCd ?? string.Empty,
                                                         x.IsTitle,

@@ -29,6 +29,6 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetSpecialNoteResponse>>(presenter.Result);
-        }
+        }   
     }
 }

@@ -1,25 +1,23 @@
 ﻿namespace Domain.Models.MstItem
 {
-    public class SearchSupplementModel
+    public class SearchSupplementModel 
     {
-        public SearchSupplementModel(List<SearchSupplementBaseModel> model, int total)
+        public SearchSupplementModel(string seibunCd, string seibun, string indexWord, string tokuhoFlg, string indexCd)
         {
-            Model = model;
-            Total = total;
+            SeibunCd = seibunCd;
+            Seibun = seibun;
+            IndexWord = indexWord;
+            TokuhoFlg = tokuhoFlg;
+            IndexCd = indexCd;
         }
 
-        public List<SearchSupplementBaseModel> Model { get;set; }
-        public int Total { get; set; }
-    }
-    public class SearchSupplementBaseModel 
-    {
-        public string SeibunCd { get; set; } = string.Empty;
+        public string SeibunCd { get; private set; } 
         
-        public string Seibun { get; set; } = string.Empty;
+        public string Seibun { get; private set; } 
 
-        public string IndexWord { get; set; } = string.Empty;
+        public string IndexWord { get; private set; } 
 
-        public string TokuhoFlg { get; set; } = string.Empty;
+        public string TokuhoFlg { get; private set; } 
         public string TokuhoFlgConvert
         {
             get
@@ -35,8 +33,6 @@
             }
         }
 
-        public string IndexCd { get; set; } = string.Empty;
-
-        public string SeibunGroupByIndexCd { get; set; } = string.Empty;
+        public string IndexCd { get; private set; } 
     }
 }

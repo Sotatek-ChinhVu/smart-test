@@ -2,15 +2,15 @@
 
 namespace EmrCloudApi.Tenant.Responses.MstItem
 {
-    public class SearchSupplementResponse
+    public class SearchOTCResponse
     {
-        public SearchSupplementResponse(List<SearchSupplementModel> listData, int total)
+        public SearchOTCResponse(List<OtcItemModel> listData, int total)
         {
             ListData = listData;
             Total = total;
         }
 
-        public List<SearchSupplementModel> ListData { get; private set; }
         public int Total { get; set; }
+        public List<OtcItemModel> ListData { get; private set; }
     }
 }

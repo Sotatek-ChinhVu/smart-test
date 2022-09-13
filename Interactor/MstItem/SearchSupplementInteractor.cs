@@ -1,5 +1,5 @@
 ﻿using Domain.Models.MstItem;
-using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.SearchSupplement;
 
 namespace Interactor.MstItem
 {
@@ -16,16 +16,16 @@ namespace Interactor.MstItem
             try
             {
                 var datas = _inputItemRepository.GetListSupplement(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
-                if (datas == null || !(datas?.Total > 0))
+                if (datas.Item1 == null || !(datas.Item2 > 0))
                 {
-                    return new SearchSupplementOutputData(new List<SearchSupplementBaseModel>(), 0, SearchSupplementStatus.NoData);
+                    return new SearchSupplementOutputData(new List<SearchSupplementModel>(), 0, SearchSupplementStatus.NoData);
                 }
 
-                return new SearchSupplementOutputData(datas.Model, datas.Total, SearchSupplementStatus.Successed);
+                return new SearchSupplementOutputData(datas.Item1, datas.Item2, SearchSupplementStatus.Successed);
             }
             catch
             {
-                return new SearchSupplementOutputData(new List<SearchSupplementBaseModel>(), 0, SearchSupplementStatus.Fail);
+                return new SearchSupplementOutputData(new List<SearchSupplementModel>(), 0, SearchSupplementStatus.Fail);
             }
         }
     }

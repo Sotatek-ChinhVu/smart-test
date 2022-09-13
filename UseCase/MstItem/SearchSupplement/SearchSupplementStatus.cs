@@ -1,4 +1,4 @@
-﻿namespace UseCase.MstItem.GetDosageDrugList
+﻿namespace UseCase.MstItem.SearchSupplement
 {
     public enum SearchSupplementStatus : byte
     {

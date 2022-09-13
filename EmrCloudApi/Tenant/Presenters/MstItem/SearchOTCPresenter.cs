@@ -1,30 +1,31 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
-using UseCase.MstItem.SearchSupplement;
+using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.SearchOTC;
 
 namespace EmrCloudApi.Tenant.Presenters.MstItem
 {
-    public class SearchSupplementPresenter : ISearchSupplementPresenterOutputPort
+    public class SearchOTCPresenter : ISearchOTCOutputPort
     {
-        public Response<SearchSupplementResponse> Result { get; private set; } = default!;
+        public Response<SearchOTCResponse> Result { get; private set; } = default!;
 
-        public void Complete(SearchSupplementOutputData outputData)
+        public void Complete(SearchOTCOutputData outputData)
         {
-            Result = new Response<SearchSupplementResponse>
+            Result = new Response<SearchOTCResponse>
             {
-                Data = new SearchSupplementResponse(outputData.SearchSupplementResponse,outputData.Total),
+                Data = new SearchOTCResponse(outputData.SearchOTCResponse,outputData.Total),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
             {
-                case SearchSupplementStatus.Successed:
+                case SearchOTCStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;
-                case SearchSupplementStatus.Fail:
+                case SearchOTCStatus.Fail:
                     Result.Message = ResponseMessage.Failed;
                     break;
-                case SearchSupplementStatus.NoData:
+                case SearchOTCStatus.NoData:
                     Result.Message = ResponseMessage.NoData;
                     break;
             }
