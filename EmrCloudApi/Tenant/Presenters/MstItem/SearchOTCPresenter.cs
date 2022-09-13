@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Presenters.MstItem
         {
             Result = new Response<SearchOTCResponse>
             {
-                Data = new SearchOTCResponse(outputData.SearchOTCResponse),
+                Data = new SearchOTCResponse(outputData.SearchOTCResponse,outputData.Total),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

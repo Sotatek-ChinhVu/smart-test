@@ -1,6 +1,7 @@
 ﻿using Domain.Models.MstItem;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.SearchOTC;
+using static Domain.Models.MstItem.SearchOTCModel;
 
 namespace Interactor.MstItem
 {
@@ -17,17 +18,17 @@ namespace Interactor.MstItem
         {
             try
             {
-                var datas = _inputItemRepository.SearchOTCModels(inputData.SearchValue,inputData.PageIndex,inputData.PageSize);
-                if (!(datas?.Count > 0))
+                var datas = _inputItemRepository.SearchOTCModels(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
+                if (datas?.Model == null || !(datas?.Total > 0))
                 {
-                    return new SearchOTCOutputData(new List<SearchOTCModel>(), SearchOTCStatus.NoData);
+                    return new SearchOTCOutputData(new List<SearchOTCBaseModel>(), 0, SearchOTCStatus.NoData);
                 }
 
-                return new SearchOTCOutputData(datas, SearchOTCStatus.Successed);
+                return new SearchOTCOutputData(datas.Model, datas.Total, SearchOTCStatus.Successed);
             }
             catch
             {
-                return new SearchOTCOutputData(new List<SearchOTCModel>(), SearchOTCStatus.Fail);
+                return new SearchOTCOutputData(new List<SearchOTCBaseModel>(), 0, SearchOTCStatus.Fail);
             }
         }
     }

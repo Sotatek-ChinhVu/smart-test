@@ -1,11 +1,21 @@
-﻿using Entity.Tenant;
-using Helper.Extendsions;
-
-namespace Domain.Models.MstItem
+﻿namespace Domain.Models.MstItem
 {
+
     public class SearchOTCModel
     {
-        public int? SerialNum { get; set; }
+        public SearchOTCModel(List<SearchOTCBaseModel> model, int total)
+        {
+            Model = model;
+            Total = total;
+        }
+
+        public List<SearchOTCBaseModel> Model { get; set; }
+        public int Total { get; set; }
+    }
+
+    public class SearchOTCBaseModel
+    {
+        public int SerialNum { get; set; }
         public string OtcCd { get; set; } = String.Empty;
         public string TradeName { get; set; } = String.Empty;
         public string TradeKana { get; set; } = String.Empty;
