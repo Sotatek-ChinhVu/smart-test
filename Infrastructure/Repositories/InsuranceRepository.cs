@@ -284,10 +284,6 @@ namespace Infrastructure.Repositories
                         isReceKisaiOrNoHoken = IsReceKisai(hokenMst) || IsNoHoken(hokenMst, item.HokenKbn, item.Houbetu ?? string.Empty);
                     }
 
-                    var tenkiSenkei = 0;
-                    var tenkiTenki = 0;
-                    var tenkiEndDate = 0;
-
                     var itemHokenInf = new HokenInfModel(
                                             hpId,
                                             ptId,
@@ -334,9 +330,6 @@ namespace Infrastructure.Repositories
                                             item.RousaiPrefName ?? string.Empty,
                                             item.RousaiCityName ?? string.Empty,
                                             item.RousaiReceCount,
-                                            tenkiSenkei,
-                                            tenkiTenki,
-                                            tenkiEndDate,
                                             houbetuHokenInf,
                                             futanRateHokenInf,
                                             futanKbnHokenInf,
