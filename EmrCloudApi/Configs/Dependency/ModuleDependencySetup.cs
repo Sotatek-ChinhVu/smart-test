@@ -150,6 +150,7 @@ using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.DrugInfor.Get;
 using Interactor.DrugInfor;
 using Domain.Models.DrugInfor;
+using UseCase.Insurance.ValidPatternExpirated;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -356,6 +357,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
+
+            // Reception - Valid Pattern Expirated
+            busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

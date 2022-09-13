@@ -106,13 +106,13 @@ namespace Infrastructure.Repositories
             return listData;
         }
 
-        public bool CheckPatternExpried(InsuranceModel itemInsurance)
+        public string CheckPatternExpirated(int hpId, long ptId, int sinDate, int patternHokenPid, bool patternIsExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, int patternConfirmDate, int hokenInfStartDate, int hokenInfEndDate, bool isHaveHokenMst, int hokenMstStartDate, int hokenMstEndDate, string hokenMstDisplayTextMaster, bool isEmptyKohi1, bool isKohiHaveHokenMst1, int kohiConfirmDate1, string kohiHokenMstDisplayTextMaster1, int kohiHokenMstStartDate1, int kohiHokenMstEndDate1, bool isEmptyKohi2, bool isKohiHaveHokenMst2, int kohiConfirmDate2, string kohiHokenMstDisplayTextMaster2, int kohiHokenMstStartDate2, int kohiHokenMstEndDate2, bool isEmptyKohi3, bool isKohiHaveHokenMst3, int kohiConfirmDate3, string kohiHokenMstDisplayTextMaster3, int kohiHokenMstStartDate3, int kohiHokenMstEndDate3, bool isEmptyKohi4, bool isKohiHaveHokenMst4, int kohiConfirmDate4, string kohiHokenMstDisplayTextMaster4, int kohiHokenMstStartDate4, int kohiHokenMstEndDate4, int patientInfBirthday, int patternHokenKbn)
         {
-            var result = false;
+            var result = "";
 
-            if (itemInsurance != null)
+            if (patternHokenKbn > 0)
             {
-                switch (itemInsurance.HokenKbn)
+                switch (patternHokenKbn)
                 {
                     // 自費
                     case 0:
@@ -122,72 +122,80 @@ namespace Infrastructure.Repositories
                     case 1:
                     // 国保
                     case 2:
-                        if (!IsValidAgeCheck(itemInsurance.SinDate, itemInsurance.HokenPid))
+                        var checkValidAge = IsValidAgeCheck(sinDate, patternHokenPid, hpId, ptId, patientInfBirthday);
+                        if (!String.IsNullOrEmpty(checkValidAge))
                         {
-                            return false;
+                            return checkValidAge;
                         }
-                        if (!IsValidConfirmDateHoken(itemInsurance.SinDate, itemInsurance.IsExpirated, itemInsurance.IsJihi, itemInsurance.IsNoHoken, itemInsurance.IsExpirated, itemInsurance.ConfirmDate))
+                        var checkValidConfirmDateHoken = IsValidConfirmDateHoken(sinDate, patternIsExpirated, hokenInfIsJihi, hokenInfIsNoHoken, patternIsExpirated, patternConfirmDate);
+                        if (!String.IsNullOrEmpty(checkValidConfirmDateHoken))
                         {
-                            return false;
+                            return checkValidConfirmDateHoken;
                         }
-
-                        if (!IsValidHokenMstDate(itemInsurance.HokenInfStartDate, itemInsurance.HokenInfEndDate, itemInsurance.SinDate, itemInsurance.IsHaveHokenMst, itemInsurance.HokenMstStartDate, itemInsurance.HokenMstEndDate))
+                        var checkValidHokenMstDate = IsValidHokenMstDate(hokenInfStartDate, hokenInfEndDate, sinDate, isHaveHokenMst, hokenMstStartDate, hokenMstEndDate, hokenMstDisplayTextMaster);
+                        if (!String.IsNullOrEmpty(checkValidHokenMstDate))
                         {
-                            return false;
+                            return checkValidHokenMstDate;
                         }
-                        if (!itemInsurance.IsEmptyKohi1)
+                        if (!isEmptyKohi1)
                         {
-                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi1.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
+                            var checkValidKohi1 = IsValidConfirmDateKohi(kohiConfirmDate1, sinDate, patternIsExpirated, 1);
+                            if (!String.IsNullOrEmpty(checkValidKohi1))
                             {
-                                return false;
+                                return result;
                             }
-
-                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi1, itemInsurance.SinDate))
+                            var checkValidKohiMst1 = IsValidMasterDateKohi(sinDate, 1, kohiHokenMstDisplayTextMaster1, kohiHokenMstStartDate1, kohiHokenMstEndDate1, isKohiHaveHokenMst1);
+                            if (!String.IsNullOrEmpty(checkValidKohiMst1))
                             {
-                                return false;
-                            }
-                        }
-                        if (!itemInsurance.IsEmptyKohi2)
-                        {
-                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi2.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
-                            {
-                                return false;
-                            }
-
-                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi2, itemInsurance.SinDate))
-                            {
-                                return false;
+                                return result;
                             }
                         }
-                        if (!itemInsurance.IsEmptyKohi3)
+                        if (!isEmptyKohi2)
                         {
-                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi3.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
+                            var checkValidKohi2 = IsValidConfirmDateKohi(kohiConfirmDate2, sinDate, patternIsExpirated, 2);
+                            if (!String.IsNullOrEmpty(checkValidKohi2))
                             {
-                                return false;
+                                return result;
                             }
-
-                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi3, itemInsurance.SinDate))
+                            var checkValidKohiMst2 = IsValidMasterDateKohi(sinDate, 2, kohiHokenMstDisplayTextMaster2, kohiHokenMstStartDate2, kohiHokenMstEndDate2, isKohiHaveHokenMst2);
+                            if (!String.IsNullOrEmpty(checkValidKohiMst2))
                             {
-                                return false;
+                                return result;
                             }
                         }
-                        if (!itemInsurance.IsEmptyKohi4)
+                        if (!isEmptyKohi3)
                         {
-                            if (!IsValidConfirmDateKohi(itemInsurance.Kohi4.ConfirmDate, itemInsurance.SinDate, itemInsurance.IsExpirated))
+                            var checkValidKohi3 = IsValidConfirmDateKohi(kohiConfirmDate3, sinDate, patternIsExpirated, 3);
+                            if (!String.IsNullOrEmpty(checkValidKohi3))
                             {
-                                return false;
+                                return result;
                             }
-
-                            if (!IsValidMasterDateKohi1(itemInsurance.Kohi4, itemInsurance.SinDate))
+                            var checkValidKohiMst3 = IsValidMasterDateKohi(sinDate, 3, kohiHokenMstDisplayTextMaster3, kohiHokenMstStartDate3, kohiHokenMstEndDate3, isKohiHaveHokenMst3);
+                            if (!String.IsNullOrEmpty(checkValidKohiMst3))
                             {
-                                return false;
+                                return result;
                             }
                         }
-                        if (!itemInsurance.IsExpirated)
+                        if (!isEmptyKohi4)
                         {
-                            return false;
+                            var checkValidKohi4 = IsValidConfirmDateKohi(kohiConfirmDate4, sinDate, patternIsExpirated, 4);
+                            if (!String.IsNullOrEmpty(checkValidKohi4))
+                            {
+                                return result;
+                            }
+                            var checkValidKohiMst4 = IsValidMasterDateKohi(sinDate, 4, kohiHokenMstDisplayTextMaster4, kohiHokenMstStartDate4, kohiHokenMstEndDate4, isKohiHaveHokenMst4);
+                            if (!String.IsNullOrEmpty(checkValidKohiMst4))
+                            {
+                                return result;
+                            }
                         }
-                        return HasElderHoken(itemInsurance.SinDate, itemInsurance.HpId, itemInsurance.PtId, itemInsurance.PatientInfBirthday);
+                        if (patternIsExpirated)
+                        {
+                            var message = new string[] { "保険組合せ" };
+                            result = String.Format(ErrorMessage.MessageType_mChk00020, message);
+                            return result;
+                        }
+                        return HasElderHoken(sinDate, hpId, ptId, patientInfBirthday);
                     // 労災(短期給付)
                     case 11:
                     // 労災(傷病年金)
@@ -196,9 +204,11 @@ namespace Infrastructure.Repositories
                     case 13:
                     // 自賠責
                     case 14:
-                        if (!itemInsurance.IsExpirated)
+                        if (patternIsExpirated)
                         {
-                            return false;
+                            var message = new string[] { "保険組合せ" };
+                            result = String.Format(ErrorMessage.MessageType_mChk00020, message);
+                            return result;
                         }
                         break;
                 }
@@ -207,8 +217,9 @@ namespace Infrastructure.Repositories
         }
 
 
-        private bool HasElderHoken(int sinDate, int hpId, long ptId, int ptInfBirthday)
+        private string HasElderHoken(int sinDate, int hpId, long ptId, int ptInfBirthday)
         {
+            var result = "";
             if (sinDate >= 20080401)
             {
                 var listHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
@@ -231,70 +242,151 @@ namespace Infrastructure.Repositories
                     {
                         if (age >= 75 && !elderHokenQuery.Any())
                         {
-                            return false;
+                            var stringParams = new string[] { "後期高齢者保険が入力されていません。", "保険者証" };
+                            result = string.Format(ErrorMessage.MessageType_mChk00080, stringParams);
+                            return result;
                         }
                         else if (age < 65 && elderHokenQuery.Any())
                         {
-                            return false;
+                            var stringParamsCheck = new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" };
+                            result = string.Format(ErrorMessage.MessageType_mChk00080, stringParamsCheck);
+                            return result;
                         }
                     }
                 }
             }
-            return true;
+            return result;
         }
 
 
-        private bool IsValidConfirmDateKohi(int kohiConfirmDate, int sinDate, bool patternIsExpirated)
+        private string IsValidConfirmDateKohi(int kohiConfirmDate, int sinDate, bool patternIsExpirated, int numberKohi)
         {
             int Kouhi1ConfirmDate = kohiConfirmDate;
             int ConfirmKohi1YM = Int32.Parse(CIUtil.Copy(Kouhi1ConfirmDate.ToString(), 1, 6));
             int SinYM = Int32.Parse(CIUtil.Copy(sinDate.ToString(), 1, 6));
+            string checkConfirmDateKohi = "";
             if (Kouhi1ConfirmDate == 0
                 || SinYM != ConfirmKohi1YM)
             {
 
                 if (patternIsExpirated)
                 {
-                    return true;
+                    return checkConfirmDateKohi;
                 }
-                return false;
+                switch (numberKohi)
+                {
+                    case 1:
+                        var stringParams1 = new string[] { "公費１", "受給者証等" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00030, stringParams1);
+                        break;
+                    case 2:
+                        var stringParams2 = new string[] { "公費２", "受給者証等" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00030, stringParams2);
+                        break;
+                    case 3:
+                        var stringParams3 = new string[] { "公費３", "受給者証等" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00030, stringParams3);
+                        break;
+                    case 4:
+                        var stringParams4 = new string[] { "公費４", "受給者証等" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00030, stringParams4);
+                        break;
+                }
+                return checkConfirmDateKohi;
             }
-            return true;
+            return checkConfirmDateKohi;
         }
 
-        private bool IsValidMasterDateKohi1(KohiInfModel itemKohi, int sinDate)
+        private string IsValidMasterDateKohi(int sinDate, int numberKohi, string kohiHokenMstDisplayTextMaster, int kohiHokenMstStartDate, int kohiHokenMstEndDate, bool isHaveKohiMst)
         {
-            if (!itemKohi.IsHaveKohiMst) return true;
-            if (itemKohi.HokenMstModel.StartDate > sinDate)
+            string checkConfirmDateKohi = "";
+            if (!isHaveKohiMst) return checkConfirmDateKohi;
+            if (kohiHokenMstStartDate > sinDate)
             {
-                return false;
+                switch (numberKohi)
+                {
+                    case 1:
+                        var stringParams1 = new string[] { "公費１ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstStartDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams1);
+                        break;
+                    case 2:
+                        var stringParams2 = new string[] { "公費２ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstStartDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams2);
+                        break;
+                    case 3:
+                        var stringParams3 = new string[] { "公費３ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstStartDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams3);
+                        break;
+                    case 4:
+                        var stringParams4 = new string[] { "公費４ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstStartDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams4);
+                        break;
+                }
+                return checkConfirmDateKohi;
             }
-            if (itemKohi.HokenMstModel.EndDate < sinDate)
+            if (kohiHokenMstEndDate < sinDate)
             {
-                return false;
+                switch (numberKohi)
+                {
+                    case 1:
+                        var stringParams1 = new string[] { "公費１ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstEndDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams1);
+                        break;
+                    case 2:
+                        var stringParams2 = new string[] { "公費２ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstEndDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams2);
+                        break;
+                    case 3:
+                        var stringParams3 = new string[] { "公費３ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstEndDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams3);
+                        break;
+                    case 4:
+                        var stringParams4 = new string[] { "公費４ '" + kohiHokenMstDisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiHokenMstEndDate) + "～)", "保険番号" };
+                        checkConfirmDateKohi = string.Format(ErrorMessage.MessageType_mChk00080, stringParams4);
+                        break;
+                }
+                return checkConfirmDateKohi;
             }
-            return true;
+            return checkConfirmDateKohi;
         }
 
-
-
-
-        private bool IsValidAgeCheck(int sinDate, int hokenPid)
+        private string IsValidAgeCheck(int sinDate, int hokenPid, int hpId, long ptId, int ptInfBirthday)
         {
-            var validPattern = _tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
+            var checkResult = "";
+            // pattern
+            var listPattern = _tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
                                                                 (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate)
-                                                                    //&&
-                                                                    //pattern.HokenInf.IsShahoOrKokuho &&
-                                                                    //!(pattern.HokenInf.HokensyaNo.Length == 8
-                                                                    // && (pattern.HokenInf.HokensyaNo.StartsWith("109") || pattern.HokenInf.HokensyaNo.StartsWith("99")))
+                                                                && pattern.HpId == hpId && pattern.PtId == ptId
                                                                     );
 
-
-            validPattern = validPattern.Where(pattern => pattern.HokenPid == hokenPid);
+            var listHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.IsDeleted == DeleteTypes.None
+                                                                && x.HpId == hpId && x.PtId == ptId
+                                                                && ((x.HokenKbn == 1 && x.Houbetu != HokenConstant.HOUBETU_NASHI) || x.HokenKbn == 2)
+                                                                && !(!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.Length == 8
+                                                                        && (x.HokensyaNo.StartsWith("109") || x.HokensyaNo.StartsWith("99"))
+                                                                ));
+            var dataJoinPatternWithHokenInf = from ptHokenPattern in listPattern
+                                              join ptHokenInf in listHokenInf on
+                                                  new { ptHokenPattern.HpId, ptHokenPattern.PtId, ptHokenPattern.HokenId } equals
+                                                  new { ptHokenInf.HpId, ptHokenInf.PtId, ptHokenInf.HokenId }
+                                                  select new
+                                                  {
+                                                      ptHokenPattern,
+                                                      ptHokenInf
+                                                  };
+            var validPattern = dataJoinPatternWithHokenInf.Where(pattern => pattern.ptHokenPattern.HokenPid == hokenPid);
 
             if (validPattern == null || validPattern.Count() == 0)
             {
-                return true;
+                return checkResult;
             }
 
             string checkParam = GetSettingParam(1005);
@@ -302,7 +394,7 @@ namespace Infrastructure.Repositories
 
             int invalidAgeCheck = 0;
             //PatientInf.Birthday
-            int patientInfBirthDay = 0;
+            int patientInfBirthDay = ptInfBirthday;
 
             foreach (var param in splittedParam)
             {
@@ -311,8 +403,9 @@ namespace Infrastructure.Repositories
 
                 foreach (var pattern in validPattern)
                 {
-                    //confirmDate =pattern.HokenInf.ConfirmDate
-                    int confirmDate = 0;
+                    var ptCheck = _tenantDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
+                                    .OrderByDescending(x => x.CheckDate).FirstOrDefault();
+                    int confirmDate = GetConfirmDateHokenInf(ptCheck);
                     if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
                     {
                         invalidAgeCheck = ageCheck;
@@ -332,20 +425,28 @@ namespace Infrastructure.Repositories
                 {
                     cardName = "保険証";
                 }
-                return false;
+                var stringParams = new string[] { $"{invalidAgeCheck}歳となりました。", cardName };
+                checkResult = string.Format(ErrorMessage.MessageType_mChk00080, stringParams);
+                return checkResult;
             }
-            return true;
+            return checkResult;
         }
 
-        private bool IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate)
+        private int GetConfirmDateHokenInf(PtHokenCheck? ptHokenCheck)
         {
+            return ptHokenCheck is null ? 0 : DateTimeToInt(ptHokenCheck.CheckDate);
+        }
+
+        private string IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate)
+        {
+            var checkComfirmDateHoken = "";
             if (isExpirated)
             {
-                return true;
+                return checkComfirmDateHoken;
             }
             if (hokenInfIsJihi || hokenInfIsNoHoken || hokenInfIsExpirated)
             {
-                return true;
+                return checkComfirmDateHoken;
             }
             // 主保険・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
             // check main hoken, apply for new hoken only
@@ -355,13 +456,16 @@ namespace Infrastructure.Repositories
             if (HokenConfirmDate == 0
                 || SinYM != ConfirmHokenYM)
             {
-                return false;
+                var stringParams = new string[] { "保険", "保険証" };
+                checkComfirmDateHoken = string.Format(ErrorMessage.MessageType_mChk00030, stringParams);
+                return checkComfirmDateHoken;
             }
-            return true;
+            return checkComfirmDateHoken;
         }
 
-        private bool IsValidHokenMstDate(int startDate, int endDate, int sinDate, bool isHaveHokenMst, int hokenMstStartDate, int hokenMstEndDate)
+        private string IsValidHokenMstDate(int startDate, int endDate, int sinDate, bool isHaveHokenMst, int hokenMstStartDate, int hokenMstEndDate, string displayTextMaster)
         {
+            var checkValidHokenMst = "";
             int HokenStartDate = startDate;
             int HokenEndDate = endDate;
             // 期限切れﾁｪｯｸ(有効保険の場合のみ)
@@ -370,20 +474,26 @@ namespace Infrastructure.Repositories
             {
                 if (!isHaveHokenMst)
                 {
-                    return true;
+                    return checkValidHokenMst;
                 }
                 if (hokenMstStartDate > sinDate)
                 {
-                    return false;
+                    var stringMessage = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(hokenMstStartDate) + "～)", "保険番号" };
+                    checkValidHokenMst = string.Format(ErrorMessage.MessageType_mChk00080, stringMessage);
+                    return checkValidHokenMst;
                 }
                 if (hokenMstEndDate < sinDate)
                 {
+                    var stringParams = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " (～"
+                            + CIUtil.SDateToShowSDate(hokenMstEndDate) + ")", "保険番号" };
 
-                    return false;
+                    checkValidHokenMst = string.Format(ErrorMessage.MessageType_mChk00080, stringParams);
+                    return checkValidHokenMst;
                 }
             }
 
-            return true;
+            return checkValidHokenMst;
         }
 
         private string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "")
@@ -415,11 +525,6 @@ namespace Infrastructure.Repositories
                 return false;
             }
             return true;
-        }
-
-        private int GetConfirmDateHokenInf(PtHokenCheck? ptHokenCheck)
-        {
-            return ptHokenCheck is null ? 0 : DateTimeToInt(ptHokenCheck.CheckDate);
         }
 
         private static int DateTimeToInt(DateTime dateTime, string format = "yyyyMMdd")

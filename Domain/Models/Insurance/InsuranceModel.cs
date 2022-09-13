@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string hokenMemo, int futanKbn, List<ConfirmDateModel> confirmDateList, bool isHaveHokenMst, int hokenMstSubNumber, int hokenMstStartDate, int hokenMstEndDate, int hokenInfStartDate, int hokenInfEndDate, string hokenInfHoubetu)
+        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string hokenMemo, int futanKbn, List<ConfirmDateModel> confirmDateList, bool isHaveHokenMst, int hokenMstSubNumber, int hokenMstStartDate, int hokenMstEndDate, int hokenMstHokenNo, int hokenMstHokenEdraNo, string hokenMstHokenSName, int hokenMstIsOtherPrefValid, int hokenInfStartDate, int hokenInfEndDate, string hokenInfHoubetu)
         {
             HpId = hpId;
             PtId = ptId;
@@ -84,6 +84,10 @@ namespace Domain.Models.InsuranceInfor
             HokenMstSubNumber = hokenMstSubNumber;
             HokenMstStartDate = hokenMstStartDate;
             HokenMstEndDate = hokenMstEndDate;
+            HokenMstHokenNo = hokenMstHokenNo;
+            HokenMstHokenEdraNo = hokenMstHokenEdraNo;
+            HokenMstHokenSName = hokenMstHokenSName;
+            HokenMstIsOtherPrefValid = hokenMstIsOtherPrefValid;
             HokenInfStartDate = hokenInfStartDate;
             HokenInfEndDate = hokenInfEndDate;
             HokenInfHoubetu = hokenInfHoubetu;
@@ -165,6 +169,95 @@ namespace Domain.Models.InsuranceInfor
             HokenMstSubNumber = 0;
             HokenMstStartDate = 0;
             HokenMstEndDate = 0;
+            HokenMstHokenNo = 0;
+            HokenMstHokenEdraNo = 0;
+            HokenMstHokenSName = string.Empty;
+            HokenMstIsOtherPrefValid = 0;
+            HokenInfStartDate = 0;
+            HokenInfEndDate = 0;
+            HokenInfHoubetu = string.Empty;
+            PatientInfBirthday = 0;
+        }
+
+        public InsuranceModel()
+        {
+            HpId = 0;
+            PtId = 0;
+            HokenPid = 0;
+            SeqNo = 0;
+            HokenKbn = 0;
+            HokenSbtCd = 0;
+            HokenId = 0;
+            Kohi1Id = 0;
+            Kohi2Id = 0;
+            Kohi3Id = 0;
+            Kohi4Id = 0;
+            StartDate = 0;
+            EndDate = 0;
+            HokenNo = 0;
+            HokenEdaNo = 0;
+            HokensyaNo = String.Empty;
+            Kigo = String.Empty;
+            Bango = String.Empty;
+            EdaNo = String.Empty;
+            HonkeKbn = 0;
+            SikakuDate = 0;
+            KofuDate = 0;
+            ConfirmDate = 0;
+            Kohi1 = new KohiInfModel();
+            Kohi2 = new KohiInfModel();
+            Kohi3 = new KohiInfModel();
+            Kohi4 = new KohiInfModel();
+            KogakuKbn = 0;
+            TasukaiYm = 0;
+            TokureiYm1 = 0;
+            TokureiYm2 = 0;
+            GenmenKbn = 0;
+            GenmenRate = 0;
+            GenmenGaku = 0;
+            SyokumuKbn = 0;
+            KeizokuKbn = 0;
+            Tokki1 = string.Empty;
+            Tokki2 = string.Empty;
+            Tokki3 = string.Empty;
+            Tokki4 = string.Empty;
+            Tokki5 = string.Empty;
+            RousaiKofuNo = string.Empty;
+            NenkinBango = string.Empty;
+            RousaiRoudouCd = string.Empty;
+            KenkoKanriBango = string.Empty;
+            RousaiSaigaiKbn = 0;
+            RousaiKantokuCd = string.Empty;
+            RousaiSyobyoDate = 0;
+            RyoyoStartDate = 0;
+            RyoyoEndDate = 0;
+            RousaiSyobyoCd = string.Empty;
+            RousaiJigyosyoName = string.Empty;
+            RousaiPrefName = string.Empty;
+            RousaiCityName = string.Empty;
+            RousaiReceCount = 0;
+            RousaiTenkiSinkei = 0;
+            RousaiTenkiTenki = 0;
+            RousaiTenkiEndDate = 0;
+            HokenMstHoubetu = string.Empty;
+            HokenMstFutanRate = 0;
+            SinDate = 0;
+            DisplayRateOnly = string.Empty;
+            JibaiHokenName = string.Empty;
+            JibaiHokenTanto = string.Empty;
+            JibaiHokenTel = string.Empty;
+            JibaiJyusyouDate = 0;
+            HokenMemo = string.Empty;
+            FutanKbn = 0;
+            ConfirmDateList = new List<ConfirmDateModel>();
+            IsHaveHokenMst = false;
+            HokenMstSubNumber = 0;
+            HokenMstStartDate = 0;
+            HokenMstEndDate = 0;
+            HokenMstHokenNo = 0;
+            HokenMstHokenEdraNo = 0;
+            HokenMstHokenSName = string.Empty;
+            HokenMstIsOtherPrefValid = 0;
             HokenInfStartDate = 0;
             HokenInfEndDate = 0;
             HokenInfHoubetu = string.Empty;
@@ -327,6 +420,14 @@ namespace Domain.Models.InsuranceInfor
 
         public int HokenMstEndDate { get; private set; }
 
+        public int HokenMstHokenNo { get; private set; }
+
+        public int HokenMstHokenEdraNo { get; private set; }
+
+        public string HokenMstHokenSName { get; private set; }
+
+        public int HokenMstIsOtherPrefValid { get; private set; }
+
         public int HokenInfStartDate { get; private set; }
 
         public int HokenInfEndDate { get; private set; }
@@ -335,6 +436,31 @@ namespace Domain.Models.InsuranceInfor
 
         public int PatientInfBirthday { get; private set; }
 
+        public string HokenMstSelectedValueMaster
+        {
+            get
+            {
+                string result = string.Empty;
+                if (HokenMstHokenEdraNo == 0)
+                {
+                    result = HokenMstHokenNo.ToString().PadLeft(3, '0');
+                }
+                else
+                {
+                    result = HokenMstHokenNo.ToString().PadLeft(3, '0') + HokenMstHokenEdraNo;
+                }
+                return result;
+            }
+        }
+
+        public string HokenMstDisplayTextMaster
+        {
+            get
+            {
+                string DisplayText = HokenMstSelectedValueMaster + " " + HokenMstHokenSName;
+                return DisplayText;
+            }
+        }
 
         private string GetHokenName()
         {
@@ -756,7 +882,7 @@ namespace Domain.Models.InsuranceInfor
             get => !(HokenInfStartDate <= SinDate && HokenInfEndDate >= SinDate);
         }
 
-        public bool IsJihi
+        public bool HokenInfIsJihi
         {
             get
             {
@@ -768,7 +894,7 @@ namespace Domain.Models.InsuranceInfor
             }
         }
 
-        public bool IsNoHoken
+        public bool HokenInfIsNoHoken
         {
             get
             {
