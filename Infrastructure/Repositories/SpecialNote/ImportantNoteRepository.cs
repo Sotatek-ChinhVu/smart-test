@@ -1,5 +1,7 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
+using Entity.Tenant;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -71,7 +73,7 @@ namespace Infrastructure.Repositories.SpecialNote
                               mst.FoodName
                         );
 
-            return query.ToList();  
+            return query.ToList();
         }
 
         public List<PtInfectionModel> GetInfectionList(long ptId)
@@ -161,3 +163,4 @@ namespace Infrastructure.Repositories.SpecialNote
         }
     }
 }
+
