@@ -132,7 +132,30 @@ namespace Infrastructure.Repositories
             var listHokenInf = new List<HokenInfModel>();
             var listKohi = new List<KohiInfModel>();
 
-            var confirmDateList = _tenantDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0).ToList();
+            var confirmDateList =
+                (
+                    from hokenCheck in _tenantDataContext.PtHokenChecks.Where(p => p.PtID == ptId && p.HpId == hpId && p.IsDeleted == 0)
+                    join userMst in _tenantDataContext.UserMsts.Where(u => u.IsDeleted == 0)
+                    on hokenCheck.CheckId equals userMst.UserId
+                    select new
+                    {
+                        hokenCheck,
+                        userMst
+                    }
+                ).ToList();
+
+            List<ConfirmDateModel> GetConfirmDateList(int hokenGrp, int hokenId)
+            {
+                if (confirmDateList == null)
+                {
+                    return new List<ConfirmDateModel>();
+                }
+
+                return confirmDateList
+                    .Where(c => c.hokenCheck.HokenGrp == hokenGrp && c.hokenCheck.HokenId == hokenId)
+                    .Select(c => new ConfirmDateModel(c.hokenCheck.HokenGrp, c.hokenCheck.HokenId, c.hokenCheck.SeqNo, c.hokenCheck.CheckId, c.userMst.KanaName ?? string.Empty, c.hokenCheck.CheckCmt ?? string.Empty, c.hokenCheck.CheckDate))
+                    .ToList();
+            }
 
             if (itemList.Count > 0)
             {
@@ -182,10 +205,10 @@ namespace Infrastructure.Repositories
                         item.SikakuDate,
                         item.KofuDate,
                         confirmDate: GetConfirmDate(item.ptHokenCheckOfHokenPattern),
-                        kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, confirmDateList),
-                        kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, confirmDateList),
-                        kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, confirmDateList),
-                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, confirmDateList),
+                        kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
+                        kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
+                        kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
+                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
                         item.KogakuKbn,
                         item.TasukaiYm,
                         item.TokureiYm1,
@@ -227,9 +250,7 @@ namespace Infrastructure.Repositories
                         item.JibaiJyusyouDate,
                         item.HokenMemo ?? string.Empty,
                         futanKbn,
-                        confirmDateList.Where(c => c.HokenGrp == 1 && c.HokenId == item.HokenId)
-                                       .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
-                                       .ToList()
+                        GetConfirmDateList(1, item.HokenId)
                     );
                     listInsurance.Add(insuranceModel);
                 }
@@ -327,9 +348,7 @@ namespace Infrastructure.Repositories
                                             isHaveHokenMst,
                                             hokenMstSubNumber,
                                             item.Houbetu ?? string.Empty,
-                                            confirmDateList.Where(c => c.HokenGrp == 1 && c.HokenId == item.HokenId)
-                                                           .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
-                                                           .ToList()
+                                            GetConfirmDateList(1, item.HokenId)
                                             );
 
                     listHokenInf.Add(itemHokenInf);
@@ -364,10 +383,8 @@ namespace Infrastructure.Repositories
                                         item.PrefNo, 
                                         new HokenMstModel(0, 0), 
                                         sinDate,
-                                        confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == item.HokenId)
-                                                       .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
-                                                       .ToList())
-                        );
+                                        GetConfirmDateList(2, item.HokenId)
+                        ));
                 }
             }
 
@@ -380,7 +397,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private KohiInfModel GetKohiInfModel(PtKohi kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<PtHokenCheck> confirmDateList)
+        private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
         {
             if (kohiInf == null)
             {
@@ -405,9 +422,7 @@ namespace Infrastructure.Repositories
                 kohiInf.PrefNo,
                 GetHokenMstModel(hokenMst),
                 sinDate,
-                confirmDateList.Where(c => c.HokenGrp == 2 && c.HokenId == kohiInf.HokenId)
-                               .Select(c => new ConfirmDateModel(c.HokenGrp, c.HokenId, c.SeqNo, c.CheckId, c.CheckMachine ?? string.Empty, c.CheckCmt ?? string.Empty, c.CheckDate))
-                               .ToList()
+                confirmDateList
                 );
         }
 

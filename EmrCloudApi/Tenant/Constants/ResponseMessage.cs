@@ -16,6 +16,7 @@
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
         public static readonly string InvalidItemCd = "Invalid ItemCd";
         public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
+        public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
 
         //Common
