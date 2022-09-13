@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetFoodAlrgy;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,6 +31,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.GetFoodAlrgy)]
+        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy([FromQuery] FoodAlrgyMasterDataRequest request)
+        {
+            var input = new GetFoodAlrgyInputData();
+            var output = _bus.Handle(input);
+
+            var presenter = new FoodAlrgyMasterDataPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
         }
     }
 }

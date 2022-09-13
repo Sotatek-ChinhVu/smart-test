@@ -107,6 +107,7 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
@@ -339,6 +340,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
+            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
