@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 
@@ -44,6 +45,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SearchOTC)]
+        public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
+        {
+            var input = new SearchOTCInputData(request.SearchValue,request.PageIndex,request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchOTCPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
         }
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
