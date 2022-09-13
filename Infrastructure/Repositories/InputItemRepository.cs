@@ -357,8 +357,8 @@ namespace Infrastructure.Repositories
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
 
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1)*pageCount).Take(pageCount);
-            var listTenMstData = listTenMst.ToList();
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name);
+            var listTenMstData = queryJoinWithKensa.ToList();
             if (listTenMstData != null && listTenMstData.Count > 0)
             {
                 for (int i = 0; i < listTenMstData.Count; i++)
@@ -383,8 +383,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.TenId ?? 0,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
-                                                          item.TenMst?.CmtCol1 ?? 0,
-                                                          item.TenMst?.IpnNameCd ?? string.Empty
+                                                           item.TenMst?.CmtCol1 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty
                                                             );
                     listTenMstModels.Add(newItemModel);
                 }

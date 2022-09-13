@@ -10,13 +10,16 @@ namespace UseCase.InputItem.Search
 {
     public class SearchInputItemOutputData: IOutputData
     {
-        public SearchInputItemOutputData(List<InputItemModel> listInputModel, SearchInputItemStatus status)
+        public SearchInputItemOutputData(List<InputItemModel> listInputModel, int totalCount, SearchInputItemStatus status)
         {
             ListInputModel = listInputModel;
+            TotalCount = totalCount;
             Status = status;
         }
 
         public List<InputItemModel> ListInputModel { get; private set; }
+
+        public int TotalCount { get; private set; }
 
         public SearchInputItemStatus Status { get; private set; }
 

@@ -20,42 +20,44 @@ namespace Interactor.InputItem
         {
             if(inputData.HpId < 0)
             {
-                return new SearchInputItemOutputData( new List<InputItemModel>(), SearchInputItemStatus.Successed);
+                return new SearchInputItemOutputData( new List<InputItemModel>(), 0, SearchInputItemStatus.Successed);
             }
 
             if (inputData.KouiKbn < 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidKouiKbn);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidKouiKbn);
             }
 
             if (inputData.SinDate <= 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidSindate);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidSindate);
             }
 
             if (inputData.PageIndex <= 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPageIndex);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidPageIndex);
             }
 
             if (inputData.PageCount <= 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPageCount);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidPageCount);
             }
 
             if (inputData.PointFrom < 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPointFrom);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidPointFrom);
             }
 
             if (inputData.PointTo < 0)
             {
-                return new SearchInputItemOutputData(new List<InputItemModel>(), SearchInputItemStatus.InvalidPointTo);
+                return new SearchInputItemOutputData(new List<InputItemModel>(), 0, SearchInputItemStatus.InvalidPointTo);
             }
 
             var data = _inputItemRepository.SearchDataInputItem(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
+            var listTenMst = data.Skip((inputData.PageIndex - 1) * inputData.PageCount).Take(inputData.PageCount);
 
-            return new SearchInputItemOutputData(data.ToList(), SearchInputItemStatus.Successed);
+
+            return new SearchInputItemOutputData(listTenMst.ToList(), data.Count(), SearchInputItemStatus.Successed);
         }
     }
 }
