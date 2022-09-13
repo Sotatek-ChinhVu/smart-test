@@ -31,9 +31,8 @@ namespace Infrastructure.Repositories
                             r.YoukaiekiCd
                    )).ToList();
         }
-        public List<SearchSupplementModel> GetListSupplement(string searchValue, int pageIndex, int pageSize)
+        public SearchSupplementModel GetListSupplement(string searchValue, int pageIndex, int pageSize)
         {
-            List<SearchSupplementModel> result = new List<SearchSupplementModel>();
             searchValue = searchValue.Trim();
             try
             {
@@ -54,23 +53,29 @@ namespace Infrastructure.Repositories
                                                      Ingre = ingreItem,
                                                  };
 
-                result = (from indexDef in listSuppleIndexDef
-                          join indexDefJoinIngreQuery in indexDefJoinIngreQueryList on indexDef.SeibunCd equals indexDefJoinIngreQuery.IndexCode.IndexCd into supplementList
-                          from supplementItem in supplementList.DefaultIfEmpty()
-                          select new SearchSupplementModel()
-                          {
-                              SeibunCd = supplementItem.Ingre.SeibunCd,
-                              Seibun = supplementItem.Ingre.Seibun,
-                              IndexWord = indexDef.IndexWord,
-                              TokuhoFlg = indexDef.TokuhoFlg,
-                              IndexCd = supplementItem.IndexCode.IndexCd
-                          }).OrderBy(x => x.IndexWord).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                var query = from indexDef in listSuppleIndexDef
+                            join indexDefJoinIngreQuery in indexDefJoinIngreQueryList on indexDef.SeibunCd equals indexDefJoinIngreQuery.IndexCode.IndexCd into supplementList
+                            from supplementItem in supplementList.DefaultIfEmpty()
+                            select new SearchSupplementBaseModel()
+                            {
+                                SeibunCd = supplementItem.Ingre.SeibunCd,
+                                Seibun = supplementItem.Ingre.Seibun,
+                                IndexWord = indexDef.IndexWord,
+                                TokuhoFlg = indexDef.TokuhoFlg,
+                                IndexCd = supplementItem.IndexCode.IndexCd
+                            };
+                var total = query.Count();
+                var result = query.OrderBy(x => x.IndexWord).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+                if (result == null || !result.Any())
+                {
+                    return new SearchSupplementModel(new List<SearchSupplementBaseModel>(),0);
+                }
+                return new SearchSupplementModel(result, total);
             }
             catch (Exception e)
             {
-                return new List<SearchSupplementModel>();
+                return new SearchSupplementModel(new List<SearchSupplementBaseModel>(), 0);
             }
-            return result;
         }
     }
 }

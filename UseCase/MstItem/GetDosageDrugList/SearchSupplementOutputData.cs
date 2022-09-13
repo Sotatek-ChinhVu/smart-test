@@ -5,14 +5,15 @@ namespace UseCase.MstItem.GetDosageDrugList
 {
     public class SearchSupplementOutputData : IOutputData
     {
-        public SearchSupplementOutputData(List<SearchSupplementModel> searchSupplements, SearchSupplementStatus status)
+        public SearchSupplementOutputData(List<SearchSupplementBaseModel> searchSupplementResponse, int total, SearchSupplementStatus status)
         {
-            SearchSupplementResponse = searchSupplements;
+            SearchSupplementResponse = searchSupplementResponse;
+            Total = total;
             Status = status;
         }
 
-        public List<SearchSupplementModel> SearchSupplementResponse { get; private set; }
-
+        public List<SearchSupplementBaseModel> SearchSupplementResponse { get; private set; }
+        public int Total { get; set; }
         public SearchSupplementStatus Status { get; private set; }
     }
 }
