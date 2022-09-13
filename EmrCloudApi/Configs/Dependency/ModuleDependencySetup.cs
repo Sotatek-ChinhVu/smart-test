@@ -135,6 +135,9 @@ using UseCase.Schema.SaveImage;
 using Domain.Models.Byomei;
 using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
+using Domain.Models.ReceptionLock;
+using UseCase.VisitingList.ReceptionLock;
+using Interactor.ReceptionLock;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -206,6 +209,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
+            services.AddTransient<IReceptionLockRepository, ReceptionLockRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -231,6 +235,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
