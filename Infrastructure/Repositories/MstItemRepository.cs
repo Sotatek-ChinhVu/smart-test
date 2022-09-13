@@ -75,5 +75,17 @@ namespace Infrastructure.Repositories
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             return new SearchOTCModel(models,total);
         }
+        public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
+        {
+            List<FoodAlrgyKbnModel> m12FoodAlrgies = new List<FoodAlrgyKbnModel>();
+            int i = 0;
+            var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.Select(x => new FoodAlrgyKbnModel()
+            {
+                FoodKbn = x.FoodKbn,
+                FoodName = x.FoodName,
+                IsDrugAdditives = int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
+            }).OrderBy(x=>x.FoodKbn).ToList();
+            return aleFoodKbns;
+        }
     }
 }
