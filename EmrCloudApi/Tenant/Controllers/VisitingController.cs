@@ -14,7 +14,6 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
-using UseCase.VisitingList.ReceptionComment;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
@@ -40,16 +39,6 @@ public class VisitingController : ControllerBase
         var input = new GetReceptionLockInputData(request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionLockPresenter();
-        presenter.Complete(output);
-        return Ok(presenter.Result);
-    }
-
-    [HttpGet(ApiPath.Get + "ReceptionComment")]
-    public ActionResult<Response<GetReceptionCommentResponse>> GetList([FromQuery] GetReceptionCommentRequest request)
-    {
-        var input = new GetReceptionCommentInputData(request.RaiinNo);
-        var output = _bus.Handle(input);
-        var presenter = new GetReceptionCommentPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
