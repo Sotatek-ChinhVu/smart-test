@@ -101,12 +101,14 @@ namespace Interactor.MedicalExamination
                                 c.Text,
                                 c.CreateDate,
                                 c.UpdateDate,
-                                c.IsDeleted)
+                                c.IsDeleted,
+                                c.RichText
+                                )
             ).ToList())
                                                              select karteGrp);
 
                 List<OrdInfModel> odrInfListByRaiinNo = _ordInfRepository
-              .GetList(inputData.PtId, inputData.HpId, historyKarteOdrRaiin.RaiinNo)
+              .GetList(inputData.PtId, inputData.HpId, inputData.UserId, historyKarteOdrRaiin.RaiinNo)
                                                     .OrderBy(odr => odr.OdrKouiKbn)
                                                     .ThenBy(odr => odr.RpNo)
                                                     .ThenBy(odr => odr.RpEdaNo)
@@ -218,7 +220,10 @@ namespace Interactor.MedicalExamination
                                         od.OdrTermVal,
                                         od.CnvTermVal,
                                         od.YjCd,
-                                        od.MasterSbt
+                                        od.MasterSbt,
+                                        od.YohoSets,
+                                        od.Kasan1,
+                                        od.Kasan2
                                 )
                                 ).ToList(),
                                 rpOdrInf.CreateDate,
