@@ -9,5 +9,6 @@
         public int PageSize { get; set; }
         public int DeleteCondition { get; set; }
         public int KarteDeleteHistory { get; set; }
+        public int UserId { get; set; }
     }
 }

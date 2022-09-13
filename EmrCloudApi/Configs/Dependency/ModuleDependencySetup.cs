@@ -38,6 +38,7 @@ using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
+using Domain.Models.UsageTreeSet;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
@@ -80,6 +81,7 @@ using Interactor.SetMst;
 using Interactor.SpecialNote;
 using Interactor.SupperSetDetail;
 using Interactor.UketukeSbtMst;
+using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.VisitingList;
 using UseCase.Byomei.DiseaseSearch;
@@ -107,6 +109,9 @@ using UseCase.KarteInfs.GetLists;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.GetDosageDrugList;
+using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.SearchOTC;
+using UseCase.MstItem.SearchSupplement;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
@@ -137,6 +142,7 @@ using UseCase.SupperSetDetail.SupperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
+using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
@@ -214,6 +220,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
+            services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -319,11 +326,14 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
+            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             //Input Item
             busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
+            busBuilder.RegisterUseCase<SearchOTCInputData, SearchOtcInteractor>();
+            busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -347,6 +357,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
+
+            //UsageTreeSet
+            busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

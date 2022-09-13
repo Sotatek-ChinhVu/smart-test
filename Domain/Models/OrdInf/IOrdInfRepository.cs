@@ -19,8 +19,8 @@ namespace Domain.Models.OrdInfs
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
 
-        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, long raiinNo, int sinDate, bool isDeleted);
+        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted);
 
-        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId,  int deleteCondition, List<long> raiinNos);
     }
 }

@@ -77,7 +77,7 @@ namespace Interactor.MedicalExamination
             #endregion
             #region Odr
             var allOdrInfs = raiinNos == null ? new List<OrdInfModel>() : _ordInfRepository
-             .GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).ToList();
+             .GetList(inputData.PtId, inputData.HpId, inputData.UserId, inputData.DeleteConditon, raiinNos).ToList();
 
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
@@ -229,7 +229,10 @@ namespace Interactor.MedicalExamination
                                             od.OdrTermVal,
                                             od.CnvTermVal,
                                             od.YjCd,
-                                            od.MasterSbt
+                                            od.MasterSbt,
+                                            od.YohoSets,
+                                            od.Kasan1,
+                                            od.Kasan2
                                     )
                                     ).ToList(),
                                     rpOdrInf.CreateDate,
