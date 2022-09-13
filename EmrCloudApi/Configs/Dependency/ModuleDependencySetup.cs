@@ -1,7 +1,9 @@
 ﻿using Domain.CalculationInf;
+using Domain.Models.Byomei;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
+using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
 using Domain.Models.InputItem;
@@ -45,10 +47,12 @@ using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
+using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.DrugDetail;
+using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.InputItem;
@@ -78,6 +82,7 @@ using Interactor.SupperSetDetail;
 using Interactor.UketukeSbtMst;
 using Interactor.User;
 using Interactor.VisitingList;
+using UseCase.Byomei.DiseaseSearch;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -85,6 +90,7 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.DrugDetail;
+using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -119,6 +125,7 @@ using UseCase.Reception.UpdateStaticCell;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.Schema.GetListImageTemplates;
+using UseCase.Schema.SaveImage;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -150,6 +157,9 @@ using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.DrugInfor.Get;
 using Interactor.DrugInfor;
 using Domain.Models.DrugInfor;
+using Domain.Models.UsageTreeSet;
+using Interactor.UsageTreeSet;
+using UseCase.UsageTreeSet.GetTree;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -223,6 +233,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
+            services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -357,6 +368,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
+
+            //UsageTreeSet
+            busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
