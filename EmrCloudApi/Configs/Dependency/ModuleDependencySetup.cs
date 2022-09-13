@@ -107,6 +107,7 @@ using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
+using UseCase.MstItem.SearchSupplement;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
@@ -329,6 +330,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedTenItemInputData, UpdateAdoptedTenItemInteractor>();
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
             busBuilder.RegisterUseCase<SearchOTCInputData, SearchOtcInteractor>();
+            busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

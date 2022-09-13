@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.MstItem
+﻿using Helper.Extendsions;
+
+namespace Domain.Models.MstItem
 {
     public class DosageDrugModel
     {

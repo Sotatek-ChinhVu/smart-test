@@ -8,6 +8,7 @@ using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
+using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 
@@ -36,7 +37,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
         [HttpPost(ApiPath.GetFoodAlrgy)]
-        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy([FromQuery] FoodAlrgyMasterDataRequest request)
+        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
             var input = new GetFoodAlrgyInputData();
             var output = _bus.Handle(input);
@@ -56,6 +57,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SearchSupplement)]
+        public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
+        {
+            var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchSupplementPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
         }
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
