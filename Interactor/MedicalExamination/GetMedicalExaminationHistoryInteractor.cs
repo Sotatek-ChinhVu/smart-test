@@ -101,7 +101,9 @@ namespace Interactor.MedicalExamination
                                 c.Text,
                                 c.CreateDate,
                                 c.UpdateDate,
-                                c.IsDeleted)
+                                c.IsDeleted,
+                                c.RichText
+                                )
             ).ToList())
                                                              select karteGrp);
 
