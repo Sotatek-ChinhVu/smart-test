@@ -90,7 +90,6 @@ namespace Interactor.MedicalExamination
 
             Parallel.ForEach(rainInfs, raiinInf =>
             {
-
                 var doctorFirst = doctors?.FirstOrDefault(d => d.UserId == raiinInf.TantoId);
                 var kaMst = kaMsts?.FirstOrDefault(k => k.KaId == raiinInf.KaId);
 
@@ -111,7 +110,9 @@ namespace Interactor.MedicalExamination
                                     c.Text,
                                     c.CreateDate,
                                     c.UpdateDate,
-                                    c.IsDeleted)
+                                    c.IsDeleted,
+                                    c.RichText
+                                    )
                 ).ToList())
                                                              select karteGrp);
 
