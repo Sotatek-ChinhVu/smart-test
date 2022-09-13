@@ -29,32 +29,34 @@ namespace Interactor.MaxMoney
             else
                 listLimit = new List<LimitListModel>();
 
-            if (inputData.Rate == 0)
-            {
-                inputData.Rate = inputData.FutanRate;
-            }
+            var infoHoken = _maxmoneyReposiory.GetInfoHokenMoney(inputData.HpId, inputData.PtId, inputData.HokenKohiId, inputData.SinYM);
 
-            if (inputData.GendoGaku == 0)
-            {
-                inputData.GendoGaku = inputData.LimitFutan;
-            }
+            if(infoHoken == null)
+                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.HokenKohiNotFound);
 
-            int kohiId = inputData.HokenKohiId;
-            int rate = inputData.Rate;
-            int sinDateYM = inputData.SinYM;
-            string displaySinDateYM = (inputData.SinYM / 100).AsString() + "/" + ((inputData.SinYM % 100 < 10) ? ("0" + (inputData.SinYM % 100).AsString()) : (inputData.SinYM % 100).AsString());
-            bool isLimitMaxMoney = inputData.FutanKbn == 1 && inputData.MonthLimitFutan == 0;
-            int gendoGaku = inputData.GendoGaku;
-            string headerText = inputData.HoubetsuNumber + " " + inputData.HokenName;
-            bool isToltalGakuDisplay = inputData.IsLimitListSum == 1;
+            if (infoHoken.MoneyLimitListFlag == 0)
+                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.HokenKohiNotValidToGet);
+
+            int kohiId = infoHoken.HokenKohiId;
+            int rate = infoHoken.Rate;
+            int sinDateYM = infoHoken.SinYM;
+            string displaySinDateYM = infoHoken.DisplaySinDateYM;
+            bool isLimitMaxMoney = infoHoken.IsLimitMaxMoney;
+            int gendoGaku = infoHoken.GendoGaku;
+            bool isToltalGakuDisplay = infoHoken.IsToltalGakuDisplay;
             int remainGendoGaku = 0;
 
-            CalculateSort(listLimit);
+            if (rate == 0)
+                rate = infoHoken.FutanRate;
 
+            if (gendoGaku == 0)
+                gendoGaku = infoHoken.LimitFutan;
+
+            CalculateSort(listLimit);
             CalculateTotalMoney(listLimit, isLimitMaxMoney, gendoGaku,ref remainGendoGaku);
 
-            MaxMoneyModel result = new MaxMoneyModel(kohiId, gendoGaku, remainGendoGaku, rate, inputData.HoubetsuNumber
-                , inputData.HokenName, sinDateYM, inputData.FutanKbn, inputData.MonthLimitFutan, inputData.IsLimitListSum,
+            MaxMoneyModel result = new MaxMoneyModel(kohiId, gendoGaku, remainGendoGaku, rate, infoHoken.Houbetsu
+                , infoHoken.HokenName, sinDateYM, infoHoken.FutanKbn, infoHoken.MonthLimitFutan, infoHoken.IsLimitListSum,
                 displaySinDateYM, listLimit);
 
             return new GetMaxMoneyOutputData(result, GetMaxMoneyStatus.Successed);

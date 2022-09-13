@@ -86,7 +86,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetMaxMoneyData")]
         public IActionResult GetMaxMoney()
         {
-            var input = new GetMaxMoneyInputData(99999491, 1, 9, 10, 20000, 20220912, 1, 10000, "38", "肝炎", 0, 0, 10000);
+            var input = new GetMaxMoneyInputData(99999491, 1, 9, 20220912);
             var output = _bus.Handle(input);
             return Ok(output);
         }
