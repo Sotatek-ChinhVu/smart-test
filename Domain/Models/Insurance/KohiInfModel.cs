@@ -2,7 +2,7 @@
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, int confirmState)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -23,6 +23,7 @@
             PrefNo = prefNo;
             SinDate = sinDate;
             ConfirmDateList = confirmDateList;
+            ConfirmState = confirmState;
         }
 
         public KohiInfModel()
@@ -46,6 +47,7 @@
             PrefNo = 0;
             SinDate = 0;
             ConfirmDateList = new List<ConfirmDateModel>();
+            ConfirmState = 0;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
@@ -85,6 +87,8 @@
         public int PrefNo { get; private set; }
 
         public int SinDate { get; private set; }
+
+        public int ConfirmState { get; private set; }
 
         public bool IsExpirated
         {

@@ -118,7 +118,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.PrefNo,
                                         new HokenMstModel(0, 0),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        0
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -139,7 +140,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.PrefNo,
                                         new HokenMstModel(0, 0),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        0
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -160,7 +162,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.PrefNo,
                                         new HokenMstModel(0, 0),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        0
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -181,7 +184,8 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.PrefNo,
                                         new HokenMstModel(0, 0),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        0
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
