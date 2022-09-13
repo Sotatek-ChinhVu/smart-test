@@ -22,6 +22,9 @@ using UseCase.Reception.GetList;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.MaxMoney.GetMaxMoney;
+using EmrCloudApi.Tenant.Requests.MaxMoney;
+using EmrCloudApi.Tenant.Presenters.MaxMoney;
+using EmrCloudApi.Tenant.Responses.MaxMoney;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -84,11 +87,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetMaxMoneyData")]
-        public IActionResult GetMaxMoney()
+        public ActionResult<Response<GetMaxMoneyResponse>> GetMaxMoney([FromQuery] GetMaxMoneyRequest request)
         {
-            var input = new GetMaxMoneyInputData(99999491, 1, 9, 20220912);
+            var input = new GetMaxMoneyInputData(request.PtId, request.HpId, request.HokenKohiId, request.SinDate);
             var output = _bus.Handle(input);
-            return Ok(output);
+
+            var presenter = new GetMaxMoneyPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetMaxMoneyResponse>>(presenter.Result);
         }
     }
 }

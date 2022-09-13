@@ -3,10 +3,11 @@
     public enum GetMaxMoneyStatus
     {
         Successed = 1,
-        DataNotFound = 2,
-        InvalidKohiId =3,
-        InvalidHpId = 4,
-        HokenKohiNotFound = 5,
-        HokenKohiNotValidToGet = 6
+        InvalidKohiId = 2,
+        InvalidHpId = 3,
+        InvalidPtId = 4,
+        InvalidSinDate = 5,
+        HokenKohiNotFound = 6,
+        HokenKohiNotValidToGet = 7
     }
 }

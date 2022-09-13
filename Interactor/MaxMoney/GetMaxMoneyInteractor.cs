@@ -1,6 +1,6 @@
 ﻿using Domain.Models.MaxMoney;
-using Helper.Extension;
 using UseCase.MaxMoney.GetMaxMoney;
+using UseCase.ReceptionSameVisit.Get;
 
 namespace Interactor.MaxMoney
 {
@@ -20,6 +20,12 @@ namespace Interactor.MaxMoney
 
             if (inputData.HpId < 0)
                 return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidHpId);
+
+            if (inputData.SinDate <= 0)
+                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidSinDate);
+
+            if (inputData.HokenKohiId <= 0)
+                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidKohiId);
 
             var listLimit = _maxmoneyReposiory.GetListLimitModel(inputData.PtId, inputData.HpId);
             if (listLimit != null)
