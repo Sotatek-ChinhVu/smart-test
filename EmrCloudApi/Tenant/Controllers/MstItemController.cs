@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.UpdateAdopted;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -32,7 +34,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
-        [HttpGet(ApiPath.GetFoodAlrgy)]
+        [HttpPost(ApiPath.GetFoodAlrgy)]
         public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy([FromQuery] FoodAlrgyMasterDataRequest request)
         {
             var input = new GetFoodAlrgyInputData();
@@ -42,6 +44,24 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SearchTenItem)]
+        public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
+        {
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, request.HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired);
+            var output = _bus.Handle(input);
+            var presenter = new SearchTenItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+        [HttpPost(ApiPath.UpdateAdoptedInputItem)]
+        public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
+        {
+            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.SinDateInputItem);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateAdoptedTenItemPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }

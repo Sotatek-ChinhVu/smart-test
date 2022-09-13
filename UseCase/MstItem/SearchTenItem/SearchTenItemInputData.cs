@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.InputItem.Search
+namespace UseCase.MstItem.SearchTenItem
 {
-    public class SearchInputItemInputData : IInputData<SearchInputItemOutputData>
+    public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchInputItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;

@@ -1,4 +1,4 @@
-﻿using Domain.Models.InputItem;
+﻿using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        public bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate)
+        public bool CheckIsGetYakkaPrice(int hpId, TenItemModel? tenMst, int sinDate)
         {
             if (tenMst == null) return false;
             var ipnKasanExclude = _tenantDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();

@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.InputItem.UpdateAdopted
+namespace UseCase.MstItem.UpdateAdopted
 {
-    public class UpdateAdoptedInputItemOutputData: IOutputData
+    public class UpdateAdoptedTenItemOutputData: IOutputData
     {
-        public UpdateAdoptedInputItemOutputData(bool statusUpdate, UpdateAdoptedInputItemStatus status)
+        public UpdateAdoptedTenItemOutputData(bool statusUpdate, UpdateAdoptedTenItemStatus status)
         {
             StatusUpdate = statusUpdate;
             Status = status;
@@ -17,6 +17,6 @@ namespace UseCase.InputItem.UpdateAdopted
 
         public bool StatusUpdate { get; private set; }
 
-        public UpdateAdoptedInputItemStatus Status { get; private set; }
+        public UpdateAdoptedTenItemStatus Status { get; private set; }
     }
 }

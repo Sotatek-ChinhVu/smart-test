@@ -6,7 +6,6 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
-using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -55,7 +54,6 @@ using Interactor.DrugDetail;
 using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
-using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
@@ -94,8 +92,6 @@ using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
-using UseCase.InputItem.Search;
-using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.JsonSetting.Get;
@@ -142,25 +138,11 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.Schema.SaveImage;
-using Domain.Models.Byomei;
-using UseCase.Byomei.DiseaseSearch;
-using Interactor.Byomei;
-using UseCase.SetMst.ReorderSetMst;
-using Domain.Models.JsonSetting;
-using Interactor.JsonSetting;
-using UseCase.JsonSetting.Get;
-using UseCase.JsonSetting.Upsert;
-using EmrCloudApi.Realtime;
-using UseCase.KohiHokenMst.Get;
-using Interactor.KohiHokenMst;
-using UseCase.SetMst.CopyPasteSetMst;
-using UseCase.DrugInfor.Get;
-using Interactor.DrugInfor;
-using Domain.Models.DrugInfor;
 using Domain.Models.UsageTreeSet;
 using Interactor.UsageTreeSet;
 using UseCase.UsageTreeSet.GetTree;
+using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -225,7 +207,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
-            services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
@@ -343,8 +324,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             //Input Item
-            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
-            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+            busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedTenItemInputData, UpdateAdoptedTenItemInteractor>();
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
 
             // Disease

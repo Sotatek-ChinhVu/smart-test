@@ -20,5 +20,7 @@
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
         public const string GetFoodAlrgy = "GetFoodAlrgy";
+        public const string SearchTenItem = "SearchTenItem";
+        public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
     }
 }

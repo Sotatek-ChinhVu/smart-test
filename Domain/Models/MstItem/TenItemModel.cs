@@ -1,11 +1,10 @@
-﻿using Domain.Constant;
-using Helper.Constants;
+﻿using Helper.Constants;
 
-namespace Domain.Models.InputItem
+namespace Domain.Models.MstItem
 {
-    public class InputItemModel
+    public class TenItemModel
     {
-        public InputItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd)
         {
             HpId = hpId;
             ItemCd = itemCd;
