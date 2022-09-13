@@ -164,6 +164,10 @@ using Domain.Models.DrugInfor;
 using Domain.Models.UsageTreeSet;
 using Interactor.UsageTreeSet;
 using UseCase.UsageTreeSet.GetTree;
+using Domain.Models.ReceptionComment;
+using EmrCloudApi.Tenant.Presenters.VisitingList;
+using Interactor.ReceptionComment;
+using UseCase.VisitingList.ReceptionComment;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -239,6 +243,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
+            services.AddTransient<IReceptionCommentRepository, ReceptionCommentRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -265,6 +270,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
             busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionCommentInputData, GetReceptionCommentInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
