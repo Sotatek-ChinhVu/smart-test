@@ -8,6 +8,7 @@ using UseCase.Core.Sync;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
+using UseCase.MstItem.SearchSupplement;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -54,6 +55,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SearchSupplement)]
+        public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
+        {
+            var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchSupplementPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
         }
     }
 }

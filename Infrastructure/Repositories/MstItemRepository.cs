@@ -1,6 +1,9 @@
 ﻿using Domain.Models.MstItem;
+using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -72,17 +75,59 @@ namespace Infrastructure.Repositories
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             return (models, total);
         }
+
         public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {
             List<FoodAlrgyKbnModel> m12FoodAlrgies = new List<FoodAlrgyKbnModel>();
             int i = 0;
-            var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.Select(x => new FoodAlrgyKbnModel()
-            {
-                FoodKbn = x.FoodKbn,
-                FoodName = x.FoodName,
-                IsDrugAdditives = int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
-            }).OrderBy(x => x.FoodKbn).ToList();
+            var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.Select(x => new FoodAlrgyKbnModel(
+                 x.FoodKbn,
+                 x.FoodName,
+                 int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
+            )).OrderBy(x => x.FoodKbn).ToList();
             return aleFoodKbns;
+        }
+
+        public (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize)
+        {
+            searchValue = searchValue.Trim();
+            try
+            {
+                var listSuppleIndexCode = _tenantDataContext.M41SuppleIndexcodes.AsQueryable();
+                var listSuppleIndexDef = _tenantDataContext.M41SuppleIndexdefs.AsQueryable();
+                var listSuppleIngre = _tenantDataContext.M41SuppleIngres.AsQueryable();
+
+                var query = (from indexDef in listSuppleIndexDef
+                             orderby indexDef.IndexWord
+                             join indexCode in listSuppleIndexCode on indexDef.SeibunCd equals indexCode.IndexCd into supplementList
+                             from supplement in supplementList.DefaultIfEmpty()
+                             join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
+                             from ingreItem in suppleIngreList.DefaultIfEmpty()
+                             where indexDef.IndexWord.Contains(searchValue)
+                             select new SearchSupplementModel(
+                                 ingreItem.SeibunCd,
+                                 ingreItem.Seibun,
+                                 indexDef.IndexWord,
+                                 indexDef.TokuhoFlg,
+                                 supplement.IndexCd
+                             )).AsQueryable();
+
+                var total = query.Count();
+                var result = query.Skip((pageIndex - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToList();
+
+                if (result == null || !result.Any())
+                {
+                    return (new List<SearchSupplementModel>(), 0);
+                }
+
+                return (result, total);
+            }
+            catch (Exception)
+            {
+                return (new List<SearchSupplementModel>(), 0);
+            }
         }
     }
 }
