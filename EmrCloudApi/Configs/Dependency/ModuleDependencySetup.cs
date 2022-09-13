@@ -142,9 +142,6 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using Domain.Models.UsageTreeSet;
-using Interactor.UsageTreeSet;
-using UseCase.UsageTreeSet.GetTree;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 
