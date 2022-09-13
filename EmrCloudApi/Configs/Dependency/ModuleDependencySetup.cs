@@ -142,6 +142,25 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.Schema.SaveImage;
+using Domain.Models.Byomei;
+using UseCase.Byomei.DiseaseSearch;
+using Interactor.Byomei;
+using UseCase.SetMst.ReorderSetMst;
+using Domain.Models.JsonSetting;
+using Interactor.JsonSetting;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
+using EmrCloudApi.Realtime;
+using UseCase.KohiHokenMst.Get;
+using Interactor.KohiHokenMst;
+using UseCase.SetMst.CopyPasteSetMst;
+using UseCase.DrugInfor.Get;
+using Interactor.DrugInfor;
+using Domain.Models.DrugInfor;
+using Domain.Models.UsageTreeSet;
+using Interactor.UsageTreeSet;
+using UseCase.UsageTreeSet.GetTree;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -215,6 +234,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
+            services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -349,6 +369,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
+
+            //UsageTreeSet
+            busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
