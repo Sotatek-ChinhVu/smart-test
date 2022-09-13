@@ -4,6 +4,6 @@
     {
         List<DosageDrugModel> GetDosages(List<string> yjCds);
         List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData();
-        SearchOTCModel SearchOTCModels(string searchValue, int pageIndex, int pageSize);
+        (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize);
     }
 }

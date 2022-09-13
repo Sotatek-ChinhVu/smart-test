@@ -1,8 +1,6 @@
 ﻿using Domain.Models.MstItem;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Linq;
-using static Domain.Models.MstItem.SearchOTCModel;
 
 namespace Infrastructure.Repositories
 {
@@ -32,7 +30,7 @@ namespace Infrastructure.Repositories
                    )).ToList();
         }
 
-        public SearchOTCModel SearchOTCModels(string searchValue, int pageIndex, int pageSize)
+        public (List<OtcItemModel>, int) SearchOTCModels(string searchValue, int pageIndex, int pageSize)
         {
             searchValue = searchValue.Trim();
             var OtcFormCodes = _tenantDataContext.M38OtcFormCode.AsQueryable();
@@ -53,27 +51,26 @@ namespace Infrastructure.Repositories
                                 || main.TradeName.Contains(searchValue)
                                 || maker.MakerKana.Contains(searchValue)
                                 || maker.MakerName.Contains(searchValue))
-                        select new SearchOTCBaseModel()
-                        {
-                            SerialNum = main.SerialNum,
-                            OtcCd = main.OtcCd,
-                            TradeName = main.TradeName,
-                            TradeKana = main.TradeKana,
-                            ClassCd = main.ClassCd,
-                            CompanyCd = main.CompanyCd,
-                            TradeCd = main.TradeCd,
-                            DrugFormCd = main.DrugFormCd,
-                            YohoCd = main.YohoCd,
-                            Form = form.Form,
-                            MakerName = maker.MakerName,
-                            MakerKana = maker.MakerKana,
-                            Yoho = usage.Yoho,
-                            ClassName = clas.ClassName,
-                            MajorDivCd = clas.MajorDivCd
-                        };
+                        select new OtcItemModel(
+                            main.SerialNum,
+                            main.OtcCd,
+                            main.TradeName,
+                            main.TradeKana,
+                            main.ClassCd,
+                            main.CompanyCd,
+                            main.TradeCd,
+                            main.DrugFormCd,
+                            main.YohoCd,
+                            form.Form,
+                            maker.MakerName,
+                            maker.MakerKana,
+                            usage.Yoho,
+                            clas.ClassName,
+                            clas.MajorDivCd
+                        );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
-            return new SearchOTCModel(models,total);
+            return (models, total);
         }
         public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {
@@ -84,7 +81,7 @@ namespace Infrastructure.Repositories
                 FoodKbn = x.FoodKbn,
                 FoodName = x.FoodName,
                 IsDrugAdditives = int.TryParse(x.FoodKbn, out i) && int.Parse(x.FoodKbn) > 50
-            }).OrderBy(x=>x.FoodKbn).ToList();
+            }).OrderBy(x => x.FoodKbn).ToList();
             return aleFoodKbns;
         }
     }

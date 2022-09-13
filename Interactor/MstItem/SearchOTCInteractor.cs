@@ -1,15 +1,13 @@
 ﻿using Domain.Models.MstItem;
-using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.SearchOTC;
-using static Domain.Models.MstItem.SearchOTCModel;
 
 namespace Interactor.MstItem
 {
-    public class SearchOTCInteractor : ISearchOTCInputPort
+    public class SearchOtcInteractor : ISearchOTCInputPort
     {
         private readonly IMstItemRepository _inputItemRepository;
 
-        public SearchOTCInteractor(IMstItemRepository inputItemRepository)
+        public SearchOtcInteractor(IMstItemRepository inputItemRepository)
         {
             _inputItemRepository = inputItemRepository;
         }
@@ -18,17 +16,18 @@ namespace Interactor.MstItem
         {
             try
             {
-                var datas = _inputItemRepository.SearchOTCModels(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
-                if (datas?.Model == null || !(datas?.Total > 0))
+                (List<OtcItemModel> otcItemList, int total) = _inputItemRepository.SearchOTCModels(inputData.SearchValue, inputData.PageIndex, inputData.PageSize);
+
+                if (otcItemList == null || total <= 0)
                 {
-                    return new SearchOTCOutputData(new List<SearchOTCBaseModel>(), 0, SearchOTCStatus.NoData);
+                    return new SearchOTCOutputData(new List<OtcItemModel>(), 0, SearchOTCStatus.NoData);
                 }
 
-                return new SearchOTCOutputData(datas.Model, datas.Total, SearchOTCStatus.Successed);
+                return new SearchOTCOutputData(otcItemList, total, SearchOTCStatus.Successed);
             }
             catch
             {
-                return new SearchOTCOutputData(new List<SearchOTCBaseModel>(), 0, SearchOTCStatus.Fail);
+                return new SearchOTCOutputData(new List<OtcItemModel>(), 0, SearchOTCStatus.Fail);
             }
         }
     }

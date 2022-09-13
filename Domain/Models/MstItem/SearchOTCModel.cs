@@ -1,34 +1,40 @@
 ﻿namespace Domain.Models.MstItem
 {
-
-    public class SearchOTCModel
+    public class OtcItemModel
     {
-        public SearchOTCModel(List<SearchOTCBaseModel> model, int total)
+        public OtcItemModel(int serialNum, string otcCd, string tradeName, string tradeKana, string classCd, string companyCd, string tradeCd, string drugFormCd, string yohoCd, string form, string makerName, string makerKana, string yoho, string className, string majorDivCd)
         {
-            Model = model;
-            Total = total;
+            SerialNum = serialNum;
+            OtcCd = otcCd;
+            TradeName = tradeName;
+            TradeKana = tradeKana;
+            ClassCd = classCd;
+            CompanyCd = companyCd;
+            TradeCd = tradeCd;
+            DrugFormCd = drugFormCd;
+            YohoCd = yohoCd;
+            Form = form;
+            MakerName = makerName;
+            MakerKana = makerKana;
+            Yoho = yoho;
+            ClassName = className;
+            MajorDivCd = majorDivCd;
         }
 
-        public List<SearchOTCBaseModel> Model { get; set; }
-        public int Total { get; set; }
-    }
-
-    public class SearchOTCBaseModel
-    {
-        public int SerialNum { get; set; }
-        public string OtcCd { get; set; } = String.Empty;
-        public string TradeName { get; set; } = String.Empty;
-        public string TradeKana { get; set; } = String.Empty;
-        public string ClassCd { get; set; } = String.Empty;
-        public string CompanyCd { get; set; } = String.Empty;
-        public string TradeCd { get; set; } = String.Empty;
-        public string DrugFormCd { get; set; } = String.Empty;
-        public string YohoCd { get; set; } = String.Empty;
-        public string Form { get; set; } = String.Empty;
-        public string MakerName { get; set; } = String.Empty;
-        public string MakerKana { get; set; } = String.Empty;
-        public string Yoho { get; set; } = String.Empty;
-        public string ClassName { get; set; } = String.Empty;
-        public string MajorDivCd { get; set; } = String.Empty;
+        public int SerialNum { get; private set; }
+        public string OtcCd { get; private set; }
+        public string TradeName { get; private set; }
+        public string TradeKana { get; private set; }
+        public string ClassCd { get; private set; }
+        public string CompanyCd { get; private set; }
+        public string TradeCd { get; private set; }
+        public string DrugFormCd { get; private set; }
+        public string YohoCd { get; private set; }
+        public string Form { get; private set; }
+        public string MakerName { get; private set; }
+        public string MakerKana { get; private set; }
+        public string Yoho { get; private set; }
+        public string ClassName { get; private set; }
+        public string MajorDivCd { get; private set; }
     }
 }

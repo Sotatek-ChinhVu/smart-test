@@ -397,7 +397,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private KohiInfModel GetKohiInfModel(PtKohi kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
+        private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
         {
             if (kohiInf == null)
             {
