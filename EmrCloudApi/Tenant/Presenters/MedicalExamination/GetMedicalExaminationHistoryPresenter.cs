@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
         {
             Result = new Response<GetMedicalExaminationHistoryResponse>()
             {
-                Data = new GetMedicalExaminationHistoryResponse(outputData.RaiinfList),
+                Data = new GetMedicalExaminationHistoryResponse(outputData.RaiinfList, outputData.Total, outputData.StartPage),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
