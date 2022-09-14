@@ -145,6 +145,7 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
+using UseCase.SupperSetDetail.SaveSupperSetDetail;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -351,6 +352,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // SupperSetDetail
             busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSupperSetDetailInputData, SaveSupperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

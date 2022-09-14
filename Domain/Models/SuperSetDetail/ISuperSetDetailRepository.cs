@@ -6,5 +6,5 @@ public interface ISuperSetDetailRepository
 {
     SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd);
 
-    bool SaveSetByomei(List<SetByomeiModel> setByomeis);
+    int SaveSuperSetDetail(int setCd, int userId, SuperSetDetailModel superSetDetailModel);
 }

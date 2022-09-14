@@ -9,6 +9,13 @@ public class SetKarteInfModel
         RichText = richText;
     }
 
+    public SetKarteInfModel()
+    {
+        HpId = 0;
+        SetCd = 0;
+        RichText = string.Empty;
+    }
+
     public int HpId { get; private set; }
     public int SetCd { get; private set; }
     public string RichText { get; private set; }
