@@ -2,7 +2,6 @@
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
 using UseCase.MstItem.GetDosageDrugList;
-using UseCase.InputItem.Search;
 
 namespace EmrCloudApi.Tenant.Presenters.MstItem
 {
