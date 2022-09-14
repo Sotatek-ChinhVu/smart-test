@@ -2,11 +2,11 @@
 {
     public class FoodAlrgyKbnModel
     {
-        public FoodAlrgyKbnModel(string foodKbn, string foodName, bool isDrugAdditives)
+        public FoodAlrgyKbnModel(string foodKbn, string foodName)
         {
             FoodKbn = foodKbn;
             FoodName = foodName;
-            IsDrugAdditives = isDrugAdditives;
+            IsDrugAdditives = int.TryParse(foodKbn, out int i) && int.Parse(foodKbn) > 50;
         }
 
         public string FoodKbn { get; private set; }
