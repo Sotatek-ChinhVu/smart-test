@@ -22,18 +22,19 @@ namespace Infrastructure.Repositories
             return maxMoneys.Select(u => new LimitListModel(u.Id,u.KohiId,u.SinDate,u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko ?? string.Empty,u.IsDeleted)).ToList();
         }
 
-        public MaxMoneyInfoHokenModel? GetInfoHokenMoney(int hpId,long ptId,int kohiId,int sinYm)
+        public MaxMoneyInfoHokenModel GetInfoHokenMoney(int hpId,long ptId,int kohiId,int sinYm)
         {
             var kohi = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.PtId == ptId
                                                                 && x.HokenId == kohiId);
-            if (kohi is null) return null;
+
+            if (kohi is null) return new MaxMoneyInfoHokenModel(0,0,0,0,0,0,string.Empty, string.Empty,0,0,0,0);
 
             var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.HokenNo == kohi.HokenNo
                                                                 && x.HokenEdaNo == kohi.HokenEdaNo);
 
-            if (hokenMst is null) return null;
+            if (hokenMst is null) return new MaxMoneyInfoHokenModel(0, 0, 0, 0, 0, 0, string.Empty, string.Empty, 0, 0, 0, 0);
 
             int limitFutan = 0;
             if (hokenMst.KaiLimitFutan > 0)
