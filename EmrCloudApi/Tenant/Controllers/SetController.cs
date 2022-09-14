@@ -72,7 +72,7 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetSuperSetDetail)]
-    public ActionResult<Response<GetSuperSetDetailResponse>> GetSetByomeiList([FromQuery] GetSuperSetDetailRequest request)
+    public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
         var input = new GetSupperSetDetailInputData(request.HpId, request.SetCd);
         var output = _bus.Handle(input);
@@ -81,5 +81,17 @@ public class SetController : ControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.SaveSuperSetDetail)]
+    public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromQuery] SaveSuperSetDetailRequest request)
+    {
+        var input = new SaveSupperSetDetailInputData(request.HpId, request.SetCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveSuperSetDetailPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
     }
 }

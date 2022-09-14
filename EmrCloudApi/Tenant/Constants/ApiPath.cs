@@ -16,6 +16,7 @@
         public const string Paste = "Paste";
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
+        public const string SaveSuperSetDetail = "SaveSuperSetDetail";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
