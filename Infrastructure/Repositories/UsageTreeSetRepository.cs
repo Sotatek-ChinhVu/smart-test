@@ -36,24 +36,26 @@ namespace Infrastructure.Repositories
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x => new { x.ItemCd, x.OdrUnitName });
 
-            return list.Join(tenMsts, list => list.ItemCd, tenMsts => tenMsts.ItemCd, (x, y) =>
-                                    new ListSetMstModel(x.HpId,
-                                                        x.GenerationId,
-                                                        x.SetId,
-                                                        x.SetName ?? string.Empty,
-                                                        x.ItemCd ?? string.Empty,
-                                                        x.IsTitle,
-                                                        x.SetKbn,
-                                                        x.SelectType,
-                                                        x.Suryo,
-                                                        x.Level1,
-                                                        x.Level2,
-                                                        x.Level3,
-                                                        x.Level4,
-                                                        x.Level5,
-                                                        x.CmtName ?? string.Empty,
-                                                        x.CmtOpt ?? string.Empty,
-                                                        y.OdrUnitName ?? string.Empty)).ToList();
+            return (from item in list
+                    join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
+                    from subpet in gj.DefaultIfEmpty()
+                    select new ListSetMstModel(item.HpId,
+                                               item.GenerationId,
+                                               item.SetId,
+                                               item.SetName ?? string.Empty,
+                                               item.ItemCd ?? string.Empty,
+                                               item.IsTitle,
+                                               item.SetKbn,
+                                               item.SelectType,
+                                               item.Suryo,
+                                               item.Level1,
+                                               item.Level2,
+                                               item.Level3,
+                                               item.Level4,
+                                               item.Level5,
+                                               item.CmtName ?? string.Empty,
+                                               item.CmtOpt ?? string.Empty,
+                                               subpet.OdrUnitName ?? string.Empty)).ToList();
         }
 
         public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int generationId, int sinDate)
@@ -68,24 +70,26 @@ namespace Infrastructure.Repositories
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x => new { x.ItemCd, x.OdrUnitName });
 
-            return list.Join(tenMsts, list => list.ItemCd, tenMsts => tenMsts.ItemCd, (x, y) =>
-                                    new ListSetMstModel(x.HpId,
-                                                        x.GenerationId,
-                                                        x.SetId,
-                                                        x.SetName ?? string.Empty,
-                                                        x.ItemCd ?? string.Empty,
-                                                        x.IsTitle,
-                                                        x.SetKbn,
-                                                        x.SelectType,
-                                                        x.Suryo,
-                                                        x.Level1,
-                                                        x.Level2,
-                                                        x.Level3,
-                                                        x.Level4,
-                                                        x.Level5,
-                                                        x.CmtName ?? string.Empty,
-                                                        x.CmtOpt ?? string.Empty,
-                                                        y.OdrUnitName ?? string.Empty)).ToList();
+            return (from item in list
+                    join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
+                    from subpet in gj.DefaultIfEmpty()
+                    select new ListSetMstModel(item.HpId,
+                                               item.GenerationId,
+                                               item.SetId,
+                                               item.SetName ?? string.Empty,
+                                               item.ItemCd ?? string.Empty,
+                                               item.IsTitle,
+                                               item.SetKbn,
+                                               item.SelectType,
+                                               item.Suryo,
+                                               item.Level1,
+                                               item.Level2,
+                                               item.Level3,
+                                               item.Level4,
+                                               item.Level5,
+                                               item.CmtName ?? string.Empty,
+                                               item.CmtOpt ?? string.Empty,
+                                               subpet.OdrUnitName ?? string.Empty)).ToList();
         }
 
         public List<ListSetMstModel> GetAllTanSetInfs(int hpId,int generationId,int sinDate)
@@ -99,25 +103,26 @@ namespace Infrastructure.Repositories
                                         && item.StartDate <= sinDate
                                         && item.EndDate >= sinDate).Select(x=>new {x.ItemCd,x.OdrUnitName});
 
-
-            return list.Join(tenMsts, list => list.ItemCd, tenMsts => tenMsts.ItemCd, (x, y) =>
-                                    new ListSetMstModel(x.HpId,
-                                                        x.GenerationId,
-                                                        x.SetId,
-                                                        x.SetName ?? string.Empty,
-                                                        x.ItemCd ?? string.Empty,
-                                                        x.IsTitle,
-                                                        x.SetKbn,
-                                                        x.SelectType,
-                                                        x.Suryo,
-                                                        x.Level1,
-                                                        x.Level2,
-                                                        x.Level3,
-                                                        x.Level4,
-                                                        x.Level5,
-                                                        x.CmtName ?? string.Empty,
-                                                        x.CmtOpt ?? string.Empty,
-                                                        y.OdrUnitName ?? string.Empty)).ToList();
+            return  (from item in list
+                    join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
+                    from subpet in gj.DefaultIfEmpty()
+                    select new ListSetMstModel(item.HpId,
+                                               item.GenerationId,
+                                               item.SetId,
+                                               item.SetName ?? string.Empty,
+                                               item.ItemCd ?? string.Empty,
+                                               item.IsTitle,
+                                               item.SetKbn,
+                                               item.SelectType,
+                                               item.Suryo,
+                                               item.Level1,
+                                               item.Level2,
+                                               item.Level3,
+                                               item.Level4,
+                                               item.Level5,
+                                               item.CmtName ?? string.Empty,
+                                               item.CmtOpt ?? string.Empty,
+                                               subpet.OdrUnitName ?? string.Empty)).ToList();
         }
     }
 }
