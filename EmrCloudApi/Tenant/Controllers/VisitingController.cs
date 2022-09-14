@@ -14,6 +14,7 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.VisitingList.PatientComment;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -30,6 +31,16 @@ public class VisitingController : ControllerBase
     {
         _bus = bus;
         _webSocketService = webSocketService;
+    }
+
+    [HttpGet(ApiPath.Get + "PatientComment")]
+    public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
+    {
+        var input = new GetPatientCommentInputData(request.HpId, request.PtId);
+        var output = _bus.Handle(input);
+        var presenter = new GetPatientCommentPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]
