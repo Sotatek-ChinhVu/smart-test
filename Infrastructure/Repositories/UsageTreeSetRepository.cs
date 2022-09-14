@@ -1,5 +1,6 @@
 ﻿using Domain.Models.UsageTreeSet;
 using Entity.Tenant;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -8,9 +9,9 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantDataContext _tenantDataContext;
 
-        public UsageTreeSetRepository(TenantDataContext tenantDataContext)
+        public UsageTreeSetRepository(ITenantProvider _tenantProvider)
         {
-            _tenantDataContext = tenantDataContext;
+            _tenantDataContext = _tenantProvider.GetTrackingTenantDataContext();
         }
 
         public int GetGenerationId(int sinDate)
