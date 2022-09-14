@@ -1,12 +1,10 @@
 ﻿using Domain.CalculationInf;
-using Domain.Models.Byomei;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
-using Domain.Models.InputItem;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -57,7 +55,6 @@ using Interactor.DrugDetail;
 using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
-using Interactor.InputItem;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
@@ -85,7 +82,6 @@ using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.VisitingList;
-using UseCase.Byomei.DiseaseSearch;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -97,8 +93,6 @@ using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
-using UseCase.InputItem.Search;
-using UseCase.InputItem.UpdateAdopted;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.JsonSetting.Get;
@@ -109,6 +103,7 @@ using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -149,6 +144,12 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.PatientComment;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.UpdateAdopted;
+using UseCase.MstItem.UpdateAdoptedByomei;
+using Domain.Models.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoney;
+using Interactor.MaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -213,17 +214,16 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
-            services.AddTransient<IInputItemRepository, InputItemRepository>();
             services.AddTransient<IVisitingListSettingRepository, VisitingListSettingRepository>();
             services.AddTransient<IDrugDetailRepository, DrugDetailRepository>();
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
-            services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IPatientCommentRepository, PatientCommentRepository>();
+            services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -332,12 +332,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
-            //Input Item
-            busBuilder.RegisterUseCase<SearchInputItemInputData, SearchInputItemInteractor>();
-            busBuilder.RegisterUseCase<UpdateAdoptedInputItemInputData, UpdateAdoptedInputItemInteractor>();
+            //MS Item
+            busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedTenItemInputData, UpdateAdoptedTenItemInteractor>();
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
             busBuilder.RegisterUseCase<SearchOTCInputData, SearchOtcInteractor>();
             busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedByomeiInputData, UpdateAdoptedByomeiInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -365,6 +366,8 @@ namespace EmrCloudApi.Configs.Dependency
             //UsageTreeSet
             busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
+            //Maxmoney
+            busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
