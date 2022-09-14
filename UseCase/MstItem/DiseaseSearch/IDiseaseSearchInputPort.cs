@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Byomei.DiseaseSearch;
+namespace UseCase.MstItem.DiseaseSearch;
 
 public interface IDiseaseSearchInputPort : IInputPort<DiseaseSearchInputData, DiseaseSearchOutputData>
 {

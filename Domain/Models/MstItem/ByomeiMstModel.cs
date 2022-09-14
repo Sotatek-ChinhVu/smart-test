@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.Byomei;
+﻿namespace Domain.Models.MstItem;
 
 public class ByomeiMstModel
 {

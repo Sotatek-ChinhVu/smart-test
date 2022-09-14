@@ -28,9 +28,15 @@ namespace Interactor.MstItem
                 return new UpdateAdoptedTenItemOutputData(false, UpdateAdoptedTenItemStatus.InvalidSinDate);
             }
 
-            var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.SinDateInputItem);
-
-            return new UpdateAdoptedTenItemOutputData(data, UpdateAdoptedTenItemStatus.Successed);
+            try
+            {
+                var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.SinDateInputItem);
+                return new UpdateAdoptedTenItemOutputData(data, UpdateAdoptedTenItemStatus.Successed);
+            }
+            catch (Exception)
+            {
+                return new UpdateAdoptedTenItemOutputData(false, UpdateAdoptedTenItemStatus.Failed);
+            }
         }
     }
 }

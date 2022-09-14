@@ -1,10 +1,9 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.Byomei;
-using EmrCloudApi.Tenant.Responses.SetMst;
-using UseCase.Byomei.DiseaseSearch;
+using EmrCloudApi.Tenant.Responses.MstItem;
+using UseCase.MstItem.DiseaseSearch;
 
-namespace EmrCloudApi.Tenant.Presenters.Byomei;
+namespace EmrCloudApi.Tenant.Presenters.MstItem;
 
 public class DiseaseSearchPresenter : IDiseaseSearchOutputPort
 {
