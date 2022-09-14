@@ -145,6 +145,9 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using Domain.Models.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoney;
+using Interactor.MaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
