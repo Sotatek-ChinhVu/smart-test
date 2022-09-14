@@ -40,5 +40,10 @@ namespace Infrastructure.CommonDB
         {
             return new TenantDataContext(GetConnectionString());
         }
+
+        public string GetTenantInfo()
+        {
+            return "Tenant1";
+        }
     }
 }

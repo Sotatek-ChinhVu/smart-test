@@ -1,6 +1,6 @@
 ﻿using Helper.Common;
 using Helper.Constants;
-using Helper.Extendsions;
+using Helper.Extension;
 
 namespace Domain.Models.Reception;
 
@@ -78,6 +78,8 @@ public class ReceptionRowModel
     // 年齢
     public string Age { get; private set; }
     // 読
+    // Patients have same KanaName will be counted as duplicate.
+    // Note: This property will be affected in case of real-time update so it will be calculated by front-end.
     public bool IsNameDuplicate { get; set; }
     public string NameDuplicateState => IsNameDuplicate ? "●" : string.Empty;
     // 予約時間

@@ -14,13 +14,25 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
     }
     public ReorderSetMstOutputData Handle(ReorderSetMstInputData reorderSetMstInputData)
     {
+        if (reorderSetMstInputData.HpId <= 0)
+        {
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidHpId);
+        }
+        else if (reorderSetMstInputData.DragSetCd <= 0)
+        {
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDragSetCd);
+        }
+        else if (reorderSetMstInputData.DropSetCd < 0)
+        {
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidDropSetCd);
+        }
         try
         {
-            if (reorderSetMstInputData.DragSetCd != 0 && _setMstRepository.ReorderSetMst(_userId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
+            if (_setMstRepository.ReorderSetMst(_userId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
             {
                 return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
             }
-            return new ReorderSetMstOutputData(ReorderSetMstStatus.Failed);
+            return new ReorderSetMstOutputData(ReorderSetMstStatus.InvalidLevel);
         }
         catch
         {

@@ -21,6 +21,9 @@ namespace EmrCloudApi.Tenant.Presenters.SetMst
             ReorderSetMstStatus.Successed => ResponseMessage.Success,
             ReorderSetMstStatus.Failed => ResponseMessage.Failed,
             ReorderSetMstStatus.InvalidLevel => ResponseMessage.InvalidLevel,
+            ReorderSetMstStatus.InvalidDragSetCd => ResponseMessage.InvalidDragSetCd,
+            ReorderSetMstStatus.InvalidDropSetCd => ResponseMessage.InvalidDropSetCd,
+            ReorderSetMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             _ => string.Empty
         };
     }

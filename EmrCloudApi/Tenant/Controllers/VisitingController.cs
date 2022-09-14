@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Messages.Reception;
+using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
@@ -35,7 +35,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
-        var input = new GetReceptionListInputData(request.HpId, request.SinDate);
+        var input = new GetReceptionListInputData(request.HpId, request.SinDate, request.RaiinNo, request.PtId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
         presenter.Complete(output);
@@ -68,10 +68,20 @@ public class VisitingController : ControllerBase
         var input = new UpdateReceptionStaticCellInputData(
             req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue);
         var output = _bus.Handle(input);
-        if (output.Status == UpdateReceptionStaticCellStatus.Success)
+        switch (output.Status)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionStaticCell,
-                new UpdateReceptionStaticCellMessage(input.RaiinNo, input.CellName, input.CellValue));
+            case UpdateReceptionStaticCellStatus.RaiinInfUpdated:
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
+                    new CommonMessage { RaiinNo = input.RaiinNo });
+                break;
+            case UpdateReceptionStaticCellStatus.RaiinCmtUpdated:
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
+                    new CommonMessage { RaiinNo = input.RaiinNo });
+                break;
+            case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
+                    new CommonMessage { PtId = input.PtId });
+                break;
         }
 
         var presenter = new UpdateReceptionStaticCellPresenter();
@@ -87,8 +97,8 @@ public class VisitingController : ControllerBase
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
-            await _webSocketService.SendMessageAsync(FunctionCodes.UpdateReceptionDynamicCell,
-                new UpdateReceptionDynamicCellMessage(input.RaiinNo, input.GrpId, input.KbnCd));
+            await _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
+                new CommonMessage { RaiinNo = input.RaiinNo });
         }
 
         var presenter = new UpdateReceptionDynamicCellPresenter();

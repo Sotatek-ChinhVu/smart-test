@@ -9,6 +9,21 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+
+        // SupperSet
+        public const string Validate = "Validate";
         public const string Reorder = "Reorder";
+        public const string Paste = "Paste";
+        public const string GetSuperSetDetail = "GetSuperSetDetail";
+        public const string DiseaseSearch = "DiseaseSearch";
+
+        //Mst Item
+        public const string GetDosageDrugList = "GetDosageDrugList";
+        public const string GetFoodAlrgy = "GetFoodAlrgy";
+        public const string SearchOTC = "SearchOTC";
+        public const string SearchSupplement = "SearchSupplement";
+
+        public const string SearchTenItem = "SearchTenItem";
+        public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
     }
 }

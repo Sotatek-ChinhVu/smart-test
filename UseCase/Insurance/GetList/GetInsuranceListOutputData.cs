@@ -1,4 +1,5 @@
-﻿using Domain.Models.InsuranceInfor;
+﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,13 @@ namespace UseCase.Insurance.GetList
 {
     public class GetInsuranceListByIdOutputData : IOutputData
     {
-        public List<InsuranceModel> ListData { get; private set; }
+        public InsuranceDataModel Data { get; private set; }
 
         public GetInsuranceListStatus Status { get; private set; }
-        public GetInsuranceListByIdOutputData(List<InsuranceModel> listData, GetInsuranceListStatus status)
+
+        public GetInsuranceListByIdOutputData(InsuranceDataModel data, GetInsuranceListStatus status)
         {
-            ListData = listData;
+            Data = data;
             Status = status;
         }
     }

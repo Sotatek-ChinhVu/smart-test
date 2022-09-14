@@ -10,11 +10,12 @@ namespace UseCase.ReceptionInsurance.Get
 {
     public class GetReceptionInsuranceInputData : IInputData<GetReceptionInsuranceOutputData>
     {
-        public GetReceptionInsuranceInputData(int hpId, long ptId, int sinDate)
+        public GetReceptionInsuranceInputData(int hpId, long ptId, int sinDate, bool isShowExpiredReception)
         {
             HpId = hpId;
             PtId = ptId;
             SinDate = sinDate;
+            IsShowExpiredReception = isShowExpiredReception;
         }
 
         public int HpId { get; private set; }
@@ -22,6 +23,8 @@ namespace UseCase.ReceptionInsurance.Get
         public long PtId { get; private set; }
         
         public int SinDate { get; private set; }
+
+        public bool IsShowExpiredReception { get; private set; }
 
     }
 }

@@ -8,7 +8,7 @@ namespace Domain.Models.ReceptionInsurance
 {
     public class ReceptionInsuranceModel
     {
-        public ReceptionInsuranceModel(int hokenKbn, string kigo, string bango, int startDate, int endDate, int confirmDate, string edaNo, string hokensyaNo, string rousaiKofuNo, int sinday, int isHokenInf, int isKohi, string futansyaNo, string jyukyusyaNo)
+        public ReceptionInsuranceModel(int hokenKbn, string kigo, string bango, int startDate, int endDate, int confirmDate, string edaNo, string hokensyaNo, string rousaiKofuNo, int sinday, int isHokenInf, int isKohi, string futansyaNo, string jyukyusyaNo, int hokenId, int confirmState)
         {
             HokenKbn = hokenKbn;
             Kigo = kigo;
@@ -24,6 +24,8 @@ namespace Domain.Models.ReceptionInsurance
             IsKohi = isKohi;
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
+            HokenId = hokenId;
+            ConfirmState = confirmState;
         }
 
         public int HokenKbn { get; private set; }
@@ -53,6 +55,10 @@ namespace Domain.Models.ReceptionInsurance
         public string FutansyaNo { get; private set; }
 
         public string JyukyusyaNo { get; private set; }
+
+        public int HokenId { get; private set; }
+
+        public int ConfirmState { get; private set; }
 
         public string KohiKbnName
         {
