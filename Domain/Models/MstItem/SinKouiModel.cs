@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.InputItem
+﻿
+namespace Domain.Models.MstItem
 {
     public class SinKouiModel
     {

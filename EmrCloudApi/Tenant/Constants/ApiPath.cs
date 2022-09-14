@@ -23,5 +23,7 @@
         public const string SearchOTC = "SearchOTC";
         public const string SearchSupplement = "SearchSupplement";
 
+        public const string SearchTenItem = "SearchTenItem";
+        public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
     }
 }

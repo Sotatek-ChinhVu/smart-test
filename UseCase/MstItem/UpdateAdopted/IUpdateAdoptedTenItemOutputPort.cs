@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.InputItem.Search
+namespace UseCase.MstItem.UpdateAdopted
 {
-    public interface ISearchInputItemInputPort : IInputPort<SearchInputItemInputData, SearchInputItemOutputData>
+    public interface IUpdateAdoptedTenItemOutputPort : IOutputPort<UpdateAdoptedTenItemOutputData>
     {
     }
 }
