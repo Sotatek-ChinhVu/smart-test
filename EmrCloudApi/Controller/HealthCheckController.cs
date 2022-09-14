@@ -24,7 +24,8 @@ namespace EmrCloudApi.Controller
         {
             string connectionString = _configuration["TenantDbSample"] ?? "Empty";
             string enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Empty";
-            return Ok("ConnectionString: " + connectionString + " Enviroment " + enviroment);
+            string version = "20220914";
+            return Ok("ConnectionString: " + connectionString + " Enviroment: " + enviroment + "Version: " + version);
         }
     }
 }
