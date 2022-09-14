@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -66,6 +67,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.DiseaseSearch)]
+        public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
+        {
+            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.Keyword, request.PageIndex, request.PageCount);
+            var output = _bus.Handle(input);
+
+            var presenter = new DiseaseSearchPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
         }
     }
 }

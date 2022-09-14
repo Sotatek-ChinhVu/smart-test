@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.Byomei;
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem;
 
 public class DiseaseSearchRequest
 {
