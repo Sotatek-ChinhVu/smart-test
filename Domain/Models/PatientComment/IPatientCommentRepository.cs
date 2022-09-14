@@ -8,6 +8,6 @@ namespace Domain.Models.PatientComment
 {
     public interface IPatientCommentRepository
     {
-        public List<PatientCommentModel> patientCommentModels(int hpId, long pdId);
+        public List<PatientCommentModel> PatientCommentModels(int hpId, long pdId);
     }
 }
