@@ -51,7 +51,7 @@ namespace UseCase.MedicalExamination.GetHistory
             {0,"－" },
             {2,"自費" }
         };
-
+        
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
         public List<GrpKarteHistoryItem> KarteHistories { get; private set; }
 

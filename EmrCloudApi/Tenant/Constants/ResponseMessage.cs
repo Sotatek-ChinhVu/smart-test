@@ -73,11 +73,11 @@
         //Medical examination controller
         public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
         public static readonly string GetMedicalExaminationInvalidHpId = "Invalid HpId";
-        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
+        public static readonly string GetMedicalExaminationInvalidStartIndex = "Invalid Start Index Of Page";
         public static readonly string GetMedicalExaminationInvalidSinDate = "Invalid SinDate";
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
-        public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+        public static readonly string GetMedicalExaminationInvalidEndIndex = "Invalid End Index Of Page";
 
         //OrdInf controller
 

@@ -15,7 +15,7 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted);
 
-        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, long raiinNo);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, List<long> raiinNos);
 
         bool CheckExistOrder(long rpNo, long rpEdaNo);
 
