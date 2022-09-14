@@ -217,6 +217,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
+            services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -358,6 +359,8 @@ namespace EmrCloudApi.Configs.Dependency
             //UsageTreeSet
             busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
+            //Maxmoney
+            busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
