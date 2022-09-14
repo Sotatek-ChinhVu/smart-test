@@ -2,6 +2,6 @@
 
 namespace UseCase.SupperSetDetail.SupperSetDetail;
 
-public interface IGetSetByomeiListOutputPort : IOutputPort<GetSupperSetDetailOutputData>
+public interface IGetSuperSetDetailOutputPort : IOutputPort<GetSupperSetDetailOutputData>
 {
 }
