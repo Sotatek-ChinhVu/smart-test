@@ -112,6 +112,7 @@ namespace Interactor.MedicalExamination
             var pageTotal = query?.Count() ?? 0;
 
             List<ReceptionModel>? rainInfs;
+            var startDateSearch = 0;
             if (inputData.SearchType == 0)
             {
                 rainInfs = query?.OrderByDescending(c => c.SinDate).Skip(inputData.EndPage + 1).Take(inputData.EndPage - inputData.StartPage).ToList();
@@ -119,24 +120,28 @@ namespace Interactor.MedicalExamination
             else
             {
                 rainInfs = query?.OrderByDescending(c => c.SinDate).ToList();
+
+                var rainMarkObj = rainInfs?.FirstOrDefault(r => r.RaiinNo == raiinNoMark);
+                var index = rainMarkObj == null ? 0 : rainInfs?.IndexOf(rainMarkObj) ?? 0;
+
                 if (inputData.SearchType == 1)
                 {
                     rainInfs = rainInfs?.Where(r => r.RaiinNo > raiinNoMark).Take(inputData.EndPage - inputData.StartPage).ToList();
                 }
                 else
                 {
-                    var rainMarkObj = rainInfs?.FirstOrDefault(r => r.RaiinNo == raiinNoMark);
-                    var index = rainMarkObj == null ? 0 : rainInfs?.IndexOf(rainMarkObj) ?? 0;
                     if (index <= 4)
                     {
                         rainInfs = rainInfs?.Where(r => r.RaiinNo < raiinNoMark).Take(inputData.EndPage - inputData.StartPage).ToList();
+                        index = 0;
                     }
-                    else if (index >= 5)
+                    else if (index >= (inputData.EndPage - inputData.StartPage))
                     {
-                        rainInfs = rainInfs?.Where(r => r.RaiinNo < raiinNoMark).Skip(index + 1 - 5).Take(inputData.EndPage - inputData.StartPage).ToList();
+                        rainInfs = rainInfs?.Where(r => r.RaiinNo < raiinNoMark).Skip(index + 1 - (inputData.EndPage - inputData.StartPage)).Take(inputData.EndPage - inputData.StartPage).ToList();
+                        index = index - (inputData.EndPage - inputData.StartPage);
                     }
                 }
-
+                startDateSearch = index;
             }
 
             if (!(rainInfs?.Count > 0))
@@ -304,7 +309,7 @@ namespace Interactor.MedicalExamination
                 historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
             }
 
-            var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed, 0);
+            var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed, startDateSearch);
 
             #endregion
             if (historyKarteOdrRaiins?.Count > 0)
