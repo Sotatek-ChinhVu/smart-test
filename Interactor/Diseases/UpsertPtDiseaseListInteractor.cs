@@ -21,7 +21,7 @@ namespace Interactor.Diseases
         {
             try
             {
-                if (inputData.ToList() == null)
+                if (inputData.ToList() == null || inputData.ToList().Count == 0)
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 }

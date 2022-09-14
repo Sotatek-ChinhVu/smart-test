@@ -365,23 +365,23 @@ namespace Infrastructure.Repositories
                                     .Where(x => x.HokenId == item.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupKohi)
                                     .OrderByDescending(x => x.CheckDate).FirstOrDefault();
                     listKohi.Add(new KohiInfModel(
-                                        item.FutansyaNo ?? string.Empty, 
-                                        item.JyukyusyaNo ?? string.Empty, 
-                                        item.HokenId, 
-                                        item.StartDate, 
-                                        item.EndDate, 
-                                        GetConfirmDate(ptHokenCheckOfKohi), 
-                                        item.Rate, 
-                                        item.GendoGaku, 
-                                        item.SikakuDate, 
-                                        item.KofuDate, 
-                                        item.TokusyuNo ?? string.Empty, 
-                                        item.HokenSbtKbn, 
-                                        item.Houbetu ?? string.Empty, 
-                                        item.HokenNo, 
+                                        item.FutansyaNo ?? string.Empty,
+                                        item.JyukyusyaNo ?? string.Empty,
+                                        item.HokenId,
+                                        item.StartDate,
+                                        item.EndDate,
+                                        GetConfirmDate(ptHokenCheckOfKohi),
+                                        item.Rate,
+                                        item.GendoGaku,
+                                        item.SikakuDate,
+                                        item.KofuDate,
+                                        item.TokusyuNo ?? string.Empty,
+                                        item.HokenSbtKbn,
+                                        item.Houbetu ?? string.Empty,
+                                        item.HokenNo,
                                         item.HokenEdaNo,
-                                        item.PrefNo, 
-                                        new HokenMstModel(0, 0), 
+                                        item.PrefNo,
+                                        new HokenMstModel(0, 0),
                                         sinDate,
                                         GetConfirmDateList(2, item.HokenId)
                         ));
@@ -393,8 +393,9 @@ namespace Infrastructure.Repositories
 
         public bool CheckHokenPIdList(List<int> hokenPIds)
         {
-            var check = _tenantDataContext.PtHokenPatterns.Any(p => hokenPIds.Contains(p.HokenPid) && p.IsDeleted != 1);
-            return check;
+            if (hokenPIds.Count == 0) return true;
+            var countPtHokens = _tenantDataContext.PtHokenPatterns.Count(p => hokenPIds.Contains(p.HokenPid) && p.IsDeleted != 1);
+            return countPtHokens == hokenPIds.Count;
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
