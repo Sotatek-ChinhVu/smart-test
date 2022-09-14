@@ -33,7 +33,7 @@ namespace Interactor.OrdInfs
                 return new GetOrdInfListTreeOutputData(new List<GroupHokenItem>(), GetOrdInfListTreeStatus.InvalidSinDate);
             }
             var allOdrInfs = _ordInfRepository
-                    .GetList(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
+                    .GetList(inputData.HpId, inputData.PtId, inputData.UserId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted)
                     .Select(o => new OdrInfItem(
                         o.HpId,
                         o.RaiinNo,
@@ -97,7 +97,10 @@ namespace Interactor.OrdInfs
                             od.OdrTermVal,
                             od.CnvTermVal,
                             od.YjCd,
-                            od.MasterSbt
+                            od.MasterSbt,
+                            od.YohoSets,
+                            od.Kasan1,
+                            od.Kasan2
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)
