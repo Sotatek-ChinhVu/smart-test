@@ -2,8 +2,15 @@
 {
     public class FoodAlrgyKbnModel
     {
-        public string FoodKbn { get; set; } = string.Empty;
-        public string FoodName { get; set; } = string.Empty;
-        public bool IsDrugAdditives { get; set; }
+        public FoodAlrgyKbnModel(string foodKbn, string foodName, bool isDrugAdditives)
+        {
+            FoodKbn = foodKbn;
+            FoodName = foodName;
+            IsDrugAdditives = isDrugAdditives;
+        }
+
+        public string FoodKbn { get; private set; }
+        public string FoodName { get; private set; }
+        public bool IsDrugAdditives { get; private set; }
     }
 }
