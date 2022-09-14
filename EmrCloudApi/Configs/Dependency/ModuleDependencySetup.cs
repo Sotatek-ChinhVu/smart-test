@@ -153,7 +153,6 @@ using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
-using Interactor.ReceptionLock;
 using UseCase.SetMst.ReorderSetMst;
 using Domain.Models.JsonSetting;
 using Interactor.JsonSetting;

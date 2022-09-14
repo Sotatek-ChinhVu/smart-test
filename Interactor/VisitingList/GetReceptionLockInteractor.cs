@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UseCase.Reception.Get;
 using UseCase.VisitingList.ReceptionLock;
 
-namespace Interactor.ReceptionLock
+namespace Interactor.VisitingList
 {
     public class GetReceptionLockInteractor : IGetReceptionLockInputPort
     {
