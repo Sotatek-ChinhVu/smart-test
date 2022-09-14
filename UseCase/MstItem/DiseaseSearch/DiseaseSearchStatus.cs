@@ -1,4 +1,4 @@
-﻿namespace UseCase.Byomei.DiseaseSearch;
+﻿namespace UseCase.MstItem.DiseaseSearch;
 
 public enum DiseaseSearchStatus : byte
 {

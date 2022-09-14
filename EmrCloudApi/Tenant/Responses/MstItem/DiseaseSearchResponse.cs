@@ -1,6 +1,6 @@
-﻿using Domain.Models.Byomei;
+﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Tenant.Responses.Byomei;
+namespace EmrCloudApi.Tenant.Responses.MstItem;
 
 public class DiseaseSearchResponse
 {
