@@ -145,6 +145,9 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
+using Domain.Models.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoney;
+using Interactor.MaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -218,6 +221,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
+            services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -358,6 +362,8 @@ namespace EmrCloudApi.Configs.Dependency
             //UsageTreeSet
             busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();
 
+            //Maxmoney
+            busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
