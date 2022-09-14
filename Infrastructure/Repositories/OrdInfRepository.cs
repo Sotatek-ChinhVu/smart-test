@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate)?.ToList();
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon)?.ToList();
             var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
 
             var result = ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sinDate, sinDate, userId, false);
@@ -38,8 +38,10 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && raiinNos.Contains(o.RaiinNo))?.ToList();
             var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
+            var rpNo = allOdrInf?.Select(o => o.RpNo);
+            var rpEdNo = allOdrInf?.Select(o => o.RpEdaNo);
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (rpNo != null && rpNo.Contains(o.RpNo)) && (rpEdNo != null && rpEdNo.Contains(o.RpEdaNo)))?.ToList();
 
             if (deleteCondition == 0)
             {
@@ -54,8 +56,8 @@ namespace Infrastructure.Repositories
                 allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
             }
 
-            var sindateMin = allOdrInf?.Min(o => o.SinDate) ?? 0;
-            var sindateMax = allOdrInf?.Max(o => o.SinDate) ?? 0;
+            var sindateMin = allOdrInfDetails?.Min(o => o.SinDate) ?? 0;
+            var sindateMax = allOdrInfDetails?.Max(o => o.SinDate) ?? 0;
 
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
