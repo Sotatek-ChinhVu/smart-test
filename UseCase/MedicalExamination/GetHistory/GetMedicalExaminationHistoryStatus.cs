@@ -8,6 +8,10 @@
         InvalidPtId = 3,
         InvalidSinDate = 4,
         InvalidEndPage = 5,
-        NoData = 6,
+        InvalidStartPageAndEndPage = 6,
+        InvalidSearchType = 7,
+        InvalidSearchCategory = 8,
+        InvalidSearchText = 9,
+        NoData = 10,
     }
 }

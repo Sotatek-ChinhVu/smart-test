@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, List<long> raiinNos)
         {
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && raiinNos.Contains(o.RaiinNo))?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
+            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo) && odr.IsDeleted == 0)?.ToList();
             var sindateMin = allOdrInf?.Min(o => o.SinDate) ?? 0;
             var sindateMax = allOdrInf?.Max(o => o.SinDate) ?? 0;
 

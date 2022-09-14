@@ -52,6 +52,23 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidEndPage, 0);
             }
+            if (inputData.StartPage >= inputData.EndPage)
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidStartPageAndEndPage, 0);
+            }
+            if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchType, 0);
+            }
+            if ((inputData.SearchType != 0 && !(inputData.SearchCategory >= 1 && inputData.SearchType <= 3)) || (inputData.SearchType == 0 && inputData.SearchCategory != 0))
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchCategory, 0);
+            }
+            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchText, 0);
+            }
+
 
             #region hard value
             int karteDeleteHistory = 1;
@@ -74,7 +91,10 @@ namespace Interactor.MedicalExamination
             List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId).OrderBy(c => c.KarteKbn).ToList();
             long SearchRaiinOnKarte()
             {
-                return allkarteInfs.FirstOrDefault(k => k.Text.Contains(inputData.SearchText) && ((inputData.SearchType == 1 && k.RaiinNo <= raiinNoEndPage) || (inputData.SearchType == 2 && k.RaiinNo > raiinNoStartPage)))?.RaiinNo ?? -1;
+                if (inputData.SearchType == 1)
+                    return allkarteInfs.FirstOrDefault(k => k.Text.Contains(inputData.SearchText) && inputData.SearchType == 1 && k.RaiinNo <= raiinNoEndPage)?.RaiinNo ?? -1;
+                else
+                    return allkarteInfs.LastOrDefault(k => k.Text.Contains(inputData.SearchText) && inputData.SearchType == 2 && k.RaiinNo > raiinNoStartPage)?.RaiinNo ?? -1;
             }
             #endregion
             #region Odr
@@ -87,31 +107,10 @@ namespace Interactor.MedicalExamination
                                                  .ToList();
             long SearchRaiinOnOdrInf()
             {
-                return allOdrInfs?.FirstOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && ((inputData.SearchType == 1 && o.RaiinNo <= raiinNoEndPage) || (inputData.SearchType == 2 && o.RaiinNo > raiinNoStartPage)))?.RaiinNo ?? -1;
-            }
-
-            long raiinNoMark = -1;
-            if (inputData.SearchCategory == 1)
-            {
-                raiinNoMark = SearchRaiinOnKarte();
-            }
-            else if (inputData.SearchCategory == 2)
-            {
-                raiinNoMark = SearchRaiinOnOdrInf();
-            }
-            else
-            {
                 if (inputData.SearchType == 1)
-                {
-                    var raiinNoKarte = SearchRaiinOnKarte();
-                    var raiinNoOdr = SearchRaiinOnOdrInf();
-                    if (raiinNoKarte >= 0 && raiinNoOdr >= 0)
-                        raiinNoMark = Math.Min(raiinNoKarte, raiinNoOdr);
-                    else if (raiinNoKarte >= 0 || raiinNoOdr >= 0)
-                        raiinNoMark = Math.Max(raiinNoKarte, raiinNoOdr);
-                }
+                    return allOdrInfs?.FirstOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && inputData.SearchType == 1 && o.RaiinNo <= raiinNoEndPage)?.RaiinNo ?? -1;
                 else
-                    raiinNoMark = Math.Max(SearchRaiinOnKarte(), SearchRaiinOnOdrInf());
+                    return allOdrInfs?.LastOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && inputData.SearchType == 2 && o.RaiinNo > raiinNoStartPage)?.RaiinNo ?? -1;
             }
 
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
@@ -120,13 +119,42 @@ namespace Interactor.MedicalExamination
             var pageTotal = query?.Count() ?? 0;
 
             List<ReceptionModel>? rainInfs;
-            var startDateSearch = 0;
+            var startPageSearch = 0;
             if (inputData.SearchType == 0)
             {
-                rainInfs = query?.Skip(inputData.EndPage + 1).Take(inputData.EndPage - inputData.StartPage).ToList();
+                rainInfs = query?.Skip(inputData.StartPage).Take(inputData.EndPage - inputData.StartPage).ToList();
             }
             else
             {
+                long raiinNoMark = -1;
+                if (inputData.SearchCategory == 1)
+                {
+                    raiinNoMark = SearchRaiinOnKarte();
+                }
+                else if (inputData.SearchCategory == 2)
+                {
+                    raiinNoMark = SearchRaiinOnOdrInf();
+                }
+                else
+                {
+                    if (inputData.SearchType == 1)
+                    {
+                        var raiinNoKarte = SearchRaiinOnKarte();
+                        var raiinNoOdr = SearchRaiinOnOdrInf();
+                        if (raiinNoKarte >= 0 && raiinNoOdr >= 0)
+                            raiinNoMark = Math.Min(raiinNoKarte, raiinNoOdr);
+                        else if (raiinNoKarte >= 0 || raiinNoOdr >= 0)
+                            raiinNoMark = Math.Max(raiinNoKarte, raiinNoOdr);
+                    }
+                    else
+                    {
+                        var raiinNoKarte = SearchRaiinOnKarte();
+                        var raiinNoOdr = SearchRaiinOnOdrInf();
+                        raiinNoMark = Math.Max(raiinNoKarte, raiinNoOdr);
+
+                    }
+                }
+
                 if (raiinNoMark == -1) rainInfs = null;
                 else
                 {
@@ -141,18 +169,18 @@ namespace Interactor.MedicalExamination
                     }
                     else
                     {
-                        if (index <= 4)
+                        if (index < inputData.EndPage - inputData.StartPage)
                         {
-                            rainInfs = rainInfs?.Where(r => r.RaiinNo < raiinNoMark).Take(inputData.EndPage - inputData.StartPage).ToList();
+                            rainInfs = rainInfs?.Take(inputData.EndPage - inputData.StartPage).ToList();
                             index = 0;
                         }
-                        else if (index >= (inputData.EndPage - inputData.StartPage))
+                        else
                         {
-                            rainInfs = rainInfs?.Where(r => r.RaiinNo < raiinNoMark).Skip(index + 1 - (inputData.EndPage - inputData.StartPage)).Take(inputData.EndPage - inputData.StartPage).ToList();
-                            index = index - (inputData.EndPage - inputData.StartPage);
+                            rainInfs = rainInfs?.Skip(index + 1 - (inputData.EndPage - inputData.StartPage)).Take(inputData.EndPage - inputData.StartPage).ToList();
+                            index = index - (inputData.EndPage - inputData.StartPage) + 1;
                         }
                     }
-                    startDateSearch = index;
+                    startPageSearch = index;
                 }
             }
 
@@ -321,7 +349,7 @@ namespace Interactor.MedicalExamination
                 historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
             }
 
-            var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed, startDateSearch);
+            var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins, GetMedicalExaminationHistoryStatus.Successed, startPageSearch);
 
             #endregion
             if (historyKarteOdrRaiins?.Count > 0)

@@ -39,6 +39,18 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.InvalidEndPage:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidEndIndex;
                     break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchType:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchType;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchCategory:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchCategory;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidStartPageAndEndPage:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidStartPageAndEndPage;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchText:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchText;
+                    break;
             }
         }
     }

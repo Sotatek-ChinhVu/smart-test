@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, int hpId)
         {
-            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
+            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && k.IsDeleted == 0).ToList();
 
             if (karteInfEntity == null)
             {
