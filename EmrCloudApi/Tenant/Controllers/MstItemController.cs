@@ -36,7 +36,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
-        [HttpPost(ApiPath.GetFoodAlrgy)]
+        [HttpGet(ApiPath.GetFoodAlrgy)]
         public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
             var input = new GetFoodAlrgyInputData();
