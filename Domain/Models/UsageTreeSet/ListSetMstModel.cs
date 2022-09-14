@@ -2,10 +2,11 @@
 {
     public class ListSetMstModel
     {
-        public ListSetMstModel(int hpId, int generationId, string setName, string itemCd, int isTitle, int setKbn, int selectType, double suryo, int level1, int level2, int level3, int level4, int level5, string cmtName, string cmtOpt)
+        public ListSetMstModel(int hpId, int generationId,int setId, string setName, string itemCd, int isTitle, int setKbn, int selectType, double suryo, int level1, int level2, int level3, int level4, int level5, string cmtName, string cmtOpt)
         {
             HpId = hpId;
             GenerationId = generationId;
+            SetId = setId;
             SetName = setName;
             ItemCd = itemCd;
             IsTitle = isTitle;
@@ -23,6 +24,7 @@
 
         public int HpId { get; private set; }
         public int GenerationId { get; private set; }
+        public int SetId { get; private set; }
         public string SetName { get; private set; }
         public string ItemCd { get; private set; }
         public int IsTitle { get; private set; }
