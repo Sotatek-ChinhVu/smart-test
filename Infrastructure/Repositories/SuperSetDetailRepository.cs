@@ -116,4 +116,26 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     }
 
     #endregion
+
+    public bool SaveSetByomei(List<SetByomeiModel> setByomeis)
+    {
+        bool status = false;
+        try
+        {
+            var listAddNews = setByomeis.Where(byomei => byomei.Id == 0).ToList();
+            var listUpdates = _tenantDataContext.
+                setByomeis.Where(byomei => !listAddNews.Contains(byomei)).ToList();
+            if (listAddNews != null && listAddNews.Count > 0)
+            {
+                _tenantDataContext.AddRange(listAddNews);
+            }
+            _tenantDataContext.UpdateRange(listUpdates);
+            _tenantDataContext.SaveChanges();
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
 }
