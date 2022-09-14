@@ -24,7 +24,7 @@ namespace Interactor.VisitingList
                 return new GetPatientCommentOutputData(new List<PatientCommentModel>(), GetPatientCommentStatus.InvalidData);
             }
 
-            var listData = _patientCommentRepository.patientCommentModels(inputData.HpId, inputData.PdId);
+            var listData = _patientCommentRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
 
             if (listData == null || listData.Count == 0)
             {

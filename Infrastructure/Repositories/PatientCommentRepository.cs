@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<PatientCommentModel> patientCommentModels(int hpId, long pdId)
+        public List<PatientCommentModel> PatientCommentModels(int hpId, long pdId)
         {
             var listData = _tenantDataContext.PtCmtInfs
                 .Where(x => x.HpId == hpId & x.PtId == pdId)
