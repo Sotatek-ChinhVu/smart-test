@@ -1,4 +1,4 @@
-﻿using Domain.Models.InputItem;
+﻿using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemGenerationConf;
@@ -10,12 +10,12 @@ namespace Interactor.OrdInfs
     public class ValidationOrdInfListInteractor : IValidationOrdInfListInputPort
     {
         private readonly IOrdInfRepository _ordInfRepository;
-        private readonly IInputItemRepository _inputItemRepository;
+        private readonly IMstItemRepository _mstItemRepository;
         private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
-        public ValidationOrdInfListInteractor(IOrdInfRepository ordInfRepository, IInputItemRepository inputItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository)
+        public ValidationOrdInfListInteractor(IOrdInfRepository ordInfRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository)
         {
             _ordInfRepository = ordInfRepository;
-            _inputItemRepository = inputItemRepository;
+            _mstItemRepository = mstItemRepository;
             _systemGenerationConfRepository = systemGenerationConfRepository;
         }
 
@@ -80,7 +80,7 @@ namespace Interactor.OrdInfs
                     {
                         foreach (var itemDetail in item.OdrDetails)
                         {
-                            var inputItem = itemDetail == null ? null : _inputItemRepository.GetTenMst(itemDetail.HpId, itemDetail.SinDate, itemDetail?.ItemCd ?? string.Empty);
+                            var inputItem = itemDetail == null ? null : _mstItemRepository.GetTenMst(itemDetail.HpId, itemDetail.SinDate, itemDetail?.ItemCd ?? string.Empty);
                             var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(itemDetail.HpId, 2002, 0, itemDetail?.SinDate ?? 0, 999);
                             var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(itemDetail?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, itemDetail?.SinDate ?? 0);
                             var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(itemDetail?.HpId ?? 0, inputItem, itemDetail?.SinDate ?? 0);
@@ -132,7 +132,10 @@ namespace Interactor.OrdInfs
                                         0,
                                         0,
                                         0,
-                                        ""
+                                        "",
+                                        new List<YohoSetMstModel>(),
+                                        0,
+                                        0
                                     );
                             ordInf.OrdInfDetails.Add(ordInfDetail);
                         }
