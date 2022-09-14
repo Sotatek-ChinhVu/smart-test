@@ -146,9 +146,6 @@ using UseCase.Schema.SaveImage;
 using Domain.Models.Byomei;
 using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
-using Domain.Models.ReceptionLock;
-using UseCase.VisitingList.ReceptionLock;
-using Interactor.ReceptionLock;
 using UseCase.SetMst.ReorderSetMst;
 using Domain.Models.JsonSetting;
 using Interactor.JsonSetting;
@@ -239,7 +236,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
-            services.AddTransient<IReceptionLockRepository, ReceptionLockRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
@@ -269,7 +265,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
-            busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
             busBuilder.RegisterUseCase<GetReceptionCommentInputData, GetReceptionCommentInteractor>();
 
             // Visiting
