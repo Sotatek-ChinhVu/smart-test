@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.InputItem.Search
+namespace UseCase.MstItem.SearchTenItem
 {
-    public enum SearchInputItemStatus: byte
+    public enum SearchTenItemStatus: byte
     {
         Successed = 1,
         InValidHpId = 2,

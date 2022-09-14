@@ -1,6 +1,6 @@
-﻿namespace EmrCloudApi.Tenant.Requests.InputItem
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem
 {
-    public class SearchInputItemRequest
+    public class SearchTenItemRequest
     {
         public string Keyword { get; set; } = string.Empty;
 
@@ -18,7 +18,7 @@
 
         public int HpId { get; set; }
 
-        public double PointFrom { get; set; } = 0; 
+        public double PointFrom { get; set; } = 0;
 
         public double PointTo { get; set; } = 0;
 

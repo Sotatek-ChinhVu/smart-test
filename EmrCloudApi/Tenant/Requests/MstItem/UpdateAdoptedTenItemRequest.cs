@@ -1,6 +1,6 @@
-﻿namespace EmrCloudApi.Tenant.Requests.InputItem
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem
 {
-    public class UpdateAdoptedInputItemRequest
+    public class UpdateAdoptedTenItemRequest
     {
         public int ValueAdopted { get; set; }
 

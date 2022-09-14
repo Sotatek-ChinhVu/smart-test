@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.InputItem.UpdateAdopted
+namespace UseCase.MstItem.UpdateAdopted
 {
-    public class UpdateAdoptedInputItemInputData : IInputData<UpdateAdoptedInputItemOutputData>
+    public class UpdateAdoptedTenItemInputData : IInputData<UpdateAdoptedTenItemOutputData>
     {
-        public UpdateAdoptedInputItemInputData(int valueAdopted, string itemCdInputItem, int sinDateInputItem)
+        public UpdateAdoptedTenItemInputData(int valueAdopted, string itemCdInputItem, int sinDateInputItem)
         {
             ValueAdopted = valueAdopted;
             ItemCdInputItem = itemCdInputItem;
