@@ -1,13 +1,9 @@
 ﻿using Domain.Models.MstItem;
 using Entity.Tenant;
-using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -707,6 +703,20 @@ namespace Infrastructure.Repositories
             return listByomeies;
         }
 
+        public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
+        {
+            if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
+            var byomeiMst = _tenantDataContext.ByomeiMsts.Where(p => p.HpId == hpId && p.ByomeiCd == byomeiCd).FirstOrDefault();
+            if (byomeiMst != null)
+            {
+                byomeiMst.IsAdopted = 1;
+                byomeiMst.UpdateId = TempIdentity.UserId;
+                byomeiMst.UpdateDate = DateTime.UtcNow;
+                byomeiMst.UpdateMachine = TempIdentity.ComputerName;
+                _tenantDataContextTracking.SaveChanges();
+            }
+            return true;
+        }
         #region Private Function
         private ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {

@@ -12,6 +12,7 @@ using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
+using UseCase.MstItem.UpdateAdoptedByomei;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -37,6 +38,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
         }
+
         [HttpGet(ApiPath.GetFoodAlrgy)]
         public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
@@ -48,10 +50,11 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
         }
+
         [HttpPost(ApiPath.SearchOTC)]
         public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
-            var input = new SearchOTCInputData(request.SearchValue,request.PageIndex,request.PageSize);
+            var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchOTCPresenter();
@@ -59,6 +62,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
         }
+
         [HttpPost(ApiPath.SearchSupplement)]
         public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
         {
@@ -70,6 +74,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
         }
+
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
@@ -79,6 +84,7 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
+
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
         public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
@@ -88,6 +94,7 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
+
         [HttpGet(ApiPath.DiseaseSearch)]
         public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
@@ -98,6 +105,16 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateAdoptedByomei)]
+        public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
+        {
+            var input = new UpdateAdoptedByomeiInputData(request.HpId, request.ByomeiCd);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateAdoptedByomeiPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
     }
 }
