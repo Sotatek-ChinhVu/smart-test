@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         public List<ReceptionCommentModel> GetReceptionComments(long raiinNo)
         {
             var receptionComment = _tenantDataContext.RaiinCmtInfs
-                .Where(x => x.RaiinNo == raiinNo)
+                .Where(x => x.RaiinNo == raiinNo & x.IsDelete == 0)
                 .Select(x => new ReceptionCommentModel(
                 x.HpId,
                 x.PtId,
