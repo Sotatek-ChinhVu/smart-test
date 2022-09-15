@@ -391,11 +391,11 @@ namespace Infrastructure.Repositories
             return new InsuranceDataModel(listInsurance, listHokenInf, listKohi);
         }
 
-        public bool CheckHokenPIdList(List<int> hokenPIds)
+        public bool CheckHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
         {
             if (hokenPIds.Count == 0) return true;
-            var countPtHokens = _tenantDataContext.PtHokenPatterns.Count(p => hokenPIds.Contains(p.HokenPid) && p.IsDeleted != 1);
-            return countPtHokens == hokenPIds.Count;
+            var countPtHokens = _tenantDataContext.PtHokenInfs.Count(p => hokenPIds.Contains(p.HokenId) && p.IsDeleted != 1 && hpIds.Contains(p.HpId) && ptIds.Contains(p.PtId));
+            return countPtHokens >= hokenPIds.Count;
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)

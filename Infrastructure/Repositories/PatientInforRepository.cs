@@ -171,7 +171,7 @@ namespace Infrastructure.Repositories
         public bool CheckListId(List<long> ptIds)
         {
             var countPtInfs = _tenantDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
-            return ptIds.Count == countPtInfs;
+            return ptIds.Count <= countPtInfs;
         }
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)

@@ -6,6 +6,6 @@ namespace Domain.Models.Insurance
     {
         InsuranceDataModel GetInsuranceListById(int hpId, long ptId, int sinDate);
         IEnumerable<InsuranceModel> GetListHokenPattern(int hpId, long ptId, bool allowDisplayDeleted);
-        bool CheckHokenPIdList(List<int> hokenPIds);
+        bool CheckHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds);
     }
 }

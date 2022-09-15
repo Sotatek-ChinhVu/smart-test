@@ -14,6 +14,10 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
 
         [Required]
         [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
+        public int HpId { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[1-9][0-9]*$", ErrorMessage = "{0} > 0")]
         public int SortNo { get; set; }
 
         public List<PrefixSuffixRequest> PrefixList { get; set; } = new List<PrefixSuffixRequest>();

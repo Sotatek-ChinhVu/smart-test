@@ -27,7 +27,7 @@ namespace Interactor.Diseases
                 }
 
                 var datas = inputData.ptDiseaseModel.Select(i => new PtDiseaseModel(
-                        0,
+                        i.HpId,
                         i.PtId,
                         i.SeqNo,
                         i.ByomeiCd,
@@ -68,7 +68,7 @@ namespace Interactor.Diseases
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
-                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).ToList()))
+                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).Distinct().ToList(), datas.Select(i => i.HpId).Distinct().ToList(), datas.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist);
                 }
