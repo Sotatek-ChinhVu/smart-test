@@ -5,6 +5,7 @@
         public const string Get = "Get";
         public const string GetList = "GetList";
         public const string Update = "Update";
+        public const string Insert = "Insert";
         public const string Upsert = "Upsert";
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
