@@ -28,6 +28,30 @@ namespace Domain.Models.MstItem
             IpnNameCd = ipnNameCd;
         }
 
+        public TenItemModel()
+        {
+            HpId = 0;
+            ItemCd = string.Empty;
+            RousaiKbn = 0;
+            KanaName1 = string.Empty;
+            Name = string.Empty;
+            KohatuKbn = 0;
+            MadokuKbn = 0;
+            KouseisinKbn = 0;
+            OdrUnitName = string.Empty;
+            EndDate = 0;
+            DrugKbn = 0;
+            MasterSbt = string.Empty;
+            BuiKbn = 0;
+            Ten = 0;
+            TenId = 0;
+            KensaMstCenterItemCd1 = string.Empty;
+            KensaMstCenterItemCd2 = string.Empty;
+            IsAdopted = 0;
+            CmtCol1 = 0;
+            IpnNameCd = string.Empty;
+        }
+
         public int HpId { get; private set; }
 
         public string ItemCd { get; private set; }

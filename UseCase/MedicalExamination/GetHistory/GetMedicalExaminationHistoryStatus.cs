@@ -9,6 +9,7 @@
         InvalidSinDate = 4,
         InvalidPageSize = 5,
         InvalidDeleteCondition = 6,
-        NoData = 7,
+        InvalidFilterId = 7,
+        NoData = 8
     }
 }

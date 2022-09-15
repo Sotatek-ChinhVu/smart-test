@@ -10,5 +10,7 @@
         public int DeleteCondition { get; set; }
         public int KarteDeleteHistory { get; set; }
         public int UserId { get; set; }
+        public long FilterId { get; set; }
+        public int IsShowApproval { get; set; }
     }
 }

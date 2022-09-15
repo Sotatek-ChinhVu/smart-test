@@ -22,6 +22,7 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionSameVisit;
@@ -223,6 +224,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

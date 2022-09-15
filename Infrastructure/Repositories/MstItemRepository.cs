@@ -78,7 +78,6 @@ namespace Infrastructure.Repositories
 
         public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {
-            List<FoodAlrgyKbnModel> m12FoodAlrgies = new List<FoodAlrgyKbnModel>();
             var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.AsEnumerable()
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(

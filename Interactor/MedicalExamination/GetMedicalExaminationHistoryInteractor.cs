@@ -1,8 +1,10 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.KaMst;
+using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
+using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.User;
 using UseCase.MedicalExamination.GetHistory;
@@ -19,7 +21,9 @@ namespace Interactor.MedicalExamination
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
         private readonly IKaMstRepository _kaRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository)
+        private readonly IKarteFilterMstRepository _karteFilterMstRepository;
+        private readonly IRaiinListTagRepository _rainListTagRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -28,6 +32,8 @@ namespace Interactor.MedicalExamination
             _insuranceRepository = insuranceRepository;
             _userRepository = userRepository;
             _kaRepository = kaRepository;
+            _karteFilterMstRepository = karteFilterMstRepository;
+            _rainListTagRepository = rainListTagRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -56,13 +62,33 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidDeleteCondition);
             }
+            if (inputData.FilterId < 0)
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidFilterId);
+            }
 
             bool allowDisplayDeleted = inputData.KarteDeleteHistory > 0;
 
-            var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory)
+            var karteFilter = inputData.FilterId == 0 ? null : _karteFilterMstRepository.Get(inputData.HpId, inputData.UserId, inputData.FilterId);
+            IEnumerable<ReceptionModel> query;
+
+            if (karteFilter?.OnlyBookmark == true)
+            {
+                query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory).Where(r => (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
+                            (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)))
+                        join raiinListTag in _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, true)
+                        on raiinInf.RaiinNo equals raiinListTag.RaiinNo
+                        join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted, karteFilter.IsAllHoken, karteFilter.IsHoken, karteFilter.IsJihi, karteFilter.IsRosai, karteFilter.IsJibai)
+                        on raiinInf.HokenPid equals ptHokenPattern.HokenPid
+                        select raiinInf;
+            }
+            else
+            {
+                query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory)
                         join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
+            }
             var pageTotal = query.Count();
             var rainInfs = query.OrderByDescending(c => c.SinDate).Skip((inputData.PageIndex - 1) * inputData.PageSize).Take(inputData.PageSize).ToList();
 
@@ -70,6 +96,7 @@ namespace Interactor.MedicalExamination
             var raiinNos = rainInfs?.Select(r => r.RaiinNo).ToList();
             var tantoIds = rainInfs?.Select(r => r.TantoId).ToList();
             var kaIds = rainInfs?.Select(r => r.TantoId).ToList();
+            var sinDates = rainInfs?.Select(r => r.SinDate).ToList();
 
             #region karte
             List<KarteKbnMstModel> allkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
@@ -81,9 +108,15 @@ namespace Interactor.MedicalExamination
 
             var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
             var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
-
             var doctors = tantoIds == null ? new List<UserMstModel>() : _userRepository.GetDoctorsList(tantoIds)?.ToList();
             var kaMsts = kaIds == null ? new List<KaMstModel>() : _kaRepository.GetByKaIds(kaIds)?.ToList();
+            var raiinListTags = (sinDates == null || raiinNos == null) ? new List<RaiinListTagModel>() : _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos)?.ToList();
+            IEnumerable<ApproveInfModel>? approveInfs = null;
+
+            if (inputData.IsShowApproval == 1 || inputData.IsShowApproval == 2)
+            {
+                approveInfs = raiinNos == null ? new List<ApproveInfModel>() : _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
+            }
 
             if (!(rainInfs?.Count > 0))
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData);
@@ -92,8 +125,10 @@ namespace Interactor.MedicalExamination
             {
                 var doctorFirst = doctors?.FirstOrDefault(d => d.UserId == raiinInf.TantoId);
                 var kaMst = kaMsts?.FirstOrDefault(k => k.KaId == raiinInf.KaId);
+                var raiinTag = raiinListTags?.FirstOrDefault(r => r.RaiinNo == raiinInf.RaiinNo && r.SinDate == raiinInf.SinDate);
+                var approveInf = approveInfs?.FirstOrDefault(a => a.RaiinNo == raiinInf.RaiinNo);
 
-                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst?.DisplayRateOnly ?? string.Empty, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
+                var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, String.Empty, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, raiinTag?.TagNo ?? 0, approveInf?.DisplayApprovalInfo ?? string.Empty, new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
                 List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
 
@@ -162,7 +197,6 @@ namespace Interactor.MedicalExamination
                                                 .ToList();
 
                         //_mapper.Map<OdrInfModel>(c)
-
                         foreach (var rpOdrInf in rpOdrInfs.OrderBy(c => c.IsDeleted))
                         {
                             var odrModel = new OdrInfHistoryItem(

@@ -42,6 +42,9 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.InvalidDeleteCondition:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidDeleteCondition;
                     break;
+                case GetMedicalExaminationHistoryStatus.InvalidFilterId:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidFilterId;
+                    break;
             }
         }
     }
