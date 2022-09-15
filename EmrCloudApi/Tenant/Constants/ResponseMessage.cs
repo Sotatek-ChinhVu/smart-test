@@ -77,8 +77,7 @@
         public static readonly string GetMedicalExaminationInvalidSinDate = "Invalid SinDate";
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
-        public static readonly string GetMedicalExaminationInvalidEndIndex = "Invalid End Index Of Page";
-        public static readonly string GetMedicalExaminationInvalidStartPageAndEndPage = "Invalid When StartPage >= EndPage";
+        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
         public static readonly string GetMedicalExaminationInvalidSearchType = "Invalid Search Type";
         public static readonly string GetMedicalExaminationInvalidSearchCategory = "Invalid Search Category";
         public static readonly string GetMedicalExaminationInvalidSearchText = "Invalid Search Text";

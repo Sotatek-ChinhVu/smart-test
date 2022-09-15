@@ -7,11 +7,10 @@
         InvalidHpId = 2,
         InvalidPtId = 3,
         InvalidSinDate = 4,
-        InvalidEndPage = 5,
-        InvalidStartPageAndEndPage = 6,
-        InvalidSearchType = 7,
-        InvalidSearchCategory = 8,
-        InvalidSearchText = 9,
-        NoData = 10,
+        InvalidPageSize = 5,
+        InvalidSearchType = 6,
+        InvalidSearchCategory = 7,
+        InvalidSearchText = 8,
+        NoData = 9,
     }
 }

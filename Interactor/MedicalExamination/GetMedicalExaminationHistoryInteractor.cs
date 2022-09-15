@@ -48,13 +48,9 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSinDate, 0);
             }
-            if (inputData.EndPage <= 0)
+            if (inputData.PageSize <= 0)
             {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidEndPage, 0);
-            }
-            if (inputData.StartPage >= inputData.EndPage)
-            {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidStartPageAndEndPage, 0);
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidPageSize, 0);
             }
             if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
             {
@@ -82,7 +78,6 @@ namespace Interactor.MedicalExamination
             query = query?.OrderByDescending(c => c.SinDate);
             var raiinNos = query?.Select(q => q.RaiinNo)?.ToList();
             var raiinNoStartPage = raiinNos == null ? 0 : raiinNos[inputData.StartPage];
-            var raiinNoEndPage = raiinNos == null ? 0 : raiinNos[inputData.EndPage];
 
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
 
@@ -92,7 +87,7 @@ namespace Interactor.MedicalExamination
             long SearchRaiinOnKarte()
             {
                 if (inputData.SearchType == 1)
-                    return allkarteInfs.FirstOrDefault(k => k.Text.Contains(inputData.SearchText) && inputData.SearchType == 1 && k.RaiinNo <= raiinNoEndPage)?.RaiinNo ?? -1;
+                    return allkarteInfs.FirstOrDefault(k => k.Text.Contains(inputData.SearchText) && inputData.SearchType == 1 && k.RaiinNo <= raiinNoStartPage)?.RaiinNo ?? -1;
                 else
                     return allkarteInfs.LastOrDefault(k => k.Text.Contains(inputData.SearchText) && inputData.SearchType == 2 && k.RaiinNo > raiinNoStartPage)?.RaiinNo ?? -1;
             }
@@ -108,7 +103,7 @@ namespace Interactor.MedicalExamination
             long SearchRaiinOnOdrInf()
             {
                 if (inputData.SearchType == 1)
-                    return allOdrInfs?.FirstOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && inputData.SearchType == 1 && o.RaiinNo <= raiinNoEndPage)?.RaiinNo ?? -1;
+                    return allOdrInfs?.FirstOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && inputData.SearchType == 1 && o.RaiinNo <= raiinNoStartPage)?.RaiinNo ?? -1;
                 else
                     return allOdrInfs?.LastOrDefault(o => o.OrdInfDetails.Any(od => od.ItemName.Contains(inputData.SearchText)) && inputData.SearchType == 2 && o.RaiinNo > raiinNoStartPage)?.RaiinNo ?? -1;
             }
@@ -122,7 +117,7 @@ namespace Interactor.MedicalExamination
             var startPageSearch = 0;
             if (inputData.SearchType == 0)
             {
-                rainInfs = query?.Skip(inputData.StartPage).Take(inputData.EndPage - inputData.StartPage).ToList();
+                rainInfs = query?.Skip(inputData.StartPage).Take(inputData.PageSize).ToList();
             }
             else
             {
@@ -165,19 +160,19 @@ namespace Interactor.MedicalExamination
 
                     if (inputData.SearchType == 1)
                     {
-                        rainInfs = rainInfs?.Where(r => r.RaiinNo > raiinNoMark).Take(inputData.EndPage - inputData.StartPage).ToList();
+                        rainInfs = rainInfs?.Where(r => r.RaiinNo <= raiinNoMark).Take(inputData.PageSize).ToList();
                     }
                     else
                     {
-                        if (index < inputData.EndPage - inputData.StartPage)
+                        if (index < inputData.PageSize)
                         {
-                            rainInfs = rainInfs?.Take(inputData.EndPage - inputData.StartPage).ToList();
+                            rainInfs = rainInfs?.Take(inputData.PageSize).ToList();
                             index = 0;
                         }
                         else
                         {
-                            rainInfs = rainInfs?.Skip(index + 1 - (inputData.EndPage - inputData.StartPage)).Take(inputData.EndPage - inputData.StartPage).ToList();
-                            index = index - (inputData.EndPage - inputData.StartPage) + 1;
+                            rainInfs = rainInfs?.Skip(index + 1 - inputData.PageSize).Take(inputData.PageSize).ToList();
+                            index = index - inputData.PageSize + 1;
                         }
                     }
                     startPageSearch = index;
