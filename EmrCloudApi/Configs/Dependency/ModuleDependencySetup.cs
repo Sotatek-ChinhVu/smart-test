@@ -76,7 +76,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
-using Interactor.SupperSetDetail;
+using Interactor.SuperSetDetail;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
@@ -133,7 +133,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
-using UseCase.SupperSetDetail.SupperSetDetail;
+using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -144,7 +144,7 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
-using UseCase.SupperSetDetail.SaveSuperSetDetail;
+using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
@@ -354,9 +354,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
-            // SupperSetDetail
-            busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
-            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSupperSetDetailInteractor>();
+            // SuperSetDetail
+            busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

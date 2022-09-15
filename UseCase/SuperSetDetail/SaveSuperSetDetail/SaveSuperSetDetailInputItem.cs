@@ -1,6 +1,6 @@
-﻿using UseCase.SupperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
+﻿using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 
-namespace UseCase.SupperSetDetail.SaveSuperSetDetail;
+namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public class SaveSuperSetDetailInputItem
 {

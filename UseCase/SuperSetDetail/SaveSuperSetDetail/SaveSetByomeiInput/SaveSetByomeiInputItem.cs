@@ -1,5 +1,5 @@
 ﻿
-namespace UseCase.SupperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
+namespace UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 
 public class SaveSetByomeiInputItem
 {

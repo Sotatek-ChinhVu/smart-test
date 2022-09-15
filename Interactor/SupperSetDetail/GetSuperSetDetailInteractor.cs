@@ -1,9 +1,9 @@
 ﻿using Domain.Models.SuperSetDetail;
-using UseCase.SupperSetDetail.SupperSetDetail;
+using UseCase.SuperSetDetail.SuperSetDetail;
 
-namespace Interactor.SupperSetDetail;
+namespace Interactor.SuperSetDetail;
 
-public class GetSuperSetDetailInteractor : IGetSupperSetDetailInputPort
+public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
 
@@ -12,24 +12,24 @@ public class GetSuperSetDetailInteractor : IGetSupperSetDetailInputPort
         _superSetDetailRepository = superSetDetailRepository;
     }
 
-    public GetSupperSetDetailOutputData Handle(GetSupperSetDetailInputData inputData)
+    public GetSuperSetDetailOutputData Handle(GetSuperSetDetailInputData inputData)
     {
         try
         {
             if (inputData.HpId <= 0)
             {
-                return new GetSupperSetDetailOutputData(GetSupperSetDetailListStatus.InvalidHpId);
+                return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidHpId);
             }
             else if (inputData.SetCd <= 0)
             {
-                return new GetSupperSetDetailOutputData(GetSupperSetDetailListStatus.InvalidSetCd);
+                return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSetCd);
             }
             var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.SetCd);
-            return new GetSupperSetDetailOutputData(result, GetSupperSetDetailListStatus.Successed);
+            return new GetSuperSetDetailOutputData(result, GetSuperSetDetailListStatus.Successed);
         }
         catch
         {
-            return new GetSupperSetDetailOutputData(GetSupperSetDetailListStatus.Failed);
+            return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.Failed);
         }
     }
 }

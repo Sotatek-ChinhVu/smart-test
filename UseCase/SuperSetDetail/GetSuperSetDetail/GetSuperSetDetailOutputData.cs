@@ -1,11 +1,11 @@
 ﻿using Domain.Models.SuperSetDetail;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.SupperSetDetail.SupperSetDetail;
+namespace UseCase.SuperSetDetail.SuperSetDetail;
 
-public class GetSupperSetDetailOutputData : IOutputData
+public class GetSuperSetDetailOutputData : IOutputData
 {
-    public GetSupperSetDetailOutputData(GetSupperSetDetailListStatus status)
+    public GetSuperSetDetailOutputData(GetSuperSetDetailListStatus status)
     {
         SuperSetDetailModel = new SuperSetDetailModel(
                                                         new List<SetByomeiModel>(),
@@ -14,12 +14,12 @@ public class GetSupperSetDetailOutputData : IOutputData
         Status = status;
     }
 
-    public GetSupperSetDetailOutputData(SuperSetDetailModel superSetDetailModel, GetSupperSetDetailListStatus status)
+    public GetSuperSetDetailOutputData(SuperSetDetailModel superSetDetailModel, GetSuperSetDetailListStatus status)
     {
         SuperSetDetailModel = superSetDetailModel;
         Status = status;
     }
 
     public SuperSetDetailModel SuperSetDetailModel { get; private set; }
-    public GetSupperSetDetailListStatus Status { get; private set; }
+    public GetSuperSetDetailListStatus Status { get; private set; }
 }

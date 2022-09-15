@@ -1,6 +1,4 @@
-﻿using Entity.Tenant;
-
-namespace Domain.Models.SuperSetDetail;
+﻿namespace Domain.Models.SuperSetDetail;
 
 public interface ISuperSetDetailRepository
 {

@@ -1,4 +1,4 @@
-﻿using UseCase.SupperSetDetail.SaveSuperSetDetail;
+﻿using UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Requests.SetMst;
 
@@ -8,5 +8,5 @@ public class SaveSuperSetDetailRequest
 
     public int UserId { get; set; }
 
-    public SaveSuperSetDetailInputItem SaveSupperSetDetailInput { get; set; } = new();
+    public SaveSuperSetDetailInputItem SaveSuperSetDetailInput { get; set; } = new();
 }

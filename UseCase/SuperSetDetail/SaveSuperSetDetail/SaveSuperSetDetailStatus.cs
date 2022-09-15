@@ -1,4 +1,4 @@
-﻿namespace UseCase.SupperSetDetail.SaveSuperSetDetail;
+﻿namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public enum SaveSuperSetDetailStatus : byte
 {

@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.SupperSetDetail.SaveSuperSetDetail;
+namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public class SaveSuperSetDetailOutputData: IOutputData
 {

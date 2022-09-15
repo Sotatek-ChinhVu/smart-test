@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetMst;
-using UseCase.SupperSetDetail.SaveSuperSetDetail;
+using UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Presenters.SetMst;
 

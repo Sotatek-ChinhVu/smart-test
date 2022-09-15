@@ -10,7 +10,7 @@
         public const string SaveList = "SaveList";
         public const string Save = "Save";
 
-        // SupperSet
+        // SuperSet
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
         public const string Paste = "Paste";
