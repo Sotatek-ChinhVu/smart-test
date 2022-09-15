@@ -16,6 +16,8 @@
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
         public static readonly string InvalidItemCd = "Invalid ItemCd";
         public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
+        public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
+        public static readonly string InvalidKohiId = "Invalid HokenKohiId";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -77,6 +79,7 @@
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
         public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+        public static readonly string GetMedicalExaminationInvalidDeleteCondition = "Invalid Delete Condition";
         public static readonly string GetMedicalExaminationInvalidFilterId = "Invalid FilterId";
 
         //OrdInf controller
@@ -147,6 +150,11 @@
         public static readonly string UpsertFlowSheetInputDataNoValid = "Input data no valid.";
         public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
         public static readonly string UpsertFlowSheetPtIdNoExist = "PtId No Exist.";
+
+        // Schema
+        public static readonly string InvalidOldImage = "Invalid old image.";
+        public static readonly string InvalidFileImage = "File image is not null.";
+
 
 
         // Today Validate Order
@@ -226,5 +234,8 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+
+        //MaxMoney
+        public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
     }
 }

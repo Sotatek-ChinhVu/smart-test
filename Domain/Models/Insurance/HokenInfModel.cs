@@ -73,71 +73,14 @@ namespace Domain.Models.Insurance
             ConfirmDateList = confirmDateList;
         }
 
-        public HokenInfModel()
+        public HokenInfModel(int hokenId, int startDate, int endDate)
         {
-            HpId = 0;
-            PtId = 0;
-            HokenId = 0;
-            SeqNo = 0;
-            HokenNo = 0;
-            HokenEdaNo = 0;
-            HokenKbn = 0;
-            HokensyaNo = string.Empty;
-            Kigo = string.Empty;
-            Bango = string.Empty;
-            EdaNo = string.Empty;
-            HonkeKbn = 0;
-            StartDate = 0;
-            EndDate = 0;
-            SikakuDate = 0;
-            KofuDate = 0;
-            ConfirmDate = 0;
-            KogakuKbn = 0;
-            TasukaiYm = 0;
-            TokureiYm1 = 0;
-            TokureiYm2 = 0;
-            GenmenKbn = 0;
-            GenmenRate = 0;
-            GenmenGaku = 0;
-            SyokumuKbn = 0;
-            KeizokuKbn = 0;
-            Tokki1 = string.Empty;
-            Tokki2 = string.Empty;
-            Tokki3 = string.Empty;
-            Tokki4 = string.Empty;
-            Tokki5 = string.Empty;
-            RousaiKofuNo = string.Empty;
-            NenkinBango = string.Empty;
-            RousaiRoudouCd = string.Empty;
-            KenkoKanriBango = string.Empty;
-            RousaiSaigaiKbn = 0;
-            RousaiKantokuCd = string.Empty;
-            RousaiSyobyoDate = 0;
-            RyoyoStartDate = 0;
-            RyoyoEndDate = 0;
-            RousaiSyobyoCd = string.Empty;
-            RousaiJigyosyoName = string.Empty;
-            RousaiPrefName = string.Empty;
-            RousaiCityName = string.Empty;
-            RousaiReceCount = 0;
-            RousaiTenkiSinkei = 0;
-            RousaiTenkiTenki = 0;
-            RousaiTenkiEndDate = 0;
-            HokenMstHoubetu = string.Empty;
-            HokenMstFutanRate = 0;
-            HokenMstFutanKbn = 0;
-            SinDate = 0;
-            JibaiHokenName = string.Empty;
-            JibaiHokenTanto = string.Empty;
-            JibaiHokenTel = string.Empty;
-            JibaiJyusyouDate = 0;
-            IsHaveHokenMst = 0;
-            HokenMstSubNumber = 0;
-            Houbetu = string.Empty;
-            ConfirmDateList = new List<ConfirmDateModel>();
+            HokenId = hokenId;
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
-        public List<ConfirmDateModel> ConfirmDateList { get; private set; }
+        public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
         public int HpId { get; private set; }
 
@@ -153,13 +96,13 @@ namespace Domain.Models.Insurance
 
         public int HokenKbn { get; private set; }
 
-        public string HokensyaNo { get; private set; }
+        public string HokensyaNo { get; private set; } = string.Empty;
 
-        public string Kigo { get; private set; }
+        public string Kigo { get; private set; } = string.Empty;
 
-        public string Bango { get; private set; }
+        public string Bango { get; private set; } = string.Empty;
 
-        public string EdaNo { get; private set; }
+        public string EdaNo { get; private set; } = string.Empty;
 
         public int HonkeKbn { get; private set; }
 
@@ -192,28 +135,28 @@ namespace Domain.Models.Insurance
 
         public int KeizokuKbn { get; private set; }
 
-        public string Tokki1 { get; private set; }
+        public string Tokki1 { get; private set; } = string.Empty;
 
-        public string Tokki2 { get; private set; }
+        public string Tokki2 { get; private set; } = string.Empty;
 
-        public string Tokki3 { get; private set; }
+        public string Tokki3 { get; private set; } = string.Empty;
 
-        public string Tokki4 { get; private set; }
+        public string Tokki4 { get; private set; } = string.Empty;
 
-        public string Tokki5 { get; private set; }
+        public string Tokki5 { get; private set; } = string.Empty;
 
         //2
-        public string RousaiKofuNo { get; private set; }
+        public string RousaiKofuNo { get; private set; } = string.Empty;
 
-        public string NenkinBango { get; private set; }
+        public string NenkinBango { get; private set; } = string.Empty;
 
-        public string RousaiRoudouCd { get; private set; }
+        public string RousaiRoudouCd { get; private set; } = string.Empty;
 
-        public string KenkoKanriBango { get; private set; }
+        public string KenkoKanriBango { get; private set; } = string.Empty;
 
         public int RousaiSaigaiKbn { get; private set; }
 
-        public string RousaiKantokuCd { get; private set; }
+        public string RousaiKantokuCd { get; private set; } = string.Empty;
 
         public int RousaiSyobyoDate { get; private set; }
 
@@ -221,13 +164,13 @@ namespace Domain.Models.Insurance
 
         public int RyoyoEndDate { get; private set; }
 
-        public string RousaiSyobyoCd { get; private set; }
+        public string RousaiSyobyoCd { get; private set; } = string.Empty;
 
-        public string RousaiJigyosyoName { get; private set; }
+        public string RousaiJigyosyoName { get; private set; } = string.Empty;
 
-        public string RousaiPrefName { get; private set; }
+        public string RousaiPrefName { get; private set; } = string.Empty;
 
-        public string RousaiCityName { get; private set; }
+        public string RousaiCityName { get; private set; } = string.Empty;
 
         public int RousaiReceCount { get; private set; }
 
@@ -237,7 +180,7 @@ namespace Domain.Models.Insurance
 
         public int RousaiTenkiEndDate { get; private set; }
 
-        public string HokenMstHoubetu { get; private set; }
+        public string HokenMstHoubetu { get; private set; } = string.Empty;
 
         public int HokenMstFutanRate { get; private set; }
 
@@ -245,11 +188,11 @@ namespace Domain.Models.Insurance
 
         public int SinDate { get; private set; }
 
-        public string JibaiHokenName { get; private set; }
+        public string JibaiHokenName { get; private set; } = string.Empty;
 
-        public string JibaiHokenTanto { get; private set; }
+        public string JibaiHokenTanto { get; private set; } = string.Empty;
 
-        public string JibaiHokenTel { get; private set; }
+        public string JibaiHokenTel { get; private set; } = string.Empty;
 
         public int JibaiJyusyouDate { get; private set; }
 
@@ -257,7 +200,7 @@ namespace Domain.Models.Insurance
 
         public int HokenMstSubNumber { get; private set; }
 
-        public string Houbetu { get; private set; }
+        public string Houbetu { get; private set; } = string.Empty;
 
         public bool IsJihi
         {
