@@ -54,10 +54,6 @@ namespace Infrastructure.Repositories
                                 ptHokenPattern.HokenSbtCd,
                                 ptHokenPattern.HokenPid,
                                 ptHokenPattern.HokenKbn,
-                                ptHokenPattern.Kohi1Id,
-                                ptHokenPattern.Kohi2Id,
-                                ptHokenPattern.Kohi3Id,
-                                ptHokenPattern.Kohi4Id,
                                 ptHokenInf = ptHokenInf,
                                 ptHokenInf.HokensyaNo,
                                 ptHokenInf.Kigo,
@@ -164,93 +160,107 @@ namespace Infrastructure.Repositories
                     string houbetu = string.Empty;
                     int futanRate = 0;
                     int futanKbn = 0;
+                    int isHaveHokenMst = 0;
+                    int hokenMstSubNumber = 0;
                     if (item.hokenMst != null)
                     {
                         houbetu = item.hokenMst.Houbetu;
                         futanRate = item.hokenMst.FutanRate;
                         futanKbn = item.hokenMst.FutanKbn;
+                        isHaveHokenMst = 1;
+                        hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
                     }
 
                     int rousaiTenkiSinkei = 0;
                     int rousaiTenkiTenki = 0;
                     int rousaiTenkiEndDate = 0;
+                    
                     if (item.ptRousaiTenkis != null)
                     {
                         rousaiTenkiSinkei = item.ptRousaiTenkis.Sinkei;
                         rousaiTenkiTenki = item.ptRousaiTenkis.Tenki;
                         rousaiTenkiEndDate = item.ptRousaiTenkis.EndDate;
+                        
                     }
+
+                    HokenInfModel hokenInf = new HokenInfModel(
+                                            hpId,
+                                            ptId,
+                                            item.HokenId,
+                                            item.SeqNo,
+                                            item.HokenNo,
+                                            item.HokenEdaNo,
+                                            item.HokenKbn,
+                                            item.HokensyaNo ?? string.Empty,
+                                            item.Kigo ?? string.Empty,
+                                            item.Bango ?? string.Empty,
+                                            item.EdaNo ?? string.Empty,
+                                            item.HonkeKbn,
+                                            item.StartDate,
+                                            item.EndDate,
+                                            item.SikakuDate,
+                                            item.KofuDate,
+                                            GetConfirmDate(item.ptHokenCheckOfHokenPattern),
+                                            item.KogakuKbn,
+                                            item.TasukaiYm,
+                                            item.TokureiYm1,
+                                            item.TokureiYm2,
+                                            item.GenmenKbn,
+                                            item.GenmenRate,
+                                            item.GenmenGaku,
+                                            item.SyokumuKbn,
+                                            item.KeizokuKbn,
+                                            item.Tokki1 ?? string.Empty,
+                                            item.Tokki2 ?? string.Empty,
+                                            item.Tokki3 ?? string.Empty,
+                                            item.Tokki4 ?? string.Empty,
+                                            item.Tokki5 ?? string.Empty,
+                                            item.RousaiKofuNo ?? string.Empty,
+                                            nenkinBango: NenkinBango(item.RousaiKofuNo),
+                                            item.RousaiRoudouCd ?? string.Empty,
+                                            item.RousaiKofuNo ?? string.Empty,
+                                            item.RousaiSaigaiKbn,
+                                            item.RousaiKantokuCd ?? string.Empty,
+                                            item.RousaiSyobyoDate,
+                                            item.RyoyoStartDate,
+                                            item.RyoyoEndDate,
+                                            item.RousaiSyobyoCd ?? string.Empty,
+                                            item.RousaiJigyosyoName ?? string.Empty,
+                                            item.RousaiPrefName ?? string.Empty,
+                                            item.RousaiCityName ?? string.Empty,
+                                            item.RousaiReceCount,
+                                            rousaiTenkiSinkei,
+                                            rousaiTenkiTenki,
+                                            rousaiTenkiEndDate,
+                                            houbetu,
+                                            futanRate,
+                                            futanKbn,
+                                            sinDate,
+                                            item.JibaiHokenName ?? string.Empty,
+                                            item.JibaiHokenTanto ?? string.Empty,
+                                            item.JibaiHokenTel ?? string.Empty,
+                                            item.JibaiJyusyouDate,
+                                            isHaveHokenMst,
+                                            hokenMstSubNumber,
+                                            item.hokenMst?.Houbetu ?? string.Empty,
+                                            GetConfirmDateList(1, item.HokenId)
+                                            );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
                         item.HpId,
                         item.PtId,
-                        item.HokenId,
+                        item.Birthday,
                         item.SeqNo,
-                        item.HokenNo,
-                        item.HokenEdaNo,
                         item.HokenSbtCd,
                         item.HokenPid,
                         item.HokenKbn,
-                        item.Kohi1Id,
-                        item.Kohi2Id,
-                        item.Kohi3Id,
-                        item.Kohi4Id,
-                        item.HokensyaNo ?? string.Empty,
-                        item.Kigo,
-                        item.Bango,
-                        item.EdaNo ?? string.Empty,
-                        item.HonkeKbn,
-                        item.StartDate,
-                        item.EndDate,
-                        item.SikakuDate,
-                        item.KofuDate,
-                        confirmDate: GetConfirmDate(item.ptHokenCheckOfHokenPattern),
+                        sinDate,
+                        item.HokenMemo,
+                        hokenInf,
                         kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
                         kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
                         kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
-                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
-                        item.KogakuKbn,
-                        item.TasukaiYm,
-                        item.TokureiYm1,
-                        item.TokureiYm2,
-                        item.GenmenKbn,
-                        item.GenmenRate,
-                        item.GenmenGaku,
-                        item.SyokumuKbn,
-                        item.KeizokuKbn,
-                        item.Tokki1,
-                        item.Tokki2,
-                        item.Tokki3,
-                        item.Tokki4,
-                        item.Tokki5,
-                        item.RousaiKofuNo,
-                        nenkinBango: NenkinBango(item.RousaiKofuNo),
-                        item.RousaiRoudouCd,
-                        item.KenkoKanriBango,
-                        item.RousaiSaigaiKbn,
-                        item.RousaiKantokuCd,
-                        item.RousaiSyobyoDate,
-                        item.RyoyoStartDate,
-                        item.RyoyoEndDate,
-                        item.RousaiSyobyoCd,
-                        item.RousaiJigyosyoName,
-                        item.RousaiPrefName,
-                        item.RousaiCityName,
-                        item.RousaiReceCount,
-                        rousaiTenkiSinkei,
-                        rousaiTenkiTenki,
-                        rousaiTenkiEndDate,
-                        houbetu,
-                        futanRate,
-                        sinDate,
-                        item.Birthday,
-                        item.JibaiHokenName,
-                        item.JibaiHokenTanto,
-                        item.JibaiHokenTel,
-                        item.JibaiJyusyouDate,
-                        item.HokenMemo ?? string.Empty,
-                        futanKbn,
-                        GetConfirmDateList(1, item.HokenId)
+                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0))
                     );
                     listInsurance.Add(insuranceModel);
                 }
@@ -401,7 +411,7 @@ namespace Infrastructure.Repositories
         {
             if (kohiInf == null)
             {
-                return new KohiInfModel();
+                return new KohiInfModel(0);
             }
             return new KohiInfModel(
                 kohiInf.FutansyaNo ?? string.Empty,
@@ -478,10 +488,10 @@ namespace Infrastructure.Repositories
             return result.Select(r => new InsuranceModel(
                         r.HpId,
                         r.PtId,
-                        r.HokenPid,
                         r.SeqNo,
-                        r.HokenKbn,
                         r.HokenSbtCd,
+                        r.HokenPid,
+                        r.HokenKbn,
                         r.HokenId,
                         r.Kohi1Id,
                         r.Kohi2Id,

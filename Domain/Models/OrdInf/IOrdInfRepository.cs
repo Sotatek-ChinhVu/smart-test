@@ -1,4 +1,4 @@
-﻿using Domain.Models.InputItem;
+﻿using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 
 namespace Domain.Models.OrdInfs
@@ -15,7 +15,7 @@ namespace Domain.Models.OrdInfs
 
         bool CheckExistOrder(long rpNo, long rpEdaNo);
 
-        bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate);
+        bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
 

@@ -33,20 +33,20 @@ namespace Interactor.UsageTreeSet
             var lstUsage = new List<ListSetMstModel>();
 
             if (inputData.SetUsageKbn == 0)
-                lstUsage = _usageTreeSetRepository.GetAllTanSetInfs(inputData.HpId, generationId);
+                lstUsage = _usageTreeSetRepository.GetAllTanSetInfs(inputData.HpId, generationId, inputData.SinDate);
             else
             {
                 if (_usageDrug.Contains(inputData.SetUsageKbn) || _usageInject.Contains(inputData.SetUsageKbn))
                 {
                     if (_usageDrug.Contains(inputData.SetUsageKbn))
-                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId);
+                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId, inputData.SinDate);
                     else
-                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId);
+                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId, inputData.SinDate);
                 }
                 else if (_listMedicalManagement.Contains(inputData.SetUsageKbn))
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId);
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId, inputData.SinDate);
                 else
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, inputData.SetUsageKbn, generationId);
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, inputData.SetUsageKbn, generationId, inputData.SinDate);
             }
             
             var lstUsageLevel1 = lstUsage.Where(
