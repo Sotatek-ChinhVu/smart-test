@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories
         public List<PatientCommentModel> PatientCommentModels(int hpId, long pdId)
         {
             var listData = _tenantDataContext.PtCmtInfs
-                .Where(x => x.HpId == hpId & x.PtId == pdId)
+                .Where(x => x.HpId == hpId & x.PtId == pdId & x.IsDeleted == 0)
                 .Select(x => new PatientCommentModel(
                 x.HpId,
                 x.PtId,
