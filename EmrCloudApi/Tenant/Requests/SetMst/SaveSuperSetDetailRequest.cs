@@ -6,6 +6,8 @@ public class SaveSuperSetDetailRequest
 
     public int UserId { get; set; } = 0;
 
+    public int HpId { get; set; } = 1;
+
     public List<SaveSetByomeiRequestItem> SaveSetByomeiRequestItems { get; set; } = new();
 
 }

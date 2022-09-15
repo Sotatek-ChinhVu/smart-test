@@ -9,7 +9,7 @@ namespace Infrastructure.Repositories;
 public class SuperSetDetailRepository : ISuperSetDetailRepository
 {
     private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext; 
+    private readonly TenantDataContext _tenantDataContext;
     private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
@@ -121,10 +121,10 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     #endregion
 
-    public int SaveSuperSetDetail(int setCd, int userId, SuperSetDetailModel superSetDetailModel)
+    public int SaveSuperSetDetail(int setCd, int userId, int hpId, SuperSetDetailModel superSetDetailModel)
     {
         int status = 0;
-        if (!SaveSetByomei(setCd, userId, superSetDetailModel.SetByomeiList))
+        if (!SaveSetByomei(setCd, userId, hpId, superSetDetailModel.SetByomeiList))
         {
             status = 1;
         }
@@ -132,15 +132,15 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     }
 
     #region SaveSetByomei
-    public bool SaveSetByomei(int setCd, int userId, List<SetByomeiModel> setByomeiModels)
+    public bool SaveSetByomei(int setCd, int userId, int hpId, List<SetByomeiModel> setByomeiModels)
     {
         bool status = false;
         try
         {
-            var listOldByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.IsDeleted != 1).ToList();
+            var listOldByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
 
             // Add new SetByomei
-            var listAddNewByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToNewSetByomeiEntity(setCd, userId, new SetByomei(), model)).ToList();
+            var listAddNewByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
             if (listAddNewByomeis != null && listAddNewByomeis.Count > 0)
             {
                 _tenantDataContext.AddRange(listAddNewByomeis);
@@ -152,7 +152,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 var mst = listOldByomeis.FirstOrDefault(mst => mst.Id == model.Id);
                 if (mst != null)
                 {
-                    mst = ConvertToNewSetByomeiEntity(setCd, userId, mst, model) ?? new SetByomei();
+                    mst = ConvertToSetByomeiEntity(setCd, userId, hpId, mst, model) ?? new SetByomei();
                 }
             }
 
@@ -174,8 +174,9 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
     }
 
-    private SetByomei ConvertToNewSetByomeiEntity(int setCd, int userId, SetByomei mst, SetByomeiModel model)
+    private SetByomei ConvertToSetByomeiEntity(int setCd, int userId, int hpId, SetByomei mst, SetByomeiModel model)
     {
+        mst.HpId = hpId;
         mst.SetCd = setCd;
         mst.SyobyoKbn = model.IsSyobyoKbn ? 1 : 0;
         mst.SikkanKbn = model.SikkanKbn;
@@ -194,7 +195,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             mst.ByomeiCd = model.ByomeiCd ?? string.Empty;
         }
 
-        var listPrefixSuffix = mst.ByomeiCd == FREE_WORD ? model.PrefixSuffixList : new();
+        var listPrefixSuffix = mst.ByomeiCd != FREE_WORD ? model.PrefixSuffixList : new();
+        var itemSuspected = listPrefixSuffix.FirstOrDefault(item => item.Code.Equals(SUSPECTED_CD));
+
+        if (itemSuspected != null)
+        {
+            listPrefixSuffix.Remove(itemSuspected);
+        }
         mst.SyusyokuCd1 = listPrefixSuffix.Count > 0 ? listPrefixSuffix[0].Code : string.Empty;
         mst.SyusyokuCd2 = listPrefixSuffix.Count > 1 ? listPrefixSuffix[1].Code : string.Empty;
         mst.SyusyokuCd3 = listPrefixSuffix.Count > 2 ? listPrefixSuffix[2].Code : string.Empty;
@@ -217,13 +224,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
         mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
 
-        if (model.IsSuspected && mst.ByomeiCd == FREE_WORD)
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }
-        else
+        else if (!model.IsSuspected && mst.ByomeiCd != FREE_WORD)
         {
-            mst.Byomei?.Replace(SUSPECTED, string.Empty);
+            mst.Byomei = mst.Byomei?.Replace(SUSPECTED, string.Empty);
         }
 
         if (model.Id == 0)

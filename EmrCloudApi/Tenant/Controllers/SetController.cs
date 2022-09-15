@@ -88,7 +88,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveSuperSetDetail)]
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
-        var input = new SaveSuperSetDetailInputData(request.SetCd, request.UserId, ConvertToSaveSuperSetDetailInputItem(request.SaveSetByomeiRequestItems));
+        var input = new SaveSuperSetDetailInputData(request.SetCd, request.UserId, request.HpId, ConvertToSaveSuperSetDetailInputItem(request.SaveSetByomeiRequestItems));
         var output = _bus.Handle(input);
 
         var presenter = new SaveSuperSetDetailPresenter();

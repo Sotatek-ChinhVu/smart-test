@@ -17,7 +17,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     {
         try
         {
-            var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, ConvertToSuperSetDetailModel(inputData));
+            var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, inputData.HpId, ConvertToSuperSetDetailModel(inputData));
             switch (result)
             {
                 case 1:
