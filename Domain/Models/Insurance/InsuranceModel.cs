@@ -63,7 +63,7 @@ namespace Domain.Models.InsuranceInfor
 
         public int SinDate { get; private set; }
 
-        private HokenInfModel HokenInf;
+        private readonly HokenInfModel HokenInf;
 
         public KohiInfModel Kohi1 { get; private set; }
 
