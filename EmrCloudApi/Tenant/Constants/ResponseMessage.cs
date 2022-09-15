@@ -84,6 +84,7 @@
         public static readonly string GetMedicalExaminationInvalidSearchType = "Invalid Search Type";
         public static readonly string GetMedicalExaminationInvalidSearchCategory = "Invalid Search Category";
         public static readonly string GetMedicalExaminationInvalidSearchText = "Invalid Search Text";
+        public static readonly string GetMedicalExaminationInvalidUserId = "Invalid UserId";
 
         //OrdInf controller
 

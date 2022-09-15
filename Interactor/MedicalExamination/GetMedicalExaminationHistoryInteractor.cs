@@ -60,11 +60,15 @@ namespace Interactor.MedicalExamination
             }
             if (!(inputData.DeleteConditon >= 0 && inputData.DeleteConditon <= 2))
             {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidDeleteCondition);
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidDeleteCondition, 0);
+            }
+            if (inputData.UserId <= 0)
+            {
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidUserId, 0);
             }
             if (inputData.FilterId < 0)
             {
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidFilterId);
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidFilterId, 0);
             }
             if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
             {
@@ -82,7 +86,7 @@ namespace Interactor.MedicalExamination
             bool allowDisplayDeleted = inputData.KarteDeleteHistory > 0;
 
             var karteFilter = inputData.FilterId == 0 ? null : _karteFilterMstRepository.Get(inputData.HpId, inputData.UserId, inputData.FilterId);
-            IEnumerable<ReceptionModel> query;
+            IEnumerable<ReceptionModel>? query;
 
             if (karteFilter?.OnlyBookmark == true)
             {
@@ -100,19 +104,19 @@ namespace Interactor.MedicalExamination
                         join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                         on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                         select raiinInf;
-            query = query?.OrderByDescending(c => c.SinDate);
-            var raiinNos = query?.Select(q => q.RaiinNo)?.ToList();
-            var raiinNoStartPage = raiinNos == null ? 0 : raiinNos[inputData.StartPage];
+            }
 
+            query = query?.OrderByDescending(c => c.SinDate)?.AsEnumerable();
+            var raiinNos = query?.Select(q => q.RaiinNo)?.ToList();
+            var tantoIds = query?.Select(r => r.TantoId).ToList();
+            var kaIds = query?.Select(r => r.TantoId).ToList();
+            var sinDates = query?.Select(r => r.SinDate).ToList();
+            var raiinNoStartPage = raiinNos == null ? 0 : raiinNos[inputData.StartPage];
             var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
-            var raiinNos = rainInfs?.Select(r => r.RaiinNo).ToList();
-            var tantoIds = rainInfs?.Select(r => r.TantoId).ToList();
-            var kaIds = rainInfs?.Select(r => r.TantoId).ToList();
-            var sinDates = rainInfs?.Select(r => r.SinDate).ToList();
 
             #region karte
-            List<KarteKbnMstModel> allkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
-            List<KarteInfModel> allkarteInfs = _karteInfRepository.GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).OrderBy(c => c.KarteKbn).ToList();
+            var allkarteKbns = _karteKbnRepository.GetList(inputData.HpId, true);
+            var allkarteInfs = raiinNos == null ? new List<KarteInfModel>() : _karteInfRepository.GetList(inputData.PtId, inputData.HpId, inputData.DeleteConditon, raiinNos).OrderBy(c => c.KarteKbn).ToList();
             long SearchRaiinOnKarte()
             {
                 if (inputData.SearchType == 1)
@@ -215,13 +219,13 @@ namespace Interactor.MedicalExamination
             if (!(rainInfs?.Count > 0))
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
 
-                if (inputData.IsShowApproval == 1 || inputData.IsShowApproval == 2)
-                {
-                    approveInfs = raiinNos == null ? new List<ApproveInfModel>() : _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
-                }
+            if (inputData.IsShowApproval == 1 || inputData.IsShowApproval == 2)
+            {
+                approveInfs = raiinNos == null ? new List<ApproveInfModel>() : _ordInfRepository.GetApproveInf(inputData.HpId, inputData.PtId, inputData.IsShowApproval == 2, raiinNos);
+            }
 
-                if (!(rainInfs?.Count > 0))
-                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData);
+            if (!(rainInfs?.Count > 0))
+                return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
 
             Parallel.ForEach(rainInfs, raiinInf =>
             {

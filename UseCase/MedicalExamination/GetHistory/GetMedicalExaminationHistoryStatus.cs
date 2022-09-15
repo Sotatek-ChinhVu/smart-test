@@ -13,6 +13,7 @@
         InvalidSearchType = 8,
         InvalidSearchCategory = 9,
         InvalidSearchText = 10,
-        NoData = 11,
+        InvalidUserId = 11,
+        NoData = 12,
     }
 }
