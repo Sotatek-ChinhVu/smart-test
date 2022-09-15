@@ -1,9 +1,10 @@
-﻿using Domain.Models.Reception;
+﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Presenters.Reception;
-using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
+using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Requests.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Requests.ReceptionInsurance;
@@ -11,17 +12,21 @@ using EmrCloudApi.Tenant.Requests.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Responses.Reception;
-using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
-using Microsoft.AspNetCore.Http;
+using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
-using UseCase.Reception.GetList;
+using UseCase.Reception.Insert;
+using UseCase.Reception.Update;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.Insurance.ValidPatternExpirated;
+using UseCase.MaxMoney.GetMaxMoney;
+using EmrCloudApi.Tenant.Requests.MaxMoney;
+using EmrCloudApi.Tenant.Presenters.MaxMoney;
+using EmrCloudApi.Tenant.Responses.MaxMoney;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,9 +35,12 @@ namespace EmrCloudApi.Tenant.Controllers
     public class ReceptionController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public ReceptionController(UseCaseBus bus)
+    private readonly IWebSocketService _webSocketService;
+
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.Get)]
@@ -45,6 +53,40 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Insert)]
+        public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
+        {
+            var input = new InsertReceptionInputData(request.Dto);
+            var output = _bus.Handle(input);
+            if (output.Status == InsertReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
+            }
+
+            var presenter = new InsertReceptionPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<InsertReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Update)]
+        public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
+        {
+            var input = new UpdateReceptionInputData(request.Dto);
+            var output = _bus.Handle(input);
+            if (output.Status == UpdateReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+            }
+
+            var presenter = new UpdateReceptionPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateReceptionResponse>>(presenter.Result);
         }
 
         [HttpGet("GetPatientRaiinKubun")]
@@ -81,6 +123,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionSameVisitResponse>>(presenter.Result);
+        }
+
+        [HttpGet("GetMaxMoneyData")]
+        public ActionResult<Response<GetMaxMoneyResponse>> GetMaxMoney([FromQuery] GetMaxMoneyRequest request)
+        {
+            var input = new GetMaxMoneyInputData(request.PtId, request.HpId, request.HokenKohiId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetMaxMoneyPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetMaxMoneyResponse>>(presenter.Result);
         }
 
         [HttpPost("CheckPatternSelectedExpirated")]
