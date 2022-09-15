@@ -8,9 +8,11 @@
         InvalidPtId = 3,
         InvalidSinDate = 4,
         InvalidPageSize = 5,
-        InvalidSearchType = 6,
-        InvalidSearchCategory = 7,
-        InvalidSearchText = 8,
-        NoData = 9,
+        InvalidDeleteCondition = 6,
+        InvalidFilterId = 7,
+        InvalidSearchType = 8,
+        InvalidSearchCategory = 9,
+        InvalidSearchText = 10,
+        NoData = 11,
     }
 }

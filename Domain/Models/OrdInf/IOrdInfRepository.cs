@@ -1,4 +1,4 @@
-﻿using Domain.Models.InputItem;
+﻿using Domain.Models.MstItem;
 using Domain.Models.OrdInf;
 
 namespace Domain.Models.OrdInfs
@@ -13,14 +13,16 @@ namespace Domain.Models.OrdInfs
 
         void Delete(int ordId);
 
-        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted);
-
-        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, List<long> raiinNos);
-
         bool CheckExistOrder(long rpNo, long rpEdaNo);
 
-        bool CheckIsGetYakkaPrice(int hpId, InputItemModel? tenMst, int sinDate);
+        bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, List<long> raiinNos);
+
+        IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted);
+        IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
+
+        IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos);
     }
 }
