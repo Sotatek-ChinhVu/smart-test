@@ -6,10 +6,11 @@
 
         public static Dictionary<string, int> TenkiKbns { get; } = new Dictionary<string, int>()
         {
-            {"下記以外", 1 },
-            {"治ゆ", 2},
-            {"中止", 3 },
-            {"死亡", 4}
+            {"下記以外", 0 },
+            {"治ゆ", 1},
+            {"中止", 2 },
+            {"死亡", 3},
+            {"その他", 9}
         };
 
         public static Dictionary<string, int> SikkanKbns { get; } = new Dictionary<string, int>()

@@ -8,6 +8,7 @@
         InvalidPtId = 3,
         InvalidSinDate = 4,
         InvalidPageSize = 5,
-        NoData = 6,
+        InvalidDeleteCondition = 6,
+        NoData = 7,
     }
 }

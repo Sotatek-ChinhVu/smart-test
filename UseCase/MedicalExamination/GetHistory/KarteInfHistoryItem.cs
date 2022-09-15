@@ -8,7 +8,7 @@ namespace UseCase.MedicalExamination.GetHistory
 {
     public class KarteInfHistoryItem
     {
-        public KarteInfHistoryItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, DateTime updateDate, DateTime createDate, int isDeleted)
+        public KarteInfHistoryItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, DateTime updateDate, DateTime createDate, int isDeleted, string richText)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -20,6 +20,7 @@ namespace UseCase.MedicalExamination.GetHistory
             UpdateDate = updateDate;
             CreateDate = createDate;
             IsDeleted = isDeleted;
+            RichText = richText;
         }
 
         public int HpId { get; private set; }
@@ -29,6 +30,7 @@ namespace UseCase.MedicalExamination.GetHistory
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
         public string Text { get; private set; }
+        public string RichText { get; private set; }
         public DateTime UpdateDate { get; private set; }
         public DateTime CreateDate { get; private set; }
         public int IsDeleted { get; private set; }

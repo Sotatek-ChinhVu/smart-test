@@ -65,5 +65,6 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result);
         }
+
     }
 }
