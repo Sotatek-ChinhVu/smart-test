@@ -6,6 +6,8 @@
 
         List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos);
 
+        long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText);
+
         bool SaveListImageKarteImgTemp(List<KarteImgInfModel> listModel);
     }
 }
