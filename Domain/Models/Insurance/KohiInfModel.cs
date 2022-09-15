@@ -31,21 +31,9 @@
             FutansyaNo = string.Empty;
             JyukyusyaNo = string.Empty;
             HokenId = hokenId;
-            StartDate = 0;
-            EndDate = 0;
-            ConfirmDate = 0;
-            Rate = 0;
-            GendoGaku = 0;
-            SikakuDate = 0;
-            KofuDate = 0;
             TokusyuNo = string.Empty;
-            HokenSbtKbn = 0;
             Houbetu = string.Empty;
             HokenMstModel = new HokenMstModel();
-            HokenNo = 0;
-            HokenEdaNo = 0;
-            PrefNo = 0;
-            SinDate = 0;
             ConfirmDateList = new List<ConfirmDateModel>();
             IsHaveKohiMst = false;
         }

@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int rousaiTenkiSinkei, int rousaiTenkiTenki, int rousaiTenkiEndDate, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string hokenMemo, int futanKbn, List<ConfirmDateModel> confirmDateList)
+        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
         {
             HpId = hpId;
             PtId = ptId;
@@ -111,9 +111,9 @@ namespace Domain.Models.InsuranceInfor
 
         public int KogakuKbn => HokenInf == null ? 0 : HokenInf.KogakuKbn;
 
-        public string HokenMstHoubetu => HokenInf == null ? string.Empty : HokenInf.HokenMstHoubetu;
+        public string HokenMstHoubetu => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.Houbetu : string.Empty;
 
-        public int HokenMstFutanRate => HokenInf == null ? 0 : HokenInf.HokenMstFutanRate;
+        public int HokenMstFutanRate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.FutanRate : 0;
 
         public int TasukaiYm => HokenInf == null ? 0 : HokenInf.TasukaiYm;
 
@@ -167,7 +167,7 @@ namespace Domain.Models.InsuranceInfor
 
         public string RousaiCityName => HokenInf == null ? string.Empty : HokenInf.RousaiCityName;
 
-        public int RousaiTenkiEndDate => HokenInf == null ? 0 : HokenInf.RousaiTenkiEndDate;
+        public int RousaiReceCount => HokenInf == null ? 0 : HokenInf.RousaiReceCount;
 
         public string JibaiHokenName => HokenInf == null ? string.Empty : HokenInf.JibaiHokenName;
 
@@ -177,7 +177,7 @@ namespace Domain.Models.InsuranceInfor
 
         public int JibaiJyusyouDate => HokenInf == null ? 0 : HokenInf.JibaiJyusyouDate;
 
-        public int FutanKbn => HokenInf == null ? 0 : HokenInf.HokenMstFutanKbn;
+        public int FutanKbn => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.FutanKbn : 0;
 
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
@@ -194,6 +194,12 @@ namespace Domain.Models.InsuranceInfor
         private bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
+
+        public int HokenMstStartDate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.StartDate : 0;
+
+        public int HokenMstEndDate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.EndDate : 0;
+
+        public string HokenMstDisplayTextMaster => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.DisplayTextMaster : string.Empty;
 
         #endregion
 

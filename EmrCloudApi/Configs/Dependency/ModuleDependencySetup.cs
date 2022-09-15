@@ -151,25 +151,6 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
-using UseCase.Schema.SaveImage;
-using Domain.Models.Byomei;
-using UseCase.Byomei.DiseaseSearch;
-using Interactor.Byomei;
-using UseCase.SetMst.ReorderSetMst;
-using Domain.Models.JsonSetting;
-using Interactor.JsonSetting;
-using UseCase.JsonSetting.Get;
-using UseCase.JsonSetting.Upsert;
-using EmrCloudApi.Realtime;
-using UseCase.KohiHokenMst.Get;
-using Interactor.KohiHokenMst;
-using UseCase.SetMst.CopyPasteSetMst;
-using UseCase.DrugInfor.Get;
-using Interactor.DrugInfor;
-using Domain.Models.DrugInfor;
-using Domain.Models.UsageTreeSet;
-using Interactor.UsageTreeSet;
-using UseCase.UsageTreeSet.GetTree;
 using UseCase.Insurance.ValidPatternExpirated;
 
 namespace EmrCloudApi.Configs.Dependency
