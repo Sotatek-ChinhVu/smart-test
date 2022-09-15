@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.SupperSetDetail.SupperSetDetail;
+namespace UseCase.SuperSetDetail.SuperSetDetail;
 
-public class GetSupperSetDetailInputData : IInputData<GetSupperSetDetailOutputData>
+public class GetSuperSetDetailInputData : IInputData<GetSuperSetDetailOutputData>
 {
-    public GetSupperSetDetailInputData(int hpId, int setCd, int sindate)
+    public GetSuperSetDetailInputData(int hpId, int setCd, int sindate)
     {
         HpId = hpId;
         SetCd = setCd;
