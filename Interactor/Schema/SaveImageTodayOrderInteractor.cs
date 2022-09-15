@@ -67,7 +67,7 @@ public class SaveImageTodayOrderInteractor : ISaveImageTodayOrderInputPort
             }
 
             string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
-            var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, memoryStream);
+            var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName, memoryStream);
             var linkImage = responseUpload.Result;
             listImageSaveTemps.Add(new KarteImgInfModel(
                                 input.HpId,

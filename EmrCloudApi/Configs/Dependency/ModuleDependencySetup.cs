@@ -149,6 +149,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
+using UseCase.Schema.SaveImageSuperSetDetail;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -353,6 +354,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Schema
             busBuilder.RegisterUseCase<SaveImageTodayOrderInputData, SaveImageTodayOrderInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+            busBuilder.RegisterUseCase<SaveImageSuperSetDetailInputData, SaveImageSuperSetDetailInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();

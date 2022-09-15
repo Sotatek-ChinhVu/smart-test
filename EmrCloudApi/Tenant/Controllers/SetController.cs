@@ -2,9 +2,11 @@
 using EmrCloudApi.Tenant.Presenters.SetMst;
 using EmrCloudApi.Tenant.Requests.SetMst;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
@@ -95,6 +97,18 @@ public class SetController : ControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveImageSuperSetDetail)]
+    public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
+    {
+        var input = new SaveImageSuperSetDetailInputData(request.HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveImageSuperSetDetailPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
     }
 
     private SaveSuperSetDetailInputItem ConvertToSaveSuperSetDetailInputItem(List<SaveSetByomeiRequestItem> saveSetByomeiRequestItems)

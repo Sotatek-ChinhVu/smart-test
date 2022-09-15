@@ -245,11 +245,54 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     #endregion
 
     #region SaveSetKarte
-    private bool SaveSetKarte()
-    {
 
-    }
 
 
     #endregion
+
+    public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)
+    {
+        bool status = false;
+        try
+        {
+            var hpId = listModel.FirstOrDefault()?.HpId;
+            var setCd = listModel.FirstOrDefault()?.SetCd;
+            var listPosition = listModel.Select(item => item.Position).ToList();
+            var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName)).ToList();
+
+            foreach (var model in listModel)
+            {
+                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName.Equals(model.OldFileName));
+                if (karteImgInf == null)
+                {
+                    karteImgInf = new SetKarteImgInf();
+                    karteImgInf.HpId = model.HpId;
+                    karteImgInf.SetCd = model.SetCd;
+                    karteImgInf.FileName = model.FileName;
+                    karteImgInf.Position = model.Position;
+                    _tenantDataContext.SetKarteImgInf.Add(karteImgInf);
+                }
+                else
+                {
+                    if (model.FileName != String.Empty)
+                    {
+                        karteImgInf.Position = model.Position;
+                        karteImgInf.FileName = model.FileName;
+                    }
+                    else
+                    {
+                        _tenantDataContext.SetKarteImgInf.Remove(karteImgInf);
+                    }
+                }
+            }
+            _tenantDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
 }
