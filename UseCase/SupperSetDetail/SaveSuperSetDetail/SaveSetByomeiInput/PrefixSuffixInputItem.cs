@@ -1,4 +1,4 @@
-﻿namespace UseCase.SupperSetDetail.SaveSupperSetDetail.SaveSetByomeiInput;
+﻿namespace UseCase.SupperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 
 public class PrefixSuffixInputItem
 {

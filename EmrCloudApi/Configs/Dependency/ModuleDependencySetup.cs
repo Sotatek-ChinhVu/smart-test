@@ -144,7 +144,7 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
-using UseCase.SupperSetDetail.SaveSupperSetDetail;
+using UseCase.SupperSetDetail.SaveSuperSetDetail;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
@@ -356,7 +356,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // SupperSetDetail
             busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
-            busBuilder.RegisterUseCase<SaveSupperSetDetailInputData, SaveSupperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSupperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

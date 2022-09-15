@@ -9,6 +9,7 @@ using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SupperSetDetail.SaveSuperSetDetail;
 using UseCase.SupperSetDetail.SupperSetDetail;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -86,7 +87,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.SaveSuperSetDetail)]
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromQuery] SaveSuperSetDetailRequest request)
     {
-        var input = new SaveSupperSetDetailInputData(request.HpId, request.SetCd);
+        var input = new SaveSuperSetDetailInputData(request.SetCd, request.UserId, request.SaveSupperSetDetailInput);
         var output = _bus.Handle(input);
 
         var presenter = new SaveSuperSetDetailPresenter();

@@ -1,10 +1,10 @@
 ﻿using Domain.Models.SuperSetDetail;
-using UseCase.SupperSetDetail.SaveSupperSetDetail;
-using UseCase.SupperSetDetail.SaveSupperSetDetail.SaveSetByomeiInput;
+using UseCase.SupperSetDetail.SaveSuperSetDetail;
+using UseCase.SupperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 
 namespace Interactor.SupperSetDetail;
 
-public class SaveSupperSetDetailInteractor : ISaveSupperSetDetailInputPort
+public class SaveSupperSetDetailInteractor : ISaveSuperSetDetailInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
 
@@ -13,20 +13,20 @@ public class SaveSupperSetDetailInteractor : ISaveSupperSetDetailInputPort
         _superSetDetailRepository = superSetDetailRepository;
     }
 
-    public SaveSupperSetDetailOutputData Handle(SaveSupperSetDetailInputData inputData)
+    public SaveSuperSetDetailOutputData Handle(SaveSuperSetDetailInputData inputData)
     {
         try
         {
             var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, ConvertToSuperSetDetailModel(inputData));
-            return new SaveSupperSetDetailOutputData(result, SaveSupperSetDetailStatus.Successed);
+            return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
         }
         catch
         {
-            return new SaveSupperSetDetailOutputData(SaveSupperSetDetailStatus.Failed);
+            return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
         }
     }
 
-    private SuperSetDetailModel ConvertToSuperSetDetailModel(SaveSupperSetDetailInputData inputData)
+    private SuperSetDetailModel ConvertToSuperSetDetailModel(SaveSuperSetDetailInputData inputData)
     {
         return new SuperSetDetailModel(
                 ConvertToListSetByomeiModel(inputData.SaveSupperSetDetailInput.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
