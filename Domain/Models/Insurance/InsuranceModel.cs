@@ -167,12 +167,6 @@ namespace Domain.Models.InsuranceInfor
 
         public string RousaiCityName => HokenInf == null ? string.Empty : HokenInf.RousaiCityName;
 
-        public int RousaiReceCount => HokenInf == null ? 0 : HokenInf.RousaiReceCount;
-
-        public int RousaiTenkiSinkei => HokenInf == null ? 0 : HokenInf.RousaiTenkiSinkei;
-
-        public int RousaiTenkiTenki => HokenInf == null ? 0 : HokenInf.RousaiTenkiTenki;
-
         public int RousaiTenkiEndDate => HokenInf == null ? 0 : HokenInf.RousaiTenkiEndDate;
 
         public string JibaiHokenName => HokenInf == null ? string.Empty : HokenInf.JibaiHokenName;
@@ -198,6 +192,8 @@ namespace Domain.Models.InsuranceInfor
         private bool IsEmptyKohi3 => (Kohi3 == null || Kohi3.HokenId == 0);
 
         private bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
+
+        public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
 
         #endregion
 
