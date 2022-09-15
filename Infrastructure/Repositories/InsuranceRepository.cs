@@ -506,52 +506,5 @@ namespace Infrastructure.Repositories
             }
             return hokenKbn == 1 && houbetu == HokenConstant.HOUBETU_NASHI;
         }
-
-        private int GetConfirmState(int hokenKbn, string houbetu, int hpId, long ptId, int sinDate, int hokenId, int hokenMstOrKohi, HokenMst? hokenMaster)
-        {
-            if (hokenMaster != null)
-            {
-                if (hokenMstOrKohi == 1)
-                {
-                    var IsReceKisaiOrNoHoken = IsReceKisai(hokenMaster) || IsNoHoken(hokenMaster, hokenKbn, houbetu);
-                    // Jihi 100% or NoHoken
-                    if (IsReceKisaiOrNoHoken)
-                    {
-                        return 1;
-                    }
-                }
-
-                // HokenChecks
-                var hokenChecks = _tenantDataContext.PtHokenChecks
-                                    .Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == 0
-                                                && x.HokenGrp == 1 && x.HokenId == hokenId && x.IsDeleted == 0)
-                                    .OrderByDescending(x => x.CheckDate)
-                                    .ToList();
-
-                if (hokenChecks.Count == 0)
-                {
-                    return 0;
-                }
-
-                var now = CIUtil.IntToDate(sinDate);
-                if (hokenChecks.Any(hk => hk.CheckDate.Year == now.Year && hk.CheckDate.Month == now.Month && hk.CheckDate.Day == now.Day))
-                {
-                    return 2;
-                }
-                int SinYM = Int32.Parse(CIUtil.Copy(sinDate.ToString(), 1, 6));
-                foreach (var ptHokenCheck in hokenChecks)
-                {
-                    int currentConfirmYM = Int32.Parse(CIUtil.Copy(CIUtil.DateTimeToInt(ptHokenCheck.CheckDate).ToString(), 1, 6));
-                    if (currentConfirmYM == SinYM)
-                    {
-                        return 3;
-                    }
-                }
-                return 0;
-
-            }
-            else
-                return 1;
-        }
     }
 }
