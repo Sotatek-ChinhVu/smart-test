@@ -4,30 +4,30 @@ using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using UseCase.Schema.SaveImage;
+using UseCase.Schema.SaveImageTodayOrder;
 
 namespace Interactor.Schema;
 
-public class SaveImageInteractor : ISaveImageInputPort
+public class SaveImageTodayOrderInteractor : ISaveImageTodayOrderInputPort
 {
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly AmazonS3Options _options;
     private readonly IKarteInfRepository _setKbnMstRepository;
 
-    public SaveImageInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository)
+    public SaveImageTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _setKbnMstRepository = setKbnMstRepository;
     }
 
-    public SaveImageOutputData Handle(SaveImageInputData input)
+    public SaveImageTodayOrderOutputData Handle(SaveImageTodayOrderInputData input)
     {
         try
         {
             if (input.PtId <= 0)
             {
-                return new SaveImageOutputData(SaveImageStatus.InvalidPtId);
+                return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidPtId);
             }
 
             List<KarteImgInfModel> listImageSaveTemps = new();
@@ -41,7 +41,7 @@ public class SaveImageInteractor : ISaveImageInputPort
                     var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
                     if (!isDelete)
                     {
-                        return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
+                        return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidOldImage);
                     }
                     listImageSaveTemps.Add(new KarteImgInfModel(
                             input.HpId,
@@ -53,7 +53,7 @@ public class SaveImageInteractor : ISaveImageInputPort
                 }
                 else
                 {
-                    return new SaveImageOutputData(SaveImageStatus.InvalidOldImage);
+                    return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidOldImage);
                 }
             }
 
@@ -63,7 +63,7 @@ public class SaveImageInteractor : ISaveImageInputPort
 
             if (memoryStream.Length <= 0)
             {
-                return new SaveImageOutputData(SaveImageStatus.InvalidFileImage);
+                return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidFileImage);
             }
 
             string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
@@ -77,11 +77,11 @@ public class SaveImageInteractor : ISaveImageInputPort
                                 String.Empty
                               ));
             _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
-            return new SaveImageOutputData(linkImage, SaveImageStatus.Successed);
+            return new SaveImageTodayOrderOutputData(linkImage, SaveImageTodayOrderStatus.Successed);
         }
         catch (Exception)
         {
-            return new SaveImageOutputData(SaveImageStatus.Failed);
+            return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.Failed);
         }
     }
 }

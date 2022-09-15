@@ -28,5 +28,10 @@
 
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
+
+        //Schema
+        public const string SaveImageTodayOrder = "SaveImageTodayOrder";
+        public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+
     }
 }

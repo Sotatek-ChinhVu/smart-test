@@ -1,6 +1,6 @@
-﻿namespace UseCase.Schema.SaveImage;
+﻿namespace UseCase.Schema.SaveImageTodayOrder;
 
-public enum SaveImageStatus : byte
+public enum SaveImageTodayOrderStatus : byte
 {
     Successed = 1,
     Failed = 2,

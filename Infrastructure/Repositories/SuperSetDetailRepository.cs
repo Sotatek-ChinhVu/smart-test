@@ -243,4 +243,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return mst;
     }
     #endregion
+
+    #region SaveSetKarte
+    private bool SaveSetKarte()
+    {
+
+    }
+
+
+    #endregion
 }
