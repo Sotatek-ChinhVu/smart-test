@@ -2,9 +2,9 @@
 {
     public interface IReceptionRepository
     {
-        ReceptionModel? Get(long raiinNo);
+        ReceptionModel Get(long raiinNo);
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
-        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
+        IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
         bool UpdateStatus(int hpId, long raiinNo, int status);
         bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo);
         bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime);

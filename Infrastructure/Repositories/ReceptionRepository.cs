@@ -15,40 +15,35 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public ReceptionModel? Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo)
         {
             var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
 
-            if (receptionEntity == null)
-            {
-                return null;
-            }
-
             return new ReceptionModel
                 (
-                    receptionEntity.HpId,
-                    receptionEntity.PtId,
-                    receptionEntity.SinDate,
-                    receptionEntity.RaiinNo,
-                    receptionEntity.OyaRaiinNo,
-                    receptionEntity.HokenPid,
-                    receptionEntity.SanteiKbn,
-                    receptionEntity.Status,
-                    receptionEntity.IsYoyaku,
-                    receptionEntity.YoyakuTime ?? string.Empty,
-                    receptionEntity.YoyakuId,
-                    receptionEntity.UketukeSbt,
-                    receptionEntity.UketukeTime ?? string.Empty,
-                    receptionEntity.UketukeId,
-                    receptionEntity.UketukeNo,
-                    receptionEntity.SinStartTime,
-                    receptionEntity.SinEndTime ?? string.Empty,
-                    receptionEntity.KaikeiTime ?? string.Empty,
-                    receptionEntity.KaikeiId,
-                    receptionEntity.KaId,
-                    receptionEntity.TantoId,
-                    receptionEntity.SyosaisinKbn,
-                    receptionEntity.JikanKbn
+                    receptionEntity?.HpId ?? 0,
+                    receptionEntity?.PtId ?? 0,
+                    receptionEntity?.SinDate ?? 0,
+                    receptionEntity?.RaiinNo ?? 0,
+                    receptionEntity?.OyaRaiinNo ?? 0,
+                    receptionEntity?.HokenPid ?? 0,
+                    receptionEntity?.SanteiKbn ?? 0,
+                    receptionEntity?.Status ?? 0,
+                    receptionEntity?.IsYoyaku ?? 0,
+                    receptionEntity?.YoyakuTime ?? string.Empty,
+                    receptionEntity?.YoyakuId ?? 0,
+                    receptionEntity?.UketukeSbt ?? 0,
+                    receptionEntity?.UketukeTime ?? string.Empty,
+                    receptionEntity?.UketukeId ?? 0,
+                    receptionEntity?.UketukeNo ?? 0,
+                    receptionEntity?.SinStartTime ?? string.Empty,
+                    receptionEntity?.SinEndTime ?? string.Empty,
+                    receptionEntity?.KaikeiTime ?? string.Empty,
+                    receptionEntity?.KaikeiId ?? 0,
+                    receptionEntity?.KaId ?? 0,
+                    receptionEntity?.TantoId ?? 0,
+                    receptionEntity?.SyosaisinKbn ?? 0,
+                    receptionEntity?.JikanKbn ?? 0
                 );
         }
 
@@ -57,12 +52,12 @@ namespace Infrastructure.Repositories
             return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
         }
 
-        public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
+        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
             var result = _tenantDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
-                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
+                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2)));
             return result.Select(r => new ReceptionModel(
                         r.HpId,
                         r.PtId,
@@ -87,7 +82,7 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn
-                   )).ToList();
+                   ));
 
         }
 
