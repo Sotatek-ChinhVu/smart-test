@@ -22,6 +22,7 @@ using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
 using Domain.Models.RaiinKubunMst;
+using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionSameVisit;
@@ -120,6 +121,8 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
+using UseCase.Reception.Insert;
+using UseCase.Reception.Update;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
 using UseCase.ReceptionInsurance.Get;
@@ -223,6 +226,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -243,6 +247,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
+            busBuilder.RegisterUseCase<InsertReceptionInputData, InsertReceptionInteractor>();
+            busBuilder.RegisterUseCase<UpdateReceptionInputData, UpdateReceptionInteractor>();
             busBuilder.RegisterUseCase<GetReceptionListInputData, GetReceptionListInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionStaticCellInputData, UpdateReceptionStaticCellInteractor>();
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
