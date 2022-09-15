@@ -1,12 +1,11 @@
-﻿using UseCase.SuperSetDetail.SaveSuperSetDetail;
-
-namespace EmrCloudApi.Tenant.Requests.SetMst;
+﻿namespace EmrCloudApi.Tenant.Requests.SetMst;
 
 public class SaveSuperSetDetailRequest
 {
-    public int SetCd { get; set; }
+    public int SetCd { get; set; } = 0;
 
-    public int UserId { get; set; }
+    public int UserId { get; set; } = 0;
 
-    public SaveSuperSetDetailInputItem SaveSuperSetDetailInput { get; set; } = new();
+    public List<SaveSetByomeiRequestItem> SaveSetByomeiRequestItems { get; set; } = new();
+
 }

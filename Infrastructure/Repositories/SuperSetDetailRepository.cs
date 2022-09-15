@@ -9,7 +9,8 @@ namespace Infrastructure.Repositories;
 public class SuperSetDetailRepository : ISuperSetDetailRepository
 {
     private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantDataContext _tenantDataContext; 
+    private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
     public SuperSetDetailRepository(ITenantProvider tenantProvider)
@@ -192,31 +193,39 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             mst.Byomei = model.FullByomei ?? string.Empty;
             mst.ByomeiCd = model.ByomeiCd ?? string.Empty;
         }
-        mst.SyusyokuCd1 = model.PrefixSuffixList.Count > 0 ? model.PrefixSuffixList[0].Code : string.Empty;
-        mst.SyusyokuCd2 = model.PrefixSuffixList.Count > 1 ? model.PrefixSuffixList[1].Code : string.Empty;
-        mst.SyusyokuCd3 = model.PrefixSuffixList.Count > 2 ? model.PrefixSuffixList[2].Code : string.Empty;
-        mst.SyusyokuCd4 = model.PrefixSuffixList.Count > 3 ? model.PrefixSuffixList[3].Code : string.Empty;
-        mst.SyusyokuCd5 = model.PrefixSuffixList.Count > 4 ? model.PrefixSuffixList[4].Code : string.Empty;
-        mst.SyusyokuCd6 = model.PrefixSuffixList.Count > 5 ? model.PrefixSuffixList[5].Code : string.Empty;
-        mst.SyusyokuCd7 = model.PrefixSuffixList.Count > 6 ? model.PrefixSuffixList[6].Code : string.Empty;
-        mst.SyusyokuCd8 = model.PrefixSuffixList.Count > 7 ? model.PrefixSuffixList[7].Code : string.Empty;
-        mst.SyusyokuCd9 = model.PrefixSuffixList.Count > 8 ? model.PrefixSuffixList[8].Code : string.Empty;
-        mst.SyusyokuCd10 = model.PrefixSuffixList.Count > 9 ? model.PrefixSuffixList[9].Code : string.Empty;
-        mst.SyusyokuCd11 = model.PrefixSuffixList.Count > 10 ? model.PrefixSuffixList[10].Code : string.Empty;
-        mst.SyusyokuCd12 = model.PrefixSuffixList.Count > 11 ? model.PrefixSuffixList[11].Code : string.Empty;
-        mst.SyusyokuCd13 = model.PrefixSuffixList.Count > 12 ? model.PrefixSuffixList[12].Code : string.Empty;
-        mst.SyusyokuCd14 = model.PrefixSuffixList.Count > 13 ? model.PrefixSuffixList[13].Code : string.Empty;
-        mst.SyusyokuCd15 = model.PrefixSuffixList.Count > 14 ? model.PrefixSuffixList[14].Code : string.Empty;
-        mst.SyusyokuCd16 = model.PrefixSuffixList.Count > 15 ? model.PrefixSuffixList[15].Code : string.Empty;
-        mst.SyusyokuCd17 = model.PrefixSuffixList.Count > 16 ? model.PrefixSuffixList[16].Code : string.Empty;
-        mst.SyusyokuCd18 = model.PrefixSuffixList.Count > 17 ? model.PrefixSuffixList[17].Code : string.Empty;
-        mst.SyusyokuCd19 = model.PrefixSuffixList.Count > 18 ? model.PrefixSuffixList[18].Code : string.Empty;
-        mst.SyusyokuCd20 = model.PrefixSuffixList.Count > 19 ? model.PrefixSuffixList[19].Code : string.Empty;
-        mst.SyusyokuCd21 = model.PrefixSuffixList.Count > 20 ? model.PrefixSuffixList[20].Code : string.Empty;
-        if (model.IsSuspected)
+
+        var listPrefixSuffix = mst.ByomeiCd == FREE_WORD ? model.PrefixSuffixList : new();
+        mst.SyusyokuCd1 = listPrefixSuffix.Count > 0 ? listPrefixSuffix[0].Code : string.Empty;
+        mst.SyusyokuCd2 = listPrefixSuffix.Count > 1 ? listPrefixSuffix[1].Code : string.Empty;
+        mst.SyusyokuCd3 = listPrefixSuffix.Count > 2 ? listPrefixSuffix[2].Code : string.Empty;
+        mst.SyusyokuCd4 = listPrefixSuffix.Count > 3 ? listPrefixSuffix[3].Code : string.Empty;
+        mst.SyusyokuCd5 = listPrefixSuffix.Count > 4 ? listPrefixSuffix[4].Code : string.Empty;
+        mst.SyusyokuCd6 = listPrefixSuffix.Count > 5 ? listPrefixSuffix[5].Code : string.Empty;
+        mst.SyusyokuCd7 = listPrefixSuffix.Count > 6 ? listPrefixSuffix[6].Code : string.Empty;
+        mst.SyusyokuCd8 = listPrefixSuffix.Count > 7 ? listPrefixSuffix[7].Code : string.Empty;
+        mst.SyusyokuCd9 = listPrefixSuffix.Count > 8 ? listPrefixSuffix[8].Code : string.Empty;
+        mst.SyusyokuCd10 = listPrefixSuffix.Count > 9 ? listPrefixSuffix[9].Code : string.Empty;
+        mst.SyusyokuCd11 = listPrefixSuffix.Count > 10 ? listPrefixSuffix[10].Code : string.Empty;
+        mst.SyusyokuCd12 = listPrefixSuffix.Count > 11 ? listPrefixSuffix[11].Code : string.Empty;
+        mst.SyusyokuCd13 = listPrefixSuffix.Count > 12 ? listPrefixSuffix[12].Code : string.Empty;
+        mst.SyusyokuCd14 = listPrefixSuffix.Count > 13 ? listPrefixSuffix[13].Code : string.Empty;
+        mst.SyusyokuCd15 = listPrefixSuffix.Count > 14 ? listPrefixSuffix[14].Code : string.Empty;
+        mst.SyusyokuCd16 = listPrefixSuffix.Count > 15 ? listPrefixSuffix[15].Code : string.Empty;
+        mst.SyusyokuCd17 = listPrefixSuffix.Count > 16 ? listPrefixSuffix[16].Code : string.Empty;
+        mst.SyusyokuCd18 = listPrefixSuffix.Count > 17 ? listPrefixSuffix[17].Code : string.Empty;
+        mst.SyusyokuCd19 = listPrefixSuffix.Count > 18 ? listPrefixSuffix[18].Code : string.Empty;
+        mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
+        mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
+
+        if (model.IsSuspected && mst.ByomeiCd == FREE_WORD)
         {
             mst.SyusyokuCd21 = SUSPECTED_CD;
         }
+        else
+        {
+            mst.Byomei?.Replace(SUSPECTED, string.Empty);
+        }
+
         if (model.Id == 0)
         {
             mst.CreateDate = DateTime.UtcNow;
@@ -226,6 +235,5 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         mst.UpdateId = userId;
         return mst;
     }
-
     #endregion
 }

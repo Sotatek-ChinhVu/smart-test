@@ -116,6 +116,9 @@
         public static readonly string GetSetKbnListInvalidSetKbn = "SetKbnTo must more than SetKbnFrom";
         public static readonly string GetSetKbnListNoData = "No Data";
         public static readonly string GetSetKbntListSuccessed = "Successed";
+        public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
+        public static readonly string SaveSetOrderInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
         //Calculation Inf
 
 

@@ -18,7 +18,17 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         try
         {
             var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, ConvertToSuperSetDetailModel(inputData));
-            return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+            switch (result)
+            {
+                case 1:
+                    return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetByomeiFailed);
+                case 2:
+                    return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetKarteInfFailed);
+                case 3:
+                    return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetOrderInfFailed);
+                default:
+                    return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+            }
         }
         catch
         {

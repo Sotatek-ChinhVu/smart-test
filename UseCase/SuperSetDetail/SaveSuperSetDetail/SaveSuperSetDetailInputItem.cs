@@ -4,5 +4,10 @@ namespace UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 public class SaveSuperSetDetailInputItem
 {
-    public List<SaveSetByomeiInputItem> SetByomeiModelInputs { get; private set; } = new();
+    public SaveSuperSetDetailInputItem(List<SaveSetByomeiInputItem> setByomeiModelInputs)
+    {
+        SetByomeiModelInputs = setByomeiModelInputs;
+    }
+
+    public List<SaveSetByomeiInputItem> SetByomeiModelInputs { get; private set; }
 }

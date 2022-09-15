@@ -1,35 +1,28 @@
-﻿using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Presenters.SetMst;
 
-public class SaveSuperSetDetailPresenter : ISetByomeiListOutputPort
+public class SaveSuperSetDetailPresenter : ISaveSuperSetDetailOutputPort
 {
-    public Response<SaveSuperSetDetailResponse> Result { get; private set; } = new Response<SaveSetMstResponse>();
+    public Response<SaveSuperSetDetailResponse> Result { get; private set; } = new();
 
     public void Complete(SaveSuperSetDetailOutputData output)
     {
-        Result.Data = new SaveSetMstResponse(output.setMstModel);
+        Result.Data = new SaveSuperSetDetailResponse(output.Status == SaveSuperSetDetailStatus.Successed);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
 
-    private string GetMessage(SaveSetMstStatus status) => status switch
+    private string GetMessage(SaveSuperSetDetailStatus status) => status switch
     {
-        SaveSetMstStatus.Successed => ResponseMessage.Success,
-        SaveSetMstStatus.Failed => ResponseMessage.Failed,
-        SaveSetMstStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
-        SaveSetMstStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
-        SaveSetMstStatus.InvalidSetKbn => ResponseMessage.InvalidSetKbn,
-        SaveSetMstStatus.InvalidSetKbnEdaNo => ResponseMessage.InvalidSetKbnEdaNo,
-        SaveSetMstStatus.InvalidGenarationId => ResponseMessage.InvalidGenarationId,
-        SaveSetMstStatus.InvalidLevel1 => ResponseMessage.InvalidLevel1,
-        SaveSetMstStatus.InvalidLevel2 => ResponseMessage.InvalidLevel2,
-        SaveSetMstStatus.InvalidLevel3 => ResponseMessage.InvalidLevel3,
-        SaveSetMstStatus.InvalidSetName => ResponseMessage.InvalidSetName,
-        SaveSetMstStatus.InvalidWeightKbn => ResponseMessage.InvalidWeightKbn,
-        SaveSetMstStatus.InvalidColor => ResponseMessage.InvalidColor,
+        SaveSuperSetDetailStatus.Successed => ResponseMessage.Success,
+        SaveSuperSetDetailStatus.Failed => ResponseMessage.Failed,
+        SaveSuperSetDetailStatus.SaveSetByomeiFailed => ResponseMessage.SaveSetByomeiFailed,
+        SaveSuperSetDetailStatus.SaveSetKarteInfFailed => ResponseMessage.SaveSetKarteInfFailed,
+        SaveSuperSetDetailStatus.SaveSetOrderInfFailed => ResponseMessage.SaveSetOrderInfFailed,
         _ => string.Empty
     };
 }
