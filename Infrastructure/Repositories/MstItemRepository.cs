@@ -158,7 +158,7 @@ namespace Infrastructure.Repositories
             );
         }
 
-        public IEnumerable<TenItemModel> SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -497,7 +497,7 @@ namespace Infrastructure.Repositories
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
-
+            var totalCount = queryJoinWithKensa.Count();
             var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
             var listTenMstData = listTenMst.ToList();
             if (listTenMstData != null && listTenMstData.Count > 0)
@@ -524,13 +524,13 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.TenId ?? 0,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
-                                                          item.TenMst?.CmtCol1 ?? 0,
-                                                          item.TenMst?.IpnNameCd ?? string.Empty
+                                                           item.TenMst?.CmtCol1 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty
                                                             );
                     listTenMstModels.Add(newItemModel);
                 }
             }
-            return listTenMstModels;
+            return (listTenMstModels, totalCount);
         }
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
         {
