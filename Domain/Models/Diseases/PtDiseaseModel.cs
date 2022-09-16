@@ -94,6 +94,10 @@ namespace Domain.Models.Diseases
 
         public ValidationStatus Validation()
         {
+            if (string.IsNullOrEmpty(Byomei))
+            {
+                return ValidationStatus.InvalidByomei;
+            }
 
             if (!PtDiseaseConst.TenkiKbns.Values.Contains(TenkiKbn))
             {

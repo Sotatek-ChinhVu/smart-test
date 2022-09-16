@@ -24,7 +24,6 @@ namespace EmrCloudApi.Tenant.Requests.Diseases
 
         public List<PrefixSuffixRequest> SuffixList { get; set; } = new List<PrefixSuffixRequest>();
 
-        [Required]
         [MaxLength(160)]
         public string Byomei { get; set; } = string.Empty;
 

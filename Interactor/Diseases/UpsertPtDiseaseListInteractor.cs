@@ -98,6 +98,9 @@ namespace Interactor.Diseases
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
             if (status == ValidationStatus.InvalidTekiDateAndStartDate)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+            if (status == ValidationStatus.InvalidByomei)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei;
+
             return UpsertPtDiseaseListStatus.Success;
         }
     }

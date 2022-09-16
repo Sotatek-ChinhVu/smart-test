@@ -48,6 +48,7 @@
         public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
+        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
 
         //Insurance
 

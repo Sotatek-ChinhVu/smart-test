@@ -29,6 +29,7 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord => ResponseMessage.UpsertPtDiseaseListInvalidFreeWord,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateContinue,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateAndStartDate,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei => ResponseMessage.UpsertPtDiseaseListInvalidByomei,
             _ => string.Empty
         };
     }

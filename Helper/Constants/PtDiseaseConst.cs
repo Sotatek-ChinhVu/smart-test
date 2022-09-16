@@ -37,6 +37,7 @@
             InvalidFreeWord,
             InvalidTenkiDateContinue,
             InvalidTekiDateAndStartDate,
+            InvalidByomei,
             Valid
         };
     }
