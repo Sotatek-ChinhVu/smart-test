@@ -235,5 +235,11 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        //SwapHoken
+        public static readonly string SwapHokenSourceInsuranceHasNotSelected = "Please select the source insurance.";
+        public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
+        public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
+        public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
     }
 }

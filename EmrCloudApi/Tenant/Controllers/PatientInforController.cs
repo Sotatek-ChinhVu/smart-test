@@ -31,6 +31,10 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using EmrCloudApi.Tenant.Requests.SwapHoken;
+using UseCase.SwapHoken.Save;
+using EmrCloudApi.Tenant.Presenters.SwapHoken;
+using EmrCloudApi.Tenant.Responses.SwapHoken;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -163,5 +167,27 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
+        [HttpPost("SwapHoken")]
+        public ActionResult<Response<SaveSwapHokenResponse>> GetHokenMstByFutansyaNo([FromBody] SaveSwapHokenRequest request)
+        {
+            var input = new SaveSwapHokenInputData(request.HpId, 
+                                                   request.PtId, 
+                                                   request.HokenIdBefore, 
+                                                   request.HokenIdAfter,
+                                                   request.HokenPidBefore,
+                                                   request.HokenPidAfter,
+                                                   request.StartDate,
+                                                   request.EndDate,
+                                                   request.IsReCalculation,
+                                                   request.IsReceCalculation,
+                                                   request.IsReceCheckError
+                                                   );
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveSwapHokenPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
+        }
     }
 }

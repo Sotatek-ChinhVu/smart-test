@@ -148,6 +148,9 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
+using UseCase.SwapHoken.Save;
+using Interactor.SwapHoken;
+using Domain.Models.SwapHoken;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -221,6 +224,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -364,6 +368,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+
+            //SwapHoken
+            busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
+
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
