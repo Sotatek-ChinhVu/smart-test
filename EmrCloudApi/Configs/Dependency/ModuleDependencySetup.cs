@@ -143,8 +143,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.Schema.SaveImage;
-using Domain.Models.Byomei;
-using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
 using UseCase.SetMst.ReorderSetMst;
 using Domain.Models.JsonSetting;
@@ -171,6 +169,9 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
+using UseCase.MonshinInfor.GetList;
+using Interactor.MonshinInf;
+using Domain.Models.MonshinInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -245,6 +246,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IReceptionCommentRepository, ReceptionCommentRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -389,6 +391,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+
+            //Monshin
+            busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
+
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
