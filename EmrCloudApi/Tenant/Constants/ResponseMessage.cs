@@ -237,5 +237,8 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        //Alrgy Drug
+
     }
 }

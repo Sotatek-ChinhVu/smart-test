@@ -33,7 +33,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Validate)]
-        public ActionResult<Response<ValidationOrdInfListResponse>> Validate([FromBody] ValidationOrdInfListRequest request)
+        public ActionResult<Response<AddAlrgyDrugListResponse>> Validate([FromBody] ValidationOrdInfListRequest request)
         {
             var input = new ValidationOrdInfListInputData(request.OrdInfs.Select(o =>
                     new ValidationOdrInfItem(
@@ -99,7 +99,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new ValidationOrdInfListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<ValidationOrdInfListResponse>>(presenter.Result);
+            return new ActionResult<Response<AddAlrgyDrugListResponse>>(presenter.Result);
         }
     }
 }
