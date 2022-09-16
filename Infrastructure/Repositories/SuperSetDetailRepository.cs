@@ -285,12 +285,9 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
             // if set karte have image, update setKarteImage
             var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
-            foreach (var item in listKarteImgInfs)
+            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName))).ToList())
             {
-                if (model.RichText.Contains(ConvertToLinkImage(item.FileName)))
-                {
-                    item.Position = 10;
-                }
+                item.Position = 10;
             }
 
             _tenantDataContext.SaveChanges();
