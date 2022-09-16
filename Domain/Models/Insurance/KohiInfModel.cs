@@ -25,11 +25,11 @@
             ConfirmDateList = confirmDateList;
         }
 
-        public KohiInfModel()
+        public KohiInfModel(int hokenId)
         {
             FutansyaNo = string.Empty;
             JyukyusyaNo = string.Empty;
-            HokenId = 0;
+            HokenId = hokenId;
             StartDate = 0;
             EndDate = 0;
             ConfirmDate = 0;
