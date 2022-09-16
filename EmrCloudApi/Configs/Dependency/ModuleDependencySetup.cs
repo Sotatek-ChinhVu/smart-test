@@ -153,6 +153,7 @@ using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
 using UseCase.Schema.SaveImageSuperSetDetail;
+using UseCase.MaxMoney.SaveMaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -374,6 +375,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+            busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
