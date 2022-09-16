@@ -27,6 +27,7 @@ using UseCase.MaxMoney.GetMaxMoney;
 using EmrCloudApi.Tenant.Requests.MaxMoney;
 using EmrCloudApi.Tenant.Presenters.MaxMoney;
 using EmrCloudApi.Tenant.Responses.MaxMoney;
+using UseCase.MaxMoney.SaveMaxMoney;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -135,6 +136,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetMaxMoneyResponse>>(presenter.Result);
+        }
+
+        [HttpPost("SaveMaxMoneyData")]
+        public ActionResult<Response<SaveMaxMoneyResponse>> SaveMaxMoney([FromBody] SaveMaxMoneyRequest request)
+        {
+            var input = new SaveMaxMoneyInputData(request.ListLimits, request.HpId, request.PtId, request.KohiId, request.SinYM);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveMaxMoneyPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveMaxMoneyResponse>>(presenter.Result);
         }
 
         [HttpPost("CheckPatternSelectedExpirated")]
