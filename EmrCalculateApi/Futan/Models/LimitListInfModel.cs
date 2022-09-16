@@ -157,7 +157,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string Biko
         {
-            get { return LimitListInf.Biko; }
+            get { return LimitListInf.Biko ?? string.Empty; }
             set
             {
                 if (LimitListInf.Biko == value) return;
