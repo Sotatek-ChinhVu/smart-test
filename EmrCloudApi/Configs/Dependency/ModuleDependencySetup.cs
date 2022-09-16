@@ -145,6 +145,8 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
+using UseCase.SpecialNote.Save;
+using Domain.Models.SpecialNote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -218,6 +220,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
+            services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -323,7 +326,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
-            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
+            busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
+
 
             //Input Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
@@ -331,6 +335,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDosageDrugListInputData, GetDosageDrugListInteractor>();
             busBuilder.RegisterUseCase<SearchOTCInputData, SearchOtcInteractor>();
             busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
+            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
