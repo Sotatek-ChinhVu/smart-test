@@ -163,7 +163,6 @@ namespace Infrastructure.Repositories
                     string houbetu = string.Empty;
                     int futanRate = 0;
                     int futanKbn = 0;
-                    bool isHaveHokenMst = false;
                     int hokenMstSubNumber = 0;
                     int hokenMstStartDate = 0;
                     int hokenMstEndDate = 0;
@@ -176,7 +175,6 @@ namespace Infrastructure.Repositories
                         houbetu = item.hokenMst.Houbetu;
                         futanRate = item.hokenMst.FutanRate;
                         futanKbn = item.hokenMst.FutanKbn;
-                        isHaveHokenMst = true;
                         hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
                         hokenMstStartDate = item.hokenMst.StartDate;
                         hokenMstEndDate = item.hokenMst.EndDate;
@@ -239,9 +237,7 @@ namespace Infrastructure.Repositories
                                             item.JibaiHokenTanto ?? string.Empty,
                                             item.JibaiHokenTel ?? string.Empty,
                                             item.JibaiJyusyouDate,
-                                            isHaveHokenMst,
-                                            hokenMstSubNumber,
-                                            item.hokenMst?.Houbetu ?? string.Empty,
+                                            houbetu ?? string.Empty,
                                             GetConfirmDateList(1, item.HokenId),
                                             ptRousaiTenkis,
                                             isReceKisaiOrNoHoken,
@@ -252,7 +248,8 @@ namespace Infrastructure.Repositories
                                                               hokenMstHokenNo,
                                                               hokenMstHokenEdraNo,
                                                               hokenMstSName,
-                                                              houbetu ?? string.Empty)
+                                                              houbetu ?? string.Empty,
+                                                              hokenMstSubNumber)
                                             );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -288,7 +285,6 @@ namespace Infrastructure.Repositories
                     string houbetuHokenInf = string.Empty;
                     int futanRateHokenInf = 0;
                     int futanKbnHokenInf = 0;
-                    bool isHaveHokenMst = false;
                     int hokenMstSubNumber = 0;
                     var isReceKisaiOrNoHoken = false;
                     int hokenMstStartDate = 0;
@@ -301,7 +297,6 @@ namespace Infrastructure.Repositories
                         houbetuHokenInf = hokenMst.Houbetu;
                         futanRateHokenInf = hokenMst.FutanRate;
                         futanKbnHokenInf = hokenMst.FutanKbn;
-                        isHaveHokenMst = true;
                         hokenMstSubNumber = hokenMst.HokenSbtKbn;
                         hokenMstStartDate = hokenMst.StartDate;
                         hokenMstEndDate = hokenMst.EndDate;
@@ -362,8 +357,6 @@ namespace Infrastructure.Repositories
                                             item.JibaiHokenTanto ?? string.Empty,
                                             item.JibaiHokenTel ?? string.Empty,
                                             item.JibaiJyusyouDate,
-                                            isHaveHokenMst,
-                                            hokenMstSubNumber,
                                             item.Houbetu ?? string.Empty,
                                             GetConfirmDateList(1, item.HokenId),
                                             ptRousaiTenkis,
@@ -376,7 +369,8 @@ namespace Infrastructure.Repositories
                                                 hokenMstHokenNo,
                                                 hokenMstHokenEdraNo,
                                                 hokenMstSName,
-                                                houbetuHokenInf ?? string.Empty
+                                                houbetuHokenInf ?? string.Empty,
+                                                hokenMstSubNumber
                                                 )
                                             );
 
@@ -462,7 +456,7 @@ namespace Infrastructure.Repositories
             {
                 return new HokenMstModel();
             }
-            return new HokenMstModel(hokenMst.FutanKbn, hokenMst.FutanRate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.HokenSname, hokenMst.Houbetu);
+            return new HokenMstModel(hokenMst.FutanKbn, hokenMst.FutanRate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.HokenSname, hokenMst.Houbetu, hokenMst.HokenSbtKbn);
         }
 
         private string NenkinBango(string? rousaiKofuNo)

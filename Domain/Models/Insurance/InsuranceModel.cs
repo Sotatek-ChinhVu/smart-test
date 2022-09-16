@@ -111,9 +111,9 @@ namespace Domain.Models.InsuranceInfor
 
         public int KogakuKbn => HokenInf == null ? 0 : HokenInf.KogakuKbn;
 
-        public string HokenMstHoubetu => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.Houbetu : string.Empty;
+        public string HokenMstHoubetu => HokenInf != null ? HokenInf.HokenMstHoubetu : string.Empty;
 
-        public int HokenMstFutanRate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.FutanRate : 0;
+        public int HokenMstFutanRate => HokenInf != null ? HokenInf.HokenMstFutanRate : 0;
 
         public int TasukaiYm => HokenInf == null ? 0 : HokenInf.TasukaiYm;
 
@@ -177,7 +177,7 @@ namespace Domain.Models.InsuranceInfor
 
         public int JibaiJyusyouDate => HokenInf == null ? 0 : HokenInf.JibaiJyusyouDate;
 
-        public int FutanKbn => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.FutanKbn : 0;
+        public int FutanKbn => HokenInf != null ? HokenInf.HokenMstFutanKbn : 0;
 
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
@@ -195,11 +195,11 @@ namespace Domain.Models.InsuranceInfor
 
         public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
 
-        public int HokenMstStartDate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.StartDate : 0;
+        public int HokenMstStartDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
 
-        public int HokenMstEndDate => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.EndDate : 0;
+        public int HokenMstEndDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
 
-        public string HokenMstDisplayTextMaster => HokenInf != null && HokenInf.HokenMst != null ? HokenInf.HokenMst.DisplayTextMaster : string.Empty;
+        public string HokenMstDisplayTextMaster => HokenInf != null ? HokenInf.HokenMstDisplayTextMaster : string.Empty;
 
         #endregion
 

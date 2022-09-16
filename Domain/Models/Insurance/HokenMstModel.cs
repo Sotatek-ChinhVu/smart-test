@@ -8,7 +8,7 @@ namespace Domain.Models.Insurance
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenShortName, string houbetu)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenShortName, string houbetu, int hokenSubNumber)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -18,6 +18,7 @@ namespace Domain.Models.Insurance
             HokenEdaNo = hokenEdaNo;
             HokenShortName = hokenShortName;
             Houbetu = houbetu;
+            HokenSubNumber = hokenSubNumber;
         }
 
         public HokenMstModel()
@@ -41,6 +42,8 @@ namespace Domain.Models.Insurance
         public string HokenShortName { get; private set; }
 
         public string Houbetu { get; private set; }
+
+        public int HokenSubNumber { get; private set; }
 
         public string SelectedValueMaster
         {
