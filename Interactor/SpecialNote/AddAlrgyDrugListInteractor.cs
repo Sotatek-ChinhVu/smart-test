@@ -45,7 +45,7 @@ namespace Interactor.SpecialNote
                             )
                     ).ToList() ?? new List<PtAlrgyDrugModel>();
 
-                if (alrgyDrugs.Count == 0)
+                if (!(alrgyDrugs?.Count() > 0))
                     keyValuePairs.Add(new(-1, AddAlrgyDrugListStatus.InputNoData));
 
                 foreach (var item in alrgyDrugs)
@@ -55,32 +55,23 @@ namespace Interactor.SpecialNote
                     {
                         keyValuePairs.Add(new(count, CovertToAddAlrgyDrugListStatus(valid)));
                     }
-                    count++;
-                }
-
-                count = 0;
-                if (alrgyDrugs?.Count() > 0)
-                {
-                    foreach (var item in alrgyDrugs)
+                    if (alrgyDrugOlds.Any(a => a.ItemCd == item.ItemCd) && !keyValuePairs.Any(k => k.Key == count))
                     {
-                        if (alrgyDrugOlds.Any(a => a.ItemCd == item.ItemCd) && !keyValuePairs.Any(k => k.Key == count))
-                        {
-                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
-                            continue;
-                        }
-                        var checkPtId = _patientInfoRepository.CheckListId(new List<long> { item.PtId });
-                        var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
-                        if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))
-                        {
-                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.PtIdNoExist));
-                            continue;
-                        }
-                        if (!chekTenMst && !keyValuePairs.Any(k => k.Key == count))
-                        {
-                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.ItemCdNoExist));
-                        }
-                        count++;
+                        keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
                     }
+
+                    var checkPtId = _patientInfoRepository.CheckListId(new List<long> { item.PtId });
+                    var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
+
+                    if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))
+                    {
+                        keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.PtIdNoExist));
+                    }
+                    if (!chekTenMst && !keyValuePairs.Any(k => k.Key == count))
+                    {
+                        keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.ItemCdNoExist));
+                    }
+                    count++;
                 }
 
                 foreach (var item in keyValuePairs)
