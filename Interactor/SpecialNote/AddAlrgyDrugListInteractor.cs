@@ -45,7 +45,7 @@ namespace Interactor.SpecialNote
                             )
                     ).ToList() ?? new List<PtAlrgyDrugModel>();
 
-                if (!(alrgyDrugs?.Count() > 0))
+                if (alrgyDrugs == null || alrgyDrugs.Count == 0)
                     keyValuePairs.Add(new(-1, AddAlrgyDrugListStatus.InputNoData));
 
                 foreach (var item in alrgyDrugs)
