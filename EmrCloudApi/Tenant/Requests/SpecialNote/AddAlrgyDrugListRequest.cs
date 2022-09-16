@@ -2,6 +2,6 @@
 {
     public class AddAlrgyDrugListRequest
     {
-        public List<AddAlrgyDrugListItem> AlgrgyDrugs { get; set; } = new();
+        public List<AddAlrgyDrugListItemRequest> AlgrgyDrugs { get; set; } = new();
     }
 }

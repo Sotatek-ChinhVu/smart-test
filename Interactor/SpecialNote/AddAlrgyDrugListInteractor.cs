@@ -1,9 +1,7 @@
-﻿using Domain.Models.PtCmtInf;
+﻿using Domain.Models.MstItem;
+using Domain.Models.PatientInfor;
 using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Models.SpecialNote.PatientInfo;
-using Domain.Models.SpecialNote.SummaryInf;
 using UseCase.SpecialNote.AddAlrgyDrugList;
-using UseCase.SpecialNote.Get;
 using static Helper.Constants.PtAlrgyDrugConst;
 
 namespace Interactor.SpecialNote
@@ -11,79 +9,112 @@ namespace Interactor.SpecialNote
     public class AddAlrgyDrugListInteractor : IAddAlrgyDrugListInputPort
     {
         private readonly IImportantNoteRepository _importantNoteRepository;
+        private readonly IPatientInforRepository _patientInfoRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public AddAlrgyDrugListInteractor(IImportantNoteRepository importantNoteRepository)
+        public AddAlrgyDrugListInteractor(IImportantNoteRepository importantNoteRepository, IPatientInforRepository patientInfoRepository, IMstItemRepository mstItemRepository)
         {
             _importantNoteRepository = importantNoteRepository;
+            _patientInfoRepository = patientInfoRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public AddAlrgyDrugListOutputData Handle(AddAlrgyDrugListInputData inputDatas)
         {
-            List<KeyValuePair<int, AddAlrgyDrugListStatus>> keyValuePairs = new List<KeyValuePair<int, AddAlrgyDrugListStatus>>();
-
-            var datas = inputDatas.DataList.Distinct();
-            var ptId = datas?.FirstOrDefault()?.PtId;
-            var alrgyDrugOlds = ptId == null ? new List<PtAlrgyDrugModel>() : _importantNoteRepository.GetAlrgyDrugList(long.Parse(ptId.ToString() ?? string.Empty));
-
-            var count = 0;
-            if (datas?.Count() > 0)
+            try
             {
-                foreach (var item in datas)
+                List<KeyValuePair<int, AddAlrgyDrugListStatus>> keyValuePairs = new List<KeyValuePair<int, AddAlrgyDrugListStatus>>();
+
+                var datas = inputDatas.DataList.Distinct();
+                var ptId = datas?.FirstOrDefault()?.PtId;
+                var alrgyDrugOlds = ptId == null ? new List<PtAlrgyDrugModel>() : _importantNoteRepository.GetAlrgyDrugList(long.Parse(ptId.ToString() ?? string.Empty));
+
+                var count = 0;
+                var alrgyDrugs = datas?.Select(
+                        i => new PtAlrgyDrugModel(
+                                0,
+                                i.PtId,
+                                0,
+                                i.SortNo,
+                                i.ItemCd,
+                                i.DrugName,
+                                i.StartDate,
+                                i.EndDate,
+                                i.Cmt,
+                                0
+                            )
+                    ).ToList() ?? new List<PtAlrgyDrugModel>();
+
+                if (alrgyDrugs.Count == 0)
+                    keyValuePairs.Add(new(-1, AddAlrgyDrugListStatus.InputNoData));
+
+                foreach (var item in alrgyDrugs)
                 {
-                    if (!alrgyDrugOlds.Any(a => a.ItemCd == item.ItemCd))
-                        keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
+                    var valid = item.Validation();
+                    if (valid != ValidationStatus.Valid)
+                    {
+                        keyValuePairs.Add(new(count, CovertToAddAlrgyDrugListStatus(valid)));
+                    }
                     count++;
                 }
-            }
 
-            var alrgyDrugs = datas?.Select(
-                    i => new PtAlrgyDrugModel(
-                            i.HpId,
-                            i.PtId,
-                            i.SeqNo,
-                            i.SortNo,
-                            i.ItemCd,
-                            i.DrugName,
-                            i.StartDate,
-                            i.EndDate,
-                            i.Cmt,
-                            i.IsDeleted
-                        )
-                ).ToList() ?? new List<PtAlrgyDrugModel>();
-
-            if (alrgyDrugs.Count == 0)
-                keyValuePairs.Add(new(-1, AddAlrgyDrugListStatus.InputNoData));
-
-            count = 0;
-            foreach (var item in alrgyDrugs)
-            {
-                var valid = item.Validation();
-                if (valid != ValidationStatus.Valid)
+                count = 0;
+                if (alrgyDrugs?.Count() > 0)
                 {
-                    keyValuePairs.Add(new(count, CovertToAddAlrgyDrugListStatus(valid)));
+                    foreach (var item in alrgyDrugs)
+                    {
+                        if (alrgyDrugOlds.Any(a => a.ItemCd == item.ItemCd) && !keyValuePairs.Any(k => k.Key == count))
+                        {
+                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
+                            continue;
+                        }
+                        var checkPtId = _patientInfoRepository.CheckListId(new List<long> { item.PtId });
+                        var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
+                        if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))
+                        {
+                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.PtIdNoExist));
+                            continue;
+                        }
+                        if (!chekTenMst && !keyValuePairs.Any(k => k.Key == count))
+                        {
+                            keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.ItemCdNoExist));
+                        }
+                        count++;
+                    }
                 }
-                count++;
+
+                foreach (var item in keyValuePairs)
+                {
+                    alrgyDrugs?.RemoveAt(item.Key);
+                }
+                if (alrgyDrugs?.Count > 0)
+                    _importantNoteRepository.AddAlrgyDrugList(alrgyDrugs);
+
+                return new AddAlrgyDrugListOutputData(keyValuePairs);
             }
-            return new AddAlrgyDrugListOutputData(keyValuePairs);
+            catch
+            {
+                return new AddAlrgyDrugListOutputData(new List<KeyValuePair<int, AddAlrgyDrugListStatus>>() { new(-1, AddAlrgyDrugListStatus.Failed) });
+            }
         }
         private AddAlrgyDrugListStatus CovertToAddAlrgyDrugListStatus(ValidationStatus validationStatus)
         {
             switch (validationStatus)
             {
-                case ValidationStatus.InvalidHpId:
-                    return AddAlrgyDrugListStatus.InvalidHpId;
                 case ValidationStatus.InvalidPtId:
                     return AddAlrgyDrugListStatus.InvalidPtId;
-                case ValidationStatus.InvalidSeqNo:
-                    return AddAlrgyDrugListStatus.InvalidSeqNo;
                 case ValidationStatus.InvalidSortNo:
                     return AddAlrgyDrugListStatus.InvalidSortNo;
                 case ValidationStatus.InvalidStartDate:
                     return AddAlrgyDrugListStatus.InvalidStartDate;
                 case ValidationStatus.InvalidEndDate:
                     return AddAlrgyDrugListStatus.InvalidEndDate;
-                case ValidationStatus.InvalidIsDeleted:
-                    return AddAlrgyDrugListStatus.InvalidIsDeleted;
+                case ValidationStatus.InvalidItemCd:
+                    return AddAlrgyDrugListStatus.InvalidItemCd;
+                case ValidationStatus.InvalidDrugName:
+                    return AddAlrgyDrugListStatus.InvalidDrugName;
+                case ValidationStatus.InvalidCmt:
+                    return AddAlrgyDrugListStatus.InvalidCmt;
                 default:
                     return AddAlrgyDrugListStatus.Successed;
             }

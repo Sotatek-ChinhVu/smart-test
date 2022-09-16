@@ -2,13 +2,7 @@
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
@@ -29,16 +23,14 @@ namespace Infrastructure.Repositories.SpecialNote
                 inputDatas.Select(
                         i => new PtAlrgyDrug
                         {
-                            HpId = i.HpId,
+                            HpId = TempIdentity.HpId,
                             PtId = i.PtId,
-                            SeqNo = i.SeqNo,
                             SortNo = i.SortNo,
                             ItemCd = i.ItemCd,
                             DrugName = i.DrugName,
                             StartDate = i.StartDate,
                             EndDate = i.EndDate,
                             Cmt = i.Cmt,
-                            IsDeleted = i.IsDeleted,
                             CreateDate = DateTime.UtcNow,
                             CreateId = TempIdentity.UserId,
                             CreateMachine = TempIdentity.ComputerName,
@@ -48,6 +40,7 @@ namespace Infrastructure.Repositories.SpecialNote
                         }
                     )
              );
+            _tenantTrackingDataContext.SaveChanges();
         }
 
         public List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId)

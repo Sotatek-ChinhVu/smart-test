@@ -4,13 +4,13 @@
     {
         public enum ValidationStatus
         {
-            InvalidHpId = 0,
-            InvalidPtId = 1,
-            InvalidSeqNo = 2,
-            InvalidSortNo = 3,
-            InvalidStartDate = 4,
-            InvalidEndDate = 5,
-            InvalidIsDeleted = 6,
+            InvalidPtId = 0,
+            InvalidSortNo = 1,
+            InvalidStartDate = 2,
+            InvalidEndDate = 3,
+            InvalidItemCd = 4,
+            InvalidDrugName = 5,
+            InvalidCmt = 6,
             Valid = 7
         };
     }

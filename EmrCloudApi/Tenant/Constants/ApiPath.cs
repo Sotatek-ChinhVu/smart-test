@@ -28,5 +28,9 @@
 
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
+
+        //Special Note
+        public const string AddAlrgyDrugList = "AddAlrgyDrugList";
+
     }
 }

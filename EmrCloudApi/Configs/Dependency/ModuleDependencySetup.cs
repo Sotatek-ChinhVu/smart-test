@@ -12,6 +12,7 @@ using Domain.Models.KaMst;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
+using Domain.Models.MaxMoney;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
@@ -62,6 +63,7 @@ using Interactor.KaMst;
 using Interactor.KarteFilter;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
+using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
 using Interactor.MstItem;
 using Interactor.OrdInfs;
@@ -102,12 +104,16 @@ using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
 using UseCase.KohiHokenMst.Get;
+using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchSupplement;
+using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.UpdateAdopted;
+using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
@@ -135,6 +141,7 @@ using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SupperSetDetail.SupperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -145,12 +152,6 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.MstItem.SearchTenItem;
-using UseCase.MstItem.UpdateAdopted;
-using UseCase.MstItem.UpdateAdoptedByomei;
-using Domain.Models.MaxMoney;
-using UseCase.MaxMoney.GetMaxMoney;
-using Interactor.MaxMoney;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -333,6 +334,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
+            busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
 
             //MS Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();

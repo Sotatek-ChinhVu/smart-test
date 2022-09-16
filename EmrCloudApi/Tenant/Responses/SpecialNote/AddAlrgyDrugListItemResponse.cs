@@ -1,17 +1,17 @@
-﻿using Helper.Constants;
+﻿using UseCase.SpecialNote.AddAlrgyDrugList;
 
 namespace EmrCloudApi.Tenant.Responses.SpecialNote
 {
     public class AddAlrgyDrugListItemResponse
     {
-        public AddAlrgyDrugListItemResponse(TodayOrderConst.TodayOrdValidationStatus status, int position, string validationMessage)
+        public AddAlrgyDrugListItemResponse(AddAlrgyDrugListStatus status, int position, string validationMessage)
         {
             Status = status;
             Position = position;
             ValidationMessage = validationMessage;
         }
 
-        public TodayOrderConst.TodayOrdValidationStatus Status { get; private set; }
+        public AddAlrgyDrugListStatus Status { get; private set; }
         public int Position { get; private set; }
         public string ValidationMessage { get; private set; }
     }

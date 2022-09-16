@@ -40,21 +40,22 @@ namespace Domain.Models.SpecialNote.ImportantNote
 
         public ValidationStatus Validation()
         {
-            if (HpId <= 0)
-            {
-                return ValidationStatus.InvalidHpId;
-            }
+
             if (PtId <= 0)
             {
-                return ValidationStatus.InvalidHpId;
-            }
-            if (SeqNo <= 0)
-            {
-                return ValidationStatus.InvalidSeqNo;
+                return ValidationStatus.InvalidPtId;
             }
             if (SortNo <= 0)
             {
                 return ValidationStatus.InvalidSortNo;
+            }
+            if (ItemCd.Length > 10)
+            {
+                return ValidationStatus.InvalidItemCd;
+            }
+            if (DrugName.Length > 100)
+            {
+                return ValidationStatus.InvalidDrugName;
             }
             if (StartDate < 0)
             {
@@ -64,10 +65,11 @@ namespace Domain.Models.SpecialNote.ImportantNote
             {
                 return ValidationStatus.InvalidEndDate;
             }
-            if (IsDeleted != 0 && IsDeleted != 1)
+            if (Cmt.Length > 100)
             {
-                return ValidationStatus.InvalidIsDeleted;
+                return ValidationStatus.InvalidCmt;
             }
+
             return ValidationStatus.Valid;
         }
     }
