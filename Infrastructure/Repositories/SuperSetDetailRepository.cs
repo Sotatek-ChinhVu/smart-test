@@ -2,7 +2,6 @@
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PostgreDataContext;
 using System.Text;
