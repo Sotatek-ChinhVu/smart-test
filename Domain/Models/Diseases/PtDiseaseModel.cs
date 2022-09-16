@@ -119,7 +119,7 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidTenkiDateContinue;
             }
-            if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate < StartDate)
+            if (TenkiKbn > TenkiKbnConst.Continued && TenkiDate < StartDate)
             {
                 return ValidationStatus.InvalidTekiDateAndStartDate;
             }
