@@ -13,6 +13,7 @@ using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
+using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
 using UseCase.SuperSetDetail.SuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -90,7 +91,13 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveSuperSetDetail)]
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
-        var input = new SaveSuperSetDetailInputData(request.SetCd, request.UserId, request.HpId, ConvertToSaveSuperSetDetailInputItem(request.SaveSetByomeiRequestItems));
+        var input = new SaveSuperSetDetailInputData(
+                request.SetCd,
+                request.UserId,
+                request.HpId,
+                ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
+                new SaveSetKarteInputItem(request.HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText)
+            );
         var output = _bus.Handle(input);
 
         var presenter = new SaveSuperSetDetailPresenter();
@@ -109,13 +116,6 @@ public class SetController : ControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
-    }
-
-    private SaveSuperSetDetailInputItem ConvertToSaveSuperSetDetailInputItem(List<SaveSetByomeiRequestItem> saveSetByomeiRequestItems)
-    {
-        return new SaveSuperSetDetailInputItem(
-                ConvertToSetByomeiModelInputs(saveSetByomeiRequestItems)
-            );
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

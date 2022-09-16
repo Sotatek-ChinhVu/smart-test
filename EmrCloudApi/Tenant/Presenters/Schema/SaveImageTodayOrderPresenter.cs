@@ -23,6 +23,7 @@ public class SaveImageTodayOrderPresenter
         SaveImageTodayOrderStatus.InvalidOldImage => ResponseMessage.InvalidOldImage,
         SaveImageTodayOrderStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         SaveImageTodayOrderStatus.InvalidFileImage => ResponseMessage.InvalidFileImage,
+        SaveImageTodayOrderStatus.DeleteSuccessed => ResponseMessage.DeleteSuccessed,
         _ => string.Empty
     };
 }

@@ -23,6 +23,7 @@ public class SaveImageSuperSetDetailPresenter
         SaveImageSuperSetDetailStatus.InvalidOldImage => ResponseMessage.InvalidOldImage,
         SaveImageSuperSetDetailStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
         SaveImageSuperSetDetailStatus.InvalidFileImage => ResponseMessage.InvalidFileImage,
+        SaveImageSuperSetDetailStatus.DeleteSuccessed => ResponseMessage.DeleteSuccessed,
         _ => string.Empty
     };
 }

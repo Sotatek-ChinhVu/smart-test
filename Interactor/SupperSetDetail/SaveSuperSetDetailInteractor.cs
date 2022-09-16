@@ -1,6 +1,7 @@
 ﻿using Domain.Models.SuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
+using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
 
 namespace Interactor.SuperSetDetail;
 
@@ -39,8 +40,8 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     private SuperSetDetailModel ConvertToSuperSetDetailModel(SaveSuperSetDetailInputData inputData)
     {
         return new SuperSetDetailModel(
-                ConvertToListSetByomeiModel(inputData.SaveSuperSetDetailInput.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
-                new SetKarteInfModel()
+                ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
+                ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem())
             );
     }
 
@@ -71,4 +72,14 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         }
         return result;
     }
+
+    private SetKarteInfModel ConvertToSetKarteInfModel(SaveSetKarteInputItem inputItem)
+    {
+        return new SetKarteInfModel(
+                inputItem.HpId,
+                inputItem.SetCd,
+                inputItem.RichText
+            );
+    }
+
 }

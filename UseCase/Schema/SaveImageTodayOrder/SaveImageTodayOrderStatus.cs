@@ -7,4 +7,5 @@ public enum SaveImageTodayOrderStatus : byte
     InvalidOldImage = 3,
     InvalidFileImage = 4,
     InvalidPtId = 5,
+    DeleteSuccessed = 6,
 }

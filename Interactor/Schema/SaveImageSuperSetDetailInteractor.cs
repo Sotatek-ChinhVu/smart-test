@@ -59,25 +59,29 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
 
             // Insert new image
             var memoryStream = input.StreamImage.ToMemoryStreamAsync().Result;
-            var subFolder = CommonConstants.SubFolderSuperSet;
+            var subFolder = CommonConstants.SubFolderSuperSet + "/" + input.SetCd.ToString();
 
-            if (memoryStream.Length <= 0)
+            if (memoryStream.Length <= 0 && string.IsNullOrEmpty(input.OldImage))
             {
                 return new SaveImageSuperSetDetailOutputData(SaveImageSuperSetDetailStatus.InvalidFileImage);
             }
-
-            string fileName = input.SetCd.ToString().PadLeft(10, '0') + ".png";
-            var responseUpload = _amazonS3Service.UploadAnObjectAsync(false, subFolder, fileName, memoryStream);
-            var linkImage = responseUpload.Result;
-            listImageSaveTemps.Add(new SetKarteImgInfModel(
-                                input.HpId,
-                                input.SetCd,
-                                input.Position,
-                                linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
-                                String.Empty
-                              ));
+            if (memoryStream.Length > 0)
+            {
+                string fileName = input.SetCd.ToString().PadLeft(10, '0') + ".png";
+                var responseUpload = _amazonS3Service.UploadAnObjectAsync(false, subFolder, fileName, memoryStream);
+                var linkImage = responseUpload.Result;
+                listImageSaveTemps.Add(new SetKarteImgInfModel(
+                                    input.HpId,
+                                    input.SetCd,
+                                    input.Position,
+                                    linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
+                                    String.Empty
+                                  ));
+                _superSetDetailRepository.SaveListSetKarteImgTemp(listImageSaveTemps);
+                return new SaveImageSuperSetDetailOutputData(linkImage, SaveImageSuperSetDetailStatus.Successed);
+            }
             _superSetDetailRepository.SaveListSetKarteImgTemp(listImageSaveTemps);
-            return new SaveImageSuperSetDetailOutputData(linkImage, SaveImageSuperSetDetailStatus.Successed);
+            return new SaveImageSuperSetDetailOutputData(SaveImageSuperSetDetailStatus.DeleteSuccessed);
         }
         catch (Exception)
         {

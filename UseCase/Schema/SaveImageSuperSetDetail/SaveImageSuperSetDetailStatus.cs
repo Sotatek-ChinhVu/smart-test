@@ -7,4 +7,5 @@ public enum SaveImageSuperSetDetailStatus : byte
     InvalidOldImage = 3,
     InvalidFileImage = 4,
     InvalidSetCd = 5,
+    DeleteSuccessed = 6,
 }

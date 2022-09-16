@@ -10,4 +10,6 @@ public class SaveSuperSetDetailRequest
 
     public List<SaveSetByomeiRequestItem> SaveSetByomeiRequestItems { get; set; } = new();
 
+    public SaveSetKarteRequestItem SaveSetKarteRequestItem { get; set; } = new();
+
 }

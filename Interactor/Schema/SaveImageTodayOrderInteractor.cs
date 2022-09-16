@@ -61,23 +61,27 @@ public class SaveImageTodayOrderInteractor : ISaveImageTodayOrderInputPort
             var memoryStream = input.StreamImage.ToMemoryStreamAsync().Result;
             var subFolder = CommonConstants.SubFolderKarte;
 
-            if (memoryStream.Length <= 0)
+            if (memoryStream.Length <= 0 && string.IsNullOrEmpty(input.OldImage))
             {
                 return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidFileImage);
             }
-
-            string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
-            var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName, memoryStream);
-            var linkImage = responseUpload.Result;
-            listImageSaveTemps.Add(new KarteImgInfModel(
-                                input.HpId,
-                                input.PtId,
-                                input.RaiinNo,
-                                linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
-                                String.Empty
-                              ));
+            if (memoryStream.Length > 0)
+            {
+                string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
+                var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName, memoryStream);
+                var linkImage = responseUpload.Result;
+                listImageSaveTemps.Add(new KarteImgInfModel(
+                                    input.HpId,
+                                    input.PtId,
+                                    input.RaiinNo,
+                                    linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
+                                    String.Empty
+                                  ));
+                _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
+                return new SaveImageTodayOrderOutputData(linkImage, SaveImageTodayOrderStatus.Successed);
+            }
             _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
-            return new SaveImageTodayOrderOutputData(linkImage, SaveImageTodayOrderStatus.Successed);
+            return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.DeleteSuccessed);
         }
         catch (Exception)
         {

@@ -1,6 +1,9 @@
 ﻿using Domain.Models.SuperSetDetail;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using PostgreDataContext;
 using System.Text;
 
@@ -10,11 +13,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 {
     private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
     private readonly TenantDataContext _tenantDataContext;
+    private readonly AmazonS3Options _options;
     private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
-    public SuperSetDetailRepository(ITenantProvider tenantProvider)
+    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider)
     {
+        _options = optionsAccessor.Value;
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
@@ -124,9 +129,14 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     public int SaveSuperSetDetail(int setCd, int userId, int hpId, SuperSetDetailModel superSetDetailModel)
     {
         int status = 0;
+
         if (!SaveSetByomei(setCd, userId, hpId, superSetDetailModel.SetByomeiList))
         {
             status = 1;
+        }
+        if (!SaveSetKarte(userId, superSetDetailModel.SetKarteInf))
+        {
+            status = 2;
         }
         return status;
     }
@@ -137,19 +147,19 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         bool status = false;
         try
         {
-            var listOldByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
+            var listOldSetByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
 
             // Add new SetByomei
-            var listAddNewByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
-            if (listAddNewByomeis != null && listAddNewByomeis.Count > 0)
+            var listAddNewSetByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
+            if (listAddNewSetByomeis != null && listAddNewSetByomeis.Count > 0)
             {
-                _tenantDataContext.AddRange(listAddNewByomeis);
+                _tenantDataContext.SetByomei.AddRange(listAddNewSetByomeis);
             }
 
             // Update SetByomei
             foreach (var model in setByomeiModels.Where(model => model.Id != 0).ToList())
             {
-                var mst = listOldByomeis.FirstOrDefault(mst => mst.Id == model.Id);
+                var mst = listOldSetByomeis.FirstOrDefault(mst => mst.Id == model.Id);
                 if (mst != null)
                 {
                     mst = ConvertToSetByomeiEntity(setCd, userId, hpId, mst, model) ?? new SetByomei();
@@ -157,8 +167,8 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             }
 
             // Delete SetByomei
-            var listByomeiDelete = listOldByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
-            foreach (var mst in listByomeiDelete)
+            var listSetByomeiDelete = listOldSetByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
+            foreach (var mst in listSetByomeiDelete)
             {
                 mst.IsDeleted = 1;
                 mst.UpdateDate = DateTime.UtcNow;
@@ -245,9 +255,60 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     #endregion
 
     #region SaveSetKarte
+    public bool SaveSetKarte(int userId, SetKarteInfModel model)
+    {
+        bool status = false;
 
+        try
+        {
+            // update SetKarte
+            var entity = _tenantDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            if (entity == null)
+            {
+                entity = new();
+                entity.SetCd = model.SetCd;
+                entity.HpId = model.HpId;
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.IsDeleted = 0;
+                entity.CreateDate = DateTime.UtcNow;
+                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateId = userId;
+                entity.CreateId = userId;
+                _tenantDataContext.SetKarteInf.Add(entity);
+            }
+            else
+            {
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.UpdateId = userId;
+                entity.UpdateDate = DateTime.UtcNow;
+            }
 
+            // if set karte have image, update setKarteImage
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
+            foreach (var item in listKarteImgInfs)
+            {
+                if (model.RichText.Contains(ConvertToLinkImage(item.FileName)))
+                {
+                    item.Position = 10;
+                }
+            }
 
+            _tenantDataContext.SaveChanges();
+            status = true;
+
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    private string ConvertToLinkImage(string FileName)
+    {
+        string link = "src=\"" + _options.BaseAccessUrl + "/" + FileName + "\"";
+        return link;
+    }
     #endregion
 
     public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)

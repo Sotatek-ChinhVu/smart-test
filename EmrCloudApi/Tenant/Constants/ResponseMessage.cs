@@ -156,6 +156,7 @@
 
         // Schema
         public static readonly string InvalidOldImage = "Invalid old image.";
+        public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
 
 
