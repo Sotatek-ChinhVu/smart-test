@@ -68,6 +68,7 @@
             this.PageFooter = new DevExpress.XtraReports.UI.PageFooterBand();
             this.UnderlineTextStyle = new DevExpress.XtraReports.UI.XRControlStyle();
             this.NormalTextStyle = new DevExpress.XtraReports.UI.XRControlStyle();
+            this.RedTextStyle = new DevExpress.XtraReports.UI.XRControlStyle();
             ((System.ComponentModel.ISupportInitialize)(this.MedicalTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PrintInfoTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PatientInfoTable)).BeginInit();
@@ -437,12 +438,23 @@
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.UnderlineTextStyle.Font = new System.Drawing.Font("Yu Gothic UI", 12F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.UnderlineTextStyle.Name = "UnderlineTextStyle";
+            this.UnderlineTextStyle.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 96F);
+            this.UnderlineTextStyle.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
             // 
             // NormalTextStyle
             // 
             this.NormalTextStyle.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.NormalTextStyle.Font = new System.Drawing.Font("Yu Gothic UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NormalTextStyle.Name = "NormalTextStyle";
+            // 
+            // RedTextStyle
+            // 
+            this.RedTextStyle.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.RedTextStyle.Font = new System.Drawing.Font("Yu Gothic UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RedTextStyle.ForeColor = System.Drawing.Color.DarkRed;
+            this.RedTextStyle.Name = "RedTextStyle";
+            this.RedTextStyle.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 96F);
+            this.RedTextStyle.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
             // 
             // Karte2Report
             // 
@@ -465,7 +477,8 @@
             this.SnapGridSize = 12.5F;
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
             this.UnderlineTextStyle,
-            this.NormalTextStyle});
+            this.NormalTextStyle,
+            this.RedTextStyle});
             this.Version = "22.1";
             ((System.ComponentModel.ISupportInitialize)(this.MedicalTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PrintInfoTable)).EndInit();
@@ -516,5 +529,6 @@
         private DevExpress.XtraReports.UI.PageFooterBand PageFooter;
         private DevExpress.XtraReports.UI.XRControlStyle UnderlineTextStyle;
         private DevExpress.XtraReports.UI.XRControlStyle NormalTextStyle;
+        private DevExpress.XtraReports.UI.XRControlStyle RedTextStyle;
     }
 }

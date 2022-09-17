@@ -21,18 +21,12 @@ public class Karte2ReportingService
             PrintStartDate = "2021/01/01(金)",
             PrintEndDate = "---"
         };
-        //dataSource.DataMember = "Items";
 
         report.DataSource = dataSource;
-        //report.SetContent();
-        //report.WriteGroupName("Group name");
-        //report.WriteGroupName("Group name");
-        //report.WriteActivedOrderCreatedInfo("Info");
-        //report.WriteActivedOrderCreatedInfo("Info");
-        //report.WriteGroupName("Group name");
-        report.WriteGroupName("Group name long long long long long long long long long long long long long long long long long long long long");
-        report.WriteGroupNameFit("Group name long long long long long long long long long long long long long long long long long long long long");
         report.WriteRowHeaderInfo("2021/01/09", "受付:08:49 川添Dr 診察:08:49-09:15 川添Dr （承認: 山本Dr 2021 / 02 / 09 18:27）");
+        report.WriteGroupName("初再診");
+        report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr", true);
+        report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr");
         report.CreateDocument();
         for (int i = 0; i < 10; i++)
         {

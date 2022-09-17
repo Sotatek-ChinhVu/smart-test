@@ -14,6 +14,8 @@ public partial class Karte2Report : XtraReport
         currentRightCellCaretLocation = RightCell.LocationF;
     }
 
+    private const float normalLineIndentWidth = 10F;
+    private const float starLineIndentWidth = normalLineIndentWidth - 20F;
     // Caret (text cursor)
     private PointF currentLeftCellCaretLocation;
     private PointF currentRightCellCaretLocation;
@@ -23,76 +25,54 @@ public partial class Karte2Report : XtraReport
         var rowStartLocation = currentLeftCellCaretLocation.Y > currentRightCellCaretLocation.Y ? currentLeftCellCaretLocation : currentRightCellCaretLocation;
         var sinDateLabel = CreateDefaultLabel();
         sinDateLabel.Text = sinDate;
-        sinDateLabel.LocationF = new PointF(0, rowStartLocation.Y);
-        AddLabelToLeftCell(sinDateLabel);
+        AddLabelToLeftCell(sinDateLabel, rowStartLocation.Y);
 
         var generalInfoLabel = CreateDefaultLabel();
         generalInfoLabel.Text = generalInfo;
-        generalInfoLabel.LocationF = new PointF(0, rowStartLocation.Y);
-        AddLabelToRightCell(generalInfoLabel);
+        generalInfoLabel.Styles.Style = RedTextStyle;
+        AddLabelToRightCell(generalInfoLabel, rowStartLocation.Y);
     }
 
     public void WriteGroupName(string groupName)
     {
-        var label = new XRLabel();
+        var label = CreateDefaultLabel();
         label.Text = groupName;
-        label.CanGrow = false;
-        label.CanShrink = false;
         label.Styles.Style = UnderlineTextStyle;
-        label.Parent = RightCell;
-        label.LocationF = new PointF(0, currentRightCellCaretLocation.Y);
-        var rec = BestSizeEstimator.GetBoundsToFitText(label);
-        label.HeightF = rec.Height;
-        currentRightCellCaretLocation.Y += label.HeightF;
-    }
-
-    public void WriteGroupNameFit(string groupName)
-    {
-        var label = new XRLabel();
-        label.CanGrow = false;
-        label.CanShrink = false;
-        label.Styles.Style = UnderlineTextStyle;
-        label.Text = groupName;
-        label.Parent = RightCell;
-        label.LocationF = new PointF(0, currentRightCellCaretLocation.Y);
-        var reg = BestSizeEstimator.GetBoundsToFitText(label);
-        //label.HeightF = reg.Height;
-        label.SizeF = reg.Size;
-        currentRightCellCaretLocation.Y += label.HeightF;
+        AddLabelToRightCell(label, currentRightCellCaretLocation.Y);
     }
 
     public void WriteActivedOrderCreatedInfo(string info, bool hasStar = false)
     {
-        if (hasStar)
-        {
-            var star = new XRLabel();
-        }
-        var label = new XRLabel();
-        label.Text = info;
-        label.Parent = RightCell;
-        label.LocationF = currentRightCellCaretLocation;
-        currentRightCellCaretLocation.Y += label.HeightF;
+        var label = CreateDefaultLabel();
+        label.Text = "<color=black>＊</color>";
+        //label.Text = hasStar ? "<color=black>＊</color>" + info : info;
+        label.AllowMarkupText = hasStar;
+        label.Styles.Style = RedTextStyle;
+        var rec = BestSizeEstimator.GetBoundsToFitText(label);
+        AddLabelToRightCell(label, currentRightCellCaretLocation.Y, hasStar ? starLineIndentWidth : normalLineIndentWidth);
     }
 
-    private void AddLabelToLeftCell(XRLabel label)
+    private void AddLabelToLeftCell(XRLabel label, float locationY, float locationX = 0)
     {
+        // Parent must be set before LocationF
         label.Parent = LeftCell;
         label.WidthF = LeftCell.WidthF;
-        //label.LocationF = currentLeftCellCaretLocation;
-        AdjustHeight(label);
+        label.LocationF = new PointF(locationX, locationY);
+        AdjustHeightToFitText(label);
         currentLeftCellCaretLocation.Y += label.HeightF;
     }
 
-    private void AddLabelToRightCell(XRLabel label)
+    private void AddLabelToRightCell(XRLabel label, float locationY, float locationX = 0)
     {
+        // Parent must be set before LocationF
         label.Parent = RightCell;
         label.WidthF = RightCell.WidthF;
-        //label.LocationF = currentRightCellCaretLocation;
-        AdjustHeight(label);
+        label.LocationF = new PointF(locationX, locationY);
+        AdjustHeightToFitText(label);
         currentRightCellCaretLocation.Y += label.HeightF;
     }
 
-    private void AdjustHeight(XRLabel label)
+    private void AdjustHeightToFitText(XRLabel label)
     {
         var rec = BestSizeEstimator.GetBoundsToFitText(label);
         label.HeightF = rec.Height;
