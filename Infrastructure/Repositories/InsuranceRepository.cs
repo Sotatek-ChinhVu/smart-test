@@ -510,6 +510,7 @@ namespace Infrastructure.Repositories
                         r.StartDate,
                         r.EndDate));
         }
+        
         private bool IsReceKisai(HokenMst HokenMasterModel)
         {
 
