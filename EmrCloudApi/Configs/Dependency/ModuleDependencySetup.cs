@@ -152,6 +152,7 @@ using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
+using UseCase.Insurance.ValidPatternExpirated;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -372,6 +373,10 @@ namespace EmrCloudApi.Configs.Dependency
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
+
+            // Reception - Valid Pattern Expirated
+            busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
