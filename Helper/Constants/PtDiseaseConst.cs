@@ -39,6 +39,21 @@
             InvalidTenkiDateContinue,
             InvalidTekiDateAndStartDate,
             InvalidByomei,
+            InvalidId,
+            InvalidHpId,
+            InvalidPtId,
+            InvalidSortNo,
+            InvalidByomeiCd,
+            InvalidStartDate,
+            InvalidTenkiDate,
+            InvalidSyubyoKbn,
+            InvalidHosokuCmt,
+            InvalidHokenPid,
+            InvalidIsNodspRece,
+            InvalidIsNodspKarte,
+            InvalidSeqNo,
+            InvalidIsImportant,
+            InvalidIsDeleted,
             Valid
         };
     }

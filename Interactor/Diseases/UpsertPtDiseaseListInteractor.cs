@@ -100,6 +100,36 @@ namespace Interactor.Diseases
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
             if (status == ValidationStatus.InvalidByomei)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei;
+            if (status == ValidationStatus.InvalidId)
+                return UpsertPtDiseaseListStatus.PtInvalidId;
+            if (status == ValidationStatus.InvalidHpId)
+                return UpsertPtDiseaseListStatus.PtInvalidHpId;
+            if (status == ValidationStatus.InvalidPtId)
+                return UpsertPtDiseaseListStatus.PtInvalidPtId;
+            if (status == ValidationStatus.InvalidSortNo)
+                return UpsertPtDiseaseListStatus.PtInvalidSortNo;
+            if (status == ValidationStatus.InvalidByomeiCd)
+                return UpsertPtDiseaseListStatus.PtInvalidByomeiCd;
+            if (status == ValidationStatus.InvalidStartDate)
+                return UpsertPtDiseaseListStatus.PtInvalidStartDate;
+            if (status == ValidationStatus.InvalidTenkiDate)
+                return UpsertPtDiseaseListStatus.PtInvalidTenkiDate;
+            if (status == ValidationStatus.InvalidSyubyoKbn)
+                return UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn;
+            if (status == ValidationStatus.InvalidHosokuCmt)
+                return UpsertPtDiseaseListStatus.PtInvalidHosokuCmt;
+            if (status == ValidationStatus.InvalidHokenPid)
+                return UpsertPtDiseaseListStatus.PtInvalidHokenPid;
+            if (status == ValidationStatus.InvalidIsNodspRece)
+                return UpsertPtDiseaseListStatus.PtInvalidIsNodspRece;
+            if (status == ValidationStatus.InvalidIsNodspKarte)
+                return UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte;
+            if (status == ValidationStatus.InvalidSeqNo)
+                return UpsertPtDiseaseListStatus.PtInvalidSeqNo;
+            if (status == ValidationStatus.InvalidIsImportant)
+                return UpsertPtDiseaseListStatus.PtInvalidIsImportant;
+            if (status == ValidationStatus.InvalidIsDeleted)
+                return UpsertPtDiseaseListStatus.PtInvalidIsDeleted;
 
             return UpsertPtDiseaseListStatus.Success;
         }

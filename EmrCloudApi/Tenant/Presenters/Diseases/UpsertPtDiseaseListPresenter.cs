@@ -30,6 +30,36 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateContinue,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateAndStartDate,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei => ResponseMessage.UpsertPtDiseaseListInvalidByomei,
+            UpsertPtDiseaseListStatus.PtInvalidId =>
+              ResponseMessage.UpsertPtDiseaseListInvalidId,
+            UpsertPtDiseaseListStatus.PtInvalidHpId =>
+              ResponseMessage.UpsertPtDiseaseListInvalidHpId,
+            UpsertPtDiseaseListStatus.PtInvalidPtId =>
+              ResponseMessage.UpsertPtDiseaseListInvalidPtId,
+            UpsertPtDiseaseListStatus.PtInvalidSortNo =>
+              ResponseMessage.UpsertPtDiseaseListInvalidSortNo,
+            UpsertPtDiseaseListStatus.PtInvalidByomeiCd =>
+              ResponseMessage.UpsertPtDiseaseListInvalidByomeiCd,
+            UpsertPtDiseaseListStatus.PtInvalidStartDate =>
+              ResponseMessage.UpsertPtDiseaseListInvalidStartDate,
+            UpsertPtDiseaseListStatus.PtInvalidTenkiDate =>
+              ResponseMessage.UpsertPtDiseaseListInvalidTenkiDate,
+            UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn =>
+              ResponseMessage.UpsertPtDiseaseListInvalidSyubyoKbn,
+            UpsertPtDiseaseListStatus.PtInvalidHosokuCmt =>
+              ResponseMessage.UpsertPtDiseaseListInvalidHosokuCmt,
+            UpsertPtDiseaseListStatus.PtInvalidHokenPid =>
+              ResponseMessage.UpsertPtDiseaseListInvalidHokenPid,
+            UpsertPtDiseaseListStatus.PtInvalidIsNodspRece =>
+              ResponseMessage.UpsertPtDiseaseListInvalidIsNodspRece,
+            UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte =>
+              ResponseMessage.UpsertPtDiseaseListInvalidIsNodspKarte,
+            UpsertPtDiseaseListStatus.PtInvalidSeqNo =>
+              ResponseMessage.UpsertPtDiseaseListInvalidSeqNo,
+            UpsertPtDiseaseListStatus.PtInvalidIsImportant =>
+              ResponseMessage.UpsertPtDiseaseListInvalidIsImportant,
+            UpsertPtDiseaseListStatus.PtInvalidIsDeleted =>
+              ResponseMessage.UpsertPtDiseaseListInvalidIsDeleted,
             _ => string.Empty
         };
     }

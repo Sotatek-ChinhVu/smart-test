@@ -94,7 +94,71 @@ namespace Domain.Models.Diseases
 
         public ValidationStatus Validation()
         {
-            if (string.IsNullOrEmpty(Byomei))
+            #region common
+            if (Id < 0)
+            {
+                return ValidationStatus.InvalidId;
+            }
+            if (PtId <= 0)
+            {
+                return ValidationStatus.InvalidPtId;
+            }
+            if (HpId <= 0)
+            {
+                return ValidationStatus.InvalidHpId;
+            }
+            if (SortNo <= 0)
+            {
+                return ValidationStatus.InvalidSortNo;
+            }
+            if (ByomeiCd.Length > 7)
+            {
+                return ValidationStatus.InvalidByomeiCd;
+            }
+            if (StartDate < 0)
+            {
+                return ValidationStatus.InvalidStartDate;
+            }
+            if (TenkiDate < 0)
+            {
+                return ValidationStatus.InvalidTenkiDate;
+            }
+            if (SyubyoKbn != 0 && SyubyoKbn != 1)
+            {
+                return ValidationStatus.InvalidSyubyoKbn;
+            }
+            if (HosokuCmt.Length > 80)
+            {
+                return ValidationStatus.InvalidHosokuCmt;
+            }
+            if (HokenPid < 0)
+            {
+                return ValidationStatus.InvalidHokenPid;
+            }
+            if (IsNodspRece != 0 && IsNodspRece != 1)
+            {
+                return ValidationStatus.InvalidIsNodspRece;
+            }
+            if (IsNodspKarte != 0 && IsNodspKarte != 1)
+            {
+                return ValidationStatus.InvalidIsNodspKarte;
+            }
+            if (SeqNo < 0)
+            {
+                return ValidationStatus.InvalidSeqNo;
+            }
+            if (IsImportant != 0 && IsImportant != 1)
+            {
+                return ValidationStatus.InvalidIsImportant;
+            }
+            if (IsDeleted != 0 && IsDeleted != 1)
+            {
+                return ValidationStatus.InvalidIsDeleted;
+            }
+            #endregion
+
+            #region advance
+            if (string.IsNullOrEmpty(Byomei) || Byomei.Length > 160)
             {
                 return ValidationStatus.InvalidByomei;
             }
@@ -123,6 +187,8 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidTekiDateAndStartDate;
             }
+            #endregion
+
             return ValidationStatus.Valid;
         }
 
@@ -166,7 +232,7 @@ namespace Domain.Models.Diseases
 
         public int SortNo { get; private set; }
 
-        public List<PrefixSuffixModel> PrefixSuffixList{ get; private set; }
+        public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
 
         public string Byomei { get; private set; }
 
