@@ -77,7 +77,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
-using Interactor.SupperSetDetail;
+using Interactor.SuperSetDetail;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
@@ -136,7 +136,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
-using UseCase.SupperSetDetail.SupperSetDetail;
+using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -154,6 +154,7 @@ using Interactor.MaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.SpecialNote.Save;
 using Domain.Models.SpecialNote;
+using UseCase.Insurance.ValidPatternExpirated;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -365,8 +366,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
-            // SupperSetDetail
-            busBuilder.RegisterUseCase<GetSupperSetDetailInputData, GetSuperSetDetailInteractor>();
+            // SuperSetDetail
+            busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
@@ -377,6 +378,10 @@ namespace EmrCloudApi.Configs.Dependency
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
+
+            // Reception - Valid Pattern Expirated
+            busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
         }
