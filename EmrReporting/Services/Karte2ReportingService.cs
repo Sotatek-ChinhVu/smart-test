@@ -23,12 +23,16 @@ public class Karte2ReportingService
         };
 
         report.DataSource = dataSource;
-        report.WriteRowHeaderInfo("2021/01/09", "受付:08:49 川添Dr 診察:08:49-09:15 川添Dr （承認: 山本Dr 2021 / 02 / 09 18:27）");
-        report.WriteGroupName("初再診");
-        report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr", true);
-        report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr");
+        //report.WriteRowHeaderInfo("2021/01/09", "受付:08:49 川添Dr 診察:08:49-09:15 川添Dr （承認: 山本Dr 2021 / 02 / 09 18:27）");
+        //report.WriteGroupName("初再診");
+        //report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr", true);
+        //report.WriteActivedOrderCreatedInfo("2021/01/09 08:49 川添Dr");
+        report.TryWriteActivedOrderCreatedInfo("＊2021/01/09 08:49 川添Dr", true);
+        report.TryWriteActivedOrderCreatedInfo("＊2021/01/09 08:49 川添Dr");
+        report.TryWriteActivedOrderCreatedInfo("＊2021/01/09 08:49 川添Dr", true);
+        //report.WriteText("＊");
         report.CreateDocument();
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 1; i++)
         {
             report.ModifyDocument(modifier =>
             {
