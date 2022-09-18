@@ -152,6 +152,8 @@ using Domain.Models.MaxMoney;
 using UseCase.MaxMoney.GetMaxMoney;
 using Interactor.MaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
+using UseCase.SpecialNote.Save;
+using Domain.Models.SpecialNote;
 using UseCase.Insurance.ValidPatternExpirated;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -227,6 +229,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
+            services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -334,7 +337,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Special note
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
-            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
+            busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
+
 
             //MS Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
@@ -343,6 +347,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchOTCInputData, SearchOtcInteractor>();
             busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiInputData, UpdateAdoptedByomeiInteractor>();
+            busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
