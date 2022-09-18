@@ -95,6 +95,8 @@
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
         public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+        public static readonly string GetMedicalExaminationInvalidDeleteCondition = "Invalid Delete Condition";
+        public static readonly string GetMedicalExaminationInvalidFilterId = "Invalid FilterId";
 
         //OrdInf controller
 

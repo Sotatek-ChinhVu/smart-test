@@ -1,10 +1,5 @@
 ﻿using Helper.Constant;
 using Helper.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UseCase.MedicalExamination.GetHistory
 {
@@ -52,10 +47,20 @@ namespace UseCase.MedicalExamination.GetHistory
             {2,"自費" }
         };
 
+        /// <summary>
+        /// raiin list tag
+        /// </summary>
+        public int TagNo { get; private set; }
+
+        /// <summary>
+        /// approve info
+        /// </summary>
+        public string SinryoTitle { get; private set; }
+
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
         public List<GrpKarteHistoryItem> KarteHistories { get; private set; }
 
-        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
@@ -73,6 +78,8 @@ namespace UseCase.MedicalExamination.GetHistory
             SanteiKbn = santeiKbn;
             HokenGroups = hokenGroups;
             KarteHistories = karteHistories;
+            TagNo = tagNo;
+            SinryoTitle = sinryoTitle;
         }
     }
 }

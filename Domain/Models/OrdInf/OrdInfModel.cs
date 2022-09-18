@@ -31,8 +31,9 @@ namespace Domain.Models.OrdInfs
 
         public GroupKoui GroupKoui { get; private set; }
         public List<OrdInfDetailModel> OrdInfDetails { get; private set; }
+        public DateTime UpdateDate { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName)
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -57,6 +58,7 @@ namespace Domain.Models.OrdInfs
             CreateDate = createDate;
             CreateId = createId;
             CreateName = createName;
+            UpdateDate = updateDate;
         }
 
         // 処方 - Drug
@@ -337,6 +339,12 @@ namespace Domain.Models.OrdInfs
             #endregion
 
             return new(-1, TodayOrdValidationStatus.Valid);
+        }
+
+        public OrdInfModel ChangeOdrDetail(List<OrdInfDetailModel> ordInfDetails)
+        {
+            OrdInfDetails = ordInfDetails;
+            return this;
         }
     }
 }
