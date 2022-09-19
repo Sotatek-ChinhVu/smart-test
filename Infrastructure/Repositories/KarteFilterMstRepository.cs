@@ -53,6 +53,36 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
         return result;
     }
 
+    public KarteFilterMstModel Get(int hpId, int userId, long filterId)
+    {
+        var karteMst = _tenantNoTrackingDataContext.KarteFilterMsts
+                         .Where(u => u.HpId == hpId && u.UserId == userId && u.FilterId == filterId && u.IsDeleted != 1)
+                         .FirstOrDefault();
+
+        var filterDetailList = _tenantNoTrackingDataContext.KarteFilterDetails
+            .Where(item => item.HpId == hpId && item.UserId == userId && (karteMst != null && karteMst.FilterId == item.FilterId))
+            .ToList();
+
+        var isBookMarkChecked = filterDetailList.FirstOrDefault(detail => detail.FilterId == filterId && detail.FilterItemCd == 1) != null;
+        var listHokenId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 3).Select(item => item.FilterEdaNo).ToList();
+        var listKaId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 4).Select(item => item.FilterEdaNo).ToList();
+        var listUserId = filterDetailList.Where(detail => detail.FilterId == filterId && detail.FilterItemCd == 2).Select(item => item.FilterEdaNo).ToList();
+
+        var detailModel = new KarteFilterDetailModel(hpId, userId, filterId, isBookMarkChecked, listHokenId, listKaId, listUserId);
+
+        var result = new KarteFilterMstModel(
+            karteMst?.HpId ?? 0,
+            karteMst?.UserId ?? 0,
+            karteMst?.FilterId ?? 0,
+            karteMst?.FilterName ?? string.Empty,
+            karteMst?.SortNo ?? 0,
+            karteMst?.AutoApply ?? 0,
+            karteMst?.IsDeleted ?? 0,
+            detailModel);
+
+        return result;
+    }
+
     public bool SaveList(List<KarteFilterMstModel> karteFilterMstModels, int userId, int hpId)
     {
         bool status = false;
@@ -73,7 +103,7 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
                         var listBookMarkChecked = listKarteFilterDetails.Where(detail => detail.FilterItemCd == 1).ToList();
                         var listOldKaId = listKarteFilterDetails.Where(detail => detail.FilterItemCd == 4).ToList();
                         var listOldUserId = listKarteFilterDetails.Where(detail => detail.FilterItemCd == 2).ToList();
-                        var listOldHokenId = listKarteFilterDetails.Where(detail =>detail.FilterItemCd == 3).ToList();
+                        var listOldHokenId = listKarteFilterDetails.Where(detail => detail.FilterItemCd == 3).ToList();
 
                         if (listKarteFilterMstModelToAdd.Any())
                         {
