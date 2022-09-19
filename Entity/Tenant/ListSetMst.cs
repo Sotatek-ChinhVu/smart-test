@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 名称
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SET_NAME")]
         [MaxLength(240)]
-        public string SetName { get; set; } = string.Empty;
+        public string? SetName { get; set; } = string.Empty;
 
         /// <summary>
         /// タイトル
@@ -141,7 +141,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(240)]
-        public string CmtName { get; set; } = string.Empty;
+        public string? CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -149,7 +149,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; } = string.Empty;
+        public string? CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

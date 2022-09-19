@@ -7,5 +7,6 @@
         public long RaiinNo { get; set; }
         public int SinDate { get; set; }
         public bool IsDeleted { get; set; }
+        public int UserId { get; set; }
     }
 }

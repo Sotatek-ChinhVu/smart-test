@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.User
+﻿namespace Domain.Models.User
 {
     public interface IUserRepository
     {
@@ -16,9 +10,11 @@ namespace Domain.Models.User
 
         void Delete(int userId);
 
-        IEnumerable<UserMstModel> GetAll();
-
         IEnumerable<UserMstModel> GetDoctorsList(int userId);
+
+        IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
+
+        IEnumerable<UserMstModel> GetAll();
 
         List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);
 

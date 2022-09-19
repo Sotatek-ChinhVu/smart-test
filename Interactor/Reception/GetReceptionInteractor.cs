@@ -1,9 +1,4 @@
 ﻿using Domain.Models.Reception;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Reception.Get;
 
 namespace Interactor.Reception
@@ -22,9 +17,9 @@ namespace Interactor.Reception
             {
                 return new GetReceptionOutputData(null, GetReceptionStatus.InvalidRaiinNo);
             }
-            
+
             var receptionModel = _receptionRepository.Get(inputData.RaiinNo);
-            if (receptionModel == null)
+            if (receptionModel.HpId == 0 && receptionModel.PtId == 0 && receptionModel.SinDate == 0 && receptionModel.RaiinNo == 0)
             {
                 return new GetReceptionOutputData(null, GetReceptionStatus.ReceptionNotExisted);
             }

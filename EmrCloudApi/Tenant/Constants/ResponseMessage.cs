@@ -16,6 +16,9 @@
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
         public static readonly string InvalidItemCd = "Invalid ItemCd";
         public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
+        public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
+        public static readonly string InvalidKohiId = "Invalid HokenKohiId";
+        public static readonly string InvalidGrpCd = "Invalid GrpCd";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -46,6 +49,22 @@
         public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
+        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
+        public static readonly string UpsertPtDiseaseListInvalidId = "Invalid Id";
+        public static readonly string UpsertPtDiseaseListInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertPtDiseaseListInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertPtDiseaseListInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertPtDiseaseListInvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string UpsertPtDiseaseListInvalidStartDate = "Invalid Byomei Start Date";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDate = "Invalid TenkiDate";
+        public static readonly string UpsertPtDiseaseListInvalidSyubyoKbn = "Invalid SyubyoKbn";
+        public static readonly string UpsertPtDiseaseListInvalidHosokuCmt = "Invalid HosokuCmt";
+        public static readonly string UpsertPtDiseaseListInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspRece = "Invalid IsNodspRece";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspKarte = "Invalid IsNodspKarte";
+        public static readonly string UpsertPtDiseaseListInvalidSeqNo = "Invalid SeqNo";
+        public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
+        public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
 
@@ -77,6 +96,8 @@
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
         public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+        public static readonly string GetMedicalExaminationInvalidDeleteCondition = "Invalid Delete Condition";
+        public static readonly string GetMedicalExaminationInvalidFilterId = "Invalid FilterId";
 
         //OrdInf controller
 
@@ -230,5 +251,8 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+
+        //MaxMoney
+        public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
     }
 }
