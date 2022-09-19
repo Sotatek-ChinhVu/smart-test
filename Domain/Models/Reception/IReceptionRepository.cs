@@ -9,7 +9,7 @@
         ReceptionModel Get(long raiinNo);
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
-        List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
+
         List<ReceptionModel> GetReceptionVisiting(long raiinNo);
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
