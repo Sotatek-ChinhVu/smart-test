@@ -1,4 +1,4 @@
-﻿using Domain.Models.ReceptionComment;
+﻿using Domain.Models.Reception;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,11 @@ namespace UseCase.VisitingList.ReceptionComment
 {
     public class GetReceptionCommentOutputData : IOutputData
     {
-        public List<ReceptionCommentModel> ReceptionComments { get; private set; }
+        public List<ReceptionModel> ReceptionComments { get; private set; }
 
         public GetReceptionCommentStatus Status { get; private set; }
 
-        public GetReceptionCommentOutputData(List<ReceptionCommentModel> receptionComments, GetReceptionCommentStatus status)
+        public GetReceptionCommentOutputData(List<ReceptionModel> receptionComments, GetReceptionCommentStatus status)
         {
             ReceptionComments = receptionComments;
             Status = status;

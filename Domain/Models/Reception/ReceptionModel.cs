@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Models.Reception
 {
@@ -54,6 +55,8 @@ namespace Domain.Models.Reception
 
         public int JikanKbn { get; private set; }
 
+        public string Text { get; set; } = string.Empty;
+
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn)
         {
             HpId = hpId;
@@ -79,6 +82,19 @@ namespace Domain.Models.Reception
             TantoId = tantoId;
             SyosaisinKbn = syosaisinKbn;
             JikanKbn = jikanKbn;
+        }
+
+        public ReceptionModel(int hpId, long ptId, long raiinNo, string text)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            RaiinNo = raiinNo;
+            Text = text;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
         }
 
         public ReceptionDto ToDto()

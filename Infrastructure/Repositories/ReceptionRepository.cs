@@ -344,5 +344,18 @@ namespace Infrastructure.Repositories
             _tenantDataContext.SaveChanges();
             return true;
         }
+
+        public List<ReceptionModel> GetReceptionComments(long raiinNo)
+        {
+            var receptionComment = _tenantDataContext.RaiinCmtInfs
+                .Where(x => x.RaiinNo == raiinNo & x.IsDelete == 0)
+                .Select(x => new ReceptionModel(
+                x.HpId,
+                x.PtId,
+                x.RaiinNo,
+                x.Text ?? String.Empty))
+                .ToList();
+            return receptionComment;
+        }
     }
 }

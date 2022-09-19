@@ -143,8 +143,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.Schema.SaveImage;
-using Domain.Models.Byomei;
-using UseCase.Byomei.DiseaseSearch;
 using Interactor.Byomei;
 using UseCase.SetMst.ReorderSetMst;
 using Domain.Models.JsonSetting;
@@ -161,9 +159,7 @@ using Domain.Models.DrugInfor;
 using Domain.Models.UsageTreeSet;
 using Interactor.UsageTreeSet;
 using UseCase.UsageTreeSet.GetTree;
-using Domain.Models.ReceptionComment;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
-using Interactor.ReceptionComment;
 using UseCase.VisitingList.ReceptionComment;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
@@ -243,7 +239,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
-            services.AddTransient<IReceptionCommentRepository, ReceptionCommentRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 

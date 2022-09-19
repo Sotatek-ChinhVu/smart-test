@@ -1,4 +1,4 @@
-﻿using Domain.Models.ReceptionComment;
+﻿using Domain.Models.Reception;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,23 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.VisitingList.ReceptionComment;
 
-namespace Interactor.ReceptionComment
+namespace Interactor.Reception
 {
     public class GetReceptionCommentInteractor : IGetReceptionCommentInputPort
     {
-        private readonly IReceptionCommentRepository _receptionCommentRepository;
-        public GetReceptionCommentInteractor(IReceptionCommentRepository receptionCommentRepository)
+        private readonly IReceptionRepository _receptionRepository;
+        public GetReceptionCommentInteractor(IReceptionRepository receptionCommentRepository)
         {
-            _receptionCommentRepository = receptionCommentRepository;
+            _receptionRepository = receptionCommentRepository;
         }
         public GetReceptionCommentOutputData Handle(GetReceptionCommentInputData inputData)
         {
             if (inputData.RaiinNo <= 0)
             {
-                return new GetReceptionCommentOutputData(new List<ReceptionCommentModel>(), GetReceptionCommentStatus.InvalidRaiinNo);
+                return new GetReceptionCommentOutputData(new List<ReceptionModel>(), GetReceptionCommentStatus.InvalidRaiinNo);
             }
 
-            var listData = _receptionCommentRepository.GetReceptionComments(inputData.RaiinNo);
+            var listData = _receptionRepository.GetReceptionComments(inputData.RaiinNo);
             if (listData == null || listData.Count == 0)
             {
                 return new GetReceptionCommentOutputData(new(), GetReceptionCommentStatus.NoData);

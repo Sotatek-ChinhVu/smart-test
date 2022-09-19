@@ -1,14 +1,14 @@
-﻿using Domain.Models.ReceptionComment;
+﻿using Domain.Models.Reception;
 
 namespace EmrCloudApi.Tenant.Responses.VisitingList
 {
     public class GetReceptionCommentResponse
     {
-        public GetReceptionCommentResponse(List<ReceptionCommentModel> receptionCommentModels)
+        public GetReceptionCommentResponse(List<ReceptionModel> receptionModels)
         {
-            ReceptionCommentModel = receptionCommentModels;
+            ReceptionModels = receptionModels;
         }
 
-        public List<ReceptionCommentModel> ReceptionCommentModel { get; set; }
+        public List<ReceptionModel> ReceptionModels { get; set; }
     }
 }
