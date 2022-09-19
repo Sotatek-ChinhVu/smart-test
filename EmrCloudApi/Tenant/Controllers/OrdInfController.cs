@@ -6,7 +6,7 @@ using EmrCloudApi.Tenant.Responses.OrdInfs;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.OrdInfs.GetListTrees;
-using UseCase.OrdInfs.Validation;
+using UseCase.OrdInfs.GetMaxRpNo;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -32,74 +32,16 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetOrdInfListTreeResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.Validate)]
-        public ActionResult<Response<ValidationOrdInfListResponse>> Validate([FromBody] ValidationOrdInfListRequest request)
+        [HttpPost(ApiPath.GetMaxRpNo)]
+        public ActionResult<Response<GetMaxRpNoResponse>> GetMaxRpNo([FromBody] GetMaxRpNoRequest request)
         {
-            var input = new ValidationOrdInfListInputData(request.OrdInfs.Select(o =>
-                    new ValidationOdrInfItem(
-                        o.HpId,
-                        o.RaiinNo,
-                        o.RpNo,
-                        o.RpEdaNo,
-                        o.PtId,
-                        o.SinDate,
-                        o.HokenPid,
-                        o.OdrKouiKbn,
-                        o.RpName,
-                        o.InoutKbn,
-                        o.SikyuKbn,
-                        o.SyohoSbt,
-                        o.SanteiKbn,
-                        o.TosekiKbn,
-                        o.DaysCnt,
-                        o.SortNo,
-                        o.IsDeleted,
-                        o.Id,
-                        o.OdrDetails.Select(od => new ValidationOdrInfDetailItem(
-                            od.HpId,
-                            od.RaiinNo,
-                            od.RpNo,
-                            od.RpEdaNo,
-                            od.RowNo,
-                            od.PtId,
-                            od.SinDate,
-                            od.SinKouiKbn,
-                            od.ItemCd,
-                            od.ItemName,
-                            od.Suryo,
-                            od.UnitName,
-                            od.UnitSbt,
-                            od.TermVal,
-                            od.KohatuKbn,
-                            od.SyohoKbn,
-                            od.SyohoLimitKbn,
-                            od.DrugKbn,
-                            od.YohoKbn,
-                            od.Kokuji1,
-                            od.Kokuji2,
-                            od.IsNodspRece,
-                            od.IpnCd,
-                            od.IpnName,
-                            od.JissiKbn,
-                            od.JissiDate,
-                            od.JissiId,
-                            od.JissiMachine,
-                            od.ReqCd,
-                            od.Bunkatu,
-                            od.CmtName,
-                            od.CmtOpt,
-                            od.FontColor,
-                            od.CommentNewline
-                        )).ToList(),
-                        o.Status
-                    )
-               ).ToList());
+            var input = new GetMaxRpNoInputData(request.PtId, request.HpId, request.RaiinNo, request.SinDate);
             var output = _bus.Handle(input);
 
-            var presenter = new ValidationOrdInfListPresenter();
+            var presenter = new GetMaxRpNoPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<ValidationOrdInfListResponse>>(presenter.Result);
+            return new ActionResult<Response<GetMaxRpNoResponse>>(presenter.Result);
         }
     }
 }
