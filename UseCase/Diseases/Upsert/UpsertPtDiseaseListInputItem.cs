@@ -4,7 +4,7 @@ namespace UseCase.Diseases.Upsert
 {
     public class UpsertPtDiseaseListInputItem
     {
-        public UpsertPtDiseaseListInputItem(long id, long ptId, int sortNo, List<PrefixSuffixModel> prefixList, List<PrefixSuffixModel> suffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted, string byomeiCd)
+        public UpsertPtDiseaseListInputItem(long id, long ptId, int sortNo, List<PrefixSuffixModel> prefixList, List<PrefixSuffixModel> suffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate, int syubyoKbn, int sikkanKbn, int nanByoCd, string hosokuCmt, int hokenPid, int isNodspRece, int isNodspKarte, long seqNo, int isImportant, int isDeleted, string byomeiCd, int hpId)
         {
             Id = id;
             PtId = ptId;
@@ -26,6 +26,7 @@ namespace UseCase.Diseases.Upsert
             IsImportant = isImportant;
             IsDeleted = isDeleted;
             ByomeiCd = byomeiCd;
+            HpId = hpId;
         }
 
         public long Id { get; private set; }
@@ -51,6 +52,7 @@ namespace UseCase.Diseases.Upsert
         public int IsImportant { get; private set; }
         public int IsDeleted { get; private set; }
         public string ByomeiCd { get; private set; }
+        public int HpId { get; private set; }
 
     }
 }

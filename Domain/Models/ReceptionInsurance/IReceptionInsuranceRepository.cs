@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.InsuranceInfor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,10 @@ namespace Domain.Models.ReceptionInsurance
 {
     public interface IReceptionInsuranceRepository
     {
-        public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception);
+        IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception);
+
+        string HasElderHoken(int sinDate, int hpId, long ptId, int ptInfBirthday);
+
+        string IsValidAgeCheck(int sinDate, int hokenPid, int hpId, long ptId, int ptInfBirthday);
     }
 }
