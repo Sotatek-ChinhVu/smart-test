@@ -416,23 +416,27 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     }
     #endregion
 
-    public int SaveSuperSetDetail(int setCd, int userId, int hpId, SuperSetDetailModel superSetDetailModel)
+    public int SaveSuperSetDetail(int setCd, int userId, int hpId, List<SetByomeiModel> SetByomeiList, SetKarteInfModel SetKarteInf, List<SetOrderInfModel> ListSetOrdInfModels)
     {
         int status = 0;
 
-        if (!SaveSetByomei(setCd, userId, hpId, superSetDetailModel.SetByomeiList))
+        if (!SaveSetByomei(setCd, userId, hpId ,SetByomeiList))
         {
             status = 1;
         }
-        if (!SaveSetKarte(userId, superSetDetailModel.SetKarteInf))
+        if (!SaveSetKarte(userId, SetKarteInf))
         {
             status = 2;
+        }
+        if (!SaveSetOrderInf(setCd, userId, hpId, ListSetOrdInfModels))
+        {
+            status = 3;
         }
         return status;
     }
 
     #region SaveSetByomei
-    public bool SaveSetByomei(int setCd, int userId, int hpId, List<SetByomeiModel> setByomeiModels)
+    private bool SaveSetByomei(int setCd, int userId, int hpId, List<SetByomeiModel> setByomeiModels)
     {
         bool status = false;
         try
@@ -545,7 +549,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     #endregion
 
     #region SaveSetKarte
-    public bool SaveSetKarte(int userId, SetKarteInfModel model)
+    private bool SaveSetKarte(int userId, SetKarteInfModel model)
     {
         bool status = false;
 
@@ -596,6 +600,80 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         string link = "src=\"" + _options.BaseAccessUrl + "/" + FileName + "\"";
         return link;
     }
+    #endregion
+
+    #region SaveSetOrderInf
+    private bool SaveSetOrderInf(int setCd, int userId, int hpId, List<SetOrderInfModel> setOrderInfModels)
+    {
+        bool status = false;
+        try
+        {
+            var listSetOrderInfs = _tenantDataContext.SetOdrInf.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
+            var listSetOrderInfDetails = _tenantDataContext.SetOdrInfDetail.Where(mst => mst.SetCd == setCd && mst.HpId == hpId).ToList();
+
+            // Add SetOrderInf
+            var listAddNewSetOrderInfs = setOrderInfModels.Where(model => model.Id == 0).Select(model => ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model)).ToList();
+            if (listAddNewSetOrderInfs != null && listAddNewSetOrderInfs.Count > 0)
+            {
+                _tenantDataContext.SetOdrInf.AddRange(listAddNewSetOrderInfs);
+            }
+
+            _tenantDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+    
+    private SetOdrInf ConvertToSetOdrInfEntity(int setCd, int userId, int hpId, SetOdrInf entity, SetOrderInfModel model)
+    {
+        entity.SetCd = setCd;
+        entity.HpId = hpId;
+        entity.OdrKouiKbn = model.OdrKouiKbn;
+        entity.RpName = model.RpName;
+        entity.InoutKbn = model.InoutKbn;
+        entity.SikyuKbn = model.SikyuKbn;
+        entity.SyohoSbt = model.SyohoSbt;
+        entity.SanteiKbn = model.SanteiKbn;
+        entity.TosekiKbn = model.TosekiKbn;
+        entity.DaysCnt = model.DaysCnt;
+        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateId = userId;
+        if (entity.Id == 0)
+        {
+            entity.CreateDate = DateTime.UtcNow;
+            entity.CreateId = userId;
+            entity.IsDeleted = 0;
+        }
+        return entity;
+    }
+    private long GetMaxRpNoForOrder(int hpId, int setCd, List<SetOrderInfModel> allOdrInf)
+    {
+        long maxRpNo = 0;
+        long maxCurrent = 0;
+
+        if (setCd > 0)
+        {
+            maxRpNo = _tenantDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd).Max(item => item.RpNo);
+        }
+
+        if (allOdrInf != null && allOdrInf.Count > 0)
+        {
+            maxCurrent = allOdrInf.Max(odr => odr.RpNo);
+        }
+
+        if (maxCurrent > maxRpNo)
+        {
+            return maxCurrent;
+        }
+
+        return maxRpNo;
+    }
+
+
     #endregion
 
     public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)

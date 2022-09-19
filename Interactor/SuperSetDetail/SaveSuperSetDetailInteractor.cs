@@ -32,7 +32,14 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 return new SaveSuperSetDetailOutputData(statusValidate);
             }
 
-            var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, inputData.HpId, ConvertToSuperSetDetailModel(inputData));
+            var result = _superSetDetailRepository.SaveSuperSetDetail(
+                                                                        inputData.SetCd, 
+                                                                        inputData.UserId, 
+                                                                        inputData.HpId, 
+                                                                        ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
+                                                                        ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem()),
+                                                                        new()
+                                                                    );
             switch (result)
             {
                 case 1:
@@ -49,15 +56,6 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         {
             return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
         }
-    }
-
-    private SuperSetDetailModel ConvertToSuperSetDetailModel(SaveSuperSetDetailInputData inputData)
-    {
-        return new SuperSetDetailModel(
-                    ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
-                    ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem()),
-                    new()
-                );
     }
 
     private List<SetByomeiModel> ConvertToListSetByomeiModel(List<SaveSetByomeiInputItem> inputItems)
