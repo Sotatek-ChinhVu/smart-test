@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Diagnostics;
 
 namespace Infrastructure.Repositories
 {
@@ -475,36 +476,25 @@ namespace Infrastructure.Repositories
                                where tenKN.ItemCd.StartsWith("KN")
                                select new { tenKN.ItemCd, ten.Ten };
 
-            var tenJoinYakkaSyusai = from ten in queryResult
-                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                     on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
-            var sinKouiCollection = new SinkouiCollection();
-
-            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
-                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
-                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+            var queryFinal = from ten in queryResult.AsEnumerable()
                              join tenKN in queryKNTensu.AsEnumerable()
-                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                             on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                             select new { TenMst = ten, tenKN };
 
-                             select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN };
             var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
                                      join k in kensaMstQuery.AsEnumerable()
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
+                                     select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
+
             var totalCount = queryJoinWithKensa.Count();
             var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
             var listTenMstData = listTenMst.ToList();
+
             if (listTenMstData != null && listTenMstData.Count > 0)
             {
-                for (int i = 0; i < listTenMstData.Count; i++)
-                {
-                    var item = listTenMstData[i];
-                    var newItemModel = new TenItemModel(
+                listTenMstModels = listTenMstData.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd,
                                                            item.TenMst.RousaiKbn,
@@ -525,9 +515,7 @@ namespace Infrastructure.Repositories
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
                                                            item.TenMst?.CmtCol1 ?? 0,
                                                            item.TenMst?.IpnNameCd ?? string.Empty
-                                                            );
-                    listTenMstModels.Add(newItemModel);
-                }
+                                                            )).ToList();
             }
             return (listTenMstModels, totalCount);
         }
