@@ -25,7 +25,6 @@ using Domain.Models.RaiinKubunMst;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
 using Domain.Models.ReceptionSameVisit;
-using Domain.Models.ReceptionVisitingModel;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
 using Domain.Models.SetMst;
@@ -224,7 +223,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IByomeiRepository, ByomeiRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
-            services.AddTransient<IReceptionVisitingRepository, ReceptionVisitingRepository>();
+            services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
         }

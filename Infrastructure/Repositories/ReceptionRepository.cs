@@ -344,5 +344,20 @@ namespace Infrastructure.Repositories
             _tenantDataContext.SaveChanges();
             return true;
         }
+
+        public List<ReceptionModel> GetReceptionVisiting(long raiinNo)
+        {
+            var listDataRaiinInf = _tenantDataContext.RaiinInfs
+                .Where(x => x.RaiinNo == raiinNo)
+                .Select(x => new ReceptionModel(
+                x.RaiinNo,
+                x.UketukeId,
+                x.KaId,
+                x.UketukeTime ?? String.Empty,
+                x.SinStartTime ?? String.Empty,
+                x.Status, x.YoyakuId, x.TantoId))
+                .ToList();
+            return listDataRaiinInf;
+        }
     }
 }

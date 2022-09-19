@@ -1,5 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
-using Domain.Models.ReceptionVisitingModel;
+using Domain.Models.Reception;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +12,8 @@ namespace Interactor.ReceptionVisiting
 {
     public class GetReceptionVisitingInteractor : IGetReceptionVisitingInputPort
     {
-        private readonly IReceptionVisitingRepository _receptionVisitingRepository;
-        public GetReceptionVisitingInteractor(IReceptionVisitingRepository receptionVisitingRepository)
+        private readonly IReceptionRepository _receptionVisitingRepository;
+        public GetReceptionVisitingInteractor(IReceptionRepository receptionVisitingRepository)
         {
             _receptionVisitingRepository = receptionVisitingRepository;
         }
@@ -22,7 +22,7 @@ namespace Interactor.ReceptionVisiting
         {
             if (inputData.RaiinNo <= 0)
             {
-                return new GetReceptionVisitingOutputData(new List<ReceptionVisitingModel>(), GetReceptionVisitingStatus.InvalidRaiinNo);
+                return new GetReceptionVisitingOutputData(new List<ReceptionModel>(), GetReceptionVisitingStatus.InvalidRaiinNo);
             }
             
             var listData = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);

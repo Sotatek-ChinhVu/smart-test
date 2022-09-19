@@ -1,4 +1,4 @@
-﻿using Domain.Models.ReceptionVisitingModel;
+﻿using Domain.Models.Reception;
 
 using UseCase.Core.Sync.Core;
 
@@ -6,11 +6,11 @@ namespace UseCase.ReceptionVisiting.Get
 {
     public class GetReceptionVisitingOutputData : IOutputData
     {
-        public List<ReceptionVisitingModel> ListVisiting { get; private set; }
+        public List<ReceptionModel> ListVisiting { get; private set; }
 
         public GetReceptionVisitingStatus Status { get; private set; }
 
-        public GetReceptionVisitingOutputData(List<ReceptionVisitingModel> listVisiting, GetReceptionVisitingStatus status)
+        public GetReceptionVisitingOutputData(List<ReceptionModel> listVisiting, GetReceptionVisitingStatus status)
         {
             ListVisiting = listVisiting;
             Status = status;

@@ -81,6 +81,21 @@ namespace Domain.Models.Reception
             JikanKbn = jikanKbn;
         }
 
+        public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
+        {
+            RaiinNo = raiinNo;
+            UketukeId = uketukeId;
+            KaId = kaId;
+            UketukeTime = uketukeTime;
+            SinStartTime= sinStartTime;
+            Status = status;
+            YoyakuId = yokakuId;
+            TantoId = tantoId;
+            YoyakuTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+        }
+
         public ReceptionDto ToDto()
         {
             return new ReceptionDto
