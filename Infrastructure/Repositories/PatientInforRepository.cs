@@ -659,5 +659,17 @@ namespace Infrastructure.Repositories
                 0,
                 "");
         }
+
+        public List<PatientInforModel> PatientCommentModels(int hpId, long pdId)
+        {
+            var listData = _tenantDataContext.PtCmtInfs
+                .Where(x => x.HpId == hpId & x.PtId == pdId & x.IsDeleted == 0)
+                .Select(x => new PatientInforModel(
+                x.HpId,
+                x.PtId,
+                x.Text))
+                .ToList();
+            return listData;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Domain.Models.PatientComment;
+﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +10,13 @@ namespace UseCase.VisitingList.PatientComment
 {
     public class GetPatientCommentOutputData : IOutputData
     {
-        public List<PatientCommentModel> patientCommentModels { get; set; }
+        public List<PatientInforModel> PatientInforModels { get; set; }
 
         public GetPatientCommentStatus Status { get; set; }
 
-        public GetPatientCommentOutputData(List<PatientCommentModel> commentModels, GetPatientCommentStatus status)
+        public GetPatientCommentOutputData(List<PatientInforModel> patientInforModels, GetPatientCommentStatus status)
         {
-            patientCommentModels = commentModels;
+            PatientInforModels = patientInforModels;
             Status = status;
         }
     }

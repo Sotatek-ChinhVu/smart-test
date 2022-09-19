@@ -14,7 +14,6 @@ using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
-using Domain.Models.PatientComment;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
@@ -222,7 +221,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
-            services.AddTransient<IPatientCommentRepository, PatientCommentRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
         }
 

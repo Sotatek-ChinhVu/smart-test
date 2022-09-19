@@ -3,7 +3,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.VisitingList;
 using UseCase.VisitingList.PatientComment;
 
-namespace EmrCloudApi.Tenant.Presenters.VisitingList
+namespace EmrCloudApi.Tenant.Presenters.PatientInfor
 {
     public class GetPatientCommentPresenter : IGetPatientCommentOutputPort
     {
@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.VisitingList
 
         public void Complete(GetPatientCommentOutputData outputData)
         {
-            Result.Data = new GetPatientCommentResponse(outputData.patientCommentModels);
+            Result.Data = new GetPatientCommentResponse(outputData.PatientInforModels);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
@@ -21,7 +21,7 @@ namespace EmrCloudApi.Tenant.Presenters.VisitingList
             GetPatientCommentStatus.Success => ResponseMessage.Success,
             GetPatientCommentStatus.InvalidData => ResponseMessage.InvalidKeyword,
             GetPatientCommentStatus.NoData => ResponseMessage.NoData,
-            _=>  string.Empty
+            _ => string.Empty
         };
     }
 }

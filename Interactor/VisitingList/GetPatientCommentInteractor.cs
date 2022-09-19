@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientComment;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,21 @@ namespace Interactor.VisitingList
 {
     public class GetPatientCommentInteractor : IGetPatientCommentInputPort
     {
-        private readonly IPatientCommentRepository _patientCommentRepository;
+        private readonly IPatientInforRepository _patientInforRepository;
 
-        public GetPatientCommentInteractor(IPatientCommentRepository patientCommentRepository)
+        public GetPatientCommentInteractor(IPatientInforRepository patientInforRepository)
         {
-            _patientCommentRepository = patientCommentRepository;
+            _patientInforRepository = patientInforRepository;
         }
 
         public GetPatientCommentOutputData Handle(GetPatientCommentInputData inputData)
         {
             if (inputData.HpId <= 0 || inputData.PdId <= 0)
             {
-                return new GetPatientCommentOutputData(new List<PatientCommentModel>(), GetPatientCommentStatus.InvalidData);
+                return new GetPatientCommentOutputData(new List<PatientInforModel>(), GetPatientCommentStatus.InvalidData);
             }
 
-            var listData = _patientCommentRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
+            var listData = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
 
             if (listData == null || listData.Count == 0)
             {

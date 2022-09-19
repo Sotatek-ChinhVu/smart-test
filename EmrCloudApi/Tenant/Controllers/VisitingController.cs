@@ -1,6 +1,7 @@
 ﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;

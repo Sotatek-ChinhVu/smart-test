@@ -9,6 +9,9 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
 
         List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input);
+
+        public List<PatientInforModel> PatientCommentModels(int hpId, long pdId);
+
         bool CheckListId(List<long> ptIds);
     }
 }

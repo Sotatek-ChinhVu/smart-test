@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Models.PatientInfor
 {
@@ -53,6 +54,13 @@ namespace Domain.Models.PatientInfor
                 LastVisitDate = lastVisitDate;
                 FirstVisitDate = firstVisitDate;
                 RainCount = rainCount;
+            }
+
+            public PatientInforModel(int hpId, long ptId, string? text)
+            {
+                HpId = hpId;
+                PtId = ptId;
+                Text = text;
             }
 
             public int LastVisitDate { get; private set; }
@@ -137,6 +145,7 @@ namespace Domain.Models.PatientInfor
 
             public string RainCount { get; private set; }
 
+            public string? Text { get; set; } = string.Empty;
         }
     }
 }

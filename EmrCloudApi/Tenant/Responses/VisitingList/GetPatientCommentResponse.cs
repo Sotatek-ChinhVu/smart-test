@@ -1,14 +1,14 @@
-﻿using Domain.Models.PatientComment;
+﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 
 namespace EmrCloudApi.Tenant.Responses.VisitingList
 {
     public class GetPatientCommentResponse
     {
-        public GetPatientCommentResponse(List<PatientCommentModel> patientCommentModels)
+        public GetPatientCommentResponse(List<PatientInforModel> patientInforModels)
         {
-            PatientCommentModels = patientCommentModels;
+            PatientInforModels = patientInforModels;
         }
 
-        public List<PatientCommentModel> PatientCommentModels { get; set; }
+        public List<PatientInforModel> PatientInforModels { get; set; }
     }
 }
