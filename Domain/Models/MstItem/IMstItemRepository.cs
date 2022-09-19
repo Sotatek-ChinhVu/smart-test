@@ -15,6 +15,8 @@
         bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem);
 
         List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount);
+        
+        List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes);
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
     }

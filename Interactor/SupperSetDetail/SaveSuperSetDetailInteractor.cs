@@ -1,4 +1,5 @@
-﻿using Domain.Models.SuperSetDetail;
+﻿using Domain.Models.MstItem;
+using Domain.Models.SuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
@@ -8,16 +9,26 @@ namespace Interactor.SuperSetDetail;
 public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
+    private readonly IMstItemRepository _mstItemRepository;
+    private const string SUSPECTED_CD = "8002";
+    private const string FREE_WORD = "0000999";
 
-    public SaveSuperSetDetailInteractor(ISuperSetDetailRepository superSetDetailRepository)
+    public SaveSuperSetDetailInteractor(ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository)
     {
         _superSetDetailRepository = superSetDetailRepository;
+        _mstItemRepository = mstItemRepository;
     }
 
     public SaveSuperSetDetailOutputData Handle(SaveSuperSetDetailInputData inputData)
     {
         try
         {
+            var statusValidate = ValidateSuperSetDetail(inputData);
+            if (statusValidate != SaveSuperSetDetailStatus.ValidateSuccess)
+            {
+                return new SaveSuperSetDetailOutputData(statusValidate);
+            }
+
             var result = _superSetDetailRepository.SaveSuperSetDetail(inputData.SetCd, inputData.UserId, inputData.HpId, ConvertToSuperSetDetailModel(inputData));
             switch (result)
             {
@@ -82,4 +93,47 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             );
     }
 
+    private SaveSuperSetDetailStatus ValidateSuperSetDetail(SaveSuperSetDetailInputData inputData)
+    {
+        if (inputData.HpId <= 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidHpId;
+        }
+        else if (inputData.SetCd < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetCd;
+        }
+        else if (inputData.UserId <= 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidUserId;
+        }
+        // validate SetByomeiModel
+        List<string> listByomeiCode = new();
+        foreach (var item in inputData.SetByomeiModelInputs)
+        {
+            listByomeiCode.AddRange(item.PrefixSuffixList.Where(item => item.Code != SUSPECTED_CD).Select(item => item.Code).ToList());
+            if (item.ByomeiCd != FREE_WORD)
+            {
+                listByomeiCode.Add(item.ByomeiCd);
+            }
+            if (item.Id < 0)
+            {
+                return SaveSuperSetDetailStatus.InvalidSetByomeiId;
+            }
+            else if (item.SikkanKbn < 0)
+            {
+                return SaveSuperSetDetailStatus.InvalidSikkanKbn;
+            }
+            else if (item.NanByoCd < 0)
+            {
+                return SaveSuperSetDetailStatus.InvalidNanByoCd;
+            }
+        }
+        var listByomeiCd = _mstItemRepository.DiseaseSearch(listByomeiCode).Select(item => item.ByomeiCd).ToList();
+        foreach (var item in inputData.SetByomeiModelInputs)
+        {
+
+        }
+        return SaveSuperSetDetailStatus.ValidateSuccess;
+    }
 }

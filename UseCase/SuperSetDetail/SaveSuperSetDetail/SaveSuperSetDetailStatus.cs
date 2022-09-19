@@ -7,4 +7,11 @@ public enum SaveSuperSetDetailStatus : byte
     SaveSetByomeiFailed = 3,
     SaveSetKarteInfFailed = 4,
     SaveSetOrderInfFailed = 5,
+    ValidateSuccess = 6,
+    InvalidSetByomeiId = 7,
+    InvalidHpId = 8,
+    InvalidSetCd = 9,
+    InvalidUserId = 10,
+    InvalidSikkanKbn = 11,
+    InvalidNanByoCd = 12,
 }
