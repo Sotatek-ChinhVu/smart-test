@@ -56,11 +56,11 @@ namespace Domain.Models.PatientInfor
                 RainCount = rainCount;
             }
 
-            public PatientInforModel(int hpId, long ptId, string? text)
+            public PatientInforModel(int hpId, long ptId, string? comment)
             {
                 HpId = hpId;
                 PtId = ptId;
-                Text = text;
+                Comment = comment;
             }
 
             public int LastVisitDate { get; private set; }
@@ -145,7 +145,7 @@ namespace Domain.Models.PatientInfor
 
             public string RainCount { get; private set; }
 
-            public string? Text { get; set; } = string.Empty;
+            public string? Comment { get; set; } = string.Empty;
         }
     }
 }
