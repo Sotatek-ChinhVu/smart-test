@@ -6,7 +6,7 @@ using UseCase.ReceptionVisiting.Get;
 using EmrCloudApi.Tenant.Responses.ReceptionVisiting;
 using System.Xml.Linq;
 
-namespace EmrCloudApi.Tenant.Presenters.ReceptionVisiting
+namespace EmrCloudApi.Tenant.Presenters.Reception
 {
     public class GetReceptionVisitingPresenter : IGetReceptionVisitingOutputPort
     {

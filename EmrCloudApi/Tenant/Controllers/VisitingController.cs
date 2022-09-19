@@ -2,7 +2,6 @@
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.Reception;
-using EmrCloudApi.Tenant.Presenters.ReceptionVisiting;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Requests.ReceptionVisiting;
