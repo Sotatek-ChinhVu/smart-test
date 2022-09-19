@@ -39,7 +39,6 @@ namespace EmrCloudApi.Tenant.Controllers
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
                     a => new AddAlrgyDrugListItemInputData(
                             a.PtId,
-                            a.SortNo,
                             a.ItemCd,
                             a.DrugName,
                             a.StartDate,

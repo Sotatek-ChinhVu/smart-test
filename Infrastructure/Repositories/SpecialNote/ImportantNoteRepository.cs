@@ -19,27 +19,33 @@ namespace Infrastructure.Repositories.SpecialNote
 
         public void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas)
         {
-            _tenantTrackingDataContext.AddRange(
-                inputDatas.Select(
-                        i => new PtAlrgyDrug
-                        {
-                            HpId = TempIdentity.HpId,
-                            PtId = i.PtId,
-                            SortNo = i.SortNo,
-                            ItemCd = i.ItemCd,
-                            DrugName = i.DrugName,
-                            StartDate = i.StartDate,
-                            EndDate = i.EndDate,
-                            Cmt = i.Cmt,
-                            CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
-                            UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName,
-                        }
-                    )
-             );
+            var ptId = inputDatas.FirstOrDefault()?.PtId ?? 0;
+            var hpId = inputDatas.FirstOrDefault()?.HpId ?? 0;
+            var maxSortNo = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(a => a.HpId == hpId && a.PtId == ptId).Max(a => a.SortNo);
+            foreach (var item in inputDatas)
+            {
+                _tenantTrackingDataContext.Add(
+                    new PtAlrgyDrug
+                    {
+                        HpId = TempIdentity.HpId,
+                        PtId = item.PtId,
+                        SortNo = maxSortNo++,
+                        ItemCd = item.ItemCd,
+                        DrugName = item.DrugName,
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
+                        Cmt = item.Cmt,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName,
+                    }
+               );
+                maxSortNo = maxSortNo + 1;
+            }
+
             _tenantTrackingDataContext.SaveChanges();
         }
 

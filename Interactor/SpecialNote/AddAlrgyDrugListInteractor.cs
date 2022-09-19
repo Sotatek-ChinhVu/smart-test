@@ -35,7 +35,7 @@ namespace Interactor.SpecialNote
                                 0,
                                 i.PtId,
                                 0,
-                                i.SortNo,
+                                0,
                                 i.ItemCd,
                                 i.DrugName,
                                 i.StartDate,
