@@ -55,8 +55,6 @@ namespace Domain.Models.Reception
 
         public int JikanKbn { get; private set; }
 
-        public string Text { get; set; } = string.Empty;
-
         public string Comment { get; private set; }
 
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
@@ -87,12 +85,12 @@ namespace Domain.Models.Reception
             Comment = comment;
         }
 
-        public ReceptionModel(int hpId, long ptId, long raiinNo, string text)
+        public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
         {
             HpId = hpId;
             PtId = ptId;
             RaiinNo = raiinNo;
-            Text = text;
+            Comment = comment;
             YoyakuTime = String.Empty;
             UketukeTime = String.Empty;
             SinStartTime = String.Empty;
