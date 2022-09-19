@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.KarteInfs
+﻿using static Helper.Constants.TodayKarteConst;
+
+namespace Domain.Models.KarteInfs
 {
     public class KarteInfModel
     {
@@ -28,5 +30,39 @@
         public string RichText { get; private set; }
         public DateTime CreateDate { get; private set; }
         public DateTime UpdateDate { get; private set; }
+
+        public ValidationStatus Validation()
+        {
+            if (HpId <= 0)
+            {
+                return ValidationStatus.InvalidHpId;
+            }
+            if (RaiinNo <= 0)
+            {
+                return ValidationStatus.InvalidRaiinNo
+            }
+            if (KarteKbn <= 0)
+            {
+                return ValidationStatus.InvalidKarteKbn;
+            }
+            if (SeqNo <= 0)
+            {
+                return ValidationStatus.InvalidSeqNo;
+            }
+            if (PtId <= 0)
+            {
+                return ValidationStatus.InvalidPtId;
+            }
+            if (SinDate <= 0)
+            {
+                return ValidationStatus.InvalidSinDate;
+            }
+            if (IsDeleted <= 0)
+            {
+                return ValidationStatus.InvalidIsDelted;
+            }
+
+            return ValidationStatus.Valid;
+        }
     }
 }
