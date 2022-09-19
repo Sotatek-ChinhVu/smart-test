@@ -23,7 +23,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "FlowSheet")]
         public ActionResult<Response<GetListFlowSheetResponse>> GetListFlowSheet([FromQuery] GetListFlowSheetRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, false, 0, 0, false);
+            var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, false, 0, 0, false, inputData.StartIndex, inputData.Count);
             var output = _bus.Handle(input);
             var presenter = new GetListFlowSheetPresenter();
             presenter.Complete(output);
@@ -34,7 +34,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "Holiday")]
         public ActionResult<Response<GetListHolidayResponse>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false);
+            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false, 0, 0);
             var output = _bus.Handle(input);
             var presenter = new GetListHolidayPresenter();
             presenter.Complete(output);
@@ -45,7 +45,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "RaiinMst")]
         public ActionResult<Response<GetListRaiinMstResponse>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
-            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, false, 0, 0, true);
+            var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, false, 0, 0, true, 0, 0);
             var output = _bus.Handle(input);
             var presenter = new GetListRaiinMstPresenter();
             presenter.Complete(output);
