@@ -9,6 +9,6 @@ namespace Domain.Models.ReceptionLock
 {
     public interface IReceptionLockRepository
     {
-        public List<ReceptionLockModel> ReceptionLockModel(long raiinNo);
+        public List<ReceptionLockModel> ReceptionLockModel(long sinDate, long ptId, long raiinNo, string functionCd);
     }
 }

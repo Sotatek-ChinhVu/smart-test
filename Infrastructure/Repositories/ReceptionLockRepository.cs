@@ -22,22 +22,22 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<ReceptionLockModel> ReceptionLockModel(long raiinNo)
+        public List<ReceptionLockModel> ReceptionLockModel(long sinDate, long ptId, long raiinNo, string functionCd)
         {
-            var listDataRaiinInf = _tenantDataContext.LockInfs
-                .Where(x => x.RaiinNo == raiinNo)
+            var listData = _tenantDataContext.LockInfs
+                .Where(x => x.SinDate == sinDate && x.PtId == ptId && x.RaiinNo == raiinNo && x.FunctionCd == functionCd)
                 .Select(x => new ReceptionLockModel(
                 x.HpId,
                 x.PtId,
-                x.FunctionCd,
+                x.FunctionCd ?? String.Empty,
                 x.SinDate,
                 x.RaiinNo,
                 x.OyaRaiinNo,
-                x.Machine,
+                x.Machine ?? String.Empty,
                 x.UserId,
                 x.LockDate))
                 .ToList();
-            return listDataRaiinInf;
+            return listData;
         }
     }
 }
