@@ -12,6 +12,15 @@ public class SystemConfModel
         Biko = biko;
     }
 
+    public SystemConfModel()
+    {
+        GrpCd = 0;
+        GrpEdaNo = 0;
+        Val = 0;
+        Param = String.Empty;
+        Biko = String.Empty;
+    }
+
     public int GrpCd { get; private set; }
     public int GrpEdaNo { get; private set; }
     public double Val { get; private set; }
