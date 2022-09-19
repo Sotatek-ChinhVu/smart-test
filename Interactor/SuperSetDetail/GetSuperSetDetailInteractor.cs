@@ -24,7 +24,11 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
             {
                 return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSetCd);
             }
-            var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.SetCd);
+            else if (inputData.Sindate <= 0)
+            {
+                return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSindate);
+            }
+            var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.SetCd, inputData.Sindate);
             return new GetSuperSetDetailOutputData(result, GetSuperSetDetailListStatus.Successed);
         }
         catch

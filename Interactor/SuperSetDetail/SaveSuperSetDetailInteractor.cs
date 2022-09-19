@@ -52,8 +52,9 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     {
         return new SuperSetDetailModel(
                 ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
-                ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem())
-            );
+                ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem()),
+                new()
+                );
     }
 
     private List<SetByomeiModel> ConvertToListSetByomeiModel(List<SaveSetByomeiInputItem> inputItems)

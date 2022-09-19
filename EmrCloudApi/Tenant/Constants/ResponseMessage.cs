@@ -48,6 +48,22 @@
         public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
+        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
+        public static readonly string UpsertPtDiseaseListInvalidId = "Invalid Id";
+        public static readonly string UpsertPtDiseaseListInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertPtDiseaseListInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertPtDiseaseListInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertPtDiseaseListInvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string UpsertPtDiseaseListInvalidStartDate = "Invalid Byomei Start Date";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDate = "Invalid TenkiDate";
+        public static readonly string UpsertPtDiseaseListInvalidSyubyoKbn = "Invalid SyubyoKbn";
+        public static readonly string UpsertPtDiseaseListInvalidHosokuCmt = "Invalid HosokuCmt";
+        public static readonly string UpsertPtDiseaseListInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspRece = "Invalid IsNodspRece";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspKarte = "Invalid IsNodspKarte";
+        public static readonly string UpsertPtDiseaseListInvalidSeqNo = "Invalid SeqNo";
+        public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
+        public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
 

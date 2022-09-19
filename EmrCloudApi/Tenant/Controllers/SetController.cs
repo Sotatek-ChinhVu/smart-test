@@ -79,7 +79,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        var input = new GetSuperSetDetailInputData(request.HpId, request.SetCd);
+        var input = new GetSuperSetDetailInputData(request.HpId, request.SetCd, request.Sindate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailPresenter();
