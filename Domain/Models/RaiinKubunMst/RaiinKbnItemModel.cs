@@ -4,9 +4,8 @@ namespace Domain.Models.RaiinKubunMst
 {
     public class RaiinKbnItemModel
     {
-        public RaiinKbnItemModel(TenItemModel tenMstModel, int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, int isDeleted)
+        public RaiinKbnItemModel( int grpCd, int kbnCd, long seqNo, string itemCd, int isExclude, int isDeleted)
         {
-            TenMstModel = tenMstModel;
             GrpCd = grpCd;
             KbnCd = kbnCd;
             SeqNo = seqNo;
@@ -15,7 +14,6 @@ namespace Domain.Models.RaiinKubunMst
             IsDeleted = isDeleted;
         }
 
-        public TenItemModel TenMstModel { get; private set; }
         public int GrpCd { get; private set; }
 
         public int KbnCd { get; private set; }
