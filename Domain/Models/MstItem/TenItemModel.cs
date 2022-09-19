@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -26,6 +26,7 @@ namespace Domain.Models.MstItem
             IsAdopted = isAdopted;
             CmtCol1 = cmtCol1;
             IpnNameCd = ipnNameCd;
+            SinKouiKbn = sinKouiKbn;
         }
 
         public TenItemModel()
@@ -91,6 +92,7 @@ namespace Domain.Models.MstItem
         public int CmtCol1 { get; private set; }
         public string IpnNameCd { get; private set; }
 
+        public int SinKouiKbn { get; private set; }
 
         public string RousaiKbnDisplay
         {
