@@ -257,5 +257,16 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        // SuperSetDetail
+        public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
+        public static readonly string InvalidSikkanKbn = "Invalid SikkanKbn, SikkanKbn >.0";
+        public static readonly string InvalidNanByoCd = "Invalid NanByoCd, NanByoCd > 0.";
+        public static readonly string InvalidByomeiCdOrSyusyokuCd = "Invalid ByomeiCd or SyusyokuCd, ByomeiCd or SyusyokuCd not found.";
+        public static readonly string SetCdNotExist = "SetCd Not Exist.";
+        public static readonly string FullByomeiMaxlength160 = "Length of FullByomei must less than 160 or equal 160.";
+        public static readonly string ByomeiCmtMaxlength80 = "Length of ByomeiCmt must less than 80 or equal 80.";
+
+
     }
 }

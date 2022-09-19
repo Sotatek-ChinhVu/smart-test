@@ -15,7 +15,7 @@ public enum SaveSuperSetDetailStatus : byte
     InvalidSikkanKbn = 11,
     InvalidNanByoCd = 12,
     InvalidByomeiCdOrSyusyokuCd = 13,
-    Maxlength160 = 14,
-    Maxlength80 = 15,
+    FullByomeiMaxlength160 = 14,
+    ByomeiCmtMaxlength80 = 15,
     SetCdNotExist = 16,
 }

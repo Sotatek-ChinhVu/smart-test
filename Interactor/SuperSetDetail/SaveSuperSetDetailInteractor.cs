@@ -115,6 +115,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
         {
             return SaveSuperSetDetailStatus.SetCdNotExist;
         }
+
         // Validate SetByomeiModel
         List<string> listByomeiCode = new();
         foreach (var item in inputData.SetByomeiModelInputs)
@@ -138,11 +139,11 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             }
             else if (item.FullByomei.Length > 160)
             {
-                return SaveSuperSetDetailStatus.Maxlength160;
+                return SaveSuperSetDetailStatus.FullByomeiMaxlength160;
             }
             else if (item.ByomeiCmt.Length > 80)
             {
-                return SaveSuperSetDetailStatus.Maxlength80;
+                return SaveSuperSetDetailStatus.ByomeiCmtMaxlength80;
             }
         }
         var listByomeiCd = _mstItemRepository.DiseaseSearch(listByomeiCode).Select(item => item.ByomeiCd).ToList();

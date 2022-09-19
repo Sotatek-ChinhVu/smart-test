@@ -23,6 +23,17 @@ public class SaveSuperSetDetailPresenter : ISaveSuperSetDetailOutputPort
         SaveSuperSetDetailStatus.SaveSetByomeiFailed => ResponseMessage.SaveSetByomeiFailed,
         SaveSuperSetDetailStatus.SaveSetKarteInfFailed => ResponseMessage.SaveSetKarteInfFailed,
         SaveSuperSetDetailStatus.SaveSetOrderInfFailed => ResponseMessage.SaveSetOrderInfFailed,
+        SaveSuperSetDetailStatus.InvalidSetByomeiId => ResponseMessage.InvalidSetByomeiId,
+        SaveSuperSetDetailStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        SaveSuperSetDetailStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
+        SaveSuperSetDetailStatus.InvalidUserId => ResponseMessage.InvalidUserId,
+        SaveSuperSetDetailStatus.InvalidSikkanKbn => ResponseMessage.InvalidSikkanKbn,
+        SaveSuperSetDetailStatus.InvalidNanByoCd => ResponseMessage.InvalidNanByoCd,
+        SaveSuperSetDetailStatus.InvalidByomeiCdOrSyusyokuCd => ResponseMessage.InvalidByomeiCdOrSyusyokuCd,
+        SaveSuperSetDetailStatus.FullByomeiMaxlength160 => ResponseMessage.FullByomeiMaxlength160,
+        SaveSuperSetDetailStatus.ByomeiCmtMaxlength80 => ResponseMessage.ByomeiCmtMaxlength80,
+        SaveSuperSetDetailStatus.SetCdNotExist => ResponseMessage.SetCdNotExist,
+
         _ => string.Empty
     };
 }
