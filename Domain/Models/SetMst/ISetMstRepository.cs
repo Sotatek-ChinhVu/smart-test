@@ -9,4 +9,6 @@ public interface ISetMstRepository
     bool PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem);
 
     SetMstModel? SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel);
+
+    bool CheckExistSetMstBySetCd(int setCd);
 }

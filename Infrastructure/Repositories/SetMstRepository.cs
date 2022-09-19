@@ -963,4 +963,10 @@ public class SetMstRepository : ISetMstRepository
         }
         _tenantDataContext.SetByomei.AddRange(listPasteSetByomeies);
     }
+
+    public bool CheckExistSetMstBySetCd(int setCd)
+    {
+        return _tenantNoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
+    }
+
 }
