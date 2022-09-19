@@ -20,8 +20,10 @@ namespace Infrastructure.Repositories
 
         public List<DosageDrugModel> GetDosages(List<string> yjCds)
         {
-            var result = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd));
-            return result == null ? new List<DosageDrugModel>() : result.Select(
+            var listDosageDrugs = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
+            var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
+            var listDosageDosages = _tenantDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
+            return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
                     r => new DosageDrugModel(
                             r.YjCd,
                             r.DoeiCd,
@@ -30,7 +32,8 @@ namespace Infrastructure.Repositories
                             r.YakkaiUnit,
                             r.RikikaRate,
                             r.RikikaUnit,
-                            r.YoukaiekiCd
+                            r.YoukaiekiCd,
+                            listDosageDosages.FirstOrDefault(item => item.DoeiCd == r.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
                    )).ToList();
         }
 
@@ -154,7 +157,8 @@ namespace Infrastructure.Repositories
                 "",
                 "",
                 tenMst?.CmtCol1 ?? 0,
-                tenMst?.IpnNameCd ?? string.Empty
+                tenMst?.IpnNameCd ?? string.Empty,
+                tenMst?.SinKouiKbn ?? 0
             );
         }
 
@@ -255,10 +259,6 @@ namespace Infrastructure.Repositories
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
 
-
-
-
-            var yakkaSyusaiMstList = _tenantDataContext.YakkaSyusaiMsts.AsQueryable();
             if (kouiKbn > 0)
             {
                 //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
@@ -397,8 +397,6 @@ namespace Infrastructure.Repositories
             if (sinDate > 0)
             {
                 queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
-
-                yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
             }
             else
             {
@@ -514,7 +512,8 @@ namespace Infrastructure.Repositories
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
                                                            item.TenMst?.CmtCol1 ?? 0,
-                                                           item.TenMst?.IpnNameCd ?? string.Empty
+                                                           item.TenMst?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.SinKouiKbn ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);

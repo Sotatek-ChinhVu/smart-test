@@ -194,7 +194,7 @@ namespace Domain.Models.Insurance
 
         public int HokenMstFutanRate => HokenMst != null ? HokenMst.FutanRate : 0;
 
-        public int HokenMstFutanKbn => HokenMst != null ? HokenMstFutanKbn : 0;
+        public int HokenMstFutanKbn => HokenMst != null ? HokenMst.FutanKbn : 0;
 
         public int HokenMstSubNumber => HokenMst != null ? HokenMst.HokenSubNumber : 0;
 
