@@ -155,6 +155,8 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.SpecialNote.Save;
 using Domain.Models.SpecialNote;
 using UseCase.Insurance.ValidPatternExpirated;
+using UseCase.SystemConf;
+using Interactor.SystemConf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -381,6 +383,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+
+            //System Conf
+            busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
