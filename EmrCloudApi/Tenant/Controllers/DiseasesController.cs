@@ -56,7 +56,8 @@ namespace EmrCloudApi.Tenant.Controllers
                     r.SeqNo,
                     r.IsImportant,
                     r.IsDeleted,
-                    r.ByomeiCd
+                    r.ByomeiCd,
+                    r.HpId
                 )).ToList());
             var output = _bus.Handle(input);
 
