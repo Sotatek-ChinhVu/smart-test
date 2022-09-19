@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace UseCase.MonshinInfor.Insert
 {
-    internal class InsertMonshinStatus
+    public enum InsertMonshinStatus
     {
+        Success = 1,
     }
 }
