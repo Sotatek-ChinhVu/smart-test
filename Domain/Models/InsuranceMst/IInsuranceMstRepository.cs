@@ -13,5 +13,6 @@ namespace Domain.Models.InsuranceMst
         public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword);
 
         HokenMstModel GetHokenMstByFutansyaNo(int hpId, int sinDate, string futansyaNo);
+        public bool SaveHokenSyaMst(HokensyaMstModel model);
     }
 }
