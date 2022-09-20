@@ -156,5 +156,6 @@ public class SetOrderInfModel
     {
         get => IsShohoComment || IsShohoBiko;
     }
+
     public List<SetOrderInfDetailModel> OrdInfDetails { get; private set; }
 }

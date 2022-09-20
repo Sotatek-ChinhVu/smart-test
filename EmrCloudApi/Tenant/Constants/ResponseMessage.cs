@@ -267,7 +267,40 @@
         public static readonly string SetCdNotExist = "SetCd Not Exist.";
         public static readonly string FullByomeiMaxlength160 = "Length of FullByomei must less than 160 or equal 160.";
         public static readonly string ByomeiCmtMaxlength80 = "Length of ByomeiCmt must less than 80 or equal 80.";
-
+        public static readonly string RpNameMaxLength240 = "Length of SetOrder RpName must less than 240 or equal 240.";
+        public static readonly string InvalidSetOrderInfId = "Id of SetOrderInf must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfRpNo = "RpNo must more than 1 or equal 1";
+        public static readonly string InvalidSetOrderInfRpEdaNo = "RpEdaNo must more than 1 or equal 1";
+        public static readonly string InvalidSetOrderInfKouiKbn = "KouiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfInoutKbn = "InoutKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSikyuKbn = "SikyuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSyohoSbt = "SyohoSbt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSanteiKbn = "SanteiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfTosekiKbn = "TosekiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfDaysCnt = "DaysCnt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSortNo = "SortNo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSinKouiKbn = "SinKouiKbn must more than 0 or equal 0";
+        public static readonly string ItemCdMaxLength10 = "Length of SetOrderDetail ItemCd must less than 10 or equal 10.";
+        public static readonly string ItemNameMaxLength240 = "Length of SetOrderDetail ItemCd must less than 240 or equal 240.";
+        public static readonly string UnitNameMaxLength24 = "Length of SetOrderDetail UnitName must less than 24 or equal 24.";
+        public static readonly string InvalidSetOrderSuryo = "Suryo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderUnitSBT = "UnitSBT must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderTermVal = "TermVal must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderKohatuKbn = "KohatuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoKbn = "SyohoKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoLimitKbn = "SyohoLimitKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderDrugKbn = "DrugKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderYohoKbn = "YohoKbn must more than 0 or equal 0";
+        public static readonly string Kokuji1MaxLength1 = "Length of SetOrderDetail Kokuji1 must less than 1 or equal 1.";
+        public static readonly string Kokuji2MaxLength1 = "Length of SetOrderDetail Kokuji2 must less than 1 or equal 1.";
+        public static readonly string InvalidSetOrderIsNodspRece = "IsNodspRece must more than 0 or equal 0";
+        public static readonly string IpnCdMaxLength12 = "Length of SetOrderDetail IpnCd must less than 12 or equal 12.";
+        public static readonly string IpnNameMaxLength120 = "Length of SetOrderDetail IpnName must less than 120 or equal 120.";
+        public static readonly string BunkatuMaxLength10 = "Length of SetOrderDetail Bunkatu must less than 10 or equal 10.";
+        public static readonly string CmtNameMaxLength240 = "Length of SetOrderDetail CmtName must less than 240 or equal 240.";
+        public static readonly string CmtOptMaxLength38 = "Length of SetOrderDetail CmtOpt must less than 38 or equal 38.";
+        public static readonly string FontColorMaxLength8 = "Length of SetOrderDetail FontColor must less than 8 or equal 8.";
+        public static readonly string InvalidSetOrderCommentNewline = "CommentNewline must more than 0 or equal 0";
 
     }
 }

@@ -4,9 +4,9 @@ public class SaveSetOrderMstRequestItem
 {
     public long Id { get; set; } = 0;
 
-    public long RpNo { get; set; } = 0;
+    public long RpNo { get; set; } = 1;
 
-    public long RpEdaNo { get; set; } = 0;
+    public long RpEdaNo { get; set; } = 1;
 
     public int OdrKouiKbn { get; set; } = 0;
 
