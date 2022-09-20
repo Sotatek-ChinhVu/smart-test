@@ -26,7 +26,8 @@ namespace Interactor.FlowSheet
             }
             else
             {
-                var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo);
+                int count = inputData.Count <= 0 ? 50 : inputData.Count;
+                var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.StartIndex, count);
                 var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
 
                 return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, new List<HolidayModel>());

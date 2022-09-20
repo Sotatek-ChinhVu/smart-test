@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn,string yjCd, string memoItem)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -26,6 +26,10 @@ namespace Domain.Models.MstItem
             IsAdopted = isAdopted;
             CmtCol1 = cmtCol1;
             IpnNameCd = ipnNameCd;
+            SinKouiKbn = sinKouiKbn;
+            YjCd = yjCd;
+            MemoItem = memoItem;
+                
         }
 
         public TenItemModel()
@@ -50,6 +54,8 @@ namespace Domain.Models.MstItem
             IsAdopted = 0;
             CmtCol1 = 0;
             IpnNameCd = string.Empty;
+            YjCd = String.Empty;
+            MemoItem = String.Empty;
         }
 
         public int HpId { get; private set; }
@@ -89,8 +95,14 @@ namespace Domain.Models.MstItem
         public string KensaMstCenterItemCd2 { get; private set; }
 
         public int CmtCol1 { get; private set; }
+
         public string IpnNameCd { get; private set; }
 
+        public int SinKouiKbn { get; private set; }
+
+        public string YjCd { get; private set; }
+
+        public string MemoItem { get; private set; }
 
         public string RousaiKbnDisplay
         {
