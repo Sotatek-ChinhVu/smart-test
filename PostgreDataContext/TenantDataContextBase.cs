@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace PostgreDataContext
 {
@@ -22,7 +23,7 @@ namespace PostgreDataContext
                 optionsBuilder.UseNpgsql(_connectionString, buider =>
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
-                });
+                }).LogTo(Console.WriteLine, LogLevel.Information);
             }
         }
 

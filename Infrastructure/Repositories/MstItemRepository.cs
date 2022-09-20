@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -158,11 +159,13 @@ namespace Infrastructure.Repositories
                 "",
                 tenMst?.CmtCol1 ?? 0,
                 tenMst?.IpnNameCd ?? string.Empty,
-                tenMst?.SinKouiKbn ?? 0
+                tenMst?.SinKouiKbn ?? 0,
+                tenMst?.YjCd ?? string.Empty,
+                string.Empty
             );
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public List<TenItemModel> SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -474,49 +477,59 @@ namespace Infrastructure.Repositories
                                where tenKN.ItemCd.StartsWith("KN")
                                select new { tenKN.ItemCd, ten.Ten };
 
-            var queryFinal = from ten in queryResult.AsEnumerable()
+            var dosageQuery = from result in queryResult
+                              join ds in _tenantDataContext.DosageDrugs.AsQueryable()
+                              on result.YjCd equals ds.YjCd into dos
+                              from dosage in dos.DefaultIfEmpty()
+                              join dg in _tenantDataContext.DosageDosages.AsQueryable()
+                              on dosage.DoeiCd equals dg.DoeiCd into dsds
+                              from dosageDosage in dsds.DefaultIfEmpty()
+                              select new { result, dosageDosage.UsageDosage };
+
+            var queryFinal = from ten in dosageQuery.AsEnumerable()
                              join tenKN in queryKNTensu.AsEnumerable()
-                             on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
+                             on ten.result.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
-                             select new { TenMst = ten, tenKN };
+                             select new { TenMst = ten, tenKN,ten.UsageDosage };
 
             var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
                                      join k in kensaMstQuery.AsEnumerable()
-                                     on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
+                                     on q.TenMst.result.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
 
-            var totalCount = queryJoinWithKensa.Count();
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.result.KanaName1).ThenBy(item => item.TenMst.result.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
             var listTenMstData = listTenMst.ToList();
 
             if (listTenMstData != null && listTenMstData.Count > 0)
             {
                 listTenMstModels = listTenMstData.Select(item => new TenItemModel(
-                                                           item.TenMst.HpId,
-                                                           item.TenMst.ItemCd,
-                                                           item.TenMst.RousaiKbn,
-                                                           item.TenMst.KanaName1 ?? string.Empty,
-                                                           item.TenMst?.Name ?? string.Empty,
-                                                           item.TenMst?.KohatuKbn ?? 0,
-                                                           item.TenMst?.MadokuKbn ?? 0,
-                                                           item.TenMst?.KouseisinKbn ?? 0,
-                                                           item.TenMst?.OdrUnitName ?? string.Empty,
-                                                           item.TenMst?.EndDate ?? 0,
-                                                           item.TenMst?.DrugKbn ?? 0,
-                                                           item.TenMst?.MasterSbt ?? string.Empty,
-                                                           item.TenMst?.BuiKbn ?? 0,
-                                                           item.TenMst?.IsAdopted ?? 0,
-                                                           item.tenKN != null ? item.tenKN.Ten : (item.TenMst?.Ten ?? 0),
-                                                           item.TenMst?.TenId ?? 0,
+                                                           item.TenMst.result?.HpId ?? 0,
+                                                           item.TenMst.result?.ItemCd ?? string.Empty,
+                                                           item.TenMst.result?.RousaiKbn ?? 0,
+                                                           item.TenMst.result?.KanaName1 ?? string.Empty,
+                                                           item.TenMst?.result?.Name ?? string.Empty,
+                                                           item.TenMst?.result?.KohatuKbn ?? 0,
+                                                           item.TenMst?.result?.MadokuKbn ?? 0,
+                                                           item.TenMst?.result?.KouseisinKbn ?? 0,
+                                                           item.TenMst?.result?.OdrUnitName ?? string.Empty,
+                                                           item.TenMst?.result?.EndDate ?? 0,
+                                                           item.TenMst?.result?.DrugKbn ?? 0,
+                                                           item.TenMst?.result?.MasterSbt ?? string.Empty,
+                                                           item.TenMst?.result?.BuiKbn ?? 0,
+                                                           item.TenMst?.result?.IsAdopted ?? 0,
+                                                           item.tenKN != null ? item.tenKN.Ten : (item.TenMst?.result?.Ten ?? 0),
+                                                           item.TenMst?.result?.TenId ?? 0,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
-                                                           item.TenMst?.CmtCol1 ?? 0,
-                                                           item.TenMst?.IpnNameCd ?? string.Empty,
-                                                           item.TenMst?.SinKouiKbn ?? 0
+                                                           item.TenMst?.result?.CmtCol1 ?? 0,
+                                                           item.TenMst?.result?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.result?.SinKouiKbn ?? 0,
+                                                           item.TenMst?.result?.YjCd ?? string.Empty,
+                                                           item.TenMst?.UsageDosage ?? string.Empty
                                                             )).ToList();
             }
-            return (listTenMstModels, totalCount);
+            return listTenMstModels;
         }
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
         {

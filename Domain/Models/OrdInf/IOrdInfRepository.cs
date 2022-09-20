@@ -23,5 +23,7 @@ namespace Domain.Models.OrdInfs
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
 
         IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos);
+
+        long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }

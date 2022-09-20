@@ -34,5 +34,7 @@
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
 
+        //Today Oder
+        public const string GetMaxRpNo = "GetMaxRpNo";
     }
 }
