@@ -4,6 +4,7 @@ using Domain.Models.SuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
+using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetOrderInput;
 
 namespace Interactor.SuperSetDetail;
 
@@ -36,9 +37,9 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                                                                         inputData.SetCd, 
                                                                         inputData.UserId, 
                                                                         inputData.HpId, 
-                                                                        ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs ?? new List<SaveSetByomeiInputItem>()),
-                                                                        ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem ?? new SaveSetKarteInputItem()),
-                                                                        new()
+                                                                        ConvertToListSetByomeiModel(inputData.SetByomeiModelInputs),
+                                                                        ConvertToSetKarteInfModel(inputData.SaveSetKarteInputItem),
+                                                                        ConvertToListSetOrderInfModel(inputData.SaveSetOrderInputItems)
                                                                     );
             switch (result)
             {
@@ -93,6 +94,60 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 inputItem.SetCd,
                 inputItem.RichText
             );
+    }
+
+    private List<SetOrderInfModel> ConvertToListSetOrderInfModel(List<SaveSetOrderInfInputItem> inputItems)
+    {
+        List<SetOrderInfModel> listSetInfModels = new();
+        foreach (var inputMst in inputItems)
+        {
+            var listSetOrderInfDetailModels = inputMst.OrdInfDetails.Select(detail =>
+                    new SetOrderInfDetailModel(
+                            detail.SinKouiKbn,
+                            detail.ItemCd,
+                            detail.ItemName,
+                            detail.ItemName,
+                            detail.Suryo,
+                            detail.UnitName,
+                            detail.UnitSBT,
+                            detail.TermVal,
+                            detail.KohatuKbn,
+                            detail.SyohoKbn,
+                            detail.SyohoLimitKbn,
+                            detail.DrugKbn,
+                            detail.YohoKbn,
+                            detail.Kokuji1,
+                            detail.Kokuji2,
+                            detail.IsNodspRece,
+                            detail.IpnCd,
+                            detail.IpnName,
+                            detail.Bunkatu,
+                            detail.CmtName,
+                            detail.CmtOpt,
+                            detail.FontColor,
+                            detail.CommentNewline
+                        )
+                ).ToList();
+            var model = new SetOrderInfModel(
+                    inputMst.Id,
+                    inputMst.RpNo,
+                    inputMst.RpEdaNo,
+                    inputMst.OdrKouiKbn,
+                    inputMst.RpName,
+                    inputMst.InoutKbn,
+                    inputMst.SikyuKbn,
+                    inputMst.SyohoSbt,
+                    inputMst.SanteiKbn,
+                    inputMst.TosekiKbn,
+                    inputMst.DaysCnt,
+                    inputMst.SortNo,
+                    inputMst.IsDeleted,
+                    listSetOrderInfDetailModels
+                );
+            listSetInfModels.Add(model);
+        }
+
+        return listSetInfModels;
     }
 
     private SaveSuperSetDetailStatus ValidateSuperSetDetail(SaveSuperSetDetailInputData inputData)

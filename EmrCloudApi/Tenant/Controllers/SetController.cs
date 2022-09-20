@@ -14,6 +14,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
+using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetOrderInput;
 using UseCase.SuperSetDetail.SuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -96,8 +97,9 @@ public class SetController : ControllerBase
                 request.UserId,
                 request.HpId,
                 ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                new SaveSetKarteInputItem(request.HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText)
-            );
+                new SaveSetKarteInputItem(request.HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
+                ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
+                );
         var output = _bus.Handle(input);
 
         var presenter = new SaveSuperSetDetailPresenter();
@@ -105,6 +107,7 @@ public class SetController : ControllerBase
 
         return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
     }
+
 
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
     public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
@@ -136,5 +139,52 @@ public class SetController : ControllerBase
                             pre.Name
                         )).ToList()
             )).ToList();
+    }
+
+    private List<SaveSetOrderInfInputItem> ConvertToSetOrderModelInputs(List<SaveSetOrderMstRequestItem> saveSetOrderMstRequestItems)
+    {
+        var result = saveSetOrderMstRequestItems.Select(mst =>
+                new SaveSetOrderInfInputItem(
+                        mst.Id,
+                        mst.RpNo,
+                        mst.RpEdaNo,
+                        mst.OdrKouiKbn,
+                        mst.RpName,
+                        mst.InoutKbn,
+                        mst.SikyuKbn,
+                        mst.SyohoSbt,
+                        mst.SanteiKbn,
+                        mst.TosekiKbn,
+                        mst.DaysCnt,
+                        mst.SortNo,
+                        mst.IsDeleted,
+                        mst.OrdInfDetails.Select(detail=> 
+                            new SetOrderInfDetailInputItem(
+                                    detail.SinKouiKbn,
+                                    detail.ItemCd,
+                                    detail.ItemName,
+                                    detail.Suryo,
+                                    detail.UnitName,
+                                    detail.UnitSBT,
+                                    detail.TermVal,
+                                    detail.KohatuKbn,
+                                    detail.SyohoKbn,
+                                    detail.SyohoLimitKbn,
+                                    detail.DrugKbn,
+                                    detail.YohoKbn,
+                                    detail.Kokuji1,
+                                    detail.Kokuji2,
+                                    detail.IsNodspRece,
+                                    detail.IpnCd,
+                                    detail.IpnName,
+                                    detail.Bunkatu,
+                                    detail.CmtName,
+                                    detail.CmtOpt,
+                                    detail.FontColor,
+                                    detail.CommentNewline
+                                )).ToList()
+                    )
+            ).ToList();
+        return result;
     }
 }

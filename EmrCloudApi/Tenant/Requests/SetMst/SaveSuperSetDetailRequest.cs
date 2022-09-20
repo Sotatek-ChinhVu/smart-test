@@ -12,4 +12,6 @@ public class SaveSuperSetDetailRequest
 
     public SaveSetKarteRequestItem SaveSetKarteRequestItem { get; set; } = new();
 
+    public List<SaveSetOrderMstRequestItem> SaveSetOrderMstRequestItems { get; set; } = new();
+
 }

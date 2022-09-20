@@ -420,7 +420,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     {
         int status = 0;
 
-        if (!SaveSetByomei(setCd, userId, hpId ,SetByomeiList))
+        if (!SaveSetByomei(setCd, userId, hpId, SetByomeiList))
         {
             status = 1;
         }
@@ -608,14 +608,46 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         bool status = false;
         try
         {
-            var listSetOrderInfs = _tenantDataContext.SetOdrInf.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
-            var listSetOrderInfDetails = _tenantDataContext.SetOdrInfDetail.Where(mst => mst.SetCd == setCd && mst.HpId == hpId).ToList();
-
-            // Add SetOrderInf
-            var listAddNewSetOrderInfs = setOrderInfModels.Where(model => model.Id == 0).Select(model => ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model)).ToList();
-            if (listAddNewSetOrderInfs != null && listAddNewSetOrderInfs.Count > 0)
+            // Add new SetOdrInf
+            List<SetOdrInf> listSetOdrInfAddNews = new();
+            List<SetOdrInfDetail> listSetOdrInfDetailAddNews = new();
+            var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
+            if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
             {
-                _tenantDataContext.SetOdrInf.AddRange(listAddNewSetOrderInfs);
+                foreach (var model in listAddNewSetOrderModels)
+                {
+                    var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
+                    entityMst.RpNo = model.RpNo;
+                    entityMst.RpEdaNo = model.RpEdaNo + 1;
+                    entityMst.SortNo = model.SortNo;
+                    entityMst.Id = 0;
+                    int rowNo = 1;
+                    foreach (var detail in model.OrdInfDetails)
+                    {
+                        var entityDetail = ConvertToSetOdrInfDetailEntity(setCd, hpId, new SetOdrInfDetail(), detail);
+                        entityDetail.RpNo = entityMst.RpNo;
+                        entityDetail.RpEdaNo = entityMst.RpEdaNo;
+                        entityDetail.RowNo = rowNo;
+                        listSetOdrInfDetailAddNews.Add(entityDetail);
+                        rowNo++;
+                    }
+                    listSetOdrInfAddNews.Add(entityMst);
+                }
+                _tenantDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
+                _tenantDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
+            }
+
+            // Delete SetOdrInf
+            var listIdDeletes = setOrderInfModels.Where(model => model.IsDeleted != 0 || model.Id > 0).Select(item => item.Id).ToList();
+            if (listIdDeletes != null && listIdDeletes.Count > 0)
+            {
+                List<SetOdrInf> listSetOdrInfDeletes = _tenantDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
+                foreach (var mst in listSetOdrInfDeletes)
+                {
+                    mst.IsDeleted = 1;
+                    mst.UpdateDate = DateTime.UtcNow;
+                    mst.UpdateId = userId;
+                }
             }
 
             _tenantDataContext.SaveChanges();
@@ -627,10 +659,12 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             return status;
         }
     }
-    
+
     private SetOdrInf ConvertToSetOdrInfEntity(int setCd, int userId, int hpId, SetOdrInf entity, SetOrderInfModel model)
     {
         entity.SetCd = setCd;
+        entity.RpNo = model.RpNo;
+        entity.RpEdaNo = model.RpEdaNo;
         entity.HpId = hpId;
         entity.OdrKouiKbn = model.OdrKouiKbn;
         entity.RpName = model.RpName;
@@ -640,6 +674,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         entity.SanteiKbn = model.SanteiKbn;
         entity.TosekiKbn = model.TosekiKbn;
         entity.DaysCnt = model.DaysCnt;
+        entity.SortNo = model.SortNo;
         entity.UpdateDate = DateTime.UtcNow;
         entity.UpdateId = userId;
         if (entity.Id == 0)
@@ -650,30 +685,37 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
         return entity;
     }
-    private long GetMaxRpNoForOrder(int hpId, int setCd, List<SetOrderInfModel> allOdrInf)
+
+    private SetOdrInfDetail ConvertToSetOdrInfDetailEntity(int setCd, int hpId, SetOdrInfDetail entity, SetOrderInfDetailModel model)
     {
-        long maxRpNo = 0;
-        long maxCurrent = 0;
-
-        if (setCd > 0)
-        {
-            maxRpNo = _tenantDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd).Max(item => item.RpNo);
-        }
-
-        if (allOdrInf != null && allOdrInf.Count > 0)
-        {
-            maxCurrent = allOdrInf.Max(odr => odr.RpNo);
-        }
-
-        if (maxCurrent > maxRpNo)
-        {
-            return maxCurrent;
-        }
-
-        return maxRpNo;
+        entity.SetCd = setCd;
+        entity.HpId = hpId;
+        entity.RpNo = model.RpNo;
+        entity.RpEdaNo = model.RpEdaNo;
+        entity.SinKouiKbn = model.SinKouiKbn;
+        entity.ItemCd = model.ItemCd;
+        entity.ItemName = model.ItemName;
+        entity.Suryo = model.Suryo;
+        entity.UnitName = model.UnitName;
+        entity.UnitSbt = model.UnitSBT;
+        entity.OdrTermVal = model.OdrTermVal;
+        entity.KohatuKbn = model.KohatuKbn;
+        entity.SyohoKbn = model.SyohoKbn;
+        entity.SyohoLimitKbn = model.SyohoLimitKbn;
+        entity.DrugKbn = model.DrugKbn;
+        entity.YohoKbn = model.YohoKbn;
+        entity.Kokuji1 = model.Kokuji1;
+        entity.Kokuji2 = model.Kokuji2;
+        entity.IsNodspRece = model.IsNodspRece;
+        entity.IpnCd = model.IpnCd;
+        entity.IpnName = model.IpnName;
+        entity.Bunkatu = model.Bunkatu;
+        entity.CmtName = model.CmtName;
+        entity.CmtOpt = model.CmtOpt;
+        entity.FontColor = model.FontColor;
+        entity.CommentNewline = model.CommentNewline;
+        return entity;
     }
-
-
     #endregion
 
     public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)
