@@ -230,7 +230,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             {
                 return SaveSuperSetDetailStatus.InvalidSetOrderInfKouiKbn;
             }
-            else if (mst.RpName.Length <= 240)
+            else if (mst.RpName.Length > 240)
             {
                 return SaveSuperSetDetailStatus.RpNameMaxLength240;
             }
@@ -268,15 +268,15 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 {
                     return SaveSuperSetDetailStatus.InvalidSetOrderSinKouiKbn;
                 }
-                else if (detail.ItemCd.Length <= 10)
+                else if (detail.ItemCd.Length > 10)
                 {
                     return SaveSuperSetDetailStatus.ItemCdMaxLength10;
                 }
-                else if (detail.ItemName.Length <= 240)
+                else if (detail.ItemName.Length > 240)
                 {
                     return SaveSuperSetDetailStatus.ItemNameMaxLength240;
                 }
-                else if (detail.UnitName.Length <= 24)
+                else if (detail.UnitName.Length > 24)
                 {
                     return SaveSuperSetDetailStatus.UnitNameMaxLength24;
                 }
@@ -312,11 +312,11 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 {
                     return SaveSuperSetDetailStatus.InvalidSetOrderYohoKbn;
                 }
-                else if (detail.Kokuji1.Length <= 1)
+                else if (detail.Kokuji1.Length > 1)
                 {
                     return SaveSuperSetDetailStatus.Kokuji1MaxLength1;
                 }
-                else if (detail.Kokuji2.Length <= 1)
+                else if (detail.Kokuji2.Length > 1)
                 {
                     return SaveSuperSetDetailStatus.Kokuji2MaxLength1;
                 }
@@ -324,27 +324,27 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 {
                     return SaveSuperSetDetailStatus.InvalidSetOrderIsNodspRece;
                 }
-                else if (detail.IpnCd.Length <= 12)
+                else if (detail.IpnCd.Length > 12)
                 {
                     return SaveSuperSetDetailStatus.IpnCdMaxLength12;
                 }
-                else if (detail.IpnName.Length <= 120)
+                else if (detail.IpnName.Length > 120)
                 {
                     return SaveSuperSetDetailStatus.IpnNameMaxLength120;
                 }
-                else if (detail.Bunkatu.Length <= 10)
+                else if (detail.Bunkatu.Length > 10)
                 {
                     return SaveSuperSetDetailStatus.BunkatuMaxLength10;
                 }
-                else if (detail.CmtName.Length <= 240)
+                else if (detail.CmtName.Length > 240)
                 {
                     return SaveSuperSetDetailStatus.CmtNameMaxLength240;
                 }
-                else if (detail.CmtOpt.Length <= 38)
+                else if (detail.CmtOpt.Length > 38)
                 {
                     return SaveSuperSetDetailStatus.CmtOptMaxLength38;
                 }
-                else if (detail.FontColor.Length <= 8)
+                else if (detail.FontColor.Length > 8)
                 {
                     return SaveSuperSetDetailStatus.FontColorMaxLength8;
                 }
