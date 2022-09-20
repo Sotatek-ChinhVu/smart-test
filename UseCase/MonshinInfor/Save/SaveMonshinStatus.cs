@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.MonshinInfor.Insert
+namespace UseCase.MonshinInfor.Save
 {
-    public enum InsertMonshinStatus
+    public enum SaveMonshinStatus
     {
         Success = 1,
     }

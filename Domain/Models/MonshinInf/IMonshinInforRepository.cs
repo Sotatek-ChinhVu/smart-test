@@ -9,5 +9,7 @@ namespace Domain.Models.MonshinInf
     public interface IMonshinInforRepository
     {
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId);
+
+        void SaveList(List<MonshinInforModel> monshinInforModels);
     }
 }
