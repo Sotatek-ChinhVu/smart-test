@@ -73,7 +73,6 @@ namespace Interactor.FlowSheet
                         0,
                         true,
                         true,
-                        true,
                         new List<RaiinListInfModel>(),
                         i.PtId,
                         i.CmtKbn,

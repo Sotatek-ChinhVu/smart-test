@@ -10,12 +10,13 @@
             {"治ゆ", 1},
             {"中止", 2 },
             {"死亡", 3},
+            {"当月", 4},
             {"その他", 9}
         };
 
         public static Dictionary<string, int> SikkanKbns { get; } = new Dictionary<string, int>()
         {
-            {"対象外", 1 },
+            {"対象外", 0 },
             {"皮膚科特定疾患指導管理料（１）算定対象", 3},
             {"皮膚科特定疾患指導管理料（２）算定対象", 4},
             {"特定疾患療養指導料／老人慢性疾患生活指導料算定対象", 5},
@@ -37,6 +38,22 @@
             InvalidFreeWord,
             InvalidTenkiDateContinue,
             InvalidTekiDateAndStartDate,
+            InvalidByomei,
+            InvalidId,
+            InvalidHpId,
+            InvalidPtId,
+            InvalidSortNo,
+            InvalidByomeiCd,
+            InvalidStartDate,
+            InvalidTenkiDate,
+            InvalidSyubyoKbn,
+            InvalidHosokuCmt,
+            InvalidHokenPid,
+            InvalidIsNodspRece,
+            InvalidIsNodspKarte,
+            InvalidSeqNo,
+            InvalidIsImportant,
+            InvalidIsDeleted,
             Valid
         };
     }

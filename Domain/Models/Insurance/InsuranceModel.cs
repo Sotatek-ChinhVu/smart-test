@@ -111,9 +111,9 @@ namespace Domain.Models.InsuranceInfor
 
         public int KogakuKbn => HokenInf == null ? 0 : HokenInf.KogakuKbn;
 
-        public string HokenMstHoubetu => HokenInf == null ? string.Empty : HokenInf.HokenMstHoubetu;
+        public string HokenMstHoubetu => HokenInf != null ? HokenInf.HokenMstHoubetu : string.Empty;
 
-        public int HokenMstFutanRate => HokenInf == null ? 0 : HokenInf.HokenMstFutanRate;
+        public int HokenMstFutanRate => HokenInf != null ? HokenInf.HokenMstFutanRate : 0;
 
         public int TasukaiYm => HokenInf == null ? 0 : HokenInf.TasukaiYm;
 
@@ -167,7 +167,7 @@ namespace Domain.Models.InsuranceInfor
 
         public string RousaiCityName => HokenInf == null ? string.Empty : HokenInf.RousaiCityName;
 
-        public int RousaiTenkiEndDate => HokenInf == null ? 0 : HokenInf.RousaiTenkiEndDate;
+        public int RousaiReceCount => HokenInf == null ? 0 : HokenInf.RousaiReceCount;
 
         public string JibaiHokenName => HokenInf == null ? string.Empty : HokenInf.JibaiHokenName;
 
@@ -177,7 +177,7 @@ namespace Domain.Models.InsuranceInfor
 
         public int JibaiJyusyouDate => HokenInf == null ? 0 : HokenInf.JibaiJyusyouDate;
 
-        public int FutanKbn => HokenInf == null ? 0 : HokenInf.HokenMstFutanKbn;
+        public int FutanKbn => HokenInf != null ? HokenInf.HokenMstFutanKbn : 0;
 
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
@@ -194,6 +194,12 @@ namespace Domain.Models.InsuranceInfor
         private bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
+
+        public int HokenMstStartDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
+
+        public int HokenMstEndDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
+
+        public string HokenMstDisplayTextMaster => HokenInf != null ? HokenInf.HokenMstDisplayTextMaster : string.Empty;
 
         #endregion
 
