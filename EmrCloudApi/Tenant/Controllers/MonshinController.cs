@@ -7,6 +7,7 @@ using EmrCloudApi.Tenant.Responses.MonshinInfor;
 using EmrCloudApi.Tenant.Requests.MonshinInfor;
 using UseCase.MonshinInfor.GetList;
 using EmrCloudApi.Tenant.Presenters.MonshinInf;
+using UseCase.MonshinInfor.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -30,6 +31,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var input = new GetMonshinInforListInputData(request.HpId, request.PtId);
             var output = _bus.Handle(input);
             var presenter = new GetMonshinInforListPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveList)]
+        public ActionResult<Response<SaveMonshinInforListResponse>> SaveList([FromBody] SaveMonshinInforListRequest request)
+        {
+            var input = new SaveMonshinInputData(request.Monshins, request.HpId, request.PtId, request.RaiinNo, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new SaveMonshinInforListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

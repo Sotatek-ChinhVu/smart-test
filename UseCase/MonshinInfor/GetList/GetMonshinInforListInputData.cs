@@ -7,7 +7,7 @@ using UseCase.Core.Sync.Core;
 
 namespace UseCase.MonshinInfor.GetList
 {
-    public class GetMonshinInforListInputData:IInputData<GetMonshinInforListOutputData>
+    public class GetMonshinInforListInputData : IInputData<GetMonshinInforListOutputData>
     {
         public GetMonshinInforListInputData(int hpId, long ptId)
         {

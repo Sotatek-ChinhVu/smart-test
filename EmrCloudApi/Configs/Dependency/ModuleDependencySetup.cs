@@ -172,6 +172,7 @@ using UseCase.MonshinInfor.GetList;
 using Interactor.MonshinInf;
 using Domain.Models.MonshinInf;
 using UseCase.MaxMoney.SaveMaxMoney;
+using UseCase.MonshinInfor.Save;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -395,6 +396,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Monshin
             busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
+            busBuilder.RegisterUseCase<SaveMonshinInputData, SaveMonshinInforListInteractor>();
 
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
             var bus = busBuilder.Build();

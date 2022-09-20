@@ -24,45 +24,54 @@ namespace Infrastructure.Repositories
 
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
         {
-            var monshinList = _tenantDataContext.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
-                .Select(x => new MonshinInforModel(
-                x.HpId,
-                x.PtId,
-                x.RaiinNo,
-                x.SinDate,
-                x.Text))
-                .ToList();
-            return monshinList;
+            throw new NotImplementedException();
         }
 
-        public void SaveList(List<MonshinInforModel> monshinInforModels, MonshinInfo monshinInfo)
+        public bool SaveList(List<MonshinInforModel> monshinInforModels, int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
-            executionStrategy.Execute(() =>
+            foreach (var model in monshinInforModels)
             {
-                var monshinInfor = _tenantDataContext.Database.BeginTransaction();
-                // Insert Monshin
-                _tenantDataContext.MonshinInfo.Add(new MonshinInfo
+                var monshinInfor = monshinInforModels.Find(x => x.HpId == model.HpId
+                    && x.PtId == model.PtId
+                    && x.RaiinNo == model.RaiinNo
+                    && x.SinDate == model.SinDate
+                    && x.IsDeleted == 0);
+                if (monshinInfor is not null)
                 {
-                    HpId = TempIdentity.HpId,
-                    PtId = monshinInfo.PtId,
-                    RaiinNo = monshinInfo.RaiinNo,
-                    SinDate = monshinInfo.SinDate,
-                    Text = monshinInfo.Text,
-                    SeqNo = monshinInfo.SeqNo,
-                    Rtext = monshinInfo.Rtext,
-                    GetKbn = monshinInfo.GetKbn,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
-                });
-                _tenantDataContext.SaveChanges();
-
-            });
-
-            #region Helper methods
-            #endregion
+                    monshinInfor.Text = model.Text;
+                    monshinInfor.UpdateDate = DateTime.UtcNow;
+                    monshinInfor.UpdateId = TempIdentity.UserId;
+                    monshinInfor.UpdateMachine = TempIdentity.ComputerName;
+                }
+                else
+                {
+                    var newMonshinInfor = monshinInforModels.Select(m => ToEntity(m));
+                    _tenantDataContext.MonshinInfo.AddRange(newMonshinInfor);
+                }
+            }
+            _tenantDataContext.SaveChanges();
+            return true;
         }
 
+        private MonshinInfo ToEntity(MonshinInforModel model)
+        {
+            return new MonshinInfo
+            {
+                HpId = TempIdentity.HpId,
+                PtId = model.PtId,
+                RaiinNo = model.RaiinNo,
+                SinDate = model.SinDate,
+                Text = model.Text,
+                SeqNo = model.SeqNo,
+                GetKbn = model.GetKbn,
+                IsDeleted = model.IsDeleted,
+                CreateId = TempIdentity.UserId,
+                CreateDate = model.CreateDate,
+                CreateMachine = TempIdentity.ComputerName,
+                UpdateDate = model.UpdateDate,
+                UpdateId = TempIdentity.UserId,
+                UpdateMachine = TempIdentity.ComputerName
+            };
+        }
     }
 }

@@ -10,17 +10,7 @@ namespace Domain.Models.MonshinInf
 {
     public class MonshinInforModel
     {
-        public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text)
-        {
-            HpId = hpId;
-            PtId = ptId;
-            RaiinNo = raiinNo;
-            SinDate = sinDate;
-            Text = text;
-        }
-
-        public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text, long seqNo,
-            string rtext, int getKbn, int createId, string? createMachine)
+        public MonshinInforModel(int hpId, long ptId, long raiinNo, int sinDate, string text, long seqNo, int getKbn, int isDeleted, DateTime createDate, DateTime updateDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -28,24 +18,23 @@ namespace Domain.Models.MonshinInf
             SinDate = sinDate;
             Text = text;
             SeqNo = seqNo;
-            Rtext = rtext;
             GetKbn = getKbn;
-            CreateId = createId;
-            CreateMachine = createMachine;
+            IsDeleted = isDeleted;
+            CreateDate = createDate;
+            UpdateDate = updateDate;
         }
 
-       
-        public int HpId { get; set; }
-        public long PtId { get; set; }
-        public long RaiinNo { get; set; }
-        public int SinDate { get; set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public long RaiinNo { get; private set; }
+        public int SinDate { get; private set; }
         public string Text { get; set; } = string.Empty;
-        public long SeqNo { get; set; }
-        public string Rtext { get; set; } = string.Empty;
-        public int GetKbn { get; set; }
-        public int IsDeleted { get; set; }
-        public int CreateId { get; set; }
-        public string? CreateMachine { get; set; } = string.Empty;
+        public long SeqNo { get; private set; }
+        public int GetKbn { get; private set; }
+        public int IsDeleted { get; private set; }
+        public DateTime CreateDate { get; private set; }
+        public DateTime UpdateDate { get; set; }
+        public int UpdateId { get; set; }
         public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

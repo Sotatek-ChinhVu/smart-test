@@ -10,6 +10,6 @@ namespace Domain.Models.MonshinInf
     {
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId);
 
-        void SaveList(List<MonshinInforModel> monshinInforModels);
+        bool SaveList(List<MonshinInforModel> monshinInforModels, int hpId, long ptId, long raiinNo, int sinDate);
     }
 }
