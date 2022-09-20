@@ -2,7 +2,7 @@
 {
     public static class TodayKarteConst
     {
-        public enum ValidationStatus
+        public enum TodayKarteValidationStatus
         {
             InvalidHpId = 1,
             InvalidRaiinNo,

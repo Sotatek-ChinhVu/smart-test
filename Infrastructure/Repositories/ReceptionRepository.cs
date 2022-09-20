@@ -10,15 +10,17 @@ namespace Infrastructure.Repositories
 {
     public class ReceptionRepository : IReceptionRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
         public ReceptionRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public ReceptionModel Get(long raiinNo)
         {
-            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = _tenantNoTrackingDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
@@ -50,15 +52,15 @@ namespace Infrastructure.Repositories
 
         public long Insert(ReceptionSaveDto dto)
         {
-            var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
+            var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
             return executionStrategy.Execute(() =>
             {
-                using var transaction = _tenantDataContext.Database.BeginTransaction();
+                using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(dto.Reception);
-                _tenantDataContext.RaiinInfs.Add(raiinInf);
-                _tenantDataContext.SaveChanges();
+                _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
+                _tenantNoTrackingDataContext.SaveChanges();
 
                 if (raiinInf.OyaRaiinNo == 0)
                 {
@@ -69,19 +71,19 @@ namespace Infrastructure.Repositories
                 if (!string.IsNullOrWhiteSpace(dto.ReceptionComment))
                 {
                     var raiinCmtInf = CreateNewRaiinCmtInf(raiinInf, dto.ReceptionComment);
-                    _tenantDataContext.RaiinCmtInfs.Add(raiinCmtInf);
+                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(raiinCmtInf);
                 }
 
                 // Insert RaiinKbnInfs
                 var raiinKbnInfs = dto.KubunInfs
                     .Where(model => model.KbnCd != CommonConstants.KbnCdDeleteFlag)
                     .Select(dto => CreateNewRaiinKbnInf(dto, raiinInf));
-                _tenantDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
+                _tenantNoTrackingDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
 
                 // Update insurances and diseases
                 AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
                 UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
-                _tenantDataContext.SaveChanges();
+                _tenantNoTrackingDataContext.SaveChanges();
 
                 transaction.Commit();
                 return raiinInf.RaiinNo;
@@ -158,7 +160,7 @@ namespace Infrastructure.Repositories
 
         public bool Update(ReceptionSaveDto dto)
         {
-            var raiinInf = _tenantDataContext.RaiinInfs.AsTracking()
+            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking()
                 .FirstOrDefault(r => r.HpId == TempIdentity.HpId
                     && r.PtId == dto.Reception.PtId
                     && r.SinDate == dto.Reception.SinDate
@@ -176,7 +178,7 @@ namespace Infrastructure.Repositories
             AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
             UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
 
-            _tenantDataContext.SaveChanges();
+            _tenantNoTrackingDataContext.SaveChanges();
             return true;
 
             #region Helper methods
@@ -203,14 +205,14 @@ namespace Infrastructure.Repositories
 
             void UpsertRaiinCmtInf(RaiinInf raiinInf, string text)
             {
-                var raiinCmtInf = _tenantDataContext.RaiinCmtInfs.AsTracking()
+                var raiinCmtInf = _tenantNoTrackingDataContext.RaiinCmtInfs.AsTracking()
                    .FirstOrDefault(x => x.HpId == TempIdentity.HpId
                         && x.RaiinNo == raiinInf.RaiinNo
                         && x.CmtKbn == CmtKbns.Comment
                         && x.IsDelete == DeleteTypes.None);
                 if (raiinCmtInf is null)
                 {
-                    _tenantDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
+                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
                     {
                         HpId = TempIdentity.HpId,
                         PtId = raiinInf.PtId,
@@ -234,7 +236,7 @@ namespace Infrastructure.Repositories
 
             void SaveRaiinKbnInfs(RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
             {
-                var existingEntities = _tenantDataContext.RaiinKbnInfs.AsTracking()
+                var existingEntities = _tenantNoTrackingDataContext.RaiinKbnInfs.AsTracking()
                     .Where(x => x.HpId == TempIdentity.HpId
                         && x.PtId == raiinInf.PtId
                         && x.SinDate == raiinInf.SinDate
@@ -258,7 +260,7 @@ namespace Infrastructure.Repositories
                         if (existingEntity is null)
                         {
                             // Insert
-                            _tenantDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            _tenantNoTrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
                             {
                                 HpId = TempIdentity.HpId,
                                 PtId = raiinInf.PtId,
@@ -290,7 +292,7 @@ namespace Infrastructure.Repositories
         {
             var hokenIds = insurances.Select(i => i.HokenId).Distinct();
             var latestPtHokenChecks = (
-                from phc in _tenantDataContext.PtHokenChecks.AsTracking()
+                from phc in _tenantNoTrackingDataContext.PtHokenChecks.AsTracking()
                 where phc.HpId == TempIdentity.HpId
                     && phc.PtID == ptId
                     && hokenIds.Contains(phc.HokenId)
@@ -322,13 +324,13 @@ namespace Infrastructure.Repositories
                     });
                 }
             }
-            _tenantDataContext.PtHokenChecks.AddRange(newPhcs);
+            _tenantNoTrackingDataContext.PtHokenChecks.AddRange(newPhcs);
         }
 
         private void UpdateDiseaseTenkis(IEnumerable<DiseaseDto> diseases, long ptId)
         {
             var ptByomeiIds = diseases.Select(d => d.Id);
-            var ptByomeis = _tenantDataContext.PtByomeis.AsTracking()
+            var ptByomeis = _tenantNoTrackingDataContext.PtByomeis.AsTracking()
                 .Where(x => x.HpId == TempIdentity.HpId && x.PtId == ptId && ptByomeiIds.Contains(x.Id))
                 .ToList();
 
@@ -354,7 +356,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
-            var result = _tenantDataContext.RaiinInfs.Where
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
                                  (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2)));
@@ -388,7 +390,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckListNo(List<long> raininNos)
         {
-            var check = _tenantDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            var check = _tenantNoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return check;
         }
 
@@ -396,27 +398,27 @@ namespace Infrastructure.Repositories
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = _tenantDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var raiinCmtInfs = _tenantDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = _tenantDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = _tenantDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = _tenantNoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = _tenantNoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = _tenantNoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = _tenantDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = _tenantDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptKohis = _tenantDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var ptCmtInfs = _tenantNoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = _tenantNoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = _tenantNoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = _tenantDataContext.RsvInfs;
-            var rsvFrameMsts = _tenantDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var rsvInfs = _tenantNoTrackingDataContext.RsvInfs;
+            var rsvFrameMsts = _tenantNoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = _tenantDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var userMsts = _tenantNoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = _tenantDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
-            var lockInfs = _tenantDataContext.LockInfs.Where(x =>
+            var lockInfs = _tenantNoTrackingDataContext.LockInfs.Where(x =>
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
             // Uketuke
-            var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
@@ -534,7 +536,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
-            var grpIds = _tenantDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
+            var grpIds = _tenantNoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.raiinInf.PtId,
@@ -621,9 +623,39 @@ namespace Infrastructure.Repositories
             return Update(hpId, raiinNo, r => r.KaId = kaId);
         }
 
+        public bool SaveRaiinInfTodayOdr(int status, int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId)
+        {
+            bool statusChanged = false;
+            var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
+
+            if (raiinInf?.Status > status)
+            {
+                statusChanged = false;
+            }
+            else
+            {
+                statusChanged = true;
+            }
+            if (raiinInf != null)
+            {
+                raiinInf.SyosaisinKbn = syosaiKbn;
+                raiinInf.JikanKbn = jikanKbn;
+                raiinInf.HokenPid = hokenPid;
+                raiinInf.SanteiKbn = santeiKbn;
+                raiinInf.TantoId = tantoId;
+                raiinInf.KaId = kaId;
+                raiinInf.UpdateId = TempIdentity.UserId;
+                raiinInf.UpdateDate = DateTime.UtcNow;
+                raiinInf.UpdateMachine = TempIdentity.ComputerName;
+                _tenantTrackingDataContext.SaveChanges();
+            }
+
+            return statusChanged;
+        }
+
         private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
         {
-            var raiinInf = _tenantDataContext.RaiinInfs.AsTracking().Where(r =>
+            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
                 r.HpId == hpId
                 && r.RaiinNo == raiinNo
                 && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
@@ -636,7 +668,7 @@ namespace Infrastructure.Repositories
             raiinInf.UpdateDate = DateTime.UtcNow;
             raiinInf.UpdateId = TempIdentity.UserId;
             raiinInf.UpdateMachine = TempIdentity.ComputerName;
-            _tenantDataContext.SaveChanges();
+            _tenantNoTrackingDataContext.SaveChanges();
             return true;
         }
     }

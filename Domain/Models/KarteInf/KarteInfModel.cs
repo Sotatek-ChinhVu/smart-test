@@ -31,38 +31,38 @@ namespace Domain.Models.KarteInfs
         public DateTime CreateDate { get; private set; }
         public DateTime UpdateDate { get; private set; }
 
-        public ValidationStatus Validation()
+        public TodayKarteValidationStatus Validation()
         {
             if (HpId <= 0)
             {
-                return ValidationStatus.InvalidHpId;
+                return TodayKarteValidationStatus.InvalidHpId;
             }
             if (RaiinNo <= 0)
             {
-                return ValidationStatus.InvalidRaiinNo
+                return TodayKarteValidationStatus.InvalidRaiinNo
             }
             if (KarteKbn <= 0)
             {
-                return ValidationStatus.InvalidKarteKbn;
+                return TodayKarteValidationStatus.InvalidKarteKbn;
             }
             if (SeqNo <= 0)
             {
-                return ValidationStatus.InvalidSeqNo;
+                return TodayKarteValidationStatus.InvalidSeqNo;
             }
             if (PtId <= 0)
             {
-                return ValidationStatus.InvalidPtId;
+                return TodayKarteValidationStatus.InvalidPtId;
             }
             if (SinDate <= 0)
             {
-                return ValidationStatus.InvalidSinDate;
+                return TodayKarteValidationStatus.InvalidSinDate;
             }
             if (IsDeleted <= 0)
             {
-                return ValidationStatus.InvalidIsDelted;
+                return TodayKarteValidationStatus.InvalidIsDelted;
             }
 
-            return ValidationStatus.Valid;
+            return TodayKarteValidationStatus.Valid;
         }
     }
 }
