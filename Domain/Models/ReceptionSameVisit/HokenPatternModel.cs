@@ -11,7 +11,7 @@ namespace Domain.Models.ReceptionSameVisit
 {
     public class HokenPatternModel
     {
-        public HokenPatternModel(long ptId, int hokenPid, int startDate, int endDate, int hokenSbtCd, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int sinDate, string hokenMstHoubetu, int hokenMstFutanRate, long raiinNo)
+        public HokenPatternModel(long ptId, int hokenPid, int startDate, int endDate, int hokenSbtCd, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int sinDate, string hokenMstHoubetu, int hokenMstFutanRate, long raiinNo, int raiinInfSyosaisinKbn, int raiinInfJikanKbn, int raiinInfSanteiKbn)
         {
             PtId = ptId;
             HokenPid = hokenPid;
@@ -31,6 +31,10 @@ namespace Domain.Models.ReceptionSameVisit
             HokenMstHoubetu = hokenMstHoubetu;
             HokenMstFutanRate = hokenMstFutanRate;
             RaiinNo = raiinNo;
+            RaiinInfSyosaisinKbn = raiinInfSyosaisinKbn;
+            RaiinInfSanteiKbn = raiinInfSanteiKbn;
+            RaiinInfJikanKbn = raiinInfJikanKbn;
+            
         }
 
         public long PtId { get; private set; }
@@ -68,6 +72,12 @@ namespace Domain.Models.ReceptionSameVisit
         public int HokenMstFutanRate { get; private set; }
         
         public long RaiinNo { get; private set; }
+
+        public int RaiinInfSyosaisinKbn { get; private set; }
+
+        public int RaiinInfJikanKbn { get; private set; }
+
+        public int RaiinInfSanteiKbn { get; private set; }
 
         public string HokenName
         {
