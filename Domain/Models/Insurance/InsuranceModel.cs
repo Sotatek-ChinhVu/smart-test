@@ -185,13 +185,13 @@ namespace Domain.Models.InsuranceInfor
 
         public bool IsEmptyHoken => (HokenId == 0);
 
-        private bool IsEmptyKohi1 => (Kohi1 == null || Kohi1.HokenId == 0);
+        public bool IsEmptyKohi1 => (Kohi1 == null || Kohi1.HokenId == 0);
 
-        private bool IsEmptyKohi2 => (Kohi2 == null || Kohi2.HokenId == 0);
+        public bool IsEmptyKohi2 => (Kohi2 == null || Kohi2.HokenId == 0);
 
-        private bool IsEmptyKohi3 => (Kohi3 == null || Kohi3.HokenId == 0);
+        public bool IsEmptyKohi3 => (Kohi3 == null || Kohi3.HokenId == 0);
 
-        private bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
+        public bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
 
@@ -200,6 +200,10 @@ namespace Domain.Models.InsuranceInfor
         public int HokenMstEndDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
 
         public string HokenMstDisplayTextMaster => HokenInf != null ? HokenInf.HokenMstDisplayTextMaster : string.Empty;
+
+
+        public string PatternRate => GetHokenRate();
+
 
         #endregion
 
@@ -594,6 +598,139 @@ namespace Domain.Models.InsuranceInfor
             return CIUtil.SDateToAge(birthday, SinDate);
         }
 
+
+        private string GetHokenRate()
+        {
+            string hokenName = string.Empty;
+            bool isHoken39 = false;
+            bool isKohiOnly = false;
+            int rate = 0;
+            if (this.HokenSbtCd < 0)
+            {
+                return hokenName;
+            }
+
+            string prefix = string.Empty;
+            if (this.HokenSbtCd == 0)
+            {
+                switch (this.HokenKbn)
+                {
+                    case 0:
+                        if (!IsEmptyHoken && HokenInf.HokenMst != null)
+                        {
+                            if (HokenInf.HokenMst.Houbetu == HokenConstant.HOUBETU_JIHI_109)
+                            {
+                                hokenName += "自費レセ " + HokenInf.HokenMst.FutanRate + "%";
+                            }
+                            else
+                            {
+                                hokenName += "自費 " + HokenInf.HokenMst.FutanRate + "%";
+                            }
+                        }
+                        return hokenName;
+                    case 11:
+                        hokenName += "労災（短期給付）";
+                        break;
+                    case 12:
+                        hokenName += "労災（傷病年金）";
+                        break;
+                    case 13:
+                        hokenName += "労災（アフターケア）";
+                        break;
+                    case 14:
+                        hokenName += "自賠責";
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(hokenName) && (HokenInf != null && HokenInf.HokenMst != null))
+                {
+                        hokenName += " " + HokenInf.HokenMst.FutanRate + "%";
+                }
+
+                return hokenName;
+            }
+            else
+            {
+                string hokenSbtCd = this.HokenSbtCd.AsString().PadRight(3, '0');
+                int firstNum = hokenSbtCd[0].AsInteger();
+                int secondNum = hokenSbtCd[1].AsInteger();
+                int thirNum = hokenSbtCd[2].AsInteger();
+                switch (firstNum)
+                {
+                    case 1:
+                        hokenName += "社保";
+                        break;
+                    case 2:
+                        hokenName += "国保";
+                        break;
+                    case 3:
+                        hokenName += "後期";
+                        isHoken39 = true;
+                        break;
+                    case 4:
+                        hokenName += "退職";
+                        break;
+                    case 5:
+                        hokenName += "公費";
+                        isKohiOnly = true;
+                        break;
+                }
+
+                if (secondNum > 0)
+                {
+
+                    if (thirNum == 1)
+                    {
+                        prefix += "単独";
+                    }
+                    else
+                    {
+                        prefix += HenkanJ.HankToZen(thirNum.AsString()) + "併";
+                    }
+                }
+
+                rate = GetRate(isHoken39, this.PtBirthday);
+            }
+            string name = hokenName + prefix;
+            if (!isHoken39 && !isKohiOnly)
+            {
+                if (IsPreSchool(this.PtBirthday, this.SinDate))
+                {
+                    name += "・６未";
+                }
+                else if (IsElder(this.PtBirthday, this.SinDate))
+                {
+                    name += "・高齢";
+                }
+                else
+                {
+                    if (!IsEmptyHoken)
+                    {
+                        if (HokenInf.HonkeKbn == 1)
+                        {
+                            name += "・本人";
+                        }
+                        else if (HokenInf.HonkeKbn == 2)
+                        {
+                            name += "・家族";
+                        }
+                    }
+                }
+            }
+
+            name += " " + rate + "%";
+            return name;
+        }
+
+        private bool IsPreSchool(int birthDay, int sinDate)
+        {
+            return !CIUtil.IsStudent(birthDay, sinDate);
+        }
+
+        private bool IsElder(int birthDay, int sinDate)
+        {
+            return CIUtil.AgeChk(birthDay, sinDate, 70);
+        }
         #endregion
     }
 }
