@@ -1,4 +1,6 @@
-﻿namespace UseCase.MedicalExamination.GetHistory
+﻿using Helper.Constants;
+
+namespace UseCase.MedicalExamination.GetHistory
 {
     public class HistoryKarteOdrRaiinItem
     {
