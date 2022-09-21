@@ -125,7 +125,7 @@ namespace Infrastructure.Repositories
                     {
                         var ordInfEntity = new OdrInf
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
@@ -198,7 +198,7 @@ namespace Infrastructure.Repositories
                         ordInf.IsDeleted = DeleteTypes.Deleted;
                         var ordInfEntity = new OdrInf
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
@@ -393,9 +393,9 @@ namespace Infrastructure.Repositories
                         List<RaiinListItem> itemCdList = raiinListItems.FindAll(item => item.ItemCd == itemCd);
                         foreach (RaiinListItem raiinListItem in itemCdList)
                         {
-                             var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId
-                                                                            && item.KbnCd == raiinListItem.KbnCd
-                                                                            && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                            var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId
+                                                                           && item.KbnCd == raiinListItem.KbnCd
+                                                                           && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
                             if (raiinListInf != null)
                             {
                                 _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);

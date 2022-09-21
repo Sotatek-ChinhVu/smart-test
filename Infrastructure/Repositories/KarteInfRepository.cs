@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                     {
                         var karteEntity = new KarteInf
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
@@ -109,7 +109,7 @@ namespace Infrastructure.Repositories
                         karte.IsDeleted = DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,

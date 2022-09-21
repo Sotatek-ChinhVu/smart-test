@@ -623,7 +623,7 @@ namespace Infrastructure.Repositories
             return Update(hpId, raiinNo, r => r.KaId = kaId);
         }
 
-        public bool SaveRaiinInfTodayOdr(int status, int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId)
+        public bool SaveRaiinInfTodayOdr(int status, int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime)
         {
             bool statusChanged = false;
             var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
@@ -644,6 +644,9 @@ namespace Infrastructure.Repositories
                 raiinInf.SanteiKbn = santeiKbn;
                 raiinInf.TantoId = tantoId;
                 raiinInf.KaId = kaId;
+                raiinInf.UketukeTime = uketukeTime;
+                raiinInf.SinEndTime = sinEndTime;
+                raiinInf.SinStartTime = sinStartTime;
                 raiinInf.UpdateId = TempIdentity.UserId;
                 raiinInf.UpdateDate = DateTime.UtcNow;
                 raiinInf.UpdateMachine = TempIdentity.ComputerName;

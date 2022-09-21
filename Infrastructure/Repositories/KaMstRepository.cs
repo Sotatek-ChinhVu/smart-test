@@ -15,6 +15,12 @@ public class KaMstRepository : IKaMstRepository
         _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
+    public bool CheckKaId(int kaId)
+    {
+        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        return check;
+    }
+
     public KaMstModel? GetByKaId(int kaId)
     {
         var entity = _tenantDataContext.KaMsts

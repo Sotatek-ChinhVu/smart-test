@@ -2,13 +2,16 @@
 {
     public class UpsertTodayOdrRequest
     {
-        public int Status { get; private set; }
-        public int SyosaiKbn { get; private set; }
-        public int JikanKbn { get; private set; }
-        public int HokenPid { get; private set; }
-        public int SanteiKbn { get; private set; }
-        public int TantoId { get; private set; }
-        public int KaId { get; private set; }
+        public int Status { get; set; }
+        public int SyosaiKbn { get; set; }
+        public int JikanKbn { get; set; }
+        public int HokenPid { get; set; }
+        public int SanteiKbn { get; set; }
+        public int TantoId { get; set; }
+        public int KaId { get; set; }
+        public string UketukeTime { get; set; } = string.Empty;
+        public string SinStartTime { get; set; } = string.Empty;
+        public string SinEndTime { get; set; } = string.Empty;
         public List<OdrInfItem> OdrInfs { get; set; } = new();
         public List<KarteItem> KarteItems { get; set; } = new();
     }

@@ -4,7 +4,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class UpsertTodayOrdInputData : IInputData<UpsertTodayOrdOutputData>
     {
-        public UpsertTodayOrdInputData(int status, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, List<OdrInfItem> odrItems, List<KarteItem> karteInfs)
+        public UpsertTodayOrdInputData(int status, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, List<KarteItemInputData> karteInfs)
         {
             Status = status;
             SyosaiKbn = syosaiKbn;
@@ -15,6 +15,9 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             KaId = kaId;
             OdrItems = odrItems;
             KarteInfs = karteInfs;
+            UketukeTime = uketukeTime;
+            SinStartTime = sinStartTime;
+            SinEndTime = sinEndTime;
         }
 
         public int Status { get; private set; }
@@ -24,7 +27,10 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public int SanteiKbn { get; private set; }
         public int TantoId { get; private set; }
         public int KaId { get; private set; }
-        public List<OdrInfItem> OdrItems { get; private set; }
-        public List<KarteItem> KarteInfs { get; private set; }
+        public string UketukeTime { get; private set; }
+        public string SinStartTime { get; private set; }
+        public string SinEndTime { get; private set; }
+        public List<OdrInfItemInputData> OdrItems { get; private set; }
+        public List<KarteItemInputData> KarteInfs { get; private set; }
     }
 }

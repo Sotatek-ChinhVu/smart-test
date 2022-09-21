@@ -25,7 +25,7 @@
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
         public static readonly string InputDataNull = "Input data is null";
-
+        public static readonly string Valid = "Valid";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -263,5 +263,19 @@
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
+        //Raiin Info TodayOdr
+        public static readonly string RaiinInfInvalidStatus = "Invalid Status";
+        public static readonly string RaiinInfInvalidSyosaiKbn = "Invalid SyosaiKbn";
+        public static readonly string RaiinInfInvalidJikanKbn = "Invalid JikanKbn";
+        public static readonly string RaiinInfInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string RaiinInfHokenPidNoExist = "HokenPid no exist";
+        public static readonly string RaiinInfInvalidSanteiKbn = "Invalid SanteiKbn";
+        public static readonly string RaiinInfInvalidTantoId = "Invalid TantoId";
+        public static readonly string RaiinInfTatoIdNoExist = "TantoId no exist";
+        public static readonly string RaiinInfInvalidKaId = "Invalid KaId";
+        public static readonly string RaiinInfKaIdNoExist = "KaId no exist";
+        public static readonly string RaiinInfInvalidUKetukeTime = "Invalid UKetukeTime";
+        public static readonly string RaiinInfInvalidSinStartTime = "Invalid SinStartTime";
+        public static readonly string RaiinInfInvalidSinEndTime = "Invalid SinEndTime";
     }
 }

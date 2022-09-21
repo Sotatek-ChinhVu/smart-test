@@ -14,6 +14,9 @@
             TatoIdNoExist,
             InvalidKaId,
             KaIdNoExist,
+            InvalidUKetukeTime,
+            InvalidSinStartTime,
+            InvalidSinEndTime,
             Valid
         }
     }

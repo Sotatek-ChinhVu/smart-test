@@ -301,6 +301,44 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                     }
                 }
             }
+
+            Result.Data = new UpsertTodayOdrResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKartes);
+        }
+
+        private string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfValidationStatus status)
+        {
+            switch (status)
+            {
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidStatus:
+                    return ResponseMessage.RaiinInfInvalidStatus;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidSyosaiKbn:
+                    return ResponseMessage.RaiinInfInvalidSyosaiKbn;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidJikanKbn:
+                    return ResponseMessage.RaiinInfInvalidJikanKbn;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidHokenPid:
+                    return ResponseMessage.RaiinInfInvalidHokenPid;
+                case RaiinInfConst.RaiinInfValidationStatus.HokenPidNoExist:
+                    return ResponseMessage.RaiinInfHokenPidNoExist;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidSanteiKbn:
+                    return ResponseMessage.RaiinInfInvalidSanteiKbn;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidTantoId:
+                    return ResponseMessage.RaiinInfInvalidTantoId;
+                case RaiinInfConst.RaiinInfValidationStatus.TatoIdNoExist:
+                    return ResponseMessage.RaiinInfTatoIdNoExist;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidKaId:
+                    return ResponseMessage.RaiinInfInvalidKaId;
+                case RaiinInfConst.RaiinInfValidationStatus.KaIdNoExist:
+                    return ResponseMessage.RaiinInfKaIdNoExist;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidUKetukeTime:
+                    return ResponseMessage.RaiinInfInvalidUKetukeTime;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidSinStartTime:
+                    return ResponseMessage.RaiinInfInvalidSinStartTime;
+                case RaiinInfConst.RaiinInfValidationStatus.InvalidSinEndTime:
+                    return ResponseMessage.RaiinInfInvalidSinEndTime;
+                default:
+                    return ResponseMessage.Valid;
+
+            }
         }
     }
 }

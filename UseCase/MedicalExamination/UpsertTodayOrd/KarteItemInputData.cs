@@ -1,12 +1,11 @@
 ﻿namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
-    public class KarteItem
+    public class KarteItemInputData
     {
-        public KarteItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, int isDeleted, string richText)
+        public KarteItemInputData(int hpId, long raiinNo, int karteKbn, long ptId, int sinDate, string text, int isDeleted, string richText)
         {
             RaiinNo = raiinNo;
             KarteKbn = karteKbn;
-            SeqNo = seqNo;
             PtId = ptId;
             SinDate = sinDate;
             Text = text;
@@ -18,7 +17,6 @@
         public long RaiinNo { get; private set; }
         public int HpId { get; private set; }
         public int KarteKbn { get; private set; }
-        public long SeqNo { get; private set; }
         public long PtId { get; private set; }
         public int SinDate { get; private set; }
         public string Text { get; private set; }

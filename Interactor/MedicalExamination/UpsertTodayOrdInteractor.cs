@@ -1,4 +1,5 @@
-﻿using Domain.Models.KaMst;
+﻿using Domain.Models.Insurance;
+using Domain.Models.KaMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.MstItem;
@@ -7,6 +8,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -27,9 +29,11 @@ namespace Interactor.MedicalExamination
         private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IKarteKbnMstRepository _karteKbnInforRepository;
+        private readonly IInsuranceRepository _insuranceInforRepository;
+        private readonly IUserRepository _userRepository;
         private readonly TenantDataContext _tenantTrackingDataContext;
 
-        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, ITenantProvider tenantProvider)
+        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, ITenantProvider tenantProvider)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -40,7 +44,8 @@ namespace Interactor.MedicalExamination
             _patientInforRepository = patientInforRepository;
             _karteKbnInforRepository = karteKbnInforRepository;
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
-
+            _insuranceInforRepository = insuranceInforRepository;
+            _userRepository = userRepository;
         }
 
         public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputData)
@@ -54,42 +59,88 @@ namespace Interactor.MedicalExamination
                     {
                         try
                         {
+                            RaiinInfConst.RaiinInfValidationStatus raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.Valid;
                             //Raiin Info
                             if (!RaiinState.ReceptionStatusToText.Keys.Contains(inputData.Status))
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidStatus, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidStatus;
                             }
-                            if (!(inputData.SyosaiKbn >= 0 && inputData.SyosaiKbn <= 8))
+                            else if (!(inputData.SyosaiKbn >= 0 && inputData.SyosaiKbn <= 8))
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidSyosaiKbn, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSyosaiKbn;
                             }
-                            if (!(inputData.JikanKbn >= 0 && inputData.JikanKbn <= 7))
+                            else if (!(inputData.JikanKbn >= 0 && inputData.JikanKbn <= 7))
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidJikanKbn, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidJikanKbn;
                             }
-                            if (inputData.HokenPid < 0)
+                            else if (inputData.HokenPid < 0)
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidHokenPid, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidHokenPid;
                             }
-                            if (!(inputData.SanteiKbn >= 0 && inputData.SanteiKbn <= 2))
+                            else if (!(inputData.SanteiKbn >= 0 && inputData.SanteiKbn <= 2))
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidSanteiKbn, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSanteiKbn;
                             }
                             if (inputData.TantoId < 0)
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidTantoId, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidTantoId;
                             }
-                            if (inputData.KaId < 0)
+                            else if (inputData.KaId < 0)
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.InvalidKaId, new Dictionary<int, KeyValuePair<int, TodayOrderConst.TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidKaId;
                             }
 
-                            int hpId = inputData.OdrItems[0].HpId;
-                            long raiinNo = inputData.OdrItems[0].RaiinNo;
-                            long ptId = inputData.OdrItems[0].PtId;
-                            int sinDate = inputData.OdrItems[0].SinDate;
+                            else if (inputData.UketukeTime.Length > 6)
+                            {
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidUKetukeTime;
+                            }
+                            else if (inputData.SinStartTime.Length > 6)
+                            {
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSinStartTime;
 
-                            _receptionRepository.SaveRaiinInfTodayOdr(inputData.Status, hpId, ptId, raiinNo, sinDate, inputData.SyosaiKbn, inputData.JikanKbn, inputData.HokenPid, inputData.SanteiKbn, inputData.TantoId, inputData.KaId);
+                            }
+                            else if (inputData.SinEndTime.Length > 6)
+                            {
+                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSinEndTime;
+                            }
+
+                            if (inputData.HokenPid > 0)
+                            {
+                                var checkHokenId = _insuranceInforRepository.CheckHokenPid(inputData.HokenPid);
+                                if (!checkHokenId)
+                                {
+                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.HokenPidNoExist;
+                                }
+                            }
+
+                            if (inputData.TantoId > 0)
+                            {
+                                var checkHokenId = _userRepository.CheckExistedUserId(inputData.TantoId);
+                                if (!checkHokenId)
+                                {
+                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.TatoIdNoExist;
+                                }
+                            }
+
+                            if (inputData.KaId > 0)
+                            {
+                                var checkHokenId = _kaRepository.CheckKaId(inputData.KaId);
+                                if (!checkHokenId)
+                                {
+                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.KaIdNoExist;
+                                }
+                            }
+
+
+                            if (inputData.OdrItems.Count > 0)
+                            {
+                                int hpId = inputData.OdrItems[0].HpId;
+                                long raiinNo = inputData.OdrItems[0].RaiinNo;
+                                long ptId = inputData.OdrItems[0].PtId;
+                                int sinDate = inputData.OdrItems[0].SinDate;
+
+                                _receptionRepository.SaveRaiinInfTodayOdr(inputData.Status, hpId, ptId, raiinNo, sinDate, inputData.SyosaiKbn, inputData.JikanKbn, inputData.HokenPid, inputData.SanteiKbn, inputData.TantoId, inputData.KaId, inputData.UketukeTime, inputData.SinStartTime, inputData.SinEndTime);
+                            }
 
                             // Odr Info
                             var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
@@ -226,12 +277,10 @@ namespace Interactor.MedicalExamination
                                 count++;
                             }
 
-                            if (dicValidation.Any())
+                            if (!dicValidation.Any())
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.Valid, dicValidation, new Dictionary<int, TodayKarteConst.TodayKarteValidationStatus>());
+                                _ordInfRepository.Upsert(allOdrInfs);
                             }
-
-                            _ordInfRepository.Upsert(allOdrInfs);
 
                             // Karte
                             var dicKarteValidation = new Dictionary<int, TodayKarteValidationStatus>();
@@ -265,7 +314,7 @@ namespace Interactor.MedicalExamination
                                     k.HpId,
                                     k.RaiinNo,
                                     k.KarteKbn,
-                                    k.SeqNo,
+                                    0,
                                     k.PtId,
                                     k.SinDate,
                                     k.Text,
@@ -286,19 +335,21 @@ namespace Interactor.MedicalExamination
                                 count++;
                             }
 
-                            if (dicKarteValidation.Any())
+                            if (!dicKarteValidation.Any())
                             {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), dicKarteValidation);
+                                _karteInfRepository.Upsert(karteModels);
                             }
 
-                            _karteInfRepository.Upsert(karteModels);
-
                             _ordInfRepository.SaveRaiinListInf(allOdrInfs);
+
+                            if (raiinInfStatus != RaiinInfConst.RaiinInfValidationStatus.Valid || dicKarteValidation.Any() && dicValidation.Any())
+                            {
+                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, dicKarteValidation);
+                            }
 
                             transaction.Commit();
 
                             return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
-
                         }
                         catch
                         {
