@@ -25,6 +25,8 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos);
 
+        long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
+
         void Upsert(List<OrdInfModel> ordInfs);
 
         void SaveRaiinListInf(List<OrdInfModel> ordInfs);

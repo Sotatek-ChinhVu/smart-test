@@ -18,6 +18,7 @@
         public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
+        public static readonly string InvalidGrpCd = "Invalid GrpCd";
 
         //Common
         public static readonly string NotFound = "Not found";

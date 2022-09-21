@@ -81,6 +81,7 @@ using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
 using Interactor.SuperSetDetail;
+using Interactor.SystemConf;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
@@ -119,6 +120,7 @@ using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.OrdInfs.GetListTrees;
+using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
@@ -148,6 +150,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
 using UseCase.SuperSetDetail.SuperSetDetail;
+using UseCase.SystemConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -248,6 +251,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
+            busBuilder.RegisterUseCase<GetMaxRpNoInputData, GetMaxRpNoInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();
@@ -383,6 +387,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
+
+            //System Conf
+            busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
