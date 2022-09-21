@@ -15,7 +15,7 @@ namespace UseCase.MedicalExamination.GetHistory
         /// hospital type come 
         /// </summary>
         public int SyosaisinKbn { get; private set; }
-        public string SyosaisinDisplay { get => SyosaiConst.FlowSheetShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
+        public string SyosaisinDisplay { get => SyosaiConst.ShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
 
         /// <summary>
         /// time to hospital
