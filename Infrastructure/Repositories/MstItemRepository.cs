@@ -160,7 +160,8 @@ namespace Infrastructure.Repositories
                 tenMst?.CmtCol1 ?? 0,
                 tenMst?.IpnNameCd ?? string.Empty,
                 tenMst?.SinKouiKbn ?? 0,
-                tenMst?.YjCd ?? string.Empty
+                tenMst?.YjCd ?? string.Empty,
+                tenMst?.CnvUnitName ?? string.Empty
             );
         }
 
@@ -515,7 +516,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CmtCol1 ?? 0,
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
                                                            item.TenMst?.SinKouiKbn ?? 0,
-                                                           item.TenMst?.YjCd ?? string.Empty
+                                                           item.TenMst?.YjCd ?? string.Empty,
+                                                           item.TenMst?.CnvUnitName ?? string.Empty
                                                             )).ToList();
             }
             return listTenMstModels;
