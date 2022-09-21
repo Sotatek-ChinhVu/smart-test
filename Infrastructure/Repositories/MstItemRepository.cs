@@ -525,7 +525,8 @@ namespace Infrastructure.Repositories
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd1 ?? string.Empty) : string.Empty,
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
                                                            item.TenMst?.CmtCol1 ?? 0,
-                                                           item.TenMst?.IpnNameCd ?? string.Empty
+                                                           item.TenMst?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.SinKouiKbn ?? 0
                                                             );
                     listTenMstModels.Add(newItemModel);
                 }
