@@ -80,6 +80,11 @@
             InvalidCommentNewline,
             InvalidTodayOrdInsertedExist,
             InvalidTodayOrdUpdatedNoExist,
+            HpIdNoExist,
+            PtIdNoExist,
+            HokenPidNoExist,
+            RaiinNoNoExist,
+            OdrNoMapOdrDetail,
             Valid
         };
 

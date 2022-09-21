@@ -254,6 +254,21 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUpdatedNoExist));
                         break;
+                    case TodayOrderConst.TodayOrdValidationStatus.HpIdNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHpIdNoExist));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.PtIdNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidPtIdNoExist));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.RaiinNoNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRaiinNoNoExist));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.HokenPidNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHokenPidNoExist));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.OdrNoMapOdrDetail:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdOrdInfNoMapOrdInfDetail));
+                        break;
                     default:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, -1, -1, string.Empty));
                         break;

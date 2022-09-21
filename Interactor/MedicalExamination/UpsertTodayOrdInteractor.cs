@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.HpMst;
+using Domain.Models.Insurance;
 using Domain.Models.KaMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -31,9 +32,10 @@ namespace Interactor.MedicalExamination
         private readonly IKarteKbnMstRepository _karteKbnInforRepository;
         private readonly IInsuranceRepository _insuranceInforRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IHpInfRepository _hpInfRepository;
         private readonly TenantDataContext _tenantTrackingDataContext;
 
-        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, ITenantProvider tenantProvider)
+        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITenantProvider tenantProvider)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -46,6 +48,7 @@ namespace Interactor.MedicalExamination
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
             _insuranceInforRepository = insuranceInforRepository;
             _userRepository = userRepository;
+            _hpInfRepository = hpInfRepository;
         }
 
         public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputData)
@@ -154,6 +157,59 @@ namespace Interactor.MedicalExamination
                                 if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
                                 {
                                     dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                                }
+
+                                var checkHpId = _hpInfRepository.CheckHpId(item.HpId);
+                                if (!checkHpId && !dicValidation.ContainsKey(count))
+                                {
+                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.HpIdNoExist));
+                                }
+
+                                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { item.RaiinNo });
+                                if (!checkRaiinNo && !dicValidation.ContainsKey(count))
+                                {
+                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.RaiinNoNoExist));
+                                }
+
+                                var checkPtId = _patientInforRepository.CheckListId(new List<long> { item.PtId });
+                                if (!checkPtId && !dicValidation.ContainsKey(count))
+                                {
+                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.PtIdNoExist));
+                                }
+
+                                var checkHokenPid = _insuranceInforRepository.CheckHokenPid(item.HokenPid);
+                                if (!checkHokenPid && !dicValidation.ContainsKey(count))
+                                {
+                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.HokenPidNoExist));
+                                }
+
+                                var countOd = 0;
+                                foreach (var itemOd in item.OdrDetails)
+                                {
+                                    if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId && item.SinDate != itemOd.SinDate) && !dicValidation.ContainsKey(count))
+                                    {
+                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
+                                    }
+
+                                    var checkHpIdOd = _hpInfRepository.CheckHpId(itemOd.HpId);
+                                    if (!checkHpIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
+                                    {
+                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.HpIdNoExist));
+                                    }
+
+                                    var checkRaiinNoOd = _receptionRepository.CheckListNo(new List<long> { itemOd.RaiinNo });
+                                    if (!checkRaiinNoOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
+                                    {
+                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.RaiinNoNoExist));
+                                    }
+
+                                    var checkPtIdOd = _patientInforRepository.CheckListId(new List<long> { itemOd.PtId });
+                                    if (!checkPtIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
+                                    {
+                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.PtIdNoExist));
+                                    }
+
+                                    countOd++;
                                 }
 
                                 count++;

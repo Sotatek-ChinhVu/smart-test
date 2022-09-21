@@ -260,6 +260,11 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
+        public static readonly string TodayOrdInvalidHpIdNoExist = "HpId no exist";
+        public static readonly string TodayOrdInvalidPtIdNoExist = "PtId no exist";
+        public static readonly string TodayOrdInvalidRaiinNoNoExist = "RaiinNo no exist";
+        public static readonly string TodayOrdInvalidHokenPidNoExist = "HokenPid no exist";
+        public static readonly string TodayOrdOrdInfNoMapOrdInfDetail = "OdrInf no map OdrInf Detail";
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";

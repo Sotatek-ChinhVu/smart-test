@@ -5,6 +5,7 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.HpMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -234,6 +235,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
+            services.AddTransient<IHpInfRepository, HpInfRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
