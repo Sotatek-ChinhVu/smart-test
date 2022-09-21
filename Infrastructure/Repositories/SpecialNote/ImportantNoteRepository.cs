@@ -43,7 +43,6 @@ namespace Infrastructure.Repositories.SpecialNote
                         UpdateMachine = TempIdentity.ComputerName,
                     }
                );
-                maxSortNo = maxSortNo + 1;
             }
 
             _tenantTrackingDataContext.SaveChanges();
