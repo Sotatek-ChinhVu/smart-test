@@ -4,6 +4,8 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -19,8 +21,10 @@ namespace Infrastructure.Repositories
 
         public List<DosageDrugModel> GetDosages(List<string> yjCds)
         {
-            var result = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd));
-            return result == null ? new List<DosageDrugModel>() : result.Select(
+            var listDosageDrugs = _tenantDataContext.DosageDrugs.Where(d => yjCds.Contains(d.YjCd)).ToList();
+            var listDoeiCd = listDosageDrugs.Select(item => item.DoeiCd).ToList();
+            var listDosageDosages = _tenantDataContext.DosageDosages.Where(item => listDoeiCd.Contains(item.DoeiCd)).ToList();
+            return listDosageDrugs == null ? new List<DosageDrugModel>() : listDosageDrugs.Select(
                     r => new DosageDrugModel(
                             r.YjCd,
                             r.DoeiCd,
@@ -29,7 +33,8 @@ namespace Infrastructure.Repositories
                             r.YakkaiUnit,
                             r.RikikaRate,
                             r.RikikaUnit,
-                            r.YoukaiekiCd
+                            r.YoukaiekiCd,
+                            listDosageDosages.FirstOrDefault(item => item.DoeiCd == r.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
                    )).ToList();
         }
 
@@ -78,7 +83,6 @@ namespace Infrastructure.Repositories
 
         public List<FoodAlrgyKbnModel> GetFoodAlrgyMasterData()
         {
-            List<FoodAlrgyKbnModel> m12FoodAlrgies = new List<FoodAlrgyKbnModel>();
             var aleFoodKbns = _tenantDataContext.M12FoodAlrgyKbn.AsEnumerable()
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(
@@ -154,11 +158,13 @@ namespace Infrastructure.Repositories
                 "",
                 "",
                 tenMst?.CmtCol1 ?? 0,
-                tenMst?.IpnNameCd ?? string.Empty
+                tenMst?.IpnNameCd ?? string.Empty,
+                tenMst?.SinKouiKbn ?? 0,
+                tenMst?.YjCd ?? string.Empty
             );
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public List<TenItemModel> SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -255,10 +261,6 @@ namespace Infrastructure.Repositories
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
 
-
-
-
-            var yakkaSyusaiMstList = _tenantDataContext.YakkaSyusaiMsts.AsQueryable();
             if (kouiKbn > 0)
             {
                 //2019-12-04 @duong.vu said: this is a self injection -> search items relate to injection only
@@ -397,8 +399,6 @@ namespace Infrastructure.Repositories
             if (sinDate > 0)
             {
                 queryResult = queryResult.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
-
-                yakkaSyusaiMstList = yakkaSyusaiMstList.Where(t => t.StartDate <= sinDate && t.EndDate >= sinDate);
             }
             else
             {
@@ -476,38 +476,26 @@ namespace Infrastructure.Repositories
                                where tenKN.ItemCd.StartsWith("KN")
                                select new { tenKN.ItemCd, ten.Ten };
 
-            var tenJoinYakkaSyusai = from ten in queryResult
-                                     join yakkaSyusaiMstItem in yakkaSyusaiMstList
-                                     on new { ten.YakkaCd, ten.ItemCd } equals new { yakkaSyusaiMstItem.YakkaCd, yakkaSyusaiMstItem.ItemCd } into yakkaSyusaiMstItems
-                                     from yakkaSyusaiItem in yakkaSyusaiMstItems.DefaultIfEmpty()
-                                     select new { TenMst = ten, YakkaSyusaiItem = yakkaSyusaiItem };
-            var sinKouiCollection = new SinkouiCollection();
-
-            var queryFinal = from ten in tenJoinYakkaSyusai.AsEnumerable()
-                             join kouiKbnItem in sinKouiCollection.AsEnumerable()
-                             on ten.TenMst.SinKouiKbn equals kouiKbnItem.SinKouiCd into tenKouiKbns
-                             from tenKouiKbn in tenKouiKbns.DefaultIfEmpty()
+            var queryFinal = from ten in queryResult.AsEnumerable()
                              join tenKN in queryKNTensu.AsEnumerable()
-                             on ten.TenMst.ItemCd equals tenKN.ItemCd into tenKNLeft
+                             on ten.ItemCd equals tenKN.ItemCd into tenKNLeft
                              from tenKN in tenKNLeft.DefaultIfEmpty()
+                             select new { TenMst = ten, tenKN };
 
-                             select new { TenMst = ten.TenMst, KouiName = tenKouiKbn.SinkouiName, ten.YakkaSyusaiItem, tenKN };
             var queryJoinWithKensa = from q in queryFinal.AsEnumerable()
                                      join k in kensaMstQuery.AsEnumerable()
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { TenMst = q.TenMst, q.KouiName, q.YakkaSyusaiItem, q.tenKN, KensaMst = kensaMst };
-            var totalCount = queryJoinWithKensa.Count();
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+                                     select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
+
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Distinct().Skip((pageIndex - 1) * pageCount).Take(pageCount);
             var listTenMstData = listTenMst.ToList();
-            if (listTenMstData != null && listTenMstData.Count > 0)
+
+            if (listTenMstData != null && listTenMstData.Any())
             {
-                for (int i = 0; i < listTenMstData.Count; i++)
-                {
-                    var item = listTenMstData[i];
-                    var newItemModel = new TenItemModel(
+                listTenMstModels = listTenMstData.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
-                                                           item.TenMst.ItemCd,
+                                                           item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
                                                            item.TenMst.KanaName1 ?? string.Empty,
                                                            item.TenMst?.Name ?? string.Empty,
@@ -526,12 +514,11 @@ namespace Infrastructure.Repositories
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
                                                            item.TenMst?.CmtCol1 ?? 0,
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
-                                                           item.TenMst?.SinKouiKbn ?? 0
-                                                            );
-                    listTenMstModels.Add(newItemModel);
-                }
+                                                           item.TenMst?.SinKouiKbn ?? 0,
+                                                           item.TenMst?.YjCd ?? string.Empty
+                                                            )).ToList();
             }
-            return (listTenMstModels, totalCount);
+            return listTenMstModels;
         }
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
         {
