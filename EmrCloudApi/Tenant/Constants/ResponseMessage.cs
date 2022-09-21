@@ -73,6 +73,15 @@
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
         public static readonly string GetKarteInfSuccessed = "Successed";
+        public static readonly string UpsertKarteInfInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertKarteInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string UpsertKarteInfInvalidKarteKbn = "Invalid KarteKbn";
+        public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
+        public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
         //OrdInf controller
         public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -253,5 +262,6 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
     }
 }

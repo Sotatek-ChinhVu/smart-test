@@ -1,8 +1,8 @@
-﻿namespace UseCase.OrdInfs.Upsert
+﻿namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class OdrInfItem
     {
-        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id)
+        public OdrInfItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, long id, List<OdrInfDetailItem> odrDetails, int isDeleted)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -21,6 +21,8 @@
             DaysCnt = daysCnt;
             SortNo = sortNo;
             Id = id;
+            OdrDetails = odrDetails;
+            IsDeleted = isDeleted;
         }
 
         public int HpId { get; private set; }
@@ -40,6 +42,7 @@
         public int DaysCnt { get; private set; }
         public int SortNo { get; private set; }
         public long Id { get; private set; }
+        public int IsDeleted { get; private set; }
         public List<OdrInfDetailItem> OdrDetails { get; private set; }
     }
 }

@@ -8,11 +8,13 @@
             InvalidSyosaiKbn,
             InvalidJikanKbn,
             InvalidHokenPid,
+            HokenPidNoExist,
             InvalidSanteiKbn,
             InvalidTantoId,
+            TatoIdNoExist,
             InvalidKaId,
+            KaIdNoExist,
             Valid
-        }
         }
     }
 }

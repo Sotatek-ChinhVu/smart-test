@@ -39,7 +39,7 @@ namespace Domain.Models.KarteInfs
             }
             if (RaiinNo <= 0)
             {
-                return TodayKarteValidationStatus.InvalidRaiinNo
+                return TodayKarteValidationStatus.InvalidRaiinNo;
             }
             if (KarteKbn <= 0)
             {

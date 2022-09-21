@@ -7,10 +7,12 @@
             InvalidHpId = 1,
             InvalidRaiinNo,
             InvalidKarteKbn,
-            InvalidSeqNo,
             InvalidPtId,
             InvalidSinDate,
             InvalidIsDelted,
+            RaiinNoNoExist,
+            PtIdNoExist,
+            KarteKbnNoExist,
             Valid
         };
     }

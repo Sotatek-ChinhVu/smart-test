@@ -7,5 +7,7 @@
         List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos);
 
         bool SaveListImageKarteImgTemp(List<KarteImgInfModel> listModel);
+
+        void Upsert(List<KarteInfModel> kartes);
     }
 }

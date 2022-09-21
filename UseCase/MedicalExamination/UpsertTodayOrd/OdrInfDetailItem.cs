@@ -1,4 +1,4 @@
-﻿namespace UseCase.OrdInfs.Upsert
+﻿namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class OdrInfDetailItem
     {

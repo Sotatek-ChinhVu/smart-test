@@ -1,8 +1,6 @@
-﻿using UseCase.Core.Sync.Core;
-
-namespace UseCase.OrdInfs.Upsert
+﻿namespace EmrCloudApi.Tenant.Requests.MedicalExamination
 {
-    public class UpsertInputData : IInputData<UpsertOutputData>
+    public class UpsertTodayOdrRequest
     {
         public int Status { get; private set; }
         public int SyosaiKbn { get; private set; }
@@ -11,5 +9,7 @@ namespace UseCase.OrdInfs.Upsert
         public int SanteiKbn { get; private set; }
         public int TantoId { get; private set; }
         public int KaId { get; private set; }
+        public List<OdrInfItem> OdrInfs { get; set; } = new();
+        public List<KarteItem> KarteItems { get; set; } = new();
     }
 }
