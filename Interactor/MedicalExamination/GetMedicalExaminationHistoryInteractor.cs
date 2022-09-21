@@ -151,12 +151,10 @@ namespace Interactor.MedicalExamination
 
             List<ReceptionModel>? rainInfs;
             var startPageSearch = 0;
-            var checkPageSize = pageTotal - inputData.StartPage;
-            var pageSize = inputData.PageSize > checkPageSize ? checkPageSize : inputData.PageSize;
 
             if (inputData.SearchType == 0)
             {
-                rainInfs = query?.Skip(inputData.StartPage).Take(pageSize).ToList();
+                rainInfs = query?.Skip(inputData.StartPage).Take(inputData.PageSize).ToList();
             }
             else
             {
@@ -170,19 +168,19 @@ namespace Interactor.MedicalExamination
 
                     if (inputData.SearchType == 1)
                     {
-                        rainInfs = rainInfs?.Where(r => r.RaiinNo <= raiinNoMark).Take(pageSize).ToList();
+                        rainInfs = rainInfs?.Where(r => r.RaiinNo <= raiinNoMark).Take(inputData.PageSize).ToList();
                     }
                     else
                     {
                         if (index < inputData.PageSize)
                         {
-                            rainInfs = rainInfs?.Take(pageSize).ToList();
+                            rainInfs = rainInfs?.Take(inputData.PageSize).ToList();
                             index = 0;
                         }
                         else
                         {
-                            rainInfs = rainInfs?.Skip(index + 1 - pageSize).Take(pageSize).ToList();
-                            index = index - pageSize + 1;
+                            rainInfs = rainInfs?.Skip(index + 1 - inputData.PageSize).Take(inputData.PageSize).ToList();
+                            index = index - inputData.PageSize + 1;
                         }
                     }
                     startPageSearch = index;
