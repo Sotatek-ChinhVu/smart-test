@@ -222,7 +222,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
             {
                 return SaveSuperSetDetailStatus.InvalidSetOrderInfRpNo;
             }
-            else if (mst.RpEdaNo < 1)
+            else if (mst.RpEdaNo < 0)
             {
                 return SaveSuperSetDetailStatus.InvalidSetOrderInfRpEdaNo;
             }

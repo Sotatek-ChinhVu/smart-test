@@ -30,7 +30,6 @@ public enum SaveSuperSetDetailStatus : byte
     InvalidSetOrderInfTosekiKbn = 26,
     InvalidSetOrderInfDaysCnt = 27,
     InvalidSetOrderInfSortNo = 28,
-
     InvalidSetOrderSinKouiKbn = 29,
     ItemCdMaxLength10 = 30,
     ItemNameMaxLength240 = 31,
