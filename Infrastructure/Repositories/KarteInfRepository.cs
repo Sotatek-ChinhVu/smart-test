@@ -102,7 +102,7 @@ namespace Infrastructure.Repositories
                             UpdateMachine = TempIdentity.ComputerName
                         };
 
-                        _tenantTrackingDataContext.Add(karteEntity);
+                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
                     }
                     else
                     {
@@ -126,10 +126,18 @@ namespace Infrastructure.Repositories
                             UpdateMachine = TempIdentity.ComputerName
                         };
 
-                        _tenantTrackingDataContext.Add(karteEntity);
+                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
+                    }
+
+                    var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == item.HpId && k.PtId == item.PtId && item.RichText.Contains(k.FileName) && k.RaiinNo == 0);
+                    foreach (var img in karteImgs)
+                    {
+                        img.RaiinNo = item.RaiinNo;
                     }
                 }
             }
+
+
 
             _tenantTrackingDataContext.SaveChanges();
         }

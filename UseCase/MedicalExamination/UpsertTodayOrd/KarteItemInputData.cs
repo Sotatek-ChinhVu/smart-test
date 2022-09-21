@@ -4,6 +4,7 @@
     {
         public KarteItemInputData(int hpId, long raiinNo, int karteKbn, long ptId, int sinDate, string text, int isDeleted, string richText)
         {
+            HpId = hpId;
             RaiinNo = raiinNo;
             KarteKbn = karteKbn;
             PtId = ptId;
@@ -11,11 +12,9 @@
             Text = text;
             IsDeleted = isDeleted;
             RichText = richText;
-            HpId = hpId;
         }
-
-        public long RaiinNo { get; private set; }
         public int HpId { get; private set; }
+        public long RaiinNo { get; private set; }
         public int KarteKbn { get; private set; }
         public long PtId { get; private set; }
         public int SinDate { get; private set; }

@@ -151,7 +151,7 @@ namespace Infrastructure.Repositories
                             UpdateMachine = TempIdentity.ComputerName
                         };
 
-                        var ordInfDetailEntity = item.OrdInfDetails.Select(
+                        var ordInfDetailEntity = item?.OrdInfDetails.Select(
                                 od => new OdrInfDetail
                                 {
                                     HpId = od.HpId,
@@ -189,9 +189,9 @@ namespace Infrastructure.Repositories
                                     FontColor = od.FontColor,
                                     CommentNewline = od.CommentNewline
                                 }
-                            );
-                        _tenantTrackingDataContext.Add(ordInfEntity);
-                        _tenantTrackingDataContext.Add(ordInfDetailEntity);
+                            ) ?? new List<OdrInfDetail>();
+                        _tenantTrackingDataContext.OdrInfs.Add(ordInfEntity);
+                        _tenantTrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
                     }
                     else
                     {
@@ -224,7 +224,7 @@ namespace Infrastructure.Repositories
                             UpdateMachine = TempIdentity.ComputerName
                         };
 
-                        var ordInfDetailEntity = item.OrdInfDetails.Select(
+                        var ordInfDetailEntity = item?.OrdInfDetails.Select(
                                 od => new OdrInfDetail
                                 {
                                     HpId = od.HpId,
@@ -262,9 +262,9 @@ namespace Infrastructure.Repositories
                                     FontColor = od.FontColor,
                                     CommentNewline = od.CommentNewline
                                 }
-                            );
-                        _tenantTrackingDataContext.Add(ordInfEntity);
-                        _tenantTrackingDataContext.Add(ordInfDetailEntity);
+                            ) ?? new List<OdrInfDetail>();
+                        _tenantTrackingDataContext.OdrInfs.Add(ordInfEntity);
+                        _tenantTrackingDataContext.OdrInfDetails.AddRange(ordInfDetailEntity);
                     }
                 }
             }

@@ -59,7 +59,7 @@ namespace Interactor.MedicalExamination
                     {
                         try
                         {
-                            RaiinInfConst.RaiinInfValidationStatus raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.Valid;
+                            var raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.Valid;
                             //Raiin Info
                             if (!RaiinState.ReceptionStatusToText.Keys.Contains(inputData.Status))
                             {
@@ -129,17 +129,6 @@ namespace Interactor.MedicalExamination
                                 {
                                     raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.KaIdNoExist;
                                 }
-                            }
-
-
-                            if (inputData.OdrItems.Count > 0)
-                            {
-                                int hpId = inputData.OdrItems[0].HpId;
-                                long raiinNo = inputData.OdrItems[0].RaiinNo;
-                                long ptId = inputData.OdrItems[0].PtId;
-                                int sinDate = inputData.OdrItems[0].SinDate;
-
-                                _receptionRepository.SaveRaiinInfTodayOdr(inputData.Status, hpId, ptId, raiinNo, sinDate, inputData.SyosaiKbn, inputData.JikanKbn, inputData.HokenPid, inputData.SanteiKbn, inputData.TantoId, inputData.KaId, inputData.UketukeTime, inputData.SinStartTime, inputData.SinEndTime);
                             }
 
                             // Odr Info
@@ -277,38 +266,9 @@ namespace Interactor.MedicalExamination
                                 count++;
                             }
 
-                            if (!dicValidation.Any())
-                            {
-                                _ordInfRepository.Upsert(allOdrInfs);
-                            }
-
                             // Karte
                             var dicKarteValidation = new Dictionary<int, TodayKarteValidationStatus>();
                             var inputKarteDataList = inputData.KarteInfs.ToList();
-
-                            count = 0;
-                            foreach (var item in inputKarteDataList)
-                            {
-                                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { item.RaiinNo });
-                                if (!checkRaiinNo)
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.RaiinNoNoExist);
-                                }
-
-                                var checkPtId = _patientInforRepository.CheckListId(new List<long> { item.PtId });
-                                if (!checkPtId && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.PtIdNoExist);
-                                }
-
-                                var checkKarteKbn = _karteKbnInforRepository.CheckKarteKbn(item.KarteKbn);
-                                if (!checkKarteKbn && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.KarteKbnNoExist);
-                                }
-
-                                count++;
-                            }
 
                             var karteModels = inputKarteDataList.Select(k => new KarteInfModel(
                                     k.HpId,
@@ -324,6 +284,7 @@ namespace Interactor.MedicalExamination
                                     DateTime.MinValue
                                 )).ToList();
 
+                            count = 0;
                             foreach (var karte in karteModels)
                             {
                                 var modelValidation = karte.Validation();
@@ -332,20 +293,44 @@ namespace Interactor.MedicalExamination
                                     dicKarteValidation.Add(count, modelValidation);
                                 }
 
+                                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { karte.RaiinNo });
+                                if (!checkRaiinNo && !dicKarteValidation.ContainsKey(count))
+                                {
+                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.RaiinNoNoExist);
+                                }
+
+                                var checkPtId = _patientInforRepository.CheckListId(new List<long> { karte.PtId });
+                                if (!checkPtId && !dicKarteValidation.ContainsKey(count))
+                                {
+                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.PtIdNoExist);
+                                }
+
+                                var checkKarteKbn = _karteKbnInforRepository.CheckKarteKbn(karte.KarteKbn);
+                                if (!checkKarteKbn && !dicKarteValidation.ContainsKey(count))
+                                {
+                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.KarteKbnNoExist);
+                                }
+
                                 count++;
                             }
 
-                            if (!dicKarteValidation.Any())
-                            {
-                                _karteInfRepository.Upsert(karteModels);
-                            }
-
-                            _ordInfRepository.SaveRaiinListInf(allOdrInfs);
-
-                            if (raiinInfStatus != RaiinInfConst.RaiinInfValidationStatus.Valid || dicKarteValidation.Any() && dicValidation.Any())
+                            if (raiinInfStatus != RaiinInfConst.RaiinInfValidationStatus.Valid || dicKarteValidation.Any() || dicValidation.Any())
                             {
                                 return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, dicKarteValidation);
                             }
+
+                            if (inputData.OdrItems.Count > 0)
+                            {
+                                int hpId = inputData.OdrItems[0].HpId;
+                                long raiinNo = inputData.OdrItems[0].RaiinNo;
+                                long ptId = inputData.OdrItems[0].PtId;
+                                int sinDate = inputData.OdrItems[0].SinDate;
+
+                                _receptionRepository.SaveRaiinInfTodayOdr(inputData.Status, hpId, ptId, raiinNo, sinDate, inputData.SyosaiKbn, inputData.JikanKbn, inputData.HokenPid, inputData.SanteiKbn, inputData.TantoId, inputData.KaId, inputData.UketukeTime, inputData.SinStartTime, inputData.SinEndTime);
+                            }
+                            _ordInfRepository.Upsert(allOdrInfs);
+                            _karteInfRepository.Upsert(karteModels);
+                            _ordInfRepository.SaveRaiinListInf(allOdrInfs);
 
                             transaction.Commit();
 

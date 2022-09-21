@@ -53,7 +53,7 @@ namespace Domain.Models.KarteInfs
             {
                 return TodayKarteValidationStatus.InvalidSinDate;
             }
-            if (IsDeleted <= 0)
+            if (IsDeleted < 0)
             {
                 return TodayKarteValidationStatus.InvalidIsDelted;
             }

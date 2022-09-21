@@ -296,7 +296,7 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                             validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfPtIdNoExist));
                             break;
                         case TodayKarteConst.TodayKarteValidationStatus.KarteKbnNoExist:
-                            validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfInvalidKarteKbn));
+                            validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfKarteKbnNoExist));
                             break;
                     }
                 }
