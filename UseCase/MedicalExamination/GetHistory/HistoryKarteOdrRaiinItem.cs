@@ -15,13 +15,13 @@ namespace UseCase.MedicalExamination.GetHistory
         /// hospital type come 
         /// </summary>
         public int SyosaisinKbn { get; private set; }
-        public string SyosaisinDisplay { get => SyosaiConst.ShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
+        public string SyosaisinDisplay { get => SyosaiConst.ReceptionShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
 
         /// <summary>
         /// time to hospital
         /// </summary>
         public int JikanKbn { get; private set; }
-        public string JikanDisplay { get => JikanConst.JikanDict.FirstOrDefault(x => x.Key == JikanKbn).Value; }
+        public string JikanDisplay { get => JikanConst.JikanKotokuDict.FirstOrDefault(x => x.Key == JikanKbn).Value; }
 
         /// <summary>
         /// medical examination department
