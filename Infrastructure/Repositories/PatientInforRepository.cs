@@ -659,7 +659,7 @@ namespace Infrastructure.Repositories
                 "");
         }
 
-        public List<PatientInforModel> PatientCommentModels(int hpId, long pdId)
+        public PatientInforModel PatientCommentModels(int hpId, long pdId)
         {
             var listData = _tenantDataContext.PtCmtInfs
                 .Where(x => x.HpId == hpId & x.PtId == pdId & x.IsDeleted == 0)
@@ -667,8 +667,15 @@ namespace Infrastructure.Repositories
                 x.HpId,
                 x.PtId,
                 x.Text))
-                .ToList();
-            return listData;
+                .FirstOrDefault();
+            if (listData is null)
+                return new PatientInforModel(0, 0, String.Empty);
+
+            return new PatientInforModel(
+                listData.HpId,
+                listData.PtId,
+                listData.Comment
+                ); ;
         }
     }
 }

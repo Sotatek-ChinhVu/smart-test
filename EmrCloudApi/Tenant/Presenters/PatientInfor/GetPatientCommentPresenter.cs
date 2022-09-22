@@ -20,7 +20,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
         {
             GetPatientCommentStatus.Success => ResponseMessage.Success,
             GetPatientCommentStatus.InvalidData => ResponseMessage.InvalidKeyword,
-            GetPatientCommentStatus.NoData => ResponseMessage.NoData,
+            GetPatientCommentStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

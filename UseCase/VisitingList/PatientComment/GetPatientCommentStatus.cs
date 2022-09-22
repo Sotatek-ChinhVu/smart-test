@@ -10,6 +10,6 @@ namespace UseCase.VisitingList.PatientComment
     {
         Success = 1,
         InvalidData = 2,
-        NoData = 3
+        Failed = 3
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Models.PatientInfor
@@ -61,6 +62,51 @@ namespace Domain.Models.PatientInfor
                 HpId = hpId;
                 PtId = ptId;
                 Comment = comment;
+            }
+
+            public PatientInforModel()
+            {
+                HpId = 0;
+                PtId = 0;
+                ReferenceNo = 0;
+                SeqNo = 0;
+                PtNum = 0;
+                KanaName = String.Empty;
+                Name = String.Empty;
+                Sex = 0;
+                Birthday = 0;
+                LimitConsFlg = 0;
+                IsDead = 0;
+                DeathDate = 0;
+                HomePost = String.Empty;
+                HomeAddress1 = String.Empty;
+                HomeAddress2 = String.Empty;
+                Tel1 = String.Empty;
+                Tel2 = String.Empty;
+                Mail = String.Empty;
+                Setanusi = String.Empty;
+                Zokugara = String.Empty;
+                Job = String.Empty;
+                RenrakuName = String.Empty;
+                RenrakuPost = String.Empty;
+                RenrakuAddress1 = String.Empty;
+                RenrakuAddress2 = String.Empty;
+                RenrakuTel = String.Empty;
+                RenrakuMemo = String.Empty;
+                OfficeName = String.Empty;
+                OfficePost = String.Empty;
+                OfficeAddress1 = String.Empty;
+                OfficeAddress2 = String.Empty;
+                OfficeTel = String.Empty;
+                OfficeMemo = String.Empty;
+                IsRyosyoDetail = 0;
+                PrimaryDoctor = 0;
+                IsTester = 0;
+                MainHokenPid = 0;
+                Memo = String.Empty;
+                LastVisitDate = 0;
+                FirstVisitDate = 0;
+                RainCount = String.Empty;
             }
 
             public int LastVisitDate { get; private set; }

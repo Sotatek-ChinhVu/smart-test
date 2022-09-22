@@ -10,13 +10,19 @@ namespace UseCase.VisitingList.PatientComment
 {
     public class GetPatientCommentOutputData : IOutputData
     {
-        public List<PatientInforModel> PatientInforModels { get; set; }
+        public PatientInforModel PatientInforModels { get; set; }
 
         public GetPatientCommentStatus Status { get; set; }
 
-        public GetPatientCommentOutputData(List<PatientInforModel> patientInforModels, GetPatientCommentStatus status)
+        public GetPatientCommentOutputData(PatientInforModel patientInforModels, GetPatientCommentStatus status)
         {
             PatientInforModels = patientInforModels;
+            Status = status;
+        }
+
+        public GetPatientCommentOutputData(GetPatientCommentStatus status)
+        {
+            PatientInforModels = new PatientInforModel();
             Status = status;
         }
     }

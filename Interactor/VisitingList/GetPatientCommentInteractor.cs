@@ -20,19 +20,21 @@ namespace Interactor.VisitingList
 
         public GetPatientCommentOutputData Handle(GetPatientCommentInputData inputData)
         {
-            if (inputData.HpId <= 0 || inputData.PdId <= 0)
+            try
             {
-                return new GetPatientCommentOutputData(new List<PatientInforModel>(), GetPatientCommentStatus.InvalidData);
+                if (inputData.HpId <= 0 || inputData.PdId <= 0)
+                {
+                    return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidData);
+                }
+
+                var listData = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
+
+                return new GetPatientCommentOutputData(listData, GetPatientCommentStatus.Success);
             }
-
-            var listData = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
-
-            if (listData == null || listData.Count == 0)
+            catch (Exception)
             {
-                return new GetPatientCommentOutputData(new(), GetPatientCommentStatus.NoData);
+                return new GetPatientCommentOutputData(GetPatientCommentStatus.Failed);
             }
-
-            return new GetPatientCommentOutputData(listData, GetPatientCommentStatus.Success);
         }
     }
 }
