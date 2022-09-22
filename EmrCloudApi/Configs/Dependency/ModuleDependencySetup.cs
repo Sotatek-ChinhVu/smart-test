@@ -158,29 +158,8 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.Schema.SaveImage;
-using Domain.Models.Byomei;
-using UseCase.Byomei.DiseaseSearch;
-using Interactor.Byomei;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
-using UseCase.SetMst.ReorderSetMst;
-using Domain.Models.JsonSetting;
-using Interactor.JsonSetting;
-using UseCase.JsonSetting.Get;
-using UseCase.JsonSetting.Upsert;
-using EmrCloudApi.Realtime;
-using UseCase.KohiHokenMst.Get;
-using Interactor.KohiHokenMst;
-using UseCase.SetMst.CopyPasteSetMst;
-using UseCase.DrugInfor.Get;
-using Interactor.DrugInfor;
-using Domain.Models.DrugInfor;
-using Domain.Models.UsageTreeSet;
-using Interactor.UsageTreeSet;
-using UseCase.UsageTreeSet.GetTree;
-using UseCase.MstItem.SearchTenItem;
-using UseCase.MstItem.UpdateAdopted;
 
 namespace EmrCloudApi.Configs.Dependency
 {
