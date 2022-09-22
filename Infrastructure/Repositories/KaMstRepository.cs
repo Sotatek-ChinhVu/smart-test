@@ -22,6 +22,13 @@ public class KaMstRepository : IKaMstRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public List<KaMstModel> GetByKaIds(List<int> kaIds)
+    {
+        var entities = _tenantDataContext.KaMsts
+           .Where(k => kaIds.Contains(k.KaId) && k.IsDeleted == DeleteTypes.None).AsEnumerable();
+        return entities is null ? new List<KaMstModel>() : entities.Select(e => ToModel(e)).ToList();
+    }
+
     public List<KaMstModel> GetList()
     {
         return _tenantDataContext.KaMsts

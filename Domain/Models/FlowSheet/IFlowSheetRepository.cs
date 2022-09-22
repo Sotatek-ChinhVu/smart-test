@@ -4,7 +4,7 @@ namespace Domain.Models.FlowSheet
 {
     public interface IFlowSheetRepository
     {
-        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo);
+        List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count);
 
         List<RaiinListMstModel> GetRaiinListMsts(int hpId);
 

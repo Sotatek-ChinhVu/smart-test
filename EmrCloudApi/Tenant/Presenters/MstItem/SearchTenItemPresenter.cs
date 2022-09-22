@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.MstItem
         {
             Result = new Response<SearchTenItemResponse>
             {
-                Data = new SearchTenItemResponse(outputData.ListInputModel, outputData.ListInputModel.Count),
+                Data = new SearchTenItemResponse(outputData.ListInputModel,outputData.TotalCount),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
