@@ -32,7 +32,16 @@ namespace Infrastructure.Repositories
 
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
         {
-            throw new NotImplementedException();
+            var monshinList = _tenantDataContextNoTracking.MonshinInfo
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).OrderByDescending(x => x.SinDate)
+                .Select(x => new MonshinInforModel(
+                x.HpId,
+                x.PtId,
+                x.RaiinNo,
+                x.SinDate,
+                x.Text))
+                .ToList();
+            return monshinList;
         }
 
         public bool SaveList(List<MonshinInforModel> monshinInforModels)
@@ -105,7 +114,7 @@ namespace Infrastructure.Repositories
                                         RaiinNo = model.RaiinNo,
                                         SinDate = model.SinDate,
                                         Text = model.Text,
-                                        GetKbn = model.GetKbn,
+                                        GetKbn = 0,
                                         IsDeleted = 0,
                                         CreateId = TempIdentity.UserId,
                                         CreateDate = DateTime.UtcNow,
