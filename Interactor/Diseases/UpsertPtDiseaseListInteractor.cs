@@ -21,13 +21,13 @@ namespace Interactor.Diseases
         {
             try
             {
-                if (inputData.ToList() == null)
+                if (inputData.ToList() == null || inputData.ToList().Count == 0)
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 }
 
                 var datas = inputData.ptDiseaseModel.Select(i => new PtDiseaseModel(
-                        0,
+                        i.HpId,
                         i.PtId,
                         i.SeqNo,
                         i.ByomeiCd,
@@ -68,9 +68,9 @@ namespace Interactor.Diseases
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
-                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).ToList()))
+                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).Distinct().ToList(), datas.Select(i => i.HpId).Distinct().ToList(), datas.Select(i => i.PtId).Distinct().ToList()))
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist);
                 }
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
 
@@ -98,6 +98,39 @@ namespace Interactor.Diseases
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
             if (status == ValidationStatus.InvalidTekiDateAndStartDate)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+            if (status == ValidationStatus.InvalidByomei)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei;
+            if (status == ValidationStatus.InvalidId)
+                return UpsertPtDiseaseListStatus.PtInvalidId;
+            if (status == ValidationStatus.InvalidHpId)
+                return UpsertPtDiseaseListStatus.PtInvalidHpId;
+            if (status == ValidationStatus.InvalidPtId)
+                return UpsertPtDiseaseListStatus.PtInvalidPtId;
+            if (status == ValidationStatus.InvalidSortNo)
+                return UpsertPtDiseaseListStatus.PtInvalidSortNo;
+            if (status == ValidationStatus.InvalidByomeiCd)
+                return UpsertPtDiseaseListStatus.PtInvalidByomeiCd;
+            if (status == ValidationStatus.InvalidStartDate)
+                return UpsertPtDiseaseListStatus.PtInvalidStartDate;
+            if (status == ValidationStatus.InvalidTenkiDate)
+                return UpsertPtDiseaseListStatus.PtInvalidTenkiDate;
+            if (status == ValidationStatus.InvalidSyubyoKbn)
+                return UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn;
+            if (status == ValidationStatus.InvalidHosokuCmt)
+                return UpsertPtDiseaseListStatus.PtInvalidHosokuCmt;
+            if (status == ValidationStatus.InvalidHokenPid)
+                return UpsertPtDiseaseListStatus.PtInvalidHokenPid;
+            if (status == ValidationStatus.InvalidIsNodspRece)
+                return UpsertPtDiseaseListStatus.PtInvalidIsNodspRece;
+            if (status == ValidationStatus.InvalidIsNodspKarte)
+                return UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte;
+            if (status == ValidationStatus.InvalidSeqNo)
+                return UpsertPtDiseaseListStatus.PtInvalidSeqNo;
+            if (status == ValidationStatus.InvalidIsImportant)
+                return UpsertPtDiseaseListStatus.PtInvalidIsImportant;
+            if (status == ValidationStatus.InvalidIsDeleted)
+                return UpsertPtDiseaseListStatus.PtInvalidIsDeleted;
+
             return UpsertPtDiseaseListStatus.Success;
         }
     }

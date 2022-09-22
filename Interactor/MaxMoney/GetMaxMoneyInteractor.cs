@@ -15,8 +15,8 @@ namespace Interactor.MaxMoney
 
         public GetMaxMoneyOutputData Handle(GetMaxMoneyInputData inputData)
         {
-            if (inputData.HokenKohiId < 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidKohiId);
+            if (inputData.PtId < 0)
+                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidPtId);
 
             if (inputData.HpId < 0)
                 return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidHpId);
