@@ -92,22 +92,10 @@ namespace Interactor.OrdInfs
                             dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
                         }
 
-                        var checkHpIdOd = _hpInfRepository.CheckHpId(itemOd.HpId);
-                        if (!checkHpIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
-                        {
-                            dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.HpIdNoExist));
-                        }
-
                         var checkRaiinNoOd = _receptionRepository.CheckListNo(new List<long> { itemOd.RaiinNo });
                         if (!checkRaiinNoOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
                         {
                             dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.RaiinNoNoExist));
-                        }
-
-                        var checkPtIdOd = _patientInforRepository.CheckListId(new List<long> { itemOd.PtId });
-                        if (!checkPtIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
-                        {
-                            dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.PtIdNoExist));
                         }
 
                         countOd++;
