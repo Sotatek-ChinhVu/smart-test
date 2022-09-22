@@ -12,16 +12,18 @@ namespace Infrastructure.Repositories
 {
     public class MonshinInforRepository : IMonshinInforRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContextTracking;
+        private readonly TenantDataContext _tenantDataContextNoTracking;
 
         public MonshinInforRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
+            _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
         {
-            var monshinList = _tenantDataContext.MonshinInfo
+            var monshinList = _tenantDataContextNoTracking.MonshinInfo
                 .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
                 .OrderByDescending(x => x.SinDate)
                 .ThenByDescending(x => x.RaiinNo)
