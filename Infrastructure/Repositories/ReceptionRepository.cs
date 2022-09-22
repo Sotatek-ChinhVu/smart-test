@@ -18,8 +18,8 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel Get(long raiinNo)
         {
-            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
-            var raiinCommentInf = _tenantDataContext.RaiinCmtInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = _tenantDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var raiinCommentInf = _tenantDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
