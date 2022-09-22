@@ -43,7 +43,7 @@ namespace Interactor.OrdInfs
                 var count = 0;
                 foreach (var item in inputDataList)
                 {
-                    var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
+                    var check = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo);
                     if (!check && item.Status == 1)
                     {
                         dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
@@ -211,17 +211,17 @@ namespace Interactor.OrdInfs
                     allOdrInfs.Add(ordInf);
                 }
 
-                count = 0;
-                foreach (var item in allOdrInfs)
+                count = -1;
+                Parallel.ForEach(allOdrInfs, item =>
                 {
+                    Interlocked.Increment(ref count);
+
                     var modelValidation = item.Validation();
                     if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
                     {
                         dicValidation.Add(count, modelValidation);
                     }
-
-                    count++;
-                }
+                });
 
                 return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
             }

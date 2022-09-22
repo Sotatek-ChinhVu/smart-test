@@ -142,7 +142,7 @@ namespace Interactor.MedicalExamination
                             var count = 0;
                             foreach (var item in inputDataList)
                             {
-                                var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
+                                var check = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo);
                                 if (!check && item.Id > 0 && item.IsDeleted == 0)
                                 {
                                     dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
