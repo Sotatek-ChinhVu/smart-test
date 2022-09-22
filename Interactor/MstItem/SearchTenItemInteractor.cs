@@ -33,11 +33,6 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), SearchTenItemStatus.InvalidPageIndex);
             }
 
-            if (inputData.PageCount <= 0)
-            {
-                return new SearchTenItemOutputData(new List<TenItemModel>(), SearchTenItemStatus.InvalidPageCount);
-            }
-
             if (inputData.PointFrom < 0)
             {
                 return new SearchTenItemOutputData(new List<TenItemModel>(), SearchTenItemStatus.InvalidPointFrom);

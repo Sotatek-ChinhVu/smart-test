@@ -16,6 +16,7 @@ namespace UseCase.RaiinKubunMst.LoadData
 
         public LoadDataKubunSettingOutputData(LoadDataKubunSettingStatus status)
         {
+            RaiinKubunList = new List<RaiinKubunMstModel>();
             Status = status;
         }
     }

@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -43,7 +44,12 @@ namespace Infrastructure.Repositories
                             r.IsConfirmed == 1,
                             r.IsAuto == 1,
                             r.IsAutoDelete == 1,
-                            r.IsDeleted == 1
+                            r.IsDeleted == 1,
+                            new List<RaiinKbnKouiModel>(),
+                            new List<RaiinKbnItemModel>(),
+                            new List<RsvFrameMstModel>(),
+                            new List<RsvGrpMstModel>(),
+                            new List<RaiinKbnYayokuModel>()
                         ))
                     .ToList();
 
@@ -52,38 +58,13 @@ namespace Infrastructure.Repositories
                         raiinKubunMst.SortNo,
                         raiinKubunMst.GrpName,
                         raiinKubunMst.IsDeleted == 1,
-                        detailList,
-                        new List<RaiinKbnKouiModel>(),
-                        new List<RaiinKbnItemModel>(),
-                        new List<RsvFrameMstModel>(),
-                        new List<RsvGrpMstModel>(),
-                        new List<RaiinKbnYayokuModel>()
+                        detailList
                     ));
             }
             return result;
         }
         public List<RaiinKubunMstModel> LoadDataKubunSetting(int HpId)
         {
-            var raiinKubunMstList = _tenantDataContext.RaiinKbnMsts
-               .Where(r => r.HpId == HpId && r.IsDeleted == 0).ToList();
-
-            List<int> groupIdlist = raiinKubunMstList.Select(r => r.GrpCd).ToList();
-
-            List<RaiinKubunDetailModel> raiinKubunDetailList = _tenantDataContext.RaiinKbnDetails
-                .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == HpId && r.IsDeleted == 0))
-                .Select(x => new RaiinKubunDetailModel(x.GrpCd, x.KbnCd, x.SortNo, x.KbnName, x.ColorCd ?? string.Empty, x.IsConfirmed == 1, x.IsAuto == 1, x.IsAutoDelete == 1, x.IsDeleted == 1))
-                .ToList();
-
-            List<RaiinKbnKouiModel> raiinKbnKouiList = _tenantDataContext.RaiinKbnKouis
-                .Where(r => groupIdlist.Contains(r.GrpId) && (r.HpId == HpId && r.IsDeleted == 0))
-                .Select(x => new RaiinKbnKouiModel(x.GrpId, x.KbnCd, x.SeqNo, x.KouiKbnId, x.IsDeleted))
-                .ToList();
-
-            List<RaiinKbnItemModel> raiinKbnItemList = _tenantDataContext.RaiinKbItems
-                .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == HpId && r.IsDeleted == 0))
-                .Select(x => new RaiinKbnItemModel(x.GrpCd, x.KbnCd, x.SeqNo, x.ItemCd, x.IsExclude, x.IsDeleted))
-                .ToList();
-
             List<RsvGrpMstModel> rsvGrpMstList = _tenantDataContext.RsvGrpMsts
                 .Where(r => r.HpId == HpId && r.IsDeleted == 0)
                 .Select(x => new RsvGrpMstModel(x.RsvGrpId, x.SortKey, x.RsvGrpName, x.IsDeleted))
@@ -94,25 +75,79 @@ namespace Infrastructure.Repositories
                 .Select(x => new RsvFrameMstModel(x.RsvGrpId, x.RsvFrameId, x.SortKey, x.RsvFrameName ?? String.Empty, x.TantoId, x.KaId, x.MakeRaiin, x.IsDeleted))
                 .ToList();
 
-            List<RaiinKbnYayokuModel> raiinKbnYayokuList = _tenantDataContext.RaiinKbnYayokus
-                .Where(r => groupIdlist.Contains(r.GrpId) && (r.HpId == HpId && r.IsDeleted == 0))
-                .Select(x => new RaiinKbnYayokuModel(x.KbnCd, x.SeqNo, x.YoyakuCd, x.IsDeleted))
-                .ToList();
+            var raiinKubunMstList = _tenantDataContext.RaiinKbnMsts
+               .Where(r => r.HpId == HpId && r.IsDeleted == 0).ToList();
 
-            return raiinKubunMstList
-                        .Select(x => new RaiinKubunMstModel
-                        (x.GrpCd,
-                        x.SortNo,
-                        x.GrpName,
-                        x.IsDeleted == 1,
-                        raiinKubunDetailList,
-                        raiinKbnKouiList,
-                        raiinKbnItemList,
-                        rsvFrameMstList,
-                        rsvGrpMstList,
-                        raiinKbnYayokuList))
-                .ToList();
+            var groupIdlist = raiinKubunMstList.Select(r => r.GrpCd).ToList();
+
+            var raiinKubunDetailList = _tenantDataContext.RaiinKbnDetails
+                                        .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == HpId && r.IsDeleted == 0))
+                                        .ToList();
+            var kbnCdList = raiinKubunDetailList.Select(r => r.KbnCd).ToList();
+
+            var query = (from kbnDetail in _tenantDataContext.RaiinKbnDetails.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
+                         join kou in _tenantDataContext.RaiinKbnKouis.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
+                         on kbnDetail.KbnCd equals kou.KbnCd into kouis
+                         from kbnKoui in kouis.DefaultIfEmpty()
+                         join item in _tenantDataContext.RaiinKbItems.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
+                         on kbnDetail.KbnCd equals item.KbnCd into items
+                         from kbnItem in items.DefaultIfEmpty()
+                         join yoyaku in _tenantDataContext.RaiinKbnYayokus.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
+                         on kbnDetail.KbnCd equals yoyaku.KbnCd into yoyakus
+                         from kbnYoyaku in yoyakus.DefaultIfEmpty()
+                         select new
+                         {
+                             kbnKoui,
+                             kbnYoyaku,
+                             kbnItem
+                         }).Distinct().ToList();
+            var raiinKbnKouiList = query.Where(x => x.kbnKoui != null).Select(x => new RaiinKbnKouiModel(
+                x.kbnKoui.GrpId,
+                x.kbnKoui.KbnCd,
+                x.kbnKoui.SeqNo,
+                x.kbnKoui.KouiKbnId,
+                x.kbnKoui.IsDeleted));
+
+            var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
+                x.kbnItem.GrpCd,
+                x.kbnItem.KbnCd,
+                x.kbnItem.SeqNo,
+                x.kbnItem.ItemCd,
+                x.kbnItem.IsExclude,
+                x.kbnItem.IsDeleted
+                ));
+
+            var raiinKbnYayokuList = query.Where(x => x.kbnYoyaku != null).Select(x => new RaiinKbnYayokuModel(
+                x.kbnYoyaku.KbnCd,
+                x.kbnYoyaku.SeqNo,
+                x.kbnYoyaku.YoyakuCd,
+                x.kbnYoyaku.IsDeleted
+                ));
+
+            var raiinKubunMstModels = raiinKubunMstList.Select(x => new RaiinKubunMstModel(
+                x.GrpCd,
+                x.SortNo,
+                x.GrpName,
+                x.IsDeleted == 1,
+                raiinKubunDetailList.Where(y => y.GrpCd == x.GrpCd)
+                                    .Select(z => new RaiinKubunDetailModel(
+                                        z.GrpCd,
+                                        z.KbnCd,
+                                        z.SortNo,
+                                        z.KbnName,
+                                        z.ColorCd ?? String.Empty,
+                                        z.IsConfirmed == 1,
+                                        z.IsAuto == 1,
+                                        z.IsAutoDelete == 1,
+                                        z.IsDeleted == 1,
+                                        raiinKbnKouiList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
+                                        raiinKbnItemList.Where(m => m.GrpCd == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList(),
+                                        rsvFrameMstList,
+                                        rsvGrpMstList,
+                                        raiinKbnYayokuList.Where(m => m.GrpId == z.GrpCd && m.KbnCd == z.KbnCd).Distinct().ToList()
+                                        )).Distinct().ToList()
+                                        )).Distinct().ToList();
+            return raiinKubunMstModels;
         }
-
     }
 }
