@@ -22,7 +22,9 @@ namespace Infrastructure.Repositories
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
         {
             var monshinList = _tenantDataContext.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).OrderByDescending(x => x.SinDate)
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
+                .OrderByDescending(x => x.SinDate)
+                .ThenByDescending(x => x.RaiinNo)
                 .Select(x => new MonshinInforModel(
                 x.HpId,
                 x.PtId,
