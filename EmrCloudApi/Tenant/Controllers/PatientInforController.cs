@@ -31,6 +31,10 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using EmrCloudApi.Tenant.Responses.HokenMst;
+using EmrCloudApi.Tenant.Requests.HokenMst;
+using UseCase.HokenMst.GetDetail;
+using EmrCloudApi.Tenant.Presenters.HokenMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -163,5 +167,15 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
+        [HttpGet("GetDetailHokenMst")]
+        public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
+        {
+            var input = new GetDetailHokenMstInputData(request.HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDetailHokenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDetailHokenMstResponse>>(presenter.Result);
+        }
     }
 }

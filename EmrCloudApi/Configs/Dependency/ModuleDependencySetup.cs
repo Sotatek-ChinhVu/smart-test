@@ -5,6 +5,7 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -57,6 +58,7 @@ using Interactor.DrugDetail;
 using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
+using Interactor.HokenMst;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
@@ -97,6 +99,7 @@ using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
+using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.InsuranceMst.Get;
@@ -233,6 +236,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
+            services.AddTransient<IHokenMstRepository, HokenMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -388,6 +392,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
+
+            //HokenMst
+            busBuilder.RegisterUseCase<GetDetailHokenMstInputData, GetDetailHokenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

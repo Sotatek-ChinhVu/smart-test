@@ -254,5 +254,10 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
     }
 }
