@@ -20,17 +20,12 @@ namespace Interactor.ReceptionVisiting
 
         public GetReceptionVisitingOutputData Handle(GetReceptionVisitingInputData inputData)
         {
-            if (inputData.RaiinNo <= 0)
+            var data = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);
+            if (data == null)
             {
-                return new GetReceptionVisitingOutputData(new List<ReceptionModel>(), GetReceptionVisitingStatus.InvalidRaiinNo);
+                return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.NoData);
             }
-            
-            var listData = _receptionVisitingRepository.GetReceptionVisiting(inputData.RaiinNo);
-            if (listData == null || listData.Count == 0)
-            {
-                return new GetReceptionVisitingOutputData(new(), GetReceptionVisitingStatus.NoData);
-            }
-            return new GetReceptionVisitingOutputData(listData, GetReceptionVisitingStatus.Success);
+            return new GetReceptionVisitingOutputData(data, GetReceptionVisitingStatus.Success);
         }
     }
 }

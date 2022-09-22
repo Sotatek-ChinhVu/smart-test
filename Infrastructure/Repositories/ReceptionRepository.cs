@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -643,9 +644,9 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public List<ReceptionModel> GetReceptionVisiting(long raiinNo)
+        public ReceptionModel? GetReceptionVisiting(long raiinNo)
         {
-            var listDataRaiinInf = _tenantDataContext.RaiinInfs
+            var DataRaiinInf = _tenantDataContext.RaiinInfs
                 .Where(x => x.RaiinNo == raiinNo)
                 .Select(x => new ReceptionModel(
                 x.RaiinNo,
@@ -654,8 +655,20 @@ namespace Infrastructure.Repositories
                 x.UketukeTime ?? String.Empty,
                 x.SinStartTime ?? String.Empty,
                 x.Status, x.YoyakuId, x.TantoId))
-                .ToList();
-            return listDataRaiinInf;
+                .FirstOrDefault();
+            if (DataRaiinInf is null)
+                return null;
+            return new ReceptionModel(
+                DataRaiinInf.RaiinNo,
+                DataRaiinInf.UketukeId,
+                DataRaiinInf.KaId,
+                DataRaiinInf.UketukeTime,
+                DataRaiinInf.SinStartTime,
+                DataRaiinInf.Status,
+                DataRaiinInf.YoyakuId,
+                DataRaiinInf.TantoId);
+
+
         }
     }
 }

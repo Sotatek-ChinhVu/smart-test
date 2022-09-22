@@ -45,7 +45,7 @@ public class VisitingController : ControllerBase
         return Ok(presenter.Result);
     }
 
-    [HttpGet(ApiPath.Get + "ReceptionVisiting")]
+    [HttpGet(ApiPath.Get + "ReceptionInfo")]
     public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
         var input = new GetReceptionVisitingInputData(request.RaiinNo);

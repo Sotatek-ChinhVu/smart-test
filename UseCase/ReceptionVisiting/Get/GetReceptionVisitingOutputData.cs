@@ -6,13 +6,19 @@ namespace UseCase.ReceptionVisiting.Get
 {
     public class GetReceptionVisitingOutputData : IOutputData
     {
-        public List<ReceptionModel> ListVisiting { get; private set; }
+        public ReceptionModel ListVisiting { get; private set; }
 
         public GetReceptionVisitingStatus Status { get; private set; }
 
-        public GetReceptionVisitingOutputData(List<ReceptionModel> listVisiting, GetReceptionVisitingStatus status)
+        public GetReceptionVisitingOutputData(ReceptionModel listVisiting, GetReceptionVisitingStatus status)
         {
             ListVisiting = listVisiting;
+            Status = status;
+        }
+
+        public GetReceptionVisitingOutputData(GetReceptionVisitingStatus status)
+        {
+            ListVisiting = new ReceptionModel();
             Status = status;
         }
     }
