@@ -490,7 +490,11 @@ namespace Infrastructure.Repositories
                                      select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
             var totalCount = queryJoinWithKensa.Where(item => item.TenMst != null).Count();
 
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Distinct().Skip((pageIndex - 1) * pageCount).Take(pageCount);
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            if(pageCount > 0)
+            {
+                listTenMst = listTenMst.Take(pageCount);
+            }
             var listTenMstData = listTenMst.ToList();
 
             if (listTenMstData != null && listTenMstData.Any())
