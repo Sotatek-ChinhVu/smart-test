@@ -9,11 +9,13 @@ namespace UseCase.VisitingList.ReceptionComment
 {
     public class GetReceptionCommentInputData : IInputData<GetReceptionCommentOutputData>
     {
-        public GetReceptionCommentInputData(long raiinNo)
+        public GetReceptionCommentInputData(int hpId, long raiinNo)
         {
+            HpId = hpId;
             RaiinNo = raiinNo;
         }
 
+        public int HpId { get; set; }
         public long RaiinNo { get; private set; }
     }
 }

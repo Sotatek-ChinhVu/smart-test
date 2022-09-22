@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.VisitingList
 
         public void Complete(GetReceptionCommentOutputData output)
         {
-            Result.Data = new GetReceptionCommentResponse(output.ReceptionComments);
+            Result.Data = new GetReceptionCommentResponse(output.ReceptionModel);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }
@@ -20,7 +20,8 @@ namespace EmrCloudApi.Tenant.Presenters.VisitingList
         {
             GetReceptionCommentStatus.Success => ResponseMessage.Success,
             GetReceptionCommentStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
-            GetReceptionCommentStatus.NoData => ResponseMessage.NoData,
+            GetReceptionCommentStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            GetReceptionCommentStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
 
         };

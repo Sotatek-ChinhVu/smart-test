@@ -4,11 +4,11 @@ namespace EmrCloudApi.Tenant.Responses.VisitingList
 {
     public class GetReceptionCommentResponse
     {
-        public GetReceptionCommentResponse(List<ReceptionModel> receptionModels)
+        public GetReceptionCommentResponse(ReceptionModel receptionModels)
         {
             ReceptionModels = receptionModels;
         }
 
-        public List<ReceptionModel> ReceptionModels { get; set; }
+        public ReceptionModel ReceptionModels { get; set; }
     }
 }

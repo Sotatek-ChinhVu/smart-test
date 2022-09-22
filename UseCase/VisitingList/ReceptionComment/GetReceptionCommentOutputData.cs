@@ -10,13 +10,19 @@ namespace UseCase.VisitingList.ReceptionComment
 {
     public class GetReceptionCommentOutputData : IOutputData
     {
-        public List<ReceptionModel> ReceptionComments { get; private set; }
+        public ReceptionModel ReceptionModel { get; private set; }
 
         public GetReceptionCommentStatus Status { get; private set; }
 
-        public GetReceptionCommentOutputData(List<ReceptionModel> receptionComments, GetReceptionCommentStatus status)
+        public GetReceptionCommentOutputData(ReceptionModel receptionModel, GetReceptionCommentStatus status)
         {
-            ReceptionComments = receptionComments;
+            ReceptionModel = receptionModel;
+            Status = status;
+        }
+
+        public GetReceptionCommentOutputData(GetReceptionCommentStatus status)
+        {
+            ReceptionModel = new ReceptionModel();
             Status = status;
         }
     }

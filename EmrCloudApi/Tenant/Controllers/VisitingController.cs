@@ -37,7 +37,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "ReceptionComment")]
     public ActionResult<Response<GetReceptionCommentResponse>> GetList([FromQuery] GetReceptionCommentRequest request)
     {
-        var input = new GetReceptionCommentInputData(request.RaiinNo);
+        var input = new GetReceptionCommentInputData(request.HpId, request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionCommentPresenter();
         presenter.Complete(output);

@@ -17,17 +17,26 @@ namespace Interactor.Reception
         }
         public GetReceptionCommentOutputData Handle(GetReceptionCommentInputData inputData)
         {
-            if (inputData.RaiinNo <= 0)
+            try
             {
-                return new GetReceptionCommentOutputData(new List<ReceptionModel>(), GetReceptionCommentStatus.InvalidRaiinNo);
+                if (inputData.HpId <= 0)
+                {
+                    return new GetReceptionCommentOutputData(new ReceptionModel(), GetReceptionCommentStatus.InvalidHpId);
+                }
+                if (inputData.RaiinNo <= 0)
+                {
+                    return new GetReceptionCommentOutputData(new ReceptionModel(), GetReceptionCommentStatus.InvalidRaiinNo);
+                }
+
+                var Data = _receptionRepository.GetReceptionComments(inputData.HpId, inputData.RaiinNo);
+
+                return new GetReceptionCommentOutputData(Data, GetReceptionCommentStatus.Success);
+            }
+            catch (Exception)
+            {
+                return new GetReceptionCommentOutputData(GetReceptionCommentStatus.Failed);
             }
 
-            var listData = _receptionRepository.GetReceptionComments(inputData.RaiinNo);
-            if (listData == null || listData.Count == 0)
-            {
-                return new GetReceptionCommentOutputData(new(), GetReceptionCommentStatus.NoData);
-            }
-            return new GetReceptionCommentOutputData(listData, GetReceptionCommentStatus.Success);
         }
     }
 }

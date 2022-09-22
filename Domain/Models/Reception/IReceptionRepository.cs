@@ -10,7 +10,7 @@
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
 
-        List<ReceptionModel> GetReceptionComments(long raiinNo);
+        ReceptionModel GetReceptionComments(int hpId, long raiinNo);
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
