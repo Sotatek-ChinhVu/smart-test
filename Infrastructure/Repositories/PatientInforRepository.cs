@@ -1,10 +1,9 @@
 ﻿using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
-using Helper.Extension;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extendsions;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -171,8 +170,8 @@ namespace Infrastructure.Repositories
 
         public bool CheckListId(List<long> ptIds)
         {
-            var check = _tenantDataContext.PtInfs.Any(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
-            return check;
+            var countPtInfs = _tenantDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
+            return ptIds.Count <= countPtInfs;
         }
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)

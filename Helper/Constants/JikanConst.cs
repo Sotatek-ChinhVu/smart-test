@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Helper.Constant
+namespace Helper.Constants
 {
     public static class JikanConst
     {
