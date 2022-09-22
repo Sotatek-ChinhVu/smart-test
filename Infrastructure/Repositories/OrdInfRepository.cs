@@ -103,6 +103,28 @@ namespace Infrastructure.Repositories
             return new IpnMinYakkaMstModel(0, 0, string.Empty, 0, 0, 0, 0, 0);
         }
 
+        public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var odrList = _tenantDataContext.OdrInfs
+            .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
+
+            if (odrList.Any())
+            {
+                return odrList.Max(odr => odr.RpNo);
+            }
+
+            return 0;
+        }
+
+
+        public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        {
+            if (searchType == 1)
+                return _tenantDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+            else
+                return _tenantDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+        }
+
         private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId, int sinDateMin, int sinDateMax, int userId, bool isHistory = true)
         {
             var result = new List<OrdInfModel>();
