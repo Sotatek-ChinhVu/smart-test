@@ -67,6 +67,22 @@
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
+        // Validate Main Insurance
+        public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
+        public static readonly string InvalidSelectedHokenInfHokenNo = "Invalid SelectedHokenInf HokenNo";
+        public static readonly string InvalidSelectedHokenInfStartDate = "Invalid SelectedHokenInf StartDate";
+        public static readonly string InvalidSelectedHokenInfEndDate = "Invalid SelectedHokenInf EndDate";
+        public static readonly string InvaliSelectedHokenInfHokensyaMstIsKigoNa = "Invalid SelectedHokenInf HokensyaMst IsKigoNa";
+        public static readonly string InvalidSelectedHokenInfHonkeKbn = "Invalid SelectedHokenInf HonkeKbn";
+        public static readonly string InvalidSelectedHokenInfTokureiYm1 = "Invalid SelectedHokenInf TokureiYm1";
+        public static readonly string InvalidSelectedHokenInfTokureiYm2 = "Invalid SelectedHokenInf TokureiYm2";
+        public static readonly string InvalidSelectedHokenInfConfirmDate = "Invalid SelectedHokenInf ConfirmDate";
+        public static readonly string InvalidSelectedHokenMstHokenNo = "Invalid SelectedHokenMst HokenNo";
+        public static readonly string InvalidSelectedHokenMstCheckDegit = "Invalid SelectedHokenMst CheckDegit";
+        public static readonly string InvalidSelectedHokenMstAgeStart = "Invalid SelectedHokenMst AgeStart";
+        public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
+        public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
+        public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
 
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";

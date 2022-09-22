@@ -1277,6 +1277,36 @@ namespace Helper.Common
             return sTime;
         }
 
+        public static bool HokenNumberCheckDigits(int hokenNumber)
+        {
+            int WHokenNumber = hokenNumber / 10;
+            return hokenNumber == PtIDChkDgtMakeM10W21(WHokenNumber);
+        }
+
+        public static int PtIDChkDgtMakeM10W21(int PtID)
+        {
+            int digit = 0;
+            string ptStr = PtID.ToString("D7");
+            int wWait = 2;
+
+            for (int i = 0; i <= ptStr.Length - 1; i++)
+            {
+                int sumOf2Digits = (ptStr[i] - '0') * wWait;
+                sumOf2Digits = sumOf2Digits % 10 + sumOf2Digits / 10;
+                digit = digit + sumOf2Digits;
+                if (wWait == 2)
+                    wWait = 1;
+                else
+                    wWait = 2;
+            }
+
+            digit = digit % 10;
+            if (digit != 0)
+                digit = 10 - digit;
+
+            return (PtID * 10 + digit);
+        }
+
     }
 
     public enum WarekiFormat

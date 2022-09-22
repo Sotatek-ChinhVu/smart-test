@@ -31,6 +31,9 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using UseCase.Insurance.ValidMainInsurance;
+using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Responses.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -161,6 +164,26 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet("ValidateMainInsurance")]
+        public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromQuery] ValidateMainInsuranceRequest request)
+        {
+            var input = new ValidMainInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
+                request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
+                request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate, request.SelectedHokenInfHokensyaMstIsKigoNa, request.SelectedHokenInfKigo, request.SelectedHokenInfBango,
+                request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
+                request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
+                request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenMstHoubetu, request.SelectedHokenMstHokenNo,
+                request.SelectedHokenMstCheckDegit, request.SelectedHokenMstAgeStart, request.SelectedHokenMstAgeEnd, request.SelectedHokenMstStartDate, request.SelectedHokenMstEndDate,
+                request.SelectedHokenMstDisplayText, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidateMainInsurancePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateMainInsuranceReponse>>(presenter.Result);
         }
 
     }

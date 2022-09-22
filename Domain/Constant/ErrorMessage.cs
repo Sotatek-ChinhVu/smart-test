@@ -34,5 +34,7 @@ namespace Domain.Constant
         public const string MessageType_mInp00040 = "{0}は {1}で入力してください。";
 
         public const string MessageType_mEnt01041 = "{0}ため、登録できません。";
+
+        public const string MessageType_mInp00010 = "{0}を入力してください。";
     }
 }
