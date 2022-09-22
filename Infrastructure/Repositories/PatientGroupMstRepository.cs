@@ -17,8 +17,8 @@ namespace Infrastructure.Repositories
 
         public List<PatientGroupMstModel> GetAll()
         {
-            var groupMstList = _tenantNoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).ToList();
-            var groupDetailList = _tenantNoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
+            var groupMstList = _tenantNoTrackingDataContext.PtGrpNameMsts.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+            var groupDetailList = _tenantNoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
 
             List<PatientGroupMstModel> result = new List<PatientGroupMstModel>();
             foreach (var groupMst in groupMstList)
@@ -48,68 +48,77 @@ namespace Infrastructure.Repositories
             bool status = false;
             try
             {
-                // list PatientGroupDetailModel
-                List<PatientGroupDetailModel> listPatientGroupDetailModels = new();
-                foreach (var model in patientGroupMstModels)
-                {
-                    listPatientGroupDetailModels.AddRange(model.Details);
-                }
-
                 // list get in datatacontext
                 var groupMstLists = _tenantDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0).ToList();
                 var groupDetailLists = _tenantDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0).ToList();
-                var listGroupMstIds = groupMstLists.Select(mst => mst.GrpId).ToList();
 
-                // Add new PtGrpNameMst
-                var listGroupModelAddNews = patientGroupMstModels.Where(model => !listGroupMstIds.Contains(model.GroupId))
-                        .Select(model => ConvertToPtGrpNameMst(hpId, userId, 0, new PtGrpNameMst(), model, true)).ToList();
-                if (listGroupModelAddNews != null && listGroupModelAddNews.Count > 0)
-                {
-                    _tenantDataContext.PtGrpNameMsts.AddRange(listGroupModelAddNews);
-                }
+                List<long> listDetailSeqNoModel = new();
+                List<PtGrpNameMst> listAddNewGroupMsts = new();
+                List<PtGrpItem> listAddNewGroupItemMsts = new();
 
-                // Add new PtGrpItem
-                var listGroupDetailMstAddNews = listPatientGroupDetailModels.Where(model => model.SeqNo == 0)
-                        .Select(model => ConvertToPtGrpItem(hpId, userId, 0, new PtGrpItem(), model, true)).ToList();
-                if (listGroupModelAddNews != null && listGroupModelAddNews.Count > 0)
+                foreach (var model in patientGroupMstModels)
                 {
-                    _tenantDataContext.PtGrpItems.AddRange(listGroupDetailMstAddNews);
-                }
-
-                // Update PtGrpNameMst
-                foreach (var mst in groupMstLists)
-                {
-                    var model = patientGroupMstModels.FirstOrDefault(model => model.GroupId == mst.GrpId);
-                    if (model != null)
+                    var groupMst = groupMstLists.FirstOrDefault(x => x.GrpId == model.GroupId);
+                    if (groupMst != null)
                     {
-                        mst.GrpName = model.GroupName;
+                        groupMst.GrpName = model.GroupName;
+                        int sortNo = 1;
+                        foreach (var detail in model.Details)
+                        {
+                            var groupDetail = groupDetailLists.FirstOrDefault(x => x.SeqNo == detail.SeqNo && x.GrpId == model.GroupId);
+                            if (groupDetail != null)
+                            {
+                                groupDetail.GrpCode = detail.GroupCode;
+                                groupDetail.GrpCodeName = detail.GroupDetailName;
+                                groupDetail.SortNo = sortNo;
+                                groupDetail.UpdateId = userId;
+                                groupDetail.UpdateDate = DateTime.UtcNow;
+                            }
+                            else
+                            {
+                                listAddNewGroupItemMsts.Add(ConvertToPtGrpItem(hpId, userId, sortNo, 0, new PtGrpItem(), detail, true));
+                            }
+                            sortNo++;
+                        }
                     }
                     else
                     {
-                        mst.IsDeleted = 1;
+                        listAddNewGroupMsts.Add(ConvertToPtGrpNameMst(hpId, userId, 0, new PtGrpNameMst(), model, true));
+                        int sortNo = 1;
+                        foreach (var detail in model.Details)
+                        {
+                            listAddNewGroupItemMsts.Add(ConvertToPtGrpItem(hpId, userId, sortNo, 0, new PtGrpItem(), detail, true));
+                            sortNo++;
+                        }
                     }
-                    mst.UpdateId = userId;
-                    mst.UpdateDate = DateTime.UtcNow;
+                    listDetailSeqNoModel.AddRange(model.Details.Select(x => x.SeqNo).ToList());
                 }
 
-                // Update PtGrpItems 
-                int sortNo = 1;
-                foreach (var mst in groupDetailLists)
+                _tenantDataContext.PtGrpNameMsts.AddRange(listAddNewGroupMsts);
+                _tenantDataContext.PtGrpItems.AddRange(listAddNewGroupItemMsts);
+
+                // delete Group
+                var listGroupDeletes = groupMstLists.Where(mst => !patientGroupMstModels.Select(x => x.GroupId).ToList().Contains(mst.GrpId)).ToList();
+                if (listGroupDeletes != null && listGroupDeletes.Count > 0)
                 {
-                    var model = listPatientGroupDetailModels.FirstOrDefault(model => model.GroupID == mst.GrpId && model.SeqNo == mst.SeqNo);
-                    if (model != null)
+                    foreach (var item in listGroupDeletes)
                     {
-                        mst.GrpCode = model.GroupCode;
-                        mst.GrpCodeName = model.GroupDetailName;
-                        mst.SortNo = sortNo;
-                        sortNo++;
+                        item.IsDeleted = 1;
+                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateId = userId;
                     }
-                    else
+                }
+
+                // delete Detail
+                var listDetailDeletes = groupDetailLists.Where(mst => !listDetailSeqNoModel.Contains(mst.SeqNo)).ToList();
+                if (listDetailDeletes != null && listDetailDeletes.Count > 0)
+                {
+                    foreach (var item in listDetailDeletes)
                     {
-                        mst.IsDeleted = 1;
+                        item.IsDeleted = 1;
+                        item.UpdateDate = DateTime.UtcNow;
+                        item.UpdateId = userId;
                     }
-                    mst.UpdateId = userId;
-                    mst.UpdateDate = DateTime.UtcNow;
                 }
 
                 _tenantDataContext.SaveChanges();
@@ -139,14 +148,14 @@ namespace Infrastructure.Repositories
             return entity;
         }
 
-        private PtGrpItem ConvertToPtGrpItem(int hpId, int userId, int isDelete, PtGrpItem entity, PatientGroupDetailModel model, bool? isAddNew = false)
+        private PtGrpItem ConvertToPtGrpItem(int hpId, int userId, int sortNo, int isDelete, PtGrpItem entity, PatientGroupDetailModel model, bool? isAddNew = false)
         {
             entity.HpId = hpId;
             entity.GrpId = model.GroupID;
             entity.GrpCode = model.GroupCode;
             entity.SeqNo = model.SeqNo;
             entity.GrpCodeName = model.GroupDetailName;
-            entity.SortNo = model.SortNo;
+            entity.SortNo = sortNo;
             entity.IsDeleted = isDelete;
             if (isAddNew == true)
             {

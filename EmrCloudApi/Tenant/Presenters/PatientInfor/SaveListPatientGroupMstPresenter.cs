@@ -22,7 +22,15 @@ public class SaveListPatientGroupMstPresenter : ISaveListPatientGroupMstOutputPo
         SaveListPatientGroupMstStatus.Failed => ResponseMessage.Failed,
         SaveListPatientGroupMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         SaveListPatientGroupMstStatus.InvalidUserId => ResponseMessage.InvalidUserId,
-
+        SaveListPatientGroupMstStatus.DuplicateGroupId => ResponseMessage.DuplicateGroupId,
+        SaveListPatientGroupMstStatus.DuplicateGroupName => ResponseMessage.DuplicateGroupName,
+        SaveListPatientGroupMstStatus.DuplicateGroupDetailCode => ResponseMessage.DuplicateGroupDetailCode,
+        SaveListPatientGroupMstStatus.DuplicateGroupDetailName => ResponseMessage.DuplicateGroupDetailName,
+        SaveListPatientGroupMstStatus.InvalidGroupId => ResponseMessage.InvalidGroupId,
+        SaveListPatientGroupMstStatus.InvalidGroupName => ResponseMessage.InvalidGroupName,
+        SaveListPatientGroupMstStatus.InvalidDetailGroupCode => ResponseMessage.InvalidDetailGroupCode,
+        SaveListPatientGroupMstStatus.InvalidGroupDetailName => ResponseMessage.InvalidGroupDetailName,
+        SaveListPatientGroupMstStatus.DuplicateGroupDetailSeqNo => ResponseMessage.DuplicateGroupDetailSeqNo,
         _ => string.Empty
     };
 }

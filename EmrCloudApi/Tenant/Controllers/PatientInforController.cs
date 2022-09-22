@@ -184,13 +184,11 @@ namespace EmrCloudApi.Tenant.Controllers
             {
                 listDatas.Add(new SaveListPatientGroupMstInputItem(
                         item.GroupId,
-                        item.SortNo,
                         item.GroupName,
                         item.Details.Select(detail => new SaveListPatientGroupDetailMstInputItem(
-                                detail.GroupId,
+                                item.GroupId,
                                 detail.GroupCode,
                                 detail.SeqNo,
-                                detail.SortNo,
                                 detail.GroupDetailName
                             )).ToList()
                     ));
