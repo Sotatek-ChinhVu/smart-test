@@ -14,6 +14,7 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -30,6 +31,16 @@ public class VisitingController : ControllerBase
     {
         _bus = bus;
         _webSocketService = webSocketService;
+    }
+
+    [HttpGet(ApiPath.Get + "ReceptionLock")]
+    public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
+    {
+        var input = new GetReceptionLockInputData(request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionLockPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]
