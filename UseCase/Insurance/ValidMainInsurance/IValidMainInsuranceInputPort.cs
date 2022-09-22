@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UseCase.Insurance.ValidMainInsurance
 {
-    internal class ValidMainInsuranceInputPort
+    internal class IValidMainInsuranceInputPort
     {
     }
 }
