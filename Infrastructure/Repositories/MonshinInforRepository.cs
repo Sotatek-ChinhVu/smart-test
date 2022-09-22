@@ -18,11 +18,11 @@ namespace Infrastructure.Repositories
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
-        
-        public List<MonshinInforModel> MonshinInforModels(int hpId,long ptId)
+
+        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
         {
             var monshinList = _tenantDataContext.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).OrderByDescending(x => x.SinDate)
                 .Select(x => new MonshinInforModel(
                 x.HpId,
                 x.PtId,

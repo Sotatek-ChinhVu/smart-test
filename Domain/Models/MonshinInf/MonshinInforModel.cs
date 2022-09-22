@@ -17,10 +17,10 @@ namespace Domain.Models.MonshinInf
             Text = text;
         }
 
-        public int HpId { get; set; }
-        public long PtId { get; set; }
-        public long RaiinNo { get; set; }
-        public int SinDate { get; set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public long RaiinNo { get; private set; }
+        public int SinDate { get; private set; }
         public string Text { get; set; } = string.Empty;
     }
 }
