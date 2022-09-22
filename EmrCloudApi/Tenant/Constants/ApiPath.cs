@@ -28,5 +28,8 @@
 
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
+
+        //Today Oder
+        public const string GetMaxRpNo = "GetMaxRpNo";
     }
 }

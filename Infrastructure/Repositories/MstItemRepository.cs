@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -158,11 +159,13 @@ namespace Infrastructure.Repositories
                 "",
                 tenMst?.CmtCol1 ?? 0,
                 tenMst?.IpnNameCd ?? string.Empty,
-                tenMst?.SinKouiKbn ?? 0
+                tenMst?.SinKouiKbn ?? 0,
+                tenMst?.YjCd ?? string.Empty,
+                tenMst?.CnvUnitName ?? string.Empty
             );
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public (List<TenItemModel>,int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -485,16 +488,20 @@ namespace Infrastructure.Repositories
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
                                      select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
+            var totalCount = queryJoinWithKensa.Where(item => item.TenMst != null).Count();
 
-            var totalCount = queryJoinWithKensa.Count();
-            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+            var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
+            if(pageCount > 0)
+            {
+                listTenMst = listTenMst.Take(pageCount);
+            }
             var listTenMstData = listTenMst.ToList();
 
-            if (listTenMstData != null && listTenMstData.Count > 0)
+            if (listTenMstData != null && listTenMstData.Any())
             {
                 listTenMstModels = listTenMstData.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
-                                                           item.TenMst.ItemCd,
+                                                           item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
                                                            item.TenMst.KanaName1 ?? string.Empty,
                                                            item.TenMst?.Name ?? string.Empty,
@@ -513,7 +520,9 @@ namespace Infrastructure.Repositories
                                                            item.KensaMst != null ? (item.KensaMst.CenterItemCd2 ?? string.Empty) : string.Empty,
                                                            item.TenMst?.CmtCol1 ?? 0,
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
-                                                           item.TenMst?.SinKouiKbn ?? 0
+                                                           item.TenMst?.SinKouiKbn ?? 0,
+                                                           item.TenMst?.YjCd ?? string.Empty,
+                                                           item.TenMst?.CnvUnitName ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
