@@ -41,7 +41,7 @@ namespace Infrastructure.Repositories
                             TagSeqNo = tagInf == null ? 0 : tagInf.SeqNo,
                             CommentContent = commentInf == null ? string.Empty : commentInf.Text,
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
-                            CommentKbn = commentInf == null ? 0 : commentInf.CmtKbn,
+                            CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
                             RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                                             on raiinListInf.KbnCd equals raiinListMst.KbnCd
