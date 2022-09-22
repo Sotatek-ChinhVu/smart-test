@@ -40,6 +40,10 @@ public class VisitingController : ControllerBase
         var input = new GetReceptionCommentInputData(request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionCommentPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
     [HttpGet(ApiPath.Get + "ReceptionLock")]
     public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
     {
