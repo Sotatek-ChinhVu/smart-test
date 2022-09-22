@@ -22,16 +22,18 @@ namespace Interactor.ReceptionVisiting
         {
             try
             {
+                if (inputData.HpId <= 0)
+                    return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.InvalidHpId);
+
+                if (inputData.RaiinNo <= 0)
+                    return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.InvalidRaiinNo);
+
                 var data = _receptionVisitingRepository.GetReceptionVisiting(inputData.HpId, inputData.RaiinNo);
-                if (data == null)
-                {
-                    return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.NoData);
-                }
+
                 return new GetReceptionVisitingOutputData(data, GetReceptionVisitingStatus.Success);
             }
             catch (Exception)
             {
-
                 return new GetReceptionVisitingOutputData(GetReceptionVisitingStatus.Failed);
             }
 

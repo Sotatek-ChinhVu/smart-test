@@ -23,7 +23,8 @@ namespace EmrCloudApi.Tenant.Presenters.Reception
         {
             GetReceptionVisitingStatus.Success => ResponseMessage.Success,
             GetReceptionVisitingStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
-            GetReceptionVisitingStatus.NoData => ResponseMessage.NoData,
+            GetReceptionVisitingStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            GetReceptionVisitingStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
 
         };
