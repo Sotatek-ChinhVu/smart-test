@@ -15,5 +15,6 @@
         InvalidSearchText = 10,
         InvalidUserId = 11,
         NoData = 12,
+        Failed = 13
     }
 }

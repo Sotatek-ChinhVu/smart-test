@@ -57,6 +57,9 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.InvalidUserId:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidUserId;
                     break;
+                case GetMedicalExaminationHistoryStatus.Failed:
+                    Result.Message = ResponseMessage.Failed;
+                    break;
             }
         }
     }
