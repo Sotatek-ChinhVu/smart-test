@@ -10,5 +10,6 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input);
         bool CheckListId(List<long> ptIds);
+
     }
 }

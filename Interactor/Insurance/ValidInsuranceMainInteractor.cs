@@ -205,9 +205,20 @@ namespace Interactor.Insurance
 
         }
 
-        public string IsValidHokenNashi()
+        public string IsValidHokenNashi(int hpId, long ptId, int sinDate, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int startDate, int endDate)
         {
+            var checkMessageIsValidHokenDetail = IsValidHokenDetail(hpId, ptId, sinDate, tokki1, tokki2, tokki3, tokki4, tokki5);
+            if (!String.IsNullOrEmpty(checkMessageIsValidHokenDetail))
+            {
+                return checkMessageIsValidHokenDetail;
+            }
 
+            var checkMessageIsValidYukoKigen = IsValidYukoKigen(startDate, endDate);
+            if (!String.IsNullOrEmpty(checkMessageIsValidYukoKigen))
+            {
+                return checkMessageIsValidYukoKigen;
+            }
+            return string.Empty;
         }
 
         private string IsValidYukoKigen(int selectedHokenInfStartDate, int selectedHokenInfEndDate)
@@ -219,6 +230,137 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "保険有効終了日", "保険有効開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
+            }
+
+            return message;
+        }
+
+        private string IsValidHokenDetail(int hpId, long ptId, int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
+        {
+            var TokkiMstBinding = _patientInforRepository.GetListTokki(hpId, sinDate);
+            var message = "";
+            bool _isValidLengthTokki(string tokkiValue)
+            {
+                var itemToki = TokkiMstBinding.FirstOrDefault(x => x.TokkiCd == tokkiValue);
+                if (itemToki != null)
+                {
+                    return true;
+                }
+                return tokkiValue.Length <= 2;
+            }
+            if (!string.IsNullOrEmpty(tokki1Value))
+            {
+                if (!_isValidLengthTokki(tokki1Value))
+                {
+                    var paramsMessage = new string[] { "特記事項１", "2文字" };
+                    message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki2Value) && tokki2Value == tokki1Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki2Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki3Value) && tokki3Value == tokki1Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki3Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki1Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki1Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+            }
+            if (!string.IsNullOrEmpty(tokki2Value))
+            {
+                if (!_isValidLengthTokki(tokki2Value))
+                {
+                    var paramsMessage = new string[] { "特記事項２", "2文字" };
+                    message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki3Value) && tokki3Value == tokki2Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki3Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki2Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki2Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+            }
+            if (!string.IsNullOrEmpty(tokki3Value))
+            {
+                if (!_isValidLengthTokki(tokki3Value))
+                {
+                    var paramsMessage = new string[] { "特記事項３", "2文字" };
+                    message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki3Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki3Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+            }
+            if (!string.IsNullOrEmpty(tokki4Value))
+            {
+                if (!_isValidLengthTokki(tokki4Value))
+                {
+                    var paramsMessage = new string[] { "特記事項４", "2文字" };
+                    message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
+                    return message;
+                }
+                if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki4Value)
+                {
+                    var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
+                    message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
+                    return message;
+                }
+            }
+            if (!string.IsNullOrEmpty(tokki5Value) && !_isValidLengthTokki(tokki5Value))
+            {
+                var paramsMessage = new string[] { "特記事項５", "2文字" };
+                message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
+                return message;
+            }
+            return message;
+        }
+
+        private string IsValidYukoKigen(int selectedHokenInfStartDate, int selectedHokenInfEndDate)
+        {
+            var message = "";
+            if (selectedHokenInfStartDate != 0 && selectedHokenInfEndDate != 0 && selectedHokenInfStartDate > selectedHokenInfEndDate)
+            {
+                var paramsMessage = new string[] { "保険有効終了日", "保険有効開始日以降" };
+                message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
+                return message;
             }
 
             return message;
