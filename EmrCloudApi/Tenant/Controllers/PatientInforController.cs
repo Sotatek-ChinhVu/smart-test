@@ -1,4 +1,4 @@
-﻿﻿﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
+﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
@@ -8,7 +8,7 @@ using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
-﻿﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
@@ -31,6 +31,8 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using UseCase.PatientGroupMst.SaveList;
+using EmrCloudApi.Tenant.Constants;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -79,7 +81,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetInsuranceListResponse>>(presenter.Result);
         }
-        
+
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
@@ -113,7 +115,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<CalculationInfResponse>>(present.Result);
         }
-        
+
         [HttpGet("GetPatientGroupMst")]
         public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
         {
@@ -124,6 +126,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListPatientGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SavePatientGroupMst)]
+        public ActionResult<Response<SaveListPatientGroupMstResponse>> SavePatientGroupMst([FromBody] SaveListPatientGroupMstRequest request)
+        {
+            var input = new SaveListPatientGroupMstInputData(request.HpId, request.UserId, ConvertToListInput(request.SaveListPatientGroupMsts));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveListPatientGroupMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveListPatientGroupMstResponse>>(presenter.Result);
         }
 
         [HttpGet("GetInsuranceMst")]
@@ -161,6 +175,27 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
+        }
+
+        private List<SaveListPatientGroupMstInputItem> ConvertToListInput(List<SaveListPatientGroupMstRequestItem> requestItems)
+        {
+            List<SaveListPatientGroupMstInputItem> listDatas = new();
+            foreach (var item in requestItems)
+            {
+                listDatas.Add(new SaveListPatientGroupMstInputItem(
+                        item.GroupId,
+                        item.SortNo,
+                        item.GroupName,
+                        item.Details.Select(detail => new SaveListPatientGroupDetailMstInputItem(
+                                detail.GroupId,
+                                detail.GroupCode,
+                                detail.SeqNo,
+                                detail.SortNo,
+                                detail.GroupDetailName
+                            )).ToList()
+                    ));
+            }
+            return listDatas;
         }
 
     }

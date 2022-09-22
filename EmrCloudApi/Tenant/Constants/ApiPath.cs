@@ -31,5 +31,8 @@
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+
+        //PatientGroupMst
+        public const string SavePatientGroupMst = "SavePatientGroupMst";
     }
 }
