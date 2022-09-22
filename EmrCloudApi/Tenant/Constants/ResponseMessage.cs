@@ -254,5 +254,55 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        //TodayOdr Field
+        public static readonly string TodayOdrSuryo = "Suryo";
+        public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
+        public static readonly string TodayOdrCmt842_830 = "CmtOpt";
+        public static readonly string TodayOdrKohatuKbn = "KohatuKbn";
+        public static readonly string TodayOdrDrugKbn = "DrugKbn";
+        public static readonly string TodayOdrId = "Id";
+        public static readonly string TodayOdrHpId = "HpId";
+        public static readonly string TodayOdrRaiinNo = "RaiinNo";
+        public static readonly string TodayOdrRpNo = "RpNo";
+        public static readonly string TodayOdrRpEdaNo = "RpEdaNo";
+        public static readonly string TodayOdrPtId = "PtId";
+        public static readonly string TodayOdrSinDate = "SinDate";
+        public static readonly string TodayOdrHokenPid = "HokenPId";
+        public static readonly string TodayOdrRpName = "RpName";
+        public static readonly string TodayOdrInOutKbn = "InOutKbn";
+        public static readonly string TodayOdrSikyuKbn = "SikyuKbn";
+        public static readonly string TodayOdrSyohoSbt = "SyohoSbt";
+        public static readonly string TodayOdrSanteiKbn = "SanteiKbn";
+        public static readonly string TodayOdrTosekiKbn = "TosekiKbn";
+        public static readonly string TodayOdrDaysCnt = "DaysCnt";
+        public static readonly string TodayOdrSortNo = "SortNo";
+        public static readonly string TodayOdrRowNo = "RowNo";
+        public static readonly string TodayOdrSinKouiKbn = "SinKouiKbn";
+        public static readonly string TodayOdrItemCd = "ItemCd";
+        public static readonly string TodayOdrItemName = "ItemName";
+        public static readonly string TodayOdrUnitName = "UnitName";
+        public static readonly string TodayOdrUnitSbt = "UnitSbt";
+        public static readonly string TodayOdrTermVal = "TermVal";
+        public static readonly string TodayOdrSyohoKbn = "SyohoKbn";
+        public static readonly string TodayOdrSyohoLimitKbn = "SyohoLimitKbn";
+        public static readonly string TodayOdrYohoKbn = "YohoKbn";
+        public static readonly string TodayOdrIsNodspRece = "IsNodspRece";
+        public static readonly string TodayOdrIpnCd = "IpnCd";
+        public static readonly string TodayOdrIpnName = "IpnName";
+        public static readonly string TodayOdrJissiKbn = "JissiKbn";
+        public static readonly string TodayOdrJissiId = "JissiId";
+        public static readonly string TodayOdrJissiMachine = "JissiMachine";
+        public static readonly string TodayOdrReqCd = "ReqCd";
+        public static readonly string TodayOdrBunkatu = "Bunkatu";
+        public static readonly string TodayOdrCmtName = "CmtName";
+        public static readonly string TodayOdrCmtOpt = "CmtOpt";
+        public static readonly string TodayOdrFontColor = "FontColor";
+        public static readonly string TodayOdrCommentNewline = "CommentNewline";
+        public static readonly string TodayOdrIsDeleted = "IsDeleted";
+        public static readonly string TodayOdrSuryoYohoKbn = "Suryo,YohoKbn";
+        public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
+        public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
+
     }
 }
