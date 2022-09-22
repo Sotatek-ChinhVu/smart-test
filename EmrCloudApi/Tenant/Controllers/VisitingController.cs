@@ -59,12 +59,13 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "ReceptionInfo")]
     public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
-        var input = new GetReceptionVisitingInputData(request.RaiinNo);
+        var input = new GetReceptionVisitingInputData(request.HpId, request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
+
     [HttpGet(ApiPath.Get + "Settings")]
     public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {

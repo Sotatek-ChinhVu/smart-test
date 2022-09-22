@@ -6,6 +6,7 @@ namespace UseCase.ReceptionVisiting.Get
     {
         Success = 1,
         InvalidRaiinNo = 2,
-        NoData = 3
+        NoData = 3,
+        Failed = 4
     }
 }

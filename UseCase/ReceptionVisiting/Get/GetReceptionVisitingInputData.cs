@@ -9,11 +9,13 @@ namespace UseCase.ReceptionVisiting.Get
 {
     public class GetReceptionVisitingInputData : IInputData<GetReceptionVisitingOutputData>
     {
-        public GetReceptionVisitingInputData(long raiinNo)
+        public GetReceptionVisitingInputData(int hpId, long raiinNo)
         {
+            HpId = hpId;
             RaiinNo = raiinNo;
         }
 
+        public int HpId { get; set; }
         public long RaiinNo { get; private set; }
 
     }

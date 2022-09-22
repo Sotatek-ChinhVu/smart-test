@@ -232,7 +232,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
-            services.AddTransient<IReceptionRepository, ReceptionRepository>();
             services.AddTransient<IReceptionLockRepository, ReceptionLockRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();

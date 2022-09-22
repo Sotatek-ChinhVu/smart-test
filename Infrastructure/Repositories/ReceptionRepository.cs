@@ -644,10 +644,10 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public ReceptionModel? GetReceptionVisiting(long raiinNo)
+        public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
             var DataRaiinInf = _tenantDataContext.RaiinInfs
-                .Where(x => x.RaiinNo == raiinNo)
+                .Where(x => x.HpId == hpId && x.RaiinNo == raiinNo)
                 .Select(x => new ReceptionModel(
                 x.RaiinNo,
                 x.UketukeId,
@@ -657,7 +657,7 @@ namespace Infrastructure.Repositories
                 x.Status, x.YoyakuId, x.TantoId))
                 .FirstOrDefault();
             if (DataRaiinInf is null)
-                return null;
+                return new ReceptionModel();
             return new ReceptionModel(
                 DataRaiinInf.RaiinNo,
                 DataRaiinInf.UketukeId,

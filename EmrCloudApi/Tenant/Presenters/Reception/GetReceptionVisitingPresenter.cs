@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Presenters.Reception
 
         public void Complete(GetReceptionVisitingOutputData output)
         {
-            Result.Data = new GetReceptionVisitingResponse(output.ListVisiting);
+            Result.Data = new GetReceptionVisitingResponse(output.ReceptionModel);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }
