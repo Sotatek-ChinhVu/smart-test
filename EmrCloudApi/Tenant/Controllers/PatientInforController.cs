@@ -166,8 +166,8 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
-        [HttpGet("ValidateMainInsurance")]
-        public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromQuery] ValidateMainInsuranceRequest request)
+        [HttpPost("ValidateMainInsurance")]
+        public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
         {
             var input = new ValidMainInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
                 request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
