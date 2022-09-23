@@ -23,9 +23,16 @@ namespace Interactor.OrdInfs
         {
             try
             {
+                
+
                 var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
+
+                if (inputDataList.Count == 0)
+                {
+                    return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Failed);
+                }
 
                 var count = 0;
                 foreach (var item in inputDataList)
@@ -161,7 +168,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Faild);
+                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
             }
         }
     }
