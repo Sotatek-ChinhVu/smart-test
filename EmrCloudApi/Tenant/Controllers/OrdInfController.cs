@@ -36,7 +36,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Validate)]
         public ActionResult<Response<ValidationOrdInfListResponse>> Validate([FromBody] ValidationOrdInfListRequest request)
         {
-            var input = new ValidationOrdInfListInputData(request.OrdInfs.Select(o =>
+            var input = new ValidationOrdInfListInputData(request.OdrInfs.Select(o =>
                     new ValidationOdrInfItem(
                         o.HpId,
                         o.RaiinNo,
