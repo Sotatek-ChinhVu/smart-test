@@ -35,12 +35,14 @@ namespace Interactor.OrdInfs
                 var count = 0;
                 foreach (var item in inputDataList)
                 {
-                    var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
-                    if (!check && item.Id > 0)
+                    var checkInsert = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo);
+                    var checkUpdate = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo-1);
+
+                    if (!checkUpdate && item.Id > 0)
                     {
                         dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
                     }
-                    else if (check && item.Id == 0)
+                    else if (checkInsert && item.Id == 0)
                     {
                         dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
                     }

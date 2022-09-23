@@ -13,7 +13,7 @@ namespace Domain.Models.OrdInfs
 
         void Delete(int ordId);
 
-        bool CheckExistOrder(long rpNo, long rpEdaNo);
+        bool CheckExistOrder(int hpId, long ptId, long raiinNo, int sinDate, long rpNo, long rpEdaNo);
 
         bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate);
 
