@@ -24,11 +24,16 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
             _webSocketService = webSocketService;
         }
+        
+        public MonshinController(UseCaseBus bus)
+        {
+            _bus = bus;
+        }
 
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMonshinInforListResponse>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
-            var input = new GetMonshinInforListInputData(request.HpId, request.PtId);
+            var input = new GetMonshinInforListInputData(request.HpId, request.PtId, request.SinDate, request.IsDeleted);
             var output = _bus.Handle(input);
             var presenter = new GetMonshinInforListPresenter();
             presenter.Complete(output);

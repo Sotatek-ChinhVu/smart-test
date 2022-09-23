@@ -6,6 +6,8 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Entity.Tenant;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
@@ -30,10 +32,10 @@ namespace Infrastructure.Repositories
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
+        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
         {
             var monshinList = _tenantDataContextNoTracking.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0))
                 .OrderByDescending(x => x.SinDate)
                 .ThenByDescending(x => x.RaiinNo)
                 .Select(x => new MonshinInforModel(
@@ -41,7 +43,10 @@ namespace Infrastructure.Repositories
                 x.PtId,
                 x.RaiinNo,
                 x.SinDate,
-                x.Text))
+                x.Text ?? string.Empty,
+                x.Rtext ?? string.Empty,
+                x.GetKbn,
+                x.IsDeleted))
                 .ToList();
             return monshinList;
         }
@@ -140,5 +145,9 @@ namespace Infrastructure.Repositories
                 });
             return result;
         }
+
+                
+        }
+
     }
 }
