@@ -19,6 +19,8 @@ namespace Infrastructure.Repositories
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count)
         {
+            List<FlowSheetModel> result = new List<FlowSheetModel>();
+
             var raiinInfsQueryable = _tenantNoTrackingDataContext.RaiinInfs
                 .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3)
                 .Skip(startIndex)
@@ -27,9 +29,12 @@ namespace Infrastructure.Repositories
             var tagsQueryable = _tenantNoTrackingDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId);
             var commentsQueryable = _tenantNoTrackingDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId);
             var query = from raiinInf in raiinInfsQueryable
-                        join karteInf in karteInfsQueryable on raiinInf.RaiinNo equals karteInf.RaiinNo into gj from karteInf in gj.DefaultIfEmpty()
-                        join tagInf in tagsQueryable on raiinInf.RaiinNo equals tagInf.RaiinNo into gjTag from tagInf in gjTag.DefaultIfEmpty()
-                        join commentInf in commentsQueryable on raiinInf.RaiinNo equals commentInf.RaiinNo into gjComment from commentInf in gjComment.DefaultIfEmpty()
+                        join karteInf in karteInfsQueryable on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
+                        from karteInf in gj.DefaultIfEmpty()
+                        join tagInf in tagsQueryable on raiinInf.RaiinNo equals tagInf.RaiinNo into gjTag
+                        from tagInf in gjTag.DefaultIfEmpty()
+                        join commentInf in commentsQueryable on raiinInf.RaiinNo equals commentInf.RaiinNo into gjComment
+                        from commentInf in gjComment.DefaultIfEmpty()
                         select new
                         {
                             RaiinNo = raiinInf.RaiinNo,
@@ -43,25 +48,25 @@ namespace Infrastructure.Repositories
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
                             RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
-                                            join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                                            on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                            select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd ?? string.Empty)
+                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                                             on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                                             select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd ?? string.Empty)
                                             )
                                             .AsEnumerable()
                         };
 
             var rawDataList = query.ToList();
 
-            var todayOdr = rawDataList.Select(r => 
+            var todayOdr = rawDataList.Select(r =>
                 new FlowSheetModel(
-                    r.SinDate, 
-                    r.TagNo, 
-                    r.Text, 
-                    r.RaiinNo, 
-                    r.SyosaisinKbn, 
-                    r.CommentContent, 
-                    r.Status, 
-                    false, 
+                    r.SinDate,
+                    r.TagNo,
+                    r.Text,
+                    r.RaiinNo,
+                    r.SyosaisinKbn,
+                    r.CommentContent,
+                    r.Status,
+                    false,
                     r.RaiinNo == raiinNo,
                     r.RaiinListInfs.ToList(),
                     ptId,
@@ -70,6 +75,7 @@ namespace Infrastructure.Repositories
                     r.TagSeqNo)
             ).ToList();
 
+            result.AddRange(todayOdr);
             // Add NextOrder Information
             // Get next order information
             var rsvkrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
@@ -85,8 +91,9 @@ namespace Infrastructure.Repositories
                                    && !string.IsNullOrEmpty(karte.Text.Trim()))
                                    .OrderBy(karte => karte.RsvDate)
                                    .ThenBy(karte => karte.KarteKbn);
+            var temp = nextOdrKarteInfs.ToList();
 
-            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs
+            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable()
                                join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                 equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
                                join karte in nextOdrKarteInfs on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
@@ -103,24 +110,40 @@ namespace Infrastructure.Repositories
             var queryNextOdr = from nextOdr in groupNextOdr
                                join karte in nextOdrKarteInfs on new { nextOdr.HpId, nextOdr.PtId, nextOdr.RsvkrtNo }
                                                 equals new { karte.HpId, karte.PtId, karte.RsvkrtNo } into odrKarteLeft
+                               join tagInf in tagsQueryable on nextOdr.RsvkrtNo equals tagInf.RaiinNo into gjTag
+                               from tagInf in gjTag.DefaultIfEmpty()
                                select new
                                {
                                    NextOdr = nextOdr,
-                                   Karte = odrKarteLeft.FirstOrDefault()
+                                   TagInf = tagInf,
+                                   Karte = odrKarteLeft.FirstOrDefault(),
+                                   RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == nextOdr.RsvkrtNo)
+                                                    join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                                                    on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                                                    select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd ?? string.Empty)
+                                            )
+                                            .AsEnumerable()
                                };
-
             var nextOdrs = queryNextOdr.AsEnumerable().Select(
                     data => new FlowSheetModel(
-                        sinDate,
-                        data.,
-                        SinDate = data.NextOdr.RsvDate,
-                        RaiinNo = data.NextOdr.RsvkrtNo,
-                        SyosaiValue = -1,
-                        IsNextOrder = true,
-                        FullLineOfKarte = data.Karte?.Text,
-                        RaiinListTagModel = new RaiinListTagModel(new RaiinListTag()),
-                        RaiinListCmtModel = new RaiinListCmtModel(new RaiinListCmt())
+                        data.NextOdr?.RsvDate ?? 0,
+                        data.TagInf?.TagNo ?? 0,
+                        data.Karte?.Text ?? string.Empty,
+                        data.NextOdr?.RsvkrtNo ?? 0,
+                        -1,
+                        string.Empty,
+                        0,
+                        true,
+                        false,
+                        data.RaiinListInfs.ToList(),
+                        data.NextOdr?.PtId ?? 0,
+                        0,
+                        0,
+                        data.TagInf?.SeqNo ?? 0
                     )).ToList();
+            result.AddRange(nextOdrs);
+
+            return result;
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
