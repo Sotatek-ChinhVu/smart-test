@@ -23,8 +23,6 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                
-
                 var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
