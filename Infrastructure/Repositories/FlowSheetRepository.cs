@@ -21,9 +21,7 @@ namespace Infrastructure.Repositories
         {
             List<FlowSheetModel> result;
 
-            var raiinInfsQueryable = _tenantNoTrackingDataContext.RaiinInfs
-                .Skip(startIndex)
-                .Take(count);
+            var raiinInfsQueryable = _tenantNoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0);
             var karteInfsQueryable = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
             var tagsQueryable = _tenantNoTrackingDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId);
             var commentsQueryable = _tenantNoTrackingDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId);
@@ -54,7 +52,6 @@ namespace Infrastructure.Repositories
                                             .AsEnumerable()
                         };
 
-            //var rawDataList = query.ToList();
 
             var todayOdr = query.Select(r =>
                 new FlowSheetModel(
@@ -72,10 +69,8 @@ namespace Infrastructure.Repositories
                     r.CommentKbn,
                     r.CommentSeqNo,
                     r.TagSeqNo)
-            );
-                //.ToList();
+            ).AsEnumerable();
 
-            //result.AddRange(todayOdr);
             // Add NextOrder Information
             // Get next order information
             var rsvkrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
@@ -140,8 +135,6 @@ namespace Infrastructure.Repositories
                         0,
                         data.TagInf?.SeqNo ?? 0
                     ));
-            //.ToList();
-            //result.AddRange(nextOdrs);
 
             result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
 
