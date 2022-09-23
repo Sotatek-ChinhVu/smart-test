@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             return generation?.GenerationId ?? 0;
         }
 
-        public List<ListSetMstModel> GetTanSetInfs(int hpId, int setUsageKbn, int generationId,int sinDate)
+        public List<ListSetMstModel> GetTanSetInfs(int hpId, int setUsageKbn, int generationId, int sinDate)
         {
             var list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
                                                         && x.GenerationId == generationId
@@ -35,7 +35,12 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
-                                        && item.EndDate >= sinDate).Select(x => new { x.ItemCd, x.OdrUnitName, x.SinKouiKbn });
+                                        && item.EndDate >= sinDate).Select(x => new
+                                        {
+                                            x.ItemCd,
+                                            x.OdrUnitName,
+                                            x.SinKouiKbn
+                                        });
 
             return (from item in list
                     join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
@@ -70,7 +75,12 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
-                                        && item.EndDate >= sinDate).Select(x => new { x.ItemCd, x.OdrUnitName,x.SinKouiKbn });
+                                        && item.EndDate >= sinDate).Select(x => new
+                                        {
+                                            x.ItemCd,
+                                            x.OdrUnitName,
+                                            x.SinKouiKbn
+                                        });
 
             return (from item in list
                     join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
@@ -95,7 +105,7 @@ namespace Infrastructure.Repositories
                                                (int?)subpet.SinKouiKbn ?? 0)).ToList();
         }
 
-        public List<ListSetMstModel> GetAllTanSetInfs(int hpId,int generationId,int sinDate)
+        public List<ListSetMstModel> GetAllTanSetInfs(int hpId, int generationId, int sinDate)
         {
             var list = _tenantDataContext.ListSetMsts.Where(x => x.HpId == hpId
                                                         && x.GenerationId == generationId
@@ -104,7 +114,12 @@ namespace Infrastructure.Repositories
             var ItemCds = list.Select(x => x.ItemCd);
             var tenMsts = _tenantDataContext.TenMsts.Where(item => ItemCds.Contains(item.ItemCd)
                                         && item.StartDate <= sinDate
-                                        && item.EndDate >= sinDate).Select(x=>new {x.ItemCd ,x.OdrUnitName, x.SinKouiKbn});
+                                        && item.EndDate >= sinDate).Select(x => new
+                                        {
+                                            x.ItemCd,
+                                            x.OdrUnitName,
+                                            x.SinKouiKbn
+                                        });
 
             return (from item in list
                     join tenMst in tenMsts on item.ItemCd equals tenMst.ItemCd into gj
