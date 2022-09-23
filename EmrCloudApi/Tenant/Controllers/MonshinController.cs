@@ -16,14 +16,6 @@ namespace EmrCloudApi.Tenant.Controllers
     public class MonshinController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IWebSocketService _webSocketService;
-
-        public MonshinController(UseCaseBus bus,
-        IWebSocketService webSocketService)
-        {
-            _bus = bus;
-            _webSocketService = webSocketService;
-        }
         
         public MonshinController(UseCaseBus bus)
         {
