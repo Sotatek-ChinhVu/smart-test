@@ -32,7 +32,10 @@ namespace Infrastructure.Repositories
                 x.PtId,
                 x.RaiinNo,
                 x.SinDate,
-                x.Text ?? string.Empty))
+                x.Text ?? string.Empty,
+                x.Rtext ?? string.Empty,
+                x.GetKbn,
+                x.IsDeleted))
                 .ToList();
             return monshinList;
         }
