@@ -110,10 +110,9 @@ namespace Infrastructure.Repositories
                                };
 
             var nextOdrs = queryNextOdr.AsEnumerable().Select(
-                    data => new FlowSheetModel()
-                    {
-                        HpId = hpId,
-                        PtId = ptId,
+                    data => new FlowSheetModel(
+                        sinDate,
+                        data.,
                         SinDate = data.NextOdr.RsvDate,
                         RaiinNo = data.NextOdr.RsvkrtNo,
                         SyosaiValue = -1,
@@ -121,7 +120,7 @@ namespace Infrastructure.Repositories
                         FullLineOfKarte = data.Karte?.Text,
                         RaiinListTagModel = new RaiinListTagModel(new RaiinListTag()),
                         RaiinListCmtModel = new RaiinListCmtModel(new RaiinListCmt())
-                    }).ToList();
+                    )).ToList();
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
