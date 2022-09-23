@@ -1,14 +1,11 @@
 ﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages;
-using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
-using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Requests.VisitingList;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.Reception;
 using EmrCloudApi.Tenant.Responses.VisitingList;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +14,6 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
-using UseCase.PatientInfor.PatientComment;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
@@ -35,16 +31,6 @@ public class VisitingController : ControllerBase
     {
         _bus = bus;
         _webSocketService = webSocketService;
-    }
-
-    [HttpGet(ApiPath.Get + "PatientComment")]
-    public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
-    {
-        var input = new GetPatientCommentInputData(request.HpId, request.PtId);
-        var output = _bus.Handle(input);
-        var presenter = new GetPatientCommentPresenter();
-        presenter.Complete(output);
-        return Ok(presenter.Result);
     }
     
     [HttpGet(ApiPath.Get + "ReceptionLock")]
