@@ -161,6 +161,7 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
+using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -281,6 +282,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
+            busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
