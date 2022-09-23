@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UseCase.VisitingList.ReceptionComment;
+using UseCase.Reception.ReceptionComment;
 
 namespace Interactor.Reception
 {

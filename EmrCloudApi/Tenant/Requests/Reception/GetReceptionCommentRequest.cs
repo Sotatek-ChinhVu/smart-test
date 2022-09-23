@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.VisitingList
+﻿namespace EmrCloudApi.Tenant.Requests.Reception
 {
     public class GetReceptionCommentRequest
     {

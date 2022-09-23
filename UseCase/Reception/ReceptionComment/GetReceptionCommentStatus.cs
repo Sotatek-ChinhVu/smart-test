@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.VisitingList.ReceptionComment
+namespace UseCase.Reception.ReceptionComment
 {
     public enum GetReceptionCommentStatus : byte
     {

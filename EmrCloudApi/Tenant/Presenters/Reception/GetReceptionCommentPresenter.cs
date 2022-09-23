@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.VisitingList;
-using UseCase.VisitingList.ReceptionComment;
+using EmrCloudApi.Tenant.Responses.Reception;
+using UseCase.Reception.ReceptionComment;
 
-namespace EmrCloudApi.Tenant.Presenters.VisitingList
+namespace EmrCloudApi.Tenant.Presenters.Reception
 {
     public class GetReceptionCommentPresenter
     {

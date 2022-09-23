@@ -14,7 +14,6 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
-using UseCase.VisitingList.ReceptionComment;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
@@ -32,16 +31,6 @@ public class VisitingController : ControllerBase
     {
         _bus = bus;
         _webSocketService = webSocketService;
-    }
-
-    [HttpGet(ApiPath.Get + "ReceptionComment")]
-    public ActionResult<Response<GetReceptionCommentResponse>> GetList([FromQuery] GetReceptionCommentRequest request)
-    {
-        var input = new GetReceptionCommentInputData(request.HpId, request.RaiinNo);
-        var output = _bus.Handle(input);
-        var presenter = new GetReceptionCommentPresenter();
-        presenter.Complete(output);
-        return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "ReceptionLock")]

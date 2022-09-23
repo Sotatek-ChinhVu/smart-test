@@ -177,7 +177,7 @@ using Domain.Models.UsageTreeSet;
 using Interactor.UsageTreeSet;
 using UseCase.UsageTreeSet.GetTree;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
-using UseCase.VisitingList.ReceptionComment;
+using UseCase.Reception.ReceptionComment;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UseCase.ColumnSetting.GetList;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.VisitingList.ReceptionComment
+namespace UseCase.Reception.ReceptionComment
 {
     public interface IGetReceptionCommentOutputPort:IOutputPort<GetReceptionCommentOutputData>
     {

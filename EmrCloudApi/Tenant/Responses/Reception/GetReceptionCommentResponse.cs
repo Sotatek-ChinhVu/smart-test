@@ -1,6 +1,6 @@
 ﻿using Domain.Models.Reception;
 
-namespace EmrCloudApi.Tenant.Responses.VisitingList
+namespace EmrCloudApi.Tenant.Responses.Reception
 {
     public class GetReceptionCommentResponse
     {
