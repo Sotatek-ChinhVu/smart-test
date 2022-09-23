@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.OrdInfs;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
@@ -113,6 +114,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetMaxRpNoResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHeaderInf)]
+        public ActionResult<Response<GetHeaderInfResponse>> GetHeaderInf([FromQuery] GetMaxRpNoRequest request)
+        {
+            var input = new GetHeaderInfInputData(request.PtId, request.HpId, request.RaiinNo, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetHeaderInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHeaderInfResponse>>(presenter.Result);
         }
     }
 }
