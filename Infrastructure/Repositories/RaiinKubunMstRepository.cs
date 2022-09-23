@@ -272,7 +272,7 @@ namespace Infrastructure.Repositories
                             result.Add(new(true, KubunSettingConstant.Successed));
                             return true;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             transaction.Rollback();
                             result.Add(new(false, KubunSettingConstant.Failed));
