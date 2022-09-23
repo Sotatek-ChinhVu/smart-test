@@ -1,12 +1,11 @@
-﻿namespace Domain.Models.KaMst;
+﻿namespace UseCase.KaMst.SaveList;
 
-public class KaMstModel
+public class SaveKaMstInputItem
 {
-    public KaMstModel(long id, int kaId, int sortNo, string receKaCd, string kaSname, string kaName)
+    public SaveKaMstInputItem(long id, int kaId, string receKaCd, string kaSname, string kaName)
     {
         Id = id;
         KaId = kaId;
-        SortNo = sortNo;
         ReceKaCd = receKaCd;
         KaSname = kaSname;
         KaName = kaName;
@@ -14,7 +13,6 @@ public class KaMstModel
 
     public long Id { get; private set; }
     public int KaId { get; private set; }
-    public int SortNo { get; private set; }
     public string ReceKaCd { get; private set; }
     public string KaSname { get; private set; }
     public string KaName { get; private set; }

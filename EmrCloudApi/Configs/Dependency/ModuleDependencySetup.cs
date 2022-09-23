@@ -161,6 +161,8 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
+using UseCase.KaMst.SaveList;
+using UseCase.KaMst.GetKaCodeList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -314,6 +316,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeMstInputData, GetKaCodeMstInteractor>();
+            busBuilder.RegisterUseCase<SaveKaMstInputData, SaveKaMstInteractor>();
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
