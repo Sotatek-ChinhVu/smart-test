@@ -213,7 +213,7 @@
         public static readonly string TodayOrdInvalidSinKouiKbn = "SinKouiKbn must more than 0 or equal 0";
         public static readonly string TodayOrdInvalidItemCd = "Length of ItemCd must less than 10 or equal 10";
         public static readonly string TodayOrdInvalidItemName = "Length of ItemName must less than 240 or equal 240";
-        public static readonly string TodayOrdInvalidSuryo = "Suryo must more than 0 or equal 0";
+        public static readonly string TodayOrdInvalidSuryo = "Invalid Suryo";
         public static readonly string TodayOrdInvalidUnitName = "Length of UnitName must less than 24 or equal 24";
         public static readonly string TodayOrdInvalidUnitSbt = "UnitSbt must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidTermVal = "TermVal must more than 0 or equal 0";
