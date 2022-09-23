@@ -300,7 +300,7 @@ namespace Domain.Models.OrdInfDetails
             {
                 return TodayOrdValidationStatus.InvalidJissiKbn;
             }
-            if (JissiId <= 0)
+            if (JissiId < 0)
             {
                 return TodayOrdValidationStatus.InvalidJissiId;
             }

@@ -224,7 +224,7 @@
         public static readonly string TodayOrdInvalidIpnCd = "Length of IpnCd must less than 12 or equal 12";
         public static readonly string TodayOrdInvalidIpnName = "Length of IpnName must less than 120 or equal 120";
         public static readonly string TodayOrdInvalidJissiKbn = "JissiKbn must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidJissiId = "JissiId must more than 0";
+        public static readonly string TodayOrdInvalidJissiId = "JissiId must more than 0 equal 0";
         public static readonly string TodayOrdInvalidJissiMachine = "Length of JissiMachine must less than 60 or equal 60";
         public static readonly string TodayOrdInvalidReqCd = "Length of ReqCd must less than 10 or equal 10";
         public static readonly string TodayOrdInvalidCmtName = "Length of CmtName must less than 240 or equal 240";
