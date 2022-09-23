@@ -1,6 +1,6 @@
 ﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 
-namespace EmrCloudApi.Tenant.Responses.VisitingList
+namespace EmrCloudApi.Tenant.Responses.PatientInfor
 {
     public class GetPatientCommentResponse
     {
@@ -9,6 +9,6 @@ namespace EmrCloudApi.Tenant.Responses.VisitingList
             PatientInforModels = patientInforModels;
         }
 
-        public PatientInforModel PatientInforModels { get; set; }
+        public PatientInforModel PatientInforModels { get; private set; }
     }
 }

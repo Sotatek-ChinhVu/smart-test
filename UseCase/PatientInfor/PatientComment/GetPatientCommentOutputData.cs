@@ -6,13 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.VisitingList.PatientComment
+namespace UseCase.PatientInfor.PatientComment
 {
     public class GetPatientCommentOutputData : IOutputData
     {
-        public PatientInforModel PatientInforModels { get; set; }
+        public PatientInforModel PatientInforModels { get; private set; }
 
-        public GetPatientCommentStatus Status { get; set; }
+        public GetPatientCommentStatus Status { get; private set; }
 
         public GetPatientCommentOutputData(PatientInforModel patientInforModels, GetPatientCommentStatus status)
         {

@@ -659,22 +659,22 @@ namespace Infrastructure.Repositories
                 "");
         }
 
-        public PatientInforModel PatientCommentModels(int hpId, long pdId)
+        public PatientInforModel PatientCommentModels(int hpId, long ptId)
         {
-            var listData = _tenantDataContext.PtCmtInfs
-                .Where(x => x.HpId == hpId & x.PtId == pdId & x.IsDeleted == 0)
+            var data = _tenantDataContext.PtCmtInfs
+                .Where(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0)
                 .Select(x => new PatientInforModel(
                 x.HpId,
                 x.PtId,
-                x.Text))
+                x.Text ?? string.Empty))
                 .FirstOrDefault();
-            if (listData is null)
+            if (data is null)
                 return new PatientInforModel(0, 0, String.Empty);
 
             return new PatientInforModel(
-                listData.HpId,
-                listData.PtId,
-                listData.Comment
+                data.HpId,
+                data.PtId,
+                data.Comment ?? string.Empty
                 ); ;
         }
     }

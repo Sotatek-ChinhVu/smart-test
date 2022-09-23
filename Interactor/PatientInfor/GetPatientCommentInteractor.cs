@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using UseCase.VisitingList.PatientComment;
+using UseCase.PatientInfor.PatientComment;
 
-namespace Interactor.VisitingList
+namespace Interactor.PatientInfor
 {
     public class GetPatientCommentInteractor : IGetPatientCommentInputPort
     {
@@ -22,14 +22,15 @@ namespace Interactor.VisitingList
         {
             try
             {
-                if (inputData.HpId <= 0 || inputData.PdId <= 0)
-                {
-                    return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidData);
-                }
+                if (inputData.HpId <= 0 )
+                    return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidHpId);
+                
+                if(inputData.PtId <= 0)
+                    return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidPtId);
 
-                var listData = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PdId);
+                var data = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PtId);
 
-                return new GetPatientCommentOutputData(listData, GetPatientCommentStatus.Success);
+                return new GetPatientCommentOutputData(data, GetPatientCommentStatus.Success);
             }
             catch (Exception)
             {

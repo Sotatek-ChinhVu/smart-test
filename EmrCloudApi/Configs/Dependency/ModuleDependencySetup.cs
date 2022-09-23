@@ -158,7 +158,7 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.VisitingList.PatientComment;
+using UseCase.PatientInfor.PatientComment;
 using UseCase.VisitingList.SaveSettings;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;

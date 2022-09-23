@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.VisitingList;
-using UseCase.VisitingList.PatientComment;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
+using UseCase.PatientInfor.PatientComment;
 
 namespace EmrCloudApi.Tenant.Presenters.PatientInfor
 {
@@ -19,7 +19,8 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
         private string GetMessage(GetPatientCommentStatus status) => status switch
         {
             GetPatientCommentStatus.Success => ResponseMessage.Success,
-            GetPatientCommentStatus.InvalidData => ResponseMessage.InvalidKeyword,
+            GetPatientCommentStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            GetPatientCommentStatus.InvalidPtId => ResponseMessage.InvalidPtId,
             GetPatientCommentStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
