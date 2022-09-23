@@ -1,23 +1,9 @@
 ﻿using Domain.Models.MonshinInf;
-using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Models.SpecialNote.PatientInfo;
-using Domain.Models.SpecialNote.SummaryInf;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Entity.Tenant;
-using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Infrastructure.Repositories
 {
@@ -91,7 +77,8 @@ namespace Infrastructure.Repositories
                                         UpdateId = TempIdentity.UserId,
                                         UpdateMachine = TempIdentity.ComputerName
                                     });
-                                }else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
+                                }
+                                else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
                                 {
                                     _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
                                     {
@@ -112,7 +99,7 @@ namespace Infrastructure.Repositories
                                         UpdateMachine = TempIdentity.ComputerName
                                     });
                                 }
-                                else if(monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
+                                else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
                                 {
                                     _tenantDataContextTracking.MonshinInfo.Add(new MonshinInfo()
                                     {
@@ -145,9 +132,5 @@ namespace Infrastructure.Repositories
                 });
             return result;
         }
-
-                
-        }
-
     }
 }
