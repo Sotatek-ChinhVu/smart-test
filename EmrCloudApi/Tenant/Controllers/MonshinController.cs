@@ -15,19 +15,16 @@ namespace EmrCloudApi.Tenant.Controllers
     public class MonshinController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IWebSocketService _webSocketService;
 
-        public MonshinController(UseCaseBus bus,
-        IWebSocketService webSocketService)
+        public MonshinController(UseCaseBus bus)
         {
             _bus = bus;
-            _webSocketService = webSocketService;
         }
 
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMonshinInforListResponse>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
-            var input = new GetMonshinInforListInputData(request.HpId, request.PtId);
+            var input = new GetMonshinInforListInputData(request.HpId, request.PtId, request.SinDate, request.IsDeleted);
             var output = _bus.Handle(input);
             var presenter = new GetMonshinInforListPresenter();
             presenter.Complete(output);

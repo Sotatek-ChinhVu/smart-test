@@ -21,6 +21,6 @@ namespace Domain.Models.MonshinInf
         public long PtId { get; private set; }
         public long RaiinNo { get; private set; }
         public int SinDate { get; private set; }
-        public string Text { get; set; } = string.Empty;
+        public string Text { get; private set; } = string.Empty;
     }
 }

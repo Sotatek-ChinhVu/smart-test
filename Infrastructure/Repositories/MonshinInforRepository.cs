@@ -21,10 +21,10 @@ namespace Infrastructure.Repositories
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId)
+        public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
         {
             var monshinList = _tenantDataContextNoTracking.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0)
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0))
                 .OrderByDescending(x => x.SinDate)
                 .ThenByDescending(x => x.RaiinNo)
                 .Select(x => new MonshinInforModel(
@@ -32,7 +32,7 @@ namespace Infrastructure.Repositories
                 x.PtId,
                 x.RaiinNo,
                 x.SinDate,
-                x.Text))
+                x.Text ?? string.Empty))
                 .ToList();
             return monshinList;
         }

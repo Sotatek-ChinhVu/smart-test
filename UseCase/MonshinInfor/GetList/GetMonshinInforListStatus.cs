@@ -9,7 +9,7 @@ namespace UseCase.MonshinInfor.GetList
     public enum GetMonshinInforListStatus
     {
         Success = 1,
-        InvalidData = 2,
+        Failed = 2,
         NoData = 3
     }
 }
