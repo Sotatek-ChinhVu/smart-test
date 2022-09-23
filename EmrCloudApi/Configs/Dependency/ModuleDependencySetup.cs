@@ -159,6 +159,33 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.Schema.SaveImage;
+using Interactor.Byomei;
+using UseCase.SetMst.ReorderSetMst;
+using Domain.Models.JsonSetting;
+using Interactor.JsonSetting;
+using UseCase.JsonSetting.Get;
+using UseCase.JsonSetting.Upsert;
+using EmrCloudApi.Realtime;
+using UseCase.KohiHokenMst.Get;
+using Interactor.KohiHokenMst;
+using UseCase.SetMst.CopyPasteSetMst;
+using UseCase.DrugInfor.Get;
+using Interactor.DrugInfor;
+using Domain.Models.DrugInfor;
+using Domain.Models.UsageTreeSet;
+using Interactor.UsageTreeSet;
+using UseCase.UsageTreeSet.GetTree;
+using UseCase.MstItem.SearchTenItem;
+using UseCase.MstItem.UpdateAdopted;
+using UseCase.MstItem.UpdateAdoptedByomei;
+using Domain.Models.MaxMoney;
+using UseCase.MaxMoney.GetMaxMoney;
+using Interactor.MaxMoney;
+using UseCase.MonshinInfor.GetList;
+using Interactor.MonshinInf;
+using Domain.Models.MonshinInf;
+using UseCase.MaxMoney.SaveMaxMoney;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
 
@@ -235,6 +262,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
@@ -388,6 +416,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+
+            //Monshin
+            busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
+
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
 
             // Reception - Valid Pattern Expirated
