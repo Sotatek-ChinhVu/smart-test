@@ -125,6 +125,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.HpId, e.StartDate, e.ItemCd });
+            modelBuilder.Entity<RsvkrtOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.RpNo, e.RpEdaNo, e.Id });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

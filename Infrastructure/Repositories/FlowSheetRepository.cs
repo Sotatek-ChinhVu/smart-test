@@ -52,7 +52,7 @@ namespace Infrastructure.Repositories
 
             var rawDataList = query.ToList();
 
-            return rawDataList.Select(r => 
+            var todayOdr = rawDataList.Select(r => 
                 new FlowSheetModel(
                     r.SinDate, 
                     r.TagNo, 
@@ -69,6 +69,59 @@ namespace Infrastructure.Repositories
                     r.CommentSeqNo,
                     r.TagSeqNo)
             ).ToList();
+
+            // Add NextOrder Information
+            // Get next order information
+            var rsvkrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
+                                                                                        && r.PtId == ptId
+                                                                                        && r.IsDeleted == DeleteTypes.None);
+            var rsvkrtMsts = _tenantNoTrackingDataContext.RsvkrtMsts.Where(r => r.HpId == hpId
+                                                                                        && r.PtId == ptId
+                                                                                        && r.IsDeleted == DeleteTypes.None
+                                                                                        && r.RsvkrtKbn == 0);
+            var nextOdrKarteInfs = _tenantNoTrackingDataContext.RsvkrtKarteInfs.Where(karte => karte.HpId == hpId
+                                   && karte.PtId == ptId
+                                   && karte.IsDeleted == 0
+                                   && !string.IsNullOrEmpty(karte.Text.Trim()))
+                                   .OrderBy(karte => karte.RsvDate)
+                                   .ThenBy(karte => karte.KarteKbn);
+
+            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs
+                               join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
+                                                equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
+                               join karte in nextOdrKarteInfs on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
+                                                equals new { karte.HpId, karte.PtId, karte.RsvkrtNo } into odrKarteLeft
+                               group rsvkrtOdrInf by new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvDate, rsvkrtOdrInf.RsvkrtNo } into g
+                               select new
+                               {
+                                   g.Key.HpId,
+                                   g.Key.PtId,
+                                   g.Key.RsvDate,
+                                   g.Key.RsvkrtNo
+                               };
+
+            var queryNextOdr = from nextOdr in groupNextOdr
+                               join karte in nextOdrKarteInfs on new { nextOdr.HpId, nextOdr.PtId, nextOdr.RsvkrtNo }
+                                                equals new { karte.HpId, karte.PtId, karte.RsvkrtNo } into odrKarteLeft
+                               select new
+                               {
+                                   NextOdr = nextOdr,
+                                   Karte = odrKarteLeft.FirstOrDefault()
+                               };
+
+            var nextOdrs = queryNextOdr.AsEnumerable().Select(
+                    data => new FlowSheetModel()
+                    {
+                        HpId = hpId,
+                        PtId = ptId,
+                        SinDate = data.NextOdr.RsvDate,
+                        RaiinNo = data.NextOdr.RsvkrtNo,
+                        SyosaiValue = -1,
+                        IsNextOrder = true,
+                        FullLineOfKarte = data.Karte?.Text,
+                        RaiinListTagModel = new RaiinListTagModel(new RaiinListTag()),
+                        RaiinListCmtModel = new RaiinListCmtModel(new RaiinListCmt())
+                    }).ToList();
         }
 
         public List<RaiinListMstModel> GetRaiinListMsts(int hpId)
