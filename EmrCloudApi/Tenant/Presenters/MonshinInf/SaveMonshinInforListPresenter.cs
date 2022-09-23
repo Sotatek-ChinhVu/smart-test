@@ -7,7 +7,7 @@ namespace EmrCloudApi.Tenant.Presenters.MonshinInf
 {
     public class SaveMonshinInforListPresenter
     {
-        public Response<SaveMonshinInforListResponse> Result { get; set; } = new();
+        public Response<SaveMonshinInforListResponse> Result { get; private set; } = new();
 
         public void Complete(SaveMonshinOutputData output)
         {

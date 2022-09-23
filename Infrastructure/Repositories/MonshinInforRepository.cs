@@ -57,6 +57,7 @@ namespace Infrastructure.Repositories
                                     && x.SinDate == model.SinDate
                                     && x.IsDeleted == 0).FirstOrDefault();
 
+                                //Update monshin when text change
                                 if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
                                 {
                                     _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
@@ -78,6 +79,8 @@ namespace Infrastructure.Repositories
                                         UpdateMachine = TempIdentity.ComputerName
                                     });
                                 }
+
+                                //Delete Monshin when text is empty
                                 else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
                                 {
                                     _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
@@ -99,6 +102,8 @@ namespace Infrastructure.Repositories
                                         UpdateMachine = TempIdentity.ComputerName
                                     });
                                 }
+
+                                //Insert monshin when not found in monshininf
                                 else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
                                 {
                                     _tenantDataContextTracking.MonshinInfo.Add(new MonshinInfo()

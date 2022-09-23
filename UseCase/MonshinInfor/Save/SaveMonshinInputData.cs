@@ -16,6 +16,6 @@ namespace UseCase.MonshinInfor.Save
             MonshinInfors = monshinInfors;
         }
 
-        public List<MonshinInforModel> MonshinInfors { get; set; }
+        public List<MonshinInforModel> MonshinInfors { get; private set; }
     }
 }
