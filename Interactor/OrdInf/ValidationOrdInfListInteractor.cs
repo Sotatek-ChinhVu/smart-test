@@ -36,11 +36,11 @@ namespace Interactor.OrdInfs
                 foreach (var item in inputDataList)
                 {
                     var check = _ordInfRepository.CheckExistOrder(item.RpNo, item.RpEdaNo);
-                    if (!check && item.Status == 1)
+                    if (!check && item.Id > 0)
                     {
                         dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
                     }
-                    else if (check && item.Status == 0)
+                    else if (check && item.Id == 0)
                     {
                         dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
                     }
