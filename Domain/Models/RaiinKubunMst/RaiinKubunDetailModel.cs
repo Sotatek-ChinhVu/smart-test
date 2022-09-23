@@ -2,6 +2,7 @@
 {
     public class RaiinKubunDetailModel
     {
+        public int HpId { get; private set; }
         public int GroupId { get; private set; }
 
         public int KubunCd { get; private set; }
@@ -25,8 +26,9 @@
         public List<RsvGrpMstModel> RsvGrpMstModels { get; private set; }
         public List<RaiinKbnYayokuModel> RaiinKbnYayokuModels { get; private set; }
 
-        public RaiinKubunDetailModel(int groupId, int kubunCd, int sortNo, string kubunName, string colorCd, bool isConfirmed, bool isAuto, bool isAutoDeleted, bool isDeleted, List<RaiinKbnKouiModel> raiinKbnKouiModels, List<RaiinKbnItemModel> raiinKbnItemModels, List<RsvFrameMstModel> rsvFrameMstModels, List<RsvGrpMstModel> rsvGrpMstModels, List<RaiinKbnYayokuModel> raiinKbnYayokuModels)
+        public RaiinKubunDetailModel(int hpId,int groupId, int kubunCd, int sortNo, string kubunName, string colorCd, bool isConfirmed, bool isAuto, bool isAutoDeleted, bool isDeleted, List<RaiinKbnKouiModel> raiinKbnKouiModels, List<RaiinKbnItemModel> raiinKbnItemModels, List<RsvFrameMstModel> rsvFrameMstModels, List<RsvGrpMstModel> rsvGrpMstModels, List<RaiinKbnYayokuModel> raiinKbnYayokuModels)
         {
+            HpId = hpId;
             GroupId = groupId;
             KubunCd = kubunCd;
             SortNo = sortNo;

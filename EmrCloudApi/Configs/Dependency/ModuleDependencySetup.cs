@@ -161,6 +161,7 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
 using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
+using UseCase.RaiinKubunMst.Save;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -285,7 +286,7 @@ namespace EmrCloudApi.Configs.Dependency
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
             busBuilder.RegisterUseCase<LoadDataKubunSettingInputData, LoadDataKubunSettingInteractor>();
-
+            busBuilder.RegisterUseCase<SaveDataKubunSettingInputData, SaveDataKubunSettingInteractor>();
 
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
