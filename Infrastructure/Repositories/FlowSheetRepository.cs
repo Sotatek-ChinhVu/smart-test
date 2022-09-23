@@ -19,10 +19,9 @@ namespace Infrastructure.Repositories
 
         public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count)
         {
-            List<FlowSheetModel> result = new List<FlowSheetModel>();
+            List<FlowSheetModel> result;
 
             var raiinInfsQueryable = _tenantNoTrackingDataContext.RaiinInfs
-                .Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.Status >= 3)
                 .Skip(startIndex)
                 .Take(count);
             var karteInfsQueryable = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
@@ -55,9 +54,9 @@ namespace Infrastructure.Repositories
                                             .AsEnumerable()
                         };
 
-            var rawDataList = query.ToList();
+            //var rawDataList = query.ToList();
 
-            var todayOdr = rawDataList.Select(r =>
+            var todayOdr = query.Select(r =>
                 new FlowSheetModel(
                     r.SinDate,
                     r.TagNo,
@@ -73,9 +72,10 @@ namespace Infrastructure.Repositories
                     r.CommentKbn,
                     r.CommentSeqNo,
                     r.TagSeqNo)
-            ).ToList();
+            );
+                //.ToList();
 
-            result.AddRange(todayOdr);
+            //result.AddRange(todayOdr);
             // Add NextOrder Information
             // Get next order information
             var rsvkrtOdrInfs = _tenantNoTrackingDataContext.RsvkrtOdrInfs.Where(r => r.HpId == hpId
@@ -91,7 +91,6 @@ namespace Infrastructure.Repositories
                                    && !string.IsNullOrEmpty(karte.Text.Trim()))
                                    .OrderBy(karte => karte.RsvDate)
                                    .ThenBy(karte => karte.KarteKbn);
-            var temp = nextOdrKarteInfs.ToList();
 
             var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable()
                                join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
@@ -124,7 +123,7 @@ namespace Infrastructure.Repositories
                                             )
                                             .AsEnumerable()
                                };
-            var nextOdrs = queryNextOdr.AsEnumerable().Select(
+            var nextOdrs = queryNextOdr.Select(
                     data => new FlowSheetModel(
                         data.NextOdr?.RsvDate ?? 0,
                         data.TagInf?.TagNo ?? 0,
@@ -140,8 +139,11 @@ namespace Infrastructure.Repositories
                         0,
                         0,
                         data.TagInf?.SeqNo ?? 0
-                    )).ToList();
-            result.AddRange(nextOdrs);
+                    ));
+            //.ToList();
+            //result.AddRange(nextOdrs);
+
+            result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
 
             return result;
         }
