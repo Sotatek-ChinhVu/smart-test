@@ -18,6 +18,23 @@ namespace Infrastructure.Repositories
             return check;
         }
 
+        public List<KarteKbnMstModel> GetCheckKarteKbns(List<int> karteKbns)
+        {
+            var result = _tenantDataContext.KarteKbnMst.Where(k => karteKbns.Contains(k.KarteKbn)).ToList();
+            return result?.Select(
+                k => new KarteKbnMstModel(
+                            k.HpId,
+                            k.KarteKbn,
+                            k.KbnName ?? string.Empty,
+                            k.KbnShortName ?? string.Empty,
+                            k.CanImg,
+                            k.SortNo,
+                            k.IsDeleted
+                    )
+                ).ToList() ?? new List<KarteKbnMstModel>();
+        }
+
+
         public List<KarteKbnMstModel> GetList(int hpId, bool isDeleted)
         {
             var karteInfEntity = _tenantDataContext.KarteKbnMst.Where(k => k.HpId == hpId && (isDeleted || k.IsDeleted == 0));
@@ -31,8 +48,8 @@ namespace Infrastructure.Repositories
                     new KarteKbnMstModel(
                             k.HpId,
                             k.KarteKbn,
-                            k.KbnName,
-                            k.KbnShortName,
+                            k.KbnName ?? string.Empty,
+                            k.KbnShortName ?? string.Empty,
                             k.CanImg,
                             k.SortNo,
                             k.IsDeleted

@@ -252,10 +252,10 @@
         public static readonly string TodayOrdInvalidDaysCnt = "DaysCnt must more than 0 or equal 0";
         public static readonly string TodayOrdInvalidSortNo = "SortNo must more than 0";
         public static readonly string TodayOrdInvalidId = "Id of OrdInf must more than 0 or equal 0";
-        public static readonly string TodayOrdInvalidPtId = "PtId must more than 0";
-        public static readonly string TodayOrdInvalidRaiinNo = "RaiinNo must more than 0";
-        public static readonly string TodayOrdInvalidSinDate = "SinDate must more than 0";
-        public static readonly string TodayOrdInvalidHpId = "HpId must more than 0";
+        public static readonly string TodayOrdInvalidPtId = "Invalid PtId";
+        public static readonly string TodayOrdInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string TodayOrdInvalidSinDate = "Invalid SinDate";
+        public static readonly string TodayOrdInvalidHpId = "Invalid HpId";
         public static readonly string TodayOrdInvalidBunkatuLength = "Length of Bunkatu must lest than 10 or equal 10";
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
@@ -270,18 +270,20 @@
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
         //Raiin Info TodayOdr
-        public static readonly string RaiinInfInvalidStatus = "Invalid Status";
-        public static readonly string RaiinInfInvalidSyosaiKbn = "Invalid SyosaiKbn";
-        public static readonly string RaiinInfInvalidJikanKbn = "Invalid JikanKbn";
-        public static readonly string RaiinInfInvalidHokenPid = "Invalid HokenPid";
-        public static readonly string RaiinInfHokenPidNoExist = "HokenPid no exist";
-        public static readonly string RaiinInfInvalidSanteiKbn = "Invalid SanteiKbn";
-        public static readonly string RaiinInfInvalidTantoId = "Invalid TantoId";
-        public static readonly string RaiinInfTatoIdNoExist = "TantoId no exist";
-        public static readonly string RaiinInfInvalidKaId = "Invalid KaId";
-        public static readonly string RaiinInfKaIdNoExist = "KaId no exist";
-        public static readonly string RaiinInfInvalidUKetukeTime = "Invalid UKetukeTime";
-        public static readonly string RaiinInfInvalidSinStartTime = "Invalid SinStartTime";
-        public static readonly string RaiinInfInvalidSinEndTime = "Invalid SinEndTime";
+        public static readonly string RaiinInfTodayOdrInvalidSyosaiKbn = "Invalid SyosaiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidJikanKbn = "Invalid JikanKbn";
+        public static readonly string RaiinInfTodayOdrInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string RaiinInfTodayOdrHokenPidNoExist = "HokenPid no exist";
+        public static readonly string RaiinInfTodayOdrInvalidSanteiKbn = "Invalid SanteiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidTantoId = "Invalid TantoId";
+        public static readonly string RaiinInfTodayOdrTatoIdNoExist = "TantoId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidKaId = "Invalid KaId";
+        public static readonly string RaiinInfTodayOdrKaIdNoExist = "KaId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidUKetukeTime = "Invalid UKetukeTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinStartTime = "Invalid SinStartTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
+        public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
+        public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
     }
 }

@@ -275,6 +275,7 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                 }
             }
 
+            validations = validations.OrderBy(v => v.OrderInfPosition).ThenBy(v => v.OrderInfDetailPosition).ToList();
             Result.Data = new ValidationOrdInfListResponse(validations);
         }
     }

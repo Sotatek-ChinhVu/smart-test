@@ -4,13 +4,13 @@ namespace EmrCloudApi.Tenant.Responses.MedicalExamination
 {
     public class RaiinInfItemResponse
     {
-        public RaiinInfItemResponse(RaiinInfConst.RaiinInfValidationStatus status, string validationMessage)
+        public RaiinInfItemResponse(RaiinInfConst.RaiinInfTodayOdrValidationStatus status, string validationMessage)
         {
             Status = status;
             ValidationMessage = validationMessage;
         }
 
-        public RaiinInfConst.RaiinInfValidationStatus Status { get; private set; }
+        public RaiinInfConst.RaiinInfTodayOdrValidationStatus Status { get; private set; }
         public string ValidationMessage { get; private set; }
     }
 }

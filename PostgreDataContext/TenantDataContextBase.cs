@@ -128,6 +128,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KouiKbnMst>().HasKey(e => new { e.HpId, e.KouiKbnId });
             modelBuilder.Entity<RaiinListKoui>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
             modelBuilder.Entity<RaiinListItem>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
+            modelBuilder.Entity<KarteInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo, e.KarteKbn });
 
         }
 

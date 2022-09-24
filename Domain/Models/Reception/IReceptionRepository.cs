@@ -27,7 +27,5 @@
         bool UpdateKaId(int hpId, long raiinNo, int kaId);
 
         bool CheckListNo(List<long> raininNos);
-
-        bool SaveRaiinInfTodayOdr(int status, int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime);
     }
 }

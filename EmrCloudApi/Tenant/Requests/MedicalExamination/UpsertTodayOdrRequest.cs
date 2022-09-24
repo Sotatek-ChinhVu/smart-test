@@ -2,7 +2,6 @@
 {
     public class UpsertTodayOdrRequest
     {
-        public int Status { get; set; }
         public int SyosaiKbn { get; set; }
         public int JikanKbn { get; set; }
         public int HokenPid { get; set; }

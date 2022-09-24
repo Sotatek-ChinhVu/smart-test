@@ -7,7 +7,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class UpsertTodayOrdOutputData : IOutputData
     {
-        public UpsertTodayOrdOutputData(UpsertTodayOrdStatus status, RaiinInfValidationStatus validationRaiinInf, Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> validationOdrs, Dictionary<int, TodayKarteValidationStatus> validationKartes)
+        public UpsertTodayOrdOutputData(UpsertTodayOrdStatus status, RaiinInfTodayOdrValidationStatus validationRaiinInf, Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> validationOdrs, Dictionary<int, TodayKarteValidationStatus> validationKartes)
         {
             Status = status;
             ValidationRaiinInf = validationRaiinInf;
@@ -17,7 +17,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
 
         public UpsertTodayOrdStatus Status { get; private set; }
 
-        public RaiinInfValidationStatus ValidationRaiinInf { get; private set; }
+        public RaiinInfTodayOdrValidationStatus ValidationRaiinInf { get; private set; }
         public Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> ValidationOdrs { get; private set; }
         public Dictionary<int, TodayKarteValidationStatus> ValidationKartes { get; private set; }
 

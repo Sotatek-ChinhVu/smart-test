@@ -38,6 +38,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.TodayOdr;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
 using Domain.Models.UsageTreeSet;
@@ -236,6 +237,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
             services.AddTransient<IHpInfRepository, HpInfRepository>();
+            services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

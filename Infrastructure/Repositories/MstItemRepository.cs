@@ -4,8 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -162,6 +160,36 @@ namespace Infrastructure.Repositories
                 tenMst?.SinKouiKbn ?? 0,
                 tenMst?.YjCd ?? string.Empty
             );
+        }
+
+        public List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds)
+        {
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+
+            return tenMsts.Select(tenMst => new TenItemModel(
+                tenMst.HpId,
+                tenMst.ItemCd,
+                tenMst.RousaiKbn,
+                tenMst.KanaName1 ?? string.Empty,
+                tenMst.Name ?? string.Empty,
+                tenMst.KohatuKbn,
+                tenMst.MadokuKbn,
+                tenMst.KouseisinKbn,
+                tenMst.OdrUnitName ?? string.Empty,
+                tenMst.EndDate,
+                tenMst.DrugKbn,
+                tenMst.MasterSbt ?? string.Empty,
+                tenMst.BuiKbn,
+                tenMst.IsAdopted,
+                tenMst.Ten,
+                tenMst.TenId,
+                "",
+                "",
+                tenMst.CmtCol1,
+                tenMst.IpnNameCd ?? string.Empty,
+                tenMst.SinKouiKbn,
+                tenMst.YjCd ?? string.Empty
+            )).ToList();
         }
 
         public List<TenItemModel> SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)

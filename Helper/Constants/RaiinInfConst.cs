@@ -2,10 +2,9 @@
 {
     public class RaiinInfConst
     {
-        public enum RaiinInfValidationStatus
+        public enum RaiinInfTodayOdrValidationStatus
         {
-            InvalidStatus = 1,
-            InvalidSyosaiKbn,
+            InvalidSyosaiKbn = 1,
             InvalidJikanKbn,
             InvalidHokenPid,
             HokenPidNoExist,
@@ -17,6 +16,13 @@
             InvalidUKetukeTime,
             InvalidSinStartTime,
             InvalidSinEndTime,
+            InvalidHpId,
+            InvalidPtId,
+            InvalidRaiinNo,
+            InvalidSinDate,
+            HpIdNoExist,
+            PtIdNoExist,
+            RaiinIdNoExist,
             Valid
         }
     }

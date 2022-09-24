@@ -258,6 +258,12 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUpdatedNoExist));
                             break;
+                        case TodayOrderConst.TodayOrdValidationStatus.HokenPidNoExist:
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHokenPidNoExist));
+                            break;
+                        case TodayOrderConst.TodayOrdValidationStatus.OdrNoMapOdrDetail:
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdOrdInfNoMapOrdInfDetail));
+                            break;
                         default:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, -1, -1, string.Empty));
                             break;
@@ -305,36 +311,48 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
             Result.Data = new UpsertTodayOdrResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKartes);
         }
 
-        private string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfValidationStatus status)
+        private string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
         {
             switch (status)
             {
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidStatus:
-                    return ResponseMessage.RaiinInfInvalidStatus;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidSyosaiKbn:
-                    return ResponseMessage.RaiinInfInvalidSyosaiKbn;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidJikanKbn:
-                    return ResponseMessage.RaiinInfInvalidJikanKbn;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidHokenPid:
-                    return ResponseMessage.RaiinInfInvalidHokenPid;
-                case RaiinInfConst.RaiinInfValidationStatus.HokenPidNoExist:
-                    return ResponseMessage.RaiinInfHokenPidNoExist;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidSanteiKbn:
-                    return ResponseMessage.RaiinInfInvalidSanteiKbn;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidTantoId:
-                    return ResponseMessage.RaiinInfInvalidTantoId;
-                case RaiinInfConst.RaiinInfValidationStatus.TatoIdNoExist:
-                    return ResponseMessage.RaiinInfTatoIdNoExist;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidKaId:
-                    return ResponseMessage.RaiinInfInvalidKaId;
-                case RaiinInfConst.RaiinInfValidationStatus.KaIdNoExist:
-                    return ResponseMessage.RaiinInfKaIdNoExist;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidUKetukeTime:
-                    return ResponseMessage.RaiinInfInvalidUKetukeTime;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidSinStartTime:
-                    return ResponseMessage.RaiinInfInvalidSinStartTime;
-                case RaiinInfConst.RaiinInfValidationStatus.InvalidSinEndTime:
-                    return ResponseMessage.RaiinInfInvalidSinEndTime;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSyosaiKbn:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidSyosaiKbn;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidJikanKbn;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidHokenPid;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrHokenPidNoExist;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidSanteiKbn;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidTantoId;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrTatoIdNoExist;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidKaId;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrKaIdNoExist;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidUKetukeTime;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidSinStartTime;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime:
+                    return ResponseMessage.RaiinInfTodayOdrInvalidSinEndTime;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHpId:
+                    return ResponseMessage.InvalidHpId;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId:
+                    return ResponseMessage.InvalidPtId;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate:
+                    return ResponseMessage.InvalidSinDate;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo:
+                    return ResponseMessage.InvalidRaiinNo;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.HpIdNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrHpIdNoExist;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrPtIdNoExist;
+                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist:
+                    return ResponseMessage.RaiinInfTodayOdrRaiinNoExist;
                 default:
                     return ResponseMessage.Valid;
 

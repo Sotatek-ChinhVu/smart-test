@@ -27,8 +27,10 @@ namespace Domain.Models.OrdInfs
 
         long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
 
-        void Upsert(List<OrdInfModel> ordInfs);
+        IEnumerable<OrdInfModel> GetListToCheckValidate(long ptId, int hpId, List<long> raiinNos);
 
-        void SaveRaiinListInf(List<OrdInfModel> ordInfs);
+        List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds);
+
+        List<Tuple<string, string, bool>> CheckIsGetYakkaPrices(int hpId, List<TenItemModel> tenMsts, int sinDate);
     }
 }

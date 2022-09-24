@@ -9,11 +9,10 @@ using Domain.Models.OrdInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Helper.Constants;
-using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PostgreDataContext;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using static Helper.Constants.TodayKarteConst;
 using static Helper.Constants.TodayOrderConst;
@@ -23,7 +22,6 @@ namespace Interactor.MedicalExamination
     public class UpsertTodayOrdInteractor : IUpsertTodayOrdInputPort
     {
         private readonly IOrdInfRepository _ordInfRepository;
-        private readonly IKarteInfRepository _karteInfRepository;
         private readonly IReceptionRepository _receptionRepository;
         private readonly IKaMstRepository _kaRepository;
         private readonly IMstItemRepository _mstItemRepository;
@@ -33,373 +31,397 @@ namespace Interactor.MedicalExamination
         private readonly IInsuranceRepository _insuranceInforRepository;
         private readonly IUserRepository _userRepository;
         private readonly IHpInfRepository _hpInfRepository;
-        private readonly TenantDataContext _tenantTrackingDataContext;
+        private readonly ITodayOdrRepository _todayOdrRepository;
 
-        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITenantProvider tenantProvider)
+        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository)
         {
             _ordInfRepository = ordInfRepository;
-            _karteInfRepository = karteInfRepository;
             _kaRepository = kaRepository;
             _receptionRepository = receptionRepository;
             _mstItemRepository = mstItemRepository;
             _systemGenerationConfRepository = systemGenerationConfRepository;
             _patientInforRepository = patientInforRepository;
             _karteKbnInforRepository = karteKbnInforRepository;
-            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
             _insuranceInforRepository = insuranceInforRepository;
             _userRepository = userRepository;
             _hpInfRepository = hpInfRepository;
+            _todayOdrRepository = todayOdrRepository;
         }
 
-        public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputData)
+        public UpsertTodayOrdOutputData Handle(UpsertTodayOrdInputData inputDatas)
         {
-            var executionStrategy = _tenantTrackingDataContext.Database.CreateExecutionStrategy();
-
-            return executionStrategy.Execute(
-                () =>
+            try
+            {
+                if (inputDatas.OdrItems.Count == 0 && inputDatas.KarteInfs.Count == 0)
                 {
-                    using (var transaction = _tenantTrackingDataContext.Database.BeginTransaction())
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                }
+
+                //Raiin Info
+                var raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid;
+
+                var inputDataList = inputDatas.OdrItems.ToList();
+                var inputKarteDataList = inputDatas.KarteInfs.ToList();
+                var hpIds = inputDataList.Select(x => x.HpId).Union(inputKarteDataList.Select(x => x.HpId)).Distinct().ToList();
+                var ptIds = inputDataList.Select(x => x.PtId).Union(inputKarteDataList.Select(x => x.PtId)).Distinct().ToList();
+                var raiinNos = inputDataList.Select(x => x.RaiinNo).Union(inputKarteDataList.Select(x => x.RaiinNo)).Distinct().ToList();
+                var sinDates = inputDataList.Select(x => x.SinDate).Union(inputKarteDataList.Select(x => x.SinDate)).Distinct().ToList();
+
+                var hpId = hpIds[0];
+                var ptId = ptIds[0];
+                var raiinNo = raiinNos[0];
+                var sinDate = sinDates[0];
+
+                if (hpIds.Count > 1 || hpIds.FirstOrDefault() <= 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHpId;
+                }
+                else if (ptIds.Count > 1 || ptIds.FirstOrDefault() <= 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId;
+                }
+                else if (raiinNos.Count > 1 || raiinNos.FirstOrDefault() <= 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo;
+                }
+                else if (sinDates.Count > 1 || sinDates.FirstOrDefault() <= 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate;
+                }
+                else
+                {
+                    var checkHpId = _hpInfRepository.CheckHpId(hpId);
+                    var checkPtId = _patientInforRepository.CheckListId(new List<long> { ptId });
+                    var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
+
+                    if (!checkHpId)
                     {
-                        try
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HpIdNoExist;
+                    }
+                    else if (!checkPtId)
+                    {
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist;
+                    }
+                    else if (!checkRaiinNo)
+                    {
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist;
+                    }
+                }
+
+                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
+                {
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                }
+
+                if (!(inputDatas.SyosaiKbn >= 0 && inputDatas.SyosaiKbn <= 8))
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSyosaiKbn;
+                }
+                else if (!(inputDatas.JikanKbn >= 0 && inputDatas.JikanKbn <= 7))
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn;
+                }
+                else if (inputDatas.HokenPid < 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid;
+                }
+                else if (!(inputDatas.SanteiKbn >= 0 && inputDatas.SanteiKbn <= 2))
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn;
+                }
+                if (inputDatas.TantoId < 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId;
+                }
+                else if (inputDatas.KaId < 0)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId;
+                }
+
+                else if (inputDatas.UketukeTime.Length > 6)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime;
+                }
+                else if (inputDatas.SinStartTime.Length > 6)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime;
+
+                }
+                else if (inputDatas.SinEndTime.Length > 6)
+                {
+                    raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime;
+                }
+
+                if (inputDatas.HokenPid > 0)
+                {
+                    var checkHokenId = _insuranceInforRepository.CheckHokenPid(inputDatas.HokenPid);
+                    if (!checkHokenId)
+                    {
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
+                    }
+                }
+
+                if (inputDatas.TantoId > 0)
+                {
+                    var checkHokenId = _userRepository.CheckExistedUserId(inputDatas.TantoId);
+                    if (!checkHokenId)
+                    {
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist;
+                    }
+                }
+
+                if (inputDatas.KaId > 0)
+                {
+                    var checkHokenId = _kaRepository.CheckKaId(inputDatas.KaId);
+                    if (!checkHokenId)
+                    {
+                        raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist;
+                    }
+                }
+
+
+
+                var dicKarteValidation = new Dictionary<int, TodayKarteValidationStatus>();
+                var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
+                var allOdrInfs = new List<OrdInfModel>();
+                var karteModels = new List<KarteInfModel>();
+                object obj = new();
+
+
+                // Odr Info
+                if (inputDatas.OdrItems.Count > 0)
+                {
+                    var raiinNoOdrs = inputDataList.Select(i => i.RaiinNo).Distinct().ToList();
+                    var checkOderInfs = _ordInfRepository.GetListToCheckValidate(ptId, hpId, raiinNoOdrs ?? new List<long>());
+
+                    var hokenPids = inputDataList.Select(i => i.HokenPid).Distinct().ToList();
+                    var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
+                    Parallel.For(0, inputDataList.Count, index =>
+                    {
+                        lock (obj)
                         {
-                            var raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.Valid;
-                            //Raiin Info
-                            if (!RaiinState.ReceptionStatusToText.Keys.Contains(inputData.Status))
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidStatus;
-                            }
-                            else if (!(inputData.SyosaiKbn >= 0 && inputData.SyosaiKbn <= 8))
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSyosaiKbn;
-                            }
-                            else if (!(inputData.JikanKbn >= 0 && inputData.JikanKbn <= 7))
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidJikanKbn;
-                            }
-                            else if (inputData.HokenPid < 0)
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidHokenPid;
-                            }
-                            else if (!(inputData.SanteiKbn >= 0 && inputData.SanteiKbn <= 2))
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSanteiKbn;
-                            }
-                            if (inputData.TantoId < 0)
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidTantoId;
-                            }
-                            else if (inputData.KaId < 0)
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidKaId;
-                            }
+                            var item = inputDataList[index];
 
-                            else if (inputData.UketukeTime.Length > 6)
+                            if (item.Id > 0)
                             {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidUKetukeTime;
-                            }
-                            else if (inputData.SinStartTime.Length > 6)
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSinStartTime;
-
-                            }
-                            else if (inputData.SinEndTime.Length > 6)
-                            {
-                                raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.InvalidSinEndTime;
-                            }
-
-                            if (inputData.HokenPid > 0)
-                            {
-                                var checkHokenId = _insuranceInforRepository.CheckHokenPid(inputData.HokenPid);
-                                if (!checkHokenId)
+                                var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                                if (!check)
                                 {
-                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.HokenPidNoExist;
+                                    dicValidation.Add(index, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+
+                                if (check)
+                                {
+                                    dicValidation.Add(index, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
+                                    return;
                                 }
                             }
 
-                            if (inputData.TantoId > 0)
+                            var checkObjs = inputDataList.Where(o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
+                            var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                            if (checkObjs.Count >= 2 && positionOrd == index)
                             {
-                                var checkHokenId = _userRepository.CheckExistedUserId(inputData.TantoId);
-                                if (!checkHokenId)
-                                {
-                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.TatoIdNoExist;
-                                }
+                                dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                                return;
                             }
 
-                            if (inputData.KaId > 0)
+                            var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
+                            if (!checkHokenPid)
                             {
-                                var checkHokenId = _kaRepository.CheckKaId(inputData.KaId);
-                                if (!checkHokenId)
-                                {
-                                    raiinInfStatus = RaiinInfConst.RaiinInfValidationStatus.KaIdNoExist;
-                                }
+                                dicValidation.Add(index, new(-1, TodayOrdValidationStatus.HokenPidNoExist));
+                                return;
                             }
 
-                            // Odr Info
-                            var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
-                            var allOdrInfs = new List<OrdInfModel>();
-                            var inputDataList = inputData.OdrItems.ToList();
-
-                            var count = 0;
-                            foreach (var item in inputDataList)
+                            Parallel.ForEach(item.OdrDetails, itemOd =>
                             {
-                                var check = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo);
-                                if (!check && item.Id > 0 && item.IsDeleted == 0)
+                                var indexOd = item.OdrDetails.IndexOf(itemOd);
+
+                                if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                                 {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                    dicValidation.Add(index, new(indexOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
                                 }
-                                else if (check && item.Id == 0 && item.IsDeleted == 0)
-                                {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
-                                }
+                            });
+                        }
+                    });
 
-                                var checkObjs = inputDataList.Where(o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
-                                var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
-                                if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
-                                {
-                                    dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
-                                }
+                    var itemCds = new List<string>();
+                    var ipnNameCds = new List<string>();
+                    foreach (var item in inputDataList.Select(o => o.OdrDetails))
+                    {
+                        itemCds.AddRange(item?.Select(od => od.ItemCd).Distinct() ?? new List<string>());
+                        ipnNameCds.AddRange(item?.Select(od => od.IpnCd).Distinct() ?? new List<string>());
+                    }
+                    itemCds = itemCds?.Distinct().ToList() ?? new List<string>();
+                    ipnNameCds = ipnNameCds?.Distinct().ToList() ?? new List<string>();
 
-                                var checkHpId = _hpInfRepository.CheckHpId(item.HpId);
-                                if (!checkHpId && !dicValidation.ContainsKey(count))
-                                {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.HpIdNoExist));
-                                }
+                    var tenMsts = _mstItemRepository.GetCheckTenItemModels(hpId, sinDate, itemCds);
+                    var ipnMinYakaMsts = _ordInfRepository.GetCheckIpnMinYakkaMsts(hpId, sinDate, ipnNameCds);
+                    var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
+                    var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
-                                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { item.RaiinNo });
-                                if (!checkRaiinNo && !dicValidation.ContainsKey(count))
-                                {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.RaiinNoNoExist));
-                                }
+                    Parallel.ForEach(inputDataList, item =>
+                    {
+                        var ordInf = new OrdInfModel(
+                                item.HpId,
+                                item.RaiinNo,
+                                item.RpNo,
+                                item.RpEdaNo,
+                                item.PtId,
+                                item.SinDate,
+                                item.HokenPid,
+                                item.OdrKouiKbn,
+                                item.RpName,
+                                item.InoutKbn,
+                                item.SikyuKbn,
+                                item.SyohoSbt,
+                                item.SanteiKbn,
+                                item.TosekiKbn,
+                                item.DaysCnt,
+                                item.SortNo,
+                                item.IsDeleted,
+                                item.Id,
+                                new List<OrdInfDetailModel>(),
+                                DateTime.MinValue,
+                                0,
+                                "",
+                                DateTime.MinValue
+                            );
 
-                                var checkPtId = _patientInforRepository.CheckListId(new List<long> { item.PtId });
-                                if (!checkPtId && !dicValidation.ContainsKey(count))
-                                {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.PtIdNoExist));
-                                }
+                        Parallel.ForEach(item.OdrDetails, itemDetail =>
+                        {
+                            var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
+                            refillSetting = itemDetail == null ? 999 : refillSetting;
+                            var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : ipnMinYakaMsts.FirstOrDefault(i => i.IpnNameCd == itemDetail?.IpnCd);
+                            var isCheckIpnKasanExclude = checkIsGetYakkaPrices.FirstOrDefault(y => y.Item1 == inputItem?.IpnNameCd && y.Item2 == inputItem?.ItemCd)?.Item3 == true;
 
-                                var checkHokenPid = _insuranceInforRepository.CheckHokenPid(item.HokenPid);
-                                if (!checkHokenPid && !dicValidation.ContainsKey(count))
-                                {
-                                    dicValidation.Add(count, new(-1, TodayOrdValidationStatus.HokenPidNoExist));
-                                }
-
-                                var countOd = 0;
-                                foreach (var itemOd in item.OdrDetails)
-                                {
-                                    if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId && item.SinDate != itemOd.SinDate) && !dicValidation.ContainsKey(count))
-                                    {
-                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
-                                    }
-
-                                    var checkHpIdOd = _hpInfRepository.CheckHpId(itemOd.HpId);
-                                    if (!checkHpIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
-                                    {
-                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.HpIdNoExist));
-                                    }
-
-                                    var checkRaiinNoOd = _receptionRepository.CheckListNo(new List<long> { itemOd.RaiinNo });
-                                    if (!checkRaiinNoOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
-                                    {
-                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.RaiinNoNoExist));
-                                    }
-
-                                    var checkPtIdOd = _patientInforRepository.CheckListId(new List<long> { itemOd.PtId });
-                                    if (!checkPtIdOd && !dicValidation.ContainsKey(count) && !dicValidation.Values.Any(d => d.Key == countOd))
-                                    {
-                                        dicValidation.Add(count, new(countOd, TodayOrdValidationStatus.PtIdNoExist));
-                                    }
-
-                                    countOd++;
-                                }
-
-                                count++;
-                            }
-
-                            foreach (var item in inputDataList)
-                            {
-                                var ordInf = new OrdInfModel(
-                                        item.HpId,
-                                        item.RaiinNo,
-                                        item.RpNo,
-                                        item.RpEdaNo,
-                                        item.PtId,
-                                        item.SinDate,
-                                        item.HokenPid,
-                                        item.OdrKouiKbn,
-                                        item.RpName,
-                                        item.InoutKbn,
-                                        item.SikyuKbn,
-                                        item.SyohoSbt,
-                                        item.SanteiKbn,
-                                        item.TosekiKbn,
-                                        item.DaysCnt,
-                                        item.SortNo,
-                                        item.IsDeleted,
-                                        item.Id,
-                                        new List<OrdInfDetailModel>(),
-                                        DateTime.MinValue,
+                            var ordInfDetail = new OrdInfDetailModel(
+                                        itemDetail?.HpId ?? 0,
+                                        itemDetail?.RaiinNo ?? 0,
+                                        itemDetail?.RpNo ?? 0,
+                                        itemDetail?.RpEdaNo ?? 0,
+                                        itemDetail?.RowNo ?? 0,
+                                        itemDetail?.PtId ?? 0,
+                                        itemDetail?.SinDate ?? 0,
+                                        itemDetail?.SinKouiKbn ?? 0,
+                                        itemDetail?.ItemCd ?? string.Empty,
+                                        itemDetail?.ItemName ?? string.Empty,
+                                        itemDetail?.Suryo ?? 0,
+                                        itemDetail?.UnitName ?? string.Empty,
+                                        itemDetail?.UnitSbt ?? 0,
+                                        itemDetail?.TermVal ?? 0,
+                                        itemDetail?.KohatuKbn ?? 0,
+                                        itemDetail?.SyohoKbn ?? 0,
+                                        itemDetail?.SyohoLimitKbn ?? 0,
+                                        itemDetail?.DrugKbn ?? 0,
+                                        itemDetail?.YohoKbn ?? 0,
+                                        itemDetail?.Kokuji1 ?? string.Empty,
+                                        itemDetail?.Kokuji2 ?? string.Empty,
+                                        itemDetail?.IsNodspRece ?? 0,
+                                        itemDetail?.IpnCd ?? string.Empty,
+                                        itemDetail?.IpnName ?? string.Empty,
+                                        itemDetail?.JissiKbn ?? 0,
+                                        itemDetail?.JissiDate ?? DateTime.MinValue,
+                                        itemDetail?.JissiId ?? 0,
+                                        itemDetail?.JissiMachine ?? string.Empty,
+                                        itemDetail?.ReqCd ?? string.Empty,
+                                        itemDetail?.Bunkatu ?? string.Empty,
+                                        itemDetail?.CmtName ?? string.Empty,
+                                        itemDetail?.CmtOpt ?? string.Empty,
+                                        itemDetail?.FontColor ?? string.Empty,
+                                        itemDetail?.CommentNewline ?? 0,
+                                        inputItem?.MasterSbt ?? string.Empty,
+                                        item?.InoutKbn ?? 0,
+                                        ipnMinYakaMst?.Yakka ?? 0,
+                                        isCheckIpnKasanExclude,
+                                        refillSetting,
+                                        inputItem?.CmtCol1 ?? 0,
+                                        inputItem?.Ten ?? 0,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
                                         0,
                                         "",
-                                        DateTime.MinValue
+                                        new List<YohoSetMstModel>(),
+                                        0,
+                                        0
                                     );
-                                if (item != null)
-                                {
-                                    foreach (var itemDetail in item.OdrDetails)
-                                    {
-                                        var inputItem = itemDetail == null ? null : _mstItemRepository.GetTenMst(itemDetail.HpId, itemDetail.SinDate, itemDetail?.ItemCd ?? string.Empty);
-                                        var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(itemDetail.HpId, 2002, 0, itemDetail?.SinDate ?? 0, 999);
-                                        var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(itemDetail?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, itemDetail?.SinDate ?? 0);
-                                        var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(itemDetail?.HpId ?? 0, inputItem ?? new TenItemModel(), itemDetail?.SinDate ?? 0);
+                            ordInf.OrdInfDetails.Add(ordInfDetail);
+                        });
 
-                                        var ordInfDetail = new OrdInfDetailModel(
-                                                    itemDetail?.HpId ?? 0,
-                                                    itemDetail?.RaiinNo ?? 0,
-                                                    itemDetail?.RpNo ?? 0,
-                                                    itemDetail?.RpEdaNo ?? 0,
-                                                    itemDetail?.RowNo ?? 0,
-                                                    itemDetail?.PtId ?? 0,
-                                                    itemDetail?.SinDate ?? 0,
-                                                    itemDetail?.SinKouiKbn ?? 0,
-                                                    itemDetail?.ItemCd ?? string.Empty,
-                                                    itemDetail?.ItemName ?? string.Empty,
-                                                    itemDetail?.Suryo ?? 0,
-                                                    itemDetail?.UnitName ?? string.Empty,
-                                                    itemDetail?.UnitSbt ?? 0,
-                                                    itemDetail?.TermVal ?? 0,
-                                                    itemDetail?.KohatuKbn ?? 0,
-                                                    itemDetail?.SyohoKbn ?? 0,
-                                                    itemDetail?.SyohoLimitKbn ?? 0,
-                                                    itemDetail?.DrugKbn ?? 0,
-                                                    itemDetail?.YohoKbn ?? 0,
-                                                    itemDetail?.Kokuji1 ?? string.Empty,
-                                                    itemDetail?.Kokuji2 ?? string.Empty,
-                                                    itemDetail?.IsNodspRece ?? 0,
-                                                    itemDetail?.IpnCd ?? string.Empty,
-                                                    itemDetail?.IpnName ?? string.Empty,
-                                                    itemDetail?.JissiKbn ?? 0,
-                                                    itemDetail?.JissiDate ?? DateTime.MinValue,
-                                                    itemDetail?.JissiId ?? 0,
-                                                    itemDetail?.JissiMachine ?? string.Empty,
-                                                    itemDetail?.ReqCd ?? string.Empty,
-                                                    itemDetail?.Bunkatu ?? string.Empty,
-                                                    itemDetail?.CmtName ?? string.Empty,
-                                                    itemDetail?.CmtOpt ?? string.Empty,
-                                                    itemDetail?.FontColor ?? string.Empty,
-                                                    itemDetail?.CommentNewline ?? 0,
-                                                    inputItem?.MasterSbt ?? string.Empty,
-                                                    item?.InoutKbn ?? 0,
-                                                    ipnMinYakaMst?.Yakka ?? 0,
-                                                    isCheckIpnKasanExclude,
-                                                    refillSetting,
-                                                    inputItem?.CmtCol1 ?? 0,
-                                                    inputItem?.Ten ?? 0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    "",
-                                                    new List<YohoSetMstModel>(),
-                                                    0,
-                                                    0
-                                                );
-                                        ordInf.OrdInfDetails.Add(ordInfDetail);
-                                    }
-                                }
+                        allOdrInfs.Add(ordInf);
+                    });
 
-                                allOdrInfs.Add(ordInf);
-                            }
+                    Parallel.ForEach(allOdrInfs, item =>
+                    {
+                        var index = allOdrInfs.IndexOf(item);
 
-                            count = 0;
-                            foreach (var item in allOdrInfs)
-                            {
-                                var modelValidation = item.Validation();
-                                if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
-                                {
-                                    dicValidation.Add(count, modelValidation);
-                                }
-
-                                count++;
-                            }
-
-                            // Karte
-                            var dicKarteValidation = new Dictionary<int, TodayKarteValidationStatus>();
-                            var inputKarteDataList = inputData.KarteInfs.ToList();
-
-                            var karteModels = inputKarteDataList.Select(k => new KarteInfModel(
-                                    k.HpId,
-                                    k.RaiinNo,
-                                    k.KarteKbn,
-                                    0,
-                                    k.PtId,
-                                    k.SinDate,
-                                    k.Text,
-                                    k.IsDeleted,
-                                    k.RichText,
-                                    DateTime.MinValue,
-                                    DateTime.MinValue
-                                )).ToList();
-
-                            count = 0;
-                            foreach (var karte in karteModels)
-                            {
-                                var modelValidation = karte.Validation();
-                                if (modelValidation != TodayKarteValidationStatus.Valid && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, modelValidation);
-                                }
-
-                                var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { karte.RaiinNo });
-                                if (!checkRaiinNo && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.RaiinNoNoExist);
-                                }
-
-                                var checkPtId = _patientInforRepository.CheckListId(new List<long> { karte.PtId });
-                                if (!checkPtId && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.PtIdNoExist);
-                                }
-
-                                var checkKarteKbn = _karteKbnInforRepository.CheckKarteKbn(karte.KarteKbn);
-                                if (!checkKarteKbn && !dicKarteValidation.ContainsKey(count))
-                                {
-                                    dicKarteValidation.Add(count, TodayKarteValidationStatus.KarteKbnNoExist);
-                                }
-
-                                count++;
-                            }
-
-                            if (raiinInfStatus != RaiinInfConst.RaiinInfValidationStatus.Valid || dicKarteValidation.Any() || dicValidation.Any())
-                            {
-                                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, dicKarteValidation);
-                            }
-
-                            if (inputData.OdrItems.Count > 0)
-                            {
-                                int hpId = inputData.OdrItems[0].HpId;
-                                long raiinNo = inputData.OdrItems[0].RaiinNo;
-                                long ptId = inputData.OdrItems[0].PtId;
-                                int sinDate = inputData.OdrItems[0].SinDate;
-
-                                _receptionRepository.SaveRaiinInfTodayOdr(inputData.Status, hpId, ptId, raiinNo, sinDate, inputData.SyosaiKbn, inputData.JikanKbn, inputData.HokenPid, inputData.SanteiKbn, inputData.TantoId, inputData.KaId, inputData.UketukeTime, inputData.SinStartTime, inputData.SinEndTime);
-                            }
-                            _ordInfRepository.Upsert(allOdrInfs);
-                            _karteInfRepository.Upsert(karteModels);
-                            _ordInfRepository.SaveRaiinListInf(allOdrInfs);
-
-                            transaction.Commit();
-
-                            return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
-                        }
-                        catch
+                        var modelValidation = item.Validation();
+                        if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index))
                         {
-                            transaction.Rollback();
-
-                            return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                            dicValidation.Add(index, modelValidation);
                         }
-                    }
-                });
+                    });
+                }
+
+                // Karte
+                if (inputDatas.KarteInfs.Count > 0)
+                {
+                    karteModels = inputKarteDataList.Select(k => new KarteInfModel(
+                            k.HpId,
+                            k.RaiinNo,
+                            k.KarteKbn,
+                            0,
+                            k.PtId,
+                            k.SinDate,
+                            k.Text,
+                            k.IsDeleted,
+                            k.RichText,
+                            DateTime.MinValue,
+                            DateTime.MinValue
+                        )).ToList();
+
+                    var karteKbns = karteModels.Select(i => i.KarteKbn).Distinct().ToList();
+                    var checkKarteKbns = karteKbns == null ? new List<KarteKbnMstModel>() : _karteKbnInforRepository.GetCheckKarteKbns(karteKbns);
+                    Parallel.For(0, karteModels.Count, index =>
+                    {
+                        lock (obj)
+                        {
+                            var karte = karteModels[index];
+                            var modelValidation = karte.Validation();
+                            if (modelValidation != TodayKarteValidationStatus.Valid)
+                            {
+                                dicKarteValidation.Add(index, modelValidation);
+                                return;
+                            }
+
+                            var checkKarteKbn = checkKarteKbns.Any(c => c.KarteKbn == karte.KarteKbn);
+                            if (!checkKarteKbn)
+                            {
+                                dicKarteValidation.Add(index, TodayKarteValidationStatus.KarteKbnNoExist);
+                            }
+                        }
+                    });
+                }
+
+                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || dicKarteValidation.Any() || dicValidation.Any())
+                {
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, dicKarteValidation);
+                }
+
+                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModels);
+
+                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+            }
+            catch
+            {
+                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+            }
         }
     }
 }

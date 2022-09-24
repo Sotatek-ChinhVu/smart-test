@@ -391,6 +391,40 @@ namespace Infrastructure.Repositories
 
         }
 
+        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
+        {
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
+                                (r =>
+                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3 && r.IsDeleted == 0 && raiinNos.Contains(r.RaiinNo));
+            return result.Select(r => new ReceptionModel(
+                        r.HpId,
+                        r.PtId,
+                        r.SinDate,
+                        r.RaiinNo,
+                        r.OyaRaiinNo,
+                        r.HokenPid,
+                        r.SanteiKbn,
+                        r.Status,
+                        r.IsYoyaku,
+                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuId,
+                        r.UketukeSbt,
+                        r.UketukeTime ?? String.Empty,
+                        r.UketukeId,
+                        r.UketukeNo,
+                        r.SinStartTime,
+                        r.SinEndTime ?? String.Empty,
+                        r.KaikeiTime ?? String.Empty,
+                        r.KaikeiId,
+                        r.KaId,
+                        r.TantoId,
+                        r.SyosaisinKbn,
+                        r.JikanKbn,
+                        string.Empty
+                   ));
+
+        }
+
         public bool CheckListNo(List<long> raininNos)
         {
             var check = _tenantNoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
@@ -626,39 +660,6 @@ namespace Infrastructure.Repositories
             return Update(hpId, raiinNo, r => r.KaId = kaId);
         }
 
-        public bool SaveRaiinInfTodayOdr(int status, int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime)
-        {
-            bool statusChanged = false;
-            var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
-
-            if (raiinInf?.Status > status)
-            {
-                statusChanged = false;
-            }
-            else
-            {
-                statusChanged = true;
-            }
-            if (raiinInf != null)
-            {
-                raiinInf.SyosaisinKbn = syosaiKbn;
-                raiinInf.JikanKbn = jikanKbn;
-                raiinInf.HokenPid = hokenPid;
-                raiinInf.SanteiKbn = santeiKbn;
-                raiinInf.TantoId = tantoId;
-                raiinInf.KaId = kaId;
-                raiinInf.UketukeTime = uketukeTime;
-                raiinInf.SinEndTime = sinEndTime;
-                raiinInf.SinStartTime = sinStartTime;
-                raiinInf.UpdateId = TempIdentity.UserId;
-                raiinInf.UpdateDate = DateTime.UtcNow;
-                raiinInf.UpdateMachine = TempIdentity.ComputerName;
-                _tenantTrackingDataContext.SaveChanges();
-            }
-
-            return statusChanged;
-        }
-
         private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
         {
             var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
@@ -674,7 +675,7 @@ namespace Infrastructure.Repositories
             raiinInf.UpdateDate = DateTime.UtcNow;
             raiinInf.UpdateId = TempIdentity.UserId;
             raiinInf.UpdateMachine = TempIdentity.ComputerName;
-            _tenantNoTrackingDataContext.SaveChanges();
+            //_tenantNoTrackingDataContext.SaveChanges();
             return true;
         }
     }
