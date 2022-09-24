@@ -9,9 +9,8 @@ namespace EmrCloudApi.Tenant.Responses.MstItem
             ListData = listData;
             TotalCount = totalCount;
         }
-
+        public int TotalCount { get; private set; }
         public List<TenItemModel> ListData { get; private set; }
 
-        public int TotalCount { get; private set; }
     }
 }

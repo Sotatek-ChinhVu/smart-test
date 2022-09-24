@@ -18,7 +18,8 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel Get(long raiinNo)
         {
-            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
+            var receptionEntity = _tenantDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var raiinCommentInf = _tenantDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
@@ -44,7 +45,8 @@ namespace Infrastructure.Repositories
                     receptionEntity?.KaId ?? 0,
                     receptionEntity?.TantoId ?? 0,
                     receptionEntity?.SyosaisinKbn ?? 0,
-                    receptionEntity?.JikanKbn ?? 0
+                    receptionEntity?.JikanKbn ?? 0,
+                    raiinCommentInf?.Text ?? string.Empty
                 );
         }
 
@@ -381,7 +383,8 @@ namespace Infrastructure.Repositories
                         r.KaId,
                         r.TantoId,
                         r.SyosaisinKbn,
-                        r.JikanKbn
+                        r.JikanKbn,
+                        string.Empty
                    ));
 
         }

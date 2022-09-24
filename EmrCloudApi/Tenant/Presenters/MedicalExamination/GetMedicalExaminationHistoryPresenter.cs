@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
         {
             Result = new Response<GetMedicalExaminationHistoryResponse>()
             {
-                Data = new GetMedicalExaminationHistoryResponse(outputData.RaiinfList),
+                Data = new GetMedicalExaminationHistoryResponse(outputData.RaiinfList, outputData.Total, outputData.StartPage),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
@@ -33,8 +33,8 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 case GetMedicalExaminationHistoryStatus.Successed:
                     Result.Message = ResponseMessage.GetMedicalExaminationSuccessed;
                     break;
-                case GetMedicalExaminationHistoryStatus.InvalidPageIndex:
-                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidPageIndex;
+                case GetMedicalExaminationHistoryStatus.InvalidStartPage:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidStartIndex;
                     break;
                 case GetMedicalExaminationHistoryStatus.InvalidPageSize:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidPageSize;
@@ -44,6 +44,21 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                     break;
                 case GetMedicalExaminationHistoryStatus.InvalidFilterId:
                     Result.Message = ResponseMessage.GetMedicalExaminationInvalidFilterId;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchType:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchType;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchCategory:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchCategory;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidSearchText:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidSearchText;
+                    break;
+                case GetMedicalExaminationHistoryStatus.InvalidUserId:
+                    Result.Message = ResponseMessage.GetMedicalExaminationInvalidUserId;
+                    break;
+                case GetMedicalExaminationHistoryStatus.Failed:
+                    Result.Message = ResponseMessage.Failed;
                     break;
             }
         }

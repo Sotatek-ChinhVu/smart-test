@@ -2,7 +2,7 @@
 {
     public class FlowSheetModel
     {
-        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isContainsFile, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, int cmtKbn, long rainListCmtSeqNo, int rainListTagSeqNo)
+        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, int cmtKbn, long rainListCmtSeqNo, int rainListTagSeqNo)
         {
             SinDate = sinDate;
             TagNo = tagNo;
@@ -11,7 +11,7 @@
             SyosaisinKbn = syosaisinKbn;
             Comment = comment;
             Status = status;
-            IsContainsFile = isContainsFile;
+            IsContainsFile = raiinListInfs.Any(r => r.RaiinListKbn == 4); ;
             IsNextOrder = isNextOrder;
             IsToDayOdr = isToDayOdr;
             RaiinListInfs = raiinListInfs;

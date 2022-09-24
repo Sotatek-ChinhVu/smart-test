@@ -13,9 +13,9 @@ namespace Interactor.MstItem
 
         public SearchTenItemOutputData Handle(SearchTenItemInputData inputData)
         {
-            if(inputData.HpId < 0)
+            if (inputData.HpId < 0)
             {
-                return new SearchTenItemOutputData( new List<TenItemModel>(), 0, SearchTenItemStatus.Successed);
+                return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.Successed);
             }
 
             if (inputData.KouiKbn < 0)
@@ -48,7 +48,7 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InvalidPointTo);
             }
 
-            var data = _mstItemRepository.SearchTenMst(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired );
+            var data = _mstItemRepository.SearchTenMst(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired);
 
             return new SearchTenItemOutputData(data.Item1, data.Item2, SearchTenItemStatus.Successed);
         }
