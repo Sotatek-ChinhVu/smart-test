@@ -189,7 +189,8 @@ namespace Infrastructure.Repositories
                 tenMst.CmtCol1,
                 tenMst.IpnNameCd ?? string.Empty,
                 tenMst.SinKouiKbn,
-                tenMst.YjCd ?? string.Empty
+                tenMst.YjCd ?? string.Empty,
+                tenMst.CnvUnitName ?? string.Empty
             )).ToList();
         }
 
