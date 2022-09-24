@@ -115,5 +115,13 @@ namespace Infrastructure.Repositories
                 return status;
             }
         }
+
+        public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        {
+            if (searchType == 1)
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+            else
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+        }
     }
 }
