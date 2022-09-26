@@ -20,7 +20,15 @@ namespace Interactor.MonshinInf
                 {
                     return new SaveMonshinOutputData(SaveMonshinStatus.InputDataNull);
                 }
-
+                foreach (var item in inputData.MonshinInfors)
+                {
+                    if (item.HpId <= 0)
+                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidHpId);
+                    if (item.PtId <= 0)
+                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidPtId);
+                    if (item.RaiinNo <= 0)
+                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidRaiinNo);
+                }
                 bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
                 var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;
                 return new SaveMonshinOutputData(status);
