@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 
 namespace Domain.Models.Reception
 {
@@ -96,6 +97,22 @@ namespace Domain.Models.Reception
             SinStartTime = String.Empty;
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
+        }
+        
+        public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
+        {
+            RaiinNo = raiinNo;
+            UketukeId = uketukeId;
+            KaId = kaId;
+            UketukeTime = uketukeTime;
+            SinStartTime = sinStartTime;
+            Status = status;
+            YoyakuId = yokakuId;
+            TantoId = tantoId;
+            YoyakuTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            Comment = String.Empty;
         }
 
         public ReceptionDto ToDto()

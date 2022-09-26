@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -655,6 +656,23 @@ namespace Infrastructure.Repositories
                 receptionComment.RaiinNo,
                 receptionComment.Text
                 );
+        }
+        
+        public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
+        {
+            var DataRaiinInf = _tenantDataContext.RaiinInfs
+                .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
+            if (DataRaiinInf is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                DataRaiinInf.RaiinNo,
+                DataRaiinInf.UketukeId,
+                DataRaiinInf.KaId,
+                DataRaiinInf.UketukeTime ?? string.Empty,
+                DataRaiinInf.SinStartTime ?? string.Empty,
+                DataRaiinInf.Status,
+                DataRaiinInf.YoyakuId,
+                DataRaiinInf.TantoId);
         }
     }
 }
