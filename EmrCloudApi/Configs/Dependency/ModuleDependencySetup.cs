@@ -13,6 +13,7 @@ using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.MaxMoney;
+using Domain.Models.MonshinInf;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
@@ -26,6 +27,7 @@ using Domain.Models.RaiinKubunMst;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.ReceptionInsurance;
+using Domain.Models.ReceptionLock;
 using Domain.Models.ReceptionSameVisit;
 using Domain.Models.SetGenerationMst;
 using Domain.Models.SetKbnMst;
@@ -66,6 +68,7 @@ using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
 using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
+using Interactor.MonshinInf;
 using Interactor.MstItem;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
@@ -110,6 +113,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MonshinInfor.GetList;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
@@ -129,6 +133,7 @@ using UseCase.PatientRaiinKubun.Get;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
+using UseCase.RaiinKubunMst.LoadData;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
@@ -157,6 +162,7 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -227,10 +233,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IJsonSettingRepository, JsonSettingRepository>();
             services.AddTransient<ISystemGenerationConfRepository, SystemGenerationConfRepository>();
             services.AddTransient<IMstItemRepository, MstItemRepository>();
+            services.AddTransient<IReceptionLockRepository, ReceptionLockRepository>();
             services.AddTransient<IDrugInforRepository, DrugInforRepository>();
             services.AddTransient<ISuperSetDetailRepository, SuperSetDetailRepository>();
             services.AddTransient<IUsageTreeSetRepository, UsageTreeSetRepository>();
             services.AddTransient<IMaxmoneyReposiory, MaxmoneyReposiory>();
+            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
         }
@@ -261,6 +269,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateReceptionDynamicCellInputData, UpdateReceptionDynamicCellInteractor>();
             busBuilder.RegisterUseCase<GetReceptionSettingsInputData, GetReceptionSettingsInteractor>();
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -279,6 +288,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
+            busBuilder.RegisterUseCase<LoadDataKubunSettingInputData, LoadDataKubunSettingInteractor>();
+
 
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
@@ -381,6 +392,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+
+            //Monshin
+            busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
+
             busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
 
             // Reception - Valid Pattern Expirated
