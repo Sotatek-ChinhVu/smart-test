@@ -47,7 +47,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.Get + "ReceptionComment")]
-        public ActionResult<Response<GetReceptionCommentResponse>> GetList([FromQuery] GetReceptionCommentRequest request)
+        public ActionResult<Response<GetReceptionCommentResponse>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
         {
             var input = new GetReceptionCommentInputData(request.HpId, request.RaiinNo);
             var output = _bus.Handle(input);
