@@ -1,4 +1,4 @@
-﻿namespace UseCase.KaMst.SaveList;
+﻿namespace UseCase.Ka.SaveList;
 
 public class SaveKaMstInputItem
 {

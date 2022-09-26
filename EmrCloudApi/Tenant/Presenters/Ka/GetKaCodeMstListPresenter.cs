@@ -1,11 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
-using UseCase.KaMst.GetKaCodeList;
+using UseCase.Ka.GetKaCodeList;
 
 namespace EmrCloudApi.Tenant.Presenters.Ka;
 
-public class GetKaCodeMstListPresenter : IgetKaCodeMstListOutputPort
+public class GetKaCodeMstListPresenter : IGetKaCodeMstListOutputPort
 {
     public Response<GetKaCodeMstListResponse> Result { get; private set; } = new();
 

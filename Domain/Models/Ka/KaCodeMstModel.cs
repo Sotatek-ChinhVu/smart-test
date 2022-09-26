@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.KaMst;
+﻿namespace Domain.Models.Ka;
 
 public class KaCodeMstModel
 {

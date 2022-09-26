@@ -1,20 +1,24 @@
-﻿using Domain.Models.KaMst;
-using UseCase.KaMst.SaveList;
+﻿using Domain.Models.Ka;
+using UseCase.Ka.SaveList;
 
-namespace Interactor.KaMst;
+namespace Interactor.Ka;
 
 public class SaveKaMstInteractor : ISaveKaMstInputPort
 {
-    private readonly IKaMstRepository _kaMstRepository;
+    private readonly IKaRepository _kaMstRepository;
 
-    public SaveKaMstInteractor(IKaMstRepository kaMstRepository)
+    public SaveKaMstInteractor(IKaRepository kaMstRepository)
     {
         _kaMstRepository = kaMstRepository;
     }
 
     public SaveKaMstOutputData Handle(SaveKaMstInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        if (inputData == null)
+        {
+            return new SaveKaMstOutputData(SaveKaMstStatus.Failed);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new SaveKaMstOutputData(SaveKaMstStatus.InvalidHpId);
         }

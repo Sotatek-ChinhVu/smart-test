@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.KaMst;
+﻿namespace Domain.Models.Ka;
 
-public interface IKaMstRepository
+public interface IKaRepository
 {
-    KaMstModel? GetByKaId(int kaId);
+    KaMstModel GetByKaId(int kaId);
 
     List<KaMstModel> GetByKaIds(List<int> kaIds);
 

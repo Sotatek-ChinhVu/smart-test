@@ -34,6 +34,7 @@
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
+        public const string SaveListKaMst = "SaveListKaMst";
 
     }
 }

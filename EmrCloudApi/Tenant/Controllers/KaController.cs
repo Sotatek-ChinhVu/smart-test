@@ -5,9 +5,9 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.KaMst.GetKaCodeList;
-using UseCase.KaMst.GetList;
-using UseCase.KaMst.SaveList;
+using UseCase.Ka.GetKaCodeList;
+using UseCase.Ka.GetList;
+using UseCase.Ka.SaveList;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -42,7 +42,7 @@ public class KaController : ControllerBase
         return Ok(presenter.Result);
     }
 
-    [HttpPost(ApiPath.SaveList)]
+    [HttpPost(ApiPath.SaveListKaMst)]
     public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
     {
         var input = new SaveKaMstInputData(request.HpId, request.UserId, request.kaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());

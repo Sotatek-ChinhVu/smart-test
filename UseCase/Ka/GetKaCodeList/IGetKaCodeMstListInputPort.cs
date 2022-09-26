@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.KaMst.GetKaCodeList;
+namespace UseCase.Ka.GetKaCodeList;
 
 public interface IGetKaCodeMstListInputPort : IInputPort<GetKaCodeMstInputData, GetKaCodeMstListOutputData>
 {

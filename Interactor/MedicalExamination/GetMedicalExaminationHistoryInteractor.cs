@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Insurance;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -20,10 +20,10 @@ namespace Interactor.MedicalExamination
         private readonly IReceptionRepository _receptionRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IKaMstRepository _kaRepository;
+        private readonly IKaRepository _kaRepository;
         private readonly IKarteFilterMstRepository _karteFilterMstRepository;
         private readonly IRaiinListTagRepository _rainListTagRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;

@@ -1,4 +1,4 @@
-﻿namespace UseCase.KaMst.SaveList;
+﻿namespace UseCase.Ka.SaveList;
 
 public enum SaveKaMstStatus : byte
 {
@@ -10,5 +10,5 @@ public enum SaveKaMstStatus : byte
     KaSnameMaxLength20 = 6,
     KaNameMaxLength40 = 7,
     ReceKaCdNotFound = 8,
-    CanNotDuplicateKaId = 9,
+    CanNotDuplicateKaId = 9
 }

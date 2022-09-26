@@ -1,4 +1,4 @@
-﻿using Domain.Models.KaMst;
+﻿using Domain.Models.Ka;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -6,21 +6,21 @@ using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class KaMstRepository : IKaMstRepository
+public class KaRepository : IKaRepository
 {
     private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
     private readonly TenantDataContext _tenantDataContext;
-    public KaMstRepository(ITenantProvider tenantProvider)
+    public KaRepository(ITenantProvider tenantProvider)
     {
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public KaMstModel? GetByKaId(int kaId)
+    public KaMstModel GetByKaId(int kaId)
     {
         var entity = _tenantNoTrackingDataContext.KaMsts
             .Where(k => k.KaId == kaId && k.IsDeleted == DeleteTypes.None).FirstOrDefault();
-        return entity is null ? null : ConvertToKaMstModel(entity);
+        return entity is null ? new KaMstModel() : ConvertToKaMstModel(entity);
     }
 
     public List<KaMstModel> GetByKaIds(List<int> kaIds)

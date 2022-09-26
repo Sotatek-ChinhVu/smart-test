@@ -1,7 +1,16 @@
-﻿namespace Domain.Models.KaMst;
+﻿namespace Domain.Models.Ka;
 
 public class KaMstModel
 {
+    public KaMstModel()
+    {
+        Id = 0;
+        KaId = 0;
+        SortNo = 0;
+        ReceKaCd = string.Empty;
+        KaSname = string.Empty;
+        KaName = string.Empty;
+    }
     public KaMstModel(long id, int kaId, int sortNo, string receKaCd, string kaSname, string kaName)
     {
         Id = id;

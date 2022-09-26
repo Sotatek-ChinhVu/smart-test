@@ -1,4 +1,4 @@
-﻿using Domain.Models.KaMst;
+﻿using Domain.Models.Ka;
 
 namespace EmrCloudApi.Tenant.Responses.Ka;
 
