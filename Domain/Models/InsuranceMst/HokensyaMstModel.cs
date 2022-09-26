@@ -59,6 +59,5 @@ namespace Domain.Models.InsuranceMst
         public string Address2 { get; private set; }
 
         public string Tel1 { get; private set; }
-
     }
 }

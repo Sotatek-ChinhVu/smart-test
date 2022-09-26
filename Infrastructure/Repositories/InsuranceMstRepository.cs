@@ -353,7 +353,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveHokenSyaMst(HokensyaMstModel model)
         {
-            HokensyaMst? hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
+            var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
             if (hoken is null)
             {
                 HokensyaMst create = new HokensyaMst()

@@ -2,9 +2,7 @@
 {
     public enum SaveHokenSyaMstStatus
     {
-        Successful = 1 ,
-        InvalidHpID = 2,
-        InvalidHokenSyaNo = 3,
-        Failed = 4
+        Successful = 1,
+        Failed = 2
     }
 }

@@ -4,6 +4,11 @@ namespace EmrCloudApi.Tenant.Responses.InsuranceMst
 {
     public class SaveHokenSyaMstResponse
     {
-        public SaveHokenSyaMstStatus State { get; set; }
+        public SaveHokenSyaMstResponse(SaveHokenSyaMstStatus state)
+        {
+            State = state;
+        }
+
+        public SaveHokenSyaMstStatus State { get; private set; }
     }
 }

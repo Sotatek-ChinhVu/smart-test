@@ -10,19 +10,16 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceMst
         public Response<SaveHokenSyaMstResponse> Result { get; private set; } = new Response<SaveHokenSyaMstResponse>();
         public void Complete(SaveHokenSyaMstOutputData outputData)
         {
-            Result.Data = new SaveHokenSyaMstResponse()
-            {
-                State = outputData.Status
-            };
+            Result.Data = new SaveHokenSyaMstResponse(outputData.Status);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
+            if (outputData.Status == SaveHokenSyaMstStatus.Failed)
+                Result.Message += $".{outputData.Message}";
         }
 
         private string GetMessage(SaveHokenSyaMstStatus status) => status switch
         {
             SaveHokenSyaMstStatus.Successful => ResponseMessage.Success,
-            SaveHokenSyaMstStatus.InvalidHpID => ResponseMessage.InvalidHpId,
-            SaveHokenSyaMstStatus.InvalidHokenSyaNo => ResponseMessage.InvalidHokenSyaNo,
             SaveHokenSyaMstStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
