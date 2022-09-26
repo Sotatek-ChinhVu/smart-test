@@ -35,5 +35,8 @@
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
     }
 }
