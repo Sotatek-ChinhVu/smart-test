@@ -19,6 +19,23 @@ public class SetMstModel
         IsGroup = isGroup;
         SetMstTooltip = setMstTooltip;
     }
+    public SetMstModel()
+    {
+        HpId = 0;
+        SetCd = 0;
+        SetKbn = 0;
+        SetKbnEdaNo = 0;
+        GenerationId = 0;
+        Level1 = 0;
+        Level2 = 0;
+        Level3 = 0;
+        SetName = string.Empty;
+        WeightKbn = 0;
+        Color = 0;
+        IsDeleted = 0;
+        IsGroup = 0;
+        SetMstTooltip = new SetMstTooltipModel();
+    }
 
     public int HpId { get; private set; }
     public int SetCd { get; private set; }

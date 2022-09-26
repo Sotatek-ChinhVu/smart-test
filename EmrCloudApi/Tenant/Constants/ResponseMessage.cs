@@ -305,6 +305,7 @@
         public static readonly string CmtOptMaxLength38 = "Length of SetOrderDetail CmtOpt must less than 38 or equal 38.";
         public static readonly string FontColorMaxLength8 = "Length of SetOrderDetail FontColor must less than 8 or equal 8.";
         public static readonly string InvalidSetOrderCommentNewline = "SetOrderDetail CommentNewline must more than 0 or equal 0";
+        public static readonly string RpNoOrRpEdaNoIsNotExist = "RpNo or RpEdaNo is not exist";
 
     }
 }

@@ -167,7 +167,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                                  join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
@@ -273,7 +273,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
-    private SetOrderInfModel ConvertToModel(SetOdrInf ordInf, string createName)
+    private SetOrderInfModel ConvertToOrderInfModel(SetOdrInf ordInf, string createName)
     {
         return new SetOrderInfModel(
                     ordInf.Id,
@@ -464,7 +464,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var listSetByomeiDelete = listOldSetByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
             foreach (var mst in listSetByomeiDelete)
             {
-                mst.IsDeleted = 1;
+                mst.IsDeleted = DeleteTypes.Deleted;
                 mst.UpdateDate = DateTime.UtcNow;
                 mst.UpdateId = userId;
             }
@@ -644,7 +644,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 List<SetOdrInf> listSetOdrInfDeletes = _tenantDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
                 foreach (var mst in listSetOdrInfDeletes)
                 {
-                    mst.IsDeleted = 1;
+                    mst.IsDeleted = DeleteTypes.Deleted;
                     mst.UpdateDate = DateTime.UtcNow;
                     mst.UpdateId = userId;
                 }
@@ -762,5 +762,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         {
             return status;
         }
+    }
+
+    public List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd)
+    {
+        var listOrder = _tenantNoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
+        return listOrder.Select(model => ConvertToOrderInfModel(model, string.Empty)).ToList();
     }
 }

@@ -71,4 +71,97 @@ public class SetOrderInfDetailInputItem
     public string FontColor { get; private set; }
 
     public int CommentNewline { get; private set; }
+
+    public SaveSuperSetDetailStatus Validate()
+    {
+        if (SinKouiKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderSinKouiKbn;
+        }
+        else if (ItemCd.Length > 10)
+        {
+            return SaveSuperSetDetailStatus.ItemCdMaxLength10;
+        }
+        else if (ItemName.Length > 240)
+        {
+            return SaveSuperSetDetailStatus.ItemNameMaxLength240;
+        }
+        else if (UnitName.Length > 24)
+        {
+            return SaveSuperSetDetailStatus.UnitNameMaxLength24;
+        }
+        else if (Suryo < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderSuryo;
+        }
+        else if (UnitSBT < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderUnitSBT;
+        }
+        else if (TermVal < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderTermVal;
+        }
+        else if (KohatuKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderKohatuKbn;
+        }
+        else if (SyohoKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderSyohoKbn;
+        }
+        else if (SyohoLimitKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderSyohoLimitKbn;
+        }
+        else if (DrugKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderDrugKbn;
+        }
+        else if (YohoKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderYohoKbn;
+        }
+        else if (Kokuji1.Length > 1)
+        {
+            return SaveSuperSetDetailStatus.Kokuji1MaxLength1;
+        }
+        else if (Kokuji2.Length > 1)
+        {
+            return SaveSuperSetDetailStatus.Kokuji2MaxLength1;
+        }
+        else if (IsNodspRece < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderIsNodspRece;
+        }
+        else if (IpnCd.Length > 12)
+        {
+            return SaveSuperSetDetailStatus.IpnCdMaxLength12;
+        }
+        else if (IpnName.Length > 120)
+        {
+            return SaveSuperSetDetailStatus.IpnNameMaxLength120;
+        }
+        else if (Bunkatu.Length > 10)
+        {
+            return SaveSuperSetDetailStatus.BunkatuMaxLength10;
+        }
+        else if (CmtName.Length > 240)
+        {
+            return SaveSuperSetDetailStatus.CmtNameMaxLength240;
+        }
+        else if (CmtOpt.Length > 38)
+        {
+            return SaveSuperSetDetailStatus.CmtOptMaxLength38;
+        }
+        else if (FontColor.Length > 8)
+        {
+            return SaveSuperSetDetailStatus.FontColorMaxLength8;
+        }
+        else if (CommentNewline < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderCommentNewline;
+        }
+        return SaveSuperSetDetailStatus.ValidateOrderDetailSuccess;
+    }
 }

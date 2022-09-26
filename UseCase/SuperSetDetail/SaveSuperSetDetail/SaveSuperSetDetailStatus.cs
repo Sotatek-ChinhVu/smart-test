@@ -51,5 +51,8 @@ public enum SaveSuperSetDetailStatus : byte
     CmtNameMaxLength240 = 47,
     CmtOptMaxLength38 = 48,
     FontColorMaxLength8 = 49,
-    InvalidSetOrderCommentNewline = 50
+    InvalidSetOrderCommentNewline = 50,
+    RpNoOrRpEdaNoIsNotExist = 51,
+    ValidateOrderSuccess = 52,
+    ValidateOrderDetailSuccess = 53
 }

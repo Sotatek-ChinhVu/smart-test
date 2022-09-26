@@ -72,11 +72,11 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         _s3Client.Dispose();
     }
 
-    private string GetUniqueKey(string subFolder, string fileName, bool? addToTenant = true)
+    private string GetUniqueKey(string subFolder, string fileName, bool addToTenant)
     {
         var tenantId = _tenantProvider.GetTenantId();
         var prefix = "tenants";
-        if (addToTenant == true)
+        if (addToTenant)
         {
             prefix += "/" + tenantId;
         }

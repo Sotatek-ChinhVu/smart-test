@@ -49,4 +49,57 @@ public class SaveSetOrderInfInputItem
     public int IsDeleted { get; private set; }
 
     public List<SetOrderInfDetailInputItem> OrdInfDetails { get; private set; }
+
+    public SaveSuperSetDetailStatus Validation()
+    {
+        if (Id < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfId;
+        }
+        else if (RpNo < 1)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfRpNo;
+        }
+        else if (RpEdaNo < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfRpEdaNo;
+        }
+        else if (OdrKouiKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfKouiKbn;
+        }
+        else if (RpName.Length > 240)
+        {
+            return SaveSuperSetDetailStatus.RpNameMaxLength240;
+        }
+        else if (InoutKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfInoutKbn;
+        }
+        else if (SikyuKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfSikyuKbn;
+        }
+        else if (SyohoSbt < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfSyohoSbt;
+        }
+        else if (SanteiKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfSanteiKbn;
+        }
+        else if (TosekiKbn < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfTosekiKbn;
+        }
+        else if (DaysCnt < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfDaysCnt;
+        }
+        else if (SortNo < 0)
+        {
+            return SaveSuperSetDetailStatus.InvalidSetOrderInfSortNo;
+        }
+        return SaveSuperSetDetailStatus.ValidateOrderSuccess;
+    }
 }

@@ -60,7 +60,7 @@ public class SetMstRepository : ISetMstRepository
                 ).ToList();
     }
 
-    public SetMstModel? SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
+    public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
         try
         {
@@ -77,7 +77,7 @@ public class SetMstRepository : ISetMstRepository
 
             if (oldSetMst == null && setMstModel.SetCd != 0)
             {
-                return null;
+                return new SetMstModel();
             }
             else
             {
@@ -197,7 +197,7 @@ public class SetMstRepository : ISetMstRepository
         }
         catch
         {
-            return null;
+            return new SetMstModel();
         }
     }
 
