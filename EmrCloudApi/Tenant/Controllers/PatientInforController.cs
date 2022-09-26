@@ -31,6 +31,9 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using EmrCloudApi.Tenant.Constants;
+using UseCase.PatientInfor.PatientComment;
+using UseCase.InsuranceMst.SaveHokenSyaMst;
 using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
@@ -47,6 +50,16 @@ namespace EmrCloudApi.Tenant.Controllers
         public PatientInforController(UseCaseBus bus)
         {
             _bus = bus;
+        }
+
+        [HttpGet(ApiPath.Get + "PatientComment")]
+        public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
+        {
+            var input = new GetPatientCommentInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetPatientCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpGet("GetPatientById")]
@@ -168,6 +181,31 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
+        [HttpPost("SaveHokenSyaMst")]
+        public ActionResult<Response<SaveHokenSyaMstResponse>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
+        {
+            var input = new SaveHokenSyaMstInputData(request.HpId
+                                                   , request.Name
+                                                   , request.KanaName
+                                                   , request.HoubetuKbn
+                                                   , request.Houbetu
+                                                   , request.HokenKbn
+                                                   , request.PrefNo
+                                                   , request.HokensyaNo
+                                                   , request.Kigo
+                                                   , request.Bango
+                                                   , request.RateHonnin
+                                                   , request.RateKazoku
+                                                   , request.PostCode
+                                                   , request.Address1
+                                                   , request.Address2
+                                                   , request.Tel1);
+
+            var output = _bus.Handle(input);
+            var presenter = new SaveHokenSyaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
         [HttpGet(ApiPath.GetDetailHokenMst)]
         public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
         {
