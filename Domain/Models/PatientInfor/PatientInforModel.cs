@@ -55,6 +55,7 @@ namespace Domain.Models.PatientInfor
                 LastVisitDate = lastVisitDate;
                 FirstVisitDate = firstVisitDate;
                 RainCount = rainCount;
+                Comment = string.Empty;
             }
 
             public PatientInforModel(int hpId, long ptId, string comment)
@@ -62,6 +63,45 @@ namespace Domain.Models.PatientInfor
                 HpId = hpId;
                 PtId = ptId;
                 Comment = comment;
+                ReferenceNo = 0;
+                SeqNo = 0;
+                PtNum = 0;
+                KanaName = string.Empty;
+                Name = string.Empty;
+                Sex = 0;
+                Birthday = 0;
+                LimitConsFlg = 0;
+                IsDead = 0;
+                DeathDate = 0;
+                HomePost = string.Empty;
+                HomeAddress1 = string.Empty;
+                HomeAddress2 = string.Empty;
+                Tel1 = string.Empty;
+                Tel2 = string.Empty;
+                Mail = string.Empty;
+                Setanusi = string.Empty;
+                Zokugara = string.Empty;
+                Job = string.Empty;
+                RenrakuName = string.Empty;
+                RenrakuPost = string.Empty;
+                RenrakuAddress1 = string.Empty;
+                RenrakuAddress2 = string.Empty;
+                RenrakuTel = string.Empty;
+                RenrakuMemo = string.Empty;
+                OfficeName = string.Empty;
+                OfficePost = string.Empty;
+                OfficeAddress1 = string.Empty;
+                OfficeAddress2 = string.Empty;
+                OfficeTel = string.Empty;
+                OfficeMemo = string.Empty;
+                IsRyosyoDetail = 0;
+                PrimaryDoctor = 0;
+                IsTester = 0;
+                MainHokenPid = 0;
+                Memo = string.Empty;
+                LastVisitDate = 0;
+                FirstVisitDate = 0;
+                RainCount = string.Empty;
             }
 
             public PatientInforModel()
@@ -71,42 +111,43 @@ namespace Domain.Models.PatientInfor
                 ReferenceNo = 0;
                 SeqNo = 0;
                 PtNum = 0;
-                KanaName = String.Empty;
-                Name = String.Empty;
+                KanaName = string.Empty;
+                Name = string.Empty;
                 Sex = 0;
                 Birthday = 0;
                 LimitConsFlg = 0;
                 IsDead = 0;
                 DeathDate = 0;
-                HomePost = String.Empty;
-                HomeAddress1 = String.Empty;
-                HomeAddress2 = String.Empty;
-                Tel1 = String.Empty;
-                Tel2 = String.Empty;
-                Mail = String.Empty;
-                Setanusi = String.Empty;
-                Zokugara = String.Empty;
-                Job = String.Empty;
-                RenrakuName = String.Empty;
-                RenrakuPost = String.Empty;
-                RenrakuAddress1 = String.Empty;
-                RenrakuAddress2 = String.Empty;
-                RenrakuTel = String.Empty;
-                RenrakuMemo = String.Empty;
-                OfficeName = String.Empty;
-                OfficePost = String.Empty;
-                OfficeAddress1 = String.Empty;
-                OfficeAddress2 = String.Empty;
-                OfficeTel = String.Empty;
-                OfficeMemo = String.Empty;
+                HomePost = string.Empty;
+                HomeAddress1 = string.Empty;
+                HomeAddress2 = string.Empty;
+                Tel1 = string.Empty;
+                Tel2 = string.Empty;
+                Mail = string.Empty;
+                Setanusi = string.Empty;
+                Zokugara = string.Empty;
+                Job = string.Empty;
+                RenrakuName = string.Empty;
+                RenrakuPost = string.Empty;
+                RenrakuAddress1 = string.Empty;
+                RenrakuAddress2 = string.Empty;
+                RenrakuTel = string.Empty;
+                RenrakuMemo = string.Empty;
+                OfficeName = string.Empty;
+                OfficePost = string.Empty;
+                OfficeAddress1 = string.Empty;
+                OfficeAddress2 = string.Empty;
+                OfficeTel = string.Empty;
+                OfficeMemo = string.Empty;
                 IsRyosyoDetail = 0;
                 PrimaryDoctor = 0;
                 IsTester = 0;
                 MainHokenPid = 0;
-                Memo = String.Empty;
+                Memo = string.Empty;
                 LastVisitDate = 0;
                 FirstVisitDate = 0;
-                RainCount = String.Empty;
+                RainCount = string.Empty;
+                Comment = string.Empty;
             }
 
             public int LastVisitDate { get; private set; }

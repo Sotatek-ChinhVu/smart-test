@@ -127,6 +127,7 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
@@ -164,9 +165,6 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.PatientInfor.PatientComment;
-using UseCase.VisitingList.SaveSettings;
-using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
