@@ -663,19 +663,15 @@ namespace Infrastructure.Repositories
         {
             var data = _tenantDataContext.PtCmtInfs
                 .Where(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0)
-                .Select(x => new PatientInforModel(
-                x.HpId,
-                x.PtId,
-                x.Text ?? string.Empty))
                 .FirstOrDefault();
             if (data is null)
-                return new PatientInforModel(0, 0, String.Empty);
+                return new PatientInforModel();
 
             return new PatientInforModel(
                 data.HpId,
                 data.PtId,
-                data.Comment ?? string.Empty
-                ); ;
+                data.Text ?? string.Empty
+                );
         }
     }
 }

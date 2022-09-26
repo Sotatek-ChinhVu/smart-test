@@ -191,7 +191,7 @@ namespace Domain.Models.PatientInfor
 
             public string RainCount { get; private set; }
 
-            public string? Comment { get; private set; } = string.Empty;
+            public string Comment { get; private set; }
         }
     }
 }
