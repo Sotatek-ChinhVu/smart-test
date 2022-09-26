@@ -275,10 +275,5 @@
 
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
-
-        //DetailHokenMst
-        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
-        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
-        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
     }
 }
