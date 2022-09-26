@@ -21,5 +21,7 @@
         List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes);
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
+
+        bool CheckItemCd(string ItemCd);
     }
 }

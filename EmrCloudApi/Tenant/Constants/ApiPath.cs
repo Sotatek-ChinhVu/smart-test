@@ -34,6 +34,10 @@
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
 
+        //Special Note
+        public const string AddAlrgyDrugList = "AddAlrgyDrugList";
+
+
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
     }
