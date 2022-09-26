@@ -114,6 +114,7 @@ namespace Interactor.Insurance
 
             return message;
         }
+
         private string IsValidConfirmDateKohi(KohiInfModel kohiModel, string numberMessage, int sinDate, bool isAddNew)
         {
             var message = "";
