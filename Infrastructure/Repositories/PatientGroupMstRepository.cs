@@ -49,8 +49,8 @@ namespace Infrastructure.Repositories
             try
             {
                 // list get in datatacontext
-                var groupMstLists = _tenantDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0).ToList();
-                var groupDetailLists = _tenantDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0).ToList();
+                var groupMstLists = _tenantDataContext.PtGrpNameMsts.Where(mst => mst.IsDeleted == 0 && mst.HpId == hpId).ToList();
+                var groupDetailLists = _tenantDataContext.PtGrpItems.Where(detail => detail.IsDeleted == 0 && detail.HpId == hpId).ToList();
 
                 List<long> listDetailSeqNoModel = new();
                 List<PtGrpNameMst> listAddNewGroupMsts = new();

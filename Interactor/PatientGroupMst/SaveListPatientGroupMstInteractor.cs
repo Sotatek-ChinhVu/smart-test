@@ -12,7 +12,11 @@ public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPo
     }
     public SaveListPatientGroupMstOutputData Handle(SaveListPatientGroupMstInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        if (inputData == null)
+        {
+            return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.Failed);
+        }
+        else if (inputData.HpId <= 0)
         {
             return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.InvalidHpId);
         }
@@ -24,7 +28,7 @@ public class SaveListPatientGroupMstInteractor : ISaveListPatientGroupMstInputPo
         var listDataInputs = ConvertToListModel(inputData.SaveListPatientGroupMstInputs);
         foreach (var model in listDataInputs)
         {
-            if (model.GroupId == 0)
+            if (model.GroupId <= 0)
             {
                 return new SaveListPatientGroupMstOutputData(SaveListPatientGroupMstStatus.InvalidGroupId);
             }
