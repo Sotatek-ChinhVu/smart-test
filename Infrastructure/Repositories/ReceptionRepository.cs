@@ -5,7 +5,6 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -676,7 +675,7 @@ namespace Infrastructure.Repositories
             raiinInf.UpdateDate = DateTime.UtcNow;
             raiinInf.UpdateId = TempIdentity.UserId;
             raiinInf.UpdateMachine = TempIdentity.ComputerName;
-            //_tenantNoTrackingDataContext.SaveChanges();
+            _tenantNoTrackingDataContext.SaveChanges();
             return true;
         }
 
@@ -693,7 +692,7 @@ namespace Infrastructure.Repositories
                 receptionComment.Text
                 );
         }
-        
+
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
             var DataRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
