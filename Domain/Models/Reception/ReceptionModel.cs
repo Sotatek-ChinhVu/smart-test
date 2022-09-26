@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Domain.Models.Reception
 {
@@ -84,6 +85,22 @@ namespace Domain.Models.Reception
             Comment = comment;
         }
 
+        public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
+        {
+            RaiinNo = raiinNo;
+            UketukeId = uketukeId;
+            KaId = kaId;
+            UketukeTime = uketukeTime;
+            SinStartTime = sinStartTime;
+            Status = status;
+            YoyakuId = yokakuId;
+            TantoId = tantoId;
+            YoyakuTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            Comment = String.Empty;
+        }
+
         public ReceptionDto ToDto()
         {
             return new ReceptionDto
@@ -113,6 +130,34 @@ namespace Domain.Models.Reception
                     JikanKbn,
                     Comment
                 );
+        }
+
+        public ReceptionModel()
+        {
+            HpId = 0;
+            PtId = 0;
+            SinDate = 0;
+            RaiinNo = 0;
+            OyaRaiinNo = 0;
+            HokenPid = 0;
+            SanteiKbn = 0;
+            Status = 0;
+            IsYoyaku = 0;
+            YoyakuTime = String.Empty;
+            YoyakuId = 0;
+            UketukeSbt = 0;
+            UketukeTime = String.Empty;
+            UketukeId = 0;
+            UketukeNo = 0;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            KaikeiId = 0;
+            KaId = 0;
+            TantoId = 0;
+            SyosaisinKbn = 0;
+            JikanKbn = 0;
+            Comment = String.Empty;
         }
     }
 }

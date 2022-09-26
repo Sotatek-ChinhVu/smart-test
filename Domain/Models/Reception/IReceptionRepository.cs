@@ -10,6 +10,8 @@
 
         List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
 
+        ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
+
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
         bool UpdateStatus(int hpId, long raiinNo, int status);
