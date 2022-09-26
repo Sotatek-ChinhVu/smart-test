@@ -9,5 +9,7 @@ namespace UseCase.MonshinInfor.Save
     public enum SaveMonshinStatus
     {
         Success = 1,
+        InputDataNull = 2,
+        Failed = 3,
     }
 }

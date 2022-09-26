@@ -1,12 +1,4 @@
-﻿using Domain.Models.ColumnSetting;
-using Domain.Models.MonshinInf;
-using Entity.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.MonshinInfor.Insert;
+﻿using Domain.Models.MonshinInf;
 using UseCase.MonshinInfor.Save;
 
 namespace Interactor.MonshinInf
@@ -22,10 +14,21 @@ namespace Interactor.MonshinInf
 
         public SaveMonshinOutputData Handle(SaveMonshinInputData inputData)
         {
-            bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
-            var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Success;
-            return new SaveMonshinOutputData(status);
-        }
+            try
+            {
+                if (!inputData.MonshinInfors.Any())
+                {
+                    return new SaveMonshinOutputData(SaveMonshinStatus.InputDataNull);
+                }
 
+                bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
+                var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;
+                return new SaveMonshinOutputData(status);
+            }
+            catch (Exception)
+            {
+                return new SaveMonshinOutputData(SaveMonshinStatus.Failed);
+            }
+        }
     }
 }

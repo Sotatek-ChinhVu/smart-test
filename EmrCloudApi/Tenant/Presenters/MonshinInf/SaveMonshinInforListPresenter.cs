@@ -19,6 +19,8 @@ namespace EmrCloudApi.Tenant.Presenters.MonshinInf
         private string GetMessage(SaveMonshinStatus status) => status switch
         {
             SaveMonshinStatus.Success => ResponseMessage.Success,
+            SaveMonshinStatus.InputDataNull => ResponseMessage.InputDataNull,
+            SaveMonshinStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

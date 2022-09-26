@@ -242,7 +242,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
-            services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

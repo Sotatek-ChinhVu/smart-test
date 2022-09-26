@@ -44,95 +44,90 @@ namespace Infrastructure.Repositories
             var result = executionStrategy.Execute(
                 () =>
                 {
-                    using (var transaction = _tenantDataContextTracking.Database.BeginTransaction())
+                    try
                     {
-                        try
+                        foreach (var model in monshinInforModels)
                         {
-                            foreach (var model in monshinInforModels)
+                            var monshinInfor = _tenantDataContextNoTracking.MonshinInfo.
+                            Where(x => x.HpId == model.HpId
+                                && x.PtId == model.PtId
+                                && x.RaiinNo == model.RaiinNo
+                                && x.SinDate == model.SinDate
+                                && x.IsDeleted == 0).FirstOrDefault();
+
+                            //Update monshin when text change
+                            if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
                             {
-                                var monshinInfor = _tenantDataContextNoTracking.MonshinInfo.
-                                Where(x => x.HpId == model.HpId
-                                    && x.PtId == model.PtId
-                                    && x.RaiinNo == model.RaiinNo
-                                    && x.SinDate == model.SinDate
-                                    && x.IsDeleted == 0).FirstOrDefault();
-
-                                //Update monshin when text change
-                                if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
+                                _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
                                 {
-                                    _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
-                                    {
-                                        HpId = monshinInfor.HpId,
-                                        PtId = monshinInfor.PtId,
-                                        RaiinNo = monshinInfor.RaiinNo,
-                                        SeqNo = monshinInfor.SeqNo,
-                                        SinDate = monshinInfor.SinDate,
-                                        Text = model.Text,
-                                        Rtext = monshinInfor.Rtext,
-                                        GetKbn = monshinInfor.GetKbn,
-                                        IsDeleted = monshinInfor.IsDeleted,
-                                        CreateId = monshinInfor.CreateId,
-                                        CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
-                                        CreateMachine = monshinInfor.CreateMachine,
-                                        UpdateDate = DateTime.UtcNow,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName
-                                    });
-                                }
-
-                                //Delete Monshin when text is empty
-                                else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
-                                {
-                                    _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
-                                    {
-                                        HpId = monshinInfor.HpId,
-                                        PtId = monshinInfor.PtId,
-                                        RaiinNo = monshinInfor.RaiinNo,
-                                        SeqNo = monshinInfor.SeqNo,
-                                        SinDate = monshinInfor.SinDate,
-                                        Text = monshinInfor.Text,
-                                        Rtext = monshinInfor.Rtext,
-                                        GetKbn = monshinInfor.GetKbn,
-                                        IsDeleted = 1,
-                                        CreateId = monshinInfor.CreateId,
-                                        CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
-                                        CreateMachine = monshinInfor.CreateMachine,
-                                        UpdateDate = DateTime.UtcNow,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName
-                                    });
-                                }
-
-                                //Insert monshin when not found in monshininf
-                                else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
-                                {
-                                    _tenantDataContextTracking.MonshinInfo.Add(new MonshinInfo()
-                                    {
-                                        HpId = model.HpId,
-                                        PtId = model.PtId,
-                                        RaiinNo = model.RaiinNo,
-                                        SinDate = model.SinDate,
-                                        Text = model.Text,
-                                        GetKbn = 0,
-                                        IsDeleted = 0,
-                                        CreateId = TempIdentity.UserId,
-                                        CreateDate = DateTime.UtcNow,
-                                        CreateMachine = TempIdentity.ComputerName,
-                                        UpdateDate = DateTime.UtcNow,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName
-                                    });
-                                }
+                                    HpId = monshinInfor.HpId,
+                                    PtId = monshinInfor.PtId,
+                                    RaiinNo = monshinInfor.RaiinNo,
+                                    SeqNo = monshinInfor.SeqNo,
+                                    SinDate = monshinInfor.SinDate,
+                                    Text = model.Text,
+                                    Rtext = monshinInfor.Rtext,
+                                    GetKbn = monshinInfor.GetKbn,
+                                    IsDeleted = monshinInfor.IsDeleted,
+                                    CreateId = monshinInfor.CreateId,
+                                    CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
+                                    CreateMachine = monshinInfor.CreateMachine,
+                                    UpdateDate = DateTime.UtcNow,
+                                    UpdateId = TempIdentity.UserId,
+                                    UpdateMachine = TempIdentity.ComputerName
+                                });
                             }
-                            _tenantDataContextTracking.SaveChanges();
-                            transaction.Commit();
-                            return true;
+
+                            //Delete Monshin when text is empty
+                            else if (monshinInfor != null && string.IsNullOrEmpty(model.Text.Trim()))
+                            {
+                                _tenantDataContextTracking.MonshinInfo.Update(new MonshinInfo()
+                                {
+                                    HpId = monshinInfor.HpId,
+                                    PtId = monshinInfor.PtId,
+                                    RaiinNo = monshinInfor.RaiinNo,
+                                    SeqNo = monshinInfor.SeqNo,
+                                    SinDate = monshinInfor.SinDate,
+                                    Text = monshinInfor.Text,
+                                    Rtext = monshinInfor.Rtext,
+                                    GetKbn = monshinInfor.GetKbn,
+                                    IsDeleted = 1,
+                                    CreateId = monshinInfor.CreateId,
+                                    CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
+                                    CreateMachine = monshinInfor.CreateMachine,
+                                    UpdateDate = DateTime.UtcNow,
+                                    UpdateId = TempIdentity.UserId,
+                                    UpdateMachine = TempIdentity.ComputerName
+                                });
+                            }
+
+                            //Insert monshin when not found in monshininf
+                            else if (monshinInfor == null && !string.IsNullOrEmpty(model.Text.Trim()))
+                            {
+                                _tenantDataContextTracking.MonshinInfo.Add(new MonshinInfo()
+                                {
+                                    HpId = model.HpId,
+                                    PtId = model.PtId,
+                                    RaiinNo = model.RaiinNo,
+                                    SinDate = model.SinDate,
+                                    Text = model.Text,
+                                    GetKbn = 0,
+                                    IsDeleted = 0,
+                                    CreateId = TempIdentity.UserId,
+                                    CreateDate = DateTime.UtcNow,
+                                    CreateMachine = TempIdentity.ComputerName,
+                                    UpdateDate = DateTime.UtcNow,
+                                    UpdateId = TempIdentity.UserId,
+                                    UpdateMachine = TempIdentity.ComputerName
+                                });
+                            }
                         }
-                        catch (Exception)
-                        {
-                            transaction.Rollback();
-                            return false;
-                        }
+                        _tenantDataContextTracking.SaveChanges();
+                        return true;
+                    }
+                    catch (Exception)
+                    {
+                        return false;
                     }
                 });
             return result;
