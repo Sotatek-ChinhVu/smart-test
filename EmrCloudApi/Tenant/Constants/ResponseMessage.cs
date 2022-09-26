@@ -272,5 +272,8 @@
         public static readonly string AddAlrgyDrugDuplicate = "This drug has existed";
         public static readonly string AddAlrgyDrugInputNoData = "Hasn't input data";
         public static readonly string AddAlrgyDrugItemCd = "ItemCd no existed";
+
+        //HokenSyamst
+        public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
     }
 }
