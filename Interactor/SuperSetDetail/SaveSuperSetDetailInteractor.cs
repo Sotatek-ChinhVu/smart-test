@@ -220,7 +220,7 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                 return mst.Validation();
             }
             // check exist RpNo and RpEdaNo
-            else if (mst.Id > 0 && !listOrderModels.Any(model => model.Id == mst.Id && model.RpNo == mst.RpNo && model.RpEdaNo == mst.RpEdaNo))
+            else if (mst.Id > 0 && !listOrderModels.Any(model => model.Id == mst.Id && model.RpNo == mst.RpNo && model.RpEdaNo == mst.RpEdaNo && model.IsDeleted == 0))
             {
                 return SaveSuperSetDetailStatus.RpNoOrRpEdaNoIsNotExist;
             }
