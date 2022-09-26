@@ -127,6 +127,7 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
@@ -277,6 +278,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
+            busBuilder.RegisterUseCase<GetPatientCommentInputData, GetPatientCommentInteractor>();
             busBuilder.RegisterUseCase<GetReceptionVisitingInputData, GetReceptionVisitingInteractor>();
 
             //Insurance

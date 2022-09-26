@@ -35,7 +35,7 @@ public class VisitingController : ControllerBase
         _bus = bus;
         _webSocketService = webSocketService;
     }
-
+    
     [HttpGet(ApiPath.Get + "ReceptionLock")]
     public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
     {
