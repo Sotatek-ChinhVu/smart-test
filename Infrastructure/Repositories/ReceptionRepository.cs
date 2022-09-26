@@ -377,7 +377,7 @@ namespace Infrastructure.Repositories
                         r.UketukeTime ?? String.Empty,
                         r.UketukeId,
                         r.UketukeNo,
-                        r.SinStartTime,
+                        r.SinStartTime ?? string.Empty,
                         r.SinEndTime ?? String.Empty,
                         r.KaikeiTime ?? String.Empty,
                         r.KaikeiId,
