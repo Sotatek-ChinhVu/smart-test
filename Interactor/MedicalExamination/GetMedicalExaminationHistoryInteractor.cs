@@ -251,7 +251,8 @@ namespace Interactor.MedicalExamination
                                         c.CreateDate,
                                         c.UpdateDate,
                                         c.IsDeleted,
-                                        c.RichText
+                                        c.RichText,
+                                        c.CreateName
                                         )
                     ).ToList())
                                                                  select karteGrp);
@@ -379,8 +380,7 @@ namespace Interactor.MedicalExamination
                                                                 rpOdrInf.CreateId,
                                                                 rpOdrInf.CreateName,
                                                                 rpOdrInf.UpdateDate,
-                                                                rpOdrInf.IsDeleted,
-                                                                rpOdrInf.UpdateName
+                                                                rpOdrInf.IsDeleted
                                                              );
 
                                 group.OdrInfs.Add(odrModel);

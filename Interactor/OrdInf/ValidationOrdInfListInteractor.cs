@@ -75,8 +75,7 @@ namespace Interactor.OrdInfs
                             DateTime.MinValue,
                             0,
                             "",
-                            DateTime.MinValue,
-                            ""
+                            DateTime.MinValue
                         );
                     if (item != null)
                     {

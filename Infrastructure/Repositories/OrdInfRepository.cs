@@ -154,15 +154,11 @@ namespace Infrastructure.Repositories
             var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
-            var userMsts = _tenantDataContext.UserMsts.Where(u => u.HpId == hpId);
             var odrInfs = from odrInf in allOdrInf
-                          join user in userMsts
-                          on odrInf.CreateId equals user.UserId into odrUserCs
-                          from odrUserC in odrUserCs.DefaultIfEmpty()
-                          join user in userMsts
-                          on odrInf.UpdateId equals user.UserId into odrUserCUs
-                          from odrUserCU in odrUserCUs.DefaultIfEmpty()
-                          select ConvertToModel(odrInf, odrUserC?.Sname ?? string.Empty, odrUserCU?.Sname ?? string.Empty);
+                          join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId)
+                          on odrInf.CreateId equals user.UserId into odrUsers
+                          from odrUser in odrUsers.DefaultIfEmpty()
+                          select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
 
             Parallel.ForEach(odrInfs, rpOdrInf =>
             {
@@ -215,7 +211,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
+        private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -239,8 +235,7 @@ namespace Infrastructure.Repositories
                         ordInf.CreateDate,
                         ordInf.CreateId,
                         createName,
-                        ordInf.UpdateDate,
-                        updateName
+                        ordInf.UpdateDate
                    );
         }
 
