@@ -383,7 +383,8 @@ namespace Interactor.MedicalExamination
                             k.IsDeleted,
                             k.RichText,
                             DateTime.MinValue,
-                            DateTime.MinValue
+                            DateTime.MinValue,
+                            ""
                         )).ToList();
 
                     Parallel.For(0, karteModels.Count, index =>
