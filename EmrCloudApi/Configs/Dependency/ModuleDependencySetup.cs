@@ -164,8 +164,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using Domain.Models.ReceptionLock;
-using UseCase.VisitingList.ReceptionLock;
 using UseCase.RaiinKubunMst.Save;
 
 namespace EmrCloudApi.Configs.Dependency

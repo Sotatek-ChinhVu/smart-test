@@ -177,7 +177,7 @@ namespace Infrastructure.Repositories
             var currentKubunYoyakuList = _tenantDataContextNoTracking.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
 
             int detailKbnCd = 0;
-            if (currentKubunDetailList!= null && currentKubunDetailList.Any())
+            if (currentKubunDetailList != null && currentKubunDetailList.Any())
             {
                 detailKbnCd = currentKubunDetailList.Max(x => x.KbnCd);
             }
@@ -264,7 +264,7 @@ namespace Infrastructure.Repositories
                                         }
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd != 0))
                                         {
-                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList, currentKubunKouiList, currentKubunItemList, currentKubunYoyakuList, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
+                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd);
                                         }
                                     });
                                     _tenantDataContextTracking.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
@@ -274,7 +274,7 @@ namespace Infrastructure.Repositories
                                         SortNo = x.SortNo,
                                         GrpName = x.GroupName,
                                         IsDeleted = x.IsDeleted ? 1 : 0,
-                                        CreateDate = DateTime.SpecifyKind(DateTime.SpecifyKind(currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc), DateTimeKind.Utc)  ,
+                                        CreateDate = DateTime.SpecifyKind(DateTime.SpecifyKind(currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc), DateTimeKind.Utc),
                                         CreateId = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateId ?? 0,
                                         CreateMachine = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateMachine ?? string.Empty,
                                         UpdateDate = DateTime.UtcNow,
@@ -431,29 +431,40 @@ namespace Infrastructure.Repositories
             {
                 raiinKubunDetailModels.ForEach(x =>
                 {
-                    if (x.RaiinKbnKouiModels.Any(x => x.KouiKbnId == 0))
+                    var kouiModelAdd = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId == 0).ToList();
+                    if (kouiModelAdd != null && kouiModelAdd.Any())
                     {
-                        kouiId = AddRaiinKbnKoui(x.KubunCd, x.GroupId, x.RaiinKbnKouiModels, kouiId);
+                        kouiId = AddRaiinKbnKoui(x.KubunCd, x.GroupId, kouiModelAdd, kouiId);
                     }
-                    if (x.RaiinKbnKouiModels.Any(x => x.KouiKbnId != 0))
+
+                    var kouiModelUpdate = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId != 0).ToList();
+                    if (kouiModelUpdate != null && kouiModelUpdate.Any())
                     {
-                        UpdateRaiinKbnKoui(x.KubunCd, grpCd, x.RaiinKbnKouiModels, raiinKbnKouis);
+                        UpdateRaiinKbnKoui(x.KubunCd, grpCd, kouiModelUpdate, raiinKbnKouis);
                     }
-                    if (x.RaiinKbnItemModels.Any(x => x.SeqNo == 0))
+
+                    var itemModelAdd = x.RaiinKbnItemModels.Where(x => x.SeqNo == 0).ToList();
+                    if (itemModelAdd != null && itemModelAdd.Any())
                     {
-                        itemSeqNo = AddRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, itemSeqNo);
+                        itemSeqNo = AddRaiinKbItem(x.KubunCd, x.GroupId, itemModelAdd, itemSeqNo);
                     }
-                    if (x.RaiinKbnItemModels.Any(x => x.SeqNo != 0))
+
+                    var itemModelUpdate = x.RaiinKbnItemModels.Where(x => x.SeqNo != 0).ToList();
+                    if (itemModelUpdate != null && itemModelUpdate.Any())
                     {
                         UpdateRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, raiinKbItems);
                     }
-                    if (x.RaiinKbnYayokuModels.Any(x => x.YoyakuCd == 0))
+
+                    var yoyakuModelAdd = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd == 0).ToList();
+                    if (yoyakuModelAdd != null && yoyakuModelAdd.Any())
                     {
                         yoyakuId = AddRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, yoyakuId);
                     }
-                    if (x.RaiinKbnYayokuModels.Any(x => x.YoyakuCd != 0))
+
+                    var yoyakuModelUpdate = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd != 0).ToList();
+                    if (yoyakuModelUpdate != null && yoyakuModelUpdate.Any())
                     {
-                        UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, raiinKbnYayokus);
+                        UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, yoyakuModelUpdate, raiinKbnYayokus);
                     }
                 });
                 _tenantDataContextTracking.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
@@ -468,7 +479,7 @@ namespace Infrastructure.Repositories
                     IsAuto = x.IsAuto ? 1 : 0,
                     IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
                     IsDeleted = x.IsDeleted ? 1 : 0,
-                    CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc) ,
+                    CreateDate = DateTime.SpecifyKind(currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
                     CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
@@ -491,7 +502,7 @@ namespace Infrastructure.Repositories
                     SeqNo = x.SeqNo,
                     KouiKbnId = x.KouiKbnId,
                     IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.SpecifyKind(raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc) ,
+                    CreateDate = DateTime.SpecifyKind(raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateId ?? 0,
                     CreateMachine = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
@@ -516,7 +527,7 @@ namespace Infrastructure.Repositories
                     IsExclude = x.IsExclude,
                     IsDeleted = x.IsDeleted,
                     SortNo = x.SortNo,
-                    CreateDate = DateTime.SpecifyKind(raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc) ,
+                    CreateDate = DateTime.SpecifyKind(raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateId ?? 0,
                     CreateMachine = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
@@ -539,7 +550,7 @@ namespace Infrastructure.Repositories
                     SeqNo = x.SeqNo,
                     YoyakuCd = x.YoyakuCd,
                     IsDeleted = x.IsDeleted,
-                    CreateDate = DateTime.SpecifyKind(raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc) ,
+                    CreateDate = DateTime.SpecifyKind(raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateDate ?? DateTime.MinValue, DateTimeKind.Utc),
                     CreateId = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateId ?? 0,
                     CreateMachine = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
