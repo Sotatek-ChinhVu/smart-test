@@ -6,13 +6,11 @@
         {
             InvalidHpId = 1,
             InvalidRaiinNo,
-            InvalidKarteKbn,
             InvalidPtId,
             InvalidSinDate,
             InvalidIsDelted,
             RaiinNoNoExist,
             PtIdNoExist,
-            KarteKbnNoExist,
             Valid
         };
     }

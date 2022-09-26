@@ -375,7 +375,7 @@ namespace Interactor.MedicalExamination
                     karteModels = inputKarteDataList.Select(k => new KarteInfModel(
                             k.HpId,
                             k.RaiinNo,
-                            k.KarteKbn,
+                            1,
                             0,
                             k.PtId,
                             k.SinDate,
@@ -386,8 +386,6 @@ namespace Interactor.MedicalExamination
                             DateTime.MinValue
                         )).ToList();
 
-                    var karteKbns = karteModels.Select(i => i.KarteKbn).Distinct().ToList();
-                    var checkKarteKbns = karteKbns == null ? new List<KarteKbnMstModel>() : _karteKbnInforRepository.GetCheckKarteKbns(karteKbns);
                     Parallel.For(0, karteModels.Count, index =>
                     {
                         lock (obj)
@@ -397,13 +395,6 @@ namespace Interactor.MedicalExamination
                             if (modelValidation != TodayKarteValidationStatus.Valid)
                             {
                                 dicKarteValidation.Add(index, modelValidation);
-                                return;
-                            }
-
-                            var checkKarteKbn = checkKarteKbns.Any(c => c.KarteKbn == karte.KarteKbn);
-                            if (!checkKarteKbn)
-                            {
-                                dicKarteValidation.Add(index, TodayKarteValidationStatus.KarteKbnNoExist);
                             }
                         }
                     });

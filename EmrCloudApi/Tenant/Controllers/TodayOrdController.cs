@@ -85,7 +85,6 @@ namespace EmrCloudApi.Tenant.Controllers
                 request.KarteItems.Select(k => new KarteItemInputData(
                            k.HpId,
                            k.RaiinNo,
-                           k.KarteKbn,
                            k.PtId,
                            k.SinDate,
                            k.Text,

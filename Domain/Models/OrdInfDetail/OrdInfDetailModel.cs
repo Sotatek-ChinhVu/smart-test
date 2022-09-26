@@ -256,7 +256,7 @@ namespace Domain.Models.OrdInfDetails
             {
                 return TodayOrdValidationStatus.InvalidItemName;
             }
-            if (Suryo < 0)
+            if (Suryo < 0 || (ItemCd == ItemCdConst.JikanKihon && !(Suryo >= 0 && Suryo <= 7)) || (ItemCd == ItemCdConst.SyosaiKihon && !(Suryo >= 0 && Suryo <= 8)))
             {
                 return TodayOrdValidationStatus.InvalidSuryo;
             }

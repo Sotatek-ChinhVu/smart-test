@@ -283,9 +283,6 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                         case TodayKarteConst.TodayKarteValidationStatus.InvalidRaiinNo:
                             validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfInvalidRaiinNo));
                             break;
-                        case TodayKarteConst.TodayKarteValidationStatus.InvalidKarteKbn:
-                            validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfInvalidKarteKbn));
-                            break;
                         case TodayKarteConst.TodayKarteValidationStatus.InvalidPtId:
                             validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfInvalidPtId));
                             break;
@@ -300,9 +297,6 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                             break;
                         case TodayKarteConst.TodayKarteValidationStatus.PtIdNoExist:
                             validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfPtIdNoExist));
-                            break;
-                        case TodayKarteConst.TodayKarteValidationStatus.KarteKbnNoExist:
-                            validationKartes.Add(new ValidationKarteInfListItemResponse(validation.Key, validation.Value, ResponseMessage.UpsertKarteInfKarteKbnNoExist));
                             break;
                     }
                 }

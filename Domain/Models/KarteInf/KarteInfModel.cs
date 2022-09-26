@@ -41,10 +41,6 @@ namespace Domain.Models.KarteInfs
             {
                 return TodayKarteValidationStatus.InvalidRaiinNo;
             }
-            if (KarteKbn <= 0)
-            {
-                return TodayKarteValidationStatus.InvalidKarteKbn;
-            }
             if (PtId <= 0)
             {
                 return TodayKarteValidationStatus.InvalidPtId;
