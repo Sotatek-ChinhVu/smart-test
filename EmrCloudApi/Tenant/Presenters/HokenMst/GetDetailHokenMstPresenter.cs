@@ -10,10 +10,7 @@ namespace EmrCloudApi.Tenant.Presenters.HokenMst
         public Response<GetDetailHokenMstResponse> Result { get; private set; } = new Response<GetDetailHokenMstResponse>();
         public void Complete(GetDetailHokenMstOutputData outputData)
         {
-            Result.Data = new GetDetailHokenMstResponse()
-            {
-                Data = outputData.Data
-            };
+            Result.Data = new GetDetailHokenMstResponse(outputData.Data);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
@@ -26,6 +23,7 @@ namespace EmrCloudApi.Tenant.Presenters.HokenMst
             GetDetailHokenMstStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
             GetDetailHokenMstStatus.InvalidHokenNo => ResponseMessage.DetailHokenMstInvalidHokenNo,
             GetDetailHokenMstStatus.InvalidPrefNo => ResponseMessage.DetailHokenMstInvalidPrefNo,
+            GetDetailHokenMstStatus.Exception => ResponseMessage.Failed,
             _ => string.Empty
         };
     }

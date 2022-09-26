@@ -15,21 +15,21 @@ namespace Infrastructure.Repositories
 
         public HokenMasterModel GetHokenMaster(int hpId, int hokenNo, int hokenEdaNo, int prefNo, int sinDate)
         {
-            var hokenMaster = _tenantDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+            var hokenMaster = _tenantDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
                                                                  u.HokenNo == hokenNo &&
                                                                  u.HokenEdaNo == hokenEdaNo &&
                                                                  (u.PrefNo == prefNo
                                                                  || u.IsOtherPrefValid == 1) &&
                                                                  u.StartDate <= sinDate &&
-                                                                 u.EndDate >= sinDate).FirstOrDefault();
+                                                                 u.EndDate >= sinDate);
 
             if (hokenMaster == null)
             {
-                hokenMaster = _tenantDataContext.HokenMsts.Where(u => u.HpId == hpId &&
+                hokenMaster = _tenantDataContext.HokenMsts.FirstOrDefault(u => u.HpId == hpId &&
                                                                                 u.HokenNo == hokenNo &&
                                                                                 u.HokenEdaNo == hokenEdaNo &&
                                                                                 (u.PrefNo == prefNo
-                                                                                || u.IsOtherPrefValid == 1)).FirstOrDefault();
+                                                                                || u.IsOtherPrefValid == 1));
             }
 
             var result = new HokenMasterModel(hpId,

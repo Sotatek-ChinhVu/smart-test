@@ -8,5 +8,6 @@
         InvalidHokenNo = 4,
         InvalidSinDate = 5,
         InvalidPrefNo = 6,
+        Exception = 7
     }
 }

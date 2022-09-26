@@ -4,6 +4,11 @@ namespace EmrCloudApi.Tenant.Responses.HokenMst
 {
     public class GetDetailHokenMstResponse
     {
-        public HokenMasterModel? Data { get; set; }
+        public GetDetailHokenMstResponse(HokenMasterModel data)
+        {
+            Data = data;
+        }
+
+        public HokenMasterModel Data { get; set; }
     }
 }

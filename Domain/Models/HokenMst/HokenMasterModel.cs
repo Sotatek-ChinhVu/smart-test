@@ -54,9 +54,59 @@ namespace Domain.Models.HokenMst
             Roudou = roudou;
         }
 
+        public HokenMasterModel()
+        {
+            HpId = 0;
+            HokenNo = 0;
+            HokenEdaNo = 0;
+            StartDate = 0;
+            EndDate = 0;
+            PrefNo = 0;
+            Houbetu = string.Empty;
+            HokenName = string.Empty;
+            HokenNameCd = string.Empty;
+            HokenSname = string.Empty;
+            HokenSbtKbn = 0;
+            HokenKohiKbn = 0;
+            IsLimitList = 0;
+            IsLimitListSum = 0;
+            CheckDigit = 0;
+            JyukyuCheckDigit = 0;
+            IsFutansyaNoCheck = 0;
+            IsJyukyusyaNoCheck = 0;
+            IsTokusyuNoCheck = 0;
+            AgeStart = 0;
+            AgeEnd = 0;
+            IsOtherPrefValid = 0;
+            EnTen = 0;
+            FutanKbn = 0;
+            FutanRate = 0;
+            KaiLimitFutan = 0;
+            DayLimitFutan = 0;
+            DayLimitCount = 0;
+            MonthLimitFutan = 0;
+            MonthLimitCount = 0;
+            LimitKbn = 0;
+            CountKbn = 0;
+            CalcSpKbn = 0;
+            MonthSpLimit = 0;
+            KogakuTekiyo = 0;
+            KogakuTotalKbn = 0;
+            FutanYusen = 0;
+            ReceSeikyuKbn = 0;
+            ReceKisai = 0;
+            ReceKisai2 = 0;
+            ReceTenKisai = 0;
+            ReceFutanHide = 0;
+            ReceFutanRound = 0;
+            ReceZeroKisai = 0;
+            ReceSpKbn = 0;
+            Roudou = string.Empty;
+        }
+
         public int HpId
         {
-            get;private set;
+            get; private set;
         }
 
         public int HokenNo
@@ -74,27 +124,27 @@ namespace Domain.Models.HokenMst
 
         public int HokenEdaNo
         {
-            get;private set;
+            get; private set;
         }
 
         public int StartDate
         {
-            get;private set;
+            get; private set;
         }
 
         public int EndDate
         {
-            get;private set;
+            get; private set;
         }
 
         public int PrefNo
         {
-            get;private set;
+            get; private set;
         }
 
         public string Houbetu
         {
-            get;private set;
+            get; private set;
         }
 
         public string HoubetuDisplay
@@ -102,202 +152,164 @@ namespace Domain.Models.HokenMst
             get
             {
                 if (string.IsNullOrEmpty(Houbetu))
-                {
                     return "0";
-                }
                 return Houbetu.PadLeft(2, '0');
             }
         }
 
         public string HokenName
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public string HokenNameCd
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public string HokenSname
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int HokenSbtKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int HokenKohiKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsLimitList
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsLimitListSum
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int CheckDigit
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int JyukyuCheckDigit
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsFutansyaNoCheck
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsJyukyusyaNoCheck
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsTokusyuNoCheck
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int AgeStart
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int AgeEnd
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int IsOtherPrefValid
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int EnTen
         {
-            get;
-            private set;
+            get; private set;
         }
-
 
         public int FutanKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int FutanRate
         {
-            get;
-            private set;
+            get; private set;
         }
-
 
         public int KaiLimitFutan
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int DayLimitFutan
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int DayLimitCount
         {
-            get;
-            private set;
+            get; private set;
         }
-
 
         public int MonthLimitFutan
         {
-            get;
-            private set;
+            get; private set;
         }
-
 
         public int MonthLimitCount
         {
-            get;
-            private set;
+            get; private set;
         }
-
 
         public int LimitKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int CountKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int CalcSpKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int MonthSpLimit
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int KogakuTekiyo
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int KogakuTotalKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int FutanYusen
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceSeikyuKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public bool IsEnableReceSeikyuKbn
@@ -307,50 +319,44 @@ namespace Domain.Models.HokenMst
 
         public int ReceKisai
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceKisai2
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceTenKisai
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceFutanHide
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceFutanRound
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceZeroKisai
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public int ReceSpKbn
         {
-            get;
-            private set;
+            get; private set;
         }
 
         public string Roudou
         {
-            get;set;
+            get; set;
         }
+
         /// <summary>
         /// 点数単価
         /// 労災と自賠だけ編集できる
