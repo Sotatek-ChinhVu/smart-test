@@ -648,13 +648,6 @@ namespace Infrastructure.Repositories
         {
             var DataRaiinInf = _tenantDataContext.RaiinInfs
                 .Where(x => x.HpId == hpId && x.RaiinNo == raiinNo)
-                .Select(x => new ReceptionModel(
-                x.RaiinNo,
-                x.UketukeId,
-                x.KaId,
-                x.UketukeTime ?? String.Empty,
-                x.SinStartTime ?? String.Empty,
-                x.Status, x.YoyakuId, x.TantoId))
                 .FirstOrDefault();
             if (DataRaiinInf is null)
                 return new ReceptionModel();
@@ -662,13 +655,11 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.RaiinNo,
                 DataRaiinInf.UketukeId,
                 DataRaiinInf.KaId,
-                DataRaiinInf.UketukeTime,
-                DataRaiinInf.SinStartTime,
+                DataRaiinInf.UketukeTime ?? string.Empty,
+                DataRaiinInf.SinStartTime ?? string.Empty,
                 DataRaiinInf.Status,
                 DataRaiinInf.YoyakuId,
                 DataRaiinInf.TantoId);
-
-
         }
     }
 }
