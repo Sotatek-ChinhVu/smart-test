@@ -98,13 +98,13 @@ namespace Infrastructure.Repositories
 
             var query = (from kbnDetail in _tenantDataContextNoTracking.RaiinKbnDetails.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
                          join kou in _tenantDataContextNoTracking.RaiinKbnKouis.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         on kbnDetail.KbnCd equals kou.KbnCd into kouis
+                         on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { kou.KbnCd, GrpCd = kou.GrpId } into kouis
                          from kbnKoui in kouis.DefaultIfEmpty()
                          join item in _tenantDataContextNoTracking.RaiinKbItems.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         on kbnDetail.KbnCd equals item.KbnCd into items
+                         on new { kbnDetail.KbnCd ,kbnDetail.GrpCd }  equals new { item.KbnCd,item.GrpCd } into items
                          from kbnItem in items.DefaultIfEmpty()
                          join yoyaku in _tenantDataContextNoTracking.RaiinKbnYayokus.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         on kbnDetail.KbnCd equals yoyaku.KbnCd into yoyakus
+                         on new { kbnDetail.KbnCd,kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
                          from kbnYoyaku in yoyakus.DefaultIfEmpty()
                          select new
                          {
@@ -118,7 +118,7 @@ namespace Infrastructure.Repositories
                 x.kbnKoui.KbnCd,
                 x.kbnKoui.SeqNo,
                 x.kbnKoui.KouiKbnId,
-                x.kbnKoui.IsDeleted));
+                x.kbnKoui.IsDeleted)).GroupBy(x => new {x.HpId,x.GrpId,x.KbnCd,x.SeqNo }).Select(x=>x.First());
 
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
@@ -129,7 +129,7 @@ namespace Infrastructure.Repositories
                 x.kbnItem.IsExclude,
                 x.kbnItem.IsDeleted,
                 x.kbnItem.SortNo
-                ));
+                )).Distinct().GroupBy(x => new { x.HpId, x.GrpCd, x.KbnCd, x.SeqNo }).Select(x => x.First());
 
             var raiinKbnYayokuList = query.Where(x => x.kbnYoyaku != null).Select(x => new RaiinKbnYayokuModel(
                 x.kbnYoyaku.HpId,
@@ -137,7 +137,7 @@ namespace Infrastructure.Repositories
                 x.kbnYoyaku.SeqNo,
                 x.kbnYoyaku.YoyakuCd,
                 x.kbnYoyaku.IsDeleted
-                ));
+                )).Distinct().GroupBy(x => new { x.HpId, x.GrpId, x.KbnCd, x.SeqNo }).Select(x => x.First());
 
             var raiinKubunMstModels = raiinKubunMstList.Select(x => new RaiinKubunMstModel(
                 x.HpId,
