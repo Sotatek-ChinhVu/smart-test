@@ -646,20 +646,14 @@ namespace Infrastructure.Repositories
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
         {
             var receptionComment = _tenantDataContext.RaiinCmtInfs
-                .Where(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1)
-                .Select(x => new ReceptionModel(
-                x.HpId,
-                x.PtId,
-                x.RaiinNo,
-                x.Text ?? String.Empty))
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
             if (receptionComment is null)
                 return new ReceptionModel();
             return new ReceptionModel(
                 receptionComment.HpId,
                 receptionComment.PtId,
                 receptionComment.RaiinNo,
-                receptionComment.Comment
+                receptionComment.Text
                 );
         }
     }
