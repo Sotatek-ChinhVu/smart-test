@@ -176,12 +176,28 @@ namespace Infrastructure.Repositories
             var currentKubunItemList = _tenantDataContextNoTracking.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunYoyakuList = _tenantDataContextNoTracking.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
 
-            int detailKbnCd = currentKubunDetailList.Max(x => x.KbnCd);
-            int kouiKbnCd = currentKubunKouiList.Max(x => x.KouiKbnId);
-            int itemSeqNo = currentKubunItemList.Max(x => (int)x.SeqNo);
-            int yoyakuKbnCd = currentKubunYoyakuList.Max(x => x.YoyakuCd);
+            int detailKbnCd = 0;
+            if (currentKubunDetailList!= null && currentKubunDetailList.Any())
+            {
+                detailKbnCd = currentKubunDetailList.Max(x => x.KbnCd);
+            }
+            int kouiKbnCd = 0;
+            if (currentKubunKouiList != null && currentKubunKouiList.Any())
+            {
+                currentKubunKouiList.Max(x => x.KouiKbnId);
+            }
+            int itemSeqNo = 0;
+            if (currentKubunItemList != null && currentKubunItemList.Any())
+            {
+                itemSeqNo = currentKubunItemList.Max(x => (int)x.SeqNo);
+            }
+            int yoyakuKbnCd = 0;
+            if (currentKubunYoyakuList != null && currentKubunYoyakuList.Any())
+            {
+                yoyakuKbnCd = currentKubunYoyakuList.Max(x => x.YoyakuCd);
+            }
 
-            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunMstList, currentKubunDetailList, currentKubunKouiList, currentKubunItemList, currentKubunYoyakuList);
+            result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunMstList, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
 
             if (result.Any(x => !x.Item1))
             {
