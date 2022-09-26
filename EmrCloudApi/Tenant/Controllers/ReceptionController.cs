@@ -28,6 +28,8 @@ using EmrCloudApi.Tenant.Requests.MaxMoney;
 using EmrCloudApi.Tenant.Presenters.MaxMoney;
 using EmrCloudApi.Tenant.Responses.MaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
+using EmrCloudApi.Tenant.Presenters.VisitingList;
+using UseCase.Reception.ReceptionComment;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -42,6 +44,16 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             _bus = bus;
             _webSocketService = webSocketService;
+        }
+
+        [HttpGet(ApiPath.Get + "ReceptionComment")]
+        public ActionResult<Response<GetReceptionCommentResponse>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
+        {
+            var input = new GetReceptionCommentInputData(request.HpId, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetReceptionCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.Get)]

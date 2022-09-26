@@ -17,5 +17,7 @@
         List<PtInfectionModel> GetInfectionList(long ptId);
 
         List<PtKioRekiModel> GetKioRekiList(long ptId);
+
+        void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas);
     }
 }
