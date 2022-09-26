@@ -266,5 +266,18 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
+        //Alrgy Drug
+        public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
+        public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
+        public static readonly string AddAlrgyDrugHpIdNoExist = "No exist HpId";
+        public static readonly string AddAlrgyDrugPtIdNoExist = "No exist PtId";
+        public static readonly string AddAlrgyDrugInvalidItemCd = "Invalid ItemCd";
+        public static readonly string AddAlrgyDrugInvalidSortNo = "Invalid SortNo";
+        public static readonly string AddAlrgyDrugInvalidStartDate = "Invalid StartDate";
+        public static readonly string AddAlrgyDrugInvalidEndDate = "Invalid EndDate";
+        public static readonly string AddAlrgyDrugInvalidDrugName = "Invalid DrugName";
+        public static readonly string AddAlrgyDrugDuplicate = "This drug has existed";
+        public static readonly string AddAlrgyDrugInputNoData = "Hasn't input data";
+        public static readonly string AddAlrgyDrugItemCd = "ItemCd no existed";
     }
 }

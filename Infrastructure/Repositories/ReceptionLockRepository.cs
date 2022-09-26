@@ -29,11 +29,11 @@ namespace Infrastructure.Repositories
                 .Select(x => new ReceptionLockModel(
                 x.HpId,
                 x.PtId,
-                x.FunctionCd ?? String.Empty,
+                x.FunctionCd ?? string.Empty,
                 x.SinDate,
                 x.RaiinNo,
                 x.OyaRaiinNo,
-                x.Machine ?? String.Empty,
+                x.Machine ?? string.Empty,
                 x.UserId,
                 x.LockDate))
                 .ToList();
