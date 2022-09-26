@@ -647,8 +647,7 @@ namespace Infrastructure.Repositories
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
             var DataRaiinInf = _tenantDataContext.RaiinInfs
-                .Where(x => x.HpId == hpId && x.RaiinNo == raiinNo)
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
             if (DataRaiinInf is null)
                 return new ReceptionModel();
             return new ReceptionModel(
