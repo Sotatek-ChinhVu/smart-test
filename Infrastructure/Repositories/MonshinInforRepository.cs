@@ -49,11 +49,11 @@ namespace Infrastructure.Repositories
                         foreach (var model in monshinInforModels)
                         {
                             var monshinInfor = _tenantDataContextNoTracking.MonshinInfo.
-                            Where(x => x.HpId == model.HpId
+                            FirstOrDefault(x => x.HpId == model.HpId
                                 && x.PtId == model.PtId
                                 && x.RaiinNo == model.RaiinNo
                                 && x.SinDate == model.SinDate
-                                && x.IsDeleted == 0).FirstOrDefault();
+                                && x.IsDeleted == 0);
 
                             //Update monshin when text change
                             if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
