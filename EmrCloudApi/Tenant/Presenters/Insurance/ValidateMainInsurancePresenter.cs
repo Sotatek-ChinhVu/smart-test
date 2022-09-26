@@ -73,6 +73,7 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                     Result.Message = ResponseMessage.InvalidSelectedHokenMstEndDate;
                     break;
                 case ValidMainInsuranceStatus.InvalidFaild:
+                    Result.Message = ResponseMessage.Failed;
                     break;
                 default:
                     break;

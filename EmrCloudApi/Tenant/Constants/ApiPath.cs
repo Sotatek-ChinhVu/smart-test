@@ -31,5 +31,8 @@
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+
+        //Validate Main Insurance
+        public const string ValidateMainInsurance = "ValidateMainInsurance";
     }
 }

@@ -34,6 +34,7 @@ using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using UseCase.Insurance.ValidMainInsurance;
 using EmrCloudApi.Tenant.Presenters.Insurance;
 using EmrCloudApi.Tenant.Responses.Insurance;
+using EmrCloudApi.Tenant.Constants;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -166,7 +167,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
-        [HttpPost("ValidateMainInsurance")]
+        [HttpPost(ApiPath.ValidateMainInsurance)]
         public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
         {
             var input = new ValidMainInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,

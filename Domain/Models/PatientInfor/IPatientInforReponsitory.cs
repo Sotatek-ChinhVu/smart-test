@@ -14,9 +14,5 @@ namespace Domain.Models.PatientInfor
         bool CheckListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
-
-        double GetSettingValue(int groupCd, int grpEdaNo);
-
-        string GetSettingParams(int groupCd, int grpEdaNo);
     }
 }
