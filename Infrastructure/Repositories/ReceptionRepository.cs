@@ -682,7 +682,7 @@ namespace Infrastructure.Repositories
 
         public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
         {
-            var receptionComment = _tenantDataContext.RaiinCmtInfs
+            var receptionComment = _tenantNoTrackingDataContext.RaiinCmtInfs
                 .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
             if (receptionComment is null)
                 return new ReceptionModel();
@@ -696,7 +696,7 @@ namespace Infrastructure.Repositories
         
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
-            var DataRaiinInf = _tenantDataContext.RaiinInfs
+            var DataRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
                 .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
             if (DataRaiinInf is null)
                 return new ReceptionModel();
