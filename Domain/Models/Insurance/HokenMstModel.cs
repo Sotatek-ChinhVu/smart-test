@@ -8,7 +8,7 @@ namespace Domain.Models.Insurance
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenShortName, string houbetu, int hokenSubNumber)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenShortName, string houbetu, int hokenSubNumber, int isFutansyaNoCheck, int jyukyusyaCheckFlag, int jyuKyuCheckDigit, int tokusyuCheckFlag, int checkDigit, int ageStart, int ageEnd)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -19,6 +19,13 @@ namespace Domain.Models.Insurance
             HokenShortName = hokenShortName;
             Houbetu = houbetu;
             HokenSubNumber = hokenSubNumber;
+            IsFutansyaNoCheck = isFutansyaNoCheck;
+            JyukyusyaCheckFlag = jyukyusyaCheckFlag;
+            JyuKyuCheckDigit = jyuKyuCheckDigit;
+            TokusyuCheckFlag = tokusyuCheckFlag;
+            CheckDigit = checkDigit;
+            AgeStart = ageStart;
+            IsFutansyaNoCheck = ageEnd;
         }
 
         public HokenMstModel()
@@ -44,6 +51,20 @@ namespace Domain.Models.Insurance
         public string Houbetu { get; private set; }
 
         public int HokenSubNumber { get; private set; }
+
+        public int IsFutansyaNoCheck { get; private set; }
+
+        public int JyukyusyaCheckFlag { get; private set; }
+
+        public int JyuKyuCheckDigit { get; private set; }
+
+        public int TokusyuCheckFlag { get; private set; }
+
+        public int CheckDigit { get; private set; }
+
+        public int AgeStart { get; private set; }
+
+        public int AgeEnd { get; private set; }
 
         public string SelectedValueMaster
         {
