@@ -36,7 +36,6 @@ namespace UseCase.Insurance.ValidKohi
             SelectedKohiMstCheckDigit = selectedKohiMstCheckDigit;
             SelectedKohiMstAgeStart1 = selectedKohiMstAgeStart1;
             SelectedKohiMstAgeEnd1 = selectedKohiMstAgeEnd1;
-            Kohi1 = kohi1;
         }
 
         public int SinDate { get; private set; }
@@ -87,6 +86,5 @@ namespace UseCase.Insurance.ValidKohi
 
         public int SelectedKohiMstAgeEnd1 { get; private set; }
 
-        public KohiInfModel Kohi1 { get; private set; }
     }
 }

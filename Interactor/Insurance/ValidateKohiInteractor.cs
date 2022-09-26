@@ -1,4 +1,7 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Constant;
+using Domain.Models.Insurance;
+using Domain.Models.ReceptionInsurance;
+using Helper.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,6 +114,48 @@ namespace Interactor.Insurance
 
             return message;
         }
+        private string IsValidConfirmDateKohi(KohiInfModel kohiModel, string numberMessage, int sinDate, bool isAddNew)
+        {
+            var message = "";
+            int kouhi1ConfirmDate = kohiModel.ConfirmDate;
+            int confirmKohi1YM = Int32.Parse(CIUtil.Copy(kouhi1ConfirmDate.ToString(), 1, 6));
+            if (kouhi1ConfirmDate == 0
+                || sinDate != confirmKohi1YM)
+            {
+                // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
+                if (isAddNew)
+                {
+                    return message;
+                }
+                else
+                {
+                    var paramsMessage = new string[] { "公費" + numberMessage, "受給者証等" };
+                    message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
+                    return message;
+                }
+            }
+            return message;
+        }
 
+        private string IsValidMasterDateKohi(KohiInfModel kohiModel, string numberMessage, int sinDate)
+        {
+            var message = "";
+            if (kohiModel.HokenMstModel == null) return message;
+            if (kohiModel.HokenMstModel.StartDate > sinDate)
+            {
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + kohiModel.HokenMstModel.DisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiModel.HokenMstModel.StartDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                return message;
+            }
+            if (kohiModel.HokenMstModel.EndDate < sinDate)
+            {
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + kohiModel.HokenMstModel.DisplayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(kohiModel.HokenMstModel.EndDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                return message;
+            }
+            return message;
+        }
     }
 }

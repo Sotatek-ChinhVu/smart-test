@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UseCase.Insurance.ValidKohi
 {
-    internal class IValidKohiInputPort
+    public interface IValidKohiInputPort : IInputPort<ValidKohiInputData, ValidKohiOutputData>
     {
     }
 }
