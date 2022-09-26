@@ -19,5 +19,7 @@
         List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount);
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
+
+        bool CheckItemCd(string ItemCd);
     }
 }
