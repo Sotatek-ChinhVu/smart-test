@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
 
 namespace Domain.Models.Reception
@@ -85,6 +86,19 @@ namespace Domain.Models.Reception
             Comment = comment;
         }
 
+        public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            RaiinNo = raiinNo;
+            Comment = comment;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+        }
+
         public ReceptionModel(long raiinNo, int uketukeId, int kaId, string uketukeTime, string sinStartTime, int status, int yokakuId, int tantoId)
         {
             RaiinNo = raiinNo;
@@ -98,6 +112,34 @@ namespace Domain.Models.Reception
             YoyakuTime = String.Empty;
             SinEndTime = String.Empty;
             KaikeiTime = String.Empty;
+            Comment = String.Empty;
+        }
+
+        public ReceptionModel()
+        {
+            HpId = 0;
+            PtId = 0;
+            SinDate = 0;
+            RaiinNo = 0;
+            OyaRaiinNo = 0;
+            HokenPid = 0;
+            SanteiKbn = 0;
+            Status = 0;
+            IsYoyaku = 0;
+            YoyakuTime = String.Empty;
+            YoyakuId = 0;
+            UketukeSbt = 0;
+            UketukeTime = String.Empty;
+            UketukeId = 0;
+            UketukeNo = 0;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            KaikeiId = 0;
+            KaId = 0;
+            TantoId = 0;
+            SyosaisinKbn = 0;
+            JikanKbn = 0;
             Comment = String.Empty;
         }
 
@@ -130,34 +172,6 @@ namespace Domain.Models.Reception
                     JikanKbn,
                     Comment
                 );
-        }
-
-        public ReceptionModel()
-        {
-            HpId = 0;
-            PtId = 0;
-            SinDate = 0;
-            RaiinNo = 0;
-            OyaRaiinNo = 0;
-            HokenPid = 0;
-            SanteiKbn = 0;
-            Status = 0;
-            IsYoyaku = 0;
-            YoyakuTime = String.Empty;
-            YoyakuId = 0;
-            UketukeSbt = 0;
-            UketukeTime = String.Empty;
-            UketukeId = 0;
-            UketukeNo = 0;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
-            KaikeiId = 0;
-            KaId = 0;
-            TantoId = 0;
-            SyosaisinKbn = 0;
-            JikanKbn = 0;
-            Comment = String.Empty;
         }
     }
 }

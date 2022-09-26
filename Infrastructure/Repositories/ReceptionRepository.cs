@@ -377,7 +377,7 @@ namespace Infrastructure.Repositories
                         r.UketukeTime ?? String.Empty,
                         r.UketukeId,
                         r.UketukeNo,
-                        r.SinStartTime,
+                        r.SinStartTime ?? string.Empty,
                         r.SinEndTime ?? String.Empty,
                         r.KaikeiTime ?? String.Empty,
                         r.KaikeiId,
@@ -644,6 +644,20 @@ namespace Infrastructure.Repositories
             return true;
         }
 
+        public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
+        {
+            var receptionComment = _tenantDataContext.RaiinCmtInfs
+                .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
+            if (receptionComment is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                receptionComment.HpId,
+                receptionComment.PtId,
+                receptionComment.RaiinNo,
+                receptionComment.Text
+                );
+        }
+        
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
             var DataRaiinInf = _tenantDataContext.RaiinInfs
