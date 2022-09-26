@@ -712,6 +712,12 @@ namespace Infrastructure.Repositories
             }
             return true;
         }
+
+        public bool CheckItemCd(string ItemCd)
+        {
+            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+        }
+
         #region Private Function
         private ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {

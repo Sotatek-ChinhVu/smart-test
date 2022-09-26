@@ -658,5 +658,19 @@ namespace Infrastructure.Repositories
                 0,
                 "");
         }
+
+        public PatientInforModel PatientCommentModels(int hpId, long ptId)
+        {
+            var data = _tenantDataContext.PtCmtInfs
+                .FirstOrDefault(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0);
+            if (data is null)
+                return new PatientInforModel();
+
+            return new PatientInforModel(
+                data.HpId,
+                data.PtId,
+                data.Text ?? string.Empty
+                );
+        }
     }
 }

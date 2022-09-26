@@ -33,6 +33,7 @@ using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using UseCase.PatientGroupMst.SaveList;
 using EmrCloudApi.Tenant.Constants;
+using UseCase.PatientInfor.PatientComment;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -44,6 +45,16 @@ namespace EmrCloudApi.Tenant.Controllers
         public PatientInforController(UseCaseBus bus)
         {
             _bus = bus;
+        }
+
+        [HttpGet(ApiPath.Get + "PatientComment")]
+        public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
+        {
+            var input = new GetPatientCommentInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetPatientCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpGet("GetPatientById")]
