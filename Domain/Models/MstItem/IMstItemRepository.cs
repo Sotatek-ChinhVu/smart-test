@@ -21,5 +21,7 @@
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
 
         List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
+
+        bool CheckItemCd(string ItemCd);
     }
 }
