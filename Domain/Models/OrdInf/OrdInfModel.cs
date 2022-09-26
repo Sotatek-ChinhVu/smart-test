@@ -32,8 +32,9 @@ namespace Domain.Models.OrdInfs
         public GroupKoui GroupKoui { get; private set; }
         public List<OrdInfDetailModel> OrdInfDetails { get; private set; }
         public DateTime UpdateDate { get; private set; }
+        public string UpdateName { get; private set; }
 
-        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate)
+        public OrdInfModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, long ptId, int sinDate, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, long id, List<OrdInfDetailModel> ordInfDetails, DateTime createDate, int createId, string createName, DateTime updateDate, string updateName)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -59,6 +60,7 @@ namespace Domain.Models.OrdInfs
             CreateId = createId;
             CreateName = createName;
             UpdateDate = updateDate;
+            UpdateName = updateName;
         }
 
         // 処方 - Drug

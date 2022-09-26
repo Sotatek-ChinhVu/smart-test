@@ -154,18 +154,22 @@ namespace Infrastructure.Repositories
             var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
+            var userMsts = _tenantDataContext.UserMsts.Where(u => u.HpId == hpId);
             var odrInfs = from odrInf in allOdrInf
-                          join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId)
-                          on odrInf.CreateId equals user.UserId into odrUsers
-                          from odrUser in odrUsers.DefaultIfEmpty()
-                          select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
+                          join user in userMsts
+                          on odrInf.CreateId equals user.UserId into odrUserCs
+                          from odrUserC in odrUserCs.DefaultIfEmpty()
+                          join user in userMsts
+                          on odrInf.UpdateId equals user.UserId into odrUserCUs
+                          from odrUserCU in odrUserCUs.DefaultIfEmpty()
+                          select ConvertToModel(odrInf, odrUserC?.Sname ?? string.Empty, odrUserCU?.Sname ?? string.Empty);
 
             Parallel.ForEach(odrInfs, rpOdrInf =>
             {
-            var odrDetailModels = new List<OrdInfDetailModel>();
+                var odrDetailModels = new List<OrdInfDetailModel>();
 
-            var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
-                .ToList();
+                var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
+                    .ToList();
 
                 if (odrInfDetails?.Count > 0)
                 {
@@ -211,226 +215,227 @@ namespace Infrastructure.Repositories
         }
 
 
-    private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
-    {
-        return new OrdInfModel(ordInf.HpId,
-                    ordInf.RaiinNo,
-                    ordInf.RpNo,
-                    ordInf.RpEdaNo,
-                    ordInf.PtId,
-                    ordInf.SinDate,
-                    ordInf.HokenPid,
-                    ordInf.OdrKouiKbn,
-                    ordInf.RpName ?? string.Empty,
-                    ordInf.InoutKbn,
-                    ordInf.SikyuKbn,
-                    ordInf.SyohoSbt,
-                    ordInf.SanteiKbn,
-                    ordInf.TosekiKbn,
-                    ordInf.DaysCnt,
-                    ordInf.SortNo,
-                    ordInf.IsDeleted,
-                    ordInf.Id,
-                    new List<OrdInfDetailModel>(),
-                    ordInf.CreateDate,
-                    ordInf.CreateId,
-                    createName,
-                    ordInf.UpdateDate
-               );
-    }
-
-    private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
-    {
-        return new OrdInfDetailModel(
-                        ordInfDetail.HpId,
-                        ordInfDetail.RaiinNo,
-                        ordInfDetail.RpNo,
-                        ordInfDetail.RpEdaNo,
-                        ordInfDetail.RowNo,
-                        ordInfDetail.PtId,
-                        ordInfDetail.SinDate,
-                        ordInfDetail.SinKouiKbn,
-                        ordInfDetail.ItemCd ?? string.Empty,
-                        ordInfDetail.ItemName ?? string.Empty,
-                        ordInfDetail.Suryo,
-                        ordInfDetail.UnitName ?? string.Empty,
-                        ordInfDetail.UnitSBT,
-                        ordInfDetail.TermVal,
-                        ordInfDetail.KohatuKbn,
-                        ordInfDetail.SyohoKbn,
-                        ordInfDetail.SyohoLimitKbn,
-                        ordInfDetail.DrugKbn,
-                        ordInfDetail.YohoKbn,
-                        ordInfDetail.Kokuji1 ?? string.Empty,
-                        ordInfDetail.Kokiji2 ?? string.Empty,
-                        ordInfDetail.IsNodspRece,
-                        ordInfDetail.IpnCd ?? string.Empty,
-                        ordInfDetail.IpnName ?? string.Empty,
-                        ordInfDetail.JissiKbn,
-                        ordInfDetail.JissiDate ?? DateTime.MinValue,
-                        ordInfDetail.JissiId,
-                        ordInfDetail.JissiMachine ?? string.Empty,
-                        ordInfDetail.ReqCd ?? string.Empty,
-                        ordInfDetail.Bunkatu ?? string.Empty,
-                        ordInfDetail.CmtName ?? string.Empty,
-                        ordInfDetail.CmtOpt ?? string.Empty,
-                        ordInfDetail.FontColor ?? string.Empty,
-                        ordInfDetail.CommentNewline,
-                        masterSbt,
-                        inOutKbn,
-                        yakka,
-                        isGetPriceInYakka,
-                        0,
-                        0,
-                        ten,
-                        bunkatuKoui,
-                        alternationIndex,
-                        kensaGaichu,
-                        odrTermVal,
-                        cnvTermVal,
-                        yjCd,
-                        yohoSets,
-                        kasan1,
-                        kasan2
-            );
-    }
-
-    private bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
-    {
-        if (tenMst == null) return false;
-
-        var ipnKasanExclude = ipnKasanExcludes.FirstOrDefault(u => u.IpnNameCd == tenMst.IpnNameCd);
-
-        var ipnKasanExcludeItem = ipnKasanExcludeItems.FirstOrDefault(u => u.ItemCd == tenMst.ItemCd);
-
-        return ipnKasanExclude == null && ipnKasanExcludeItem == null;
-    }
-
-    private int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
-    {
-        if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
-               string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
-               odrInfDetail?.SinKouiKbn == 0)
+        private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
+            return new OrdInfModel(ordInf.HpId,
+                        ordInf.RaiinNo,
+                        ordInf.RpNo,
+                        ordInf.RpEdaNo,
+                        ordInf.PtId,
+                        ordInf.SinDate,
+                        ordInf.HokenPid,
+                        ordInf.OdrKouiKbn,
+                        ordInf.RpName ?? string.Empty,
+                        ordInf.InoutKbn,
+                        ordInf.SikyuKbn,
+                        ordInf.SyohoSbt,
+                        ordInf.SanteiKbn,
+                        ordInf.TosekiKbn,
+                        ordInf.DaysCnt,
+                        ordInf.SortNo,
+                        ordInf.IsDeleted,
+                        ordInf.Id,
+                        new List<OrdInfDetailModel>(),
+                        ordInf.CreateDate,
+                        ordInf.CreateId,
+                        createName,
+                        ordInf.UpdateDate,
+                        updateName
+                   );
+        }
+
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        {
+            return new OrdInfDetailModel(
+                            ordInfDetail.HpId,
+                            ordInfDetail.RaiinNo,
+                            ordInfDetail.RpNo,
+                            ordInfDetail.RpEdaNo,
+                            ordInfDetail.RowNo,
+                            ordInfDetail.PtId,
+                            ordInfDetail.SinDate,
+                            ordInfDetail.SinKouiKbn,
+                            ordInfDetail.ItemCd ?? string.Empty,
+                            ordInfDetail.ItemName ?? string.Empty,
+                            ordInfDetail.Suryo,
+                            ordInfDetail.UnitName ?? string.Empty,
+                            ordInfDetail.UnitSBT,
+                            ordInfDetail.TermVal,
+                            ordInfDetail.KohatuKbn,
+                            ordInfDetail.SyohoKbn,
+                            ordInfDetail.SyohoLimitKbn,
+                            ordInfDetail.DrugKbn,
+                            ordInfDetail.YohoKbn,
+                            ordInfDetail.Kokuji1 ?? string.Empty,
+                            ordInfDetail.Kokiji2 ?? string.Empty,
+                            ordInfDetail.IsNodspRece,
+                            ordInfDetail.IpnCd ?? string.Empty,
+                            ordInfDetail.IpnName ?? string.Empty,
+                            ordInfDetail.JissiKbn,
+                            ordInfDetail.JissiDate ?? DateTime.MinValue,
+                            ordInfDetail.JissiId,
+                            ordInfDetail.JissiMachine ?? string.Empty,
+                            ordInfDetail.ReqCd ?? string.Empty,
+                            ordInfDetail.Bunkatu ?? string.Empty,
+                            ordInfDetail.CmtName ?? string.Empty,
+                            ordInfDetail.CmtOpt ?? string.Empty,
+                            ordInfDetail.FontColor ?? string.Empty,
+                            ordInfDetail.CommentNewline,
+                            masterSbt,
+                            inOutKbn,
+                            yakka,
+                            isGetPriceInYakka,
+                            0,
+                            0,
+                            ten,
+                            bunkatuKoui,
+                            alternationIndex,
+                            kensaGaichu,
+                            odrTermVal,
+                            cnvTermVal,
+                            yjCd,
+                            yohoSets,
+                            kasan1,
+                            kasan2
+                );
+        }
+
+        private bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
+        {
+            if (tenMst == null) return false;
+
+            var ipnKasanExclude = ipnKasanExcludes.FirstOrDefault(u => u.IpnNameCd == tenMst.IpnNameCd);
+
+            var ipnKasanExcludeItem = ipnKasanExcludeItems.FirstOrDefault(u => u.ItemCd == tenMst.ItemCd);
+
+            return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        private int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
+        {
+            if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
+                   string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
+                   odrInfDetail?.SinKouiKbn == 0)
+            {
+                return KensaGaichuTextConst.NONE;
+            }
+
+            if (odrInfDetail?.SinKouiKbn == 61 || odrInfDetail?.SinKouiKbn == 64)
+            {
+                bool kensaCondition;
+                if (kensaIraiCondition == 0)
+                {
+                    kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
+                }
+                else
+                {
+                    kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
+                }
+
+                if (kensaCondition && inOutKbn == 1)
+                {
+                    int kensaSetting = kensaIrai;
+                    if (kensaMst == null)
+                    {
+                        if (kensaSetting > 0)
+                        {
+                            return KensaGaichuTextConst.GAICHU_NONE;
+                        }
+                    }
+                    else if (string.IsNullOrEmpty(kensaMst.CenterItemCd1)
+                        && string.IsNullOrEmpty(kensaMst.CenterItemCd2) && kensaSetting > 1)
+                    {
+                        return KensaGaichuTextConst.GAICHU_NOT_SET;
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(odrInfDetail?.ItemName) && string.IsNullOrEmpty(odrInfDetail.ItemCd))
+            {
+                if (inOutKbn == 1 && (odrKouiKbn >= 20 && odrKouiKbn <= 23) || odrKouiKbn == 28)
+                {
+                    if (odrInfDetail.IsNodspRece == 0)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_ON;
+                    }
+                }
+                else
+                {
+                    if (odrInfDetail.IsNodspRece == 1)
+                    {
+                        return KensaGaichuTextConst.IS_DISPLAY_RECE_OFF;
+                    }
+                }
+            }
             return KensaGaichuTextConst.NONE;
         }
 
-        if (odrInfDetail?.SinKouiKbn == 61 || odrInfDetail?.SinKouiKbn == 64)
+        private List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
-            bool kensaCondition;
-            if (kensaIraiCondition == 0)
-            {
-                kensaCondition = (odrInfDetail.SinKouiKbn == 61 || odrInfDetail.SinKouiKbn == 64) && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9";
-            }
-            else
-            {
-                kensaCondition = odrInfDetail.SinKouiKbn == 61 && odrInfDetail.Kokuji1 != "7" && odrInfDetail.Kokuji1 != "9" && (tenMst == null ? 0 : tenMst.HandanGrpKbn) != 6;
-            }
+            var query = from yoho in listYohoSetMst
+                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                        select new
+                        {
+                            Yoho = yoho,
+                            ItemName = ten.Name,
+                            YohoKbn = ten.YohoKbn
+                        };
 
-            if (kensaCondition && inOutKbn == 1)
-            {
-                int kensaSetting = kensaIrai;
-                if (kensaMst == null)
-                {
-                    if (kensaSetting > 0)
-                    {
-                        return KensaGaichuTextConst.GAICHU_NONE;
-                    }
-                }
-                else if (string.IsNullOrEmpty(kensaMst.CenterItemCd1)
-                    && string.IsNullOrEmpty(kensaMst.CenterItemCd2) && kensaSetting > 1)
-                {
-                    return KensaGaichuTextConst.GAICHU_NOT_SET;
-                }
-            }
+            return query.OrderBy(u => u.Yoho.SortNo).AsEnumerable().Select(u => new YohoSetMstModel(u.ItemName, u.YohoKbn, u.Yoho?.SetId ?? 0, u.Yoho?.UserId ?? 0, u.Yoho?.ItemCd ?? string.Empty)).ToList();
         }
 
-        if (!string.IsNullOrEmpty(odrInfDetail?.ItemName) && string.IsNullOrEmpty(odrInfDetail.ItemCd))
+        public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
         {
-            if (inOutKbn == 1 && (odrKouiKbn >= 20 && odrKouiKbn <= 23) || odrKouiKbn == 28)
+            var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
+            return result.Select(
+                    r => new ApproveInfModel(
+                            r.Id,
+                            r.HpId,
+                            r.PtId,
+                            r.SinDate,
+                            r.RaiinNo,
+                            r.SeqNo,
+                            r.IsDeleted,
+                            GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
+                        )
+                );
+        }
+
+        private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
+        {
+            string result = string.Empty;
+            string info = string.Empty;
+
+            string docName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            if (!string.IsNullOrEmpty(docName))
             {
-                if (odrInfDetail.IsNodspRece == 0)
-                {
-                    return KensaGaichuTextConst.IS_DISPLAY_RECE_ON;
-                }
+                info += docName;
             }
-            else
+
+            string approvalDateTime = string.Empty;
+            if (updateDate != null && updateDate.Value != DateTime.MinValue)
             {
-                if (odrInfDetail.IsNodspRece == 1)
-                {
-                    return KensaGaichuTextConst.IS_DISPLAY_RECE_OFF;
-                }
+                approvalDateTime = " " + updateDate.Value.ToString("yyyy/MM/dd HH:mm");
             }
+
+            info += approvalDateTime;
+
+            if (!string.IsNullOrEmpty(info))
+            {
+                result += "（承認: " + info + "）";
+            }
+
+            return result;
         }
-        return KensaGaichuTextConst.NONE;
-    }
 
-    private List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
-    {
-        var query = from yoho in listYohoSetMst
-                    join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
-                    select new
-                    {
-                        Yoho = yoho,
-                        ItemName = ten.Name,
-                        YohoKbn = ten.YohoKbn
-                    };
-
-        return query.OrderBy(u => u.Yoho.SortNo).AsEnumerable().Select(u => new YohoSetMstModel(u.ItemName, u.YohoKbn, u.Yoho?.SetId ?? 0, u.Yoho?.UserId ?? 0, u.Yoho?.ItemCd ?? string.Empty)).ToList();
-    }
-
-    public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
-    {
-        var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
-        return result.Select(
-                r => new ApproveInfModel(
-                        r.Id,
-                        r.HpId,
-                        r.PtId,
-                        r.SinDate,
-                        r.RaiinNo,
-                        r.SeqNo,
-                        r.IsDeleted,
-                        GetDisplayApproveInf(r.UpdateId, r.UpdateDate)
-                    )
-            );
-    }
-
-    private string GetDisplayApproveInf(int updateId, DateTime? updateDate)
-    {
-        string result = string.Empty;
-        string info = string.Empty;
-
-        string docName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
-        if (!string.IsNullOrEmpty(docName))
+        public OrdInfModel Read(int ordId)
         {
-            info += docName;
+            throw new NotImplementedException();
         }
 
-        string approvalDateTime = string.Empty;
-        if (updateDate != null && updateDate.Value != DateTime.MinValue)
+        public void Update(OrdInfModel ord)
         {
-            approvalDateTime = " " + updateDate.Value.ToString("yyyy/MM/dd HH:mm");
+            throw new NotImplementedException();
         }
-
-        info += approvalDateTime;
-
-        if (!string.IsNullOrEmpty(info))
-        {
-            result += "（承認: " + info + "）";
-        }
-
-        return result;
     }
-
-    public OrdInfModel Read(int ordId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Update(OrdInfModel ord)
-    {
-        throw new NotImplementedException();
-    }
-}
 }

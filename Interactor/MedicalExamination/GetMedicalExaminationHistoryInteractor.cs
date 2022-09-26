@@ -235,7 +235,7 @@ namespace Interactor.MedicalExamination
 
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, hokenFirst == null ? string.Empty : hokenFirst.HokenName, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, raiinTag?.TagNo ?? 0, approveInf?.DisplayApprovalInfo ?? string.Empty, GetHokenPatternType(hokenFirst?.HokenKbn ?? 0), new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
-                    List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
+                    List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenByDescending(c => c.IsDeleted).ThenBy(c => c.CreateDate).ThenBy(c => c.UpdateDate).ToList();
 
                     historyKarteOdrRaiin.KarteHistories.AddRange(from karteKbn in allkarteKbns
                                                                  where karteInfByRaiinNo.Any(c => c.KarteKbn == karteKbn.KarteKbn)
@@ -379,7 +379,8 @@ namespace Interactor.MedicalExamination
                                                                 rpOdrInf.CreateId,
                                                                 rpOdrInf.CreateName,
                                                                 rpOdrInf.UpdateDate,
-                                                                rpOdrInf.IsDeleted
+                                                                rpOdrInf.IsDeleted,
+                                                                rpOdrInf.UpdateName
                                                              );
 
                                 group.OdrInfs.Add(odrModel);
