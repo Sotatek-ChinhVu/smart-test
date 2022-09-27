@@ -20,6 +20,7 @@ public class GetKaCodeMstListPresenter : IGetKaCodeMstListOutputPort
     {
         GetKaCodeMstListStatus.Success => ResponseMessage.Success,
         GetKaCodeMstListStatus.NoData => ResponseMessage.NoData,
+        GetKaCodeMstListStatus.Failed => ResponseMessage.Failed,
         _ => string.Empty
     };
 }
