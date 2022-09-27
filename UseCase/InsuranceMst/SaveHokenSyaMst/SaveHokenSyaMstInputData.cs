@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using UseCase.Core.Sync.Core;
 
-namespace Domain.Models.InsuranceMst
+namespace UseCase.InsuranceMst.SaveHokenSyaMst
 {
-    public class HokensyaMstModel
+    public class SaveHokenSyaMstInputData : IInputData<SaveHokenSyaMstOutputData>
     {
-        public HokensyaMstModel(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1)
+        public SaveHokenSyaMstInputData(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1)
         {
             HpId = hpId;
             Name = name;
