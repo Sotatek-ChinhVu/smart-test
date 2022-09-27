@@ -42,6 +42,12 @@ namespace Helper.Common
             }
         }
 
+        //日付チェック(西暦yyyymmdd)
+        public static bool CheckSDate(string input)
+        {
+            return DateTime.TryParseExact(input, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeResult);
+        }
+
         /// <summary>
         /// 四捨五入
         /// </summary>

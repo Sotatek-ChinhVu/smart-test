@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SpecialNote.ImportantNote
+﻿using static Helper.Constants.PtAlrgyDrugConst;
+
+namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtAlrgyDrugModel
     {
@@ -35,5 +37,40 @@
         public string Cmt { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public ValidationStatus Validation()
+        {
+
+            if (PtId <= 0)
+            {
+                return ValidationStatus.InvalidPtId;
+            }
+            if (SortNo <= 0)
+            {
+                return ValidationStatus.InvalidSortNo;
+            }
+            if (ItemCd.Length > 10)
+            {
+                return ValidationStatus.InvalidItemCd;
+            }
+            if (DrugName.Length > 100)
+            {
+                return ValidationStatus.InvalidDrugName;
+            }
+            if (StartDate < 0)
+            {
+                return ValidationStatus.InvalidStartDate;
+            }
+            if (EndDate < 0)
+            {
+                return ValidationStatus.InvalidEndDate;
+            }
+            if (Cmt.Length > 100)
+            {
+                return ValidationStatus.InvalidCmt;
+            }
+
+            return ValidationStatus.Valid;
+        }
     }
 }
