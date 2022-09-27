@@ -27,7 +27,7 @@ namespace Interactor.PatientInfor
                 return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.InvalidKeyword);
             }
 
-            string keyword = inputData.Keyword;
+            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
             bool isContainMode = inputData.ContainMode;
             bool isNum = int.TryParse(keyword, out int ptNum);
 
