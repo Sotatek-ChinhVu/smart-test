@@ -258,8 +258,25 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
-
+        
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
+        
+        //Alrgy Drug
+        public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
+        public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
+        public static readonly string AddAlrgyDrugHpIdNoExist = "No exist HpId";
+        public static readonly string AddAlrgyDrugPtIdNoExist = "No exist PtId";
+        public static readonly string AddAlrgyDrugInvalidItemCd = "Invalid ItemCd";
+        public static readonly string AddAlrgyDrugInvalidSortNo = "Invalid SortNo";
+        public static readonly string AddAlrgyDrugInvalidStartDate = "Invalid StartDate";
+        public static readonly string AddAlrgyDrugInvalidEndDate = "Invalid EndDate";
+        public static readonly string AddAlrgyDrugInvalidDrugName = "Invalid DrugName";
+        public static readonly string AddAlrgyDrugDuplicate = "This drug has existed";
+        public static readonly string AddAlrgyDrugInputNoData = "Hasn't input data";
+        public static readonly string AddAlrgyDrugItemCd = "ItemCd no existed";
+
+        //HokenSyamst
+        public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
     }
 }

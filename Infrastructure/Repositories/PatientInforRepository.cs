@@ -5,7 +5,9 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PostgreDataContext;
+using System;
 
 namespace Infrastructure.Repositories
 {
@@ -15,6 +17,56 @@ namespace Infrastructure.Repositories
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+        }
+
+        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum)
+        {
+            var ptInf = _tenantDataContext.PtInfs.Where(x => x.PtNum == ptNum).FirstOrDefault();
+            if (ptInf == null)
+            {
+                return (new PatientInforModel(), false);
+            }
+
+            long ptId = ptInf.PtId;
+
+            //Get ptMemo
+            string memo = string.Empty;
+            PtMemo? ptMemo = _tenantDataContext.PtMemos.Where(x => x.PtId == ptId).FirstOrDefault();
+            if (ptMemo != null)
+            {
+                memo = ptMemo.Memo ?? string.Empty;
+            }
+
+            int lastVisitDate = _tenantDataContext.RaiinInfs
+                .Where(r => r.HpId == TempIdentity.HpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == DeleteTypes.None)
+                .OrderByDescending(r => r.SinDate)
+                .Select(r => r.SinDate)
+                .FirstOrDefault();
+            PatientInforModel ptInfModel = ToModel(ptInf, memo, lastVisitDate);
+
+            return new(ptInfModel, true);
+        }
+
+        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword)
+        {
+            var ptInfWithLastVisitDate =
+                from p in _tenantDataContext.PtInfs
+                where p.IsDelete == 0 && (p.PtNum == ptNum || p.KanaName.Contains(keyword) || p.Name.Contains(keyword))
+                select new
+                {
+                    ptInf = p,
+                    lastVisitDate = (
+                        from r in _tenantDataContext.RaiinInfs
+                        where r.HpId == TempIdentity.HpId
+                            && r.PtId == p.PtId
+                            && r.Status >= RaiinState.TempSave
+                            && r.IsDeleted == DeleteTypes.None
+                        orderby r.SinDate descending
+                        select r.SinDate
+                    ).FirstOrDefault()
+                };
+
+            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
@@ -657,6 +709,90 @@ namespace Infrastructure.Repositories
                 lastVisitDate,
                 0,
                 "");
+        }
+
+        public PatientInforModel PatientCommentModels(int hpId, long ptId)
+        {
+            var data = _tenantDataContext.PtCmtInfs
+                .FirstOrDefault(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0);
+            if (data is null)
+                return new PatientInforModel();
+
+            return new PatientInforModel(
+                data.HpId,
+                data.PtId,
+                data.Text ?? string.Empty
+                );
+        }
+
+        public List<PatientInforModel> SearchBySindate(int sindate)
+        {
+            var ptIdList = _tenantDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
+            var ptInfWithLastVisitDate =
+                (from p in _tenantDataContext.PtInfs
+                where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                select new
+                {
+                    ptInf = p,
+                    lastVisitDate = (
+                        from r in _tenantDataContext.RaiinInfs
+                        where r.HpId == TempIdentity.HpId
+                            && r.PtId == p.PtId
+                            && r.Status >= RaiinState.TempSave
+                            && r.IsDeleted == DeleteTypes.None
+                        orderby r.SinDate descending
+                        select r.SinDate
+                    ).FirstOrDefault()
+                }).ToList();
+
+            return ptInfWithLastVisitDate.Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+        }
+
+        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode)
+        {
+            var ptInfWithLastVisitDate =
+            from p in _tenantDataContext.PtInfs
+            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1 == keyword) || 
+                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2 == keyword) || 
+                                      p.Name == keyword)
+            select new
+            {
+                ptInf = p,
+                lastVisitDate = (
+                        from r in _tenantDataContext.RaiinInfs
+                        where r.HpId == TempIdentity.HpId
+                            && r.PtId == p.PtId
+                            && r.Status >= RaiinState.TempSave
+                            && r.IsDeleted == DeleteTypes.None
+                        orderby r.SinDate descending
+                        select r.SinDate
+                    ).FirstOrDefault()
+                };
+
+            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+        }
+
+        public List<PatientInforModel> SearchName(string keyword, bool isContainMode)
+        {
+            var ptInfWithLastVisitDate =
+            from p in _tenantDataContext.PtInfs
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name == keyword) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName == keyword))
+            select new
+            {
+                ptInf = p,
+                lastVisitDate = (
+                        from r in _tenantDataContext.RaiinInfs
+                        where r.HpId == TempIdentity.HpId
+                            && r.PtId == p.PtId
+                            && r.Status >= RaiinState.TempSave
+                            && r.IsDeleted == DeleteTypes.None
+                        orderby r.SinDate descending
+                        select r.SinDate
+                    ).FirstOrDefault()
+            };
+
+            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
     }
 }
