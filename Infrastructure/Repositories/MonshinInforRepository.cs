@@ -17,6 +17,13 @@ namespace Infrastructure.Repositories
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public bool CheckExistMonshinInf(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var check = _tenantDataContextNoTracking.RaiinInfs
+                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
+            return check;
+        }
+
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
         {
             var monshinList = _tenantDataContextNoTracking.MonshinInfo

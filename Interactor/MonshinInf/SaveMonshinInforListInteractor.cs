@@ -22,14 +22,8 @@ namespace Interactor.MonshinInf
                 }
                 foreach (var item in inputData.MonshinInfors)
                 {
-                    if (item.HpId <= 0)
-                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidHpId);
-                    if (item.PtId <= 0)
-                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidPtId);
-                    if (item.RaiinNo <= 0)
-                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidRaiinNo);
-                    if (item.SinDate <= 0)
-                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidSinDate);
+                    if (!_monshinInforRepository.CheckExistMonshinInf(item.HpId, item.PtId, item.SinDate, item.RaiinNo))
+                        return new SaveMonshinOutputData(SaveMonshinStatus.InputDataDoesNotExists);
                 }
                 bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
                 var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;
