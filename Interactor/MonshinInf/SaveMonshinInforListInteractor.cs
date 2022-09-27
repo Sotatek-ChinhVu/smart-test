@@ -28,6 +28,8 @@ namespace Interactor.MonshinInf
                         return new SaveMonshinOutputData(SaveMonshinStatus.InvalidPtId);
                     if (item.RaiinNo <= 0)
                         return new SaveMonshinOutputData(SaveMonshinStatus.InvalidRaiinNo);
+                    if (item.SinDate <= 0)
+                        return new SaveMonshinOutputData(SaveMonshinStatus.InvalidSinDate);
                 }
                 bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
                 var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;

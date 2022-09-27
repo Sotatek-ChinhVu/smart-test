@@ -10,9 +10,10 @@ namespace UseCase.MonshinInfor.Save
     {
         Success = 1,
         InputDataNull = 2,
-        Failed = 3,
-        InvalidHpId= 4,
-        InvalidPtId = 5,
-        InvalidRaiinNo = 6,
+        InvalidHpId = 3,
+        InvalidPtId = 4,
+        InvalidRaiinNo = 5,
+        InvalidSinDate = 6,
+        Failed = 7,
     }
 }
