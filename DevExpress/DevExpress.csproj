@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Template\" />
+    <ProjectReference Include="..\UseCase\UseCase.csproj" />
   </ItemGroup>
 
 </Project>
