@@ -774,6 +774,12 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchName(string keyword, bool isContainMode)
         {
+            if (keyword == null ||
+                string.IsNullOrWhiteSpace(keyword))
+            {
+                return new List<PatientInforModel>();
+            }
+
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
             where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name == keyword) ||
