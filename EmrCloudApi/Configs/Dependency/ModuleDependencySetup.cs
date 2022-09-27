@@ -104,6 +104,7 @@ using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.InsuranceMst.Get;
+using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
 using UseCase.Ka.GetList;
@@ -415,6 +416,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Conf
             busBuilder.RegisterUseCase<GetSystemConfInputData, GetSystemConfInteractor>();
+
+            //SaveHokenSya
+            busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
