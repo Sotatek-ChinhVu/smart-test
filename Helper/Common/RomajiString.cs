@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.VisualBasic;
+using System.Reflection;
 using System.Text;
 
 namespace Helper.Common
@@ -43,6 +44,11 @@ namespace Helper.Common
                     _japaneseCharacterList.Add(splitMe);
                 }
             }
+        }
+
+        public string GetJapaneseCharacters()
+        {
+            return string.Join(",", _japaneseCharacterList);
         }
 
         public string RomajiToKana(string value)
