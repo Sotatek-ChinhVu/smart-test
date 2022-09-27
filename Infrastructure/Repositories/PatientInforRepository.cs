@@ -750,6 +750,11 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode)
         {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return new List<PatientInforModel>();
+            }
+
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
             where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1 == keyword) || 
@@ -774,8 +779,7 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchName(string keyword, bool isContainMode)
         {
-            if (keyword == null ||
-                string.IsNullOrWhiteSpace(keyword))
+            if (string.IsNullOrWhiteSpace(keyword))
             {
                 return new List<PatientInforModel>();
             }
