@@ -9,6 +9,11 @@ namespace Helper.Common
         private const uint LCMAP_HALFWIDTH = 0x00400000;
         private const uint LCMAP_FULLWIDTH = 0x00800000;
 
+        /// <summary>
+        /// Convert string from fullsize to halfsize
+        /// </summary>
+        /// <param name="fullWidth"></param>
+        /// <returns></returns>
         public static string HankToZen(string fullWidth)
         {
             try
@@ -31,6 +36,11 @@ namespace Helper.Common
             }
         }
 
+        /// <summary>
+        /// Convert string from halfsize to fullsize
+        /// </summary>
+        /// <param name="halfWidth"></param>
+        /// <returns></returns>
         public static string ZenToHank(string halfWidth)
         {
             try
