@@ -1,4 +1,4 @@
-﻿﻿﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
+﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
@@ -8,7 +8,7 @@ using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
-﻿﻿using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
@@ -34,6 +34,10 @@ using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.Insurance;
 using UseCase.Insurance.ValidKohi;
 using EmrCloudApi.Tenant.Presenters.Insurance;
+using UseCase.PatientGroupMst.SaveList;
+using EmrCloudApi.Tenant.Constants;
+using UseCase.PatientInfor.PatientComment;
+using UseCase.InsuranceMst.SaveHokenSyaMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -45,6 +49,16 @@ namespace EmrCloudApi.Tenant.Controllers
         public PatientInforController(UseCaseBus bus)
         {
             _bus = bus;
+        }
+
+        [HttpGet(ApiPath.Get + "PatientComment")]
+        public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
+        {
+            var input = new GetPatientCommentInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new GetPatientCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpGet("GetPatientById")]
@@ -82,7 +96,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetInsuranceListResponse>>(presenter.Result);
         }
-        
+
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
@@ -116,7 +130,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<CalculationInfResponse>>(present.Result);
         }
-        
+
         [HttpGet("GetPatientGroupMst")]
         public ActionResult<Response<GetListPatientGroupMstResponse>> GetPatientGroupMst()
         {
@@ -127,6 +141,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListPatientGroupMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SavePatientGroupMst)]
+        public ActionResult<Response<SaveListPatientGroupMstResponse>> SavePatientGroupMst([FromBody] SaveListPatientGroupMstRequest request)
+        {
+            var input = new SaveListPatientGroupMstInputData(request.HpId, request.UserId, ConvertToListInput(request.SaveListPatientGroupMsts));
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveListPatientGroupMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveListPatientGroupMstResponse>>(presenter.Result);
         }
 
         [HttpGet("GetInsuranceMst")]
@@ -191,5 +217,49 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<ValidateKohiResponse>>(presenter.Result);
         }
 
+        private List<SaveListPatientGroupMstInputItem> ConvertToListInput(List<SaveListPatientGroupMstRequestItem> requestItems)
+        {
+            List<SaveListPatientGroupMstInputItem> listDatas = new();
+            foreach (var item in requestItems)
+            {
+                listDatas.Add(new SaveListPatientGroupMstInputItem(
+                        item.GroupId,
+                        item.GroupName,
+                        item.Details.Select(detail => new SaveListPatientGroupDetailMstInputItem(
+                                item.GroupId,
+                                detail.GroupCode,
+                                detail.SeqNo,
+                                detail.GroupDetailName
+                            )).ToList()
+                    ));
+            }
+            return listDatas;
+        }
+
+        [HttpPost("SaveHokenSyaMst")]
+        public ActionResult<Response<SaveHokenSyaMstResponse>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
+        {
+            var input = new SaveHokenSyaMstInputData(request.HpId
+                                                   , request.Name
+                                                   , request.KanaName
+                                                   , request.HoubetuKbn
+                                                   , request.Houbetu
+                                                   , request.HokenKbn
+                                                   , request.PrefNo
+                                                   , request.HokensyaNo
+                                                   , request.Kigo
+                                                   , request.Bango
+                                                   , request.RateHonnin
+                                                   , request.RateKazoku
+                                                   , request.PostCode
+                                                   , request.Address1
+                                                   , request.Address2
+                                                   , request.Tel1);
+
+            var output = _bus.Handle(input);
+            var presenter = new SaveHokenSyaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
     }
 }
