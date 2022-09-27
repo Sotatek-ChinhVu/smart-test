@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
                     if(CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.Now;
+                        item.UpdateDate = DateTime.UtcNow;
                         item.UpdateId = TempIdentity.UserId;
                         item.UpdateMachine = TempIdentity.ComputerName;
                     }

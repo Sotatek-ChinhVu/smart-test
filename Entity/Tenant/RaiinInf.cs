@@ -122,7 +122,7 @@ namespace Entity.Tenant
         [Column("SIN_START_TIME")]
         [MaxLength(6)]
         [CustomAttribute.DefaultValue("0")]
-        public string SinStartTime { get; set; } = string.Empty;
+        public string? SinStartTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 診察終了時間
