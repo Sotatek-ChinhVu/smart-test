@@ -348,7 +348,7 @@ namespace Infrastructure.Repositories
                             RaiinNo = item.RaiinNo,
                             RpNo = item.RpNo,
                             RpEdaNo = item.RpEdaNo,
-                            Id = item.Id,
+                            Id = 0,
                             HokenPid = item.HokenPid,
                             OdrKouiKbn = item.OdrKouiKbn,
                             RpName = item.RpName,
