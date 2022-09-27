@@ -1,4 +1,5 @@
 ﻿using Domain.Models.OrdInfs;
+using Domain.Models.Reception;
 using UseCase.OrdInfs.GetHeaderInf;
 
 namespace Interactor.OrdInfs
@@ -6,9 +7,12 @@ namespace Interactor.OrdInfs
     public class GetHeaderInfInteractor : IGetHeaderInfInputPort
     {
         private readonly IOrdInfRepository _ordInfRepository;
-        public GetHeaderInfInteractor(IOrdInfRepository ordInfRepository)
+        private readonly IReceptionRepository _receptionRepository;
+
+        public GetHeaderInfInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository)
         {
             _ordInfRepository = ordInfRepository;
+            _receptionRepository = receptionRepository;
         }
 
         public GetHeaderInfOutputData Handle(GetHeaderInfInputData inputData)
@@ -17,34 +21,35 @@ namespace Interactor.OrdInfs
             {
                 if (inputData.RaiinNo <= 0)
                 {
-                    return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.InvalidRaiinNo);
+                    return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidRaiinNo);
                 }
                 if (inputData.HpId <= 0)
                 {
-                    return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.InvalidHpId);
+                    return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.InvalidPtId);
+                    return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidPtId);
 
                 }
                 if (inputData.SinDate <= 0)
                 {
-                    return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.InvalidSinDate);
+                    return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidSinDate);
                 }
 
-                var result = _ordInfRepository.GetHeaderInfo(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+                var raiinNo = _receptionRepository.Get(inputData.RaiinNo);
+                var odrInf = _ordInfRepository.GetHeaderInfo(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
 
-                if (result.HpId == 0 && result.PtId == 0 && result.SinDate == 0 && result.RaiinNo == 0)
+                if (odrInf.HpId == 0 && odrInf.PtId == 0 && odrInf.SinDate == 0 && odrInf.RaiinNo == 0 && raiinNo.HpId == 0 && raiinNo.PtId == 0 && raiinNo.RaiinNo == 0 && raiinNo.SinDate == 0)
                 {
-                    return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.NoData);
+                    return new GetHeaderInfOutputData(GetHeaderInfStatus.NoData);
                 }
 
-                return new GetHeaderInfOutputData(result, GetHeaderInfStatus.Successed);
+                return new GetHeaderInfOutputData(raiinNo.SyosaisinKbn, raiinNo.JikanKbn, raiinNo.HokenPid, raiinNo.SanteiKbn, raiinNo.TantoId, raiinNo.KaId, raiinNo.UketukeTime, raiinNo.SinStartTime, raiinNo.SinEndTime, odrInf, GetHeaderInfStatus.Successed);
             }
             catch
             {
-                return new GetHeaderInfOutputData(new OrdInfModel(), GetHeaderInfStatus.Failed);
+                return new GetHeaderInfOutputData(GetHeaderInfStatus.Failed);
             }
         }
     }

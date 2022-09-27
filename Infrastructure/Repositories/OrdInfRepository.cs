@@ -65,7 +65,7 @@ namespace Infrastructure.Repositories
         public OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate)
         {
 
-            var odrInf = _tenantDataContext.OdrInfs.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn == 10) ?? new OdrInf();
+            var odrInf = _tenantDataContext.OdrInfs.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn == 10 && odr.IsDeleted == 0) ?? new OdrInf();
 
             var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && odrInf.RpEdaNo == o.RpEdaNo)?.ToList();
 

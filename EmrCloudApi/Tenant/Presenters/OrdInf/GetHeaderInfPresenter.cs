@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
         {
             Result = new Response<GetHeaderInfResponse>()
             {
-                Data = new GetHeaderInfResponse(outputData.OdrInfs),
+                Data = new GetHeaderInfResponse(outputData.SyosaiKbn, outputData.JikanKbn, outputData.HokenPid, outputData.SanteiKbn, outputData.TantoId, outputData.KaId, outputData.UketukeTime, outputData.SinStartTime, outputData.SinEndTime, outputData.OdrInfs),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
