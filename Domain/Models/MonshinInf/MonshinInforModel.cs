@@ -31,16 +31,14 @@ namespace Domain.Models.MonshinInf
             #region common
             if (HpId <= 0)
                 return ValidationStatus.InvalidHpId;
-
             if (PtId <= 0)
                 return ValidationStatus.InvalidPtId;
-
             if (RaiinNo <= 0)
                 return ValidationStatus.InValidRaiinNo;
-
             if (SinDate <= 0)
                 return ValidationStatus.InvalidSinDate;
             #endregion
+
             return ValidationStatus.Valid;
         }
     }
