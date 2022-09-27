@@ -1,6 +1,4 @@
-﻿using Helper.Extension;
-
-namespace Domain.Models.HokenMst
+﻿namespace Domain.Models.HokenMst
 {
     public class HokenMasterModel
     {
@@ -118,7 +116,7 @@ namespace Domain.Models.HokenMst
         {
             get
             {
-                return HokenNo.AsString().PadLeft(3, '0');
+                return HokenNo.ToString().PadLeft(3, '0');
             }
         }
 
