@@ -12,6 +12,7 @@ namespace UseCase.MedicalExamination.GetHistory
 
         public int IsDeleted { get; private set; }
         public DateTime UpdateDate { get; private set; }
+        public string UpdateName { get; private set; }
         public string UpdateDateDisplay
         {
             get => UpdateDate.ToString("yyyy/MM/dd hh:mm");

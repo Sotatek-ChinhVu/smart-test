@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UseCase.MedicalExamination.GetHistory
+﻿namespace UseCase.MedicalExamination.GetHistory
 {
     public class KarteInfHistoryItem
     {
-        public KarteInfHistoryItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, DateTime updateDate, DateTime createDate, int isDeleted, string richText)
+        public KarteInfHistoryItem(int hpId, long raiinNo, int karteKbn, long seqNo, long ptId, int sinDate, string text, DateTime updateDate, DateTime createDate, int isDeleted, string richText, string createName)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -21,6 +15,7 @@ namespace UseCase.MedicalExamination.GetHistory
             CreateDate = createDate;
             IsDeleted = isDeleted;
             RichText = richText;
+            CreateName = createName;
         }
 
         public int HpId { get; private set; }
@@ -34,6 +29,7 @@ namespace UseCase.MedicalExamination.GetHistory
         public DateTime UpdateDate { get; private set; }
         public DateTime CreateDate { get; private set; }
         public int IsDeleted { get; private set; }
+        public string CreateName { get; private set; }
         public string UpdateDateDisplay
         {
             get => UpdateDate.ToString("yyyy/MM/dd hh:mm");

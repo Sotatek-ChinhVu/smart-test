@@ -160,7 +160,7 @@ namespace Infrastructure.Repositories
                           from odrUser in odrUsers.DefaultIfEmpty()
                           select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
 
-            foreach (var rpOdrInf in odrInfs)
+            Parallel.ForEach(odrInfs, rpOdrInf =>
             {
                 var odrDetailModels = new List<OrdInfDetailModel>();
 
@@ -172,8 +172,9 @@ namespace Infrastructure.Repositories
                     int count = 0;
                     var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
 
-                    foreach (var odrInfDetail in odrInfDetails)
+                    Parallel.ForEach(odrInfDetails, odrInfDetail =>
                     {
+
                         var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd);
                         var ten = tenMst?.Ten ?? 0;
                         if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd)) odrInfDetail.IpnCd = tenMst.IpnNameCd;
@@ -200,11 +201,11 @@ namespace Infrastructure.Repositories
                         var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0);
                         odrDetailModels.Add(odrInfDetailModel);
                         count++;
-                    }
+                    });
+                    rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
+                    result.Add(rpOdrInf);
                 }
-                rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
-                result.Add(rpOdrInf);
-            }
+            });
 
             return result;
         }

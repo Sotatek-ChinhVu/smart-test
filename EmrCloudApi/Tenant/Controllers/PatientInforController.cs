@@ -34,6 +34,7 @@ using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using UseCase.PatientGroupMst.SaveList;
 using EmrCloudApi.Tenant.Constants;
 using UseCase.PatientInfor.PatientComment;
+using UseCase.InsuranceMst.SaveHokenSyaMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -207,5 +208,30 @@ namespace EmrCloudApi.Tenant.Controllers
             return listDatas;
         }
 
+        [HttpPost("SaveHokenSyaMst")]
+        public ActionResult<Response<SaveHokenSyaMstResponse>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
+        {
+            var input = new SaveHokenSyaMstInputData(request.HpId
+                                                   , request.Name
+                                                   , request.KanaName
+                                                   , request.HoubetuKbn
+                                                   , request.Houbetu
+                                                   , request.HokenKbn
+                                                   , request.PrefNo
+                                                   , request.HokensyaNo
+                                                   , request.Kigo
+                                                   , request.Bango
+                                                   , request.RateHonnin
+                                                   , request.RateKazoku
+                                                   , request.PostCode
+                                                   , request.Address1
+                                                   , request.Address2
+                                                   , request.Tel1);
+
+            var output = _bus.Handle(input);
+            var presenter = new SaveHokenSyaMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
     }
 }
