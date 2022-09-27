@@ -1,4 +1,6 @@
 ﻿
+using static Helper.Constants.MonshinInfConst;
+
 namespace Domain.Models.MonshinInf
 {
     public class MonshinInforModel
@@ -23,5 +25,29 @@ namespace Domain.Models.MonshinInf
         public string Rtext { get; private set; }
         public int GetKbn { get; private set; }
         public int IsDeleted { get; private set; }
+
+        public ValidationStatus Validation()
+        {
+            #region common
+            if (HpId <= 0)
+                return ValidationStatus.InvalidHpId;
+
+            if (PtId <= 0)
+                return ValidationStatus.InvalidPtId;
+
+            if (RaiinNo <= 0)
+                return ValidationStatus.InValidRaiinNo;
+
+            if (SinDate <= 0)
+                return ValidationStatus.InvalidSinDate;
+
+            if (GetKbn != 1 && GetKbn != 9)
+                return ValidationStatus.InvalidKbn;
+
+            if (IsDeleted != 0 && IsDeleted != 1)
+                return ValidationStatus.InvalidIsDeleted;
+            #endregion
+            return ValidationStatus.Valid;
+        }
     }
 }

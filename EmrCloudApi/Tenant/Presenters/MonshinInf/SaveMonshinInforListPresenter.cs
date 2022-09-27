@@ -21,6 +21,10 @@ namespace EmrCloudApi.Tenant.Presenters.MonshinInf
             SaveMonshinStatus.Success => ResponseMessage.Success,
             SaveMonshinStatus.InputDataNull => ResponseMessage.InputDataNull,
             SaveMonshinStatus.InputDataDoesNotExists => ResponseMessage.InputDataDoesNotExists,
+            SaveMonshinStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+            SaveMonshinStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            SaveMonshinStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+            SaveMonshinStatus.InValidRaiinNo => ResponseMessage.InvalidRaiinNo,
             SaveMonshinStatus.Failed => ResponseMessage.Failed,
             _ => string.Empty
         };
