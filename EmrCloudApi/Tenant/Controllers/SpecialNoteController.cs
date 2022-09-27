@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using DevExpress.Export;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.SpecialNote;
 using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
@@ -29,6 +30,8 @@ namespace EmrCloudApi.Tenant.Controllers
 
             var presenter = new GetSpecialNotePresenter();
             presenter.Complete(output);
+            Karte2Export karte2Export = new Karte2Export();
+            karte2Export.ExportToPdf();
 
             return new ActionResult<Response<GetSpecialNoteResponse>>(presenter.Result);
         }
