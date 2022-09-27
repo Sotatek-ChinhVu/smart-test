@@ -40,12 +40,6 @@ namespace Domain.Models.MonshinInf
 
             if (SinDate <= 0)
                 return ValidationStatus.InvalidSinDate;
-
-            if (GetKbn != 1 && GetKbn != 9)
-                return ValidationStatus.InvalidKbn;
-
-            if (IsDeleted != 0 && IsDeleted != 1)
-                return ValidationStatus.InvalidIsDeleted;
             #endregion
             return ValidationStatus.Valid;
         }

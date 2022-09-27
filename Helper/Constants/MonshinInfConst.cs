@@ -4,8 +4,8 @@
     {
         public enum ValidationStatus
         {
-            InvalidHpId,
             InvalidPtId,
+            InvalidHpId,
             InValidRaiinNo,
             InvalidSinDate,
             InvalidIsDeleted,

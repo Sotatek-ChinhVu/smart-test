@@ -7,8 +7,8 @@
         InputDataDoesNotExists = 3,
         Failed = 4,
         InvalidPtId = 5,
-        InvalidHpId,
-        InvalidSinDate,
-        InValidRaiinNo,
+        InvalidHpId = 6,
+        InvalidSinDate = 7,
+        InValidRaiinNo = 8,
     }
 }
