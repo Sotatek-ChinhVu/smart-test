@@ -10,4 +10,8 @@
     <PackageReference Include="DevExpress.Reporting.Core" Version="22.1.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Template\" />
+  </ItemGroup>
+
 </Project>
