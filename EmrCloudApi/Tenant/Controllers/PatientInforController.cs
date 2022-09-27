@@ -31,6 +31,9 @@ using UseCase.KohiHokenMst.Get;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
+using EmrCloudApi.Tenant.Responses.Insurance;
+using UseCase.Insurance.ValidKohi;
+using EmrCloudApi.Tenant.Presenters.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -150,7 +153,6 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SearchHokensyaMstResponse>>(presenter.Result);
         }
 
-
         [HttpGet("GetHokenMstByFutansyaNo")]
         public ActionResult<Response<GetKohiHokenMstResponse>> GetHokenMstByFutansyaNo([FromQuery] GetKohiHokenMstRequest request)
         {
@@ -161,6 +163,32 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost("ValidateKohi")]
+        public ActionResult<Response<ValidateKohiResponse>> ValidateKohi([FromBody] ValidateKohiRequest request)
+        {
+            var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel1, request.IsSelectedKohiMst1, request.SelectedKohiFutansyaNo1, request.SelectedKohiJyukyusyaNo1, 
+                request.SelectedKohiTokusyuNo1, request.SelectedKohiStartDate1, request.SelectedKohiEndDate1, request.SelectedKohiConfirmDate1, request.SelectedKohiHokenNo1, request.SelectedKohiIsAddNew1, 
+                request.SelectedKohiMstFutansyaCheckFlag1, request.SelectedKohiMstJyukyusyaCheckFlag1, request.SelectedKohiMstJyuKyuCheckDigit1, request.SelectedKohiMst1TokusyuCheckFlag1, 
+                request.SelectedKohiMstStartDate1, request.SelectedKohiMstEndDate1, request.SelectedKohiMstDisplayText1, request.SelectedKohiMstHoubetu1, request.SelectedKohiMstCheckDigit1,
+                request.SelectedKohiMstAgeStart1, request.SelectedKohiMstAgeEnd1, request.IsKohiEmptyModel2, request.IsSelectedKohiMst2, request.SelectedKohiFutansyaNo2, request.SelectedKohiJyukyusyaNo2, 
+                request.SelectedKohiTokusyuNo2, request.SelectedKohiStartDate2, request.SelectedKohiEndDate2, request.SelectedKohiConfirmDate2, request.SelectedKohiHokenNo2, request.SelectedKohiIsAddNew2, 
+                request.SelectedKohiMstFutansyaCheckFlag2, request.SelectedKohiMstJyukyusyaCheckFlag2, request.SelectedKohiMstJyuKyuCheckDigit2, request.SelectedKohiMst2TokusyuCheckFlag2, request.SelectedKohiMstStartDate2, 
+                request.SelectedKohiMstEndDate2, request.SelectedKohiMstDisplayText2, request.SelectedKohiMstHoubetu2, request.SelectedKohiMstCheckDigit2, request.SelectedKohiMstAgeStart2, request.SelectedKohiMstAgeEnd2, 
+                request.IsKohiEmptyModel3, request.IsSelectedKohiMst3, request.SelectedKohiFutansyaNo3, request.SelectedKohiJyukyusyaNo3, request.SelectedKohiTokusyuNo3, request.SelectedKohiStartDate3, request.SelectedKohiEndDate3,
+                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiIsAddNew3, request.SelectedKohiMstFutansyaCheckFlag3, request.SelectedKohiMstJyukyusyaCheckFlag3,
+                request.SelectedKohiMstJyuKyuCheckDigit3, request.SelectedKohiMst3TokusyuCheckFlag3, request.SelectedKohiMstStartDate3, request.SelectedKohiMstEndDate3, request.SelectedKohiMstDisplayText3, 
+                request.SelectedKohiMstHoubetu3, request.SelectedKohiMstCheckDigit3, request.SelectedKohiMstAgeStart3, request.SelectedKohiMstAgeEnd3, request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, 
+                request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4, request.SelectedKohiConfirmDate4, request.SelectedKohiHokenNo4,
+                request.SelectedKohiIsAddNew4, request.SelectedKohiMstFutansyaCheckFlag4, request.SelectedKohiMstJyukyusyaCheckFlag4, request.SelectedKohiMstJyuKyuCheckDigit4, request.SelectedKohiMst4TokusyuCheckFlag4, request.SelectedKohiMstStartDate4, 
+                request.SelectedKohiMstEndDate4, request.SelectedKohiMstDisplayText4, request.SelectedKohiMstHoubetu4, request.SelectedKohiMstCheckDigit4, request.SelectedKohiMstAgeStart4, request.SelectedKohiMstAgeEnd4);
+            var output = _bus.Handle(input);
+            
+            var presenter = new ValidateKohiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateKohiResponse>>(presenter.Result);
         }
 
     }
