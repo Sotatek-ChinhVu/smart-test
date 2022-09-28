@@ -19,6 +19,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
+using Domain.Models.PostCodeMst;
 using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
@@ -74,6 +75,7 @@ using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientRaiinKubun;
+using Interactor.PostCodeMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
@@ -133,6 +135,7 @@ using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
+using UseCase.PostCodeMst.Search;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
@@ -247,6 +250,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
+            services.AddTransient<IPostCodeMstRepository, PostCodeMstRepostitory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -415,6 +419,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
+
+            //PostCodeMst
+            busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
