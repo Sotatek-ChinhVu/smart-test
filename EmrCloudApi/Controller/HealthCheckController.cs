@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Helper.Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCloudApi.Controller
@@ -24,7 +25,23 @@ namespace EmrCloudApi.Controller
         {
             string connectionString = _configuration["TenantDbSample"] ?? "Empty";
             string enviroment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Empty";
-            return Ok("ConnectionString: " + connectionString + " Enviroment " + enviroment);
+            string version = "20220927";
+            return Ok("ConnectionString: " + connectionString + " Enviroment: " + enviroment + "Version: " + version);
+        }
+        
+        
+        [HttpGet("GetJapaneseCharacters")]
+        public ActionResult<string> GetJapaneseCharacters()
+        {
+            string result = RomajiString.Instance.GetJapaneseCharacters();
+            return Ok(result);
+        }
+
+        [HttpGet("ConvertRomajiToKana")]
+        public ActionResult<string> ConvertRomajiToKana(string value)
+        {
+            string result = RomajiString.Instance.RomajiToKana(value);
+            return Ok(result);
         }
     }
 }

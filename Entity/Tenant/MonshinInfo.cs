@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// リッチテキスト
         /// </summary>
         [Column("RTEXT")]
-        public string Rtext { get; set; } = string.Empty;
+        public string? Rtext { get; set; } = string.Empty;
 
         /// <summary>
         /// 取込区分

@@ -31,5 +31,7 @@
         bool UpdateKaId(int hpId, long raiinNo, int kaId);
 
         bool CheckListNo(List<long> raininNos);
+
+        bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
     }
 }

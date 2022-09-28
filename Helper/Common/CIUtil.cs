@@ -8,11 +8,23 @@ namespace Helper.Common
     {
         //Calculate age from yyyymmdd format
         private const int HEISEI_START_YEAR = 1989;
-
         private const int SHOWA_START_YEAR = 1926;
         private const int TAISHO_START_YEAR = 1912;
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
+
+        public static string ToHalfsize(string value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            string kanaString = RomajiString.Instance.RomajiToKana(value);
+            string fullToHalf = HalfsizeString.Instance.ToHalfsize(kanaString);
+
+            return fullToHalf;
+        }
 
         // Format for param: yyyymmdd
         public static DateTime IntToDate(int iDateTime)
