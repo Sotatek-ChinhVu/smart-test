@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using DevExpress.Export;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.KarteInfs;
 using EmrCloudApi.Tenant.Requests.KarteInfs;
 using EmrCloudApi.Tenant.Responses;
@@ -28,6 +29,8 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetListKarteInfPresenter();
             presenter.Complete(output);
 
+            Karte1Export export = new();
+            export.ExportToPdf();
             return new ActionResult<Response<GetListKarteInfResponse>>(presenter.Result);
         }
     }
