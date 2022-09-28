@@ -267,7 +267,10 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
-
+        
+        //Monshin
+        public static readonly string InputDataDoesNotExists = "Input Data does not exist";
+        
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
         public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";

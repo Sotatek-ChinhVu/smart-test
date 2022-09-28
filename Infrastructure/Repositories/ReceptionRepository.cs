@@ -657,7 +657,7 @@ namespace Infrastructure.Repositories
                 receptionComment.Text
                 );
         }
-        
+
         public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
         {
             var DataRaiinInf = _tenantDataContext.RaiinInfs
@@ -673,6 +673,13 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.Status,
                 DataRaiinInf.YoyakuId,
                 DataRaiinInf.TantoId);
+        }
+
+        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var check = _tenantDataContext.RaiinInfs
+                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
+            return check;
         }
     }
 }
