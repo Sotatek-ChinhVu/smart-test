@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted)
         {
             var monshinList = _tenantDataContextNoTracking.MonshinInfo
-                .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0) && x.GetKbn == 1)
+                .Where(x => x.HpId == hpId && x.PtId == ptId && x.SinDate <= sinDate && (isDeleted || x.IsDeleted == 0))
                 .OrderByDescending(x => x.SinDate)
                 .ThenByDescending(x => x.RaiinNo)
                 .Select(x => new MonshinInforModel(
@@ -48,7 +48,7 @@ namespace Infrastructure.Repositories
                         && x.RaiinNo == model.RaiinNo
                         && x.SinDate == model.SinDate
                         && x.IsDeleted == 0
-                        && x.GetKbn == 1);
+                        && x.GetKbn == 0);
 
                     //Update monshin when text change
                     if (monshinInfor != null && !string.IsNullOrEmpty(model.Text.Trim()))
@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = model.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = monshinInfor.GetKbn,
+                            GetKbn = 0,
                             IsDeleted = monshinInfor.IsDeleted,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                             SinDate = monshinInfor.SinDate,
                             Text = monshinInfor.Text,
                             Rtext = monshinInfor.Rtext,
-                            GetKbn = monshinInfor.GetKbn,
+                            GetKbn = 0,
                             IsDeleted = 1,
                             CreateId = monshinInfor.CreateId,
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
