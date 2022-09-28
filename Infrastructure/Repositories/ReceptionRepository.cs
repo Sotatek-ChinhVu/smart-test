@@ -191,13 +191,15 @@ namespace Infrastructure.Repositories
                     || entity.KaId != model.KaId
                     || entity.UketukeSbt != model.UketukeSbt
                     || entity.UketukeNo != model.UketukeNo
-                    || entity.TantoId != model.TantoId)
+                    || entity.TantoId != model.TantoId
+                    || entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
                     entity.KaId = model.KaId;
                     entity.UketukeSbt = model.UketukeSbt;
                     entity.UketukeNo = model.UketukeNo;
                     entity.TantoId = model.TantoId;
+                    entity.HokenPid = model.HokenPid;
                     entity.UpdateDate = DateTime.UtcNow;
                     entity.UpdateId = TempIdentity.UserId;
                     entity.UpdateMachine = TempIdentity.ComputerName;
