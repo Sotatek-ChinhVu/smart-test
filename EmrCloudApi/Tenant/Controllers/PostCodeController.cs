@@ -4,7 +4,7 @@ using EmrCloudApi.Tenant.Requests.PostCodeMst;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PostCodeMst;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Async;
+using UseCase.Core.Sync;
 using UseCase.PostCodeMst.Search;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -20,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet(ApiPath.GetList)]
+        [HttpGet("SearchPostCode")]
         public ActionResult<Response<SearchPostCodeRespone>> GetList([FromQuery] SearchPostCodeRequest request)
         {
             var input = new SearchPostCodeInputData(request.PostCode1, request.PostCode2, request.Address);
