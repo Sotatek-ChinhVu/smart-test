@@ -8,8 +8,6 @@
             InvalidHpId,
             InValidRaiinNo,
             InvalidSinDate,
-            InvalidIsDeleted,
-            InvalidKbn,
             Valid
         };
     }
