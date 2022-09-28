@@ -23,7 +23,7 @@ namespace Interactor.SpecialNote
         {
             try
             {
-                List<KeyValuePair<int, AddAlrgyDrugListStatus>> keyValuePairs = new List<KeyValuePair<int, AddAlrgyDrugListStatus>>();
+                List<KeyValuePair<int, AddAlrgyDrugListStatus>> keyValuePairs = new();
 
                 var datas = inputDatas.DataList.Distinct();
                 var ptId = datas?.FirstOrDefault()?.PtId;
@@ -46,7 +46,10 @@ namespace Interactor.SpecialNote
                     ).ToList() ?? new List<PtAlrgyDrugModel>();
 
                 if (alrgyDrugs == null || alrgyDrugs.Count == 0)
+                {
                     keyValuePairs.Add(new(-1, AddAlrgyDrugListStatus.InputNoData));
+                    return new AddAlrgyDrugListOutputData(keyValuePairs);
+                }
 
                 foreach (var item in alrgyDrugs)
                 {
@@ -88,27 +91,20 @@ namespace Interactor.SpecialNote
                 return new AddAlrgyDrugListOutputData(new List<KeyValuePair<int, AddAlrgyDrugListStatus>>() { new(-1, AddAlrgyDrugListStatus.Failed) });
             }
         }
-        private AddAlrgyDrugListStatus CovertToAddAlrgyDrugListStatus(ValidationStatus validationStatus)
+
+        private static AddAlrgyDrugListStatus CovertToAddAlrgyDrugListStatus(ValidationStatus validationStatus)
         {
-            switch (validationStatus)
+            return validationStatus switch
             {
-                case ValidationStatus.InvalidPtId:
-                    return AddAlrgyDrugListStatus.InvalidPtId;
-                case ValidationStatus.InvalidSortNo:
-                    return AddAlrgyDrugListStatus.InvalidSortNo;
-                case ValidationStatus.InvalidStartDate:
-                    return AddAlrgyDrugListStatus.InvalidStartDate;
-                case ValidationStatus.InvalidEndDate:
-                    return AddAlrgyDrugListStatus.InvalidEndDate;
-                case ValidationStatus.InvalidItemCd:
-                    return AddAlrgyDrugListStatus.InvalidItemCd;
-                case ValidationStatus.InvalidDrugName:
-                    return AddAlrgyDrugListStatus.InvalidDrugName;
-                case ValidationStatus.InvalidCmt:
-                    return AddAlrgyDrugListStatus.InvalidCmt;
-                default:
-                    return AddAlrgyDrugListStatus.Successed;
-            }
+                ValidationStatus.InvalidPtId => AddAlrgyDrugListStatus.InvalidPtId,
+                ValidationStatus.InvalidSortNo => AddAlrgyDrugListStatus.InvalidSortNo,
+                ValidationStatus.InvalidStartDate => AddAlrgyDrugListStatus.InvalidStartDate,
+                ValidationStatus.InvalidEndDate => AddAlrgyDrugListStatus.InvalidEndDate,
+                ValidationStatus.InvalidItemCd => AddAlrgyDrugListStatus.InvalidItemCd,
+                ValidationStatus.InvalidDrugName => AddAlrgyDrugListStatus.InvalidDrugName,
+                ValidationStatus.InvalidCmt => AddAlrgyDrugListStatus.InvalidCmt,
+                _ => AddAlrgyDrugListStatus.Successed,
+            };
         }
     }
 }
