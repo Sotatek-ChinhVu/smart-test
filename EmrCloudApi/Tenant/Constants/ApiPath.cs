@@ -38,5 +38,8 @@
 
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        //Validate Insurance rousai jibai
+        public const string ValidateRousaiJibai = "ValidateRousaiJibai";
     }
 }

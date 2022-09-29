@@ -23,9 +23,5 @@ namespace Domain.Models.PatientInfor
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
         bool CheckListId(List<long> ptIds);
-
-        double GetSettingValue(int groupCd, int grpEdaNo);
-
-        string GetSettingParams(int groupCd, int grpEdaNo);
     }
 }

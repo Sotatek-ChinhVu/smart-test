@@ -192,7 +192,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
-        [HttpPost("ValidateRousaiJibai")]
+        [HttpPost(ApiPath.ValidateRousaiJibai)]
         public ActionResult<Response<ValidateRousaiJibaiResponse>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
         {
             var input = new ValidateRousaiJibaiInputData(request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,

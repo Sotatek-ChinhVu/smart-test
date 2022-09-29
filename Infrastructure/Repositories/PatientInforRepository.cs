@@ -665,27 +665,6 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
-        public double GetSettingValue(int groupCd, int grpEdaNo)
-        {
-            var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
-            return systemConf != null ? systemConf.Val : 0;
-        }
-
-        public string GetSettingParams(int groupCd, int grpEdaNo)
-        {
-
-            var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
-
-            //Fix comment 894 (duong.vu)
-            //Return value in DB if and only if Param is not null or white space
-            if (systemConf != null && !string.IsNullOrWhiteSpace(systemConf.Param))
-            {
-                return systemConf.Param;
-            }
-
-            return string.Empty;
-        }
-
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)
         {
             return new PatientInforModel(

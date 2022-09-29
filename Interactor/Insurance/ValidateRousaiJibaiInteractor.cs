@@ -2,6 +2,7 @@
 using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Domain.Models.ReceptionInsurance;
+using Domain.Models.SystemConf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,10 @@ namespace Interactor.Insurance
 {
     public class ValidateRousaiJibaiInteractor : IValidateRousaiJibaiInputPort
     {
-        private readonly IPatientInforRepository _patientInforRepository;
-        public ValidateRousaiJibaiInteractor(IPatientInforRepository patientInforRepository)
+        private readonly ISystemConfRepository _systemConfRepository;
+        public ValidateRousaiJibaiInteractor(ISystemConfRepository systemConfRepository)
         {
-            _patientInforRepository = patientInforRepository;
+            _systemConfRepository = systemConfRepository;
         }
 
         public ValidateRousaiJibaiOutputData Handle(ValidateRousaiJibaiInputData inputData)
@@ -108,7 +109,7 @@ namespace Interactor.Insurance
         private string IsValidRodo(string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
         {
             var message = "";
-            var rousaiReceder = (int)_patientInforRepository.GetSettingValue(100003, 0);
+            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
             if (rousaiReceder == 1)
             {
                 if (string.IsNullOrEmpty(rodoBango))
@@ -135,7 +136,7 @@ namespace Interactor.Insurance
         private string IsValidNenkin(string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
         {
             var message = "";
-            var systemConfigRousaiKufu = (int)_patientInforRepository.GetSettingValue(1006, 0);
+            var systemConfigRousaiKufu = (int)_systemConfRepository.GetSettingValue(1006, 0);
             if (systemConfigRousaiKufu == 1)
             {
                 if (string.IsNullOrEmpty(nenkinBago))
@@ -151,7 +152,7 @@ namespace Interactor.Insurance
                     return message;
                 }
             }
-            var systemConfigRousaiReceder = (int)_patientInforRepository.GetSettingValue(100003, 0);
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
             var checkMessageCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
             if (!String.IsNullOrEmpty(checkMessageCommonCheckForRosai))
             {
@@ -162,7 +163,7 @@ namespace Interactor.Insurance
         private string IsValidKenko(string kenkoKanriBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
         {
             var message = "";
-            var systemConfigRousaiKufuValidate = (int)_patientInforRepository.GetSettingValue(1006, 0);
+            var systemConfigRousaiKufuValidate = (int)_systemConfRepository.GetSettingValue(1006, 0);
             if (systemConfigRousaiKufuValidate == 1)
             {
                 if (string.IsNullOrEmpty(kenkoKanriBango))
@@ -179,7 +180,7 @@ namespace Interactor.Insurance
                 }
             }
 
-            var systemConfigRousaiReceder = (int)_patientInforRepository.GetSettingValue(100003, 0);
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
             var checkMessageCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
             if (!String.IsNullOrEmpty(checkMessageCommonCheckForRosai))
             {
