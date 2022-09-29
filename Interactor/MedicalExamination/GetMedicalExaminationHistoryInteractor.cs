@@ -40,49 +40,10 @@ namespace Interactor.MedicalExamination
         {
             try
             {
-                if (inputData.HpId <= 0)
+                var validate = Validate(inputData);
+                if (validate != GetMedicalExaminationHistoryStatus.Successed)
                 {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidHpId, 0);
-                }
-                if (inputData.StartPage < 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidStartPage, 0);
-                }
-                if (inputData.PtId <= 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidPtId, 0);
-                }
-                if (inputData.SinDate <= 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSinDate, 0);
-                }
-                if (inputData.PageSize <= 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidPageSize, 0);
-                }
-                if (!(inputData.DeleteConditon >= 0 && inputData.DeleteConditon <= 2))
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidDeleteCondition, 0);
-                }
-                if (inputData.UserId <= 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidUserId, 0);
-                }
-                if (inputData.FilterId < 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidFilterId, 0);
-                }
-                if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchType, 0);
-                }
-                if ((inputData.SearchType != 0 && !(inputData.SearchCategory >= 1 && inputData.SearchType <= 3)) || (inputData.SearchType == 0 && inputData.SearchCategory != 0))
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchCategory, 0);
-                }
-                if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
-                {
-                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidSearchText, 0);
+                    return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), validate, 0);
                 }
 
                 bool allowDisplayDeleted = inputData.KarteDeleteHistory > 0;
@@ -90,6 +51,7 @@ namespace Interactor.MedicalExamination
                 var karteFilter = inputData.FilterId == 0 ? null : _karteFilterMstRepository.Get(inputData.HpId, inputData.UserId, inputData.FilterId);
                 IEnumerable<ReceptionModel>? query;
 
+                //Get raiin follow filter or no filter
                 if (karteFilter?.OnlyBookmark == true)
                 {
                     query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory).Where(r => (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
@@ -108,8 +70,11 @@ namespace Interactor.MedicalExamination
                             select raiinInf;
                 }
 
-                query = query?.OrderByDescending(c => c.SinDate)?.AsEnumerable();
-                var pageTotal = query?.Count() ?? 0;
+                var startPageSearch = 0;
+                var allRaiinInf = query?.ToList();
+
+                //Check page total
+                var pageTotal = allRaiinInf?.Count ?? 0;
                 if (pageTotal == 0)
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
                 if (inputData.StartPage >= pageTotal)
@@ -117,77 +82,7 @@ namespace Interactor.MedicalExamination
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.InvalidStartPage, 0);
                 }
 
-                var allRaiinNos = query?.Select(q => q.RaiinNo)?.ToList();
-                var raiinNoStartPage = !(allRaiinNos?.Count() > 0) ? 0 : allRaiinNos[inputData.StartPage];
-
-                long raiinNoMark = -1;
-                if (inputData.SearchType != 0)
-                {
-                    var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
-                    var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
-
-                    if (inputData.SearchCategory == 1)
-                    {
-                        raiinNoMark = rainNoMarkKarte;
-                    }
-                    else if (inputData.SearchCategory == 2)
-                    {
-                        raiinNoMark = rainNoMarkOdr;
-                    }
-                    else
-                    {
-                        if (inputData.SearchType == 1)
-                        {
-                            if (rainNoMarkKarte >= 0 && rainNoMarkOdr >= 0)
-                                raiinNoMark = Math.Min(rainNoMarkKarte, rainNoMarkOdr);
-                            else if (rainNoMarkKarte >= 0 || rainNoMarkOdr >= 0)
-                                raiinNoMark = Math.Max(rainNoMarkKarte, rainNoMarkOdr);
-                        }
-                        else
-                        {
-                            raiinNoMark = Math.Max(rainNoMarkKarte, rainNoMarkOdr);
-
-                        }
-                    }
-                }
-
-                List<ReceptionModel>? rainInfs;
-                var startPageSearch = 0;
-
-                if (inputData.SearchType == 0)
-                {
-                    rainInfs = query?.Skip(inputData.StartPage).Take(inputData.PageSize).ToList();
-                }
-                else
-                {
-                    if (raiinNoMark == -1) rainInfs = null;
-                    else
-                    {
-                        rainInfs = query?.ToList();
-
-                        var rainMarkObj = rainInfs?.FirstOrDefault(r => r.RaiinNo == raiinNoMark);
-                        var index = rainMarkObj == null ? 0 : rainInfs?.IndexOf(rainMarkObj) ?? 0;
-
-                        if (inputData.SearchType == 1)
-                        {
-                            rainInfs = rainInfs?.Where(r => r.RaiinNo <= raiinNoMark).Take(inputData.PageSize).ToList();
-                        }
-                        else
-                        {
-                            if (index < inputData.PageSize)
-                            {
-                                rainInfs = rainInfs?.Take(inputData.PageSize).ToList();
-                                index = 0;
-                            }
-                            else
-                            {
-                                rainInfs = rainInfs?.Skip(index + 1 - inputData.PageSize).Take(inputData.PageSize).ToList();
-                                index = index - inputData.PageSize + 1;
-                            }
-                        }
-                        startPageSearch = index;
-                    }
-                }
+                var rainInfs = SearchAndPagination(inputData, allRaiinInf, ref startPageSearch);
 
                 var raiinNos = rainInfs?.Select(q => q.RaiinNo)?.ToList();
                 var tantoIds = rainInfs?.Select(r => r.TantoId).ToList();
@@ -216,6 +111,7 @@ namespace Interactor.MedicalExamination
                 var raiinListTags = (sinDates == null || raiinNos == null) ? new List<RaiinListTagModel>() : _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos)?.ToList();
                 IEnumerable<ApproveInfModel>? approveInfs = null;
 
+                //Check data get and show approval
                 if (!(rainInfs?.Count > 0))
                     return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.NoData, 0);
 
@@ -229,14 +125,17 @@ namespace Interactor.MedicalExamination
 
                 Parallel.ForEach(rainInfs, raiinInf =>
                 {
+                    //Infor relation
                     var doctorFirst = doctors?.FirstOrDefault(d => d.UserId == raiinInf.TantoId);
                     var kaMst = kaMsts?.FirstOrDefault(k => k.KaId == raiinInf.KaId);
                     var raiinTag = raiinListTags?.FirstOrDefault(r => r.RaiinNo == raiinInf.RaiinNo && r.SinDate == raiinInf.SinDate);
                     var approveInf = approveInfs?.FirstOrDefault(a => a.RaiinNo == raiinInf.RaiinNo);
 
+                    //Composite karte and order
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(raiinInf.RaiinNo, raiinInf.SinDate, raiinInf.HokenPid, hokenFirst == null ? string.Empty : hokenFirst.HokenName, hokenFirst == null ? string.Empty : hokenFirst.DisplayRateOnly, raiinInf.SyosaisinKbn, raiinInf.JikanKbn, raiinInf.KaId, kaMst == null ? String.Empty : kaMst.KaName, raiinInf.TantoId, doctorFirst == null ? String.Empty : doctorFirst.Sname, raiinInf.SanteiKbn, raiinTag?.TagNo ?? 0, approveInf?.DisplayApprovalInfo ?? string.Empty, GetHokenPatternType(hokenFirst?.HokenKbn ?? 0), new List<HokenGroupHistoryItem>(), new List<GrpKarteHistoryItem>());
 
-                    List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenBy(c => c.IsDeleted).ToList();
+                    //Excute karte
+                    List<KarteInfModel> karteInfByRaiinNo = allkarteInfs.Where(odr => odr.RaiinNo == historyKarteOdrRaiin.RaiinNo).OrderBy(c => c.KarteKbn).ThenByDescending(c => c.IsDeleted).ThenBy(c => c.CreateDate).ThenBy(c => c.UpdateDate).ToList();
 
                     historyKarteOdrRaiin.KarteHistories.AddRange(from karteKbn in allkarteKbns
                                                                  where karteInfByRaiinNo.Any(c => c.KarteKbn == karteKbn.KarteKbn)
@@ -252,144 +151,13 @@ namespace Interactor.MedicalExamination
                                         c.CreateDate,
                                         c.UpdateDate,
                                         c.IsDeleted,
-                                        c.RichText
+                                        c.RichText,
+                                        c.CreateName
                                         )
                     ).ToList())
                                                                  select karteGrp);
-
-                    var odrInfListByRaiinNo = allOdrInfs
-                        .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(
-                               o => o.ChangeOdrDetail(o.OrdInfDetails.Where(od => od.RaiinNo == historyKarteOdrRaiin.RaiinNo).
-                        ToList()));
-                    odrInfListByRaiinNo = odrInfListByRaiinNo.OrderBy(odr => odr.OdrKouiKbn)
-                                              .ThenBy(odr => odr.RpNo)
-                                              .ThenBy(odr => odr.RpEdaNo)
-                                              .ThenBy(odr => odr.SortNo)
-                                              .ToList();
-
-                    // Find By Hoken
-                    List<int> hokenPidList = odrInfListByRaiinNo.GroupBy(odr => odr.HokenPid).Select(grp => grp.Key).ToList();
-
-                    Parallel.ForEach(hokenPidList, hokenPid =>
-                    {
-                        var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
-                        var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
-
-                        var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
-                            .GroupBy(odr => new
-                            {
-                                odr.HokenPid,
-                                odr.GroupKoui,
-                                odr.InoutKbn,
-                                odr.SyohoSbt,
-                                odr.SikyuKbn,
-                                odr.TosekiKbn,
-                                odr.SanteiKbn
-                            })
-                            .Select(grp => grp.FirstOrDefault())
-                            .ToList();
-
-                        foreach (var groupOdrInf in groupOdrInfList)
-                        {
-                            var group = new GroupOdrGHistoryItem(hokenPid, string.Empty, new List<OdrInfHistoryItem>());
-
-                            var rpOdrInfs = odrInfListByRaiinNo.Where(odrInf => odrInf.HokenPid == hokenPid
-                                                        && odrInf.GroupKoui.Value == groupOdrInf?.GroupKoui.Value
-                                                        && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                        && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                        && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                        && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                        && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                                    .ToList();
-
-                            //_mapper.Map<OdrInfModel>(c)
-                            foreach (var rpOdrInf in rpOdrInfs.OrderBy(c => c.IsDeleted))
-                            {
-                                var odrModel = new OdrInfHistoryItem(
-                                        rpOdrInf.HpId,
-                                        rpOdrInf.RaiinNo,
-                                        rpOdrInf.RpNo,
-                                        rpOdrInf.RpEdaNo,
-                                        rpOdrInf.PtId,
-                                        rpOdrInf.SinDate,
-                                        rpOdrInf.HokenPid,
-                                        rpOdrInf.OdrKouiKbn,
-                                        rpOdrInf.RpName,
-                                        rpOdrInf.InoutKbn,
-                                        rpOdrInf.SikyuKbn,
-                                        rpOdrInf.SyohoSbt,
-                                        rpOdrInf.SanteiKbn,
-                                        rpOdrInf.TosekiKbn,
-                                        rpOdrInf.DaysCnt,
-                                        rpOdrInf.SortNo,
-                                        rpOdrInf.Id,
-                                        rpOdrInf.GroupKoui.Value,
-                                        rpOdrInf.OrdInfDetails.Select(od =>
-                                            new OdrInfDetailItem(
-                                                od.HpId,
-                                                od.RaiinNo,
-                                                od.RpNo,
-                                                od.RpEdaNo,
-                                                od.RowNo,
-                                                od.PtId,
-                                                od.SinDate,
-                                                od.SinKouiKbn,
-                                                od.ItemCd,
-                                                od.ItemName,
-                                                od.Suryo,
-                                                od.UnitName,
-                                                od.UnitSbt,
-                                                od.TermVal,
-                                                od.KohatuKbn,
-                                                od.SyohoKbn,
-                                                od.SyohoLimitKbn,
-                                                od.DrugKbn,
-                                                od.YohoKbn,
-                                                od.Kokuji1,
-                                                od.Kokuji2,
-                                                od.IsNodspRece,
-                                                od.IpnCd,
-                                                od.IpnName,
-                                                od.JissiKbn,
-                                                od.JissiDate,
-                                                od.JissiId,
-                                                od.JissiMachine,
-                                                od.ReqCd,
-                                                od.Bunkatu,
-                                                od.CmtName,
-                                                od.CmtName,
-                                                od.FontColor,
-                                                od.CommentNewline,
-                                                od.Yakka,
-                                                od.IsGetPriceInYakka,
-                                                od.Ten,
-                                                od.BunkatuKoui,
-                                                od.AlternationIndex,
-                                                od.KensaGaichu,
-                                                od.OdrTermVal,
-                                                od.CnvTermVal,
-                                                od.YjCd,
-                                                od.MasterSbt,
-                                                od.YohoSets,
-                                                od.Kasan1,
-                                                od.Kasan2
-                                        )
-                                        ).ToList(),
-                                        rpOdrInf.CreateDate,
-                                        rpOdrInf.CreateId,
-                                        rpOdrInf.CreateName,
-                                        rpOdrInf.UpdateDate,
-                                        rpOdrInf.IsDeleted
-                                     );
-
-                                group.OdrInfs.Add(odrModel);
-                            }
-                            hokenGrp.GroupOdrItems.Add(group);
-                        }
-
-                        historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
-                    });
-                    historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
+                    //Excute order
+                    ExcuteOrder(insuranceData, allOdrInfs, historyKarteOdrRaiin, historyKarteOdrRaiins);
                 });
 
                 var result = new GetMedicalExaminationHistoryOutputData(pageTotal, historyKarteOdrRaiins.OrderByDescending(x => x.SinDate).ToList(), GetMedicalExaminationHistoryStatus.Successed, startPageSearch);
@@ -406,7 +174,12 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private int GetHokenPatternType(int hokenKbn)
+        /// <summary>
+        /// Get type for hoken
+        /// </summary>
+        /// <param name="hokenKbn"></param>
+        /// <returns></returns>
+        private static int GetHokenPatternType(int hokenKbn)
         {
             switch (hokenKbn)
             {
@@ -423,6 +196,297 @@ namespace Interactor.MedicalExamination
                 default:
                     return 0;
             }
+        }
+
+        /// <summary>
+        /// Validate
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <returns></returns>
+        private static GetMedicalExaminationHistoryStatus Validate(GetMedicalExaminationHistoryInputData inputData)
+        {
+            if (inputData.HpId <= 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidHpId;
+            }
+
+            if (inputData.StartPage < 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidStartPage;
+            }
+
+            if (inputData.PtId <= 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidPtId;
+            }
+
+            if (inputData.SinDate <= 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidSinDate;
+            }
+
+            if (inputData.PageSize <= 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidPageSize;
+            }
+
+            if (!(inputData.DeleteConditon >= 0 && inputData.DeleteConditon <= 2))
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidDeleteCondition;
+            }
+
+            if (inputData.UserId <= 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidUserId;
+            }
+
+            if (inputData.FilterId < 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidFilterId;
+            }
+
+            if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidSearchType;
+            }
+
+            if ((inputData.SearchType != 0 && !(inputData.SearchCategory >= 1 && inputData.SearchType <= 3)) || (inputData.SearchType == 0 && inputData.SearchCategory != 0))
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidSearchCategory;
+            }
+
+            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
+            {
+                return GetMedicalExaminationHistoryStatus.InvalidSearchText;
+            }
+
+            return GetMedicalExaminationHistoryStatus.Successed;
+        }
+
+        /// <summary>
+        /// Search and pagination
+        /// </summary>
+        /// <param name="inputData"></param>
+        /// <param name="allRaiinInf"></param>
+        /// <param name="startPageSearch"></param>
+        /// <returns></returns>
+        private List<ReceptionModel>? SearchAndPagination(GetMedicalExaminationHistoryInputData inputData, List<ReceptionModel>? allRaiinInf, ref int startPageSearch)
+        {
+            var allRaiinNos = allRaiinInf?.Select(q => q.RaiinNo)?.ToList();
+            var raiinNoStartPage = !(allRaiinNos?.Count() > 0) ? 0 : allRaiinNos[inputData.StartPage];
+
+            long raiinNoMark = -1;
+            if (inputData.SearchType != 0)
+            {
+                var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
+                var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
+
+                if (inputData.SearchCategory == 1)
+                {
+                    raiinNoMark = rainNoMarkKarte;
+                }
+                else if (inputData.SearchCategory == 2)
+                {
+                    raiinNoMark = rainNoMarkOdr;
+                }
+                else
+                {
+                    if (inputData.SearchType == 1)
+                    {
+                        if (rainNoMarkKarte >= 0 && rainNoMarkOdr >= 0)
+                            raiinNoMark = Math.Min(rainNoMarkKarte, rainNoMarkOdr);
+                        else if (rainNoMarkKarte >= 0 || rainNoMarkOdr >= 0)
+                            raiinNoMark = Math.Max(rainNoMarkKarte, rainNoMarkOdr);
+                    }
+                    else
+                    {
+                        raiinNoMark = Math.Max(rainNoMarkKarte, rainNoMarkOdr);
+
+                    }
+                }
+            }
+
+            List<ReceptionModel>? rainInfs;
+
+            if (inputData.SearchType == 0)
+            {
+                rainInfs = allRaiinInf?.Skip(inputData.StartPage).Take(inputData.PageSize).ToList();
+            }
+            else
+            {
+                if (raiinNoMark == -1) rainInfs = null;
+                else
+                {
+                    var rainMarkObj = allRaiinInf?.FirstOrDefault(r => r.RaiinNo == raiinNoMark);
+                    var index = rainMarkObj == null ? 0 : allRaiinInf?.IndexOf(rainMarkObj) ?? 0;
+
+                    if (inputData.SearchType == 1)
+                    {
+                        rainInfs = allRaiinInf?.Where(r => r.RaiinNo <= raiinNoMark).Take(inputData.PageSize).ToList();
+                    }
+                    else
+                    {
+                        if (index < inputData.PageSize)
+                        {
+                            rainInfs = allRaiinInf?.Take(inputData.PageSize).ToList();
+                            index = 0;
+                        }
+                        else
+                        {
+                            rainInfs = allRaiinInf?.Skip(index + 1 - inputData.PageSize).Take(inputData.PageSize).ToList();
+                            index = index - inputData.PageSize + 1;
+                        }
+                    }
+                    startPageSearch = index;
+                }
+            }
+
+            return rainInfs;
+        }
+
+        /// <summary>
+        /// Excute Order
+        /// </summary>
+        /// <param name="insuranceData"></param>
+        /// <param name="allOdrInfs"></param>
+        /// <param name="historyKarteOdrRaiin"></param>
+        /// <param name="historyKarteOdrRaiins"></param>
+        private void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
+        {
+            var odrInfListByRaiinNo = allOdrInfs
+         .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(
+                o => o.ChangeOdrDetail(o.OrdInfDetails.Where(od => od.RaiinNo == historyKarteOdrRaiin.RaiinNo).
+         ToList()));
+            odrInfListByRaiinNo = odrInfListByRaiinNo.OrderBy(odr => odr.OdrKouiKbn)
+                                      .ThenBy(odr => odr.RpNo)
+                                      .ThenBy(odr => odr.RpEdaNo)
+                                      .ThenBy(odr => odr.SortNo)
+                                      .ToList();
+
+            // Find By Hoken
+            List<int> hokenPidList = odrInfListByRaiinNo.GroupBy(odr => odr.HokenPid).Select(grp => grp.Key).ToList();
+
+            Parallel.ForEach(hokenPidList, hokenPid =>
+            {
+                var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+
+                var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
+                    .GroupBy(odr => new
+                    {
+                        odr.HokenPid,
+                        odr.GroupKoui,
+                        odr.InoutKbn,
+                        odr.SyohoSbt,
+                        odr.SikyuKbn,
+                        odr.TosekiKbn,
+                        odr.SanteiKbn
+                    })
+                    .Select(grp => grp.FirstOrDefault())
+                    .ToList();
+
+                Parallel.ForEach(groupOdrInfList, groupOdrInf =>
+                {
+                    var group = new GroupOdrGHistoryItem(hokenPid, string.Empty, new List<OdrInfHistoryItem>());
+
+                    var rpOdrInfs = odrInfListByRaiinNo.Where(odrInf => odrInf.HokenPid == hokenPid
+                                                && odrInf.GroupKoui.Value == groupOdrInf?.GroupKoui.Value
+                                                && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
+                                            .ToList();
+
+                    //_mapper.Map<OdrInfModel>(c)
+                    Parallel.ForEach(rpOdrInfs.OrderBy(c => c.IsDeleted), rpOdrInf =>
+                    {
+
+                        var odrModel = new OdrInfHistoryItem(
+                                                        rpOdrInf.HpId,
+                                                        rpOdrInf.RaiinNo,
+                                                        rpOdrInf.RpNo,
+                                                        rpOdrInf.RpEdaNo,
+                                                        rpOdrInf.PtId,
+                                                        rpOdrInf.SinDate,
+                                                        rpOdrInf.HokenPid,
+                                                        rpOdrInf.OdrKouiKbn,
+                                                        rpOdrInf.RpName,
+                                                        rpOdrInf.InoutKbn,
+                                                        rpOdrInf.SikyuKbn,
+                                                        rpOdrInf.SyohoSbt,
+                                                        rpOdrInf.SanteiKbn,
+                                                        rpOdrInf.TosekiKbn,
+                                                        rpOdrInf.DaysCnt,
+                                                        rpOdrInf.SortNo,
+                                                        rpOdrInf.Id,
+                                                        rpOdrInf.GroupKoui.Value,
+                                                        rpOdrInf.OrdInfDetails.Select(od =>
+                                                            new OdrInfDetailItem(
+                                                                od.HpId,
+                                                                od.RaiinNo,
+                                                                od.RpNo,
+                                                                od.RpEdaNo,
+                                                                od.RowNo,
+                                                                od.PtId,
+                                                                od.SinDate,
+                                                                od.SinKouiKbn,
+                                                                od.ItemCd,
+                                                                od.ItemName,
+                                                                od.Suryo,
+                                                                od.UnitName,
+                                                                od.UnitSbt,
+                                                                od.TermVal,
+                                                                od.KohatuKbn,
+                                                                od.SyohoKbn,
+                                                                od.SyohoLimitKbn,
+                                                                od.DrugKbn,
+                                                                od.YohoKbn,
+                                                                od.Kokuji1,
+                                                                od.Kokuji2,
+                                                                od.IsNodspRece,
+                                                                od.IpnCd,
+                                                                od.IpnName,
+                                                                od.JissiKbn,
+                                                                od.JissiDate,
+                                                                od.JissiId,
+                                                                od.JissiMachine,
+                                                                od.ReqCd,
+                                                                od.Bunkatu,
+                                                                od.CmtName,
+                                                                od.CmtName,
+                                                                od.FontColor,
+                                                                od.CommentNewline,
+                                                                od.Yakka,
+                                                                od.IsGetPriceInYakka,
+                                                                od.Ten,
+                                                                od.BunkatuKoui,
+                                                                od.AlternationIndex,
+                                                                od.KensaGaichu,
+                                                                od.OdrTermVal,
+                                                                od.CnvTermVal,
+                                                                od.YjCd,
+                                                                od.MasterSbt,
+                                                                od.YohoSets,
+                                                                od.Kasan1,
+                                                                od.Kasan2
+                                                        )
+                                                        ).ToList(),
+                                                        rpOdrInf.CreateDate,
+                                                        rpOdrInf.CreateId,
+                                                        rpOdrInf.CreateName,
+                                                        rpOdrInf.UpdateDate,
+                                                        rpOdrInf.IsDeleted
+                                                     );
+
+                        group.OdrInfs.Add(odrModel);
+                    });
+                    hokenGrp.GroupOdrItems.Add(group);
+                });
+
+                historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
+            });
+            historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
         }
     }
 }
