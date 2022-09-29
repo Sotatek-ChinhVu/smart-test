@@ -804,5 +804,10 @@ namespace Infrastructure.Repositories
 
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
+
+        public List<PatientInforModel> SearchEmptyPatientID(long ptId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
