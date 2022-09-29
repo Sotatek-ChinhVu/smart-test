@@ -10,11 +10,11 @@ namespace UseCase.Reception.Get
 {
     public class GetReceptionOutputData : IOutputData
     {
-        public ReceptionModel? ReceptionModel { get; private set; }
+        public ReceptionModel ReceptionModel { get; private set; }
 
         public GetReceptionStatus Status { get; private set; }
 
-        public GetReceptionOutputData(ReceptionModel? receptionModel, GetReceptionStatus status)
+        public GetReceptionOutputData(ReceptionModel receptionModel, GetReceptionStatus status)
         {
             ReceptionModel = receptionModel;
             Status = status;
