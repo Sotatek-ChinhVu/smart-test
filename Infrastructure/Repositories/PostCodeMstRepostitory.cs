@@ -1,8 +1,6 @@
 ﻿using Domain.Models.PostCodeMst;
-using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -20,41 +18,24 @@ namespace Infrastructure.Repositories
         public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address)
         {
             var entities = _tenantDataContextNoTracking.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-            if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(item => item.PostCd.StartsWith(postCode1));
-
-            if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(item => item.PostCd.EndsWith(postCode2));
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(item => item.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
 
-            var query = entities;
+            else if (!string.IsNullOrEmpty(postCode1))
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+
+            else if (!string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
 
             if (!string.IsNullOrEmpty(address))
             {
-                // PrefName + CityName + Banti
-                Expression<Func<PostCodeMst, bool>> containsAddressFull = x =>
-                (x.PrefName + x.CityName + x.Banti).Contains(address)
-                && !string.IsNullOrEmpty(x.CityName);
-                query = entities.Where(containsAddressFull);
-
-                // PrefName + CityName
-                if (query.Count() == 0)
-                {
-                    Expression<Func<PostCodeMst, bool>> containsAddressHalf = x =>
-                    ((x.PrefName + x.CityName).Contains(address));
-                    query = entities.Where(containsAddressHalf);
-                }
-
-                // PrefName
-                if (query.Count() == 0)
-                {
-                    query = entities.Where(item => item.PrefName == address);
-                }
+                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
+                                                || (e.PrefName + e.CityName).Contains(address)
+                                                || e.PrefName.Contains(address));
             }
 
-            var result = query.OrderBy(x => x.PostCd)
+            var result = entities.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
                                   .ThenBy(x => x.Banti)

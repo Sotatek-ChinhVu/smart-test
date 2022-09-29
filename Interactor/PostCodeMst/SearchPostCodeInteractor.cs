@@ -18,6 +18,7 @@ namespace Interactor.PostCodeMst
             {
                 if (inputData.HpId <= 0)
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidHpId);
+
                 if (inputData.PostCode1.Length > 3)
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPostCode);
 
@@ -25,7 +26,6 @@ namespace Interactor.PostCodeMst
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPostCode);
 
                 var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, inputData.PostCode1, inputData.PostCode2, inputData.Address);
-
                 if (!listPostCode.Any())
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.NoData);
 

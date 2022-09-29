@@ -35,5 +35,8 @@
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+
+        //PostCode
+        public const string SearchPostCode = "SearchPostCode";
     }
 }

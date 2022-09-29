@@ -16,15 +16,20 @@
             IsDeleted = isDeleted;
         }
 
-        public long Id { get; set; }
-        public int HpId { get; set; }
-        public string PostCd { get; set; }
-        public string PrefKana { get; set; }
-        public string CityKana { get; set; }
-        public string PostalTermKana { get; set; }
-        public string PrefName { get; set; }
-        public string CityName { get; set; }
-        public string Banti { get; set; }
-        public int IsDeleted { get; set; }
+        public long Id { get; private set; }
+        public int HpId { get; private set; }
+        public string PostCd { get; private set; }
+        public string PrefKana { get; private set; }
+        public string CityKana { get; private set; }
+        public string PostalTermKana { get; private set; }
+        public string PrefName { get; private set; }
+        public string CityName { get; private set; }
+        public string Banti { get; private set; }
+        public int IsDeleted { get; private set; }
+
+        public string Address
+        {
+            get => PrefName + CityName + Banti;
+        }
     }
 }

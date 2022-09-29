@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Presenters.PostCodeMst;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.PostCodeMst;
 using EmrCloudApi.Tenant.Requests.PostCodeMst;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PostCodeMst;
@@ -19,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
-        [HttpGet("SearchPostCode")]
+        [HttpGet(ApiPath.SearchPostCode)]
         public ActionResult<Response<SearchPostCodeRespone>> GetList([FromQuery] SearchPostCodeRequest request)
         {
             var input = new SearchPostCodeInputData(request.HpId, request.PostCode1, request.PostCode2, request.Address);
