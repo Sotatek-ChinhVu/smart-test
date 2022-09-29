@@ -34,6 +34,15 @@
         //Patient Infor
 
         //Group Infor
+        public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
+        public static readonly string DuplicateGroupName = "Can not duplicate GroupName";
+        public static readonly string DuplicateGroupDetailCode = "Can not Duplicate GroupDetail Code";
+        public static readonly string DuplicateGroupDetailSeqNo = "Can not Duplicate GroupDetail SeqNo";
+        public static readonly string DuplicateGroupDetailName = "Can not Duplicate GroupDetail Name";
+        public static readonly string InvalidGroupId = "Invalid GroupId, GroupId > 0";
+        public static readonly string InvalidGroupName = "Invalid GroupName, GroupName is required and length must be less than or equal 20";
+        public static readonly string InvalidDetailGroupCode = "Invalid GroupCode, GroupCode is required and length must be less than or equal 2";
+        public static readonly string InvalidGroupDetailName = "Invalid GroupDetailName, GroupDetailName is required and length must be less than or equal 30";
 
         //Reception controller
 
@@ -289,6 +298,9 @@
         public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
         public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
         public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
+
+        //Monshin
+        public static readonly string InputDataDoesNotExists = "Input Data does not exist";
 
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";

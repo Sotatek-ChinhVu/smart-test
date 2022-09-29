@@ -192,13 +192,15 @@ namespace Infrastructure.Repositories
                     || entity.KaId != model.KaId
                     || entity.UketukeSbt != model.UketukeSbt
                     || entity.UketukeNo != model.UketukeNo
-                    || entity.TantoId != model.TantoId)
+                    || entity.TantoId != model.TantoId
+                    || entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
                     entity.KaId = model.KaId;
                     entity.UketukeSbt = model.UketukeSbt;
                     entity.UketukeNo = model.UketukeNo;
                     entity.TantoId = model.TantoId;
+                    entity.HokenPid = model.HokenPid;
                     entity.UpdateDate = DateTime.UtcNow;
                     entity.UpdateId = TempIdentity.UserId;
                     entity.UpdateMachine = TempIdentity.ComputerName;
@@ -412,7 +414,7 @@ namespace Infrastructure.Repositories
                         r.UketukeTime ?? String.Empty,
                         r.UketukeId,
                         r.UketukeNo,
-                        r.SinStartTime,
+                        r.SinStartTime ?? String.Empty,
                         r.SinEndTime ?? String.Empty,
                         r.KaikeiTime ?? String.Empty,
                         r.KaikeiId,
@@ -708,6 +710,13 @@ namespace Infrastructure.Repositories
                 DataRaiinInf.Status,
                 DataRaiinInf.YoyakuId,
                 DataRaiinInf.TantoId);
+        }
+
+        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var check = _tenantTrackingDataContext.RaiinInfs
+                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
+            return check;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using System.Xml.Linq;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.Reception
 {
@@ -58,6 +59,7 @@ namespace Domain.Models.Reception
 
         public string Comment { get; private set; }
 
+        [JsonConstructor]
         public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment)
         {
             HpId = hpId;

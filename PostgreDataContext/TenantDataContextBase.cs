@@ -130,6 +130,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinListItem>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
             modelBuilder.Entity<KarteInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo, e.KarteKbn });
 
+            modelBuilder.Entity<MonshinInfo>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
