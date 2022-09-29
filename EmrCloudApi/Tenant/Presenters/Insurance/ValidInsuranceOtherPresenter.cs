@@ -32,6 +32,8 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                     break;
                 case ValidInsuranceOtherStatus.InvalidAge65:
                     Result.Message = ResponseMessage.InvalidAge65;
+                case ValidInsuranceOtherStatus.InvalidDuplicatePattern:
+                    Result.Message = ResponseMessage.InvalidAge65;
                     break;
             }
         }
