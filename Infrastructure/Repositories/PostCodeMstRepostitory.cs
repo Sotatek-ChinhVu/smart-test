@@ -61,13 +61,13 @@ namespace Infrastructure.Repositories
                                   .Select(x => new PostCodeMstModel(
                                       x.Id,
                                       x.HpId,
-                                      x.PostCd ?? string.Empty ,
+                                      x.PostCd ?? string.Empty,
                                       x.PrefKana ?? string.Empty,
                                       x.CityKana ?? string.Empty,
                                       x.PostalTermKana ?? string.Empty,
                                       x.PrefName ?? string.Empty,
                                       x.CityName ?? string.Empty,
-                                      x.Banti?? string.Empty,
+                                      x.Banti ?? string.Empty,
                                       x.IsDeleted))
                                   .ToList();
             return result;
