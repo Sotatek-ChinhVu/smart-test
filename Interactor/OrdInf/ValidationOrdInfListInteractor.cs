@@ -36,7 +36,7 @@ namespace Interactor.OrdInfs
                 foreach (var item in inputDataList)
                 {
                     var checkInsert = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo);
-                    var checkUpdate = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo-1);
+                    var checkUpdate = _ordInfRepository.CheckExistOrder(item.HpId, item.PtId, item.RaiinNo, item.SinDate, item.RpNo, item.RpEdaNo - 1);
 
                     if (!checkUpdate && item.Id > 0)
                     {
