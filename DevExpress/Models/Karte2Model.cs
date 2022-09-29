@@ -10,7 +10,7 @@ namespace DevExpress.Models
     public class Karte2Model
     {
         public string Id { get; set; }
-        public List<TempObj> tempObjs;
+        public List<TempObj> tempObjs { get; set; }
     }
     public class TempObj
     {
