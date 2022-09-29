@@ -12,6 +12,7 @@ namespace UseCase.Insurance.ValidPatternOther
         InvalidSindate = 1,
         InvalidPtBirthday = 2,
         InvalidAge75 = 3,
-        InvalidAge65 = 4
+        InvalidAge65 = 4,
+        InvalidDuplicatePattern = 5
     }
 }

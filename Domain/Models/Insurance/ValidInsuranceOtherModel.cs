@@ -54,17 +54,32 @@ namespace Domain.Models.Insurance
 
     public class HokenPatternsModel
     {
-        public HokenPatternsModel(int hokenId, bool isExpirated, int isDeleted)
+        public HokenPatternsModel(int hokenId, int hokenKbn, bool isExpirated, int isDeleted, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id)
         {
             HokenId = hokenId;
+            HokenKbn = hokenKbn;
             IsExpirated = isExpirated;
             IsDeleted = isDeleted;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
         }
 
         public int HokenId { get; private set; }
 
+        public int HokenKbn { get; private set; }
+
         public bool IsExpirated { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public int Kohi1Id { get; private set; }
+
+        public int Kohi2Id { get; private set; }
+
+        public int Kohi3Id { get; private set; }
+
+        public int Kohi4Id { get; private set; }
     }
 }
