@@ -66,8 +66,8 @@ builder.Services.AddCors(options =>
 // This config is needed for EF Core Migrations to find the DbContext
 builder.Services.AddDbContext<TenantDataContext>(options =>
 {
-    //var connectionStr = builder.Configuration["TenantDbSample"];
-    var connectionStr = "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+    var connectionStr = builder.Configuration["TenantDbSample"];
+    //var connectionStr = "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
     options.UseNpgsql(connectionStr);
 });
 
