@@ -38,5 +38,8 @@
 
         //PostCode
         public const string SearchPostCode = "SearchPostCode";
+        
+        //PatientGroupMst
+        public const string SavePatientGroupMst = "SavePatientGroupMst";
     }
 }
