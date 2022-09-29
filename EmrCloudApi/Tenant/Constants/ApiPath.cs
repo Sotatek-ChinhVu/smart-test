@@ -38,5 +38,8 @@
 
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        // Validate Insurance Other
+        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
     }
 }

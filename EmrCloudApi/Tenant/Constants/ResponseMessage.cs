@@ -287,5 +287,10 @@
 
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
+
+        // Invalid Insurance Other
+        public static readonly string InvalidAge75 = "Invalid hokenInf age >= 75 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidAge65 = "HokenInf Age < 65 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
     }
 }

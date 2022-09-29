@@ -35,6 +35,9 @@ using UseCase.PatientGroupMst.SaveList;
 using EmrCloudApi.Tenant.Constants;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
+using EmrCloudApi.Tenant.Responses.Insurance;
+using UseCase.Insurance.ValidPatternOther;
+using EmrCloudApi.Tenant.Presenters.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -232,6 +235,18 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveHokenSyaMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ValidateInsuranceOther)]
+        public ActionResult<Response<ValidInsuranceOtherResponse>> ValidateInsuranceOther([FromBody] ValidInsuranceOtherRequest request)
+        {
+            var input = new ValidInsuranceOtherInputData(request.ValidModel);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidInsuranceOtherPresenter();
+
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidInsuranceOtherResponse>>(presenter.Result);
         }
     }
 }
