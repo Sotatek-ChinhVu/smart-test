@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<PostCodeMstModel> PostCodeMstModels(string postCode1, string postCode2, string address)
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address)
         {
-            var entities = _tenantDataContextNoTracking.PostCodeMsts.Where(x => x.IsDeleted == 0);
+            var entities = _tenantDataContextNoTracking.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
             if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(item => item.PostCd.StartsWith(postCode1));
 

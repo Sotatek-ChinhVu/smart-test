@@ -4,13 +4,15 @@ namespace UseCase.PostCodeMst.Search
 {
     public class SearchPostCodeInputData : IInputData<SearchPostCodeOutputData>
     {
-        public SearchPostCodeInputData(string postCode1, string postCode2, string address)
+        public SearchPostCodeInputData(int hpId, string postCode1, string postCode2, string address)
         {
-            this.PostCode1 = postCode1;
-            this.PostCode2 = postCode2;
-            this.Address = address;
+            HpId = hpId;
+            PostCode1 = postCode1;
+            PostCode2 = postCode2;
+            Address = address;
         }
 
+        public int HpId { get; private set; }
         public string PostCode1 { get; private set; }
         public string PostCode2 { get; private set; }
         public string Address { get; private set; }

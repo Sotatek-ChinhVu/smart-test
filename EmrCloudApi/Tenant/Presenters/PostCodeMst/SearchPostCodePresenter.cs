@@ -21,6 +21,7 @@ namespace EmrCloudApi.Tenant.Presenters.PostCodeMst
             SearchPostCodeStatus.Success => ResponseMessage.Success,
             SearchPostCodeStatus.Failed => ResponseMessage.Failed,
             SearchPostCodeStatus.NoData => ResponseMessage.NoData,
+            SearchPostCodeStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             SearchPostCodeStatus.InvalidPostCode => ResponseMessage.InvalidPostCode,
             _ => string.Empty
         };

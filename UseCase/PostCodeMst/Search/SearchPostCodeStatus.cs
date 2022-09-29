@@ -5,6 +5,7 @@
         Success = 1,
         Failed = 2,
         NoData = 3,
-        InvalidPostCode = 4,
+        InvalidHpId = 4,
+        InvalidPostCode = 5,
     }
 }
