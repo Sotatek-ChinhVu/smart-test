@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Domain.Models.PatientInfor
 {
@@ -53,6 +55,99 @@ namespace Domain.Models.PatientInfor
                 LastVisitDate = lastVisitDate;
                 FirstVisitDate = firstVisitDate;
                 RainCount = rainCount;
+                Comment = string.Empty;
+            }
+
+            public PatientInforModel(int hpId, long ptId, string comment)
+            {
+                HpId = hpId;
+                PtId = ptId;
+                Comment = comment;
+                ReferenceNo = 0;
+                SeqNo = 0;
+                PtNum = 0;
+                KanaName = string.Empty;
+                Name = string.Empty;
+                Sex = 0;
+                Birthday = 0;
+                LimitConsFlg = 0;
+                IsDead = 0;
+                DeathDate = 0;
+                HomePost = string.Empty;
+                HomeAddress1 = string.Empty;
+                HomeAddress2 = string.Empty;
+                Tel1 = string.Empty;
+                Tel2 = string.Empty;
+                Mail = string.Empty;
+                Setanusi = string.Empty;
+                Zokugara = string.Empty;
+                Job = string.Empty;
+                RenrakuName = string.Empty;
+                RenrakuPost = string.Empty;
+                RenrakuAddress1 = string.Empty;
+                RenrakuAddress2 = string.Empty;
+                RenrakuTel = string.Empty;
+                RenrakuMemo = string.Empty;
+                OfficeName = string.Empty;
+                OfficePost = string.Empty;
+                OfficeAddress1 = string.Empty;
+                OfficeAddress2 = string.Empty;
+                OfficeTel = string.Empty;
+                OfficeMemo = string.Empty;
+                IsRyosyoDetail = 0;
+                PrimaryDoctor = 0;
+                IsTester = 0;
+                MainHokenPid = 0;
+                Memo = string.Empty;
+                LastVisitDate = 0;
+                FirstVisitDate = 0;
+                RainCount = string.Empty;
+            }
+
+            public PatientInforModel()
+            {
+                HpId = 0;
+                PtId = 0;
+                ReferenceNo = 0;
+                SeqNo = 0;
+                PtNum = 0;
+                KanaName = string.Empty;
+                Name = string.Empty;
+                Sex = 0;
+                Birthday = 0;
+                LimitConsFlg = 0;
+                IsDead = 0;
+                DeathDate = 0;
+                HomePost = string.Empty;
+                HomeAddress1 = string.Empty;
+                HomeAddress2 = string.Empty;
+                Tel1 = string.Empty;
+                Tel2 = string.Empty;
+                Mail = string.Empty;
+                Setanusi = string.Empty;
+                Zokugara = string.Empty;
+                Job = string.Empty;
+                RenrakuName = string.Empty;
+                RenrakuPost = string.Empty;
+                RenrakuAddress1 = string.Empty;
+                RenrakuAddress2 = string.Empty;
+                RenrakuTel = string.Empty;
+                RenrakuMemo = string.Empty;
+                OfficeName = string.Empty;
+                OfficePost = string.Empty;
+                OfficeAddress1 = string.Empty;
+                OfficeAddress2 = string.Empty;
+                OfficeTel = string.Empty;
+                OfficeMemo = string.Empty;
+                IsRyosyoDetail = 0;
+                PrimaryDoctor = 0;
+                IsTester = 0;
+                MainHokenPid = 0;
+                Memo = string.Empty;
+                LastVisitDate = 0;
+                FirstVisitDate = 0;
+                RainCount = string.Empty;
+                Comment = string.Empty;
             }
 
             public int LastVisitDate { get; private set; }
@@ -137,6 +232,7 @@ namespace Domain.Models.PatientInfor
 
             public string RainCount { get; private set; }
 
+            public string Comment { get; private set; }
         }
     }
 }

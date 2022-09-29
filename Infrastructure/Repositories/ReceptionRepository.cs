@@ -5,6 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -190,13 +191,15 @@ namespace Infrastructure.Repositories
                     || entity.KaId != model.KaId
                     || entity.UketukeSbt != model.UketukeSbt
                     || entity.UketukeNo != model.UketukeNo
-                    || entity.TantoId != model.TantoId)
+                    || entity.TantoId != model.TantoId
+                    || entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
                     entity.KaId = model.KaId;
                     entity.UketukeSbt = model.UketukeSbt;
                     entity.UketukeNo = model.UketukeNo;
                     entity.TantoId = model.TantoId;
+                    entity.HokenPid = model.HokenPid;
                     entity.UpdateDate = DateTime.UtcNow;
                     entity.UpdateId = TempIdentity.UserId;
                     entity.UpdateMachine = TempIdentity.ComputerName;
@@ -376,7 +379,7 @@ namespace Infrastructure.Repositories
                         r.UketukeTime ?? String.Empty,
                         r.UketukeId,
                         r.UketukeNo,
-                        r.SinStartTime,
+                        r.SinStartTime ?? string.Empty,
                         r.SinEndTime ?? String.Empty,
                         r.KaikeiTime ?? String.Empty,
                         r.KaikeiId,
@@ -641,6 +644,44 @@ namespace Infrastructure.Repositories
             raiinInf.UpdateMachine = TempIdentity.ComputerName;
             _tenantDataContext.SaveChanges();
             return true;
+        }
+
+        public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
+        {
+            var receptionComment = _tenantDataContext.RaiinCmtInfs
+                .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
+            if (receptionComment is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                receptionComment.HpId,
+                receptionComment.PtId,
+                receptionComment.RaiinNo,
+                receptionComment.Text
+                );
+        }
+
+        public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
+        {
+            var DataRaiinInf = _tenantDataContext.RaiinInfs
+                .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
+            if (DataRaiinInf is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                DataRaiinInf.RaiinNo,
+                DataRaiinInf.UketukeId,
+                DataRaiinInf.KaId,
+                DataRaiinInf.UketukeTime ?? string.Empty,
+                DataRaiinInf.SinStartTime ?? string.Empty,
+                DataRaiinInf.Status,
+                DataRaiinInf.YoyakuId,
+                DataRaiinInf.TantoId);
+        }
+
+        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var check = _tenantDataContext.RaiinInfs
+                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
+            return check;
         }
     }
 }
