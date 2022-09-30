@@ -15,7 +15,7 @@ namespace Infrastructure.Repositories
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address)
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageCount)
         {
             var entities = _tenantDataContextNoTracking.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
@@ -50,6 +50,7 @@ namespace Infrastructure.Repositories
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
                                       x.IsDeleted))
+                                  .Skip(pageIndex).Take(pageCount)
                                   .ToList();
             return result;
         }

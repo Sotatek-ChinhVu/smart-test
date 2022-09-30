@@ -7,5 +7,7 @@
         NoData = 3,
         InvalidHpId = 4,
         InvalidPostCode = 5,
+        InvalidPageIndex = 6,
+        InvalidPageCount = 7,
     }
 }
