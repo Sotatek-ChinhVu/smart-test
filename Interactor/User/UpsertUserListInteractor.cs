@@ -19,23 +19,30 @@ namespace Interactor.User
 
         public UpsertUserListOutputData Handle(UpsertUserListInputData inputData)
         {
-            //Check duplicatedId in the insertList
-            var duplicatedIdDic = inputData.InserteddUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
-            if (duplicatedIdDic.Any())
+            try
             {
-                return new UpsertUserListOutputData(UpsertUserListStatus.DuplicateId);
-            }
+                //Check duplicatedId in the insertList
+                var duplicatedIdDic = inputData.InserteddUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
+                if (duplicatedIdDic.Any())
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.DuplicateId);
+                }
 
-            //Check existedId in the insertList
-            var idList = inputData.InserteddUserList.Select(u => u.Id).ToList();
-            if (_userRepository.CheckExistedId(idList))
+                //Check existedId in the insertList
+                var idList = inputData.InserteddUserList.Select(u => u.Id).ToList();
+                if (_userRepository.CheckExistedId(idList))
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
+                }
+                return new UpsertUserListOutputData(UpsertUserListStatus.Success);
+            }
+            catch
             {
-                return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
+                return new UpsertUserListOutputData(UpsertUserListStatus.Fail);
             }
+            _userRepository.Upsert(inputData.UpdatedUserList/*, inputData.InserteddUserList*/);
 
-            _userRepository.Upsert(inputData.UpdatedUserList, inputData.InserteddUserList);
-
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

@@ -50,7 +50,7 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
-        var updatedUserList = upsertUserRequest.UserInfoList.Where(u => !u.IsInsertModel).Select(u => UserInfoRequestToModel(u)).ToList();
+        var updatedUserList = upsertUserRequest.UserInfoList/*.Where(u => !u.IsInsertModel)*/.Select(u => UserInfoRequestToModel(u)).ToList();
         var insertedUserList = upsertUserRequest.UserInfoList.Where(u => u.IsInsertModel).Select(u => UserInfoRequestToModel(u)).ToList();
 
         var input = new UpsertUserListInputData(updatedUserList, insertedUserList);

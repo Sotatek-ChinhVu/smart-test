@@ -89,9 +89,37 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-        public void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList)
+        public void Upsert(List<UserMstModel> updatedUserList)
         {
+            foreach(var inputData in updatedUserList)
+            {
+                if(inputData.IsDeleted == DeleteTypes.Deleted)
+                {
+                    var userMsts = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    if(userMsts != null)
+                    {
+                        userMsts.IsDeleted = DeleteTypes.Deleted;
+                    }
+                }
+                else
+                {
+                    var userMsts = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    if( userMsts != null)
+                    {
+                        _tenantDataContext.UserMsts.Add(ToModel1(inputData));
 
+                        userMsts.IsDeleted = DeleteTypes.Deleted;
+                        userMsts.UpdateId = TempIdentity.UserId;
+                        userMsts.UpdateDate = DateTime.UtcNow;
+                        userMsts.UpdateMachine = TempIdentity.ComputerName;
+                    }
+                    else
+                    {
+                        _tenantDataContext.UserMsts.Add(ToModel1(inputData));
+                    }
+                }
+            }
+            _tenantDataContext.SaveChanges();
         }
 
         private UserMstModel ToModel(UserMst u)
@@ -114,6 +142,11 @@ namespace Infrastructure.Repositories
                 u.SortNo,
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
+        }
+        private UserMst ToModel1(UserMstModel u)
+        {
+            return new UserMst(
+                );
         }
     }
 }
