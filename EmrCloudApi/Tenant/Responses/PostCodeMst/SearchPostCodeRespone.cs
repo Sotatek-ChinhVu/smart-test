@@ -6,9 +6,9 @@ namespace EmrCloudApi.Tenant.Responses.PostCodeMst
     {
         public SearchPostCodeRespone(List<PostCodeMstModel> postCodeMstModels)
         {
-            this.postCodeMstModels = postCodeMstModels;
+            PostCodeMstModels = postCodeMstModels;
         }
 
-        public List<PostCodeMstModel> postCodeMstModels { get; private set; }
+        public List<PostCodeMstModel> PostCodeMstModels { get; private set; }
     }
 }
