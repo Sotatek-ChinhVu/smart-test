@@ -22,7 +22,7 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
-        List<PatientInforModel> SearchEmptyPatientID(long ptId);
+        List<PatientInforModel> SearchEmptyPatientID(long ptId, int pageIndex, int pageCount);
 
         bool CheckListId(List<long> ptIds);
     }

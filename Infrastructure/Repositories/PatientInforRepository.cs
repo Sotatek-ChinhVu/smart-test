@@ -5,9 +5,7 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PostgreDataContext;
-using System;
 
 namespace Infrastructure.Repositories
 {
@@ -805,15 +803,15 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> SearchEmptyPatientID(long ptId)
+        public List<PatientInforModel> SearchEmptyPatientID(long ptId, int pageIndex, int pageCount)
         {
-            for (int i = 0; i < 43; i++)
+            for (int i = 0; i < pageCount; i++)
             {
                 var model = new PatientInforModel();
                 ptId += i;
                 var CheckExistPtID = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId);
 
-                if(CheckExistPtID != null)
+                if (CheckExistPtID != null)
                 {
 
                 }
