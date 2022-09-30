@@ -42,5 +42,7 @@
         // ExportReport
         public const string ExportKarte1 = "ExportKarte1";
 
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
     }
 }
