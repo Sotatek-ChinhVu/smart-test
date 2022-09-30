@@ -6,9 +6,9 @@ using System.Drawing;
 
 namespace DevExpress.Template
 {
-    public partial class Karte2Template : DevExpress.XtraReports.UI.XtraReport
+    public partial class Karte1Template_page2 : DevExpress.XtraReports.UI.XtraReport
     {
-        public Karte2Template()
+        public Karte1Template_page2()
         {
             InitializeComponent();
         }

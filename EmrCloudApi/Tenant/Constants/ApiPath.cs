@@ -38,5 +38,9 @@
 
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        // ExportReport
+        public const string ExportKarte1 = "ExportKarte1";
+
     }
 }

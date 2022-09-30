@@ -29,8 +29,6 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetListKarteInfPresenter();
             presenter.Complete(output);
 
-            Karte1Export export = new();
-            export.ExportToPdf();
             return new ActionResult<Response<GetListKarteInfResponse>>(presenter.Result);
         }
     }

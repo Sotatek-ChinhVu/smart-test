@@ -1,4 +1,6 @@
-﻿using Domain.CalculationInf;
+﻿using DevExpress.Export;
+using DevExpress.Interface;
+using Domain.CalculationInf;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -57,6 +59,7 @@ using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.DrugDetail;
 using Interactor.DrugInfor;
+using Interactor.ExportPDF;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.Insurance;
@@ -99,6 +102,7 @@ using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.DrugDetail;
 using UseCase.DrugInfor.Get;
+using UseCase.ExportPDF.ExportKarte1;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
@@ -203,6 +207,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+
+            // Export
+            services.AddTransient<IKarte1Export, Karte1Export>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -431,6 +438,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
+
+            //ExportReport
+            busBuilder.RegisterUseCase<ExportKarte1InputData, ExportKarte1Interactor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -27,6 +27,24 @@ namespace Domain.Models.InsuranceInfor
             Kohi4 = kohi4;
         }
 
+        public InsuranceModel() // new model
+        {
+            HpId = 0;
+            PtId = 0;
+            PtBirthday = 0;
+            SeqNo = 0;
+            HokenSbtCd = 0;
+            HokenPid = 0;
+            HokenKbn = 0;
+            SinDate = 0;
+            HokenMemo = string.Empty;
+            HokenInf = new HokenInfModel(0, 0, 0);
+            Kohi1 = new KohiInfModel(0);
+            Kohi2 = new KohiInfModel(0);
+            Kohi3 = new KohiInfModel(0);
+            Kohi4 = new KohiInfModel(0);
+        }
+
         public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
         {
             HpId = hpId;
@@ -174,6 +192,12 @@ namespace Domain.Models.InsuranceInfor
         public string JibaiHokenTanto => HokenInf == null ? string.Empty : HokenInf.JibaiHokenTanto;
 
         public string JibaiHokenTel => HokenInf == null ? string.Empty : HokenInf.JibaiHokenTel;
+
+        public string HokensyaName => HokenInf == null ? string.Empty : HokenInf.HokensyaName;
+
+        public string HokensyaAddress => HokenInf == null ? string.Empty : HokenInf.HokensyaAddress;
+
+        public string HokensyaTel => HokenInf == null ? string.Empty : HokenInf.HokensyaTel;
 
         public int JibaiJyusyouDate => HokenInf == null ? 0 : HokenInf.JibaiJyusyouDate;
 
