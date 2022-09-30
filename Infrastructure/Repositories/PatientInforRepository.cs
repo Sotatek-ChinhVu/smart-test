@@ -730,20 +730,20 @@ namespace Infrastructure.Repositories
             var ptIdList = _tenantDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
             var ptInfWithLastVisitDate =
                 (from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
-                select new
-                {
-                    ptInf = p,
-                    lastVisitDate = (
-                        from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
-                            && r.PtId == p.PtId
-                            && r.Status >= RaiinState.TempSave
-                            && r.IsDeleted == DeleteTypes.None
-                        orderby r.SinDate descending
-                        select r.SinDate
-                    ).FirstOrDefault()
-                }).ToList();
+                 where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 select new
+                 {
+                     ptInf = p,
+                     lastVisitDate = (
+                         from r in _tenantDataContext.RaiinInfs
+                         where r.HpId == TempIdentity.HpId
+                             && r.PtId == p.PtId
+                             && r.Status >= RaiinState.TempSave
+                             && r.IsDeleted == DeleteTypes.None
+                         orderby r.SinDate descending
+                         select r.SinDate
+                     ).FirstOrDefault()
+                 }).ToList();
 
             return ptInfWithLastVisitDate.Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
@@ -757,8 +757,8 @@ namespace Infrastructure.Repositories
 
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) || 
-                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) || 
+            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
+                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
             select new
             {
@@ -772,7 +772,7 @@ namespace Infrastructure.Repositories
                         orderby r.SinDate descending
                         select r.SinDate
                     ).FirstOrDefault()
-                };
+            };
 
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
@@ -807,7 +807,17 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyPatientID(long ptId)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < 43; i++)
+            {
+                var model = new PatientInforModel();
+                ptId += i;
+                var CheckExistPtID = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId);
+
+                if(CheckExistPtID != null)
+                {
+
+                }
+            }
         }
     }
 }
