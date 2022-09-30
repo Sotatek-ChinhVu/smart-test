@@ -8,6 +8,6 @@
         InvalidHpId = 4,
         InvalidPostCode = 5,
         InvalidPageIndex = 6,
-        InvalidPageCount = 7,
+        InvalidPageSize = 7,
     }
 }

@@ -23,8 +23,8 @@ namespace Interactor.PostCodeMst
                 if (inputData.PageIndex < 0)
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPageIndex);
 
-                if (inputData.PageCount < 0)
-                    return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPageCount);
+                if (inputData.PageSize < 0)
+                    return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPageSize);
 
                 string postcode1 = CIUtil.ToHalfsize(inputData.PostCode1);
                 if (postcode1.Length > 3)
@@ -36,7 +36,7 @@ namespace Interactor.PostCodeMst
 
                 string address = CIUtil.ToHalfsize(inputData.Address);
 
-                var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageCount);
+                var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
                 if (!listPostCode.Any())
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.NoData);
 

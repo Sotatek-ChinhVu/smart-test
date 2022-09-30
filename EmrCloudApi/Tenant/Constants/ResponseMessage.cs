@@ -20,6 +20,7 @@
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
         public static readonly string InvalidPostCode = "Invalid Post Code";
+        public static readonly string InvalidPageSize = "Invalid Page Size";
 
         //Common
         public static readonly string NotFound = "Not found";

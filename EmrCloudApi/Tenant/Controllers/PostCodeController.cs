@@ -23,7 +23,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchPostCode)]
         public ActionResult<Response<SearchPostCodeRespone>> GetList([FromQuery] SearchPostCodeRequest request)
         {
-            var input = new SearchPostCodeInputData(request.HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageCount);
+            var input = new SearchPostCodeInputData(request.HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);

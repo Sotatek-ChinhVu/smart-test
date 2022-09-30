@@ -24,7 +24,7 @@ namespace EmrCloudApi.Tenant.Presenters.PostCodeMst
             SearchPostCodeStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             SearchPostCodeStatus.InvalidPostCode => ResponseMessage.InvalidPostCode,
             SearchPostCodeStatus.InvalidPageIndex => ResponseMessage.InvalidPageIndex,
-            SearchPostCodeStatus.InvalidPageCount => ResponseMessage.InvalidPageCount,
+            SearchPostCodeStatus.InvalidPageSize => ResponseMessage.InvalidPageCount,
             _ => string.Empty
         };
     }
