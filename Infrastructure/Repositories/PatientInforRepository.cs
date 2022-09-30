@@ -805,18 +805,18 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)
         {
+            long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
+            long startIndex = (pageIndex - 1) * pageSize + ptNum;
             var result = new List<PatientInforModel>();
-            for (long i = ptNum; i < (ptNum + pageSize); i++)
+            for (long i = startIndex; i < endIndex; i++)
             {
-                var CheckExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == ptNum);
+                var CheckExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == startIndex);
 
                 if (CheckExistPtNum == null)
 
-                    result.Add(new PatientInforModel(hpId, i, "(空き) " + i, "(空き) " + i));
+                    result.Add(new PatientInforModel(hpId, i, string.Empty, string.Concat(i, " (空き) ", i)));
                 else
-                    result.Add(new PatientInforModel(hpId, i, CheckExistPtNum.KanaName, CheckExistPtNum.Name));
-
-                ptNum += 1;
+                    result.Add(new PatientInforModel(hpId, i, string.Concat(i, " ", CheckExistPtNum.KanaName), string.Concat(i, " ", CheckExistPtNum.Name)));
             }
 
             return result;
