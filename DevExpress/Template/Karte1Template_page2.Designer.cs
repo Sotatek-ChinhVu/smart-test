@@ -237,7 +237,7 @@
             // 
             // BottomMargin
             // 
-            this.BottomMargin.HeightF = 21.875F;
+            this.BottomMargin.HeightF = 3.125F;
             this.BottomMargin.Name = "BottomMargin";
             // 
             // Detail
@@ -424,7 +424,7 @@
             this.DataMember = "ListByomeiModels";
             this.DataSource = this.objectDataSource2;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
-            this.Margins = new System.Drawing.Printing.Margins(100, 100, 100, 22);
+            this.Margins = new System.Drawing.Printing.Margins(100, 100, 100, 3);
             this.Version = "22.1";
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
