@@ -36,6 +36,9 @@
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
 
+        //PostCode
+        public const string SearchPostCode = "SearchPostCode";
+        
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
