@@ -803,19 +803,23 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> SearchEmptyPatientID(long ptId, int pageIndex, int pageCount)
+        public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)
         {
-            for (int i = 0; i < pageCount; i++)
+            var result = new List<PatientInforModel>();
+            for (long i = ptNum; i < pageSize; i++)
             {
-                var model = new PatientInforModel();
-                ptId += i;
-                var CheckExistPtID = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtId == ptId);
+                var CheckExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == ptNum);
 
-                if (CheckExistPtID != null)
-                {
+                if (CheckExistPtNum == null)
+                
+                    result.Add(new PatientInforModel(hpId, i, "(空き) " + i, "(空き) " + i));
+                else
+                    result.Add(new PatientInforModel(hpId, i, CheckExistPtNum.KanaName, CheckExistPtNum.Name));
 
-                }
+                ptNum += 1;
             }
+
+            return result;
         }
     }
 }
