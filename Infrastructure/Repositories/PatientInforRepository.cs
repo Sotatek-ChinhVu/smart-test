@@ -808,15 +808,16 @@ namespace Infrastructure.Repositories
             long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             var result = new List<PatientInforModel>();
+
             for (long i = startIndex; i < endIndex; i++)
             {
-                var CheckExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == startIndex);
+                var ExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == startIndex);
 
-                if (CheckExistPtNum == null)
+                if (ExistPtNum == null)
+                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き) ", i)));
 
-                    result.Add(new PatientInforModel(hpId, i, string.Empty, string.Concat(i, " (空き) ", i)));
                 else
-                    result.Add(new PatientInforModel(hpId, i, string.Concat(i, " ", CheckExistPtNum.KanaName), string.Concat(i, " ", CheckExistPtNum.Name)));
+                    result.Add(new PatientInforModel(ExistPtNum.HpId, ExistPtNum.PtId, ExistPtNum.PtNum, string.Concat(i, " ", ExistPtNum.Name)));
             }
 
             return result;

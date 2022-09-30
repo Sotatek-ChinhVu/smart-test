@@ -142,14 +142,14 @@
                 Comment = string.Empty;
             }
 
-            public PatientInforModel(int hpId, long ptNum, string kanaName, string name)
+            public PatientInforModel(int hpId, long ptId, long ptNum, string name)
             {
                 HpId = hpId;
-                PtId = 0;
+                PtId = ptId;
                 ReferenceNo = 0;
                 SeqNo = 0;
                 PtNum = ptNum;
-                KanaName = kanaName;
+                KanaName = string.Empty;
                 Name = name;
                 Sex = 0;
                 Birthday = 0;
