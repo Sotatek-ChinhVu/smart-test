@@ -1,4 +1,4 @@
-﻿namespace UseCase.PostCodeMst.Search
+﻿namespace UseCase.MstItem.SearchPostCode
 {
     public enum SearchPostCodeStatus
     {

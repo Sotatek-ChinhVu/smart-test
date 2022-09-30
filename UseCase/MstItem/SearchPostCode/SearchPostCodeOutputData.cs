@@ -1,7 +1,7 @@
-﻿using Domain.Models.PostCodeMst;
+﻿using Domain.Models.MstItem;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.PostCodeMst.Search
+namespace UseCase.MstItem.SearchPostCode
 {
     public class SearchPostCodeOutputData : IOutputData
     {

@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.PostCodeMst
+﻿namespace EmrCloudApi.Tenant.Requests.MstItem
 {
     public class SearchPostCodeRequest
     {

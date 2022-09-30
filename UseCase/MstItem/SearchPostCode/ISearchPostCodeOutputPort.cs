@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.PostCodeMst.Search
+namespace UseCase.MstItem.SearchPostCode
 {
     public interface ISearchPostCodeOutputPort : IOutputPort<SearchPostCodeOutputData>
     {

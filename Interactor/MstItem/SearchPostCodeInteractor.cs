@@ -1,16 +1,16 @@
-﻿using Domain.Models.PostCodeMst;
+﻿using Domain.Models.MstItem;
 using Helper.Common;
-using UseCase.PostCodeMst.Search;
+using UseCase.MstItem.SearchPostCode;
 
-namespace Interactor.PostCodeMst
+namespace Interactor.MstItem
 {
     public class SearchPostCodeInteractor : ISearchPostCodeInputPort
     {
-        private readonly IPostCodeMstRepository _postCodeMstRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public SearchPostCodeInteractor(IPostCodeMstRepository postCodeMstRepository)
+        public SearchPostCodeInteractor(IMstItemRepository mstItemRepository)
         {
-            _postCodeMstRepository = postCodeMstRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public SearchPostCodeOutputData Handle(SearchPostCodeInputData inputData)
@@ -36,7 +36,7 @@ namespace Interactor.PostCodeMst
 
                 string address = CIUtil.ToHalfsize(inputData.Address);
 
-                var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
+                var listPostCode = _mstItemRepository.PostCodeMstModels(inputData.HpId, postcode1, postcode2, address, inputData.PageIndex, inputData.PageSize);
                 if (!listPostCode.Any())
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.NoData);
 

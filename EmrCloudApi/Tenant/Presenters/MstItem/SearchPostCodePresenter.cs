@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.PostCodeMst;
-using UseCase.PostCodeMst.Search;
+using EmrCloudApi.Tenant.Responses.MstItem;
+using UseCase.MstItem.SearchPostCode;
 
-namespace EmrCloudApi.Tenant.Presenters.PostCodeMst
+namespace EmrCloudApi.Tenant.Presenters.MstItem
 {
     public class SearchPostCodePresenter : ISearchPostCodeOutputPort
     {

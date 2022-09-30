@@ -1,6 +1,6 @@
-﻿using Domain.Models.PostCodeMst;
+﻿using Domain.Models.MstItem;
 
-namespace EmrCloudApi.Tenant.Responses.PostCodeMst
+namespace EmrCloudApi.Tenant.Responses.MstItem
 {
     public class SearchPostCodeRespone
     {

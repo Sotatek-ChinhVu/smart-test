@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.PostCodeMst
+﻿namespace Domain.Models.MstItem
 {
     public class PostCodeMstModel
     {
