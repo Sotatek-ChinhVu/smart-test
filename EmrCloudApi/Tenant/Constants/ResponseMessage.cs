@@ -288,6 +288,11 @@
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
 
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
+
         // Invalid Insurance Other
         public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";

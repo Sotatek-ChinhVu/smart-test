@@ -39,6 +39,9 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
     }
