@@ -1,4 +1,6 @@
-﻿using Domain.CalculationInf;
+﻿using DevExpress.Export;
+using DevExpress.Interface;
+using Domain.CalculationInf;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -46,7 +48,7 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using EmrCloudApi.Realtime;
-using Infrastructure.CommonDB;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
@@ -116,6 +118,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.Karte2Print;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
@@ -203,6 +206,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+
+            //export
+            services.AddTransient<IKarte2Export, Karte2Export>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -330,6 +336,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
+            busBuilder.RegisterUseCase<Karte2ExportInputData, Karte2ExportInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

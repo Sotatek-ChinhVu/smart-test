@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure.CommonDB
+namespace Infrastructure.Common
 {
     public class TenantProvider : ITenantProvider
     {

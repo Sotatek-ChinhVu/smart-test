@@ -1,4 +1,5 @@
-﻿using Helper.Constants;
+﻿using Domain.Models.ReceptionSameVisit;
+using Helper.Constants;
 
 namespace UseCase.MedicalExamination.GetHistory
 {
@@ -56,11 +57,12 @@ namespace UseCase.MedicalExamination.GetHistory
         /// approve info
         /// </summary>
         public string SinryoTitle { get; private set; }
+        public int Status { get; private set; }
 
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
         public List<GrpKarteHistoryItem> KarteHistories { get; private set; }
 
-        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType,int status, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
@@ -81,6 +83,7 @@ namespace UseCase.MedicalExamination.GetHistory
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
             HokenType = hokenType;
+            Status = status;
         }
     }
 }

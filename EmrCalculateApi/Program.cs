@@ -2,7 +2,7 @@ using EmrCalculateApi.Futan;
 using EmrCalculateApi.Implementation;
 using EmrCalculateApi.Implementation.IkaCalculate;
 using EmrCalculateApi.Interface;
-using Infrastructure.CommonDB;
+using Infrastructure.Common;
 using Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);

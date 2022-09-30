@@ -139,6 +139,9 @@
         public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 60";
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
+        public static readonly string InvalidDeleteCondition = "Invalid Delete Condition";
+        public static readonly string InvalidUser = "Invalid User";
+        public static readonly string InvalidUrl = "Invalid Url";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
@@ -287,5 +290,6 @@
 
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
+
     }
 }
