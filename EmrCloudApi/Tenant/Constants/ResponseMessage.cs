@@ -11,6 +11,7 @@
         public static readonly string InvalidHokenId = "Invalid HokenId";
         public static readonly string InvalidPageIndex = "Invalid PageIndex";
         public static readonly string InvalidPageCount = "Invalid PageCount";
+        public static readonly string InvalidPageSize = "Invalid PageSize";
         public static readonly string InvalidStartIndex = "Invalid StartIndex";
         public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
@@ -287,5 +288,13 @@
 
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
+
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
+
+        //PostCode
+        public static readonly string InvalidPostCode = "Invalid PostCode";
     }
 }
