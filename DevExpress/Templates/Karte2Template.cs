@@ -4,11 +4,11 @@ using System.Collections;
 using System.ComponentModel;
 using System.Drawing;
 
-namespace DevExpress.Templates
+namespace DevExpress.Template
 {
-    public partial class Karte2ReportTemplate : DevExpress.XtraReports.UI.XtraReport
+    public partial class Karte2Template : DevExpress.XtraReports.UI.XtraReport
     {
-        public Karte2ReportTemplate()
+        public Karte2Template()
         {
             InitializeComponent();
         }

@@ -1,7 +1,7 @@
 ﻿using DevExpress.DataAccess.ObjectBinding;
 using DevExpress.Interface;
 using DevExpress.Models;
-using DevExpress.Templates;
+using DevExpress.Template;
 using DevExpress.XtraPrinting;
 using DevExpress.XtraReports;
 using System;
@@ -16,12 +16,10 @@ namespace DevExpress.Export
     {
         public void ExportToPdf(Karte2ExportModel karte2ExportModel,Stream stream)
         {
-            var report = new Karte2ReportTemplate();
-            var subReport = new Karte2SubReportTemplate();
+            var report = new Karte2Template();
             var dataSource = new ObjectDataSource();
             dataSource.DataSource = karte2ExportModel;
             report.DataSource = dataSource;
-            subReport.DataSource = dataSource;
             report.DataMember = "HistoryKarteOdrRaiinItems";
             PdfExportOptions pdfExportOptions = new PdfExportOptions()
             {
@@ -34,12 +32,10 @@ namespace DevExpress.Export
 
         public void ExportToPdf(Karte2ExportModel karte2ExportModel)
         {
-            var report = new Karte2ReportTemplate();
-            var subReport = new Karte2SubReportTemplate();
+            var report = new Karte2Template ();
             var dataSource = new ObjectDataSource();
             dataSource.DataSource = karte2ExportModel;
             report.DataSource = dataSource;
-            subReport.DataSource = dataSource;
             report.DataMember = "HistoryKarteOdrRaiinItems";
 
             PdfExportOptions pdfExportOptions = new PdfExportOptions()
