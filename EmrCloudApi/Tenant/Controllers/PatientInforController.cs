@@ -39,7 +39,6 @@ using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
-using EmrCloudApi.Tenant.Constants;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
