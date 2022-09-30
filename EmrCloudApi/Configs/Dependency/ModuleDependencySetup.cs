@@ -267,7 +267,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            services.AddTransient<IPostCodeMstRepository, PostCodeMstRepostitory>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -394,6 +393,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiInputData, UpdateAdoptedByomeiInteractor>();
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
+            busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -437,9 +437,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
-
-            //PostCodeMst
-            busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
 
             //HokenMst
             busBuilder.RegisterUseCase<GetDetailHokenMstInputData, GetDetailHokenMstInteractor>();
