@@ -18,6 +18,7 @@
         public static readonly string InvalidFutansyaNo = "Invalid FutansyaNo";
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
+        public static readonly string InvalidGrpCd = "Invalid GrpCd";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -33,6 +34,15 @@
         //Patient Infor
 
         //Group Infor
+        public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
+        public static readonly string DuplicateGroupName = "Can not duplicate GroupName";
+        public static readonly string DuplicateGroupDetailCode = "Can not Duplicate GroupDetail Code";
+        public static readonly string DuplicateGroupDetailSeqNo = "Can not Duplicate GroupDetail SeqNo";
+        public static readonly string DuplicateGroupDetailName = "Can not Duplicate GroupDetail Name";
+        public static readonly string InvalidGroupId = "Invalid GroupId, GroupId > 0";
+        public static readonly string InvalidGroupName = "Invalid GroupName, GroupName is required and length must be less than or equal 20";
+        public static readonly string InvalidDetailGroupCode = "Invalid GroupCode, GroupCode is required and length must be less than or equal 2";
+        public static readonly string InvalidGroupDetailName = "Invalid GroupDetailName, GroupDetailName is required and length must be less than or equal 30";
 
         //Reception controller
 
@@ -48,6 +58,22 @@
         public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
         public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
+        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
+        public static readonly string UpsertPtDiseaseListInvalidId = "Invalid Id";
+        public static readonly string UpsertPtDiseaseListInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertPtDiseaseListInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertPtDiseaseListInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertPtDiseaseListInvalidByomeiCd = "Invalid ByomeiCd";
+        public static readonly string UpsertPtDiseaseListInvalidStartDate = "Invalid Byomei Start Date";
+        public static readonly string UpsertPtDiseaseListInvalidTenkiDate = "Invalid TenkiDate";
+        public static readonly string UpsertPtDiseaseListInvalidSyubyoKbn = "Invalid SyubyoKbn";
+        public static readonly string UpsertPtDiseaseListInvalidHosokuCmt = "Invalid HosokuCmt";
+        public static readonly string UpsertPtDiseaseListInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspRece = "Invalid IsNodspRece";
+        public static readonly string UpsertPtDiseaseListInvalidIsNodspKarte = "Invalid IsNodspKarte";
+        public static readonly string UpsertPtDiseaseListInvalidSeqNo = "Invalid SeqNo";
+        public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
+        public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
 
@@ -74,11 +100,17 @@
         //Medical examination controller
         public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
         public static readonly string GetMedicalExaminationInvalidHpId = "Invalid HpId";
-        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
+        public static readonly string GetMedicalExaminationInvalidStartIndex = "Invalid Start Index Of Page";
         public static readonly string GetMedicalExaminationInvalidSinDate = "Invalid SinDate";
         public static readonly string GetMedicalExaminationNoData = "No Data";
         public static readonly string GetMedicalExaminationSuccessed = "Successed";
-        public static readonly string GetMedicalExaminationInvalidPageIndex = "Invalid PageIndex";
+        public static readonly string GetMedicalExaminationInvalidDeleteCondition = "Invalid Delete Condition";
+        public static readonly string GetMedicalExaminationInvalidFilterId = "Invalid FilterId";
+        public static readonly string GetMedicalExaminationInvalidPageSize = "Invalid PageSize";
+        public static readonly string GetMedicalExaminationInvalidSearchType = "Invalid Search Type";
+        public static readonly string GetMedicalExaminationInvalidSearchCategory = "Invalid Search Category";
+        public static readonly string GetMedicalExaminationInvalidSearchText = "Invalid Search Text";
+        public static readonly string GetMedicalExaminationInvalidUserId = "Invalid UserId";
 
         //OrdInf controller
 
@@ -235,5 +267,30 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+        
+        //Monshin
+        public static readonly string InputDataDoesNotExists = "Input Data does not exist";
+        
+        //Alrgy Drug
+        public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
+        public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
+        public static readonly string AddAlrgyDrugHpIdNoExist = "No exist HpId";
+        public static readonly string AddAlrgyDrugPtIdNoExist = "No exist PtId";
+        public static readonly string AddAlrgyDrugInvalidItemCd = "Invalid ItemCd";
+        public static readonly string AddAlrgyDrugInvalidSortNo = "Invalid SortNo";
+        public static readonly string AddAlrgyDrugInvalidStartDate = "Invalid StartDate";
+        public static readonly string AddAlrgyDrugInvalidEndDate = "Invalid EndDate";
+        public static readonly string AddAlrgyDrugInvalidDrugName = "Invalid DrugName";
+        public static readonly string AddAlrgyDrugDuplicate = "This drug has existed";
+        public static readonly string AddAlrgyDrugInputNoData = "Hasn't input data";
+        public static readonly string AddAlrgyDrugItemCd = "ItemCd no existed";
+
+        //HokenSyamst
+        public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
+
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
     }
 }

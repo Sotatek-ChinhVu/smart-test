@@ -1,9 +1,10 @@
-﻿using Domain.Models.Reception;
+﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Presenters.Reception;
-using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
+using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Requests.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Requests.ReceptionInsurance;
@@ -11,20 +12,24 @@ using EmrCloudApi.Tenant.Requests.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Responses.Reception;
-using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
-using Microsoft.AspNetCore.Http;
+using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
-using UseCase.Reception.GetList;
+using UseCase.Reception.Insert;
+using UseCase.Reception.Update;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
+using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.MaxMoney.GetMaxMoney;
 using EmrCloudApi.Tenant.Requests.MaxMoney;
 using EmrCloudApi.Tenant.Presenters.MaxMoney;
 using EmrCloudApi.Tenant.Responses.MaxMoney;
+using UseCase.MaxMoney.SaveMaxMoney;
+using EmrCloudApi.Tenant.Presenters.VisitingList;
+using UseCase.Reception.ReceptionComment;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -33,9 +38,22 @@ namespace EmrCloudApi.Tenant.Controllers
     public class ReceptionController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public ReceptionController(UseCaseBus bus)
+    private readonly IWebSocketService _webSocketService;
+
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService)
         {
             _bus = bus;
+            _webSocketService = webSocketService;
+        }
+
+        [HttpGet(ApiPath.Get + "ReceptionComment")]
+        public ActionResult<Response<GetReceptionCommentResponse>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
+        {
+            var input = new GetReceptionCommentInputData(request.HpId, request.RaiinNo);
+            var output = _bus.Handle(input);
+            var presenter = new GetReceptionCommentPresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.Get)]
@@ -48,6 +66,40 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Insert)]
+        public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
+        {
+            var input = new InsertReceptionInputData(request.Dto);
+            var output = _bus.Handle(input);
+            if (output.Status == InsertReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
+            }
+
+            var presenter = new InsertReceptionPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<InsertReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Update)]
+        public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
+        {
+            var input = new UpdateReceptionInputData(request.Dto);
+            var output = _bus.Handle(input);
+            if (output.Status == UpdateReceptionStatus.Success)
+            {
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+            }
+
+            var presenter = new UpdateReceptionPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateReceptionResponse>>(presenter.Result);
         }
 
         [HttpGet("GetPatientRaiinKubun")]
@@ -96,6 +148,35 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetMaxMoneyResponse>>(presenter.Result);
+        }
+
+        [HttpPost("SaveMaxMoneyData")]
+        public ActionResult<Response<SaveMaxMoneyResponse>> SaveMaxMoney([FromBody] SaveMaxMoneyRequest request)
+        {
+            var input = new SaveMaxMoneyInputData(request.ListLimits, request.HpId, request.PtId, request.KohiId, request.SinYM);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveMaxMoneyPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveMaxMoneyResponse>>(presenter.Result);
+        }
+
+        [HttpPost("CheckPatternSelectedExpirated")]
+        public ActionResult<Response<ValidPatternExpiratedResponse>> CheckPatternSelectedExpirated([FromBody] ValidPatternExpiratedRequest request)
+        {
+            var input = new ValidPatternExpiratedInputData(request.HpId, request.PtId, request.SinDate, request.PatternHokenPid, request.PatternIsExpirated, request.HokenInfIsJihi, request.HokenInfIsNoHoken, request.PatternConfirmDate,
+                                                           request.HokenInfStartDate, request.HokenInfEndDate, request.IsHaveHokenMst, request.HokenMstStartDate, request.HokenMstEndDate, request.HokenMstDisplayTextMaster, request.IsEmptyKohi1,
+                                                           request.IsKohiHaveHokenMst1, request.KohiConfirmDate1, request.KohiHokenMstDisplayTextMaster1, request.KohiHokenMstStartDate1, request.KohiHokenMstEndDate1,
+                                                           request.IsEmptyKohi2, request.IsKohiHaveHokenMst2, request.KohiConfirmDate2, request.KohiHokenMstDisplayTextMaster2, request.KohiHokenMstStartDate2,
+                                                           request.KohiHokenMstEndDate2, request.IsEmptyKohi3, request.IsKohiHaveHokenMst3, request.KohiConfirmDate3, request.KohiHokenMstDisplayTextMaster3, request.KohiHokenMstStartDate3,
+                                                           request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidPatternExpiratedPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidPatternExpiratedResponse>>(presenter.Result);
         }
     }
 }

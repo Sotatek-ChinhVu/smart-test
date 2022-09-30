@@ -4,9 +4,11 @@ using EmrCloudApi.Tenant.Messages;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.VisitingList;
 using EmrCloudApi.Tenant.Requests.Reception;
+using EmrCloudApi.Tenant.Requests.ReceptionVisiting;
 using EmrCloudApi.Tenant.Requests.VisitingList;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Reception;
+using EmrCloudApi.Tenant.Responses.ReceptionVisiting;
 using EmrCloudApi.Tenant.Responses.VisitingList;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -14,6 +16,8 @@ using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.ReceptionVisiting.Get;
+using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Tenant.Controllers;
@@ -31,6 +35,16 @@ public class VisitingController : ControllerBase
         _bus = bus;
         _webSocketService = webSocketService;
     }
+    
+    [HttpGet(ApiPath.Get + "ReceptionLock")]
+    public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
+    {
+        var input = new GetReceptionLockInputData(request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionLockPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
 
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
@@ -38,6 +52,16 @@ public class VisitingController : ControllerBase
         var input = new GetReceptionListInputData(request.HpId, request.SinDate, request.RaiinNo, request.PtId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
+        presenter.Complete(output);
+        return Ok(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.Get + "ReceptionInfo")]
+    public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
+    {
+        var input = new GetReceptionVisitingInputData(request.HpId, request.RaiinNo);
+        var output = _bus.Handle(input);
+        var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }

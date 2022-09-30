@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace PostgreDataContext
 {
@@ -22,7 +23,7 @@ namespace PostgreDataContext
                 optionsBuilder.UseNpgsql(_connectionString, buider =>
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
-                });
+                }).LogTo(Console.WriteLine, LogLevel.Information);
             }
         }
 
@@ -124,6 +125,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.HpId, e.StartDate, e.ItemCd });
+            modelBuilder.Entity<MonshinInfo>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

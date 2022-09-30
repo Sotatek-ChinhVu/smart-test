@@ -21,4 +21,8 @@ namespace Domain.Models.Insurance
 
         public int RousaiTenkiEndDate { get; private set; }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> develop

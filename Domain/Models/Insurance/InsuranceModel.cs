@@ -9,35 +9,27 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
+<<<<<<< HEAD
         public InsuranceModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenSbtCd, int hokenPid, int hokenKbn, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, string houbetu, int futanRate, int sinDate, int birthDay, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string hokenMemo, int futanKbn, List<ConfirmDateModel> confirmDateList, List<RousaiTenkiModel> listRousaiTenKi)
+=======
+        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
+>>>>>>> develop
         {
             HpId = hpId;
             PtId = ptId;
-            HokenId = hokenId;
+            PtBirthday = ptBirthDay;
             SeqNo = seqNo;
-            HokenNo = hokenNo;
-            HokenEdaNo = hokenEdaNo;
             HokenSbtCd = hokenSbtCd;
             HokenPid = hokenPid;
             HokenKbn = hokenKbn;
-            Kohi1Id = kohi1Id;
-            Kohi2Id = kohi2Id;
-            Kohi3Id = kohi3Id;
-            Kohi4Id = kohi4Id;
-            HokensyaNo = hokensyaNo;
-            Kigo = kigo;
-            Bango = bango;
-            EdaNo = edaNo;
-            HonkeKbn = honkeKbn;
-            StartDate = startDate;
-            EndDate = endDate;
-            SikakuDate = sikakuDate;
-            KofuDate = kofuDate;
-            ConfirmDate = confirmDate;
+            SinDate = sinDate;
+            HokenMemo = memo;
+            HokenInf = hokenInf;
             Kohi1 = kohi1;
             Kohi2 = kohi2;
             Kohi3 = kohi3;
             Kohi4 = kohi4;
+<<<<<<< HEAD
             KogakuKbn = kogakuKbn;
             TasukaiYm = tasukaiYm;
             TokureiYm1 = tokureiYm1;
@@ -78,16 +70,18 @@ namespace Domain.Models.InsuranceInfor
             FutanKbn = futanKbn;
             ConfirmDateList = confirmDateList;
             ListRousaiTenKi = listRousaiTenKi;
+=======
+>>>>>>> develop
         }
 
-        public InsuranceModel(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
         {
             HpId = hpId;
             PtId = ptId;
-            HokenPid = hokenPid;
+            PtBirthday = 0;
             SeqNo = seqNo;
-            HokenKbn = hokenKbn;
             HokenSbtCd = hokenSbtCd;
+<<<<<<< HEAD
             HokenId = hokenId;
             Kohi1Id = kohi1Id;
             Kohi2Id = kohi2Id;
@@ -139,31 +133,32 @@ namespace Domain.Models.InsuranceInfor
             RousaiReceCount = 0;
             HokenMstHoubetu = string.Empty;
             HokenMstFutanRate = 0;
+=======
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+>>>>>>> develop
             SinDate = 0;
-            DisplayRateOnly = string.Empty;
-            JibaiHokenName = string.Empty;
-            JibaiHokenTanto = string.Empty;
-            JibaiHokenTel = string.Empty;
-            JibaiJyusyouDate = 0;
             HokenMemo = string.Empty;
+<<<<<<< HEAD
             FutanKbn = 0;
             ConfirmDateList = new List<ConfirmDateModel>();
             ListRousaiTenKi = new List<RousaiTenkiModel>();
+=======
+            HokenInf = new HokenInfModel(hokenId, startDate, endDate);
+            Kohi1 = new KohiInfModel(kohi1Id);
+            Kohi2 = new KohiInfModel(kohi2Id);
+            Kohi3 = new KohiInfModel(kohi3Id);
+            Kohi4 = new KohiInfModel(kohi4Id);
+>>>>>>> develop
         }
-
-        public List<ConfirmDateModel> ConfirmDateList { get; private set; }
 
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 
-        public int HokenId { get; private set; }
+        public int PtBirthday { get; private set; }
 
         public long SeqNo { get; private set; }
-
-        public int HokenNo { get; private set; }
-
-        public int HokenEdaNo { get; private set; }
 
         public int HokenSbtCd { get; private set; }
 
@@ -171,38 +166,11 @@ namespace Domain.Models.InsuranceInfor
 
         public int HokenKbn { get; private set; }
 
-        public int Kohi1Id { get; private set; }
+        public string HokenMemo { get; private set; }
 
-        public int Kohi2Id { get; private set; }
+        public int SinDate { get; private set; }
 
-        public int Kohi3Id { get; private set; }
-
-        public int Kohi4Id { get; private set; }
-
-        public string HokenName
-        {
-            get => GetHokenName();
-        }
-
-        public string HokensyaNo { get; private set; }
-
-        public string Kigo { get; private set; }
-
-        public string Bango { get; private set; }
-
-        public string EdaNo { get; private set; }
-
-        public int HonkeKbn { get; private set; }
-
-        public int StartDate { get; private set; }
-
-        public int EndDate { get; private set; }
-
-        public int SikakuDate { get; private set; }
-
-        public int KofuDate { get; private set; }
-
-        public int ConfirmDate { get; private set; }
+        private readonly HokenInfModel HokenInf;
 
         public KohiInfModel Kohi1 { get; private set; }
 
@@ -211,91 +179,149 @@ namespace Domain.Models.InsuranceInfor
         public KohiInfModel Kohi3 { get; private set; }
 
         public KohiInfModel Kohi4 { get; private set; }
-        // detail 1
-        public int KogakuKbn { get; private set; }
+        
+        #region Expose properties
 
-        public int TasukaiYm { get; private set; }
+        public List<ConfirmDateModel> ConfirmDateList => HokenInf == null ? new List<ConfirmDateModel>() : HokenInf.ConfirmDateList;
 
-        public int TokureiYm1 { get; private set; }
+        public int HokenId => HokenInf == null ? 0 : HokenInf.HokenId;
 
-        public int TokureiYm2 { get; private set; }
+        public int StartDate => HokenInf == null ? 0 : HokenInf.StartDate;
 
-        public int GenmenKbn { get; private set; }
+        public int EndDate => HokenInf == null ? 0 : HokenInf.EndDate;
 
-        public int GenmenRate { get; private set; }
+        public int HokenNo => HokenInf == null ? 0 : HokenInf.HokenNo;
 
-        public int GenmenGaku { get; private set; }
+        public int HokenEdaNo => HokenInf == null ? 0 : HokenInf.HokenEdaNo;
 
-        public int SyokumuKbn { get; private set; }
+        public int Kohi1Id => Kohi1 == null ? 0 : Kohi1.HokenId;
 
-        public int KeizokuKbn { get; private set; }
+        public int Kohi2Id => Kohi1 == null ? 0 : Kohi2.HokenId;
 
-        public string Tokki1 { get; private set; }
+        public int Kohi3Id => Kohi1 == null ? 0 : Kohi3.HokenId;
 
-        public string Tokki2 { get; private set; }
+        public int Kohi4Id => Kohi1 == null ? 0 : Kohi4.HokenId;
 
-        public string Tokki3 { get; private set; }
+        public string HokensyaNo => HokenInf == null ? string.Empty : HokenInf.HokensyaNo;
 
-        public string Tokki4 { get; private set; }
+        public string Kigo => HokenInf == null ? string.Empty : HokenInf.Kigo;
 
-        public string Tokki5 { get; private set; }
+        public string Bango => HokenInf == null ? string.Empty : HokenInf.Bango;
+
+        public string EdaNo => HokenInf == null ? string.Empty : HokenInf.EdaNo;
+
+        public int SikakuDate => HokenInf == null ? 0 : HokenInf.SikakuDate;
+
+        public int KofuDate => HokenInf == null ? 0 : HokenInf.KofuDate;
+
+        public int ConfirmDate => HokenInf == null ? 0 : HokenInf.ConfirmDate;
+
+        public int KogakuKbn => HokenInf == null ? 0 : HokenInf.KogakuKbn;
+
+        public string HokenMstHoubetu => HokenInf != null ? HokenInf.HokenMstHoubetu : string.Empty;
+
+        public int HokenMstFutanRate => HokenInf != null ? HokenInf.HokenMstFutanRate : 0;
+
+        public int TasukaiYm => HokenInf == null ? 0 : HokenInf.TasukaiYm;
+
+        public int TokureiYm1 => HokenInf == null ? 0 : HokenInf.TokureiYm1;
+
+        public int TokureiYm2 => HokenInf == null ? 0 : HokenInf.TokureiYm2;
+
+        public int GenmenKbn => HokenInf == null ? 0 : HokenInf.GenmenKbn;
+
+        public int GenmenRate => HokenInf == null ? 0 : HokenInf.GenmenRate;
+
+        public int GenmenGaku => HokenInf == null ? 0 : HokenInf.GenmenGaku;
+
+        public int SyokumuKbn => HokenInf == null ? 0 : HokenInf.SyokumuKbn;
+
+        public int KeizokuKbn => HokenInf == null ? 0 : HokenInf.KeizokuKbn;
+
+        public string Tokki1 => HokenInf == null ? string.Empty : HokenInf.Tokki1;
+
+        public string Tokki2 => HokenInf == null ? string.Empty : HokenInf.Tokki2;
+
+        public string Tokki3 => HokenInf == null ? string.Empty : HokenInf.Tokki3;
+
+        public string Tokki4 => HokenInf == null ? string.Empty : HokenInf.Tokki4;
+
+        public string Tokki5 => HokenInf == null ? string.Empty : HokenInf.Tokki5;
         //2
-        public string RousaiKofuNo { get; private set; }
+        public string RousaiKofuNo => HokenInf == null ? string.Empty : HokenInf.RousaiKofuNo;
 
-        public string NenkinBango { get; private set; }
+        public string NenkinBango => HokenInf == null ? string.Empty : HokenInf.NenkinBango;
 
-        public string RousaiRoudouCd { get; private set; }
+        public string RousaiRoudouCd => HokenInf == null ? string.Empty : HokenInf.RousaiRoudouCd;
 
-        public string KenkoKanriBango { get; private set; }
+        public string KenkoKanriBango => HokenInf == null ? string.Empty : HokenInf.KenkoKanriBango;
 
-        public int RousaiSaigaiKbn { get; private set; }
+        public int RousaiSaigaiKbn => HokenInf == null ? 0 : HokenInf.RousaiSaigaiKbn;
 
-        public string RousaiKantokuCd { get; private set; }
+        public string RousaiKantokuCd => HokenInf == null ? string.Empty : HokenInf.RousaiKantokuCd;
 
-        public int RousaiSyobyoDate { get; private set; }
+        public int RousaiSyobyoDate => HokenInf == null ? 0 : HokenInf.RousaiSyobyoDate;
 
-        public int RyoyoStartDate { get; private set; }
+        public int RyoyoStartDate => HokenInf == null ? 0 : HokenInf.RyoyoStartDate;
 
-        public int RyoyoEndDate { get; private set; }
+        public int RyoyoEndDate => HokenInf == null ? 0 : HokenInf.RyoyoEndDate;
 
-        public string RousaiSyobyoCd { get; private set; }
+        public string RousaiSyobyoCd => HokenInf == null ? string.Empty : HokenInf.RousaiSyobyoCd;
 
-        public string RousaiJigyosyoName { get; private set; }
+        public string RousaiJigyosyoName => HokenInf == null ? string.Empty : HokenInf.RousaiJigyosyoName;
 
-        public string RousaiPrefName { get; private set; }
+        public string RousaiPrefName => HokenInf == null ? string.Empty : HokenInf.RousaiPrefName;
 
-        public string RousaiCityName { get; private set; }
+        public string RousaiCityName => HokenInf == null ? string.Empty : HokenInf.RousaiCityName;
 
-        public int RousaiReceCount { get; private set; }
+        public int RousaiReceCount => HokenInf == null ? 0 : HokenInf.RousaiReceCount;
 
+<<<<<<< HEAD
         public string HokenMstHoubetu { get; private set; }
+=======
+        public string JibaiHokenName => HokenInf == null ? string.Empty : HokenInf.JibaiHokenName;
 
-        public int HokenMstFutanRate { get; private set; }
+        public string JibaiHokenTanto => HokenInf == null ? string.Empty : HokenInf.JibaiHokenTanto;
 
-        public int SinDate { get; private set; }
+        public string JibaiHokenTel => HokenInf == null ? string.Empty : HokenInf.JibaiHokenTel;
 
-        public string DisplayRateOnly { get; private set; }
+        public int JibaiJyusyouDate => HokenInf == null ? 0 : HokenInf.JibaiJyusyouDate;
+>>>>>>> develop
 
-        public bool IsEmptyHoken
-        {
-            get => (HokenId == 0);
-        }
+        public int FutanKbn => HokenInf != null ? HokenInf.HokenMstFutanKbn : 0;
 
-        public string JibaiHokenName { get; private set; }
+        public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
-        public string JibaiHokenTanto { get; private set; }
+        public string HokenName => GetHokenName();
 
-        public string JibaiHokenTel { get; private set; }
+        public bool IsEmptyHoken => (HokenId == 0);
 
-        public int JibaiJyusyouDate { get; private set; }
+        public bool IsEmptyKohi1 => (Kohi1 == null || Kohi1.HokenId == 0);
 
-        public string HokenMemo { get; private set; }
+        public bool IsEmptyKohi2 => (Kohi2 == null || Kohi2.HokenId == 0);
 
-        public int FutanKbn { get; private set; }
+        public bool IsEmptyKohi3 => (Kohi3 == null || Kohi3.HokenId == 0);
+
+        public bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
+
+        public List<RousaiTenkiModel> ListRousaiTenKi => HokenInf == null ? new List<RousaiTenkiModel>() : HokenInf.ListRousaiTenki;
+
+        public int HokenMstStartDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
+
+        public int HokenMstEndDate => HokenInf != null ? HokenInf.HokenMstStartDate : 0;
+
+        public string HokenMstDisplayTextMaster => HokenInf != null ? HokenInf.HokenMstDisplayTextMaster : string.Empty;
 
         public List<RousaiTenkiModel> ListRousaiTenKi { get; private set; }
 
-        private string GetHokenName()
+        public string PatternRate => GetHokenRate();
+
+
+        #endregion
+
+        #region Function
+
+        public string GetHokenName()
         {
             string hokenName = HokenPid.ToString().PadLeft(3, '0') + ". ";
 
@@ -456,7 +482,6 @@ namespace Domain.Models.InsuranceInfor
             }
             return hokenName + prefix;
         }
-
 
         private string GetRateOnly(int birthDay)
         {
@@ -685,25 +710,139 @@ namespace Domain.Models.InsuranceInfor
             return CIUtil.SDateToAge(birthday, SinDate);
         }
 
-        public bool IsEmptyKohi1
+
+        private string GetHokenRate()
         {
-            get => (Kohi1Id == 0 || Kohi1 == null);
+            string hokenName = string.Empty;
+            bool isHoken39 = false;
+            bool isKohiOnly = false;
+            int rate = 0;
+            if (this.HokenSbtCd < 0)
+            {
+                return hokenName;
+            }
+
+            string prefix = string.Empty;
+            if (this.HokenSbtCd == 0)
+            {
+                switch (this.HokenKbn)
+                {
+                    case 0:
+                        if (!IsEmptyHoken && HokenInf.HokenMst != null)
+                        {
+                            if (HokenInf.HokenMst.Houbetu == HokenConstant.HOUBETU_JIHI_109)
+                            {
+                                hokenName += "自費レセ " + HokenInf.HokenMst.FutanRate + "%";
+                            }
+                            else
+                            {
+                                hokenName += "自費 " + HokenInf.HokenMst.FutanRate + "%";
+                            }
+                        }
+                        return hokenName;
+                    case 11:
+                        hokenName += "労災（短期給付）";
+                        break;
+                    case 12:
+                        hokenName += "労災（傷病年金）";
+                        break;
+                    case 13:
+                        hokenName += "労災（アフターケア）";
+                        break;
+                    case 14:
+                        hokenName += "自賠責";
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(hokenName) && (HokenInf != null && HokenInf.HokenMst != null))
+                {
+                        hokenName += " " + HokenInf.HokenMst.FutanRate + "%";
+                }
+
+                return hokenName;
+            }
+            else
+            {
+                string hokenSbtCd = this.HokenSbtCd.AsString().PadRight(3, '0');
+                int firstNum = hokenSbtCd[0].AsInteger();
+                int secondNum = hokenSbtCd[1].AsInteger();
+                int thirNum = hokenSbtCd[2].AsInteger();
+                switch (firstNum)
+                {
+                    case 1:
+                        hokenName += "社保";
+                        break;
+                    case 2:
+                        hokenName += "国保";
+                        break;
+                    case 3:
+                        hokenName += "後期";
+                        isHoken39 = true;
+                        break;
+                    case 4:
+                        hokenName += "退職";
+                        break;
+                    case 5:
+                        hokenName += "公費";
+                        isKohiOnly = true;
+                        break;
+                }
+
+                if (secondNum > 0)
+                {
+
+                    if (thirNum == 1)
+                    {
+                        prefix += "単独";
+                    }
+                    else
+                    {
+                        prefix += HenkanJ.HankToZen(thirNum.AsString()) + "併";
+                    }
+                }
+
+                rate = GetRate(isHoken39, this.PtBirthday);
+            }
+            string name = hokenName + prefix;
+            if (!isHoken39 && !isKohiOnly)
+            {
+                if (IsPreSchool(this.PtBirthday, this.SinDate))
+                {
+                    name += "・６未";
+                }
+                else if (IsElder(this.PtBirthday, this.SinDate))
+                {
+                    name += "・高齢";
+                }
+                else
+                {
+                    if (!IsEmptyHoken)
+                    {
+                        if (HokenInf.HonkeKbn == 1)
+                        {
+                            name += "・本人";
+                        }
+                        else if (HokenInf.HonkeKbn == 2)
+                        {
+                            name += "・家族";
+                        }
+                    }
+                }
+            }
+
+            name += " " + rate + "%";
+            return name;
         }
 
-        public bool IsEmptyKohi2
+        private bool IsPreSchool(int birthDay, int sinDate)
         {
-            get => (Kohi2Id == 0 || Kohi2 == null);
+            return !CIUtil.IsStudent(birthDay, sinDate);
         }
 
-        public bool IsEmptyKohi3
+        private bool IsElder(int birthDay, int sinDate)
         {
-            get => (Kohi3Id == 0 || Kohi3 == null);
+            return CIUtil.AgeChk(birthDay, sinDate, 70);
         }
-
-        public bool IsEmptyKohi4
-        {
-            get => (Kohi4Id == 0 || Kohi4 == null);
-        }
-
+        #endregion
     }
 }

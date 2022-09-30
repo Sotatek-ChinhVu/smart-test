@@ -44,6 +44,7 @@ namespace Interactor.SpecialNote
         {
             return _summaryInfRepository.GetList(hpId, ptId);
         }
+
         private ImportantNoteModel GetImportantNoteTab(long ptId)
         {
             var listPtAlrgyElseItem = _importantNoteRepository.GetAlrgyElseList(ptId);

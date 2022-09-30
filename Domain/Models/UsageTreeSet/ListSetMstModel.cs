@@ -2,7 +2,7 @@
 {
     public class ListSetMstModel
     {
-        public ListSetMstModel(int hpId, int generationId,int setId, string setName, string itemCd, int isTitle, int setKbn, int selectType, double suryo, int level1, int level2, int level3, int level4, int level5, string cmtName, string cmtOpt,string unitName)
+        public ListSetMstModel(int hpId, int generationId,int setId, string setName, string itemCd, int isTitle, int setKbn, int selectType, double suryo, int level1, int level2, int level3, int level4, int level5, string cmtName, string cmtOpt, string unitName, int sinKouiKbn, int yohoKbn)
         {
             HpId = hpId;
             GenerationId = generationId;
@@ -21,6 +21,8 @@
             CmtName = cmtName;
             CmtOpt = cmtOpt;
             UnitName = unitName;
+            SinKouiKbn = sinKouiKbn;
+            YohoKbn = yohoKbn;
         }
 
         public int HpId { get; private set; }
@@ -41,7 +43,8 @@
         public string CmtOpt { get; private set; }
         public int Level { get; set; }
         public string UnitName { get; private set; }
-
+        public int SinKouiKbn { get; private set; }
+        public int YohoKbn { get; private set; }
         public bool HasChildItems
         {
             get

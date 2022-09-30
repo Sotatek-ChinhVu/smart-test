@@ -2,5 +2,5 @@
 
 public interface ISuperSetDetailRepository
 {
-    SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd);
+    SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate);
 }
