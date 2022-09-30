@@ -1,4 +1,5 @@
 ﻿using Domain.Models.PostCodeMst;
+using Helper.Common;
 using UseCase.PostCodeMst.Search;
 
 namespace Interactor.PostCodeMst
@@ -25,7 +26,8 @@ namespace Interactor.PostCodeMst
                 if (inputData.PostCode2.Length > 4)
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.InvalidPostCode);
 
-                var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, inputData.PostCode1, inputData.PostCode2, inputData.Address);
+                string address = CIUtil.ToHalfsize(inputData.Address);
+                var listPostCode = _postCodeMstRepository.PostCodeMstModels(inputData.HpId, inputData.PostCode1, inputData.PostCode2, address);
                 if (!listPostCode.Any())
                     return new SearchPostCodeOutputData(new List<PostCodeMstModel>(), SearchPostCodeStatus.NoData);
 
