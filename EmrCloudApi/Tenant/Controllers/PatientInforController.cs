@@ -1,6 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Presenters.HokenMst;
 using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
@@ -8,6 +9,7 @@ using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
+using EmrCloudApi.Tenant.Requests.HokenMst;
 using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
@@ -15,6 +17,7 @@ using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
+using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
@@ -24,6 +27,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
+using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
@@ -36,11 +40,6 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.InsuranceMst.SaveHokenSyaMst;
-using EmrCloudApi.Tenant.Responses.HokenMst;
-using EmrCloudApi.Tenant.Requests.HokenMst;
-using UseCase.HokenMst.GetDetail;
-using EmrCloudApi.Tenant.Presenters.HokenMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -251,7 +250,7 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<SearchEmptyIdResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetDetailHokenMst)]
         public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
         {
