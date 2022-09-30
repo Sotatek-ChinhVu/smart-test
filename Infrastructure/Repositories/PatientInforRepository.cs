@@ -806,12 +806,12 @@ namespace Infrastructure.Repositories
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)
         {
             var result = new List<PatientInforModel>();
-            for (long i = ptNum; i < pageSize; i++)
+            for (long i = ptNum; i < (ptNum + pageSize); i++)
             {
                 var CheckExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == ptNum);
 
                 if (CheckExistPtNum == null)
-                
+
                     result.Add(new PatientInforModel(hpId, i, "(空き) " + i, "(空き) " + i));
                 else
                     result.Add(new PatientInforModel(hpId, i, CheckExistPtNum.KanaName, CheckExistPtNum.Name));

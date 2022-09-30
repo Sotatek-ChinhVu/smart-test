@@ -38,5 +38,8 @@
 
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        //PatientInfor
+        public const string SearchEmptyId = "SearchEmptyId";
     }
 }

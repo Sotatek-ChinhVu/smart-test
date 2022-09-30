@@ -1,14 +1,14 @@
-﻿using Domain.Models.SpecialNote.PatientInfo;
+﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 
 namespace EmrCloudApi.Tenant.Responses.PatientInfor
 {
     public class SearchEmptyIdResponse
     {
-        public SearchEmptyIdResponse(List<PatientInfoModel> patientInfoModels)
+        public SearchEmptyIdResponse(List<PatientInforModel> patientInforModels)
         {
-            PatientInfoModels = patientInfoModels;
+            PatientInforModels = patientInforModels;
         }
 
-        public List<PatientInfoModel> PatientInfoModels { get; private set; }
+        public List<PatientInforModel> PatientInforModels { get; private set; }
     }
 }

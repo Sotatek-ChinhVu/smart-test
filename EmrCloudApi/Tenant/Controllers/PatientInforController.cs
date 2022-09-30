@@ -1,40 +1,41 @@
-﻿using EmrCloudApi.Tenant.Presenters.CalculationInf;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.CalculationInf;
+using EmrCloudApi.Tenant.Presenters.GroupInf;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
+using EmrCloudApi.Tenant.Presenters.InsuranceMst;
+using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
+using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
+using EmrCloudApi.Tenant.Requests.GroupInf;
+using EmrCloudApi.Tenant.Requests.Insurance;
+using EmrCloudApi.Tenant.Requests.InsuranceMst;
+using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
-using EmrCloudApi.Tenant.Presenters.InsuranceList;
-using EmrCloudApi.Tenant.Presenters.PatientInfor;
-using EmrCloudApi.Tenant.Requests.Insurance;
-using EmrCloudApi.Tenant.Responses.InsuranceList;
-using EmrCloudApi.Tenant.Presenters.GroupInf;
-using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
+using EmrCloudApi.Tenant.Responses.InsuranceList;
+using EmrCloudApi.Tenant.Responses.InsuranceMst;
+using EmrCloudApi.Tenant.Responses.KohiHokenMst;
+using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.Insurance.GetList;
-using EmrCloudApi.Tenant.Responses.PatientInfor;
+using UseCase.InsuranceMst.Get;
+using UseCase.InsuranceMst.SaveHokenSyaMst;
+using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.PatientComment;
+using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
-using EmrCloudApi.Tenant.Responses.InsuranceMst;
-using UseCase.InsuranceMst.Get;
-using EmrCloudApi.Tenant.Presenters.InsuranceMst;
-using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.SearchAdvanced;
-using UseCase.KohiHokenMst.Get;
-using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
-using EmrCloudApi.Tenant.Responses.KohiHokenMst;
-using EmrCloudApi.Tenant.Requests.KohiHokenMst;
-using UseCase.PatientGroupMst.SaveList;
-using EmrCloudApi.Tenant.Constants;
-using UseCase.PatientInfor.PatientComment;
-using UseCase.InsuranceMst.SaveHokenSyaMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -232,6 +233,18 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveHokenSyaMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.SearchEmptyId)]
+        public ActionResult<Response<SearchEmptyIdResponse>> SearchEmptyId([FromQuery] SearchEmptyIdResquest request)
+        {
+            var input = new SearchEmptyIdInputData(request.HpId, request.PtNum, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchEmptyIdPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SearchEmptyIdResponse>>(presenter.Result);
         }
     }
 }
