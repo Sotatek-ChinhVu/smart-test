@@ -26,6 +26,7 @@ namespace UseCase.Insurance.ValidMainInsurance
         InvalidSelectedHokenMstAgeEnd = 15,
         InvalidSelectedHokenMstStartDate = 16,
         InvalidSelectedHokenMstEndDate = 17,
-        InvalidFaild = 18
+        InvalidFaild = 18,
+        InvalidHpIdNotExist = 19
     }
 }

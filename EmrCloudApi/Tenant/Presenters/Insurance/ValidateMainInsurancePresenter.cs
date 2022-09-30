@@ -75,7 +75,8 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                 case ValidMainInsuranceStatus.InvalidFaild:
                     Result.Message = ResponseMessage.Failed;
                     break;
-                default:
+                case ValidMainInsuranceStatus.InvalidHpIdNotExist:
+                    Result.Message = ResponseMessage.InvalidHpIdNotExist;
                     break;
             }
         }
