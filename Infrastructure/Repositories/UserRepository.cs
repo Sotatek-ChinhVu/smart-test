@@ -143,7 +143,7 @@ namespace Infrastructure.Repositories
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
         }
-        private UserMst ToModel1(UserMstModel u)
+        private UserMst ToModel1(UserMstModel user)
         {
             return new UserMst(
                 );

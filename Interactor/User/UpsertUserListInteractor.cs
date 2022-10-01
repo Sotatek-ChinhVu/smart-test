@@ -40,9 +40,7 @@ namespace Interactor.User
             {
                 return new UpsertUserListOutputData(UpsertUserListStatus.Fail);
             }
-            _userRepository.Upsert(inputData.UpdatedUserList/*, inputData.InserteddUserList*/);
-
-            //throw new NotImplementedException();
+            _userRepository.Upsert(inputData.UpdatedUserList);
         }
     }
 }
