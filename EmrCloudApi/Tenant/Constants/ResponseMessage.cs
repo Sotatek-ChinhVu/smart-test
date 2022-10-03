@@ -40,9 +40,6 @@
         public static readonly string InvalidSelectedHokenInfRousaiSyobyoDate = "Invalid SelectedHokenInf RousaiSyobyoDate";
         public static readonly string InvalidSelectedHokenInfRyoyoStartDate = "Invalid SelectedHokenInf RyoyoStartDate";
         public static readonly string InvalidSelectedHokenInfRyoyoEndDate = "Invalid SelectedHokenInf RyoyoEndDate";
-        public static readonly string InvalidSelectedHokenInfStartDate = "Invalid SelectedHokenInf StartDate";
-        public static readonly string InvalidSelectedHokenInfEndDate = "Invalid SelectedHokenInf EndDate";
-        public static readonly string InvalidSelectedHokenInfConfirmDate = "Invalid SelectedHokenInf ConfirmDate";
 
         //Group Infor
         public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
