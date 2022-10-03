@@ -91,9 +91,9 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-        public void Upsert(List<UserMstModel> updatedUserList)
+        public void Upsert(List<UserMstModel> upsertUserList)
         {
-            foreach(var inputData in updatedUserList)
+            foreach(var inputData in upsertUserList)
             {
                 if(inputData.IsDeleted == DeleteTypes.Deleted)
                 {
@@ -105,17 +105,19 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMsts = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
-                        userMsts.IsDeleted = DeleteTypes.Deleted;
-                        userMsts.UpdateId = TempIdentity.UserId;
-                        userMsts.UpdateDate = DateTime.UtcNow;
-                        userMsts.UpdateMachine = TempIdentity.ComputerName;
+                        var temUser = ConVertUserList(inputData);
+                        temUser.IsDeleted = DeleteTypes.Deleted;
+                        temUser.UpdateId = TempIdentity.UserId;
+                        temUser.UpdateDate = DateTime.UtcNow;
+                        temUser.UpdateMachine = TempIdentity.ComputerName;
+                        _tenantNoTrackingDataContext.Update(inputData);
                     }
                     else
                     {
-                        _tenantTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
+                        _tenantNoTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
                     }
                 }
             }
