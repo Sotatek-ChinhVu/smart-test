@@ -9,7 +9,7 @@ using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -64,7 +64,7 @@ using Interactor.HokenMst;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
-using Interactor.KaMst;
+using Interactor.Ka;
 using Interactor.KarteFilter;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
@@ -111,7 +111,7 @@ using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
-using UseCase.KaMst.GetList;
+using UseCase.Ka.GetList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
@@ -176,6 +176,8 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
+using UseCase.Ka.SaveList;
+using UseCase.Ka.GetKaCodeList;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -221,7 +223,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
-            services.AddTransient<IKaMstRepository, KaMstRepository>();
+            services.AddTransient<IKaRepository, KaRepository>();
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
@@ -348,6 +350,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeMstInputData, GetKaCodeMstInteractor>();
+            busBuilder.RegisterUseCase<SaveKaMstInputData, SaveKaMstInteractor>();
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
