@@ -1,7 +1,7 @@
-﻿using Domain.Models.KaMst;
+﻿using Domain.Models.Ka;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.KaMst.GetList;
+namespace UseCase.Ka.GetList;
 
 public class GetKaMstListOutputData : IOutputData
 {
