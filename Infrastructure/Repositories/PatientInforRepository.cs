@@ -818,7 +818,7 @@ namespace Infrastructure.Repositories
                     result.Add(new PatientInforModel(hpId, 0, ptNum, string.Concat(ptNum, " (空き) ", ptNum)));
 
                 else
-                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(ptNum, " ", checkExistPtNum.Name)));
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
             });
 
             return result;
