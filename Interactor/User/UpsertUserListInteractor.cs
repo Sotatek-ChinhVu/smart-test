@@ -22,14 +22,14 @@ namespace Interactor.User
             try
             {
                 //Check duplicatedId in the upsertList
-                var duplicatedIdDic = inputData.UpdatedUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
+                var duplicatedIdDic = inputData.UpsertUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
                 if (duplicatedIdDic.Any())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.DuplicateId);
                 }
 
                 //Check existedId in the upsertList
-                var idList = inputData.UpdatedUserList.Select(u => u.Id).ToList();
+                var idList = inputData.UpsertUserList.Select(u => u.Id).ToList();
                 if (_userRepository.CheckExistedId(idList))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
@@ -40,7 +40,7 @@ namespace Interactor.User
             {
                 return new UpsertUserListOutputData(UpsertUserListStatus.Fail);
             }
-            _userRepository.Upsert(inputData.UpdatedUserList);
+            _userRepository.Upsert(inputData.UpsertUserList);
         }
     }
 }

@@ -5,13 +5,9 @@ namespace UseCase.User.UpsertList;
 
 public class UpsertUserListInputData : IInputData<UpsertUserListOutputData>
 {
-    public UpsertUserListInputData(List<UserMstModel> updatedUserList/*, List<UserMstModel> inserteddUserList*/)
+    public UpsertUserListInputData(List<UserMstModel> upsertUserList)
     {
-        UpdatedUserList = updatedUserList;
-        //InserteddUserList = inserteddUserList;
+        UpsertUserList = upsertUserList;
     }
-
-    public List<UserMstModel> UpdatedUserList { get; set; }
-
-    //public List<UserMstModel> InserteddUserList { get; set; }
+    public List<UserMstModel> UpsertUserList { get; set; }
 }

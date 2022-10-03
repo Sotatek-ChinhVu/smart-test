@@ -9,15 +9,17 @@ namespace Infrastructure.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
         public UserRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public bool CheckExistedId(List<long> idList)
         {
-            return _tenantDataContext.UserMsts.Any(u => idList.Contains(u.Id));
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => idList.Contains(u.Id));
         }
 
         public void Create(UserMstModel user)
@@ -32,12 +34,12 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetAll()
         {
-            return _tenantDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
+            return _tenantNoTrackingDataContext.UserMsts.AsEnumerable().Select(u => ToModel(u)).ToList();
         }
 
         public List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly)
         {
-            var query = _tenantDataContext.UserMsts.Where(u =>
+            var query = _tenantNoTrackingDataContext.UserMsts.Where(u =>
                 u.StartDate <= sinDate
                 && u.EndDate >= sinDate
                 && u.IsDeleted == DeleteTypes.None);
@@ -51,33 +53,33 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
+            var result = _tenantNoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds)
         {
-            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
+            var result = _tenantNoTrackingDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 
         public UserMstModel? GetByUserId(int userId)
         {
-            var entity = _tenantDataContext.UserMsts
+            var entity = _tenantNoTrackingDataContext.UserMsts
                 .Where(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
         }
 
         public UserMstModel? GetByLoginId(string loginId)
         {
-            var entity = _tenantDataContext.UserMsts
+            var entity = _tenantNoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
         }
 
         public int MaxUserId()
         {
-            return _tenantDataContext.UserMsts.Max(u => u.UserId);
+            return _tenantNoTrackingDataContext.UserMsts.Max(u => u.UserId);
         }
 
         public UserMstModel Read(int userId)
@@ -95,7 +97,7 @@ namespace Infrastructure.Repositories
             {
                 if(inputData.IsDeleted == DeleteTypes.Deleted)
                 {
-                    var userMsts = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if(userMsts != null)
                     {
                         userMsts.IsDeleted = DeleteTypes.Deleted;
@@ -103,11 +105,9 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var userMsts = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
-                        _tenantDataContext.UserMsts.Add(ConVertUserList(inputData));
-
                         userMsts.IsDeleted = DeleteTypes.Deleted;
                         userMsts.UpdateId = TempIdentity.UserId;
                         userMsts.UpdateDate = DateTime.UtcNow;
@@ -115,11 +115,11 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        _tenantDataContext.UserMsts.Add(ConVertUserList(inputData));
+                        _tenantTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
                     }
                 }
             }
-            _tenantDataContext.SaveChanges();
+            _tenantTrackingDataContext.SaveChanges();
         }
 
         private UserMstModel ToModel(UserMst u)

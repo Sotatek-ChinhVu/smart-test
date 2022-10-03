@@ -50,9 +50,9 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.UpsertList)]
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
-        var updatedUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u)).ToList();
+        var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u)).ToList();
 
-        var input = new UpsertUserListInputData(updatedUserList);
+        var input = new UpsertUserListInputData(upsertUserList);
         var output = _bus.Handle(input);
         var presenter = new UpsertUserListPresenter();
         presenter.Complete(output);
