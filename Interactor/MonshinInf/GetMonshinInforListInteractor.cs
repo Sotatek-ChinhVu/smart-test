@@ -22,6 +22,7 @@ namespace Interactor.MonshinInf
             try
             {
                 var listMonshin = _monshinInforRepository.MonshinInforModels(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsDeleted);
+                
                 if (listMonshin == null || listMonshin.Count == 0)
                 {
                     return new GetMonshinInforListOutputData(new(), GetMonshinInforListStatus.NoData);

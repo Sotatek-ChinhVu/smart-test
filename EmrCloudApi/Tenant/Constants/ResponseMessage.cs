@@ -11,6 +11,7 @@
         public static readonly string InvalidHokenId = "Invalid HokenId";
         public static readonly string InvalidPageIndex = "Invalid PageIndex";
         public static readonly string InvalidPageCount = "Invalid PageCount";
+        public static readonly string InvalidPageSize = "Invalid PageSize";
         public static readonly string InvalidStartIndex = "Invalid StartIndex";
         public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
@@ -19,6 +20,7 @@
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
+        public static readonly string InvalidHpIdNotExist = "HpId not exist";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -76,6 +78,22 @@
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
+        // Validate Main Insurance
+        public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
+        public static readonly string InvalidSelectedHokenInfHokenNo = "Invalid SelectedHokenInf HokenNo";
+        public static readonly string InvalidSelectedHokenInfStartDate = "Invalid SelectedHokenInf StartDate";
+        public static readonly string InvalidSelectedHokenInfEndDate = "Invalid SelectedHokenInf EndDate";
+        public static readonly string InvaliSelectedHokenInfHokensyaMstIsKigoNa = "Invalid SelectedHokenInf HokensyaMst IsKigoNa";
+        public static readonly string InvalidSelectedHokenInfHonkeKbn = "Invalid SelectedHokenInf HonkeKbn";
+        public static readonly string InvalidSelectedHokenInfTokureiYm1 = "Invalid SelectedHokenInf TokureiYm1";
+        public static readonly string InvalidSelectedHokenInfTokureiYm2 = "Invalid SelectedHokenInf TokureiYm2";
+        public static readonly string InvalidSelectedHokenInfConfirmDate = "Invalid SelectedHokenInf ConfirmDate";
+        public static readonly string InvalidSelectedHokenMstHokenNo = "Invalid SelectedHokenMst HokenNo";
+        public static readonly string InvalidSelectedHokenMstCheckDegit = "Invalid SelectedHokenMst CheckDegit";
+        public static readonly string InvalidSelectedHokenMstAgeStart = "Invalid SelectedHokenMst AgeStart";
+        public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
+        public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
+        public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
 
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -268,6 +286,17 @@
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
+        // KaMst
+        public static readonly string InvalidKaId = "Invalid KaId, KaId > 0";
+        public static readonly string KaSnameMaxLength20 = "Length of KaSname must lest than 20 or equal 20";
+        public static readonly string KaNameMaxLength40 = "Length of KaName must lest than 40 or equal 40";
+        public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
+        public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
+
+        
+        //Monshin
+        public static readonly string InputDataDoesNotExists = "Input Data does not exist";
+        
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
         public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
@@ -285,8 +314,15 @@
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
 
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
+
+        //PostCode
+        public static readonly string InvalidPostCode = "Invalid PostCode";
+
         //Valid Kohi
-        public static readonly string InvalidPtBirthday = "Invalid Pt Birthday";
         public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";
         public static readonly string InvalidKohiHokenMstEmpty1 = "Invalid kohi1 hokenMst empty model";
         public static readonly string InvalidFutansyaNoEmpty1 = "Invalid kohi1 futansyaNo empty";

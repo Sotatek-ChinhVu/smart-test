@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
@@ -665,6 +666,16 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
+        public List<TokkiMstModel> GetListTokki(int hpId, int sinDate)
+        {
+            return _tenantDataContext.TokkiMsts
+                    .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                    .OrderBy(entity => entity.HpId)
+                    .ThenBy(entity => entity.TokkiCd)
+                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName))
+                    .ToList();
+        }
+
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)
         {
             return new PatientInforModel(
@@ -714,7 +725,7 @@ namespace Infrastructure.Repositories
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
         {
             var data = _tenantDataContext.PtCmtInfs
-                .FirstOrDefault(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0);
+                .FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (data is null)
                 return new PatientInforModel();
 
@@ -750,10 +761,15 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode)
         {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return new List<PatientInforModel>();
+            }
+
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1 == keyword) || 
-                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2 == keyword) || 
+            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) || 
+                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) || 
                                       p.Name == keyword)
             select new
             {
@@ -774,10 +790,15 @@ namespace Infrastructure.Repositories
 
         public List<PatientInforModel> SearchName(string keyword, bool isContainMode)
         {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return new List<PatientInforModel>();
+            }
+
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name == keyword) ||
-                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName == keyword))
+            where p.IsDelete == 0 && (p.Name != null && (isContainMode && p.Name.Contains(keyword) || p.Name.StartsWith(keyword)) ||
+                                      p.KanaName != null && (isContainMode && p.KanaName.Contains(keyword) || p.KanaName.StartsWith(keyword)))
             select new
             {
                 ptInf = p,
