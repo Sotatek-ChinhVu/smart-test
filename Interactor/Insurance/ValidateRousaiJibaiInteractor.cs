@@ -22,88 +22,96 @@ namespace Interactor.Insurance
 
         public ValidateRousaiJibaiOutputData Handle(ValidateRousaiJibaiInputData inputData)
         {
-            if (inputData.HokenKbn < 0)
+            try
             {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidHokenKbn);
-            }
+                if (inputData.HokenKbn < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidHokenKbn);
+                }
 
-            if (inputData.SinDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSinDate);
-            }
+                if (inputData.SinDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSinDate);
+                }
 
-            if (inputData.SelectedHokenInfRousaiSaigaiKbn < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn);
-            }
+                if (inputData.SelectedHokenInfRousaiSaigaiKbn < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn);
+                }
 
-            if (inputData.SelectedHokenInfRousaiSyobyoDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate);
-            }
+                if (inputData.SelectedHokenInfRousaiSyobyoDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate);
+                }
 
-            if (inputData.SelectedHokenInfRyoyoStartDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate);
-            }
+                if (inputData.SelectedHokenInfRyoyoStartDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate);
+                }
 
-            if (inputData.SelectedHokenInfRyoyoEndDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate);
-            }
+                if (inputData.SelectedHokenInfRyoyoEndDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate);
+                }
 
-            if (inputData.SelectedHokenInfStartDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate);
-            }
+                if (inputData.SelectedHokenInfStartDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate);
+                }
 
-            if (inputData.SelectedHokenInfEndDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate);
-            }
+                if (inputData.SelectedHokenInfEndDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate);
+                }
 
-            if (inputData.SelectedHokenInfConfirmDate < 0)
-            {
-                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-            }
-            
-            switch(inputData.HokenKbn)
-            {
-                // 労災(短期給付)	
-                case 11:
-                    var checkMessageIsValidRodo = IsValidRodo(inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
-                    if(!String.IsNullOrEmpty(checkMessageIsValidRodo))
-                    {
-                        return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidRodo, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-                    }    
-                    break;
-                // 労災(傷病年金)
-                case 12:
-                    var checkMessageIsValidNenkin = IsValidNenkin(inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
-                    if (!String.IsNullOrEmpty(checkMessageIsValidNenkin))
-                    {
-                        return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidNenkin, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-                    }
-                    break;
-                // アフターケア
-                case 13:
-                    var checkMessageIsValidKenko = IsValidKenko(inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
-                    if (!String.IsNullOrEmpty(checkMessageIsValidKenko))
-                    {
-                        return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidKenko, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-                    }
-                    break;
-                // 自賠責
-                case 14:
-                    var checkMessageIsValidJibai = IsValidJibai(inputData.ListRousaiTenki);
-                    if (!String.IsNullOrEmpty(checkMessageIsValidJibai))
-                    {
-                        return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidJibai, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-                    }
-                    break;
-            }
+                if (inputData.SelectedHokenInfConfirmDate < 0)
+                {
+                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+                }
 
-            return new ValidateRousaiJibaiOutputData(true, string.Empty, ValidateRousaiJibaiStatus.InvalidSuccess);
+                switch (inputData.HokenKbn)
+                {
+                    // 労災(短期給付)	
+                    case 11:
+                        var checkMessageIsValidRodo = IsValidRodo(inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        if (!String.IsNullOrEmpty(checkMessageIsValidRodo))
+                        {
+                            return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidRodo, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+                        }
+                        break;
+                    // 労災(傷病年金)
+                    case 12:
+                        var checkMessageIsValidNenkin = IsValidNenkin(inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        if (!String.IsNullOrEmpty(checkMessageIsValidNenkin))
+                        {
+                            return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidNenkin, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+                        }
+                        break;
+                    // アフターケア
+                    case 13:
+                        var checkMessageIsValidKenko = IsValidKenko(inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        if (!String.IsNullOrEmpty(checkMessageIsValidKenko))
+                        {
+                            return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidKenko, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+                        }
+                        break;
+                    // 自賠責
+                    case 14:
+                        var checkMessageIsValidJibai = IsValidJibai(inputData.ListRousaiTenki);
+                        if (!String.IsNullOrEmpty(checkMessageIsValidJibai))
+                        {
+                            return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidJibai, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+                        }
+                        break;
+                }
+
+                return new ValidateRousaiJibaiOutputData(true, string.Empty, ValidateRousaiJibaiStatus.InvalidSuccess);
+            }
+            catch (Exception)
+            {
+                return new ValidateRousaiJibaiOutputData(false, "Validate Exception", ValidateRousaiJibaiStatus.InvalidFaild);
+                throw;
+            }
         }
 
         private string IsValidRodo(string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
