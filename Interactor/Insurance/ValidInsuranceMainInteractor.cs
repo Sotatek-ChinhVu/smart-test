@@ -25,103 +25,13 @@ namespace Interactor.Insurance
         {
             try
             {
-                if (inputData.HpId < 0)
+                // check validate Input
+                var checkValidInput = CheckValidateInputData(inputData);
+                if(!checkValidInput.Result)
                 {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidHpId);
-                }
-                // Check exist HpId
+                    return checkValidInput;
+                }   
                 
-
-                if (inputData.SinDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSinDate);
-                }
-
-                if (inputData.PtBirthday < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidPtBirthday);
-                }
-
-                if (inputData.HokenKbn < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
-                }
-
-                if (inputData.HokenKbn < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
-                }
-
-                if (inputData.SelectedHokenInfHokenNo < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenNo);
-                }
-
-                if (inputData.SelectedHokenInfStartDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfStartDate);
-                }
-
-                if (inputData.SelectedHokenInfEndDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfEndDate);
-                }
-
-                if (inputData.SelectedHokenInfHokensyaMstIsKigoNa < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvaliSelectedHokenInfHokensyaMstIsKigoNa);
-                }
-
-                if (inputData.SelectedHokenInfHonkeKbn < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
-                }
-
-                if (inputData.SelectedHokenInfTokureiYm1 < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm1);
-                }
-
-                if (inputData.SelectedHokenInfTokureiYm2 < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm2);
-                }
-
-                if (inputData.SelectedHokenInfConfirmDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfConfirmDate);
-                }
-
-                if (inputData.SelectedHokenMstHokenNo < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstHokenNo);
-                }
-
-                if (inputData.SelectedHokenMstCheckDegit < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstCheckDegit);
-                }
-
-                if (inputData.SelectedHokenMstAgeStart < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeStart);
-                }
-
-                if (inputData.SelectedHokenMstAgeEnd < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeEnd);
-                }
-
-                if (inputData.SelectedHokenMstStartDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstStartDate);
-                }
-
-                if (inputData.SelectedHokenMstEndDate < 0)
-                {
-                    return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstEndDate);
-                }
-
                 switch (inputData.HokenKbn)
                 {
                     // 自費
@@ -170,6 +80,106 @@ namespace Interactor.Insurance
 
                 return new ValidMainInsuranceOutputData(false, "Validate Exception", ValidMainInsuranceStatus.InvalidFaild);
             }
+        }
+
+        private ValidMainInsuranceOutputData CheckValidateInputData(ValidMainInsuranceInputData inputData)
+        {
+            if (inputData.HpId < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidHpId);
+            }
+
+            if (inputData.SinDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSinDate);
+            }
+
+            if (inputData.PtBirthday < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidPtBirthday);
+            }
+
+            if (inputData.HokenKbn < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+            }
+
+            if (inputData.HokenKbn < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+            }
+
+            if (inputData.SelectedHokenInfHokenNo < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenNo);
+            }
+
+            if (inputData.SelectedHokenInfStartDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfStartDate);
+            }
+
+            if (inputData.SelectedHokenInfEndDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfEndDate);
+            }
+
+            if (inputData.SelectedHokenInfHokensyaMstIsKigoNa < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvaliSelectedHokenInfHokensyaMstIsKigoNa);
+            }
+
+            if (inputData.SelectedHokenInfHonkeKbn < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+            }
+
+            if (inputData.SelectedHokenInfTokureiYm1 < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm1);
+            }
+
+            if (inputData.SelectedHokenInfTokureiYm2 < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm2);
+            }
+
+            if (inputData.SelectedHokenInfConfirmDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfConfirmDate);
+            }
+
+            if (inputData.SelectedHokenMstHokenNo < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstHokenNo);
+            }
+
+            if (inputData.SelectedHokenMstCheckDegit < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstCheckDegit);
+            }
+
+            if (inputData.SelectedHokenMstAgeStart < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeStart);
+            }
+
+            if (inputData.SelectedHokenMstAgeEnd < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeEnd);
+            }
+
+            if (inputData.SelectedHokenMstStartDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstStartDate);
+            }
+
+            if (inputData.SelectedHokenMstEndDate < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstEndDate);
+            }
+
+            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private string IsValidJihi(int SelectedHokenInfHokenNo)
@@ -322,7 +332,7 @@ namespace Interactor.Insurance
             {
                 return checkMessageIsValidTokkurei;
             }
-            var checkMessageIsValidConfirmDateAgeCheck = IsValidConfirmDateAgeCheck(selectedHokenInfIsAddNew, selectedHokenInfisExpirated, selectedHokenInfisShahoOrKokuho, hokenSyaNo, selectedHokenInfconfirmDate, ptBirthday, sinDate);
+            var checkMessageIsValidConfirmDateAgeCheck = IsValidConfirmDateAgeCheck(selectedHokenInfIsAddNew, selectedHokenInfisExpirated, selectedHokenInfisShahoOrKokuho, hokenSyaNo, selectedHokenInfconfirmDate, ptBirthday, sinDate, hpId);
             if (!String.IsNullOrEmpty(checkMessageIsValidConfirmDateAgeCheck))
             {
                 return checkMessageIsValidConfirmDateAgeCheck;
@@ -575,7 +585,7 @@ namespace Interactor.Insurance
             return message;
         }
 
-        private string IsValidConfirmDateAgeCheck(bool isAddNew, bool isExpirated, bool isShahoOrKokuho, string hokensyaNo, int confirmDate, int ptBirthday, int sinDate)
+        private string IsValidConfirmDateAgeCheck(bool isAddNew, bool isExpirated, bool isShahoOrKokuho, string hokensyaNo, int confirmDate, int ptBirthday, int sinDate, int hpId)
         {
             var message = "";
             if (isAddNew)
@@ -595,11 +605,11 @@ namespace Interactor.Insurance
             {
                 return message;
             }
-            var configCheckAge = _systemConfRepository.GetSettingValue(1005, 0);
+            var configCheckAge = _systemConfRepository.GetSettingValue(hpId, 1005, 0);
             if (configCheckAge == 1)
             {
                 int invalidAgeCheck = 0;
-                string checkParam = _systemConfRepository.GetSettingParams(1005, 0);
+                string checkParam = _systemConfRepository.GetSettingParams(hpId, 1005, 0);
                 var splittedParam = checkParam.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var param in splittedParam)
                 {

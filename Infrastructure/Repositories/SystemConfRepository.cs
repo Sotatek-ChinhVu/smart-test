@@ -33,16 +33,16 @@ public class SystemConfRepository : ISystemConfRepository
         return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s.Param, s.Biko ?? string.Empty);
     }
 
-    public double GetSettingValue(int groupCd, int grpEdaNo)
+    public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
-        var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+        var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
         return systemConf != null ? systemConf.Val : 0;
     }
 
-    public string GetSettingParams(int groupCd, int grpEdaNo)
+    public string GetSettingParams(int groupCd, int grpEdaNo, int hpId)
     {
 
-        var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+        var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
 
         //Fix comment 894 (duong.vu)
         //Return value in DB if and only if Param is not null or white space
