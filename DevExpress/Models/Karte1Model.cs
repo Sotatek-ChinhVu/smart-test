@@ -4,7 +4,7 @@ namespace DevExpress.Models;
 
 public class Karte1Model
 {
-    public Karte1Model(string sysDateTimeS, string ptNum, string futansyaNo_K1, string hokensyaNo, string jyukyusyaNo_K1, string kigoBango, string ptKanaName, string ptName, string hokenKigenW, string setainusi, string birthDateW, string age, string sex, string hokenSyutokuW, string ptPostCode, string ptAddress1, string ptAddress2, string officeAddress, string officeTel, string ptTel, string office, string ptRenrakuTel, string hokensyaAddress, string zokugara, string hokensyaTel, string job, string hokensyaName, string futansyaNo_K2, string jyukyusyaNo_K2, List<Karte1ByomeiModel> listByomeiModels)
+    public Karte1Model(string sysDateTimeS, string ptNum, string futansyaNo_K1, string hokensyaNo, string jyukyusyaNo_K1, string kigoBango, string ptKanaName, string ptName, string hokenKigenW, string setainusi, string birthDateW, string age, string sex, string hokenSyutokuW, string ptPostCode, string ptAddress1, string ptAddress2, string officeAddress, string officeTel, string ptTel, string office, string ptRenrakuTel, string hokensyaAddress, string zokugara, string hokensyaTel, string job, string hokensyaName, string futansyaNo_K2, string jyukyusyaNo_K2, List<Karte1ByomeiModel> listByomeiModels_p1, List<Karte1ByomeiModel> listByomeiModels_p2)
     {
         SysDateTimeS = sysDateTimeS;
         PtNum = ptNum;
@@ -35,7 +35,8 @@ public class Karte1Model
         HokensyaName = hokensyaName;
         FutansyaNo_K2 = futansyaNo_K2;
         JyukyusyaNo_K2 = jyukyusyaNo_K2;
-        ListByomeiModels = listByomeiModels;
+        ListByomeiModels_p1 = listByomeiModels_p1;
+        ListByomeiModels_p2 = listByomeiModels_p2;
     }
     public Karte1Model()
     {
@@ -68,7 +69,8 @@ public class Karte1Model
         HokensyaName = "hokensyaName";
         FutansyaNo_K2 = "futansyaNo_K2";
         JyukyusyaNo_K2 = "jyukyusyaNo_K2";
-        ListByomeiModels = new();
+        ListByomeiModels_p1 = new();
+        ListByomeiModels_p2 = new();
     }
 
     public string SysDateTimeS { get; set; }
@@ -100,5 +102,6 @@ public class Karte1Model
     public string HokensyaName { get; set; }
     public string FutansyaNo_K2 { get; set; }
     public string JyukyusyaNo_K2 { get; set; }
-    public List<Karte1ByomeiModel> ListByomeiModels { get; set; }
+    public List<Karte1ByomeiModel> ListByomeiModels_p1 { get; set; }
+    public List<Karte1ByomeiModel> ListByomeiModels_p2 { get; set; }
 }

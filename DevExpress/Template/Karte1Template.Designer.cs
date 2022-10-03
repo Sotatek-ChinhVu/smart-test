@@ -138,7 +138,7 @@
             this.Detail = new DevExpress.XtraReports.UI.DetailBand();
             this.xrTable2 = new DevExpress.XtraReports.UI.XRTable();
             this.xrTableRow2 = new DevExpress.XtraReports.UI.XRTableRow();
-            this.xrTableCell7 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.byomei_name = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell8 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell9 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell11 = new DevExpress.XtraReports.UI.XRTableCell();
@@ -1856,7 +1856,7 @@
             // xrTableRow2
             // 
             this.xrTableRow2.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
-            this.xrTableCell7,
+            this.byomei_name,
             this.xrTableCell8,
             this.xrTableCell9,
             this.xrTableCell11,
@@ -1865,17 +1865,17 @@
             this.xrTableRow2.Name = "xrTableRow2";
             this.xrTableRow2.Weight = 1D;
             // 
-            // xrTableCell7
+            // byomei_name
             // 
-            this.xrTableCell7.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            this.byomei_name.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrTableCell7.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            this.byomei_name.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[ListByomeiModels].[Byomei]")});
-            this.xrTableCell7.Multiline = true;
-            this.xrTableCell7.Name = "xrTableCell7";
-            this.xrTableCell7.StylePriority.UseBorders = false;
-            this.xrTableCell7.Text = "xrTableCell7";
-            this.xrTableCell7.Weight = 2.2338548630934492D;
+            this.byomei_name.Multiline = true;
+            this.byomei_name.Name = "byomei_name";
+            this.byomei_name.StylePriority.UseBorders = false;
+            this.byomei_name.Text = "byomei_name";
+            this.byomei_name.Weight = 2.2338548630934492D;
             // 
             // xrTableCell8
             // 
@@ -2032,7 +2032,7 @@
         private DataAccess.ObjectBinding.ObjectDataSource objectDataSource1;
         private XtraReports.UI.XRTable xrTable2;
         private XtraReports.UI.XRTableRow xrTableRow2;
-        private XtraReports.UI.XRTableCell xrTableCell7;
+        public XtraReports.UI.XRTableCell byomei_name;
         private XtraReports.UI.XRTableCell xrTableCell8;
         private XtraReports.UI.XRTableCell xrTableCell9;
         private XtraReports.UI.XRTableCell xrTableCell10;

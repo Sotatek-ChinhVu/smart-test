@@ -17,35 +17,25 @@ public class Karte1Export : IKarte1Export
         dataSource.DataSource = data;
         report.DataSource = dataSource;
         report.DataMember = "ListByomeiModels";
+        var check = report.byomei_name.HeightF;
 
-        //// page 2
-        //var report_p2 = new Karte1Template_page2();
-        //var dataSource_p2 = new ObjectDataSource();
-
-        //dataSource_p2.DataSource = data;
-        //report_p2.DataSource = dataSource_p2;
-        //report_p2.DataMember = "ListByomeiModels";
-
-        //report.Pages.AddRange(report_p2.Pages);
         report.CreateDocument();
-
         for (int i = 0; i < 2; i++)
         {
             report.ModifyDocument(modifier =>
             {
                 var report_p2 = new Karte1Template_page2();
                 var dataSource_p2 = new ObjectDataSource();
-
                 dataSource_p2.DataSource = data;
                 report_p2.DataSource = dataSource_p2;
                 report_p2.DataMember = "ListByomeiModels";
 
-                report.Pages.AddRange(report_p2.Pages);
+                report_p2.CreateDocument();
+                modifier.AddPages(report_p2.Pages);
                 report.PrintingSystem.ContinuousPageNumbering = true;
 
             });
         }
-
 
         PdfExportOptions pdfExportOptions = new PdfExportOptions()
         {
