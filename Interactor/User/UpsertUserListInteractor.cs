@@ -22,14 +22,14 @@ namespace Interactor.User
             try
             {
                 //Check duplicatedId in the insertList
-                var duplicatedIdDic = inputData.InserteddUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
+                var duplicatedIdDic = inputData.UpdatedUserList.GroupBy(u => u.Id).Where(g => g.Count() > 1).ToDictionary(u => u.Key, y => y.Count());
                 if (duplicatedIdDic.Any())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.DuplicateId);
                 }
 
                 //Check existedId in the insertList
-                var idList = inputData.InserteddUserList.Select(u => u.Id).ToList();
+                var idList = inputData.UpdatedUserList.Select(u => u.Id).ToList();
                 if (_userRepository.CheckExistedId(idList))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
