@@ -24,56 +24,16 @@ namespace Interactor.Insurance
         {
             try
             {
-                if (inputData.HokenKbn < 0)
+                var checkValidInputData = CheckValidateInput(inputData);
+                if(!checkValidInputData.Result)
                 {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidHokenKbn);
-                }
-
-                if (inputData.SinDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSinDate);
-                }
-
-                if (inputData.SelectedHokenInfRousaiSaigaiKbn < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn);
-                }
-
-                if (inputData.SelectedHokenInfRousaiSyobyoDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate);
-                }
-
-                if (inputData.SelectedHokenInfRyoyoStartDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate);
-                }
-
-                if (inputData.SelectedHokenInfRyoyoEndDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate);
-                }
-
-                if (inputData.SelectedHokenInfStartDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate);
-                }
-
-                if (inputData.SelectedHokenInfEndDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate);
-                }
-
-                if (inputData.SelectedHokenInfConfirmDate < 0)
-                {
-                    return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
-                }
-
+                    return checkValidInputData;
+                }    
                 switch (inputData.HokenKbn)
                 {
                     // 労災(短期給付)	
                     case 11:
-                        var checkMessageIsValidRodo = IsValidRodo(inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        var checkMessageIsValidRodo = IsValidRodo(inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         if (!String.IsNullOrEmpty(checkMessageIsValidRodo))
                         {
                             return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidRodo, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
@@ -81,7 +41,7 @@ namespace Interactor.Insurance
                         break;
                     // 労災(傷病年金)
                     case 12:
-                        var checkMessageIsValidNenkin = IsValidNenkin(inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        var checkMessageIsValidNenkin = IsValidNenkin(inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         if (!String.IsNullOrEmpty(checkMessageIsValidNenkin))
                         {
                             return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidNenkin, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
@@ -89,7 +49,7 @@ namespace Interactor.Insurance
                         break;
                     // アフターケア
                     case 13:
-                        var checkMessageIsValidKenko = IsValidKenko(inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew);
+                        var checkMessageIsValidKenko = IsValidKenko(inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         if (!String.IsNullOrEmpty(checkMessageIsValidKenko))
                         {
                             return new ValidateRousaiJibaiOutputData(false, checkMessageIsValidKenko, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
@@ -104,7 +64,6 @@ namespace Interactor.Insurance
                         }
                         break;
                 }
-
                 return new ValidateRousaiJibaiOutputData(true, string.Empty, ValidateRousaiJibaiStatus.InvalidSuccess);
             }
             catch (Exception)
@@ -114,10 +73,10 @@ namespace Interactor.Insurance
             }
         }
 
-        private string IsValidRodo(string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
+        private string IsValidRodo(string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
-            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
+            var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
             if (rousaiReceder == 1)
             {
                 if (string.IsNullOrEmpty(rodoBango))
@@ -141,10 +100,10 @@ namespace Interactor.Insurance
             return message;
         }
 
-        private string IsValidNenkin(string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
+        private string IsValidNenkin(string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
-            var systemConfigRousaiKufu = (int)_systemConfRepository.GetSettingValue(1006, 0);
+            var systemConfigRousaiKufu = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
             if (systemConfigRousaiKufu == 1)
             {
                 if (string.IsNullOrEmpty(nenkinBago))
@@ -160,7 +119,7 @@ namespace Interactor.Insurance
                     return message;
                 }
             }
-            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
             var checkMessageCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
             if (!String.IsNullOrEmpty(checkMessageCommonCheckForRosai))
             {
@@ -168,10 +127,10 @@ namespace Interactor.Insurance
             }
             return message;
         }
-        private string IsValidKenko(string kenkoKanriBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
+        private string IsValidKenko(string kenkoKanriBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
-            var systemConfigRousaiKufuValidate = (int)_systemConfRepository.GetSettingValue(1006, 0);
+            var systemConfigRousaiKufuValidate = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
             if (systemConfigRousaiKufuValidate == 1)
             {
                 if (string.IsNullOrEmpty(kenkoKanriBango))
@@ -188,7 +147,7 @@ namespace Interactor.Insurance
                 }
             }
 
-            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0);
+            var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
             var checkMessageCommonCheckForRosai = CommonCheckForRosai(hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
             if (!String.IsNullOrEmpty(checkMessageCommonCheckForRosai))
             {
@@ -243,6 +202,61 @@ namespace Interactor.Insurance
             }
             return message;
         }
+
+        private ValidateRousaiJibaiOutputData CheckValidateInput(ValidateRousaiJibaiInputData inputData)
+        {
+            if (inputData.HpId < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidHpId);
+            }
+
+            if (inputData.HokenKbn < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidHokenKbn);
+            }
+
+            if (inputData.SinDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSinDate);
+            }
+
+            if (inputData.SelectedHokenInfRousaiSaigaiKbn < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn);
+            }
+
+            if (inputData.SelectedHokenInfRousaiSyobyoDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate);
+            }
+
+            if (inputData.SelectedHokenInfRyoyoStartDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate);
+            }
+
+            if (inputData.SelectedHokenInfRyoyoEndDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate);
+            }
+
+            if (inputData.SelectedHokenInfStartDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate);
+            }
+
+            if (inputData.SelectedHokenInfEndDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate);
+            }
+
+            if (inputData.SelectedHokenInfConfirmDate < 0)
+            {
+                return new ValidateRousaiJibaiOutputData(false, string.Empty, ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate);
+            }
+
+            return new ValidateRousaiJibaiOutputData(true, string.Empty, ValidateRousaiJibaiStatus.InvalidSuccess);
+        }    
 
         private string CommonCheckForRosai(int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int rosaiReceden, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
         {
@@ -323,9 +337,9 @@ namespace Interactor.Insurance
             }
 
             // 労災・療養期間ﾁｪｯｸ
-            int RousaiRyoyoStartDate = sHokenInfRyoyoStartDate;
-            int RousaiRyoyoEndDate = sHokenInfRyoyoEndDate;
-            if (RousaiRyoyoStartDate != 0 && RousaiRyoyoEndDate != 0 && RousaiRyoyoStartDate > RousaiRyoyoEndDate)
+            int rousaiRyoyoStartDate = sHokenInfRyoyoStartDate;
+            int rousaiRyoyoEndDate = sHokenInfRyoyoEndDate;
+            if (rousaiRyoyoStartDate != 0 && rousaiRyoyoEndDate != 0 && rousaiRyoyoStartDate > rousaiRyoyoEndDate)
             {
                 var paramsMessage = new string[] { "労災療養終了日", "労災療養開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
@@ -333,9 +347,9 @@ namespace Interactor.Insurance
             }
 
             // 労災・有効期限ﾁｪｯｸ
-            int RosaiYukoFromDate = sHokenInfStartDate;
-            int RosaiYukoToDate = sHokenInfEndDate;
-            if (RosaiYukoFromDate != 0 && RosaiYukoToDate != 0 && RosaiYukoFromDate > RosaiYukoToDate)
+            int rosaiYukoFromDate = sHokenInfStartDate;
+            int rosaiYukoToDate = sHokenInfEndDate;
+            if (rosaiYukoFromDate != 0 && rosaiYukoToDate != 0 && rosaiYukoFromDate > rosaiYukoToDate)
             {
                 var paramsMessage = new string[] { "労災有効終了日", "労災有効開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
@@ -354,9 +368,9 @@ namespace Interactor.Insurance
 
         private bool DataChkFn10(int sinDate, int startDate, int endDate, bool isAddNew)
         {
-            int FToDay = sinDate;
-            if (isAddNew && ((endDate > 0 && endDate < FToDay)
-                    || (startDate > 0 && startDate > FToDay)))
+            int fToDay = sinDate;
+            if (isAddNew && ((endDate > 0 && endDate < fToDay)
+                    || (startDate > 0 && startDate > fToDay)))
             {
                 return false;
             }

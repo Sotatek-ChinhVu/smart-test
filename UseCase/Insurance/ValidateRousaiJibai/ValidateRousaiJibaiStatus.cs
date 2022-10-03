@@ -18,6 +18,7 @@ namespace UseCase.Insurance.ValidateRousaiJibai
         InvalidSelectedHokenInfStartDate = 7,
         InvalidSelectedHokenInfEndDate = 8,
         InvalidSelectedHokenInfConfirmDate = 9,
-        InvalidFaild = 10
+        InvalidHpId = 10,
+        InvalidFaild = 11
     }
 }

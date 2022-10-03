@@ -12,7 +12,6 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
         {
             Result = new Response<ValidateRousaiJibaiResponse>()
             {
-
                 Data = new ValidateRousaiJibaiResponse(output.Result, output.Message),
                 Status = (byte)output.Status,
             };
@@ -47,6 +46,12 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                     break;
                 case ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate:
                     Result.Message = ResponseMessage.InvalidSelectedHokenInfConfirmDate;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidHpId:
+                    Result.Message = ResponseMessage.InvalidHpId;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidFaild:
+                    Result.Message = ResponseMessage.Failed;
                     break;
                 default:
                     break;

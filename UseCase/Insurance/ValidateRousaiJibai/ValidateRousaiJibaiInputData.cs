@@ -10,8 +10,9 @@ namespace UseCase.Insurance.ValidateRousaiJibai
 {
     public class ValidateRousaiJibaiInputData : IInputData<ValidateRousaiJibaiOutputData>
     {
-        public ValidateRousaiJibaiInputData(int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate)
+        public ValidateRousaiJibaiInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate)
         {
+            HpId = hpId;
             HokenKbn = hokenKbn;
             SinDate = sinDate;
             IsSelectedHokenInf = isSelectedHokenInf;
@@ -29,6 +30,8 @@ namespace UseCase.Insurance.ValidateRousaiJibai
             SelectedHokenInfKenkoKanriBango = selectedHokenInfKenkoKanriBango;
             SelectedHokenInfConfirmDate = selectedHokenInfConfirmDate;
         }
+
+        public int HpId { get; private set; }
 
         public int HokenKbn { get; private set; }
 
