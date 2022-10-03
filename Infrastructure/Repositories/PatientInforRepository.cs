@@ -725,7 +725,7 @@ namespace Infrastructure.Repositories
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
         {
             var data = _tenantDataContext.PtCmtInfs
-                .FirstOrDefault(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0);
+                .FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (data is null)
                 return new PatientInforModel();
 
