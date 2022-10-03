@@ -130,14 +130,12 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
-        List<Karte1ByomeiModel> listByomeiModels_p1 = new();
-        List<Karte1ByomeiModel> listByomeiModels_p2 = new();
+        List<Karte1ByomeiModel> listByomeiModels = new();
         if (ptByomeis != null && ptByomeis.Count > 0)
         {
-            bool addToPage1 = true;
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + "chekckasfjkjfashkjfgakslghjsghjsghjkdshjghjsdghj";
+                string byomeiDisplay = byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
@@ -148,10 +146,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
                 var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
                 var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-
-                if (addToPage1)
-                {
-                    listByomeiModels_p1.Add(new Karte1ByomeiModel(
+                listByomeiModels.Add(new Karte1ByomeiModel(
                                             byomeiDisplay,
                                             byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
                                             byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
@@ -160,19 +155,6 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         ));
-                }
-                else
-                {
-                    listByomeiModels_p2.Add(new Karte1ByomeiModel(
-                                            byomeiDisplay,
-                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
-                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
-                                            tenkiChusiMaru,
-                                            tenkiSiboMaru,
-                                            tenkiSonota,
-                                            tenkiTiyuMaru
-                                        ));
-                }
             }
         }
 
@@ -206,8 +188,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 hokensyaName,
                 futansyaNo_K2,
                 jyukyusyaNo_K2,
-                listByomeiModels_p1,
-                listByomeiModels_p2
+                listByomeiModels
             );
 
         _karte1Export.ExportToPdf(model);

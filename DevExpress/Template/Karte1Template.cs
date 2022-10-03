@@ -12,5 +12,27 @@ namespace DevExpress.Template
         {
             InitializeComponent();
         }
+        private void groupHeaderPage2_PrintOnPage(object sender, PrintOnPageEventArgs e)
+        {
+            if (e.PageCount > 0 && e.PageIndex == 0)
+            {
+                // Cancels the control's printing.
+                e.Cancel = true;
+            }
+            if (e.PageCount > 0 && e.PageIndex > 0)
+            {
+                // Cancels the control's printing.
+                groupFooterPage1.Visible = false;
+            }
+        }
+
+        private void groupFooterPage1_PrintOnPage(object sender, PrintOnPageEventArgs e)
+        {
+            if (e.PageCount > 0 && e.PageIndex > 0)
+            {
+                // Cancels the control's printing.
+                e.Cancel = true;
+            }
+        }
     }
 }
