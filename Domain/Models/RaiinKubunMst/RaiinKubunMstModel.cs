@@ -11,15 +11,15 @@ namespace Domain.Models.RaiinKubunMst
 
         public bool IsDeleted { get; private set; }
 
-        public List<RaiinKubunDetailModel> Items { get; private set; }
+        public List<RaiinKubunDetailModel> RaiinKubunDetailModels { get; private set; }
 
-        public RaiinKubunMstModel(int groupId, int sortNo, string groupName, bool isDeleted, List<RaiinKubunDetailModel> items)
+        public RaiinKubunMstModel(int groupId, int sortNo, string groupName, bool isDeleted, List<RaiinKubunDetailModel> raiinKubunDetailModels)
         {
             GroupId = groupId;
             SortNo = sortNo;
             GroupName = groupName;
             IsDeleted = isDeleted;
-            Items = items;
+            RaiinKubunDetailModels = raiinKubunDetailModels;
         }
     }
 }

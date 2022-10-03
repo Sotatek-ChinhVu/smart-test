@@ -31,29 +31,36 @@ namespace Infrastructure.Repositories
 
         public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
-            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
+            var karteInfEntities = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
 
             if (deleteCondition == 0)
             {
-                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None);
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
             }
             else if (deleteCondition == 1)
             {
-                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
             }
             else
             {
-                karteInfEntity = karteInfEntity.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
             }
 
-            if (karteInfEntity == null)
+            if (karteInfEntities == null)
             {
                 return new List<KarteInfModel>();
             }
-            return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
+
+            var karteInfs = from karte in karteInfEntities
+                            join user in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
+                          on karte.CreateId equals user.UserId into odrUsers
+                            from odrUser in odrUsers.DefaultIfEmpty()
+                            select ConvertToModel(karte, odrUser?.Sname ?? string.Empty);
+
+            return karteInfs.ToList();
         }
 
-        private KarteInfModel ConvertToModel(KarteInf itemData)
+        private KarteInfModel ConvertToModel(KarteInf itemData, string updateName = "")
         {
             return new KarteInfModel(
                 itemData.HpId,
@@ -66,7 +73,8 @@ namespace Infrastructure.Repositories
                 itemData.IsDeleted,
                 itemData.RichText == null ? string.Empty : Encoding.UTF8.GetString(itemData.RichText),
                 itemData.CreateDate,
-                itemData.UpdateDate
+                itemData.UpdateDate,
+                updateName
                 );
         }
 
@@ -114,6 +122,14 @@ namespace Infrastructure.Repositories
             {
                 return status;
             }
+        }
+
+        public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        {
+            if (searchType == 1)
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+            else
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo > raiinNo)?.RaiinNo ?? -1;
         }
     }
 }
