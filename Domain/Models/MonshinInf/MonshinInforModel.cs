@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using static Helper.Constants.MonshinInfConst;
 
 namespace Domain.Models.MonshinInf
 {
@@ -28,5 +25,21 @@ namespace Domain.Models.MonshinInf
         public string Rtext { get; private set; }
         public int GetKbn { get; private set; }
         public int IsDeleted { get; private set; }
+
+        public ValidationStatus Validation()
+        {
+            #region common
+            if (HpId <= 0)
+                return ValidationStatus.InvalidHpId;
+            if (PtId <= 0)
+                return ValidationStatus.InvalidPtId;
+            if (RaiinNo <= 0)
+                return ValidationStatus.InValidRaiinNo;
+            if (SinDate <= 0)
+                return ValidationStatus.InvalidSinDate;
+            #endregion
+
+            return ValidationStatus.Valid;
+        }
     }
 }

@@ -11,6 +11,7 @@
         public static readonly string InvalidHokenId = "Invalid HokenId";
         public static readonly string InvalidPageIndex = "Invalid PageIndex";
         public static readonly string InvalidPageCount = "Invalid PageCount";
+        public static readonly string InvalidPageSize = "Invalid PageSize";
         public static readonly string InvalidStartIndex = "Invalid StartIndex";
         public static readonly string InvalidKouiKbn = "Invalid KouiKbn";
         public static readonly string InvalidValueAdopted = "Invalid Value Adopted";
@@ -34,6 +35,15 @@
         //Patient Infor
 
         //Group Infor
+        public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
+        public static readonly string DuplicateGroupName = "Can not duplicate GroupName";
+        public static readonly string DuplicateGroupDetailCode = "Can not Duplicate GroupDetail Code";
+        public static readonly string DuplicateGroupDetailSeqNo = "Can not Duplicate GroupDetail SeqNo";
+        public static readonly string DuplicateGroupDetailName = "Can not Duplicate GroupDetail Name";
+        public static readonly string InvalidGroupId = "Invalid GroupId, GroupId > 0";
+        public static readonly string InvalidGroupName = "Invalid GroupName, GroupName is required and length must be less than or equal 20";
+        public static readonly string InvalidDetailGroupCode = "Invalid GroupCode, GroupCode is required and length must be less than or equal 2";
+        public static readonly string InvalidGroupDetailName = "Invalid GroupDetailName, GroupDetailName is required and length must be less than or equal 30";
 
         //Reception controller
 
@@ -266,6 +276,10 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
+        
+        //Monshin
+        public static readonly string InputDataDoesNotExists = "Input Data does not exist";
+        
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
         public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
@@ -282,5 +296,13 @@
 
         //HokenSyamst
         public static readonly string InvalidHokenSyaNo = "HokenSyaNo is null or empty";
+
+        //DetailHokenMst
+        public static readonly string DetailHokenMstInvalidHokenEdaNo = "HokenEdaNo is not valid";
+        public static readonly string DetailHokenMstInvalidHokenNo = "HokenNo is not valid";
+        public static readonly string DetailHokenMstInvalidPrefNo = "PrefNo is not valid";
+
+        //PostCode
+        public static readonly string InvalidPostCode = "Invalid PostCode";
     }
 }
