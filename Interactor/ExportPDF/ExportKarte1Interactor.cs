@@ -134,31 +134,44 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
         List<Karte1ByomeiModel> listByomeiModels_p2 = new();
         if (ptByomeis != null && ptByomeis.Count > 0)
         {
-            for (int i = 0; i < 5; i++)
+            bool addToPage1 = true;
+            foreach (var byomei in ptByomeis)
             {
-                foreach (var byomei in ptByomeis)
+                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + "chekckasfjkjfashkjfgakslghjsghjsghjkdshjghjsdghj";
+                if (byomei.SyubyoKbn == 1)
                 {
-                    string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + "chekckasfjkjfashkjfgakslghjsghjsghjkdshjghjsdghj";
-                    if (byomei.SyubyoKbn == 1)
-                    {
-                        byomeiDisplay = "（主）" + byomeiDisplay;
-                    }
-                    var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
-                    var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
-                    var tenkiChusiMaru = byomei.TenkiKbn != TenkiKbnConst.Canceled ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                    var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                    var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                    var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                    byomeiDisplay = "（主）" + byomeiDisplay;
+                }
+                var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
+                var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
+                var tenkiChusiMaru = byomei.TenkiKbn != TenkiKbnConst.Canceled ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
 
+                if (addToPage1)
+                {
                     listByomeiModels_p1.Add(new Karte1ByomeiModel(
-                                                byomeiDisplay,
-                                                byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
-                                                byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
-                                                tenkiChusiMaru,
-                                                tenkiSiboMaru,
-                                                tenkiSonota,
-                                                tenkiTiyuMaru
-                                            ));
+                                            byomeiDisplay,
+                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
+                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
+                                            tenkiChusiMaru,
+                                            tenkiSiboMaru,
+                                            tenkiSonota,
+                                            tenkiTiyuMaru
+                                        ));
+                }
+                else
+                {
+                    listByomeiModels_p2.Add(new Karte1ByomeiModel(
+                                            byomeiDisplay,
+                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
+                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
+                                            tenkiChusiMaru,
+                                            tenkiSiboMaru,
+                                            tenkiSonota,
+                                            tenkiTiyuMaru
+                                        ));
                 }
             }
         }

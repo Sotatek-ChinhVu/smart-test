@@ -16,7 +16,7 @@ public class Karte1Export : IKarte1Export
 
         dataSource.DataSource = data;
         report.DataSource = dataSource;
-        report.DataMember = "ListByomeiModels";
+        report.DataMember = "ListByomeiModels_p1";
         var check = report.byomei_name.HeightF;
 
         report.CreateDocument();
@@ -28,7 +28,7 @@ public class Karte1Export : IKarte1Export
                 var dataSource_p2 = new ObjectDataSource();
                 dataSource_p2.DataSource = data;
                 report_p2.DataSource = dataSource_p2;
-                report_p2.DataMember = "ListByomeiModels";
+                report_p2.DataMember = "ListByomeiModels_p2";
 
                 report_p2.CreateDocument();
                 modifier.AddPages(report_p2.Pages);
