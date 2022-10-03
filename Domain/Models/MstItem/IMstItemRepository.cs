@@ -21,5 +21,7 @@
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
 
         bool CheckItemCd(string ItemCd);
+
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
     }
 }
