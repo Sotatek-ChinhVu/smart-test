@@ -12,7 +12,6 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
         {
             Result = new Response<ValidateKohiResponse>()
             {
-
                 Data = new ValidateKohiResponse(output.Result, output.Message),
                 Status = (byte)output.Status,
             };

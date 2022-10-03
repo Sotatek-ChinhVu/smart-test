@@ -619,16 +619,16 @@ namespace Interactor.Insurance
                     }
 
                     //年齢チェック
-                    int intAGE = -1;
+                    int intAge = -1;
                     if (ptBirthday != 0)
                     {
-                        intAGE = CIUtil.SDateToAge(ptBirthday, Int32.Parse(DateTime.Now.ToString("yyyyMMdd")));
+                        intAge = CIUtil.SDateToAge(ptBirthday, Int32.Parse(DateTime.Now.ToString("yyyyMMdd")));
                     }
-                    if (intAGE != -1)
+                    if (intAge != -1)
                     {
                         int ageStartMst = hokenMstAgeStartDate;
                         int ageEndMst = hokenMstAgeEndDate;
-                        if ((ageStartMst != 0 || ageEndMst != 999) && (intAGE < ageStartMst || intAGE > ageEndMst))
+                        if ((ageStartMst != 0 || ageEndMst != 999) && (intAge < ageStartMst || intAge > ageEndMst))
                         {
                             var paramsMessage = new string[] { "公費" + numberMessage + "の保険が適用年齢範囲外の", "・この保険の適用年齢範囲は。" + ageStartMst + "歳 〜 " + ageEndMst + "歳 です。" };
                             message = String.Format(ErrorMessage.MessageType_mEnt01041, paramsMessage);
