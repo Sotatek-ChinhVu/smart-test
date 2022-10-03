@@ -182,10 +182,10 @@ namespace Interactor.Insurance
             return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
         }
 
-        private string IsValidJihi(int SelectedHokenInfHokenNo)
+        private string IsValidJihi(int selectedHokenInfHokenNo)
         {
             var message = "";
-            if (SelectedHokenInfHokenNo == 0)
+            if (selectedHokenInfHokenNo == 0)
             {
                 var paramsMessage = new string[] { "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
@@ -662,23 +662,23 @@ namespace Interactor.Insurance
         private string IsValidHokenMstDate(int startDate, int endDate, int sinDate, string displayTextMaster)
         {
             var message = "";
-            int HokenStartDate = startDate;
-            int HokenEndDate = endDate;
+            int hokenStartDate = startDate;
+            int hokenEndDate = endDate;
             // 期限切れﾁｪｯｸ(有効保険の場合のみ)
-            if ((HokenStartDate <= sinDate || HokenStartDate == 0)
-                && (HokenEndDate >= sinDate || HokenEndDate == 0))
+            if ((hokenStartDate <= sinDate || hokenStartDate == 0)
+                && (hokenEndDate >= sinDate || hokenEndDate == 0))
             {
-                if (HokenStartDate > sinDate)
+                if (hokenStartDate > sinDate)
                 {
                     var paramsMessage = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
                             + CIUtil.SDateToShowSDate(startDate) + "～)", "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
                     return message;
                 }
-                if (HokenEndDate < sinDate)
+                if (hokenEndDate < sinDate)
                 {
                     var paramsMessage = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " (～"
-                            + CIUtil.SDateToShowSDate(HokenEndDate) + ")", "保険番号" };
+                            + CIUtil.SDateToShowSDate(hokenEndDate) + ")", "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
                     return message;
                 }
