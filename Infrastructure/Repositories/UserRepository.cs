@@ -106,7 +106,7 @@ namespace Infrastructure.Repositories
                     var userMsts = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
-                        _tenantDataContext.UserMsts.Add(ToModel1(inputData));
+                        _tenantDataContext.UserMsts.Add(ConVertUserList(inputData));
 
                         userMsts.IsDeleted = DeleteTypes.Deleted;
                         userMsts.UpdateId = TempIdentity.UserId;
@@ -115,7 +115,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        _tenantDataContext.UserMsts.Add(ToModel1(inputData));
+                        _tenantDataContext.UserMsts.Add(ConVertUserList(inputData));
                     }
                 }
             }
@@ -143,7 +143,7 @@ namespace Infrastructure.Repositories
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
         }
-        private UserMst ToModel1(UserMstModel user)
+        private UserMst ConVertUserList(UserMstModel user)
         {
             return new UserMst(
                 );
