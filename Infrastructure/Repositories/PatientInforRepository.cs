@@ -809,16 +809,17 @@ namespace Infrastructure.Repositories
             long startIndex = (pageIndex - 1) * pageSize + ptNum;
             var result = new List<PatientInforModel>();
 
-            for (long i = startIndex; i < endIndex; i++)
-            {
-                var ExistPtNum = _tenantDataContext.PtInfs.FirstOrDefault(p => p.PtNum == startIndex);
+            var existPtNum = _tenantDataContext.PtInfs.Where(p => p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
 
-                if (ExistPtNum == null)
-                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き) ", i)));
+            Parallel.For(startIndex, endIndex, ptNum =>
+            {
+                var checkExistPtNum = existPtNum.FirstOrDefault(x => x.PtNum == ptNum);
+                if (checkExistPtNum == null)
+                    result.Add(new PatientInforModel(hpId, 0, ptNum, string.Concat(ptNum, " (空き) ", ptNum)));
 
                 else
-                    result.Add(new PatientInforModel(ExistPtNum.HpId, ExistPtNum.PtId, ExistPtNum.PtNum, string.Concat(i, " ", ExistPtNum.Name)));
-            }
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(ptNum, " ", checkExistPtNum.Name)));
+            });
 
             return result;
         }
