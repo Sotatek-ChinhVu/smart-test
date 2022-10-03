@@ -37,8 +37,20 @@
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
 
-
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+
+        // KaCode
+        public const string GetListKaCode = "GetListKaCode";
+        public const string SaveListKaMst = "SaveListKaMst";
+
+        //PostCode
+        public const string SearchPostCode = "SearchPostCode";
+        
+        //PatientGroupMst
+        public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
     }
 }

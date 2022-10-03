@@ -5,10 +5,11 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -59,10 +60,11 @@ using Interactor.DrugDetail;
 using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
+using Interactor.HokenMst;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
-using Interactor.KaMst;
+using Interactor.Ka;
 using Interactor.KarteFilter;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
@@ -90,6 +92,7 @@ using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.VisitingList;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -101,13 +104,14 @@ using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
+using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
-using UseCase.KaMst.GetList;
+using UseCase.Ka.GetList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
@@ -116,10 +120,12 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MonshinInfor.GetList;
+using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
+using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
@@ -128,6 +134,7 @@ using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
 using UseCase.PatientGroupMst.GetList;
+using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchSimple;
@@ -170,6 +177,8 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
+using UseCase.Ka.SaveList;
+using UseCase.Ka.GetKaCodeList;
 using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -178,6 +187,18 @@ namespace EmrCloudApi.Configs.Dependency
     {
         public void Run(IServiceCollection services)
         {
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
@@ -203,7 +224,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
-            services.AddTransient<IKaMstRepository, KaMstRepository>();
+            services.AddTransient<IKaRepository, KaRepository>();
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
@@ -248,6 +269,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IMonshinInforRepository, MonshinInforRepository>();
             services.AddTransient<IRaiinListTagRepository, RaiinListTagRepository>();
             services.AddTransient<ISpecialNoteRepository, SpecialNoteRepository>();
+            services.AddTransient<IHokenMstRepository, HokenMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -295,6 +317,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoSimpleInputData, SearchPatientInfoSimpleInteractor>();
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
+            busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -328,6 +351,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeMstInputData, GetKaCodeMstInteractor>();
+            busBuilder.RegisterUseCase<SaveKaMstInputData, SaveKaMstInteractor>();
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
@@ -373,6 +398,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchSupplementInputData, SearchSupplementInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiInputData, UpdateAdoptedByomeiInteractor>();
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
+            busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -403,11 +429,11 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Maxmoney
             busBuilder.RegisterUseCase<GetMaxMoneyInputData, GetMaxMoneyInteractor>();
+            busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
 
             //Monshin
             busBuilder.RegisterUseCase<GetMonshinInforListInputData, GetMonshinInforListInteractor>();
-
-            busBuilder.RegisterUseCase<SaveMaxMoneyInputData, SaveMaxMoneyInteractor>();
+            busBuilder.RegisterUseCase<SaveMonshinInputData, SaveMonshinInforListInteractor>();
 
             // Reception - Valid Pattern Expirated
             busBuilder.RegisterUseCase<ValidPatternExpiratedInputData, ValidPatternExpiratedInteractor>();
@@ -417,6 +443,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SaveHokenSya
             busBuilder.RegisterUseCase<SaveHokenSyaMstInputData, SaveHokenSyaMstInteractor>();
+
+            //HokenMst
+            busBuilder.RegisterUseCase<GetDetailHokenMstInputData, GetDetailHokenMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
