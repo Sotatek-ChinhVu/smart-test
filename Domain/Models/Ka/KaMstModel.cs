@@ -1,8 +1,17 @@
-﻿namespace Domain.Models.KaMst;
+﻿namespace Domain.Models.Ka;
 
 public class KaMstModel
 {
-    public KaMstModel(long id, int kaId, int sortNo, string receKaCd, string kaSname, string kaName, int isDeleted)
+    public KaMstModel()
+    {
+        Id = 0;
+        KaId = 0;
+        SortNo = 0;
+        ReceKaCd = string.Empty;
+        KaSname = string.Empty;
+        KaName = string.Empty;
+    }
+    public KaMstModel(long id, int kaId, int sortNo, string receKaCd, string kaSname, string kaName)
     {
         Id = id;
         KaId = kaId;
@@ -10,7 +19,6 @@ public class KaMstModel
         ReceKaCd = receKaCd;
         KaSname = kaSname;
         KaName = kaName;
-        IsDeleted = isDeleted;
     }
 
     public long Id { get; private set; }
@@ -19,5 +27,4 @@ public class KaMstModel
     public string ReceKaCd { get; private set; }
     public string KaSname { get; private set; }
     public string KaName { get; private set; }
-    public int IsDeleted { get; private set; }
 }

@@ -285,6 +285,14 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        // KaMst
+        public static readonly string InvalidKaId = "Invalid KaId, KaId > 0";
+        public static readonly string KaSnameMaxLength20 = "Length of KaSname must lest than 20 or equal 20";
+        public static readonly string KaNameMaxLength40 = "Length of KaName must lest than 40 or equal 40";
+        public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
+        public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
+
         
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
