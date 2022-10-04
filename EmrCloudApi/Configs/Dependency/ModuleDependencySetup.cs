@@ -178,11 +178,9 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.SaveSettings;
-using Domain.Models.ReceptionLock;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
-using UseCase.VisitingList.SaveSettings;
 using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Configs.Dependency

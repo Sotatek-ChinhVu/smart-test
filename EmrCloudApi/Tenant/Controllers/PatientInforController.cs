@@ -42,9 +42,7 @@ using EmrCloudApi.Tenant.Presenters.HokenMst;
 using UseCase.Insurance.ValidMainInsurance;
 using EmrCloudApi.Tenant.Presenters.Insurance;
 using EmrCloudApi.Tenant.Responses.Insurance;
-using EmrCloudApi.Tenant.Responses.Insurance;
 using UseCase.Insurance.ValidateRousaiJibai;
-using EmrCloudApi.Tenant.Presenters.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
