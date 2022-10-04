@@ -619,12 +619,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 {
                     var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
                     entityMst.RpNo = model.RpNo;
+                    entityMst.RpEdaNo = model.RpEdaNo + 1;
                     if (entityMst.RpNo == 0)
                     {
                         entityMst.RpNo = GetMaxRpNo(setCd, hpId) + plusRpNo;
+                        entityMst.RpEdaNo = 1;
                         plusRpNo++;
                     }
-                    entityMst.RpEdaNo = model.RpEdaNo + 1;
                     entityMst.SortNo = model.SortNo;
                     entityMst.Id = 0;
                     int rowNo = 1;
