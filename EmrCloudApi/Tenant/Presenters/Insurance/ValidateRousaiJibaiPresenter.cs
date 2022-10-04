@@ -53,8 +53,6 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                 case ValidateRousaiJibaiStatus.InvalidFaild:
                     Result.Message = ResponseMessage.Failed;
                     break;
-                default:
-                    break;
             }
         }
     }

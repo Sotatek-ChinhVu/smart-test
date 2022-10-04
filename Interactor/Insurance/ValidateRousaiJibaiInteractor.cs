@@ -69,7 +69,6 @@ namespace Interactor.Insurance
             catch (Exception)
             {
                 return new ValidateRousaiJibaiOutputData(false, "Validate Exception", ValidateRousaiJibaiStatus.InvalidFaild);
-                throw;
             }
         }
 
