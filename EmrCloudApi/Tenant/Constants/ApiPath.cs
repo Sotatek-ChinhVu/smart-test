@@ -38,5 +38,8 @@
 
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
     }
 }
