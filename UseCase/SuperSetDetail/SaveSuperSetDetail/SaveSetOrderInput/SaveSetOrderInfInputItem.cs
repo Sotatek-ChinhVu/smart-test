@@ -56,7 +56,7 @@ public class SaveSetOrderInfInputItem
         {
             return SaveSuperSetDetailStatus.InvalidSetOrderInfId;
         }
-        else if (RpNo < 1)
+        else if (RpNo < 0)
         {
             return SaveSuperSetDetailStatus.InvalidSetOrderInfRpNo;
         }

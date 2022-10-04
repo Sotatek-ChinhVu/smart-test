@@ -614,7 +614,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
             if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
             {
-                int plusRpNo = 0;
+                int plusRpNo = 1;
                 foreach (var model in listAddNewSetOrderModels)
                 {
                     var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
