@@ -49,7 +49,6 @@ namespace Interactor.MaxMoney
             string displaySinDateYM = infoHoken.DisplaySinDateYM;
             bool isLimitMaxMoney = infoHoken.IsLimitMaxMoney;
             int gendoGaku = infoHoken.GendoGaku;
-            bool isToltalGakuDisplay = infoHoken.IsToltalGakuDisplay;
             int remainGendoGaku = 0;
 
             if (rate == 0)

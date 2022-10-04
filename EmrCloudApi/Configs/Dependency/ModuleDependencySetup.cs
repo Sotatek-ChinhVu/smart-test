@@ -177,10 +177,11 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.VisitingList.SaveSettings;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
-using UseCase.VisitingList.SaveSettings;
+using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -321,6 +322,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
+            busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
