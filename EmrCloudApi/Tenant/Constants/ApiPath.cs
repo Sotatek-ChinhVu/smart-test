@@ -55,5 +55,8 @@
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
+
+        //Validate Insurance rousai jibai
+        public const string ValidateRousaiJibai = "ValidateRousaiJibai";
     }
 }
