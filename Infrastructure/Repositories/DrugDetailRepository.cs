@@ -43,9 +43,9 @@ namespace Infrastructure.Repositories
 
             List<DrugMenuItemModel> drugMenuItems = new List<DrugMenuItemModel>();
             //Root
-            var newModelInfFirst = new MenuInfModel("医薬品情報", "", 0, 0, 0, "", new DrugDetailModel());
+            var newModelInfFirst = new MenuInfModel("医薬品情報", "", 0, 0, 0, "", 0);
             var newModelItem = new MenuItemModel(newModelInfFirst, new List<MenuInfModel>());
-            DrugMenuItemModel rootMenu = new DrugMenuItemModel(newModelItem, new DrugDetailModel());
+            DrugMenuItemModel rootMenu = new DrugMenuItemModel(newModelItem, 0, 0);
             drugMenuItems.Add(rootMenu);
 
             var piInfDetailCollection = _tenantDataContext.PiInfDetails.AsQueryable(); //PI_INF_DETAIL
@@ -91,18 +91,15 @@ namespace Infrastructure.Repositories
             }
 
             //Last
-            var newModelInfLast = new MenuInfModel("患者向け情報", "", 0, 0, 0, "", new DrugDetailModel());
+            var newModelInfLast = new MenuInfModel("患者向け情報", "", 0, 0, 0, "", 0);
             var newModelItemLast = new MenuItemModel(newModelInfLast, new List<MenuInfModel>());
-            DrugMenuItemModel lastMenu = new DrugMenuItemModel(newModelItemLast, new DrugDetailModel());
+            DrugMenuItemModel lastMenu = new DrugMenuItemModel(newModelItemLast, 0, 1);
             drugMenuItems.Add(lastMenu);
 
-
-
-
             //適応病名
-            var newModelInfTekyoByomeiMenu = new MenuInfModel("適応病名", "", 0, 0, 0, "", new DrugDetailModel());
+            var newModelInfTekyoByomeiMenu = new MenuInfModel("適応病名", "", 0, 0, 0, "", 0);
             var newModelItemTekyoByomeiMenu = new MenuItemModel(newModelInfTekyoByomeiMenu, new List<MenuInfModel>());
-            DrugMenuItemModel tekyoByomeiMenu = new DrugMenuItemModel(newModelItemTekyoByomeiMenu, new DrugDetailModel());
+            DrugMenuItemModel tekyoByomeiMenu = new DrugMenuItemModel(newModelItemTekyoByomeiMenu, 0, 2);
             drugMenuItems.Add(tekyoByomeiMenu);
 
             if (drugMenuItems.Count > 0)
@@ -110,22 +107,26 @@ namespace Infrastructure.Repositories
                 for (int i = 0; i < drugMenuItems.Count; i++)
                 {
 
-                    int selectedIndex = drugMenuItems[0].MenuItem.Childrens.IndexOf(drugMenuItems[i].MenuItem.Menu);
-                    var itemDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
-                    drugMenuItems[i].DetailInfor = itemDetail;
+                    var selectedIndex = drugMenuItems[0].MenuItem.Childrens.IndexOf(drugMenuItems[i].MenuItem.Menu);
+                    drugMenuItems[i].IndexOfChildrens = selectedIndex;
+                    if(selectedIndex < 0)
+                    {
+                        var indexLevel0 = drugMenuItems.IndexOf(drugMenuItems[i]);
+                        drugMenuItems[i].IndexOfLevel0 = indexLevel0;
+                    }    
 
                     if (drugMenuItems[i].MenuItem.Childrens.Count > 0)
                     {
                         foreach (var item in drugMenuItems[i].MenuItem.Childrens)
                         {
-                            var itemChildrentDetail = GetDetail(selectedIndex, drugName, itemCd, yjCode, drugMenuItems, drugMenuItems[i], piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
-                            item.DetailInfor = itemChildrentDetail;
+                            var selectedChildrens = drugMenuItems[0].MenuItem.Childrens.IndexOf(item);
+                            item.IndexOfChildrens = selectedChildrens;
                         }
                     }
                 }
             }
             return drugMenuItems;
-            }
+        }
 
         private DrugDetailModel GetDetail(int selectedIndex, string drugName, string itemCd, string yjCode, List<DrugMenuItemModel> listDrugMenu, DrugMenuItemModel drugMenuItem, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
         {
@@ -442,7 +443,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch != "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", new DrugDetailModel()), new List<MenuInfModel>()), new DrugDetailModel()))
+                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", 0), new List<MenuInfModel>()), 0, 0))
                                     .OrderBy(mn => mn.MenuItem.Menu.SeqNo).ToList();
                 return listMenuItem;
 
@@ -464,7 +465,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch == "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", new DrugDetailModel()), new List<MenuInfModel>()), new DrugDetailModel()))
+                                    .Select(mn => new DrugMenuItemModel(new MenuItemModel(new MenuInfModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", 0), new List<MenuInfModel>()), 0, 0))
                                     .OrderBy(mn => mn.MenuItem.Menu.SeqNo).ToList();
                 return listMenuItem;
             }
@@ -505,7 +506,7 @@ namespace Infrastructure.Repositories
             {
                 title = "\u3000" + title;
             }
-            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString(), new DrugDetailModel());
+            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString(), 0);
 
             rootItem.MenuItem.Childrens.Add(menuItemChildren);
         }
