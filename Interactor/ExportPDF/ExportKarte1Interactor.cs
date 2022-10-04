@@ -7,6 +7,8 @@ using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using Helper.Common;
+using Helper.Constants;
+using Infrastructure.Interfaces;
 using UseCase.ExportPDF.ExportKarte1;
 
 namespace Interactor.ExportPDF;
@@ -17,13 +19,15 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IKarte1Export _karte1Export;
+    private readonly IAmazonS3Service _amazonS3Service;
 
-    public ExportKarte1Interactor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export)
+    public ExportKarte1Interactor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export, IAmazonS3Service amazonS3Service)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _karte1Export = karte1Export;
+        _amazonS3Service = amazonS3Service;
     }
 
     public ExportKarte1OutputData Handle(ExportKarte1InputData input)
@@ -135,7 +139,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei;
+                string byomeiDisplay = byomei.Byomei+"fdhsdgsjdghsdfghjdfhjgdfdhgjkldfdhljkghdlgdfjhklghjdflghdfjlghdfjkghdfgdjfkgheruaivhndfjdvkbbrdbveruigbajksdfgbhfadadgjkfhdaksga;GHAGJHDJKSGHJAG";
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
@@ -158,7 +162,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             }
         }
 
-        var model = new Karte1Model(
+        var model = new Karte1ExportModel(
                 sysDateTimeS,
                 ptNum,
                 futansyaNo_K1,
@@ -191,8 +195,24 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 listByomeiModels
             );
 
-        _karte1Export.ExportToPdf(model);
+        var streamOutput = _karte1Export.ExportToPdf(model);
+        var url = UploadAmazonS3(model.FileName, streamOutput);
 
         return new ExportKarte1OutputData(ExportKarte1Status.Success);
+    }
+
+    private string UploadAmazonS3(string fileName, Stream stream)
+    {
+        // Insert new file
+        var subFolder = CommonConstants.SubFolderKarte1Print;
+
+        if (stream.Length <= 0)
+        {
+            return String.Empty;
+        }
+
+        var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName + ".pdf", stream);
+        var url = responseUpload.Result;
+        return url;
     }
 }

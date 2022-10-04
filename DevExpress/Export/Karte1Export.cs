@@ -9,7 +9,7 @@ namespace DevExpress.Export;
 
 public class Karte1Export : IKarte1Export
 {
-    public void ExportToPdf(Karte1Model data)
+    public Stream ExportToPdf(Karte1ExportModel data)
     {
         var report = new Karte1Template();
         var dataSource = new ObjectDataSource();
@@ -32,5 +32,6 @@ public class Karte1Export : IKarte1Export
 
         // Export the report.
         report.ExportToPdf(pdfExportFile, pdfExportOptions);
+        return
     }
 }
