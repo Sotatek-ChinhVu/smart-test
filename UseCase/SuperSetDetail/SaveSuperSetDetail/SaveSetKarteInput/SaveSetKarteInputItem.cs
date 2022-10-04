@@ -1,15 +1,15 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿namespace UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
 
-public class SetKarteInfModel
+public class SaveSetKarteInputItem
 {
-    public SetKarteInfModel()
+    public SaveSetKarteInputItem()
     {
         HpId = 0;
         SetCd = 0;
         RichText = string.Empty;
     }
 
-    public SetKarteInfModel(int hpId, int setCd, string richText)
+    public SaveSetKarteInputItem(int hpId, int setCd, string richText)
     {
         HpId = hpId;
         SetCd = setCd;

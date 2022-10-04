@@ -1,8 +1,9 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿
+namespace UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 
-public class SetByomeiModel
+public class SaveSetByomeiInputItem
 {
-    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList)
+    public SaveSetByomeiInputItem(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixInputItem> prefixSuffixList)
     {
         Id = id;
         IsSyobyoKbn = isSyobyoKbn;
@@ -37,5 +38,5 @@ public class SetByomeiModel
 
     public string ByomeiCd { get; private set; }
 
-    public List<PrefixSuffixModel> PrefixSuffixList { get; private set; }
+    public List<PrefixSuffixInputItem> PrefixSuffixList { get; private set; }
 }

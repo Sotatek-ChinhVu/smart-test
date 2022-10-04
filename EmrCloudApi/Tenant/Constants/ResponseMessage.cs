@@ -166,6 +166,9 @@
         public static readonly string GetSetKbnListInvalidSetKbn = "SetKbnTo must more than SetKbnFrom";
         public static readonly string GetSetKbnListNoData = "No Data";
         public static readonly string GetSetKbntListSuccessed = "Successed";
+        public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
+        public static readonly string SaveSetOrderInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
         //Calculation Inf
 
 
@@ -201,6 +204,7 @@
 
         // Schema
         public static readonly string InvalidOldImage = "Invalid old image.";
+        public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
 
 
@@ -285,6 +289,50 @@
 
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
+
+        // SuperSetDetail
+        public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
+        public static readonly string InvalidSikkanKbn = "Invalid SikkanKbn, SikkanKbn >.0";
+        public static readonly string InvalidNanByoCd = "Invalid NanByoCd, NanByoCd > 0.";
+        public static readonly string InvalidByomeiCdOrSyusyokuCd = "Invalid ByomeiCd or SyusyokuCd, ByomeiCd or SyusyokuCd not found.";
+        public static readonly string SetCdNotExist = "SetCd Not Exist.";
+        public static readonly string FullByomeiMaxlength160 = "Length of FullByomei must less than 160 or equal 160.";
+        public static readonly string ByomeiCmtMaxlength80 = "Length of ByomeiCmt must less than 80 or equal 80.";
+        public static readonly string RpNameMaxLength240 = "Length of SetOrder RpName must less than 240 or equal 240.";
+        public static readonly string InvalidSetOrderInfId = "Id of SetOrderInf must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfRpNo = "SetOrder RpNo must more than 1 or equal 1";
+        public static readonly string InvalidSetOrderInfRpEdaNo = "SetOrder RpEdaNo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfKouiKbn = "SetOrder KouiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfInoutKbn = "SetOrder InoutKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSikyuKbn = "SetOrder SikyuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSyohoSbt = "SetOrder SyohoSbt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSanteiKbn = "SetOrder SanteiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfTosekiKbn = "SetOrder TosekiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfDaysCnt = "SetOrder DaysCnt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSortNo = "SetOrder SortNo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSinKouiKbn = "SetOrderDetail SinKouiKbn must more than 0 or equal 0";
+        public static readonly string ItemCdMaxLength10 = "Length of SetOrderDetail ItemCd must less than 10 or equal 10.";
+        public static readonly string ItemNameMaxLength240 = "Length of SetOrderDetail ItemCd must less than 240 or equal 240.";
+        public static readonly string UnitNameMaxLength24 = "Length of SetOrderDetail UnitName must less than 24 or equal 24.";
+        public static readonly string InvalidSetOrderSuryo = "SetOrderDetail Suryo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderUnitSBT = "SetOrderDetail UnitSBT must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderTermVal = "SetOrderDetail TermVal must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderKohatuKbn = "SetOrderDetail KohatuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoKbn = "SetOrderDetail SyohoKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoLimitKbn = "SetOrderDetail SyohoLimitKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderDrugKbn = "SetOrderDetail DrugKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderYohoKbn = "SetOrderDetail YohoKbn must more than 0 or equal 0";
+        public static readonly string Kokuji1MaxLength1 = "Length of SetOrderDetail Kokuji1 must less than 1 or equal 1.";
+        public static readonly string Kokuji2MaxLength1 = "Length of SetOrderDetail Kokuji2 must less than 1 or equal 1.";
+        public static readonly string InvalidSetOrderIsNodspRece = "SetOrderDetail IsNodspRece must more than 0 or equal 0";
+        public static readonly string IpnCdMaxLength12 = "Length of SetOrderDetail IpnCd must less than 12 or equal 12.";
+        public static readonly string IpnNameMaxLength120 = "Length of SetOrderDetail IpnName must less than 120 or equal 120.";
+        public static readonly string BunkatuMaxLength10 = "Length of SetOrderDetail Bunkatu must less than 10 or equal 10.";
+        public static readonly string CmtNameMaxLength240 = "Length of SetOrderDetail CmtName must less than 240 or equal 240.";
+        public static readonly string CmtOptMaxLength38 = "Length of SetOrderDetail CmtOpt must less than 38 or equal 38.";
+        public static readonly string FontColorMaxLength8 = "Length of SetOrderDetail FontColor must less than 8 or equal 8.";
+        public static readonly string InvalidSetOrderCommentNewline = "SetOrderDetail CommentNewline must more than 0 or equal 0";
+        public static readonly string RpNoOrRpEdaNoIsNotExist = "RpNo or RpEdaNo is not exist";
 
         // KaMst
         public static readonly string InvalidKaId = "Invalid KaId, KaId > 0";
