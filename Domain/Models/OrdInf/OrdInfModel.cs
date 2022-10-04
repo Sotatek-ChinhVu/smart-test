@@ -112,11 +112,11 @@ namespace Domain.Models.OrdInfs
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
             }
-            if (RpNo <= 0)
+            if ((Id > 0 && RpNo <= 0) || (Id == 0 && RpNo != 0))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRpNo);
             }
-            if (RpEdaNo <= 0)
+            if ((Id > 0 && RpEdaNo <= 0) || (Id == 0 && RpEdaNo != 0))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
             }

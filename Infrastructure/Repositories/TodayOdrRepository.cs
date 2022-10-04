@@ -35,7 +35,7 @@ namespace Infrastructure.Repositories
                             if (odrInfs.Count > 0)
                             {
                                 SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
-                                UpsertOdrInfs(odrInfs);
+                                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                             }
 
                             if (karteInfModels.Count > 0)
@@ -322,8 +322,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UpsertOdrInfs(List<OrdInfModel> ordInfs)
+        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
         {
+            var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
             foreach (var item in ordInfs)
             {
                 if (item.IsDeleted == DeleteTypes.Deleted)
@@ -346,8 +347,8 @@ namespace Infrastructure.Repositories
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
-                            RpNo = item.RpNo,
-                            RpEdaNo = item.RpEdaNo,
+                            RpNo = rpNoMax++,
+                            RpEdaNo = 1,
                             Id = 0,
                             HokenPid = item.HokenPid,
                             OdrKouiKbn = item.OdrKouiKbn,
@@ -375,8 +376,8 @@ namespace Infrastructure.Repositories
                                     PtId = od.PtId,
                                     SinDate = od.SinDate,
                                     RaiinNo = od.RaiinNo,
-                                    RpNo = od.RpNo,
-                                    RpEdaNo = od.RpEdaNo,
+                                    RpNo = ordInfEntity.RpNo,
+                                    RpEdaNo = 1,
                                     RowNo = od.RowNo,
                                     SinKouiKbn = od.SinKouiKbn,
                                     ItemCd = od.ItemCd,
@@ -420,8 +421,8 @@ namespace Infrastructure.Repositories
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
                             RpNo = item.RpNo,
-                            RpEdaNo = item.RpEdaNo,
-                            Id = 0,
+                            RpEdaNo = item.RpEdaNo + 1,
+                            Id = item.Id,
                             HokenPid = item.HokenPid,
                             OdrKouiKbn = item.OdrKouiKbn,
                             RpName = item.RpName,
@@ -449,7 +450,7 @@ namespace Infrastructure.Repositories
                                     SinDate = od.SinDate,
                                     RaiinNo = od.RaiinNo,
                                     RpNo = od.RpNo,
-                                    RpEdaNo = od.RpEdaNo,
+                                    RpEdaNo = ordInfEntity.RpEdaNo,
                                     RowNo = od.RowNo,
                                     SinKouiKbn = od.SinKouiKbn,
                                     ItemCd = od.ItemCd,
@@ -581,6 +582,19 @@ namespace Infrastructure.Repositories
             var karteInf = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.RaiinNo == raiinNo && k.KarteKbn == karteKbn && k.PtId == ptId).OrderByDescending(k => k.SeqNo).FirstOrDefault();
 
             return karteInf != null ? karteInf.SeqNo : 0;
+        }
+
+        private long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var odrList = _tenantNoTrackingDataContext.OdrInfs
+            .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
+
+            if (odrList.Any())
+            {
+                return odrList.Max(odr => odr.RpNo);
+            }
+
+            return 0;
         }
     }
 }

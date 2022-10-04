@@ -78,7 +78,6 @@
             InvalidCmtOpt,
             InvalidFontColor,
             InvalidCommentNewline,
-            InvalidTodayOrdInsertedExist,
             InvalidTodayOrdUpdatedNoExist,
             HpIdNoExist,
             PtIdNoExist,

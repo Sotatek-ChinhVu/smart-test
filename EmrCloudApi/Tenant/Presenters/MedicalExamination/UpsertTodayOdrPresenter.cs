@@ -73,58 +73,58 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSumBunkatuDifferentSuryo, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidQuantityUnit:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidQuantityUnit,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidQuantityUnit, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidPrice:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidPrice,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidPrice, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoOfReffill:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoOfReffill,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSuryoOfReffill, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt840:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt840,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt840, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt842:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt842,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt842, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt842CmtOptMoreThan38:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt842CmtOptMoreThan38,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt842CmtOptMoreThan38, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt830CmtOpt:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt830CmtOpt,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt830CmtOpt, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt830CmtOptMoreThan38:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt830CmtOptMoreThan38,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt830CmtOptMoreThan38, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt831:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt831,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt831, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt850Date:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt850Date,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt850Date, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt850OtherDate:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt850OtherDate,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt850OtherDate, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt851:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt851,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt851, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt852:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt852,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt852, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt853:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt853,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt853, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt880:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt880,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidCmt880, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.DuplicateTodayOrd:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdDuplicateTodayOrd,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdDuplicateTodayOrd, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidKohatuKbn:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidKohatuKbn, string.Empty));
@@ -154,31 +154,31 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSinDate, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidHokenPId:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHokenPId,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidHokenPId, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidRpName:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRpName,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRpName, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidInoutKbn:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidInoutKbn,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidInoutKbn, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSikyuKbn:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSikyuKbn,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSikyuKbn, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoSbt:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSyohoSbt,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSyohoSbt, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSanteiKbn:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSanteiKbn,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSanteiKbn, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidTosekiKbn:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidTosekiKbn,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidTosekiKbn, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidDaysCnt:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidDaysCnt,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidDaysCnt, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidSortNo:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSortNo,string.Empty));
+                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidSortNo, string.Empty));
                             break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidRowNo:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidRowNo, string.Empty));
@@ -252,9 +252,6 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidIsDeleted:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidIsDeleted, string.Empty));
                             break;
-                        case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdInsertedExist:
-                            validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidInsertedExist, string.Empty));
-                            break;
                         case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
                             validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.TodayOrdInvalidUpdatedNoExist, string.Empty));
                             break;
@@ -305,52 +302,31 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
             Result.Data = new UpsertTodayOdrResponse(outputData.Status, new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKartes);
         }
 
-        private string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
+        private static string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
         {
-            switch (status)
+            return status switch
             {
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSyosaiKbn:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidSyosaiKbn;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidJikanKbn;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidHokenPid;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrHokenPidNoExist;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidSanteiKbn;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidTantoId;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrTatoIdNoExist;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidKaId;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrKaIdNoExist;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidUKetukeTime;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidSinStartTime;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime:
-                    return ResponseMessage.RaiinInfTodayOdrInvalidSinEndTime;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHpId:
-                    return ResponseMessage.InvalidHpId;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId:
-                    return ResponseMessage.InvalidPtId;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate:
-                    return ResponseMessage.InvalidSinDate;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo:
-                    return ResponseMessage.InvalidRaiinNo;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.HpIdNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrHpIdNoExist;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrPtIdNoExist;
-                case RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist:
-                    return ResponseMessage.RaiinInfTodayOdrRaiinNoExist;
-                default:
-                    return ResponseMessage.Valid;
-
-            }
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSyosaiKbn => ResponseMessage.RaiinInfTodayOdrInvalidSyosaiKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn => ResponseMessage.RaiinInfTodayOdrInvalidJikanKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid => ResponseMessage.RaiinInfTodayOdrInvalidHokenPid,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist => ResponseMessage.RaiinInfTodayOdrHokenPidNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn => ResponseMessage.RaiinInfTodayOdrInvalidSanteiKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId => ResponseMessage.RaiinInfTodayOdrInvalidTantoId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist => ResponseMessage.RaiinInfTodayOdrTatoIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId => ResponseMessage.RaiinInfTodayOdrInvalidKaId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist => ResponseMessage.RaiinInfTodayOdrKaIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime => ResponseMessage.RaiinInfTodayOdrInvalidUKetukeTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime => ResponseMessage.RaiinInfTodayOdrInvalidSinStartTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime => ResponseMessage.RaiinInfTodayOdrInvalidSinEndTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.HpIdNoExist => ResponseMessage.RaiinInfTodayOdrHpIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist => ResponseMessage.RaiinInfTodayOdrPtIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist => ResponseMessage.RaiinInfTodayOdrRaiinNoExist,
+                _ => ResponseMessage.Valid,
+            };
         }
     }
 }
