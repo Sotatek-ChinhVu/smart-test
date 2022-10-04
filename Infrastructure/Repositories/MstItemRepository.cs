@@ -695,7 +695,17 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+        public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
+        {
+            var listDatas = _tenantDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
+            List<ByomeiMstModel> listByomeies = new();
 
+            if (listDatas != null)
+            {
+                listByomeies = listDatas.Select(mst => ConvertToByomeiMstModel(mst)).ToList();
+            }
+            return listByomeies;
+        }
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;

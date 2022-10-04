@@ -157,7 +157,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImage;
+using UseCase.Schema.SaveImageTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -167,6 +167,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
+using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SystemConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -420,11 +421,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             // Schema
-            busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
+            busBuilder.RegisterUseCase<SaveImageTodayOrderInputData, SaveImageTodayOrderInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();

@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Schema.SaveImage;
+namespace UseCase.Schema.SaveImageTodayOrder;
 
-public class SaveImageInputData : IInputData<SaveImageOutputData>
+public class SaveImageTodayOrderInputData : IInputData<SaveImageTodayOrderOutputData>
 {
-    public SaveImageInputData(int hpId, long ptId, long raiinNo, string oldImage, Stream streamImage)
+    public SaveImageTodayOrderInputData(int hpId, long ptId, long raiinNo, string oldImage, Stream streamImage)
     {
         HpId = hpId;
         PtId = ptId;

@@ -2,6 +2,13 @@
 
 public class SetKarteInfModel
 {
+    public SetKarteInfModel()
+    {
+        HpId = 0;
+        SetCd = 0;
+        RichText = string.Empty;
+    }
+
     public SetKarteInfModel(int hpId, int setCd, string richText)
     {
         HpId = hpId;
