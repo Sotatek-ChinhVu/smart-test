@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
@@ -663,6 +664,16 @@ namespace Infrastructure.Repositories
             }
 
             #endregion
+        }
+
+        public List<TokkiMstModel> GetListTokki(int hpId, int sinDate)
+        {
+            return _tenantDataContext.TokkiMsts
+                    .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                    .OrderBy(entity => entity.HpId)
+                    .ThenBy(entity => entity.TokkiCd)
+                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName))
+                    .ToList();
         }
 
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)

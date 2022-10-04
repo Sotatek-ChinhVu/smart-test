@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// 列名
         /// </summary>
         [Column("COLUMN_NAME")]
-        public string ColumnName { get; set; } = string.Empty;
+        public string? ColumnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 区分コード

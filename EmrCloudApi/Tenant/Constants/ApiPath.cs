@@ -52,5 +52,8 @@
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
+
+        //Validate Main Insurance
+        public const string ValidateMainInsurance = "ValidateMainInsurance";
     }
 }
