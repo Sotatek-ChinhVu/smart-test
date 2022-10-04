@@ -614,13 +614,15 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
             if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
             {
+                int plusRpNo = 0;
                 foreach (var model in listAddNewSetOrderModels)
                 {
                     var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
                     entityMst.RpNo = model.RpNo;
                     if (entityMst.RpNo == 0)
                     {
-                        entityMst.RpNo = GetMaxRpNo(setCd, hpId);
+                        entityMst.RpNo = GetMaxRpNo(setCd, hpId) + plusRpNo;
+                        plusRpNo++;
                     }
                     entityMst.RpEdaNo = model.RpEdaNo + 1;
                     entityMst.SortNo = model.SortNo;
