@@ -1,6 +1,6 @@
 ﻿using Domain.Models.HpMst;
 using Domain.Models.Insurance;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.MstItem;
@@ -23,7 +23,7 @@ namespace Interactor.MedicalExamination
     {
         private readonly IOrdInfRepository _ordInfRepository;
         private readonly IReceptionRepository _receptionRepository;
-        private readonly IKaMstRepository _kaRepository;
+        private readonly IKaRepository _kaRepository;
         private readonly IMstItemRepository _mstItemRepository;
         private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
         private readonly IPatientInforRepository _patientInforRepository;
@@ -33,7 +33,7 @@ namespace Interactor.MedicalExamination
         private readonly IHpInfRepository _hpInfRepository;
         private readonly ITodayOdrRepository _todayOdrRepository;
 
-        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaMstRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository)
+        public UpsertTodayOrdInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IKaRepository kaRepository, IMstItemRepository mstItemRepository, ISystemGenerationConfRepository systemGenerationConfRepository, IPatientInforRepository patientInforRepository, IKarteKbnMstRepository karteKbnInforRepository, IInsuranceRepository insuranceInforRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, ITodayOdrRepository todayOdrRepository)
         {
             _ordInfRepository = ordInfRepository;
             _kaRepository = kaRepository;

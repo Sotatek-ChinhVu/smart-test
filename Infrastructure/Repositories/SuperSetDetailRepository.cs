@@ -4,6 +4,8 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using PostgreDataContext;
 using System.Text;
 
@@ -13,8 +15,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 {
     private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
     private readonly TenantDataContext _tenantDataContext;
-    public SuperSetDetailRepository(ITenantProvider tenantProvider)
+    private readonly AmazonS3Options _options;
+    private const string SUSPECTED = "の疑い";
+    private const string SUSPECTED_CD = "8002";
+    private const string FREE_WORD = "0000999";
+    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider)
     {
+        _options = optionsAccessor.Value;
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
@@ -64,6 +71,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             isSuspected = codeLists.Any(c => c == "8002");
         }
         return new SetByomeiModel(
+                mst.Id,
                 isSyobyoKbn,
                 sikkanKbn,
                 nanByoCd,
@@ -159,7 +167,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                                  join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
-                                 select ConvertToModel(odrInf, odrUser?.Name ?? string.Empty);
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
 
         // Convert to list SetOrderInfModel
         foreach (var itemOrderModel in listOrderInfModels)
@@ -265,7 +273,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
-    private SetOrderInfModel ConvertToModel(SetOdrInf ordInf, string createName)
+    private SetOrderInfModel ConvertToOrderInfModel(SetOdrInf ordInf, string createName)
     {
         return new SetOrderInfModel(
                     ordInf.Id,
@@ -407,4 +415,378 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return KensaGaichuTextConst.NONE;
     }
     #endregion
+
+    public int SaveSuperSetDetail(int setCd, int userId, int hpId, List<SetByomeiModel> SetByomeiList, SetKarteInfModel SetKarteInf, List<SetOrderInfModel> ListSetOrdInfModels)
+    {
+        int status = 0;
+
+        if (!SaveSetByomei(setCd, userId, hpId, SetByomeiList))
+        {
+            status = 1;
+        }
+        if (!SaveSetKarte(userId, SetKarteInf))
+        {
+            status = 2;
+        }
+        if (!SaveSetOrderInf(setCd, userId, hpId, ListSetOrdInfModels))
+        {
+            status = 3;
+        }
+        return status;
+    }
+
+    #region SaveSetByomei
+    private bool SaveSetByomei(int setCd, int userId, int hpId, List<SetByomeiModel> setByomeiModels)
+    {
+        bool status = false;
+        try
+        {
+            var listOldSetByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
+
+            // Add new SetByomei
+            var listAddNewSetByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
+            if (listAddNewSetByomeis != null && listAddNewSetByomeis.Count > 0)
+            {
+                _tenantDataContext.SetByomei.AddRange(listAddNewSetByomeis);
+            }
+
+            // Update SetByomei
+            foreach (var model in setByomeiModels.Where(model => model.Id != 0).ToList())
+            {
+                var mst = listOldSetByomeis.FirstOrDefault(mst => mst.Id == model.Id);
+                if (mst != null)
+                {
+                    mst = ConvertToSetByomeiEntity(setCd, userId, hpId, mst, model) ?? new SetByomei();
+                }
+            }
+
+            // Delete SetByomei
+            var listSetByomeiDelete = listOldSetByomeis.Where(mst => !setByomeiModels.Select(model => model.Id).ToList().Contains(mst.Id)).ToList();
+            foreach (var mst in listSetByomeiDelete)
+            {
+                mst.IsDeleted = DeleteTypes.Deleted;
+                mst.UpdateDate = DateTime.UtcNow;
+                mst.UpdateId = userId;
+            }
+            _tenantDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    private SetByomei ConvertToSetByomeiEntity(int setCd, int userId, int hpId, SetByomei mst, SetByomeiModel model)
+    {
+        mst.HpId = hpId;
+        mst.SetCd = setCd;
+        mst.SyobyoKbn = model.IsSyobyoKbn ? 1 : 0;
+        mst.SikkanKbn = model.SikkanKbn;
+        mst.NanbyoCd = model.NanByoCd;
+        mst.IsNodspRece = model.IsDspRece ? 0 : 1;
+        mst.IsNodspKarte = model.IsDspKarte ? 0 : 1;
+        mst.HosokuCmt = model.ByomeiCmt ?? string.Empty;
+        if (model.FullByomei.StartsWith("//"))
+        {
+            mst.Byomei = model.FullByomei.Substring(2) ?? string.Empty;
+            mst.ByomeiCd = FREE_WORD;
+        }
+        else
+        {
+            mst.Byomei = model.FullByomei ?? string.Empty;
+            mst.ByomeiCd = model.ByomeiCd ?? string.Empty;
+        }
+
+        var listPrefixSuffix = mst.ByomeiCd != FREE_WORD ? model.PrefixSuffixList : new();
+        var itemSuspected = listPrefixSuffix.FirstOrDefault(item => item.Code.Equals(SUSPECTED_CD));
+
+        if (itemSuspected != null)
+        {
+            listPrefixSuffix.Remove(itemSuspected);
+        }
+        mst.SyusyokuCd1 = listPrefixSuffix.Count > 0 ? listPrefixSuffix[0].Code : string.Empty;
+        mst.SyusyokuCd2 = listPrefixSuffix.Count > 1 ? listPrefixSuffix[1].Code : string.Empty;
+        mst.SyusyokuCd3 = listPrefixSuffix.Count > 2 ? listPrefixSuffix[2].Code : string.Empty;
+        mst.SyusyokuCd4 = listPrefixSuffix.Count > 3 ? listPrefixSuffix[3].Code : string.Empty;
+        mst.SyusyokuCd5 = listPrefixSuffix.Count > 4 ? listPrefixSuffix[4].Code : string.Empty;
+        mst.SyusyokuCd6 = listPrefixSuffix.Count > 5 ? listPrefixSuffix[5].Code : string.Empty;
+        mst.SyusyokuCd7 = listPrefixSuffix.Count > 6 ? listPrefixSuffix[6].Code : string.Empty;
+        mst.SyusyokuCd8 = listPrefixSuffix.Count > 7 ? listPrefixSuffix[7].Code : string.Empty;
+        mst.SyusyokuCd9 = listPrefixSuffix.Count > 8 ? listPrefixSuffix[8].Code : string.Empty;
+        mst.SyusyokuCd10 = listPrefixSuffix.Count > 9 ? listPrefixSuffix[9].Code : string.Empty;
+        mst.SyusyokuCd11 = listPrefixSuffix.Count > 10 ? listPrefixSuffix[10].Code : string.Empty;
+        mst.SyusyokuCd12 = listPrefixSuffix.Count > 11 ? listPrefixSuffix[11].Code : string.Empty;
+        mst.SyusyokuCd13 = listPrefixSuffix.Count > 12 ? listPrefixSuffix[12].Code : string.Empty;
+        mst.SyusyokuCd14 = listPrefixSuffix.Count > 13 ? listPrefixSuffix[13].Code : string.Empty;
+        mst.SyusyokuCd15 = listPrefixSuffix.Count > 14 ? listPrefixSuffix[14].Code : string.Empty;
+        mst.SyusyokuCd16 = listPrefixSuffix.Count > 15 ? listPrefixSuffix[15].Code : string.Empty;
+        mst.SyusyokuCd17 = listPrefixSuffix.Count > 16 ? listPrefixSuffix[16].Code : string.Empty;
+        mst.SyusyokuCd18 = listPrefixSuffix.Count > 17 ? listPrefixSuffix[17].Code : string.Empty;
+        mst.SyusyokuCd19 = listPrefixSuffix.Count > 18 ? listPrefixSuffix[18].Code : string.Empty;
+        mst.SyusyokuCd20 = listPrefixSuffix.Count > 19 ? listPrefixSuffix[19].Code : string.Empty;
+        mst.SyusyokuCd21 = listPrefixSuffix.Count > 20 ? listPrefixSuffix[20].Code : string.Empty;
+
+        if (model.IsSuspected && mst.ByomeiCd != FREE_WORD && itemSuspected == null)
+        {
+            mst.SyusyokuCd21 = SUSPECTED_CD;
+        }
+        else if (!model.IsSuspected && mst.ByomeiCd != FREE_WORD)
+        {
+            mst.Byomei = mst.Byomei?.Replace(SUSPECTED, string.Empty);
+        }
+
+        if (model.Id == 0)
+        {
+            mst.CreateDate = DateTime.UtcNow;
+            mst.CreateId = userId;
+        }
+        mst.UpdateDate = DateTime.UtcNow;
+        mst.UpdateId = userId;
+        return mst;
+    }
+    #endregion
+
+    #region SaveSetKarte
+    private bool SaveSetKarte(int userId, SetKarteInfModel model)
+    {
+        bool status = false;
+
+        try
+        {
+            // update SetKarte
+            var entity = _tenantDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            if (entity == null)
+            {
+                entity = new();
+                entity.SetCd = model.SetCd;
+                entity.HpId = model.HpId;
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.IsDeleted = 0;
+                entity.CreateDate = DateTime.UtcNow;
+                entity.UpdateDate = DateTime.UtcNow;
+                entity.UpdateId = userId;
+                entity.CreateId = userId;
+                _tenantDataContext.SetKarteInf.Add(entity);
+            }
+            else
+            {
+                entity.RichText = Encoding.UTF8.GetBytes(model.RichText);
+                entity.UpdateId = userId;
+                entity.UpdateDate = DateTime.UtcNow;
+            }
+
+            // if set karte have image, update setKarteImage
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
+            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName))).ToList())
+            {
+                item.Position = 10;
+            }
+
+            _tenantDataContext.SaveChanges();
+            status = true;
+
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    private string ConvertToLinkImage(string FileName)
+    {
+        string link = "src=\"" + _options.BaseAccessUrl + "/" + FileName + "\"";
+        return link;
+    }
+    #endregion
+
+    #region SaveSetOrderInf
+    private bool SaveSetOrderInf(int setCd, int userId, int hpId, List<SetOrderInfModel> setOrderInfModels)
+    {
+        bool status = false;
+        try
+        {
+            // Add new SetOdrInf
+            List<SetOdrInf> listSetOdrInfAddNews = new();
+            List<SetOdrInfDetail> listSetOdrInfDetailAddNews = new();
+            var listAddNewSetOrderModels = setOrderInfModels.Where(model => model.IsDeleted == 0).ToList();
+            if (listAddNewSetOrderModels != null && listAddNewSetOrderModels.Count > 0)
+            {
+                int plusRpNo = 1;
+                foreach (var model in listAddNewSetOrderModels)
+                {
+                    var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
+                    entityMst.RpNo = model.RpNo;
+                    entityMst.RpEdaNo = model.RpEdaNo + 1;
+                    if (entityMst.RpNo == 0)
+                    {
+                        entityMst.RpNo = GetMaxRpNo(setCd, hpId) + plusRpNo;
+                        entityMst.RpEdaNo = 1;
+                        plusRpNo++;
+                    }
+                    entityMst.SortNo = model.SortNo;
+                    entityMst.Id = 0;
+                    int rowNo = 1;
+                    foreach (var detail in model.OrdInfDetails)
+                    {
+                        var entityDetail = ConvertToSetOdrInfDetailEntity(setCd, hpId, new SetOdrInfDetail(), detail);
+                        entityDetail.RpNo = entityMst.RpNo;
+                        entityDetail.RpEdaNo = entityMst.RpEdaNo;
+                        entityDetail.RowNo = rowNo;
+                        listSetOdrInfDetailAddNews.Add(entityDetail);
+                        rowNo++;
+                    }
+                    listSetOdrInfAddNews.Add(entityMst);
+                }
+                _tenantDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
+                _tenantDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
+            }
+
+            // Delete SetOdrInf
+            var listIdDeletes = setOrderInfModels.Where(model => model.IsDeleted != 0 || model.Id > 0).Select(item => item.Id).ToList();
+            if (listIdDeletes != null && listIdDeletes.Count > 0)
+            {
+                List<SetOdrInf> listSetOdrInfDeletes = _tenantDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
+                foreach (var mst in listSetOdrInfDeletes)
+                {
+                    mst.IsDeleted = DeleteTypes.Deleted;
+                    mst.UpdateDate = DateTime.UtcNow;
+                    mst.UpdateId = userId;
+                }
+            }
+
+            _tenantDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    private SetOdrInf ConvertToSetOdrInfEntity(int setCd, int userId, int hpId, SetOdrInf entity, SetOrderInfModel model)
+    {
+        entity.SetCd = setCd;
+        entity.RpNo = model.RpNo;
+        entity.RpEdaNo = model.RpEdaNo;
+        entity.HpId = hpId;
+        entity.OdrKouiKbn = model.OdrKouiKbn;
+        entity.RpName = model.RpName;
+        entity.InoutKbn = model.InoutKbn;
+        entity.SikyuKbn = model.SikyuKbn;
+        entity.SyohoSbt = model.SyohoSbt;
+        entity.SanteiKbn = model.SanteiKbn;
+        entity.TosekiKbn = model.TosekiKbn;
+        entity.DaysCnt = model.DaysCnt;
+        entity.SortNo = model.SortNo;
+        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateId = userId;
+        if (entity.Id == 0)
+        {
+            entity.CreateDate = DateTime.UtcNow;
+            entity.CreateId = userId;
+            entity.IsDeleted = 0;
+        }
+        return entity;
+    }
+
+    private SetOdrInfDetail ConvertToSetOdrInfDetailEntity(int setCd, int hpId, SetOdrInfDetail entity, SetOrderInfDetailModel model)
+    {
+        entity.SetCd = setCd;
+        entity.HpId = hpId;
+        entity.RpNo = model.RpNo;
+        entity.RpEdaNo = model.RpEdaNo;
+        entity.SinKouiKbn = model.SinKouiKbn;
+        entity.ItemCd = model.ItemCd;
+        entity.ItemName = model.ItemName;
+        entity.Suryo = model.Suryo;
+        entity.UnitName = model.UnitName;
+        entity.UnitSbt = model.UnitSBT;
+        entity.OdrTermVal = model.OdrTermVal;
+        entity.KohatuKbn = model.KohatuKbn;
+        entity.SyohoKbn = model.SyohoKbn;
+        entity.SyohoLimitKbn = model.SyohoLimitKbn;
+        entity.DrugKbn = model.DrugKbn;
+        entity.YohoKbn = model.YohoKbn;
+        entity.Kokuji1 = model.Kokuji1;
+        entity.Kokuji2 = model.Kokuji2;
+        entity.IsNodspRece = model.IsNodspRece;
+        entity.IpnCd = model.IpnCd;
+        entity.IpnName = model.IpnName;
+        entity.Bunkatu = model.Bunkatu;
+        entity.CmtName = model.CmtName;
+        entity.CmtOpt = model.CmtOpt;
+        entity.FontColor = model.FontColor;
+        entity.CommentNewline = model.CommentNewline;
+        return entity;
+    }
+    #endregion
+
+    public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)
+    {
+        bool status = false;
+        try
+        {
+            var hpId = listModel.FirstOrDefault()?.HpId;
+            var setCd = listModel.FirstOrDefault()?.SetCd;
+            var listPosition = listModel.Select(item => item.Position).ToList();
+            var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName)).ToList();
+
+            foreach (var model in listModel)
+            {
+                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName.Equals(model.OldFileName));
+                if (karteImgInf == null)
+                {
+                    karteImgInf = new SetKarteImgInf();
+                    karteImgInf.HpId = model.HpId;
+                    karteImgInf.SetCd = model.SetCd;
+                    karteImgInf.FileName = model.FileName;
+                    karteImgInf.Position = model.Position;
+                    _tenantDataContext.SetKarteImgInf.Add(karteImgInf);
+                }
+                else
+                {
+                    if (model.FileName != String.Empty)
+                    {
+                        karteImgInf.Position = model.Position;
+                        karteImgInf.FileName = model.FileName;
+                    }
+                    else
+                    {
+                        _tenantDataContext.SetKarteImgInf.Remove(karteImgInf);
+                    }
+                }
+            }
+            _tenantDataContext.SaveChanges();
+            status = true;
+            return status;
+        }
+        catch (Exception)
+        {
+            return status;
+        }
+    }
+
+    public List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd)
+    {
+        var listOrder = _tenantNoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
+        return listOrder.Select(model => ConvertToOrderInfModel(model, string.Empty)).ToList();
+    }
+
+    public long GetMaxRpNo(int setCd, int hpId)
+    {
+        if (setCd <= 0)
+        {
+            return 0;
+        }
+
+        var result = _tenantNoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd)
+                                                  .Max(item => item.RpNo);
+        return result;
+    }
+
 }

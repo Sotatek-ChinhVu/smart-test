@@ -52,6 +52,24 @@ public class SetOrderInfModel
         OrdInfDetails = ordInfDetails;
     }
 
+    public SetOrderInfModel(long id, long rpNo, long rpEdaNo, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int sortNo, int isDeleted, List<SetOrderInfDetailModel> ordInfDetails)
+    {
+        Id = id;
+        RpNo = rpNo;
+        RpEdaNo = rpEdaNo;
+        OdrKouiKbn = odrKouiKbn;
+        RpName = rpName;
+        InoutKbn = inoutKbn;
+        SikyuKbn = sikyuKbn;
+        SyohoSbt = syohoSbt;
+        SanteiKbn = santeiKbn;
+        TosekiKbn = tosekiKbn;
+        DaysCnt = daysCnt;
+        SortNo = sortNo;
+        IsDeleted = isDeleted;
+        OrdInfDetails = ordInfDetails;
+    }
+
     public long Id { get; private set; }
 
     public int HpId { get; private set; }
@@ -86,9 +104,9 @@ public class SetOrderInfModel
 
     public int CreateId { get; private set; }
 
-    public string CreateName { get; private set; }
+    public string CreateName { get; private set; } = string.Empty;
 
-    public GroupKoui GroupKoui { get; private set; }
+    public GroupKoui GroupKoui { get; private set; } = GroupKoui.From(0);
 
     /// <summary>
     /// 自己注射 - Self-Injection
@@ -138,5 +156,6 @@ public class SetOrderInfModel
     {
         get => IsShohoComment || IsShohoBiko;
     }
+
     public List<SetOrderInfDetailModel> OrdInfDetails { get; private set; }
 }

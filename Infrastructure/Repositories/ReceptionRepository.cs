@@ -188,12 +188,15 @@ namespace Infrastructure.Repositories
             void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
             {
                 // Detect changes
-                if (entity.OyaRaiinNo != model.OyaRaiinNo
-                    || entity.KaId != model.KaId
-                    || entity.UketukeSbt != model.UketukeSbt
-                    || entity.UketukeNo != model.UketukeNo
-                    || entity.TantoId != model.TantoId
-                    || entity.HokenPid != model.HokenPid)
+                if (entity.OyaRaiinNo != model.OyaRaiinNo || 
+                    entity.KaId != model.KaId || 
+                    entity.UketukeSbt != model.UketukeSbt || 
+                    entity.UketukeNo != model.UketukeNo || 
+                    entity.TantoId != model.TantoId ||
+                    entity.SyosaisinKbn != model.SyosaisinKbn ||
+                    entity.JikanKbn != model.JikanKbn ||
+                    entity.SanteiKbn != model.SanteiKbn || 
+                    entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
                     entity.KaId = model.KaId;
@@ -201,6 +204,9 @@ namespace Infrastructure.Repositories
                     entity.UketukeNo = model.UketukeNo;
                     entity.TantoId = model.TantoId;
                     entity.HokenPid = model.HokenPid;
+                    entity.SyosaisinKbn = model.SyosaisinKbn;
+                    entity.JikanKbn = model.JikanKbn;
+                    entity.SanteiKbn = model.SanteiKbn;
                     entity.UpdateDate = DateTime.UtcNow;
                     entity.UpdateId = TempIdentity.UserId;
                     entity.UpdateMachine = TempIdentity.ComputerName;
@@ -226,8 +232,11 @@ namespace Infrastructure.Repositories
                         Text = text,
                         CreateDate = DateTime.UtcNow,
                         CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
-                    });
+                        CreateMachine = TempIdentity.ComputerName,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName
+                });
                 }
                 else if (raiinCmtInf.Text != text)
                 {

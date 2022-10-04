@@ -39,6 +39,10 @@ namespace Interactor.OrdInfs
                 var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
+                if (inputDataList.Count == 0)
+                {
+                    return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Failed);
+                }
                 if (inputDataList.Select(i => i.HpId).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.HpId <= 0)
                 {
                     dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.InvalidHpId));
@@ -270,7 +274,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Faild);
+                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
             }
         }
     }
