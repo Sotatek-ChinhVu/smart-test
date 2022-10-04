@@ -34,6 +34,12 @@
         public static readonly string CreateUserSuccessed = "User created!!!";
 
         //Patient Infor
+        // RousaiJibai
+        public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
+        public static readonly string InvalidSelectedHokenInfRousaiSaigaiKbn = "Invalid SelectedHokenInf RousaiSaigaiKbn";
+        public static readonly string InvalidSelectedHokenInfRousaiSyobyoDate = "Invalid SelectedHokenInf RousaiSyobyoDate";
+        public static readonly string InvalidSelectedHokenInfRyoyoStartDate = "Invalid SelectedHokenInf RyoyoStartDate";
+        public static readonly string InvalidSelectedHokenInfRyoyoEndDate = "Invalid SelectedHokenInf RyoyoEndDate";
 
         //Group Infor
         public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
