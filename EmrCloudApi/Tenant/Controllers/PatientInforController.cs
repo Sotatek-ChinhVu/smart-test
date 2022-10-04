@@ -39,6 +39,9 @@ using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
+using UseCase.Insurance.ValidMainInsurance;
+using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Responses.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -236,16 +239,6 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveHokenSyaMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
-        }
-        [HttpGet(ApiPath.GetDetailHokenMst)]
-        public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
-        {
-            var input = new GetDetailHokenMstInputData(request.HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
-            var output = _bus.Handle(input);
-
-            var presenter = new GetDetailHokenMstPresenter();
-            presenter.Complete(output);
-            return new ActionResult<Response<GetDetailHokenMstResponse>>(presenter.Result);
         }
     }
 }

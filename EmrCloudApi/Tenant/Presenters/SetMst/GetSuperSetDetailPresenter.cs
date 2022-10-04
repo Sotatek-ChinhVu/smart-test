@@ -5,7 +5,7 @@ using UseCase.SuperSetDetail.SuperSetDetail;
 
 namespace EmrCloudApi.Tenant.Presenters.SetMst;
 
-public class GetSuperSetDetailPresenter : IGetSuperSetDetailOutputPort
+public class GetSuperSetDetailPresenter : IGetSuperSetOutputPort
 {
     public Response<GetSuperSetDetailResponse> Result { get; private set; } = new();
 
