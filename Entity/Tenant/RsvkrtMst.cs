@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RSV_NAME")]
         [MaxLength(120)]
-        public string RsvName { get; set; } = string.Empty;
+        public string? RsvName { get; set; } = string.Empty;
 
         [Column("SORT_NO")]
         [CustomAttribute.DefaultValue(0)]
