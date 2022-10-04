@@ -2,8 +2,9 @@
 
 public class SetByomeiModel
 {
-    public SetByomeiModel(bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList)
+    public SetByomeiModel(long id, bool isSyobyoKbn, int sikkanKbn, int nanByoCd, string fullByomei, bool isSuspected, bool isDspRece, bool isDspKarte, string byomeiCmt, string byomeiCd, List<PrefixSuffixModel> prefixSuffixList)
     {
+        Id = id;
         IsSyobyoKbn = isSyobyoKbn;
         SikkanKbn = sikkanKbn;
         NanByoCd = nanByoCd;
@@ -15,6 +16,8 @@ public class SetByomeiModel
         ByomeiCd = byomeiCd;
         PrefixSuffixList = prefixSuffixList;
     }
+
+    public long Id { get; private set; }
 
     public bool IsSyobyoKbn { get; private set; }
 

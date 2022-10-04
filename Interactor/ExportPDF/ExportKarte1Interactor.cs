@@ -215,7 +215,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             return String.Empty;
         }
 
-        var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName + ".pdf", stream);
+        var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName + ".pdf", stream);
         var url = responseUpload.Result;
         return url;
     }

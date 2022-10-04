@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.Schema;
 
-public class SaveImageRequest
+public class SaveImageTodayOrderRequest
 {
     public int HpId { get; set; }
     public long PtId { get; set; }

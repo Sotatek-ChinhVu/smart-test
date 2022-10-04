@@ -20,6 +20,7 @@
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
+        public static readonly string InvalidHpIdNotExist = "HpId not exist";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -33,6 +34,12 @@
         public static readonly string CreateUserSuccessed = "User created!!!";
 
         //Patient Infor
+        // RousaiJibai
+        public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
+        public static readonly string InvalidSelectedHokenInfRousaiSaigaiKbn = "Invalid SelectedHokenInf RousaiSaigaiKbn";
+        public static readonly string InvalidSelectedHokenInfRousaiSyobyoDate = "Invalid SelectedHokenInf RousaiSyobyoDate";
+        public static readonly string InvalidSelectedHokenInfRyoyoStartDate = "Invalid SelectedHokenInf RyoyoStartDate";
+        public static readonly string InvalidSelectedHokenInfRyoyoEndDate = "Invalid SelectedHokenInf RyoyoEndDate";
 
         //Group Infor
         public static readonly string DuplicateGroupId = "Can not duplicate GroupId";
@@ -77,6 +84,22 @@
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
+        // Validate Main Insurance
+        public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
+        public static readonly string InvalidSelectedHokenInfHokenNo = "Invalid SelectedHokenInf HokenNo";
+        public static readonly string InvalidSelectedHokenInfStartDate = "Invalid SelectedHokenInf StartDate";
+        public static readonly string InvalidSelectedHokenInfEndDate = "Invalid SelectedHokenInf EndDate";
+        public static readonly string InvaliSelectedHokenInfHokensyaMstIsKigoNa = "Invalid SelectedHokenInf HokensyaMst IsKigoNa";
+        public static readonly string InvalidSelectedHokenInfHonkeKbn = "Invalid SelectedHokenInf HonkeKbn";
+        public static readonly string InvalidSelectedHokenInfTokureiYm1 = "Invalid SelectedHokenInf TokureiYm1";
+        public static readonly string InvalidSelectedHokenInfTokureiYm2 = "Invalid SelectedHokenInf TokureiYm2";
+        public static readonly string InvalidSelectedHokenInfConfirmDate = "Invalid SelectedHokenInf ConfirmDate";
+        public static readonly string InvalidSelectedHokenMstHokenNo = "Invalid SelectedHokenMst HokenNo";
+        public static readonly string InvalidSelectedHokenMstCheckDegit = "Invalid SelectedHokenMst CheckDegit";
+        public static readonly string InvalidSelectedHokenMstAgeStart = "Invalid SelectedHokenMst AgeStart";
+        public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
+        public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
+        public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
 
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -149,6 +172,9 @@
         public static readonly string GetSetKbnListInvalidSetKbn = "SetKbnTo must more than SetKbnFrom";
         public static readonly string GetSetKbnListNoData = "No Data";
         public static readonly string GetSetKbntListSuccessed = "Successed";
+        public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
+        public static readonly string SaveSetOrderInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
         //Calculation Inf
 
 
@@ -184,6 +210,7 @@
 
         // Schema
         public static readonly string InvalidOldImage = "Invalid old image.";
+        public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
 
 
@@ -227,7 +254,7 @@
         public static readonly string TodayOrdInvalidSinKouiKbn = "SinKouiKbn must more than 0 or equal 0";
         public static readonly string TodayOrdInvalidItemCd = "Length of ItemCd must less than 10 or equal 10";
         public static readonly string TodayOrdInvalidItemName = "Length of ItemName must less than 240 or equal 240";
-        public static readonly string TodayOrdInvalidSuryo = "Suryo must more than 0 or equal 0";
+        public static readonly string TodayOrdInvalidSuryo = "Invalid Suryo";
         public static readonly string TodayOrdInvalidUnitName = "Length of UnitName must less than 24 or equal 24";
         public static readonly string TodayOrdInvalidUnitSbt = "UnitSbt must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidTermVal = "TermVal must more than 0 or equal 0";
@@ -238,7 +265,7 @@
         public static readonly string TodayOrdInvalidIpnCd = "Length of IpnCd must less than 12 or equal 12";
         public static readonly string TodayOrdInvalidIpnName = "Length of IpnName must less than 120 or equal 120";
         public static readonly string TodayOrdInvalidJissiKbn = "JissiKbn must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidJissiId = "JissiId must more than 0";
+        public static readonly string TodayOrdInvalidJissiId = "JissiId must more than 0 equal 0";
         public static readonly string TodayOrdInvalidJissiMachine = "Length of JissiMachine must less than 60 or equal 60";
         public static readonly string TodayOrdInvalidReqCd = "Length of ReqCd must less than 10 or equal 10";
         public static readonly string TodayOrdInvalidCmtName = "Length of CmtName must less than 240 or equal 240";
@@ -269,12 +296,107 @@
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
+        // SuperSetDetail
+        public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
+        public static readonly string InvalidSikkanKbn = "Invalid SikkanKbn, SikkanKbn >.0";
+        public static readonly string InvalidNanByoCd = "Invalid NanByoCd, NanByoCd > 0.";
+        public static readonly string InvalidByomeiCdOrSyusyokuCd = "Invalid ByomeiCd or SyusyokuCd, ByomeiCd or SyusyokuCd not found.";
+        public static readonly string SetCdNotExist = "SetCd Not Exist.";
+        public static readonly string FullByomeiMaxlength160 = "Length of FullByomei must less than 160 or equal 160.";
+        public static readonly string ByomeiCmtMaxlength80 = "Length of ByomeiCmt must less than 80 or equal 80.";
+        public static readonly string RpNameMaxLength240 = "Length of SetOrder RpName must less than 240 or equal 240.";
+        public static readonly string InvalidSetOrderInfId = "Id of SetOrderInf must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfRpNo = "SetOrder RpNo must more than 1 or equal 1";
+        public static readonly string InvalidSetOrderInfRpEdaNo = "SetOrder RpEdaNo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfKouiKbn = "SetOrder KouiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfInoutKbn = "SetOrder InoutKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSikyuKbn = "SetOrder SikyuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSyohoSbt = "SetOrder SyohoSbt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSanteiKbn = "SetOrder SanteiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfTosekiKbn = "SetOrder TosekiKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfDaysCnt = "SetOrder DaysCnt must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderInfSortNo = "SetOrder SortNo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSinKouiKbn = "SetOrderDetail SinKouiKbn must more than 0 or equal 0";
+        public static readonly string ItemCdMaxLength10 = "Length of SetOrderDetail ItemCd must less than 10 or equal 10.";
+        public static readonly string ItemNameMaxLength240 = "Length of SetOrderDetail ItemCd must less than 240 or equal 240.";
+        public static readonly string UnitNameMaxLength24 = "Length of SetOrderDetail UnitName must less than 24 or equal 24.";
+        public static readonly string InvalidSetOrderSuryo = "SetOrderDetail Suryo must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderUnitSBT = "SetOrderDetail UnitSBT must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderTermVal = "SetOrderDetail TermVal must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderKohatuKbn = "SetOrderDetail KohatuKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoKbn = "SetOrderDetail SyohoKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderSyohoLimitKbn = "SetOrderDetail SyohoLimitKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderDrugKbn = "SetOrderDetail DrugKbn must more than 0 or equal 0";
+        public static readonly string InvalidSetOrderYohoKbn = "SetOrderDetail YohoKbn must more than 0 or equal 0";
+        public static readonly string Kokuji1MaxLength1 = "Length of SetOrderDetail Kokuji1 must less than 1 or equal 1.";
+        public static readonly string Kokuji2MaxLength1 = "Length of SetOrderDetail Kokuji2 must less than 1 or equal 1.";
+        public static readonly string InvalidSetOrderIsNodspRece = "SetOrderDetail IsNodspRece must more than 0 or equal 0";
+        public static readonly string IpnCdMaxLength12 = "Length of SetOrderDetail IpnCd must less than 12 or equal 12.";
+        public static readonly string IpnNameMaxLength120 = "Length of SetOrderDetail IpnName must less than 120 or equal 120.";
+        public static readonly string BunkatuMaxLength10 = "Length of SetOrderDetail Bunkatu must less than 10 or equal 10.";
+        public static readonly string CmtNameMaxLength240 = "Length of SetOrderDetail CmtName must less than 240 or equal 240.";
+        public static readonly string CmtOptMaxLength38 = "Length of SetOrderDetail CmtOpt must less than 38 or equal 38.";
+        public static readonly string FontColorMaxLength8 = "Length of SetOrderDetail FontColor must less than 8 or equal 8.";
+        public static readonly string InvalidSetOrderCommentNewline = "SetOrderDetail CommentNewline must more than 0 or equal 0";
+        public static readonly string RpNoOrRpEdaNoIsNotExist = "RpNo or RpEdaNo is not exist";
+
         // KaMst
         public static readonly string InvalidKaId = "Invalid KaId, KaId > 0";
         public static readonly string KaSnameMaxLength20 = "Length of KaSname must lest than 20 or equal 20";
         public static readonly string KaNameMaxLength40 = "Length of KaName must lest than 40 or equal 40";
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
+
+        
+
+        //TodayOdr Field
+        public static readonly string TodayOdrSuryo = "Suryo";
+        public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
+        public static readonly string TodayOdrCmt842_830 = "CmtOpt";
+        public static readonly string TodayOdrKohatuKbn = "KohatuKbn";
+        public static readonly string TodayOdrDrugKbn = "DrugKbn";
+        public static readonly string TodayOdrId = "Id";
+        public static readonly string TodayOdrHpId = "HpId";
+        public static readonly string TodayOdrRaiinNo = "RaiinNo";
+        public static readonly string TodayOdrRpNo = "RpNo";
+        public static readonly string TodayOdrRpEdaNo = "RpEdaNo";
+        public static readonly string TodayOdrPtId = "PtId";
+        public static readonly string TodayOdrSinDate = "SinDate";
+        public static readonly string TodayOdrHokenPid = "HokenPId";
+        public static readonly string TodayOdrRpName = "RpName";
+        public static readonly string TodayOdrInOutKbn = "InOutKbn";
+        public static readonly string TodayOdrSikyuKbn = "SikyuKbn";
+        public static readonly string TodayOdrSyohoSbt = "SyohoSbt";
+        public static readonly string TodayOdrSanteiKbn = "SanteiKbn";
+        public static readonly string TodayOdrTosekiKbn = "TosekiKbn";
+        public static readonly string TodayOdrDaysCnt = "DaysCnt";
+        public static readonly string TodayOdrSortNo = "SortNo";
+        public static readonly string TodayOdrRowNo = "RowNo";
+        public static readonly string TodayOdrSinKouiKbn = "SinKouiKbn";
+        public static readonly string TodayOdrItemCd = "ItemCd";
+        public static readonly string TodayOdrItemName = "ItemName";
+        public static readonly string TodayOdrUnitName = "UnitName";
+        public static readonly string TodayOdrUnitSbt = "UnitSbt";
+        public static readonly string TodayOdrTermVal = "TermVal";
+        public static readonly string TodayOdrSyohoKbn = "SyohoKbn";
+        public static readonly string TodayOdrSyohoLimitKbn = "SyohoLimitKbn";
+        public static readonly string TodayOdrYohoKbn = "YohoKbn";
+        public static readonly string TodayOdrIsNodspRece = "IsNodspRece";
+        public static readonly string TodayOdrIpnCd = "IpnCd";
+        public static readonly string TodayOdrIpnName = "IpnName";
+        public static readonly string TodayOdrJissiKbn = "JissiKbn";
+        public static readonly string TodayOdrJissiId = "JissiId";
+        public static readonly string TodayOdrJissiMachine = "JissiMachine";
+        public static readonly string TodayOdrReqCd = "ReqCd";
+        public static readonly string TodayOdrBunkatu = "Bunkatu";
+        public static readonly string TodayOdrCmtName = "CmtName";
+        public static readonly string TodayOdrCmtOpt = "CmtOpt";
+        public static readonly string TodayOdrFontColor = "FontColor";
+        public static readonly string TodayOdrCommentNewline = "CommentNewline";
+        public static readonly string TodayOdrIsDeleted = "IsDeleted";
+        public static readonly string TodayOdrSuryoYohoKbn = "Suryo,YohoKbn";
+        public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
+        public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
         
         //Monshin
