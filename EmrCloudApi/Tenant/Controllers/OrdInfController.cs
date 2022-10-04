@@ -37,7 +37,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Validate)]
         public ActionResult<Response<ValidationOrdInfListResponse>> Validate([FromBody] ValidationOrdInfListRequest request)
         {
-            var input = new ValidationOrdInfListInputData(request.OrdInfs.Select(o =>
+            var input = new ValidationOrdInfListInputData(request.OdrInfs.Select(o =>
                     new ValidationOdrInfItem(
                         o.HpId,
                         o.RaiinNo,
@@ -92,8 +92,7 @@ namespace EmrCloudApi.Tenant.Controllers
                             od.CmtOpt,
                             od.FontColor,
                             od.CommentNewline
-                        )).ToList(),
-                        o.Status
+                        )).ToList()
                     )
                ).ToList());
             var output = _bus.Handle(input);

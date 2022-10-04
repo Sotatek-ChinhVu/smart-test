@@ -4,16 +4,16 @@ namespace UseCase.OrdInfs.Validation
 {
     public class ValidationOrdInfListInputData : IInputData<ValidationOrdInfListOutputData>
     {
-        public ValidationOrdInfListInputData(List<ValidationOdrInfItem> ordInfs)
+        public ValidationOrdInfListInputData(List<ValidationOdrInfItem> odrInfs)
         {
-            OrdInfs = ordInfs;
+            OdrInfs = odrInfs;
         }
 
-        public List<ValidationOdrInfItem> OrdInfs { get; private set; }
+        public List<ValidationOdrInfItem> OdrInfs { get; private set; }
 
         public List<ValidationOdrInfItem> ToList()
         {
-            return OrdInfs;
+            return OdrInfs;
         }
     }
 }
