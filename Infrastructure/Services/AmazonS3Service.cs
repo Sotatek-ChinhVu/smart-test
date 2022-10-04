@@ -39,7 +39,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
                 Key = GetUniqueKey(subFolder, fileName),
                 InputStream = memoryStream,
             };
-
             var response = await _s3Client.PutObjectAsync(request);
             return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
         }

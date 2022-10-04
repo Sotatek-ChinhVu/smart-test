@@ -139,7 +139,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei+"fdhsdgsjdghsdfghjdfhjgdfdhgjkldfdhljkghdlgdfjhklghjdflghdfjlghdfjkghdfgdjfkgheruaivhndfjdvkbbrdbveruigbajksdfgbhfadadgjkfhdaksga;GHAGJHDJKSGHJAG";
+                string byomeiDisplay = byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
@@ -196,12 +196,16 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             );
 
         var streamOutput = _karte1Export.ExportToPdf(model);
-        var url = UploadAmazonS3(model.FileName, streamOutput);
+        var url = string.Empty;
+        if (streamOutput.Length > 0)
+        {
+            url = UploadAmazonS3(model.FileName, streamOutput);
+        }
 
-        return new ExportKarte1OutputData(ExportKarte1Status.Success);
+        return new ExportKarte1OutputData(url, ExportKarte1Status.Success);
     }
 
-    private string UploadAmazonS3(string fileName, Stream stream)
+    private string UploadAmazonS3(string fileName, MemoryStream stream)
     {
         // Insert new file
         var subFolder = CommonConstants.SubFolderKarte1Print;
