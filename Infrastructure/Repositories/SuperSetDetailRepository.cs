@@ -618,6 +618,10 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 {
                     var entityMst = ConvertToSetOdrInfEntity(setCd, userId, hpId, new SetOdrInf(), model);
                     entityMst.RpNo = model.RpNo;
+                    if (entityMst.RpNo == 0)
+                    {
+                        entityMst.RpNo = GetMaxRpNo(setCd, hpId);
+                    }
                     entityMst.RpEdaNo = model.RpEdaNo + 1;
                     entityMst.SortNo = model.SortNo;
                     entityMst.Id = 0;
@@ -769,4 +773,17 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         var listOrder = _tenantNoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
         return listOrder.Select(model => ConvertToOrderInfModel(model, string.Empty)).ToList();
     }
+
+    public long GetMaxRpNo(int setCd, int hpId)
+    {
+        if (setCd <= 0)
+        {
+            return 0;
+        }
+
+        var result = _tenantNoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd)
+                                                  .Max(item => item.RpNo);
+        return result;
+    }
+
 }
