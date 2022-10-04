@@ -5,6 +5,7 @@ using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Buffers.Text;
 using System.Net;
 
 namespace Infrastructure.Services;
@@ -127,5 +128,26 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         } while (listResponse.IsTruncated);
 
         return listObjects;
+    }
+
+    public async Task<string> UploadPdfAsync(string subFolder, string fileName, MemoryStream memoryStream)
+    {
+        try
+        {
+            var request = new PutObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = GetUniqueKey(subFolder, fileName),
+                InputStream = memoryStream,
+            };
+            request.Metadata.Add("pdf", "application/pdf");
+
+            var response = await _s3Client.PutObjectAsync(request);
+            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
+        }
+        catch (AmazonS3Exception)
+        {
+            return string.Empty;
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace DevExpress.Interface
 {
     public interface IKarte2Export
     {
-        void ExportToPdf(Karte2ExportModel karte2ExportModel, Stream stream);
+        void ExportToPdf(Karte2ExportModel karte2ExportModel,Stream stream);
         void ExportToPdf(Karte2ExportModel karte2ExportModel);
     }
 }

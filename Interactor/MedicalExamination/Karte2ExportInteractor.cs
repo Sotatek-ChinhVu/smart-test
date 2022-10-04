@@ -72,10 +72,10 @@ namespace Interactor.MedicalExamination
                     StartDate = inputData.StartDate.ToString(),
                     EndDate = inputData.EndDate.ToString(),
                     HistoryKarteOdrRaiinItems = historyKarteOdrRaiinItem,
-                    FileName = inputData.HpId + "_" + inputData.PtId + "_" + inputData.UserId + "_" + DateTime.UtcNow.ToString("dd/mm/yyyy hh:ss")
+                    FileName = inputData.HpId + "_" + inputData.PtId + "_" + inputData.UserId
                 };
-                Stream stream = new MemoryStream();
-                _karte2Export.ExportToPdf(karte2ExportModel, stream);
+                MemoryStream stream = new MemoryStream();
+                _karte2Export.ExportToPdf(karte2ExportModel,stream);
                 _karte2Export.ExportToPdf(karte2ExportModel);
                 var url = UploadAmazonS3(karte2ExportModel, stream);
                 if (string.IsNullOrEmpty(url))
@@ -89,9 +89,9 @@ namespace Interactor.MedicalExamination
                 return new Karte2ExportOutputData(Karte2PrintStatus.Failed);
             }
         }
-        private string UploadAmazonS3(Karte2ExportModel karte2ExportModel, Stream stream)
+        private string UploadAmazonS3(Karte2ExportModel karte2ExportModel, MemoryStream stream)
         {
-            string fileName = CommonConstants.SubFolderKarte2Print + "/" + karte2ExportModel.FileName + ".Pdf";
+            string fileName = CommonConstants.SubFolderKarte2Print + "/" + karte2ExportModel.FileName.Replace(" ","") + ".pdf";
             if (_amazonS3Service.ObjectExistsAsync(fileName).Result)
             {
                 var isDelete = _amazonS3Service.DeleteObjectAsync(fileName).Result;
@@ -109,7 +109,7 @@ namespace Interactor.MedicalExamination
                 return String.Empty;
             }
 
-            var responseUpload = _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, stream);
+            var responseUpload = _amazonS3Service.UploadPdfAsync(subFolder, fileName, stream);
             var url = responseUpload.Result;
             return url;
         }

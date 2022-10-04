@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6.Tests", "6.Tests", "{74CA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6225E703-8D83-468C-88AC-0BA89C702F99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DevExpress", "DevExpress\DevExpress.csproj", "{9B08C9AF-2BAA-487D-AD9C-0C5A1FA7841E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DevExpress", "DevExpress\DevExpress.csproj", "{9B08C9AF-2BAA-487D-AD9C-0C5A1FA7841E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
