@@ -28,31 +28,29 @@ namespace Infrastructure.Repositories
             return executionStrategy.Execute(
                 () =>
                 {
-                    using (var transaction = _tenantTrackingDataContext.Database.BeginTransaction())
+                    using var transaction = _tenantTrackingDataContext.Database.BeginTransaction();
+                    try
                     {
-                        try
+                        if (odrInfs.Count > 0)
                         {
-                            if (odrInfs.Count > 0)
-                            {
-                                SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
-                                UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
-                            }
-
-                            if (karteInfModels.Count > 0)
-                                UpsertKarteInfs(karteInfModels);
-
-                            SaveRaiinListInf(odrInfs);
-
-                            transaction.Commit();
-
-                            return true;
+                            SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
+                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
-                        catch
-                        {
-                            transaction.Rollback();
 
-                            return false;
-                        }
+                        if (karteInfModels.Count > 0)
+                            UpsertKarteInfs(karteInfModels);
+
+                        SaveRaiinListInf(odrInfs);
+
+                        transaction.Commit();
+
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+
+                        return false;
                     }
                 });
 

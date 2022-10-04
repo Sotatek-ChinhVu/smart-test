@@ -79,7 +79,7 @@ namespace Domain.Models.OrdInfs
             }
         }
 
-        private double SumBunkatu(string bunkatu)
+        private static double SumBunkatu(string bunkatu)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace Domain.Models.OrdInfs
             #endregion
 
             #region Validate business
-            if (!TodayOrderConst.OdrKouiKbns.Values.Contains(OdrKouiKbn))
+            if (!OdrKouiKbns.ContainsValue(OdrKouiKbn))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidOdrKouiKbn);
             }
