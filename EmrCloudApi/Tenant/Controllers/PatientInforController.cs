@@ -35,6 +35,13 @@ using UseCase.PatientGroupMst.SaveList;
 using EmrCloudApi.Tenant.Constants;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
+using EmrCloudApi.Tenant.Responses.HokenMst;
+using EmrCloudApi.Tenant.Requests.HokenMst;
+using UseCase.HokenMst.GetDetail;
+using EmrCloudApi.Tenant.Presenters.HokenMst;
+using UseCase.Insurance.ValidMainInsurance;
+using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Responses.Insurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {

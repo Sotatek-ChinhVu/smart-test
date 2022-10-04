@@ -18,6 +18,7 @@
         public const string Paste = "Paste";
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
+        public const string SaveSuperSetDetail = "SaveSuperSetDetail";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -30,14 +31,30 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
 
+        //Schema
+        public const string SaveImageTodayOrder = "SaveImageTodayOrder";
+        public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
-
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
 
+        // KaCode
+        public const string GetListKaCode = "GetListKaCode";
+        public const string SaveListKaMst = "SaveListKaMst";
+
+        //PostCode
+        public const string SearchPostCode = "SearchPostCode";
+        
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
+
+        //HokenMst
+        public const string GetDetailHokenMst = "GetDetailHokenMst";
+
+        //Validate Main Insurance
+        public const string ValidateMainInsurance = "ValidateMainInsurance";
     }
 }

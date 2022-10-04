@@ -2,7 +2,7 @@
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst, int isDeleted)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -24,6 +24,7 @@
             SinDate = sinDate;
             ConfirmDateList = confirmDateList;
             IsHaveKohiMst = isHaveKohiMst;
+            IsDeleted = isDeleted;
         }
 
         public KohiInfModel(int hokenId)
@@ -77,6 +78,10 @@
         public int SinDate { get; private set; }
 
         public bool IsHaveKohiMst { get; private set; }
+
+        public int IsDeleted { get; private set; }
+
+        public bool IsEmptyModel => HokenId == 0;
 
         public bool IsExpirated
         {

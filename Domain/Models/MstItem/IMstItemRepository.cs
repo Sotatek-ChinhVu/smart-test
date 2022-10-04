@@ -17,9 +17,13 @@
         bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem);
 
         List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount);
+        
+        List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes);
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
 
         bool CheckItemCd(string ItemCd);
+
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
     }
 }
