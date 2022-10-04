@@ -109,7 +109,6 @@ namespace Infrastructure.Repositories
                     if( userMsts != null)
                     {
                         var temUser = ConVertUserList(inputData);
-                        temUser.IsDeleted = DeleteTypes.Deleted;
                         temUser.UpdateId = TempIdentity.UserId;
                         temUser.UpdateDate = DateTime.UtcNow;
                         temUser.UpdateMachine = TempIdentity.ComputerName;
@@ -145,10 +144,28 @@ namespace Infrastructure.Repositories
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
         }
-        private UserMst ConVertUserList(UserMstModel user)
+        private UserMst ConVertUserList(UserMstModel u)
         {
-            return new UserMst(
-                );
+            return new UserMst{
+                Id = u.Id,
+                UserId = u.UserId,
+                JobCd = u.JobCd,
+                ManagerKbn = u.ManagerKbn,
+                KaId = u.KaId,
+                KanaName = u.KanaName,
+                Name = u.Name,
+                Sname = u.Sname,
+                DrName = u.DrName,
+                LoginId = u.LoginId,
+                LoginPass = u.LoginPass,
+                MayakuLicenseNo = u.MayakuLicenseNo,
+                StartDate = u.StartDate,
+                EndDate = u.EndDate,
+                SortNo = u.SortNo,
+                RenkeiCd1 = u.RenkeiCd1,
+                IsDeleted = u.IsDeleted,
+            };
+                
         }
     }
 }
