@@ -13,44 +13,59 @@ namespace Interactor.Insurance
     {
         public ValidInsuranceOtherOutputData Handle(ValidInsuranceOtherInputData inputData)
         {
-            if (inputData.ValidModel.Sindate < 0)
+            try
             {
-                return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidSindate);
-            }
-            
-            if (inputData.ValidModel.PtBirthday < 0)
-            {
-                return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidPtBirthday);
-            }
-
-            var messageError = "";
-
-            // Check Duplicate Pattern
-            if (inputData.ValidModel.ListHokenPattern.Any())
-            {
-                var patternHokenOnlyCheckDuplicate = inputData.ValidModel.ListHokenPattern.Where(pattern => pattern.HokenKbn >= 1 && pattern.HokenKbn <= 4 && pattern.IsDeleted == 0);
-                var duplicateQuery = patternHokenOnlyCheckDuplicate.GroupBy(x => new { x.HokenId, x.Kohi1Id, x.Kohi2Id, x.Kohi3Id, x.Kohi4Id })
-                                        .Where(g => g.Count() > 1);
-                if (duplicateQuery != null && duplicateQuery.Any())
+                if (inputData.ValidModel.Sindate < 0)
                 {
-                    var paramsMessageCheckDuplicate = new string[] { "同じ組合せの保険・公１・公２・公３・公４を持つ組合せ" };
-                    messageError = String.Format(ErrorMessage.MessageType_mEnt00020, paramsMessageCheckDuplicate);
-                    return new ValidInsuranceOtherOutputData(false, messageError, ValidInsuranceOtherStatus.InvalidDuplicatePattern);
+                    return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidSindate);
                 }
-            }
 
-            // Check Age
-            if (inputData.ValidModel.IsSelectedHokenInfEmptyModel || !inputData.ValidModel.SelectedHokenInfIsShahoOrKokuho)
-            {
-                return new ValidInsuranceOtherOutputData(true, String.Empty, ValidInsuranceOtherStatus.Success);
+                if (inputData.ValidModel.PtBirthday < 0)
+                {
+                    return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidPtBirthday);
+                }
+
+                var messageError = "";
+                // Check Duplicate Pattern
+                if (inputData.ValidModel.ListHokenPattern.Any())
+                {
+                    var patternHokenOnlyCheckDuplicate = inputData.ValidModel.ListHokenPattern.Where(pattern => pattern.HokenKbn >= 1 && pattern.HokenKbn <= 4 && pattern.IsDeleted == 0);
+                    var duplicateQuery = patternHokenOnlyCheckDuplicate.GroupBy(x => new { x.HokenId, x.Kohi1Id, x.Kohi2Id, x.Kohi3Id, x.Kohi4Id })
+                                            .Where(g => g.Count() > 1);
+                    if (duplicateQuery != null && duplicateQuery.Any())
+                    {
+                        var paramsMessageCheckDuplicate = new string[] { "同じ組合せの保険・公１・公２・公３・公４を持つ組合せ" };
+                        messageError = String.Format(ErrorMessage.MessageType_mEnt00020, paramsMessageCheckDuplicate);
+                        return new ValidInsuranceOtherOutputData(false, messageError, ValidInsuranceOtherStatus.InvalidDuplicatePattern);
+                    }
+                }
+
+                // Check Age
+                if (inputData.ValidModel.IsSelectedHokenInfEmptyModel || !inputData.ValidModel.SelectedHokenInfIsShahoOrKokuho)
+                {
+                    return new ValidInsuranceOtherOutputData(true, String.Empty, ValidInsuranceOtherStatus.Success);
+                }
+
+                var checkAge = CheckAge(inputData);
+                if(!checkAge.Result)
+                {
+                    return checkAge;
+                }   
+                return new ValidInsuranceOtherOutputData(true, messageError, ValidInsuranceOtherStatus.Success);
             }
-            
+            catch (Exception)
+            {
+                return new ValidInsuranceOtherOutputData(true, "Validate Exception", ValidInsuranceOtherStatus.Success);
+            }
+        }
+
+        private ValidInsuranceOtherOutputData CheckAge(ValidInsuranceOtherInputData inputData)
+        {
+            var messageError = "";
             if (inputData.ValidModel.Sindate >= 20080401 && (inputData.ValidModel.ListHokenPattern.Count > 0 && inputData.ValidModel.ListHokenInf.Count > 0))
             {
                 var patternHokenOnlyCheckAge = inputData.ValidModel.ListHokenPattern.Where(pattern => pattern.IsDeleted == 0 && !pattern.IsExpirated);
-
                 int age = CIUtil.SDateToAge(inputData.ValidModel.PtBirthday, inputData.ValidModel.Sindate);
-
                 // hoken exist in at least 1 pattern
                 var inUsedHokens = inputData.ValidModel.ListHokenInf.Where(hoken => hoken.HokenId > 0 && hoken.IsDeleted == 0 && !hoken.IsExpirated
                                                             && patternHokenOnlyCheckAge.Any(pattern => pattern.HokenId == hoken.HokenId));
