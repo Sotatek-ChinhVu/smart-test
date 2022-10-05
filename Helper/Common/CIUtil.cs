@@ -1324,7 +1324,6 @@ namespace Helper.Common
 
             return (PtID * 10 + digit);
         }
-
     }
 
     public enum WarekiFormat
@@ -1346,5 +1345,4 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
-
 }

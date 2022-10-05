@@ -59,6 +59,9 @@
         //Validate Insurance rousai jibai
         public const string ValidateRousaiJibai = "ValidateRousaiJibai";
 
+        //Validate Kohi
+        public const string ValidateKohi = "ValidateKohi";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
     }

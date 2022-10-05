@@ -183,6 +183,7 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
 using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidKohi;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -325,6 +326,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
+            busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
