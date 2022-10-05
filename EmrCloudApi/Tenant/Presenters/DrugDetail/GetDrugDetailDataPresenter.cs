@@ -24,10 +24,10 @@ namespace EmrCloudApi.Tenant.Presenters.DrugDetailData
                     Result.Message = ResponseMessage.Success;
                     break;
                 case GetDrugDetailDataStatus.InvalidItemCd:
-                    Result.Message = ResponseMessage.InvalidItemCd
+                    Result.Message = ResponseMessage.InvalidItemCd;
                     break;
                 case GetDrugDetailDataStatus.InvalidYJCode:
-                    Result.Message = ResponseMessage.InvalidSinDate;
+                    Result.Message = ResponseMessage.InvalidYJCode;
                     break;
                 case GetDrugDetailDataStatus.Faild:
                     Result.Message = ResponseMessage.Failed;
