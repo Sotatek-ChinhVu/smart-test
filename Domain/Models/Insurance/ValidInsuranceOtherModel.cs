@@ -30,6 +30,7 @@ namespace Domain.Models.Insurance
 
         public List<HokenPatternsModel> ListHokenPattern { get; private set; }
     }
+
     public class HokenInfor
     {
         public HokenInfor(int endDate, string hokensyaNo, int hokenId, int isDeleted, bool isExpirated)

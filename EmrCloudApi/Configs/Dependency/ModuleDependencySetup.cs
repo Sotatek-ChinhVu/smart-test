@@ -312,7 +312,6 @@ namespace EmrCloudApi.Configs.Dependency
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
             busBuilder.RegisterUseCase<ValidMainInsuranceInputData, ValidInsuranceMainInteractor>();
-
             busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
 
             //Karte
