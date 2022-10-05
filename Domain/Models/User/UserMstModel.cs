@@ -36,7 +36,6 @@
         public string Sname { get; private set; }
         public string LoginId { get; private set; }
         public string LoginPass { get; private set; }
-        public List<UserMstModel> UserPrefixSuffixList { get; private set; }
         public string MayakuLicenseNo { get; private set; }
         public int StartDate { get; private set; }
         public int EndDate { get; private set; }

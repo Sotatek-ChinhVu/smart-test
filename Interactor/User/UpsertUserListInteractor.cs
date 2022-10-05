@@ -38,7 +38,7 @@ namespace Interactor.User
             }
             catch
             {
-                return new UpsertUserListOutputData(UpsertUserListStatus.Fail);
+                return new UpsertUserListOutputData(UpsertUserListStatus.False);
             }
             _userRepository.Upsert(inputData.UpsertUserList);
         }

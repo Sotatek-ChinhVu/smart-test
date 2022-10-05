@@ -108,10 +108,10 @@ namespace Infrastructure.Repositories
                     var userMsts = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
-                        var temUser = ConVertUserList(inputData);
-                        temUser.UpdateId = TempIdentity.UserId;
-                        temUser.UpdateDate = DateTime.UtcNow;
-                        temUser.UpdateMachine = TempIdentity.ComputerName;
+                        var updateUser = ConVertUserList(inputData);
+                        updateUser.UpdateId = TempIdentity.UserId;
+                        updateUser.UpdateDate = DateTime.UtcNow;
+                        updateUser.UpdateMachine = TempIdentity.ComputerName;
                         _tenantNoTrackingDataContext.Update(inputData);
                     }
                     else
