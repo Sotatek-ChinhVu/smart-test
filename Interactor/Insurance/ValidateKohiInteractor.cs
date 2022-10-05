@@ -21,72 +21,80 @@ namespace Interactor.Insurance
 
         public ValidKohiOutputData Handle(ValidKohiInputData inputData)
         {
-            if (inputData.SinDate < 0)
+            try
             {
-                return new ValidKohiOutputData(false, string.Empty, ValidKohiStatus.InvalidSindate);
+                if (inputData.SinDate < 0)
+                {
+                    return new ValidKohiOutputData(false, string.Empty, ValidKohiStatus.InvalidSindate);
+                }
+                if (inputData.PtBirthday < 0)
+                {
+                    return new ValidKohiOutputData(false, string.Empty, ValidKohiStatus.InvalidPtBirthday);
+                }
+                //IsValidKohi1
+                var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMst1TokusyuCheckFlag1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiMstEndDate1, inputData.SelectedKohiMstDisplayText1, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
+                if (!checkMessageKohi1.Result)
+                {
+                    return checkMessageKohi1;
+                }
+                // check Kohi No Function1
+                var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiHokenNo1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyuKyuCheckDigit1, inputData.SelectedKohiMstCheckDigit1, inputData.SelectedKohiMstHoubetu1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstAgeStart1, inputData.SelectedKohiMstAgeEnd1, 1, inputData.PtBirthday);
+                if (!checkMessageKohiNoFnc1.Result)
+                {
+                    return checkMessageKohiNoFnc1;
+                }
+                //IsValidKohi2
+                var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMst2TokusyuCheckFlag2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiMstEndDate2, inputData.SelectedKohiMstDisplayText2, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
+                if (!checkMessageKohi2.Result)
+                {
+                    return checkMessageKohi2;
+                }
+                // check Kohi No Function 2
+                var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiHokenNo2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyuKyuCheckDigit2, inputData.SelectedKohiMstCheckDigit2, inputData.SelectedKohiMstHoubetu2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstAgeStart2, inputData.SelectedKohiMstAgeEnd2, 2, inputData.PtBirthday);
+                if (!checkMessageKohiNoFnc2.Result)
+                {
+                    return checkMessageKohiNoFnc2;
+                }
+                //IsValidKohi3
+                var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMst3TokusyuCheckFlag3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiMstEndDate3, inputData.SelectedKohiMstDisplayText3, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
+                if (!checkMessageKohi3.Result)
+                {
+                    return checkMessageKohi3;
+                }
+                // check Kohi No Function 3
+                var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiHokenNo3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyuKyuCheckDigit3, inputData.SelectedKohiMstCheckDigit3, inputData.SelectedKohiMstHoubetu3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstAgeStart3, inputData.SelectedKohiMstAgeEnd3, 3, inputData.PtBirthday);
+                if (!checkMessageKohiNoFnc3.Result)
+                {
+                    return checkMessageKohiNoFnc3;
+                }
+                //IsValidKohi4
+                var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMst4TokusyuCheckFlag4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiMstEndDate4, inputData.SelectedKohiMstDisplayText4, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
+                if (!checkMessageKohi4.Result)
+                {
+                    return checkMessageKohi4;
+                }
+                // check Kohi No Function 4
+                var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiHokenNo4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyuKyuCheckDigit4, inputData.SelectedKohiMstCheckDigit4, inputData.SelectedKohiMstHoubetu4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstAgeStart4, inputData.SelectedKohiMstAgeEnd4, 4, inputData.PtBirthday);
+                if (!checkMessageKohiNoFnc4.Result)
+                {
+                    return checkMessageKohiNoFnc4;
+                }
+                var checkMessageKohiAll = IsvalidKohiAll(inputData.IsKohiEmptyModel1, inputData.IsKohiEmptyModel2, inputData.IsKohiEmptyModel3, inputData.IsKohiEmptyModel4,
+                                                         inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstDisplayText1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1,
+                                                         inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstDisplayText2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2,
+                                                         inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstDisplayText3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3,
+                                                         inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstDisplayText4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4);
+                if (!checkMessageKohiAll.Result)
+                {
+                    return checkMessageKohiAll;
+                }
+                return new ValidKohiOutputData(true, string.Empty, ValidKohiStatus.InvalidSuccess);
             }
-            if (inputData.PtBirthday < 0)
+            catch (Exception)
             {
-                return new ValidKohiOutputData(false, string.Empty, ValidKohiStatus.InvalidPtBirthday);
+
+                return new ValidKohiOutputData(false, "Validate Exception", ValidKohiStatus.InvalidFaild);
             }
-            //IsValidKohi1
-            var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMst1TokusyuCheckFlag1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiMstEndDate1, inputData.SelectedKohiMstDisplayText1, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
-            if (!checkMessageKohi1.Result)
-            {
-                return checkMessageKohi1;
-            }
-            // check Kohi No Function1
-            var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiHokenNo1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyuKyuCheckDigit1, inputData.SelectedKohiMstCheckDigit1, inputData.SelectedKohiMstHoubetu1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstAgeStart1, inputData.SelectedKohiMstAgeEnd1, 1, inputData.PtBirthday);
-            if (!checkMessageKohiNoFnc1.Result)
-            {
-                return checkMessageKohiNoFnc1;
-            }
-            //IsValidKohi2
-            var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMst2TokusyuCheckFlag2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiMstEndDate2, inputData.SelectedKohiMstDisplayText2, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
-            if (!checkMessageKohi2.Result)
-            {
-                return checkMessageKohi2;
-            }
-            // check Kohi No Function 2
-            var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiHokenNo2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyuKyuCheckDigit2, inputData.SelectedKohiMstCheckDigit2, inputData.SelectedKohiMstHoubetu2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstAgeStart2, inputData.SelectedKohiMstAgeEnd2, 2, inputData.PtBirthday);
-            if (!checkMessageKohiNoFnc2.Result)
-            {
-                return checkMessageKohiNoFnc2;
-            }
-            //IsValidKohi3
-            var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMst3TokusyuCheckFlag3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiMstEndDate3, inputData.SelectedKohiMstDisplayText3, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
-            if (!checkMessageKohi3.Result)
-            {
-                return checkMessageKohi3;
-            }
-            // check Kohi No Function 3
-            var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiHokenNo3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyuKyuCheckDigit3, inputData.SelectedKohiMstCheckDigit3, inputData.SelectedKohiMstHoubetu3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstAgeStart3, inputData.SelectedKohiMstAgeEnd3, 3, inputData.PtBirthday);
-            if (!checkMessageKohiNoFnc3.Result)
-            {
-                return checkMessageKohiNoFnc3;
-            }
-            //IsValidKohi4
-            var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMst4TokusyuCheckFlag4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiMstEndDate4, inputData.SelectedKohiMstDisplayText4, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
-            if (!checkMessageKohi4.Result)
-            {
-                return checkMessageKohi4;
-            }
-            // check Kohi No Function 4
-            var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiHokenNo4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyuKyuCheckDigit4, inputData.SelectedKohiMstCheckDigit4, inputData.SelectedKohiMstHoubetu4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstAgeStart4, inputData.SelectedKohiMstAgeEnd4, 4, inputData.PtBirthday);
-            if (!checkMessageKohiNoFnc4.Result)
-            {
-                return checkMessageKohiNoFnc4;
-            }
-            var checkMessageKohiAll = IsvalidKohiAll(inputData.IsKohiEmptyModel1, inputData.IsKohiEmptyModel2, inputData.IsKohiEmptyModel3, inputData.IsKohiEmptyModel4,
-                                                     inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstDisplayText1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1,
-                                                     inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstDisplayText2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2,
-                                                     inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstDisplayText3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3,
-                                                     inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstDisplayText4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4);
-            if (!checkMessageKohiAll.Result)
-            {
-                return checkMessageKohiAll;
-            }
-            return new ValidKohiOutputData(true, string.Empty, ValidKohiStatus.InvalidSuccess);
         }
 
         private ValidKohiOutputData IsValidKohi(bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew)
@@ -131,7 +139,6 @@ namespace Interactor.Insurance
                 }
             }
 
-
             if (isHokenMstModel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
@@ -153,6 +160,41 @@ namespace Interactor.Insurance
                     return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEmpty4);
                 }
             }
+
+            // check validate data
+            var checkValidateData = CheckValidData(numberMessage, numberKohi, futansyaNo, hokenMstIsFutansyaCheckFlag, jyukyusyaNo, hokenMstIsJyukyusyaCheckFlag, tokusyuNo, hokenMstIsTokusyuCheckFlag);
+            if (!checkValidateData.Result)
+            {
+                return checkValidateData;
+            }
+
+            // check kohi date
+            var checkKohiDate = CheckKohiDate(startDate, endDate, numberMessage, numberKohi);
+            if (!checkKohiDate.Result)
+            {
+                return checkKohiDate;
+            }
+
+            // check confirm date kohi
+            var checkMessageIsValidConfirmDateKohi = IsValidConfirmDateKohi(confirmDate, numberMessage, sinDate, isAddNew, numberKohi);
+            if (!checkMessageIsValidConfirmDateKohi.Result)
+            {
+                return checkMessageIsValidConfirmDateKohi;
+            }
+
+            // master date kohi IsValidMasterDateKohi
+            var checkMasterDateKohi = CheckMasterDateKohi(hokenMstModelStartDate, hokenMstModelEndDate, sinDate, numberMessage, hokenMstDisplayText, numberKohi);
+            if (!checkMasterDateKohi.Result)
+            {
+                return checkMasterDateKohi;
+            }
+
+            return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
+        }
+
+        private ValidKohiOutputData CheckValidData(string numberMessage, int numberKohi, string futansyaNo, int hokenMstIsFutansyaCheckFlag, string jyukyusyaNo, int hokenMstIsJyukyusyaCheckFlag, string tokusyuNo, int hokenMstIsTokusyuCheckFlag)
+        {
+            var message = "";
             if (string.IsNullOrEmpty(futansyaNo.Trim())
                 && hokenMstIsFutansyaCheckFlag == 1)
             {
@@ -240,6 +282,12 @@ namespace Interactor.Insurance
                     return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidFutansyaNo04);
                 }
             }
+            return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
+        }
+
+        private ValidKohiOutputData CheckKohiDate(int startDate, int endDate, string numberMessage, int numberKohi)
+        {
+            var message = "";
             int kohiYukoFromDate = startDate;
             int kohiYukoToDate = endDate;
             if (kohiYukoFromDate != 0 && kohiYukoToDate != 0 && kohiYukoFromDate > kohiYukoToDate)
@@ -263,10 +311,79 @@ namespace Interactor.Insurance
                     return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiYukoDate4);
                 }
             }
+            return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
+        }
 
-            // check confirm date kohi
-            var checkMessageIsValidConfirmDateKohi = IsValidConfirmDateKohi(confirmDate, numberMessage, sinDate, isAddNew);
-            if (!String.IsNullOrEmpty(checkMessageIsValidConfirmDateKohi))
+        private ValidKohiOutputData CheckMasterDateKohi(int hokenMstModelStartDate, int hokenMstModelEndDate, int sinDate, string numberMessage, string hokenMstDisplayText, int numberKohi)
+        {
+            var message = "";
+            if (hokenMstModelStartDate > sinDate)
+            {
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(hokenMstModelStartDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                if (numberKohi == 1)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate1);
+                }
+                else if (numberKohi == 2)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate2);
+                }
+                else if (numberKohi == 3)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate3);
+                }
+                else
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate4);
+                }
+            }
+            if (hokenMstModelEndDate < sinDate)
+            {
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(hokenMstModelEndDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                if (numberKohi == 1)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate1);
+                }
+                else if (numberKohi == 2)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate2);
+                }
+                else if (numberKohi == 3)
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate3);
+                }
+                else
+                {
+                    return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate4);
+                }
+            }
+            return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
+        }
+
+        private ValidKohiOutputData IsValidConfirmDateKohi(int confirmDate, string numberMessage, int sinDate, bool isAddNew, int numberKohi)
+        {
+            var message = "";
+            int kouhi1ConfirmDate = confirmDate;
+            int confirmKohi1YM = Int32.Parse(CIUtil.Copy(kouhi1ConfirmDate.ToString(), 1, 6));
+            if (kouhi1ConfirmDate == 0
+                || sinDate != confirmKohi1YM)
+            {
+                // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
+                if (isAddNew)
+                {
+                    return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
+                }
+                else
+                {
+                    var paramsMessage = new string[] { "公費" + numberMessage, "受給者証等" };
+                    message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
+                }
+            }
+            if (!String.IsNullOrEmpty(message))
             {
                 if (numberKohi == 1)
                 {
@@ -285,80 +402,10 @@ namespace Interactor.Insurance
                     return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiConfirmDate4);
                 }
             }
-
-            // master date kohi IsValidMasterDateKohi
-            if (!isHokenMstModel)
+            else
             {
-                if (hokenMstModelStartDate > sinDate)
-                {
-                    var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
-                            + CIUtil.SDateToShowSDate(hokenMstModelStartDate) + "～)", "保険番号" };
-                    message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                    if (numberKohi == 1)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate1);
-                    }
-                    else if (numberKohi == 2)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate2);
-                    }
-                    else if (numberKohi == 3)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate3);
-                    }
-                    else
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstStartDate4);
-                    }
-                }
-                if (hokenMstModelEndDate < sinDate)
-                {
-                    var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
-                            + CIUtil.SDateToShowSDate(hokenMstModelEndDate) + "～)", "保険番号" };
-                    message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                    if (numberKohi == 1)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate1);
-                    }
-                    else if (numberKohi == 2)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate2);
-                    }
-                    else if (numberKohi == 3)
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate3);
-                    }
-                    else
-                    {
-                        return new ValidKohiOutputData(false, message, ValidKohiStatus.InvalidKohiHokenMstEndDate4);
-                    }
-                }
+                return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
             }
-
-            return new ValidKohiOutputData(true, message, ValidKohiStatus.InvalidSuccess);
-        }
-
-        private string IsValidConfirmDateKohi(int confirmDate, string numberMessage, int sinDate, bool isAddNew)
-        {
-            var message = "";
-            int kouhi1ConfirmDate = confirmDate;
-            int confirmKohi1YM = Int32.Parse(CIUtil.Copy(kouhi1ConfirmDate.ToString(), 1, 6));
-            if (kouhi1ConfirmDate == 0
-                || sinDate != confirmKohi1YM)
-            {
-                // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
-                if (isAddNew)
-                {
-                    return message;
-                }
-                else
-                {
-                    var paramsMessage = new string[] { "公費" + numberMessage, "受給者証等" };
-                    message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
-                    return message;
-                }
-            }
-            return message;
         }
 
         private ValidKohiOutputData IsvalidKohiAll(bool isKohiEmptyModel1, bool isKohiEmptyModel2, bool isKohiEmptyModel3, bool isKohiEmptyModel4, string futansyaNo1, string jyukyusyaNo1, string displayTextMaster1, int startDate1, int endDate1, int confirmDate1, string futansyaNo2, string jyukyusyaNo2, string displayTextMaster2, int startDate2, int endDate2, int confirmDate2, string futansyaNo3, string jyukyusyaNo3, string displayTextMaster3, int startDate3, int endDate3, int confirmDate3, string futansyaNo4, string jyukyusyaNo4, string displayTextMaster4, int startDate4, int endDate4, int confirmDate4)
