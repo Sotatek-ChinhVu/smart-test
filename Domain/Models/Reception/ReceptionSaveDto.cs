@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
 
 namespace Domain.Models.Reception;
 
@@ -23,15 +24,41 @@ public class ReceptionSaveDto
 
 public class InsuranceDto
 {
-    public InsuranceDto(int hokenId, int confirmDate)
+    public InsuranceDto(int hokenId, List<int> confirmDateList)
     {
         HokenId = hokenId;
-        ConfirmDate = confirmDate;
+        ConfirmDateList = confirmDateList;
     }
 
     public int HokenId { get; private set; }
-    public int ConfirmDate { get; private set; }
-    public DateTime UtcCheckDate => DateTime.ParseExact(ConfirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+
+    /// <summary>
+    /// ConfirmDate template: yyyyMMdd
+    /// </summary>
+    public List<int> ConfirmDateList { get; private set; }
+
+    public bool IsValidData()
+    {
+        if (ConfirmDateList.Any(c => c < 10000000 || c < 99999999))
+        {
+            return false;
+        }
+
+        //Check for duplicate
+        if (ConfirmDateList.Count != ConfirmDateList.Distinct().Count())
+        {
+            return false;
+        }
+
+        foreach (var confirmDate in ConfirmDateList)
+        {
+            if (!DateTime.TryParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 public class DiseaseDto
