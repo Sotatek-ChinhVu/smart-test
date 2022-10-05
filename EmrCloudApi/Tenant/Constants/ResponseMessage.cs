@@ -430,6 +430,8 @@
         // Export 
         public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
         public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string CanNotExportPdf = "Can not export file Pdf.";
+        public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
 
         //Valid Kohi
         public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";

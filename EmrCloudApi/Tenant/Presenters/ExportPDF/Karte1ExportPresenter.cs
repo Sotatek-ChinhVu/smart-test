@@ -20,7 +20,12 @@ public class Karte1ExportPresenter : IExportKarte1OutputPort
     {
         ExportKarte1Status.Success => ResponseMessage.Success,
         ExportKarte1Status.PtInfNotFould => ResponseMessage.PtInfNotFould,
+        ExportKarte1Status.InvalidSindate => ResponseMessage.InvalidSinDate,
+        ExportKarte1Status.InvalidHpId => ResponseMessage.InvalidHpId,
         ExportKarte1Status.HokenNotFould => ResponseMessage.HokenNotFould,
+        ExportKarte1Status.Failed => ResponseMessage.Failed,
+        ExportKarte1Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
+        ExportKarte1Status.CanNotReturnPdfFile => ResponseMessage.CanNotReturnPdfFile,
         _ => string.Empty
     };
 }

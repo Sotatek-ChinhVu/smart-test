@@ -32,6 +32,15 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
 
     public ExportKarte1OutputData Handle(ExportKarte1InputData input)
     {
+        if (input.HpId <= 0)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.InvalidHpId);
+        }
+        else if (input.SinDate <= 10000000 || input.SinDate >= 99999999)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.InvalidSindate);
+        }
+
         var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, input.SinDate, 0);
         if (ptInf == null)
         {
@@ -203,14 +212,24 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 listByomeiModels
             );
 
-        var streamOutput = _karte1Export.ExportToPdf(model);
-        var url = string.Empty;
-        if (streamOutput.Length > 0)
+        try
         {
-            url = UploadAmazonS3(model.FileName, streamOutput);
+            var streamOutput = _karte1Export.ExportToPdf(model);
+            if (streamOutput.Length <= 0)
+            {
+                return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
+            }
+            var url = UploadAmazonS3(model.FileName, streamOutput);
+            if (url.Trim().Length == 0)
+            {
+                return new ExportKarte1OutputData(ExportKarte1Status.CanNotReturnPdfFile);
+            }
+            return new ExportKarte1OutputData(url, ExportKarte1Status.Success);
         }
-
-        return new ExportKarte1OutputData(url, ExportKarte1Status.Success);
+        catch (Exception)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.Failed);
+        }
     }
 
     private string UploadAmazonS3(string fileName, MemoryStream stream)

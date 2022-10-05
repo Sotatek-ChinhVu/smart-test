@@ -5,5 +5,10 @@
         Success = 1,
         PtInfNotFould = 2,
         HokenNotFould = 3,
+        InvalidHpId = 4,
+        InvalidSindate = 5,
+        Failed = 6,
+        CanNotExportPdf = 7,
+        CanNotReturnPdfFile = 8,
     }
 }
