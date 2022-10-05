@@ -210,35 +210,35 @@
             this.xrTableCell1.Multiline = true;
             this.xrTableCell1.Name = "xrTableCell1";
             this.xrTableCell1.Text = "傷 病 名";
-            this.xrTableCell1.Weight = 1.6219214922505838D;
+            this.xrTableCell1.Weight = 1.6242519638930493D;
             // 
             // xrTableCell2
             // 
             this.xrTableCell2.Multiline = true;
             this.xrTableCell2.Name = "xrTableCell2";
             this.xrTableCell2.Text = "職\r\n務";
-            this.xrTableCell2.Weight = 0.44374703552485911D;
+            this.xrTableCell2.Weight = 0.44438463721375704D;
             // 
             // xrTableCell4
             // 
             this.xrTableCell4.Multiline = true;
             this.xrTableCell4.Name = "xrTableCell4";
             this.xrTableCell4.Text = "開 始";
-            this.xrTableCell4.Weight = 1.0584996441686128D;
+            this.xrTableCell4.Weight = 1.0600205583534736D;
             // 
             // xrTableCell3
             // 
             this.xrTableCell3.Multiline = true;
             this.xrTableCell3.Name = "xrTableCell3";
             this.xrTableCell3.Text = "終 了";
-            this.xrTableCell3.Weight = 1.0525007654077094D;
+            this.xrTableCell3.Weight = 1.0540130600527802D;
             // 
             // xrTableCell5
             // 
             this.xrTableCell5.Multiline = true;
             this.xrTableCell5.Name = "xrTableCell5";
             this.xrTableCell5.Text = "転 帰";
-            this.xrTableCell5.Weight = 1.1810379887804405D;
+            this.xrTableCell5.Weight = 1.1750367066191454D;
             // 
             // xrTableCell6
             // 

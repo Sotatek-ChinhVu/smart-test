@@ -23,13 +23,6 @@ public class Karte1Export : IKarte1Export
             PdfACompatibility = PdfACompatibility.PdfA1b
         };
 
-        // Specify the path for the exported PDF file.  
-        string pdfExportFile =
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
-            @"\Downloads\" +
-            "demo_file" +
-            ".pdf";
-
         // Export the report.
         MemoryStream stream = new();
         report.ExportToPdf(stream, pdfExportOptions);
