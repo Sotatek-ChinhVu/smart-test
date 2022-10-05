@@ -23,14 +23,14 @@ namespace EmrCloudApi.Tenant.Presenters.DrugDetailData
                 case GetDrugDetailDataStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;
-                case GetDrugDetailDataStatus.InValidHpId:
-                    Result.Message = ResponseMessage.InvalidHpId;
+                case GetDrugDetailDataStatus.InvalidItemCd:
+                    Result.Message = ResponseMessage.InvalidItemCd
                     break;
-                case GetDrugDetailDataStatus.InValidSindate:
+                case GetDrugDetailDataStatus.InvalidYJCode:
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
-                case GetDrugDetailDataStatus.InValidItemCd:
-                    Result.Message = ResponseMessage.InvalidItemCd;
+                case GetDrugDetailDataStatus.Faild:
+                    Result.Message = ResponseMessage.Failed;
                     break;
             }
         }

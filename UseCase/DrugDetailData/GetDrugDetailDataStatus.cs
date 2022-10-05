@@ -9,8 +9,8 @@ namespace UseCase.DrugDetailData
     public enum GetDrugDetailDataStatus : byte
     {
         Successed = 1,
-        InValidHpId = 2,
-        InValidSindate = 3,
-        InValidItemCd = 4
+        InvalidItemCd = 2,
+        InvalidYJCode = 3,
+        Faild = 4
     }
 }

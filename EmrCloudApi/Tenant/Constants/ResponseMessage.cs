@@ -21,6 +21,7 @@
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
+        public static readonly string InvalidYJCode = "Invalid YJCode";
 
         //Common
         public static readonly string NotFound = "Not found";
