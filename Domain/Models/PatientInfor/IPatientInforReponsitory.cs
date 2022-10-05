@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 
 namespace Domain.Models.PatientInfor
 {
@@ -25,5 +26,7 @@ namespace Domain.Models.PatientInfor
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
         bool CheckListId(List<long> ptIds);
+
+        List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
     }
 }

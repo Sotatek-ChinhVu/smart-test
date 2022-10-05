@@ -300,7 +300,7 @@ namespace Domain.Models.OrdInfDetails
             {
                 return TodayOrdValidationStatus.InvalidJissiKbn;
             }
-            if (JissiId <= 0)
+            if (JissiId < 0)
             {
                 return TodayOrdValidationStatus.InvalidJissiId;
             }
@@ -335,6 +335,11 @@ namespace Domain.Models.OrdInfDetails
             #endregion
 
             #region Validate business
+
+            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0))
+            {
+                return TodayOrdValidationStatus.InvalidSuryo;
+            }
             if (!TodayOrderConst.KohatuKbns.Values.Contains(KohatuKbn))
             {
                 return TodayOrdValidationStatus.InvalidKohatuKbn;

@@ -9,7 +9,7 @@ using Domain.Models.HokenMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -64,7 +64,7 @@ using Interactor.HokenMst;
 using Interactor.Insurance;
 using Interactor.InsuranceMst;
 using Interactor.JsonSetting;
-using Interactor.KaMst;
+using Interactor.Ka;
 using Interactor.KarteFilter;
 using Interactor.KarteInfs;
 using Interactor.KohiHokenMst;
@@ -106,12 +106,13 @@ using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
-using UseCase.KaMst.GetList;
+using UseCase.Ka.GetList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
@@ -157,7 +158,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImage;
+using UseCase.Schema.SaveImageTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -167,6 +168,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
+using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SystemConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -176,8 +178,11 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.VisitingList.ReceptionLock;
+using UseCase.Ka.SaveList;
+using UseCase.Ka.GetKaCodeList;
+using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -222,7 +227,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IRaiinKubunMstRepository, RaiinKubunMstRepository>();
             services.AddTransient<IRaiinCmtInfRepository, RaiinCmtInfRepository>();
             services.AddTransient<IUketukeSbtMstRepository, UketukeSbtMstRepository>();
-            services.AddTransient<IKaMstRepository, KaMstRepository>();
+            services.AddTransient<IKaRepository, KaRepository>();
             services.AddTransient<IRaiinKbnInfRepository, RaiinKbnInfRepository>();
             services.AddTransient<ICalculationInfRepository, CalculationInfRepository>();
             services.AddTransient<IGroupInfRepository, GroupInfRepository>();
@@ -306,6 +311,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
+            busBuilder.RegisterUseCase<ValidMainInsuranceInputData, ValidInsuranceMainInteractor>();
+
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
@@ -317,6 +324,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SearchEmptyIdInputData, SearchEmptyIdInteractor>();
+            busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -350,6 +358,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Ka
             busBuilder.RegisterUseCase<GetKaMstListInputData, GetKaMstListInteractor>();
+            busBuilder.RegisterUseCase<GetKaCodeMstInputData, GetKaCodeMstInteractor>();
+            busBuilder.RegisterUseCase<SaveKaMstInputData, SaveKaMstInteractor>();
 
             // UketukeSbt
             busBuilder.RegisterUseCase<GetUketukeSbtMstListInputData, GetUketukeSbtMstListInteractor>();
@@ -411,11 +421,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             // Schema
-            busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
+            busBuilder.RegisterUseCase<SaveImageTodayOrderInputData, SaveImageTodayOrderInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
