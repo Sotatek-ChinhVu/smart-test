@@ -43,8 +43,6 @@ using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
 using UseCase.Insurance.ValidMainInsurance;
-using EmrCloudApi.Tenant.Presenters.Insurance;
-using EmrCloudApi.Tenant.Responses.Insurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -199,7 +197,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
         }
 
-        [HttpPost("ValidateKohi")]
+        [HttpPost(ApiPath.ValidateKohi)]
         public ActionResult<Response<ValidateKohiResponse>> ValidateKohi([FromBody] ValidateKohiRequest request)
         {
             var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel1, request.IsSelectedKohiMst1, request.SelectedKohiFutansyaNo1, request.SelectedKohiJyukyusyaNo1, 

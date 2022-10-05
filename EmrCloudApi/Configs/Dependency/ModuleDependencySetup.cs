@@ -182,7 +182,6 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
 using UseCase.Insurance.ValidateRousaiJibai;
-using UseCase.VisitingList.SaveSettings;
 using UseCase.Insurance.ValidKohi;
 
 namespace EmrCloudApi.Configs.Dependency
