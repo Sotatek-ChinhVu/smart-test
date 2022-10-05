@@ -3,7 +3,8 @@ using DevExpress.Interface;
 using DevExpress.Models;
 using DevExpress.Templates;
 using DevExpress.XtraPrinting;
-
+using DevExpress.XtraReports;
+using DevExpress.XtraReports.UI;
 
 namespace DevExpress.Export
 {
@@ -26,10 +27,22 @@ namespace DevExpress.Export
 
         public void ExportToPdf(Karte2ExportModel karte2ExportModel)
         {
-            var report = new Karte2ReportTemplate ();
+            var report = new Karte2ReportTemplate();
+
             var dataSource = new ObjectDataSource();
+            var dataSourceRichText = new ObjectDataSource();
+            var dataSourceHoken= new ObjectDataSource();
+
             dataSource.DataSource = karte2ExportModel;
+            dataSourceRichText.DataSource = karte2ExportModel.RichTextKarte2Models;
+            dataSourceHoken.DataSource = karte2ExportModel.RichTextKarte2Models.SelectMany(x => x.GroupNameKarte2Models).ToList();
+
+
             report.DataSource = dataSource;
+            XRSubreport subReportRichtext = report.xrSubreport2;
+            subReportRichtext.ReportSource.DataSource = dataSourceRichText;
+            XRSubreport subReportHoken = subReportRichtext.ReportSource.Bands[BandKind.Detail].FindControl("xrSubreport1", true) as XRSubreport;
+            subReportHoken.ReportSource.DataSource = dataSourceHoken;
 
             PdfExportOptions pdfExportOptions = new PdfExportOptions()
             {

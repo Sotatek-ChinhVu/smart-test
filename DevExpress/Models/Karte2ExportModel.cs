@@ -1,4 +1,5 @@
 ﻿using UseCase.MedicalExamination.GetHistory;
+using UseCase.OrdInfs.GetListTrees;
 
 namespace DevExpress.Models
 {
@@ -7,6 +8,8 @@ namespace DevExpress.Models
         public int HpId { get; set; }
 
         public long PtId { get; set; }
+        public long RaiinNo { get; set; }
+        public int SinDate { get; set; }
 
         public string KanaName { get; set; } = string.Empty;
 
@@ -24,7 +27,35 @@ namespace DevExpress.Models
 
         public string FileName { get; set; } = string.Empty;
 
-        public List<HistoryKarteOdrRaiinItem> HistoryKarteOdrRaiinItems { get; set; } = new List<HistoryKarteOdrRaiinItem>();
+        public List<RichTextKarte2Model> RichTextKarte2Models { get; set; } = new List<RichTextKarte2Model>();
+
+    }
+    public class RichTextKarte2Model
+    {
+        public int HpId { get; set; }
+        public long RaiinNo { get; set; }
+        public long PtId { get; set; }
+        public int SinDate { get; set; }
+        public string RichText { get; set; } = string.Empty;
+        public List<GroupNameKarte2Model> GroupNameKarte2Models { get; set; } = new List<GroupNameKarte2Model>();
+    }
+    public class GroupNameKarte2Model
+    {
+        public int HpId { get; set; }
+        public long RaiinNo { get; set; }
+        public long PtId { get; set; }
+        public int SinDate { get; set; }
+        public List<RpNameKarte2Model> RpNameKarte2Models { get; set; } = new List<RpNameKarte2Model>();
+        public string GroupName { get; set; } = string.Empty;
+    }
+    public class RpNameKarte2Model 
+    {
+        public string RpName { get; set; } = string.Empty;
+        public List<ItemNameKarte2Model> ItemNameKarte2Models { get; set; } = new List<ItemNameKarte2Model>();
+    }
+    public class ItemNameKarte2Model
+    {
+        public string ItemName { get; set; } = string.Empty;
     }
 
 }

@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Karte2ReportTemplate));
             this.TopMargin = new DevExpress.XtraReports.UI.TopMarginBand();
             this.xrLabel14 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel13 = new DevExpress.XtraReports.UI.XRLabel();
@@ -46,7 +45,6 @@
             this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
             this.BottomMargin = new DevExpress.XtraReports.UI.BottomMarginBand();
-            this.Detail = new DevExpress.XtraReports.UI.DetailBand();
             this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.Title = new DevExpress.XtraReports.UI.XRControlStyle();
             this.GroupCaption1 = new DevExpress.XtraReports.UI.XRControlStyle();
@@ -58,22 +56,16 @@
             this.DetailData3_Odd = new DevExpress.XtraReports.UI.XRControlStyle();
             this.DetailCaptionBackground3 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.PageInfo = new DevExpress.XtraReports.UI.XRControlStyle();
-            this.DetailReport = new DevExpress.XtraReports.UI.DetailReportBand();
-            this.Detail1 = new DevExpress.XtraReports.UI.DetailBand();
-            this.DetailReport1 = new DevExpress.XtraReports.UI.DetailReportBand();
-            this.Detail2 = new DevExpress.XtraReports.UI.DetailBand();
-            this.DetailReport2 = new DevExpress.XtraReports.UI.DetailReportBand();
-            this.Detail3 = new DevExpress.XtraReports.UI.DetailBand();
-            this.xrRichText1 = new DevExpress.XtraReports.UI.XRRichText();
+            this.GroupFooter1 = new DevExpress.XtraReports.UI.GroupFooterBand();
+            this.xrPanel1 = new DevExpress.XtraReports.UI.XRPanel();
+            this.Detail = new DevExpress.XtraReports.UI.DetailBand();
+            this.xrSubreport2 = new DevExpress.XtraReports.UI.XRSubreport();
             this.PageHeader = new DevExpress.XtraReports.UI.PageHeaderBand();
             this.xrTable1 = new DevExpress.XtraReports.UI.XRTable();
             this.xrTableRow1 = new DevExpress.XtraReports.UI.XRTableRow();
             this.xrTableCell1 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell2 = new DevExpress.XtraReports.UI.XRTableCell();
-            this.GroupFooter1 = new DevExpress.XtraReports.UI.GroupFooterBand();
-            this.xrPanel1 = new DevExpress.XtraReports.UI.XRPanel();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xrRichText1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -297,14 +289,8 @@
             // 
             // BottomMargin
             // 
-            this.BottomMargin.HeightF = 44F;
+            this.BottomMargin.HeightF = 13.6699F;
             this.BottomMargin.Name = "BottomMargin";
-            // 
-            // Detail
-            // 
-            this.Detail.HeightF = 0F;
-            this.Detail.KeepTogether = true;
-            this.Detail.Name = "Detail";
             // 
             // objectDataSource1
             // 
@@ -415,65 +401,40 @@
             this.PageInfo.Name = "PageInfo";
             this.PageInfo.Padding = new DevExpress.XtraPrinting.PaddingInfo(6, 6, 0, 0, 100F);
             // 
-            // DetailReport
+            // GroupFooter1
             // 
-            this.DetailReport.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
-            this.Detail1,
-            this.DetailReport1});
-            this.DetailReport.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.DetailReport.DataMember = "HistoryKarteOdrRaiinItems";
-            this.DetailReport.DataSource = this.objectDataSource1;
-            this.DetailReport.Level = 0;
-            this.DetailReport.Name = "DetailReport";
+            this.GroupFooter1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+            this.xrPanel1});
+            this.GroupFooter1.HeightF = 9.705113F;
+            this.GroupFooter1.Name = "GroupFooter1";
+            this.GroupFooter1.RepeatEveryPage = true;
             // 
-            // Detail1
+            // xrPanel1
             // 
-            this.Detail1.HeightF = 0F;
-            this.Detail1.Name = "Detail1";
+            this.xrPanel1.Borders = DevExpress.XtraPrinting.BorderSide.Top;
+            this.xrPanel1.LocationFloat = new DevExpress.Utils.PointFloat(1.000398F, 0F);
+            this.xrPanel1.Name = "xrPanel1";
+            this.xrPanel1.SizeF = new System.Drawing.SizeF(749.9995F, 9.705113F);
+            this.xrPanel1.StylePriority.UseBorders = false;
             // 
-            // DetailReport1
+            // Detail
             // 
-            this.DetailReport1.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
-            this.Detail2,
-            this.DetailReport2});
-            this.DetailReport1.DataMember = "HistoryKarteOdrRaiinItems.KarteHistories";
-            this.DetailReport1.DataSource = this.objectDataSource1;
-            this.DetailReport1.Level = 0;
-            this.DetailReport1.Name = "DetailReport1";
+            this.Detail.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+            this.xrSubreport2});
+            this.Detail.HeightF = 82.29168F;
+            this.Detail.KeepTogether = true;
+            this.Detail.Name = "Detail";
             // 
-            // Detail2
+            // xrSubreport2
             // 
-            this.Detail2.HeightF = 0F;
-            this.Detail2.Name = "Detail2";
-            // 
-            // DetailReport2
-            // 
-            this.DetailReport2.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
-            this.Detail3});
-            this.DetailReport2.DataMember = "HistoryKarteOdrRaiinItems.KarteHistories.KarteData";
-            this.DetailReport2.DataSource = this.objectDataSource1;
-            this.DetailReport2.Level = 0;
-            this.DetailReport2.Name = "DetailReport2";
-            // 
-            // Detail3
-            // 
-            this.Detail3.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
-            this.xrRichText1});
-            this.Detail3.HeightF = 110F;
-            this.Detail3.Name = "Detail3";
-            // 
-            // xrRichText1
-            // 
-            this.xrRichText1.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)));
-            this.xrRichText1.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Html", "[RichText]")});
-            this.xrRichText1.Font = new System.Drawing.Font("Arial", 9.75F);
-            this.xrRichText1.LocationFloat = new DevExpress.Utils.PointFloat(1.000404F, 0F);
-            this.xrRichText1.Name = "xrRichText1";
-            this.xrRichText1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrRichText1.SerializableRtfString = resources.GetString("xrRichText1.SerializableRtfString");
-            this.xrRichText1.SizeF = new System.Drawing.SizeF(749.9996F, 110F);
-            this.xrRichText1.StylePriority.UseBorders = false;
+            this.xrSubreport2.LocationFloat = new DevExpress.Utils.PointFloat(1.00069F, 0F);
+            this.xrSubreport2.Name = "xrSubreport2";
+            this.xrSubreport2.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("HpId", null, "HpId"));
+            this.xrSubreport2.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("PtId", null, "PtId"));
+            this.xrSubreport2.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("SinDate", null, "SinDate"));
+            this.xrSubreport2.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("RaiinNo", null, "RaiinNo"));
+            this.xrSubreport2.ReportSource = new DevExpress.Templates.Karte2SubReportRichText();
+            this.xrSubreport2.SizeF = new System.Drawing.SizeF(749.9993F, 82.29168F);
             // 
             // PageHeader
             // 
@@ -526,36 +487,19 @@
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell2.Weight = 3.7808309944642291D;
             // 
-            // GroupFooter1
-            // 
-            this.GroupFooter1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
-            this.xrPanel1});
-            this.GroupFooter1.HeightF = 9.705113F;
-            this.GroupFooter1.Name = "GroupFooter1";
-            this.GroupFooter1.RepeatEveryPage = true;
-            // 
-            // xrPanel1
-            // 
-            this.xrPanel1.Borders = DevExpress.XtraPrinting.BorderSide.Top;
-            this.xrPanel1.LocationFloat = new DevExpress.Utils.PointFloat(1.000398F, 0F);
-            this.xrPanel1.Name = "xrPanel1";
-            this.xrPanel1.SizeF = new System.Drawing.SizeF(749.9995F, 9.705113F);
-            this.xrPanel1.StylePriority.UseBorders = false;
-            // 
             // Karte2ReportTemplate
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.TopMargin,
             this.BottomMargin,
             this.Detail,
-            this.DetailReport,
-            this.PageHeader,
-            this.GroupFooter1});
+            this.GroupFooter1,
+            this.PageHeader});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
             this.objectDataSource1});
             this.DataSource = this.objectDataSource1;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
-            this.Margins = new System.Drawing.Printing.Margins(48, 51, 111, 44);
+            this.Margins = new System.Drawing.Printing.Margins(48, 51, 111, 14);
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
             this.Title,
             this.GroupCaption1,
@@ -569,7 +513,6 @@
             this.PageInfo});
             this.Version = "22.1";
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xrRichText1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
@@ -579,7 +522,6 @@
 
         private XtraReports.UI.TopMarginBand TopMargin;
         private XtraReports.UI.BottomMarginBand BottomMargin;
-        private XtraReports.UI.DetailBand Detail;
         private DataAccess.ObjectBinding.ObjectDataSource objectDataSource1;
         private XtraReports.UI.XRControlStyle Title;
         private XtraReports.UI.XRControlStyle GroupCaption1;
@@ -591,13 +533,6 @@
         private XtraReports.UI.XRControlStyle DetailData3_Odd;
         private XtraReports.UI.XRControlStyle DetailCaptionBackground3;
         private XtraReports.UI.XRControlStyle PageInfo;
-        private XtraReports.UI.DetailReportBand DetailReport;
-        private XtraReports.UI.DetailBand Detail1;
-        private XtraReports.UI.DetailReportBand DetailReport1;
-        private XtraReports.UI.DetailBand Detail2;
-        private XtraReports.UI.DetailReportBand DetailReport2;
-        private XtraReports.UI.DetailBand Detail3;
-        private XtraReports.UI.PageHeaderBand PageHeader;
         private XtraReports.UI.XRLabel xrLabel14;
         private XtraReports.UI.XRLabel xrLabel13;
         private XtraReports.UI.XRLabel xrLabel12;
@@ -612,12 +547,14 @@
         private XtraReports.UI.XRLabel xrLabel3;
         private XtraReports.UI.XRLabel xrLabel2;
         private XtraReports.UI.XRLabel xrLabel1;
+        private XtraReports.UI.GroupFooterBand GroupFooter1;
+        private XtraReports.UI.XRPanel xrPanel1;
+        private XtraReports.UI.DetailBand Detail;
+        public XtraReports.UI.XRSubreport xrSubreport2;
+        private XtraReports.UI.PageHeaderBand PageHeader;
         private XtraReports.UI.XRTable xrTable1;
         private XtraReports.UI.XRTableRow xrTableRow1;
         private XtraReports.UI.XRTableCell xrTableCell1;
         private XtraReports.UI.XRTableCell xrTableCell2;
-        private XtraReports.UI.GroupFooterBand GroupFooter1;
-        private XtraReports.UI.XRPanel xrPanel1;
-        private XtraReports.UI.XRRichText xrRichText1;
     }
 }

@@ -134,14 +134,14 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         return listObjects;
     }
 
-    public async Task<string> UploadPdfAsync(string subFolder, string fileName, MemoryStream memoryStream)
+    public async Task<string> UploadPdfAsync(bool addToTenant,string subFolder, string fileName, MemoryStream memoryStream)
     {
         try
         {
             var request = new PutObjectRequest
             {
                 BucketName = _options.BucketName,
-                Key = GetUniqueKey(subFolder, fileName),
+                Key = GetUniqueKey(subFolder, fileName,addToTenant),
                 InputStream = memoryStream,
             };
             request.Metadata.Add("pdf", "application/pdf");

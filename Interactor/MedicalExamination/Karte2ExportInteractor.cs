@@ -1,7 +1,7 @@
 ﻿using DevExpress.Interface;
 using DevExpress.Models;
 using Domain.Models.Insurance;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
@@ -25,13 +25,13 @@ namespace Interactor.MedicalExamination
         private readonly IReceptionRepository _receptionRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IKaMstRepository _kaRepository;
+        private readonly IKaRepository _kaRepository;
         private readonly IRaiinListTagRepository _rainListTagRepository;
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IAmazonS3Service _amazonS3Service;
         private readonly IKarte2Export _karte2Export;
 
-        public Karte2ExportInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository, IRaiinListTagRepository rainListTagRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service, IKarte2Export karte2Export)
+        public Karte2ExportInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IRaiinListTagRepository rainListTagRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service, IKarte2Export karte2Export)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -64,6 +64,8 @@ namespace Interactor.MedicalExamination
                 {
                     HpId = patientInfo.HpId,
                     PtId = patientInfo.PtId,
+                    SinDate = historyKarteOdrRaiinItemWithStatus.Item1.First().SinDate,
+                    RaiinNo = historyKarteOdrRaiinItemWithStatus.Item1.First().RaiinNo,
                     KanaName = patientInfo.KanaName,
                     Name = patientInfo.Name,
                     Sex = patientInfo.Sex.ToString(),
@@ -71,7 +73,7 @@ namespace Interactor.MedicalExamination
                     CurrentTime = DateTime.UtcNow.ToString(),
                     StartDate = inputData.StartDate.ToString(),
                     EndDate = inputData.EndDate.ToString(),
-                    HistoryKarteOdrRaiinItems = historyKarteOdrRaiinItem,
+                    RichTextKarte2Models = MapToDevExpressModel(historyKarteOdrRaiinItem),
                     FileName = inputData.HpId + "_" + inputData.PtId + "_" + inputData.UserId
                 };
                 MemoryStream stream = new MemoryStream();
@@ -88,6 +90,46 @@ namespace Interactor.MedicalExamination
             {
                 return new Karte2ExportOutputData(Karte2PrintStatus.Failed);
             }
+        }
+        private List<RichTextKarte2Model> MapToDevExpressModel(List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems)
+        {
+            var hokenKarte2s = historyKarteOdrRaiinItems.SelectMany(x => x.HokenGroups)
+               .SelectMany(x => x.GroupOdrItems).ToList();
+
+            var richTextKarte2s = historyKarteOdrRaiinItems.SelectMany(x => x.KarteHistories).SelectMany(x => x.KarteData)
+                .Select(x => new RichTextKarte2Model()
+                {
+                    HpId = x.HpId,
+                    PtId = x.PtId,
+                    SinDate = x.SinDate,
+                    RaiinNo = x.RaiinNo,
+                    RichText = x.RichText,
+                    GroupNameKarte2Models = hokenKarte2s.Where(y=> y.OdrInfs.Any(z => z.HpId == x.HpId &&
+                                                                                      z.PtId == x.PtId &&
+                                                                                      z.SinDate == x.SinDate&&
+                                                                                      z.RaiinNo == x.RaiinNo))
+                                                                                           .Select( k => 
+                                                                                              new GroupNameKarte2Model()
+                                                                                              {
+                                                                                                  GroupName = k.GroupName,
+                                                                                                  HpId = x.HpId,
+                                                                                                  PtId = x.PtId,
+                                                                                                  RaiinNo = x.RaiinNo,
+                                                                                                  SinDate = x.SinDate,
+                                                                                                  RpNameKarte2Models = k.OdrInfs.Select(m=> new RpNameKarte2Model()
+                                                                                                  {
+                                                                                                      RpName = m.RpName,
+                                                                                                      ItemNameKarte2Models = m.OdrDetails.Select(n => new ItemNameKarte2Model()
+                                                                                                      {
+                                                                                                          ItemName = n.ItemName
+                                                                                                      }).ToList(),
+
+                                                                                                  }).ToList(),
+                                                                                              }
+                                                                                            ).ToList()
+                }).ToList();
+
+            return richTextKarte2s;
         }
         private string UploadAmazonS3(Karte2ExportModel karte2ExportModel, MemoryStream stream)
         {
@@ -109,7 +151,7 @@ namespace Interactor.MedicalExamination
                 return String.Empty;
             }
 
-            var responseUpload = _amazonS3Service.UploadPdfAsync(subFolder, fileName, stream);
+            var responseUpload = _amazonS3Service.UploadPdfAsync(true,subFolder, fileName, stream);
             var url = responseUpload.Result;
             return url;
         }

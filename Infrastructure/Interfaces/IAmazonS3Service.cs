@@ -7,5 +7,5 @@ public interface IAmazonS3Service
     Task<bool> ObjectExistsAsync(string key);
     Task<bool> DeleteObjectAsync(string key);
     Task<List<string>> GetListObjectAsync(string prefix);
-    Task<string> UploadPdfAsync(string subFolder, string fileName, MemoryStream memoryStream);
+    Task<string> UploadPdfAsync(bool addToTenant,string subFolder, string fileName, MemoryStream memoryStream);
 }
