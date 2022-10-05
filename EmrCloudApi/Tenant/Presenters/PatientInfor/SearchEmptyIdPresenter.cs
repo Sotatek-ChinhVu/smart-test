@@ -21,6 +21,8 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
             SearchEmptyIdStatus.Success => ResponseMessage.Success,
             SearchEmptyIdStatus.Failed => ResponseMessage.Failed,
             SearchEmptyIdStatus.NoData => ResponseMessage.NoData,
+            SearchEmptyIdStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            SearchEmptyIdStatus.InvalidPtNum => ResponseMessage.InvalidPtNum,
             _ => string.Empty
         };
     }
