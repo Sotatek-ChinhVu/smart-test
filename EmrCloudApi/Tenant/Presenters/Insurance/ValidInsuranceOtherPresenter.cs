@@ -28,12 +28,13 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                     Result.Message = ResponseMessage.InvalidPtBirthday;
                     break;
                 case ValidInsuranceOtherStatus.InvalidAge75:
-                    Result.Message = ResponseMessage.InvalidAge75;
+                    Result.Message = ResponseMessage.InvalidPatternOtherAge75;
                     break;
                 case ValidInsuranceOtherStatus.InvalidAge65:
-                    Result.Message = ResponseMessage.InvalidAge65;
+                    Result.Message = ResponseMessage.InvalidPatternOtherAge65;
+                    break;
                 case ValidInsuranceOtherStatus.InvalidDuplicatePattern:
-                    Result.Message = ResponseMessage.InvalidAge65;
+                    Result.Message = ResponseMessage.InvalidCheckDuplicatePattern;
                     break;
             }
         }

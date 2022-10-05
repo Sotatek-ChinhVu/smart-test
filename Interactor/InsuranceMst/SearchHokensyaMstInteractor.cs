@@ -1,4 +1,5 @@
 ﻿using Domain.Models.InsuranceMst;
+using Helper.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,8 @@ namespace Interactor.InsuranceMst
                 return new SearchHokensyaMstOutputData(new List<HokensyaMstModel>(), SearchHokensyaMstStatus.InvalidKeyword);
             }
 
-            var data = _insuranceMstReponsitory.SearchListDataHokensyaMst(inputData.HpId, inputData.PageIndex, inputData.PageCount,inputData.SinDate, inputData.Keyword);
+            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+            var data = _insuranceMstReponsitory.SearchListDataHokensyaMst(inputData.HpId, inputData.PageIndex, inputData.PageCount,inputData.SinDate, keyword);
 
             return new SearchHokensyaMstOutputData(data.ToList(), SearchHokensyaMstStatus.Successed);
         }

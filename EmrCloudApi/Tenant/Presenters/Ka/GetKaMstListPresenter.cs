@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
-using UseCase.KaMst.GetList;
+using UseCase.Ka.GetList;
 
 namespace EmrCloudApi.Tenant.Presenters.Ka;
 

@@ -39,9 +39,11 @@ using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
-using EmrCloudApi.Tenant.Responses.Insurance;
-using UseCase.Insurance.ValidPatternOther;
+using UseCase.Insurance.ValidMainInsurance;
 using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Responses.Insurance;
+using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidPatternOther;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -194,6 +196,21 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetKohiHokenMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ValidateRousaiJibai)]
+        public ActionResult<Response<ValidateRousaiJibaiResponse>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
+        {
+            var input = new ValidateRousaiJibaiInputData(request.HpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
+                request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
+                request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
+                request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidateRousaiJibaiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateRousaiJibaiResponse>>(presenter.Result);
         }
 
         private List<SaveListPatientGroupMstInputItem> ConvertToListInput(List<SaveListPatientGroupMstRequestItem> requestItems)
