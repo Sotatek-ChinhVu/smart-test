@@ -43,6 +43,9 @@ using EmrCloudApi.Tenant.Requests.HokenMst;
 using UseCase.HokenMst.GetDetail;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
 using UseCase.Insurance.ValidMainInsurance;
+using EmrCloudApi.Tenant.Presenters.Insurance;
+using EmrCloudApi.Tenant.Responses.Insurance;
+using UseCase.Insurance.ValidateRousaiJibai;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -222,6 +225,21 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<ValidateKohiResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.ValidateRousaiJibai)]
+        public ActionResult<Response<ValidateRousaiJibaiResponse>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
+        {
+            var input = new ValidateRousaiJibaiInputData(request.HpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
+                request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
+                request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
+                request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidateRousaiJibaiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateRousaiJibaiResponse>>(presenter.Result);
+        }
+
         private List<SaveListPatientGroupMstInputItem> ConvertToListInput(List<SaveListPatientGroupMstRequestItem> requestItems)
         {
             List<SaveListPatientGroupMstInputItem> listDatas = new();
@@ -265,6 +283,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveHokenSyaMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.GetDetailHokenMst)]
+        public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
+        {
+            var input = new GetDetailHokenMstInputData(request.HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDetailHokenMstPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetDetailHokenMstResponse>>(presenter.Result);
         }
     }
 }

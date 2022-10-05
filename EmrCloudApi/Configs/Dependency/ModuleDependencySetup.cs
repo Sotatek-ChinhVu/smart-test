@@ -157,7 +157,7 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImage;
+using UseCase.Schema.SaveImageTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -167,6 +167,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
+using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SystemConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -176,9 +177,11 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
+using UseCase.VisitingList.SaveSettings;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
+using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.Insurance.ValidKohi;
 
@@ -321,6 +324,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
+            busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
             busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
 
             //RaiinKubun
@@ -418,11 +422,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             // Schema
-            busBuilder.RegisterUseCase<SaveImageInputData, SaveImageInteractor>();
+            busBuilder.RegisterUseCase<SaveImageTodayOrderInputData, SaveImageTodayOrderInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
