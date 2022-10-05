@@ -14,7 +14,14 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
 
     public InsertReceptionOutputData Handle(InsertReceptionInputData input)
     {
-        var raiinNo = _receptionRepository.Insert(input.Dto);
+        ReceptionSaveDto dto = input.Dto;
+
+        if (dto!.Insurances.Any(i => !i.IsValidData()))
+        {
+            return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
+        }
+
+        var raiinNo = _receptionRepository.Insert(dto);
         return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
     }
 }

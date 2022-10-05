@@ -428,5 +428,77 @@
 
         //PostCode
         public static readonly string InvalidPostCode = "Invalid PostCode";
+
+        //Valid Kohi
+        public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";
+        public static readonly string InvalidKohiHokenMstEmpty1 = "Invalid kohi1 hokenMst empty model";
+        public static readonly string InvalidFutansyaNoEmpty1 = "Invalid kohi1 futansyaNo empty";
+        public static readonly string InvalidJyukyusyaNo1 = "Invalid kohi1 jyukyusyaNo empty";
+        public static readonly string InvalidTokusyuNo1 = "Invalid kohi1 tokusyuNo empty";
+        public static readonly string InvalidFutansyaNo01 = "Invalid kohi1 futansyaNo equal 0";
+        public static readonly string InvalidKohiYukoDate1 = "Invalid kohi1 YukoDate";
+        public static readonly string InvalidKohiHokenMstStartDate1 = "Invalid kohi1 hokenMst startDate";
+        public static readonly string InvalidKohiHokenMstEndDate1 = "Invalid kohi1 hokenMst endDate";
+        public static readonly string InvalidKohiConfirmDate1 = "Invalid kohi1 hokenMst confirmDate";
+        public static readonly string InvalidMstCheckHBT1 = "Invalid check HBT";
+        public static readonly string InvalidMstCheckDigitFutansyaNo1 = "Invalid kohi1 check degit futansyaNo";
+        public static readonly string InvalidMstCheckDigitJyukyusyaNo1 = "Invalid kohi1 check degit jyukyusyaNo";
+        public static readonly string InvalidMstCheckAge1 = "Invalid kohi1 check date hokenMst age";
+        public static readonly string InvalidFutanJyoTokuNull1 = "Invalid kohi1 futansyaNo jyukyusyaNo tokusyuNo null";
+        public static readonly string InvalidKohiEmptyModel2 = "Invalid kohi2 empty model";
+        public static readonly string InvalidKohiHokenMstEmpty2 = "Invalid kohi2 hokenMst empty model";
+        public static readonly string InvalidFutansyaNoEmpty2 = "Invalid kohi2 futansyaNo empty";
+        public static readonly string InvalidJyukyusyaNo2 = "Invalid kohi2 jyukyusyaNo empty";
+        public static readonly string InvalidTokusyuNo2 = "Invalid kohi2 tokusyuNo empty";
+        public static readonly string InvalidFutansyaNo02 = "Invalid kohi2 futansyaNo equal 0";
+        public static readonly string InvalidKohiYukoDate2 = "Invalid kohi2 YukoDate";
+        public static readonly string InvalidKohiHokenMstStartDate2 = "Invalid kohi2 hokenMst startDate";
+        public static readonly string InvalidKohiHokenMstEndDate2 = "Invalid kohi2 hokenMst endDate";
+        public static readonly string InvalidKohiConfirmDate2 = "Invalid kohi2 hokenMst confirmDate";
+        public static readonly string InvalidMstCheckHBT2 = "Invalid check HBT";
+        public static readonly string InvalidMstCheckDigitFutansyaNo2 = "Invalid kohi2 check degit futansyaNo";
+        public static readonly string InvalidMstCheckDigitJyukyusyaNo2 = "Invalid kohi2 check degit jyukyusyaNo";
+        public static readonly string InvalidMstCheckAge2 = "Invalid kohi2 check date hokenMst age";
+        public static readonly string InvalidFutanJyoTokuNull2 = "Invalid kohi2 futansyaNo jyukyusyaNo tokusyuNo null";
+        public static readonly string InvalidKohiEmptyModel3 = "Invalid kohi3 empty model";
+        public static readonly string InvalidKohiHokenMstEmpty3 = "Invalid kohi3 hokenMst empty model";
+        public static readonly string InvalidFutansyaNoEmpty3 = "Invalid kohi3 futansyaNo empty";
+        public static readonly string InvalidJyukyusyaNo3 = "Invalid kohi3 jyukyusyaNo empty";
+        public static readonly string InvalidTokusyuNo3 = "Invalid kohi3 tokusyuNo empty";
+        public static readonly string InvalidFutansyaNo03 = "Invalid kohi3 futansyaNo equal 0";
+        public static readonly string InvalidKohiYukoDate3 = "Invalid kohi3 YukoDate";
+        public static readonly string InvalidKohiHokenMstStartDate3 = "Invalid kohi3 hokenMst startDate";
+        public static readonly string InvalidKohiHokenMstEndDate3 = "Invalid kohi3 hokenMst endDate";
+        public static readonly string InvalidKohiConfirmDate3 = "Invalid kohi3 hokenMst confirmDate";
+        public static readonly string InvalidMstCheckHBT3 = "Invalid check HBT";
+        public static readonly string InvalidMstCheckDigitFutansyaNo3 = "Invalid kohi3 check degit futansyaNo";
+        public static readonly string InvalidMstCheckDigitJyukyusyaNo3 = "Invalid kohi3 check degit jyukyusyaNo";
+        public static readonly string InvalidMstCheckAge3 = "Invalid kohi3 check date hokenMst age";
+        public static readonly string InvalidFutanJyoTokuNull3 = "Invalid kohi3 futansyaNo jyukyusyaNo tokusyuNo null";
+        public static readonly string InvalidKohiEmptyModel4 = "Invalid kohi4 empty model";
+        public static readonly string InvalidKohiHokenMstEmpty4 = "Invalid kohi4 hokenMst empty model";
+        public static readonly string InvalidFutansyaNoEmpty4 = "Invalid kohi4 futansyaNo empty";
+        public static readonly string InvalidJyukyusyaNo4 = "Invalid kohi4 jyukyusyaNo empty";
+        public static readonly string InvalidTokusyuNo4 = "Invalid kohi4 tokusyuNo empty";
+        public static readonly string InvalidFutansyaNo04 = "Invalid kohi4 futansyaNo equal 0";
+        public static readonly string InvalidKohiYukoDate4 = "Invalid kohi4 YukoDate";
+        public static readonly string InvalidKohiHokenMstStartDate4 = "Invalid kohi4 hokenMst startDate";
+        public static readonly string InvalidKohiHokenMstEndDate4 = "Invalid kohi4 hokenMst endDate";
+        public static readonly string InvalidKohiConfirmDate4 = "Invalid kohi4 hokenMst confirmDate";
+        public static readonly string InvalidMstCheckHBT4 = "Invalid check HBT";
+        public static readonly string InvalidMstCheckDigitFutansyaNo4 = "Invalid kohi4 check degit futansyaNo";
+        public static readonly string InvalidMstCheckDigitJyukyusyaNo4 = "Invalid kohi4 check degit jyukyusyaNo";
+        public static readonly string InvalidMstCheckAge4 = "Invalid kohi4 check date hokenMst age";
+        public static readonly string InvalidFutanJyoTokuNull4 = "Invalid kohi4 futansyaNo jyukyusyaNo tokusyuNo null";
+        public static readonly string InvalidKohiEmpty21 = "Invalid kohi2 kohi1 empty model";
+        public static readonly string InvalidKohiEmpty31 = "Invalid kohi3 kohi1 empty model";
+        public static readonly string InvalidKohiEmpty32 = "Invalid kohi3 kohi2 empty model";
+        public static readonly string InvalidKohiEmpty41 = "Invalid kohi4 kohi1 empty model";
+        public static readonly string InvalidKohiEmpty42 = "Invalid kohi4 kohi2 empty model";
+        public static readonly string InvalidKohiEmpty43 = "Invalid kohi4 kohi3 empty model";
+        public static readonly string InvalidDuplicateKohi1 = "Invalid duplicate kohi1 empty model";
+        public static readonly string InvalidDuplicateKohi2 = "Invalid duplicate kohi2 empty model";
+        public static readonly string InvalidDuplicateKohi3 = "Invalid duplicate kohi3 empty model";
+        public static readonly string InvalidDuplicateKohi4 = "Invalid duplicate kohi4 empty model";
     }
 }
