@@ -10,13 +10,13 @@ namespace UseCase.DrugDetailData
 {
     public class GetDrugDetailDataOutputData : IOutputData
     {
-        public GetDrugDetailDataOutputData(List<DrugMenuItemModel> drugMenu, GetDrugDetailDataStatus status)
+        public GetDrugDetailDataOutputData(DrugDetailModel data, GetDrugDetailDataStatus status)
         {
-            DrugMenu = drugMenu;
+            Data = data;
             Status = status;
         }
 
-        public List<DrugMenuItemModel> DrugMenu { get; private set; }
+        public DrugDetailModel Data { get; private set; }
 
         public GetDrugDetailDataStatus Status { get; private set; }
 

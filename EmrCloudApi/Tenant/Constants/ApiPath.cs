@@ -58,5 +58,8 @@
 
         //Validate Insurance rousai jibai
         public const string ValidateRousaiJibai = "ValidateRousaiJibai";
+
+        //Drug Infor
+        public const string DrugDataSelectedTree = "DrugDataSelectedTree";
     }
 }

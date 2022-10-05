@@ -10,20 +10,23 @@ namespace UseCase.DrugDetailData
 {
     public class GetDrugDetailDataInputData: IInputData<GetDrugDetailDataOutputData>
     {
-        public GetDrugDetailDataInputData(int hpId, int sinDate, string itemCd, MenuInfModel drugMenu)
+        public GetDrugDetailDataInputData(int selectedIndexOfChildrens, int selectedIndexOfLevel0, string drugName, string itemCd, string yJCode)
         {
-            HpId = hpId;
-            SinDate = sinDate;
+            SelectedIndexOfChildrens = selectedIndexOfChildrens;
+            SelectedIndexOfLevel0 = selectedIndexOfLevel0;
+            DrugName = drugName;
             ItemCd = itemCd;
-            DrugMenu = drugMenu;
+            YJCode = yJCode;
         }
 
-        public int HpId { get; private set; }
+        public int SelectedIndexOfChildrens { get; private set; }
 
-        public int SinDate { get; private set; }
+        public int SelectedIndexOfLevel0 { get; private set; }
+
+        public string DrugName { get; private set; }
 
         public string ItemCd { get; private set; }
 
-        public MenuInfModel DrugMenu { get; private set; }
+        public string YJCode { get; private set; }
     }
 }

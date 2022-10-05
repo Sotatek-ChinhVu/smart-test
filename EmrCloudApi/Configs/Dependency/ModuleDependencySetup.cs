@@ -182,6 +182,8 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.Ka.SaveList;
 using UseCase.Ka.GetKaCodeList;
 using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.DrugDetailData;
+using Interactor.DrugDetailData;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -411,6 +413,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
+            busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
