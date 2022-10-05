@@ -426,5 +426,10 @@
 
         //PostCode
         public static readonly string InvalidPostCode = "Invalid PostCode";
+
+        // Export 
+        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
+        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+
     }
 }

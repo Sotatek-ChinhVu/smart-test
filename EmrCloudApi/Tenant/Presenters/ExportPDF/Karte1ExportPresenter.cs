@@ -19,6 +19,8 @@ public class Karte1ExportPresenter : IExportKarte1OutputPort
     private string GetMessage(ExportKarte1Status status) => status switch
     {
         ExportKarte1Status.Success => ResponseMessage.Success,
+        ExportKarte1Status.PtInfNotFould => ResponseMessage.PtInfNotFould,
+        ExportKarte1Status.HokenNotFould => ResponseMessage.HokenNotFould,
         _ => string.Empty
     };
 }

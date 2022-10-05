@@ -33,8 +33,16 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
     public ExportKarte1OutputData Handle(ExportKarte1InputData input)
     {
         var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, input.SinDate, 0);
-        var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(input.HpId, input.PtId, input.HokenPid, input.SinDate, input.TenkiByomei);
+        if (ptInf == null)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.PtInfNotFould);
+        }
         var hoken = _insuranceRepository.GetPtHokenInf(input.HpId, input.HokenPid, input.PtId, input.SinDate);
+        if (hoken == null)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.HokenNotFould);
+        }
+        var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(input.HpId, input.PtId, input.HokenPid, input.SinDate, input.TenkiByomei);
         var printoutDateTime = DateTime.UtcNow;
 
         var ptNum = string.Empty;
