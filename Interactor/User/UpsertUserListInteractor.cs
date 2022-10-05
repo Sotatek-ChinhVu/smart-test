@@ -34,13 +34,15 @@ namespace Interactor.User
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
                 }
+
+                _userRepository.Upsert(inputData.UpsertUserList);
+
                 return new UpsertUserListOutputData(UpsertUserListStatus.Success);
             }
             catch
             {
                 return new UpsertUserListOutputData(UpsertUserListStatus.False);
             }
-            _userRepository.Upsert(inputData.UpsertUserList);
         }
     }
 }

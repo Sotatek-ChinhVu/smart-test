@@ -112,18 +112,18 @@ namespace Infrastructure.Repositories
                         updateUser.UpdateId = TempIdentity.UserId;
                         updateUser.UpdateDate = DateTime.UtcNow;
                         updateUser.UpdateMachine = TempIdentity.ComputerName;
-                        _tenantNoTrackingDataContext.Update(inputData);
+                        _tenantTrackingDataContext.Update(inputData);
                     }
                     else
                     {
-                        _tenantNoTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
+                        _tenantTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
                     }
                 }
             }
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private UserMstModel ToModel(UserMst u)
+        private static UserMstModel ToModel(UserMst u)
         {
             return new UserMstModel(
                 u.Id,
@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
         }
-        private UserMst ConVertUserList(UserMstModel u)
+        private static UserMst ConVertUserList(UserMstModel u)
         {
             return new UserMst{
                 Id = u.Id,
