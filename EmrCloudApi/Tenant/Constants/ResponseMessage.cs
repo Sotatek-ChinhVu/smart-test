@@ -173,7 +173,7 @@
         public static readonly string GetSetKbnListNoData = "No Data";
         public static readonly string GetSetKbntListSuccessed = "Successed";
         public static readonly string SaveSetByomeiFailed = "Save SetByomei Failed.";
-        public static readonly string SaveSetOrderInfFailed = "Save SetKarteInf Failed.";
+        public static readonly string SaveSetOrderInfFailed = "Save SetOrderInf Failed.";
         public static readonly string SaveSetKarteInfFailed = "Save SetKarteInf Failed.";
         //Calculation Inf
 
@@ -306,7 +306,7 @@
         public static readonly string ByomeiCmtMaxlength80 = "Length of ByomeiCmt must less than 80 or equal 80.";
         public static readonly string RpNameMaxLength240 = "Length of SetOrder RpName must less than 240 or equal 240.";
         public static readonly string InvalidSetOrderInfId = "Id of SetOrderInf must more than 0 or equal 0";
-        public static readonly string InvalidSetOrderInfRpNo = "SetOrder RpNo must more than 1 or equal 1";
+        public static readonly string InvalidSetOrderInfRpNo = "SetOrder RpNo must more than 0 or equal 0";
         public static readonly string InvalidSetOrderInfRpEdaNo = "SetOrder RpEdaNo must more than 0 or equal 0";
         public static readonly string InvalidSetOrderInfKouiKbn = "SetOrder KouiKbn must more than 0 or equal 0";
         public static readonly string InvalidSetOrderInfInoutKbn = "SetOrder InoutKbn must more than 0 or equal 0";
