@@ -106,13 +106,17 @@ using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
+using UseCase.Ka.GetKaCodeList;
 using UseCase.Ka.GetList;
+using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
@@ -178,12 +182,8 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.VisitingList.SaveSettings;
 using UseCase.VisitingList.ReceptionLock;
-using UseCase.Ka.SaveList;
-using UseCase.Ka.GetKaCodeList;
-using UseCase.Insurance.ValidateRousaiJibai;
-using UseCase.Insurance.ValidKohi;
+using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
 {
