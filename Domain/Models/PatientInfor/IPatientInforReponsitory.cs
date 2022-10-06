@@ -23,6 +23,8 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
+        List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
+
         bool CheckListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);

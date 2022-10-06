@@ -50,6 +50,9 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        //PatientInfor
+        public const string SearchEmptyId = "SearchEmptyId";
+        
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
 

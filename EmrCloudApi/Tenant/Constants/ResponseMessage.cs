@@ -35,6 +35,8 @@
         public static readonly string CreateUserSuccessed = "User created!!!";
 
         //Patient Infor
+        public static readonly string InvalidPtNum = "Invalid PtNum";
+
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
         public static readonly string InvalidSelectedHokenInfRousaiSaigaiKbn = "Invalid SelectedHokenInf RousaiSaigaiKbn";
@@ -348,7 +350,7 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
-        
+
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
@@ -399,10 +401,10 @@
         public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
         public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
-        
+
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
-        
+
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
         public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
