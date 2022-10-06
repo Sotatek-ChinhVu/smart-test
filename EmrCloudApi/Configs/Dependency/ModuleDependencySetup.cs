@@ -106,13 +106,18 @@ using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
+using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
+using UseCase.Ka.GetKaCodeList;
 using UseCase.Ka.GetList;
+using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
 using UseCase.KarteInfs.GetLists;
@@ -138,6 +143,7 @@ using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.SearchAdvanced;
+using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
@@ -177,11 +183,8 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
-using UseCase.VisitingList.SaveSettings;
 using UseCase.VisitingList.ReceptionLock;
-using UseCase.Ka.SaveList;
-using UseCase.Ka.GetKaCodeList;
-using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.VisitingList.SaveSettings;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -311,7 +314,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Insurance
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
             busBuilder.RegisterUseCase<ValidMainInsuranceInputData, ValidInsuranceMainInteractor>();
-
+            busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
@@ -322,7 +325,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchPatientInfoAdvancedInputData, SearchPatientInfoAdvancedInteractor>();
             busBuilder.RegisterUseCase<GetListPatientGroupMstInputData, GetListPatientGroupMstInteractor>();
             busBuilder.RegisterUseCase<SaveListPatientGroupMstInputData, SaveListPatientGroupMstInteractor>();
+            busBuilder.RegisterUseCase<SearchEmptyIdInputData, SearchEmptyIdInteractor>();
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
+            busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
