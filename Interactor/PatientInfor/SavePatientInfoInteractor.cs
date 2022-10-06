@@ -44,17 +44,11 @@ namespace Interactor.PatientInfor
         {
             var result = new List<SavePatientInfoValidation>();
 
-            //if (model.HpId <= 0)
-            //    result.Add(SaveHokenSyaMstValidation.InvalidHpId);
-
-            //if (string.IsNullOrEmpty(model.HokensyaNo) || model.HokensyaNo.Length > 8)
-            //    result.Add(SaveHokenSyaMstValidation.InvalidHokensyaNo);
+            if (model.HpId <= 0)
+                result.Add(SavePatientInfoValidation.InvalidHpId);
 
             //if (model.Patient. != null && model.KanaName.Length > 100)
-            //    result.Add(SaveHokenSyaMstValidation.InvalidKanaName);
-
-
-            
+            //    result.Add(SavePatientInfoValidation.InvalidKanaName);
 
             return result;
         }

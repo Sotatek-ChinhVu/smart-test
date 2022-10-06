@@ -233,5 +233,6 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
         }
+
     }
 }
