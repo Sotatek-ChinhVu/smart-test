@@ -83,6 +83,61 @@
             Valid
         };
 
+        public enum InputItemValidationStatus
+        {
+            InvalidInoutKbn,
+            InvalidTosekiKbn,
+            InvalidDaysCnt,
+            InvalidSpecialItem,
+            InvalidSpecialStadardUsage,
+            InvalidOdrKouiKbn,
+            InvalidSpecialSuppUsage,
+            InvalidHasUsageButNotDrug,
+            InvalidHasUsageButNotInjectionOrDrug,
+            InvalidHasDrugButNotUsage,
+            InvalidHasInjectionButNotUsage,
+            InvalidHasNotBothInjectionAndUsageOf28,
+            InvalidStandardUsageOfDrugOrInjection,
+            InvalidSuppUsageOfDrugOrInjection,
+            InvalidBunkatu,
+            InvalidUsageWhenBuntakuNull,
+            InvalidSumBunkatuDifferentSuryo,
+            InvalidQuantityUnit,
+            InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull,
+            InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu,
+            InvalidPrice,
+            InvalidSuryoOfReffill,
+            InvalidCmt840,
+            InvalidCmt842,
+            InvalidCmt842CmtOptMoreThan38,
+            InvalidCmt830CmtOpt,
+            InvalidCmt830CmtOptMoreThan38,
+            InvalidCmt831,
+            InvalidCmt850Date,
+            InvalidCmt850OtherDate,
+            InvalidCmt851,
+            InvalidCmt852,
+            InvalidCmt853,
+            InvalidCmt880,
+            InvalidKohatuKbn,
+            InvalidDrugKbn,
+            InvalidRowNo,
+            InvalidSinKouiKbn,
+            InvalidItemCd,
+            InvalidItemName,
+            InvalidSuryo,
+            InvalidUnitName,
+            InvalidSyohoKbn,
+            InvalidYohoKbn,
+            InvalidBunkatuLength,
+            InvalidCmtName,
+            InvalidCmtOpt,
+            RaiinNoNoExist,
+            OdrNoMapOdrDetail,
+            Valid
+        };
+
+
         public static Dictionary<string, int> OdrKouiKbns { get; } = new Dictionary<string, int>()
         {
             {"未設定", 0 },
