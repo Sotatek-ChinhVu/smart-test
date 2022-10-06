@@ -1,4 +1,4 @@
-﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Domain.Models.PatientInfor;
 
 namespace Domain.Models.PatientInfor
 {
@@ -23,5 +23,6 @@ namespace Domain.Models.PatientInfor
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
         bool CheckListId(List<long> ptIds);
+        bool SavePatientInfor(int hpId, string memo, PatientInforModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps);
     }
 }

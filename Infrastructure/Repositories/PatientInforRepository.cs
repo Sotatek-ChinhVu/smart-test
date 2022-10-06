@@ -1,13 +1,21 @@
-﻿using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Amazon.Runtime.Internal;
+using Amazon.S3.Model;
+using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Helper.Mapping;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PostgreDataContext;
 using System;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace Infrastructure.Repositories
 {
@@ -803,6 +811,1214 @@ namespace Infrastructure.Repositories
             };
 
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+        }
+
+        public bool SavePatientInfor(int hpId,string memo,PatientInforModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)
+        {
+            int defaultMaxDate = 99999999;
+            if (ptInf.PtId == 0)
+            {
+                PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
+                if (patientInsert.PtNum == 0)
+                    patientInsert.PtNum = GetAutoPtNum(hpId);
+                patientInsert.CreateDate = DateTime.UtcNow;
+                patientInsert.CreateId = TempIdentity.UserId;
+                patientInsert.HpId = hpId;
+                _tenantDataContext.Add(patientInsert);
+                bool resultCreatePatient = _tenantDataContext.SaveChanges() > 0;
+
+                if (ptSantei != null)
+                {
+                    var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
+                        dest.CreateId = TempIdentity.UserId;
+                        dest.PtId = patientInsert.PtId;
+                        dest.HpId = hpId;
+                        dest.UpdateMachine = TempIdentity.ComputerName;
+                        return dest; 
+                    });
+                    _tenantDataContext.Add(ptSanteiInsert);
+                }
+
+                if (!string.IsNullOrEmpty(memo))
+                {
+                    _tenantDataContext.Add(new PtMemo()
+                    {
+                        HpId = hpId,
+                        PtId = patientInsert.PtId,
+                        Memo = memo,
+                        CreateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName,
+                        CreateDate = DateTime.UtcNow
+                    });
+                }
+
+                if (ptGrps != null && ptGrps.Any())
+                {
+                    var listPtGrpInf = Mapper.Map<PtGrpInfModel, PtGrpInf>(ptGrps, (src, dest) => {
+                        dest.CreateDate = DateTime.UtcNow;
+                        dest.CreateId = TempIdentity.UserId;
+                        dest.GroupId = src.GrpId;
+                        dest.GroupCode = src.GrpCode;
+                        dest.UpdateMachine = TempIdentity.ComputerName;
+                        dest.HpId = hpId;
+                        dest.PtId = patientInsert.PtId;
+                        return dest;
+                    });
+                    _tenantDataContext.AddRange(listPtGrpInf);
+                }
+
+                //Hoken
+                int hoKenIndex = 1;
+                int hokenKohiIndex = 1;
+                if (hokenPartterns != null && hokenPartterns.Any())
+                {
+                    foreach (var hokenParttern in hokenPartterns)
+                    {
+                        var hokenModel = Mapper.Map(hokenParttern, new PtHokenPattern(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.UpdateMachine = TempIdentity.ComputerName;
+                            dest.PtId = patientInsert.PtId;
+                            dest.HpId = hpId;
+                            return dest;
+                        });
+
+                        hokenModel.HokenPid = hoKenIndex;
+                        hokenModel.HokenId = hoKenIndex;
+                        hokenModel.EndDate = hokenModel.EndDate == 0 ? defaultMaxDate : hokenModel.EndDate;
+
+                        var hokenInfModel = Mapper.Map(hokenParttern.HokenInf, new PtHokenInf(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.UpdateMachine = TempIdentity.ComputerName;
+                            dest.PtId = patientInsert.PtId;
+                            dest.HpId = hpId;
+                            return dest;
+                        });
+
+                        hokenInfModel.HokenId = hoKenIndex;
+                        hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
+                        _tenantDataContext.Add(hokenInfModel);
+
+                        if (hokenParttern.HokenInf.HokenChecks != null && hokenParttern.HokenInf.HokenChecks.Any())
+                        {
+                            foreach (var item in hokenParttern.HokenInf.HokenChecks)
+                            {
+                                PtHokenCheck addPtHokenCheck = Mapper.Map(item, new PtHokenCheck(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HokenId = hokenModel.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    dest.PtID = patientInsert.PtId;
+                                    dest.HokenGrp = 1;
+                                    dest.HpId = hpId;
+                                    return dest;
+                                });
+                                _tenantDataContext.Add(addPtHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi1 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInsert.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi1Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi1.HokenChecks != null && hokenParttern.Kohi1.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi1.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInsert.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+
+                        }
+
+                        if (hokenParttern.Kohi2 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInsert.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi2Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi2.HokenChecks != null && hokenParttern.Kohi2.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi2.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInsert.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi3 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInsert.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi3Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi3.HokenChecks != null && hokenParttern.Kohi3.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi3.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInsert.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi4 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.PtId = patientInsert.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi4Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi4.HokenChecks != null && hokenParttern.Kohi4.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi4.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInsert.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        _tenantDataContext.PtHokenPatterns.Add(hokenModel);
+                        hoKenIndex++;
+                    }
+                }
+            }
+            else
+            {
+                #region Patient-info
+                PtInf? patientInfo = _tenantDataContext.PtInfs.FirstOrDefault(x=>x.PtId == ptInf.PtId);
+                if (patientInfo is null)
+                    return false;
+
+                Mapper.Map(ptInf, patientInfo, (source, dest) =>
+                {
+                    dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateId = TempIdentity.UserId;
+                    dest.UpdateMachine = TempIdentity.ComputerName;
+                    return dest;
+                });
+                #endregion
+
+                #region Patient-memo
+                PtMemo? memoCurrent = _tenantDataContext.PtMemos.FirstOrDefault(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == 0);
+                if (memoCurrent != null)
+                {
+                    if (string.IsNullOrEmpty(memo))
+                    {
+                        memoCurrent.IsDeleted = 1;
+                        memoCurrent.UpdateDate = DateTime.UtcNow;
+                        memoCurrent.UpdateMachine = TempIdentity.ComputerName;
+                        memoCurrent.UpdateId = TempIdentity.UserId;
+                        _tenantDataContext.PtMemos.Update(memoCurrent);
+                    }
+                    else
+                    {
+                        if (memoCurrent.Memo != null && !memoCurrent.Memo.Equals(memo))
+                        {
+                            memoCurrent.IsDeleted = 1;
+                            memoCurrent.UpdateDate = DateTime.UtcNow;
+                            memoCurrent.UpdateMachine = TempIdentity.ComputerName;
+                            memoCurrent.UpdateId = TempIdentity.UserId;
+                            _tenantDataContext.PtMemos.Update(memoCurrent);
+                            _tenantDataContext.PtMemos.Add(new PtMemo()
+                            {
+                                HpId = patientInfo.HpId,
+                                PtId = patientInfo.PtId,
+                                Memo = memo,
+                                CreateId = TempIdentity.UserId,
+                                CreateDate = DateTime.UtcNow,
+                                CreateMachine = TempIdentity.ComputerName
+                            });
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(memo))
+                    {
+                        _tenantDataContext.PtMemos.Add(new PtMemo()
+                        {
+                            HpId = patientInfo.HpId,
+                            PtId = patientInfo.PtId,
+                            Memo = memo,
+                            CreateId = TempIdentity.UserId,
+                            CreateDate = DateTime.UtcNow,
+                            CreateMachine = TempIdentity.ComputerName
+                        });
+                    }
+                }
+                #endregion
+
+                #region PtSantei
+                PtSanteiConf? ptSanteiConf = _tenantDataContext.PtSanteiConfs.FirstOrDefault(x=>x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId);
+                if (ptSanteiConf == null && ptSantei != null)
+                {
+                    var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
+                        dest.CreateId = TempIdentity.UserId;
+                        dest.PtId = patientInfo.PtId;
+                        dest.HpId = hpId;
+                        dest.UpdateMachine = TempIdentity.ComputerName;
+                        return dest;
+                    });
+                    _tenantDataContext.PtSanteiConfs.Add(ptSanteiInsert);
+                }
+                else if (ptSanteiConf != null && ptSantei == null)
+                {
+                    ptSanteiConf.UpdateId = TempIdentity.UserId;
+                    ptSanteiConf.UpdateDate = DateTime.UtcNow;
+                    ptSanteiConf.IsDeleted = DeleteTypes.Deleted;
+                    _tenantDataContext.PtSanteiConfs.Update(ptSanteiConf);
+                }
+                else if (ptSanteiConf != null && ptSantei != null)
+                {
+                    ptSanteiConf.KbnNo = ptSantei.KbnNo;
+                    ptSanteiConf.EdaNo = ptSantei.EdaNo;
+                    ptSanteiConf.KbnVal = ptSantei.KbnVal;
+                    ptSanteiConf.StartDate = ptSantei.StartDate;
+                    ptSanteiConf.EndDate = ptSantei.EndDate;
+                    ptSanteiConf.UpdateId = TempIdentity.UserId;
+                    ptSanteiConf.UpdateDate = DateTime.UtcNow;
+                    _tenantDataContext.PtSanteiConfs.Update(ptSanteiConf);
+                }
+                #endregion
+
+                #region GrpInf
+                var databaseGrpInfs = _tenantDataContext.PtGrpInfs.Where(x=> x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
+                //Remove haven't in list or have but value codeGrp = null 
+                var GrpInRemoves = databaseGrpInfs.Where(c => !ptGrps.Any(_ => _.GrpId == c.GroupId)
+                                            || ptGrps.Any(_ => _.GrpId == c.GroupId && string.IsNullOrEmpty(_.GrpCode)));
+                foreach (var item in GrpInRemoves)
+                {
+                    item.UpdateId = TempIdentity.UserId;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.IsDeleted = DeleteTypes.Deleted;
+                    _tenantDataContext.PtGrpInfs.Update(item);
+                }
+
+
+                foreach (var item in ptGrps)
+                {
+                    var info = databaseGrpInfs
+                       .Where(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GrpId)
+                       .FirstOrDefault();
+
+                    if (info != null && !string.IsNullOrEmpty(item.GrpCode))
+                    {
+                        //Remove record old
+                        info.UpdateId = TempIdentity.UserId;
+                        info.UpdateDate = DateTime.UtcNow;
+                        info.IsDeleted = DeleteTypes.Deleted;
+                        _tenantDataContext.PtGrpInfs.Update(info);
+
+                        //clone new record
+                        PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.GroupId = source.GrpId;
+                            dest.GroupCode = source.GrpCode;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.PtId = patientInfo.PtId;
+                            dest.HpId = hpId;
+                            dest.CreateMachine = TempIdentity.ComputerName;
+                            return dest;
+                        });
+                        _tenantDataContext.PtGrpInfs.Add(model);
+                    }
+                    else if (info == null && !string.IsNullOrEmpty(item.GrpCode))
+                    {
+                        PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.GroupId = source.GrpId;
+                            dest.GroupCode = source.GrpCode;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.PtId = patientInfo.PtId;
+                            dest.HpId = hpId;
+                            dest.CreateMachine = TempIdentity.ComputerName;
+                            return dest;
+                        });
+                        _tenantDataContext.PtGrpInfs.Add(model);
+                    }
+                    else if (info != null && string.IsNullOrEmpty(item.GrpCode))
+                    {
+                        //delete it 
+                        info.UpdateId = TempIdentity.UserId;
+                        info.UpdateDate = DateTime.Now;
+                        info.IsDeleted = DeleteTypes.Deleted;
+                        _tenantDataContext.PtGrpInfs.Update(info);
+                    }
+                }
+                #endregion
+
+                //Hoken
+                var databaseHokenPartterns = _tenantDataContext.PtHokenPatterns.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
+                var databaseHoKentInfs = _tenantDataContext.PtHokenInfs.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
+                var databasePtKohis = _tenantDataContext.PtKohis.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
+                var databaseHokenChecks = _tenantDataContext.PtHokenChecks.Where(c => c.PtID == patientInfo.PtId && c.HpId == patientInfo.HpId && c.IsDeleted == DeleteTypes.None).ToList();
+
+                int hoKenIndex = databaseHokenPartterns.Any() ? databaseHokenPartterns.Max(c => c.HokenId) + 1 : 1;
+                int hokenKohiIndex = databasePtKohis.Any() ? databasePtKohis.Max(c => c.HokenId) + 1 : 1;
+
+                #region Delete data not in request
+                var deleteHokenPartterns = databaseHokenPartterns.Where(c => !hokenPartterns.Any(_ => _.SeqNo == c.SeqNo) && c.IsDeleted == 0);
+                foreach (var hokenPartternDelete in deleteHokenPartterns)
+                {
+                    if (hokenPartternDelete.Kohi1Id != 0)
+                    {
+                        var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
+                                                                            && c.HokenId == hokenPartternDelete.Kohi1Id);
+                        if (hokenHokiDelete != null)
+                        {
+                            hokenHokiDelete.IsDeleted = 1;
+                            hokenHokiDelete.UpdateDate = DateTime.UtcNow;
+                            hokenHokiDelete.UpdateId = TempIdentity.UserId;
+                            _tenantDataContext.PtKohis.Update(hokenHokiDelete);
+
+                            var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
+                            if (hokenChecks != null && hokenChecks.Any())
+                            {
+                                foreach (var check in hokenChecks)
+                                {
+                                    check.IsDeleted = 1;
+                                    check.UpdateId = TempIdentity.UserId;
+                                    check.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtHokenChecks.Update(check);
+                                }
+                            }
+                        }
+                    }
+
+                    if (hokenPartternDelete.Kohi2Id != 0)
+                    {
+                        var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
+                                                                            && c.HokenId == hokenPartternDelete.Kohi2Id);
+                        if (hokenHokiDelete != null)
+                        {
+                            hokenHokiDelete.IsDeleted = 1;
+                            hokenHokiDelete.UpdateDate = DateTime.UtcNow;
+                            hokenHokiDelete.UpdateId = TempIdentity.UserId;
+                            _tenantDataContext.PtKohis.Update(hokenHokiDelete);
+
+                            var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
+                            if (hokenChecks != null && hokenChecks.Any())
+                            {
+                                foreach (var check in hokenChecks)
+                                {
+                                    check.IsDeleted = 1;
+                                    check.UpdateId = TempIdentity.UserId;
+                                    check.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtHokenChecks.Update(check);
+                                }
+                            }
+                        }
+                    }
+
+                    if (hokenPartternDelete.Kohi3Id != 0)
+                    {
+                        var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
+                                                                            && c.HokenId == hokenPartternDelete.Kohi3Id);
+                        if (hokenHokiDelete != null)
+                        {
+                            hokenHokiDelete.IsDeleted = 1;
+                            hokenHokiDelete.UpdateDate = DateTime.UtcNow;
+                            hokenHokiDelete.UpdateId = TempIdentity.UserId;
+                            _tenantDataContext.PtKohis.Update(hokenHokiDelete);
+
+                            var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
+                            if (hokenChecks != null && hokenChecks.Any())
+                            {
+                                foreach (var check in hokenChecks)
+                                {
+                                    check.IsDeleted = 1;
+                                    check.UpdateId = TempIdentity.UserId;
+                                    check.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtHokenChecks.Update(check);
+                                }
+                            }
+                        }
+                    }
+
+                    if (hokenPartternDelete.Kohi4Id != 0)
+                    {
+                        var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
+                                                                            && c.HokenId == hokenPartternDelete.Kohi4Id);
+                        if (hokenHokiDelete != null)
+                        {
+                            hokenHokiDelete.IsDeleted = 1;
+                            hokenHokiDelete.UpdateDate = DateTime.UtcNow;
+                            hokenHokiDelete.UpdateId = TempIdentity.UserId;
+                            _tenantDataContext.PtKohis.Update(hokenHokiDelete);
+
+                            var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
+                            if (hokenChecks != null && hokenChecks.Any())
+                            {
+                                foreach (var check in hokenChecks)
+                                {
+                                    check.IsDeleted = 1;
+                                    check.UpdateId = TempIdentity.UserId;
+                                    check.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtHokenChecks.Update(check);
+                                }
+                            }
+                        }
+                    }
+
+                    var hokenIfDelete = databaseHoKentInfs.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
+                                                                            && c.HokenId == hokenPartternDelete.HokenId);
+
+                    if (hokenIfDelete != null)
+                    {
+                        hokenIfDelete.IsDeleted = 1;
+                        hokenIfDelete.UpdateDate = DateTime.UtcNow;
+                        hokenIfDelete.UpdateId = TempIdentity.UserId;
+                        _tenantDataContext.PtHokenInfs.Update(hokenIfDelete);
+                    }
+
+                    hokenPartternDelete.IsDeleted = 1;
+                    hokenPartternDelete.UpdateDate = DateTime.UtcNow;
+                    hokenPartternDelete.UpdateId = TempIdentity.UserId;
+                    _tenantDataContext.PtHokenPatterns.Update(hokenPartternDelete);
+
+                    var hokenPatternChecks = databaseHokenChecks.Where(c => c.CheckId == hokenPartternDelete.HokenId && c.HokenGrp == 1);
+                    if (hokenPatternChecks != null && hokenPatternChecks.Any())
+                    {
+                        foreach (var check in hokenPatternChecks)
+                        {
+                            check.IsDeleted = 1;
+                            check.UpdateId = TempIdentity.UserId;
+                            check.UpdateDate = DateTime.UtcNow;
+                            _tenantDataContext.PtHokenChecks.Update(check);
+                        }
+                    }
+                }
+                #endregion
+
+                #region Add new & update current
+                foreach (var hokenParttern in hokenPartterns)
+                {
+                    if (hokenParttern.SeqNo != 0) //update entity
+                    {
+                        var hokenPartternUpdate = databaseHokenPartterns.FirstOrDefault(c => c.SeqNo == hokenParttern.SeqNo);
+                        if(hokenPartternUpdate != null)
+                        {
+                            hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+
+                            #region KohiId1
+                            if (hokenPartternUpdate.Kohi1Id == 0 && hokenParttern.Kohi1 != null) // add new
+                            {
+                                hokenPartternUpdate.Kohi1Id = hokenKohiIndex;
+
+                                var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.PtId = patientInfo.PtId;
+                                    dest.HpId = hpId;
+                                    dest.HokenId = hokenKohiIndex;
+                                    dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtKohis.Add(kohi);
+                                hokenKohiIndex++;
+                            }
+                            else if (hokenPartternUpdate.Kohi1Id != 0 && hokenParttern.Kohi1 == null) //Case remove
+                            {
+                                var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi1Id);
+                                if (kohiRemove != null)
+                                {
+                                    kohiRemove.IsDeleted = 1;
+                                    kohiRemove.UpdateDate = DateTime.UtcNow;
+                                    kohiRemove.UpdateId = TempIdentity.UserId;
+                                    _tenantDataContext.PtKohis.Update(kohiRemove);
+                                }
+                                hokenPartternUpdate.Kohi1Id = 0;
+                            }
+                            else if (hokenPartternUpdate.Kohi1Id != 0 && hokenParttern.Kohi1 != null)
+                            {
+                                hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+
+                                var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi1Id);
+                                if (kohiUpdate != null)
+                                {
+                                    kohiUpdate.FutansyaNo = hokenParttern.Kohi1.FutansyaNo;
+                                    kohiUpdate.JyukyusyaNo = hokenParttern.Kohi1.JyukyusyaNo;
+                                    kohiUpdate.TokusyuNo = hokenParttern.Kohi1.TokusyuNo;
+                                    kohiUpdate.SikakuDate = hokenParttern.Kohi1.SikakuDate;
+                                    kohiUpdate.KofuDate = hokenParttern.Kohi1.KofuDate;
+                                    kohiUpdate.Rate = hokenParttern.Kohi1.Rate;
+                                    kohiUpdate.StartDate = hokenParttern.Kohi1.StartDate;
+                                    kohiUpdate.EndDate = hokenParttern.Kohi1.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi1.EndDate;
+                                    kohiUpdate.GendoGaku = hokenParttern.Kohi1.GendoGaku;
+                                    kohiUpdate.HokenEdaNo = hokenParttern.Kohi1.HokenEdaNo;
+                                    kohiUpdate.HokenSbtKbn = hokenParttern.Kohi1.HokenSbtKbn;
+                                    kohiUpdate.Houbetu = hokenParttern.Kohi1.Houbetu;
+                                    kohiUpdate.UpdateId = TempIdentity.UserId;
+                                    kohiUpdate.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtKohis.Update(kohiUpdate);
+                                }
+                            }
+
+                            //HokenCheck
+                            if (hokenParttern.Kohi1 == null || hokenParttern.Kohi1.HokenChecks == null)
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, new List<PtHokenCheckModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi1Id, TempIdentity.UserId, true).Wait();
+                            }
+                            else
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi1.HokenChecks, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi1Id, TempIdentity.UserId, true).Wait();
+                            }
+
+                            #endregion
+
+                            #region KohiId2
+                            if (hokenPartternUpdate.Kohi2Id == 0 && hokenParttern.Kohi2 != null) // add new
+                            {
+                                hokenPartternUpdate.Kohi2Id = hokenKohiIndex;
+
+                                var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.PtId = patientInfo.PtId;
+                                    dest.HpId = hpId;
+                                    dest.HokenId = hokenKohiIndex;
+                                    dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtKohis.Add(kohi);
+                                hokenKohiIndex++;
+                            }
+                            else if (hokenPartternUpdate.Kohi2Id != 0 && hokenParttern.Kohi2 == null) //Case remove
+                            {
+                                var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                 && c.HokenId == hokenPartternUpdate.Kohi2Id);
+                                if (kohiRemove != null)
+                                {
+                                    kohiRemove.IsDeleted = 1;
+                                    kohiRemove.UpdateDate = DateTime.UtcNow;
+                                    kohiRemove.UpdateId = TempIdentity.UserId;
+                                    _tenantDataContext.PtKohis.Update(kohiRemove);
+                                }
+                                hokenPartternUpdate.Kohi2Id = 0;
+                            }
+                            else if (hokenPartternUpdate.Kohi2Id != 0 && hokenParttern.Kohi2 != null)
+                            {
+                                hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+
+                                var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi2Id);
+                                if (kohiUpdate != null)
+                                {
+                                    kohiUpdate.FutansyaNo = hokenParttern.Kohi2.FutansyaNo;
+                                    kohiUpdate.JyukyusyaNo = hokenParttern.Kohi2.JyukyusyaNo;
+                                    kohiUpdate.TokusyuNo = hokenParttern.Kohi2.TokusyuNo;
+                                    kohiUpdate.SikakuDate = hokenParttern.Kohi2.SikakuDate;
+                                    kohiUpdate.KofuDate = hokenParttern.Kohi2.KofuDate;
+                                    kohiUpdate.Rate = hokenParttern.Kohi2.Rate;
+                                    kohiUpdate.StartDate = hokenParttern.Kohi2.StartDate;
+                                    kohiUpdate.EndDate = hokenParttern.Kohi2.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi2.EndDate;
+                                    kohiUpdate.GendoGaku = hokenParttern.Kohi2.GendoGaku;
+                                    kohiUpdate.HokenEdaNo = hokenParttern.Kohi2.HokenEdaNo;
+                                    kohiUpdate.HokenSbtKbn = hokenParttern.Kohi2.HokenSbtKbn;
+                                    kohiUpdate.Houbetu = hokenParttern.Kohi2.Houbetu;
+                                    kohiUpdate.UpdateId = TempIdentity.UserId;
+                                    kohiUpdate.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtKohis.Update(kohiUpdate);
+                                }
+                            }
+
+                            //HokenCheck
+                            if (hokenParttern.Kohi2 == null || hokenParttern.Kohi2.HokenChecks == null)
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, new List<PtHokenCheckModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi2Id, TempIdentity.UserId, true).Wait();
+                            }
+                            else
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi2.HokenChecks, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi2Id, TempIdentity.UserId, true).Wait();
+                            }
+                            #endregion
+
+                            #region KohiId3
+                            if (hokenPartternUpdate.Kohi3Id == 0 && hokenParttern.Kohi3 != null) // add new
+                            {
+                                hokenPartternUpdate.Kohi3Id = hokenKohiIndex;
+
+                                var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.PtId = patientInfo.PtId;
+                                    dest.HpId = hpId;
+                                    dest.HokenId = hokenKohiIndex;
+                                    dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtKohis.Add(kohi);
+                                hokenKohiIndex++;
+                            }
+                            else if (hokenPartternUpdate.Kohi3Id != 0 && hokenParttern.Kohi3 == null) //Case remove
+                            {
+                                var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi3Id);
+                                if (kohiRemove != null)
+                                {
+                                    kohiRemove.IsDeleted = 1;
+                                    kohiRemove.UpdateDate = DateTime.UtcNow;
+                                    kohiRemove.UpdateId = TempIdentity.UserId;
+                                    _tenantDataContext.PtKohis.Update(kohiRemove);
+                                }
+                                hokenPartternUpdate.Kohi3Id = 0;
+                            }
+                            else if (hokenPartternUpdate.Kohi3Id != 0 && hokenParttern.Kohi3 != null)
+                            {
+                                hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+
+                                var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi3Id);
+                                if (kohiUpdate != null)
+                                {
+                                    kohiUpdate.FutansyaNo = hokenParttern.Kohi3.FutansyaNo;
+                                    kohiUpdate.JyukyusyaNo = hokenParttern.Kohi3.JyukyusyaNo;
+                                    kohiUpdate.TokusyuNo = hokenParttern.Kohi3.TokusyuNo;
+                                    kohiUpdate.SikakuDate = hokenParttern.Kohi3.SikakuDate;
+                                    kohiUpdate.KofuDate = hokenParttern.Kohi3.KofuDate;
+                                    kohiUpdate.Rate = hokenParttern.Kohi3.Rate;
+                                    kohiUpdate.StartDate = hokenParttern.Kohi3.StartDate;
+                                    kohiUpdate.EndDate = hokenParttern.Kohi3.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi3.EndDate;
+                                    kohiUpdate.GendoGaku = hokenParttern.Kohi3.GendoGaku;
+                                    kohiUpdate.HokenEdaNo = hokenParttern.Kohi3.HokenEdaNo;
+                                    kohiUpdate.HokenSbtKbn = hokenParttern.Kohi3.HokenSbtKbn;
+                                    kohiUpdate.Houbetu = hokenParttern.Kohi3.Houbetu;
+                                    kohiUpdate.UpdateId = TempIdentity.UserId;
+                                    kohiUpdate.UpdateDate = DateTime.UtcNow;
+                                    _tenantDataContext.PtKohis.Update(kohiUpdate);
+                                }
+                            }
+
+                            //HokenCheck
+                            if (hokenParttern.Kohi3 == null || hokenParttern.Kohi3.HokenChecks == null)
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, new List<PtHokenCheckModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi3Id, TempIdentity.UserId, true).Wait();
+                            }
+                            else
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi3.HokenChecks, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi3Id, TempIdentity.UserId, true).Wait();
+                            }
+                            #endregion
+
+                            #region KohiId4
+                            if (hokenPartternUpdate.Kohi4Id == 0 && hokenParttern.Kohi4 != null) // add new
+                            {
+                                hokenPartternUpdate.Kohi4Id = hokenKohiIndex;
+
+                                var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.PtId = patientInfo.PtId;
+                                    dest.HpId = hpId;
+                                    dest.HokenId = hokenKohiIndex;
+                                    dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtKohis.Add(kohi);
+                                hokenKohiIndex++;
+                            }
+                            else if (hokenPartternUpdate.Kohi4Id != 0 && hokenParttern.Kohi4 == null) //Case remove
+                            {
+                                var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi4Id);
+                                if (kohiRemove != null)
+                                {
+                                    kohiRemove.IsDeleted = 1;
+                                    kohiRemove.UpdateDate = DateTime.Now;
+                                    kohiRemove.UpdateId = TempIdentity.UserId;
+                                    _tenantDataContext.PtKohis.Update(kohiRemove);
+                                }
+                                hokenPartternUpdate.Kohi4Id = 0;
+                            }
+                            else if (hokenPartternUpdate.Kohi4Id != 0 && hokenParttern.Kohi4 != null)
+                            {
+                                hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+
+                                var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
+                                                                                && c.HokenId == hokenPartternUpdate.Kohi4Id);
+                                if (kohiUpdate != null)
+                                {
+                                    kohiUpdate.FutansyaNo = hokenParttern.Kohi4.FutansyaNo;
+                                    kohiUpdate.JyukyusyaNo = hokenParttern.Kohi4.JyukyusyaNo;
+                                    kohiUpdate.TokusyuNo = hokenParttern.Kohi4.TokusyuNo;
+                                    kohiUpdate.SikakuDate = hokenParttern.Kohi4.SikakuDate;
+                                    kohiUpdate.KofuDate = hokenParttern.Kohi4.KofuDate;
+                                    kohiUpdate.Rate = hokenParttern.Kohi4.Rate;
+                                    kohiUpdate.StartDate = hokenParttern.Kohi4.StartDate;
+                                    kohiUpdate.EndDate = hokenParttern.Kohi4.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi4.EndDate;
+                                    kohiUpdate.GendoGaku = hokenParttern.Kohi4.GendoGaku;
+                                    kohiUpdate.HokenEdaNo = hokenParttern.Kohi4.HokenEdaNo;
+                                    kohiUpdate.HokenSbtKbn = hokenParttern.Kohi4.HokenSbtKbn;
+                                    kohiUpdate.Houbetu = hokenParttern.Kohi4.Houbetu;
+                                    kohiUpdate.UpdateId = TempIdentity.UserId;
+                                    kohiUpdate.UpdateDate = DateTime.Now;
+                                    _tenantDataContext.PtKohis.Update(kohiUpdate);
+                                }
+                            }
+
+                            //HokenCheck
+                            if (hokenParttern.Kohi4 == null || hokenParttern.Kohi4.HokenChecks == null)
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, new List<PtHokenCheckModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi4Id, TempIdentity.UserId, true).Wait();
+                            }
+                            else
+                            {
+                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi4.HokenChecks, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi4Id, TempIdentity.UserId, true).Wait();
+                            }
+                            #endregion
+
+                            hokenPartternUpdate.StartDate = hokenParttern.StartDate;
+                            hokenPartternUpdate.EndDate = hokenParttern.EndDate;
+                            hokenPartternUpdate.UpdateDate = DateTime.UtcNow;
+                            hokenPartternUpdate.UpdateId = TempIdentity.UserId;
+                        };
+
+                        int hokenParternHokenId = 0;
+                        if (hokenPartternUpdate != null)
+                            hokenParternHokenId = hokenPartternUpdate.HokenId;
+
+                        var hokenIfUpdate = databaseHoKentInfs.FirstOrDefault(c => c.HpId == hpId && c.PtId == patientInfo.PtId
+                                                                            && c.HokenId == hokenParternHokenId);
+                        if (hokenIfUpdate != null)
+                        {
+                            if (hokenParttern.HokenInf != null)
+                            {
+                                hokenIfUpdate.HokenNo = hokenParttern.HokenInf.HokenNo;
+                                hokenIfUpdate.HokensyaNo = hokenParttern.HokenInf.HokensyaNo;
+                                hokenIfUpdate.Kigo = hokenParttern.HokenInf.Kigo;
+                                hokenIfUpdate.Bango = hokenParttern.HokenInf.Bango;
+                                hokenIfUpdate.HonkeKbn = hokenParttern.HokenInf.HonkeKbn;
+                                hokenIfUpdate.HokenKbn = hokenParttern.HokenInf.HokenKbn;
+                                hokenIfUpdate.Houbetu = hokenParttern.HokenInf.Houbetu;
+                                hokenIfUpdate.HokensyaName = hokenParttern.HokenInf.HokensyaName;
+                                hokenIfUpdate.HokensyaNo = hokenParttern.HokenInf.HokensyaNo;
+                                hokenIfUpdate.HokensyaPost = hokenParttern.HokenInf.HokensyaPost;
+                                hokenIfUpdate.HokensyaAddress = hokenParttern.HokenInf.HokensyaAddress;
+                                hokenIfUpdate.HokensyaTel = hokenParttern.HokenInf.HokensyaTel;
+                                hokenIfUpdate.KofuDate = hokenParttern.HokenInf.KofuDate;
+                                hokenIfUpdate.StartDate = hokenParttern.HokenInf.StartDate;
+                                hokenIfUpdate.EndDate = hokenParttern.HokenInf.EndDate == 0 ? defaultMaxDate : hokenParttern.HokenInf.EndDate;
+                                hokenIfUpdate.RyoyoStartDate = hokenParttern.HokenInf.RyoyoStartDate;
+                                hokenIfUpdate.RyoyoEndDate = hokenParttern.HokenInf.RyoyoEndDate == 0 ? defaultMaxDate : hokenParttern.HokenInf.RyoyoEndDate;
+                                hokenIfUpdate.Gendogaku = hokenParttern.HokenInf.Gendogaku;
+                                hokenIfUpdate.KeizokuKbn = hokenParttern.HokenInf.KeizokuKbn;
+                                hokenIfUpdate.KogakuKbn = hokenParttern.HokenInf.KogakuKbn;
+                                hokenIfUpdate.KogakuType = hokenParttern.HokenInf.KogakuType;
+                                hokenIfUpdate.TokureiYm1 = hokenParttern.HokenInf.TokureiYm1;
+                                hokenIfUpdate.TokureiYm2 = hokenParttern.HokenInf.TokureiYm2;
+                                hokenIfUpdate.TasukaiYm = hokenParttern.HokenInf.TasukaiYm;
+                                hokenIfUpdate.SyokumuKbn = hokenParttern.HokenInf.SyokumuKbn;
+                                hokenIfUpdate.GenmenKbn = hokenParttern.HokenInf.GenmenKbn;
+                                hokenIfUpdate.GenmenRate = hokenParttern.HokenInf.GenmenRate;
+                                hokenIfUpdate.GenmenGaku = hokenParttern.HokenInf.GenmenGaku;
+                                hokenIfUpdate.Tokki1 = hokenParttern.HokenInf.Tokki1;
+                                hokenIfUpdate.Tokki2 = hokenParttern.HokenInf.Tokki2;
+                                hokenIfUpdate.Tokki3 = hokenParttern.HokenInf.Tokki3;
+                                hokenIfUpdate.Tokki4 = hokenParttern.HokenInf.Tokki4;
+                                hokenIfUpdate.Tokki5 = hokenParttern.HokenInf.Tokki5;
+                                hokenIfUpdate.RousaiKofuNo = hokenParttern.HokenInf.RousaiKofuNo;
+                                hokenIfUpdate.RousaiSaigaiKbn = hokenParttern.HokenInf.RousaiSaigaiKbn;
+                                hokenIfUpdate.RousaiJigyosyoName = hokenParttern.HokenInf.RousaiJigyosyoName;
+                                hokenIfUpdate.RousaiPrefName = hokenParttern.HokenInf.RousaiPrefName;
+                                hokenIfUpdate.RousaiCityName = hokenParttern.HokenInf.RousaiCityName;
+                                hokenIfUpdate.RousaiSyobyoDate = hokenParttern.HokenInf.RousaiSyobyoDate;
+                                hokenIfUpdate.RousaiSyobyoCd = hokenParttern.HokenInf.RousaiSyobyoCd;
+                                hokenIfUpdate.RousaiRoudouCd = hokenParttern.HokenInf.RousaiRoudouCd;
+                                hokenIfUpdate.RousaiKantokuCd = hokenParttern.HokenInf.RousaiKantokuCd;
+                                hokenIfUpdate.RousaiReceCount = hokenParttern.HokenInf.RousaiReceCount;
+                                hokenIfUpdate.JibaiHokenName = hokenParttern.HokenInf.JibaiHokenName;
+                                hokenIfUpdate.JibaiHokenTanto = hokenParttern.HokenInf.JibaiHokenTanto;
+                                hokenIfUpdate.JibaiHokenTel = hokenParttern.HokenInf.JibaiHokenTel;
+                                hokenIfUpdate.JibaiJyusyouDate = hokenParttern.HokenInf.JibaiJyusyouDate;
+                                hokenIfUpdate.SikakuDate = hokenParttern.HokenInf.SikakuDate;
+                                hokenIfUpdate.EdaNo = hokenParttern.HokenInf.EdaNo;
+                                hokenIfUpdate.KeizokuKbn = hokenParttern.HokenInf.KeizokuKbn;
+                                _tenantDataContext.PtHokenInfs.Update(hokenIfUpdate);
+
+                                if (hokenPartternUpdate != null && hokenParttern.HokenInf.HokenChecks != null)
+                                    UpdateHokenCheck(databaseHokenChecks, hokenParttern.HokenInf.HokenChecks, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.HokenId, TempIdentity.UserId);
+                            }
+                        }
+
+                        if(hokenPartternUpdate != null)
+                            _tenantDataContext.PtHokenPatterns.Update(hokenPartternUpdate);
+                    }
+                    else //Add Entity
+                    {
+                        var hokenModel = Mapper.Map(hokenParttern, new PtHokenPattern(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.UpdateMachine = TempIdentity.ComputerName;
+                            dest.PtId = patientInfo.PtId;
+                            dest.HpId = hpId;
+                            return dest;
+                        });
+
+                        hokenModel.HokenPid = hoKenIndex;
+                        hokenModel.HokenId = hoKenIndex;
+                        hokenModel.EndDate = hokenModel.EndDate == 0 ? defaultMaxDate : hokenModel.EndDate;
+
+                        var hokenInfModel = Mapper.Map(hokenParttern.HokenInf, new PtHokenInf(), (source, dest) => {
+                            dest.CreateId = TempIdentity.UserId;
+                            dest.CreateDate = DateTime.UtcNow;
+                            dest.UpdateMachine = TempIdentity.ComputerName;
+                            dest.PtId = patientInfo.PtId;
+                            dest.HpId = hpId;
+                            return dest;
+                        });
+
+                        hokenInfModel.HokenId = hoKenIndex;
+                        hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
+                        _tenantDataContext.Add(hokenInfModel);
+
+                        if (hokenParttern.HokenInf != null && hokenParttern.HokenInf.HokenChecks != null && hokenParttern.HokenInf.HokenChecks.Any())
+                        {
+                            foreach (var item in hokenParttern.HokenInf.HokenChecks)
+                            {
+                                PtHokenCheck addPtHokenCheck = Mapper.Map(item, new PtHokenCheck(), (source, dest) => {
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HokenId = hokenModel.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    dest.PtID = patientInfo.PtId;
+                                    dest.HokenGrp = 1;
+                                    dest.HpId = hpId;
+                                    return dest;
+                                });
+                                _tenantDataContext.Add(addPtHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi1 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInfo.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi1Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi1.HokenChecks != null && hokenParttern.Kohi1.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi1.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInfo.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+
+                        }
+
+                        if (hokenParttern.Kohi2 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInfo.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi2Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi2.HokenChecks != null && hokenParttern.Kohi2.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi2.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInfo.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi3 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                dest.PtId = patientInfo.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi3Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi3.HokenChecks != null && hokenParttern.Kohi3.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi3.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInfo.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        if (hokenParttern.Kohi4 != null)
+                        {
+                            var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
+                                dest.CreateId = TempIdentity.UserId;
+                                dest.CreateDate = DateTime.UtcNow;
+                                dest.PtId = patientInfo.PtId;
+                                dest.HpId = hpId;
+                                dest.HokenId = hokenKohiIndex;
+                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
+                                dest.UpdateMachine = TempIdentity.ComputerName;
+                                return dest;
+                            });
+
+                            _tenantDataContext.PtKohis.Add(kohi);
+                            hokenModel.Kohi4Id = hokenKohiIndex;
+                            hokenKohiIndex++;
+
+                            if (hokenParttern.Kohi4.HokenChecks != null && hokenParttern.Kohi4.HokenChecks.Any())
+                            {
+                                var listAddHokenCheck = Mapper.Map<PtHokenCheckModel, PtHokenCheck>(hokenParttern.Kohi4.HokenChecks, (src, dest) => {
+                                    dest.CreateDate = DateTime.UtcNow;
+                                    dest.CreateId = TempIdentity.UserId;
+                                    dest.HpId = hpId;
+                                    dest.PtID = patientInfo.PtId;
+                                    dest.HokenGrp = 2;
+                                    dest.HokenId = kohi.HokenId;
+                                    dest.CheckId = TempIdentity.UserId;
+                                    dest.UpdateMachine = TempIdentity.ComputerName;
+                                    return dest;
+                                });
+                                _tenantDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
+                            }
+                        }
+
+                        _tenantDataContext.PtHokenPatterns.Add(hokenModel);
+                        hoKenIndex++;
+                    }
+                }
+                #endregion
+                _tenantDataContext.PtInfs.Update(patientInfo);
+            }
+            return _tenantDataContext.SaveChanges() > 0;
+        }
+
+        private long GetAutoPtNum(int HpId)
+        {
+            long startPtNum = 1;
+            long startPtNumSetting = (long)GetSettingValue(1014, HpId, 1);
+            if (startPtNumSetting > 0)
+            {
+                startPtNum = startPtNumSetting;
+            }
+            return GetAutoPtNum(startPtNum, HpId);
+        }
+
+        private double GetSettingValue(int groupCd, int hpId, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
+        {
+            SystemConf? systemConf = new SystemConf();
+            systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p =>
+                    p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            return systemConf != null ? systemConf.Val : defaultValue;
+        }
+
+
+        private long GetAutoPtNum(long startValue, int hpId)
+        {
+            int autoSetting = (int)GetSettingValue(1014, hpId, 0);
+            var ptNumExisting = _tenantDataContext.PtInfs.FirstOrDefault
+                (ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum == startValue);
+            if (ptNumExisting == null)
+            {
+                return startValue;
+            }
+
+            var ptList = _tenantDataContext.PtInfs.Where(ptInf => (autoSetting != 1 ? true : ptInf.IsDelete == 0) && ptInf.PtNum >= startValue)
+               .OrderBy(ptInf => ptInf.PtNum);
+
+            long minPtNum = 0;
+            if (ptList != null && ptList.Any())
+            {
+                var queryNotExistPtNum =
+                    from ptInf in ptList
+                    where !(from ptInfDistinct in ptList
+                            select ptInfDistinct.PtNum)
+                           .Contains(ptInf.PtNum + 1)
+                    orderby ptInf.PtNum
+                    select ptInf.PtNum;
+                if (queryNotExistPtNum != null)
+                {
+                    minPtNum = queryNotExistPtNum.FirstOrDefault();
+                }
+            }
+            return minPtNum + 1;
+        }
+
+        private Task UpdateHokenCheck(List<PtHokenCheck> databaseList, List<PtHokenCheckModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
+        {
+            int hokenGrp = 1;
+            if (hokenKohi)
+            {
+                hokenGrp = 2;
+            }
+            var checkDatabaseData = databaseList.Where(c => c.HokenId == hokenId && c.HokenGrp == hokenGrp);
+            var deleteList = checkDatabaseData.Where(c => !savingList.Any(_ => _.SeqNo == c.SeqNo) && c.IsDeleted == 0);
+            foreach (var deleteItem in deleteList) //Removes
+            {
+                deleteItem.IsDeleted = 1;
+                _tenantDataContext.PtHokenChecks.Update(deleteItem);
+            }
+
+            foreach (var createItem in savingList.Where(c => c.SeqNo == 0)) // Add new
+            {
+                PtHokenCheck addedHokenCheck = new PtHokenCheck();
+                addedHokenCheck.HpId = hpId;
+                addedHokenCheck.PtID = ptId;
+                addedHokenCheck.HokenGrp = hokenGrp;
+                addedHokenCheck.HokenId = hokenId;
+                addedHokenCheck.CheckDate = createItem.CheckDate;
+                addedHokenCheck.CheckId = actUserId;
+                addedHokenCheck.CheckCmt = createItem.CheckCmt;
+                addedHokenCheck.CreateId = actUserId;
+                addedHokenCheck.CreateDate = DateTime.UtcNow;
+                _tenantDataContext.PtHokenChecks.Add(addedHokenCheck);
+            }
+
+            //Updates
+            foreach (var updateItem in savingList.Where(c => c.SeqNo != 0))
+            {
+                var modelUpdate = checkDatabaseData.FirstOrDefault(c => c.SeqNo == updateItem.SeqNo);
+                if (modelUpdate != null)
+                {
+                    modelUpdate.CheckDate = updateItem.CheckDate;
+                    modelUpdate.CheckId = actUserId;
+                    modelUpdate.CheckCmt = updateItem.CheckCmt;
+                    modelUpdate.CreateId = actUserId;
+                    modelUpdate.UpdateDate = DateTime.UtcNow;
+                    _tenantDataContext.PtHokenChecks.Update(modelUpdate);
+                }
+            }
+            return Task.CompletedTask;
         }
     }
 }
