@@ -39,7 +39,7 @@ public class InsuranceDto
 
     public bool IsValidData()
     {
-        if (ConfirmDateList.Any(c => c < 10000000 || c < 99999999))
+        if (ConfirmDateList.Any(c => c < 10000000 || 99999999 < c))
         {
             return false;
         }

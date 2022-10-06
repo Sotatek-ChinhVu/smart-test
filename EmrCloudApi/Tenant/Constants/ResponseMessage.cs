@@ -34,6 +34,8 @@
         public static readonly string CreateUserSuccessed = "User created!!!";
 
         //Patient Infor
+        public static readonly string InvalidPtNum = "Invalid PtNum";
+
         // RousaiJibai
         public static readonly string InvalidHokenKbn = "Invalid HokenKbn";
         public static readonly string InvalidSelectedHokenInfRousaiSaigaiKbn = "Invalid SelectedHokenInf RousaiSaigaiKbn";
@@ -347,7 +349,7 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
-        
+
 
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
@@ -398,10 +400,10 @@
         public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
         public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
-        
+
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
-        
+
         //Alrgy Drug
         public static readonly string AddAlrgyDrugInvalidCmt = "Invalid Cmt";
         public static readonly string AddAlrgyDrugInvalidPtId = "Invalid PtId";
@@ -504,5 +506,10 @@
         public static readonly string InvalidDuplicateKohi2 = "Invalid duplicate kohi2 empty model";
         public static readonly string InvalidDuplicateKohi3 = "Invalid duplicate kohi3 empty model";
         public static readonly string InvalidDuplicateKohi4 = "Invalid duplicate kohi4 empty model";
+
+        // Invalid Insurance Other
+        public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
     }
 }

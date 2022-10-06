@@ -53,6 +53,9 @@
         // ExportReport
         public const string ExportKarte1 = "ExportKarte1";
 
+        //PatientInfor
+        public const string SearchEmptyId = "SearchEmptyId";
+        
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
 
@@ -64,5 +67,8 @@
 
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
+
+        // Validate Insurance Other
+        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
     }
 }
