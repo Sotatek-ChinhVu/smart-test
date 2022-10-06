@@ -500,5 +500,10 @@
         public static readonly string InvalidDuplicateKohi2 = "Invalid duplicate kohi2 empty model";
         public static readonly string InvalidDuplicateKohi3 = "Invalid duplicate kohi3 empty model";
         public static readonly string InvalidDuplicateKohi4 = "Invalid duplicate kohi4 empty model";
+
+        // Invalid Insurance Other
+        public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
+        public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
     }
 }
