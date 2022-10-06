@@ -6,9 +6,9 @@ namespace UseCase.PatientInfor.Save
     {
         [Description("HpId property is valid")]
         InvalidHpId,
-        [Description("Name property is valid")]
+        [Description("Patient Name property is valid")]
         InvalidName,
-        [Description("KanaName property is valid")]
+        [Description("Patient KanaName property is valid")]
         InvalidKanaName,
     }
 }

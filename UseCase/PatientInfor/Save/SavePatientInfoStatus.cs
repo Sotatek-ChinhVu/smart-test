@@ -3,7 +3,6 @@
     public enum SavePatientInfoStatus
     {
         Successful,
-        Failed,
-        Exception
+        Failed
     }
 }

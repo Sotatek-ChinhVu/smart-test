@@ -47,8 +47,11 @@ namespace Interactor.PatientInfor
             if (model.HpId <= 0)
                 result.Add(SavePatientInfoValidation.InvalidHpId);
 
-            //if (model.Patient. != null && model.KanaName.Length > 100)
-            //    result.Add(SavePatientInfoValidation.InvalidKanaName);
+            if (model.Patient.Name == null || model.Patient.Name.Length > 100)
+                result.Add(SavePatientInfoValidation.InvalidName);
+
+            if (model.Patient.KanaName == null || model.Patient.KanaName.Length > 100)
+                result.Add(SavePatientInfoValidation.InvalidKanaName);
 
             return result;
         }

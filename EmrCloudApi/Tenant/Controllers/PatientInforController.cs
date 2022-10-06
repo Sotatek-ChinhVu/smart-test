@@ -35,6 +35,7 @@ using UseCase.PatientGroupMst.SaveList;
 using EmrCloudApi.Tenant.Constants;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
+using UseCase.PatientInfor.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -234,5 +235,20 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SaveHokenSyaMstResponse>>(presenter.Result);
         }
 
+        [HttpPost("SavePatientInfo")]
+        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        {
+            var input = new SavePatientInfoInputData(request.PtInformation.HpId,
+                                                    request.PtInformation.Patient,
+                                                    request.PtInformation.Memo,
+                                                    request.PtInformation.PtSantei,
+                                                    request.PtInformation.HokenParterns,
+                                                    request.PtInformation.PtGrpInfs
+                                                    );
+            var output = _bus.Handle(input);
+            var presenter = new SavePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
+        }
     }
 }
