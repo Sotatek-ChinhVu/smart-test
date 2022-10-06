@@ -46,13 +46,13 @@
 
         //PostCode
         public const string SearchPostCode = "SearchPostCode";
-        
+
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
-        
+
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
 
@@ -67,5 +67,9 @@
 
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
+
+        //Validate InputItem
+        public const string ValidateInputItem = "ValidateInputItem";
+
     }
 }

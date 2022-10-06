@@ -80,17 +80,22 @@
             InvalidCommentNewline,
             InvalidTodayOrdInsertedExist,
             InvalidTodayOrdUpdatedNoExist,
+            InvalidGazoDensibaitaiHozon,
+            InvalidTokuzai,
+            InvalidTokuzaiKouiKbn,
+            InvalidTokuzaiDrugOrInjection,
             Valid
         };
 
         public enum InputItemValidationStatus
         {
+            InvalidHpId,
             InvalidInoutKbn,
             InvalidTosekiKbn,
             InvalidDaysCnt,
+            InvalidOdrKouiKbn,
             InvalidSpecialItem,
             InvalidSpecialStadardUsage,
-            InvalidOdrKouiKbn,
             InvalidSpecialSuppUsage,
             InvalidHasUsageButNotDrug,
             InvalidHasUsageButNotInjectionOrDrug,

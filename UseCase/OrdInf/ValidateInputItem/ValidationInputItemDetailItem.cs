@@ -16,7 +16,7 @@
         public string CmtName { get; private set; }
         public string CmtOpt { get; private set; }
 
-        public ValidationInputItemDetailItem(int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int kohatuKbn, int syohoKbn, int drugKbn, int yohoKbn, string bunkatu, string cmtName, string cmtOpt)
+        public ValidationInputItemDetailItem(int rowNo, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int kohatuKbn, int syohoKbn, int drugKbn, int yohoKbn, string bunkatu, string cmtName, string cmtOpt)
         {
             SinKouiKbn = sinKouiKbn;
             ItemCd = itemCd;
@@ -30,6 +30,7 @@
             Bunkatu = bunkatu;
             CmtName = cmtName;
             CmtOpt = cmtOpt;
+            RowNo = rowNo;
         }
     }
 }

@@ -2,18 +2,18 @@
 
 namespace UseCase.OrdInfs.ValidationInputItem
 {
-    public class ValidationInputItemInputData : IInputData<ValidationOrdInfListOutputData>
+    public class ValidationInputItemInputData : IInputData<ValidationInputItemOutputData>
     {
-        public ValidationInputItemInputData(List<ValidationOdrInfItem> odrInfs)
+        public ValidationInputItemInputData(List<ValidationInputItemItem> items)
         {
-            OdrInfs = odrInfs;
+            Items = items;
         }
 
-        public List<ValidationOdrInfItem> OdrInfs { get; private set; }
+        public List<ValidationInputItemItem> Items { get; private set; }
 
-        public List<ValidationOdrInfItem> ToList()
+        public List<ValidationInputItemItem> ToList()
         {
-            return OdrInfs;
+            return Items;
         }
     }
 }

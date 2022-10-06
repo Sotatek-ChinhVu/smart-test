@@ -5,13 +5,13 @@ namespace UseCase.OrdInfs.ValidationInputItem
 {
     public class ValidationInputItemOutputData : IOutputData
     {
-        public ValidationInputItemOutputData(Dictionary<int, KeyValuePair<int, InputItemValidationStatus>> validations, ValidationInputItemStatus status)
+        public ValidationInputItemOutputData(Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> validations, ValidationInputItemStatus status)
         {
             Validations = validations;
             Status = status;
         }
 
-        public Dictionary<int, KeyValuePair<int, InputItemValidationStatus>> Validations { get; private set; }
+        public Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> Validations { get; private set; }
         public ValidationInputItemStatus Status { get; private set; }
 
     }

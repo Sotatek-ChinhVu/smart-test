@@ -2,7 +2,7 @@
 
 namespace UseCase.OrdInfs.ValidationInputItem
 {
-    public interface IValidationInputItemInputPort : IInputPort<ValidationOrdInfListInputData, ValidationOrdInfListOutputData>
+    public interface IValidationInputItemInputPort : IInputPort<ValidationInputItemInputData, ValidationInputItemOutputData>
     {
     }
 }

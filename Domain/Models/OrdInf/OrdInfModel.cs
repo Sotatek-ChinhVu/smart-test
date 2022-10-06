@@ -79,7 +79,7 @@ namespace Domain.Models.OrdInfs
             }
         }
 
-        private double SumBunkatu(string bunkatu)
+        private static double SumBunkatu(string bunkatu)
         {
             try
             {
@@ -96,61 +96,19 @@ namespace Domain.Models.OrdInfs
             }
         }
 
-        public KeyValuePair<int, TodayOrdValidationStatus> Validation()
+
+        public KeyValuePair<int, TodayOrdValidationStatus> Validation(int flag)
         {
 
             #region Validate common
-            if (Id < 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidId);
-            }
+
             if (HpId <= 0)
             {
                 return new(-1, TodayOrdValidationStatus.InvalidHpId);
             }
-            if (RaiinNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
-            }
-            if (RpNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpNo);
-            }
-            if (RpEdaNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
-            }
-            if (PtId <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidPtId);
-            }
-            if (SinDate <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSinDate);
-            }
-            if (HokenPid <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidHokenPId);
-            }
-            if (RpName.Length > 240)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpName);
-            }
             if (InoutKbn != 0 && InoutKbn != 1)
             {
                 return new(-1, TodayOrdValidationStatus.InvalidInoutKbn);
-            }
-            if (SikyuKbn != 0 && SikyuKbn != 1)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSikyuKbn);
-            }
-            if (SyohoSbt != 0 && SyohoSbt != 1 && SyohoSbt != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSyohoSbt);
-            }
-            if (SanteiKbn != 0 && SanteiKbn != 1 && SanteiKbn != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSanteiKbn);
             }
             if (TosekiKbn != 0 && TosekiKbn != 1 && TosekiKbn != 2)
             {
@@ -160,18 +118,67 @@ namespace Domain.Models.OrdInfs
             {
                 return new(-1, TodayOrdValidationStatus.InvalidDaysCnt);
             }
-            if (SortNo <= 0)
+
+            if (flag == 0)
             {
-                return new(-1, TodayOrdValidationStatus.InvalidSortNo);
-            }
-            if (IsDeleted != 0 && IsDeleted != 1 && IsDeleted != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidIsDeleted);
+                if (Id < 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidId);
+                }
+
+                if (RaiinNo <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
+                }
+                if (RpNo <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidRpNo);
+                }
+                if (RpEdaNo <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
+                }
+                if (PtId <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidPtId);
+                }
+                if (SinDate <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidSinDate);
+                }
+                if (HokenPid <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidHokenPId);
+                }
+                if (RpName.Length > 240)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidRpName);
+                }
+                if (SikyuKbn != 0 && SikyuKbn != 1)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidSikyuKbn);
+                }
+                if (SyohoSbt != 0 && SyohoSbt != 1 && SyohoSbt != 2)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidSyohoSbt);
+                }
+                if (SanteiKbn != 0 && SanteiKbn != 1 && SanteiKbn != 2)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidSanteiKbn);
+                }
+                if (SortNo <= 0)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidSortNo);
+                }
+                if (IsDeleted != 0 && IsDeleted != 1 && IsDeleted != 2)
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidIsDeleted);
+                }
             }
             #endregion
 
             #region Validate business
-            if (!TodayOrderConst.OdrKouiKbns.Values.Contains(OdrKouiKbn))
+            if (!OdrKouiKbns.ContainsValue(OdrKouiKbn))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidOdrKouiKbn);
             }
@@ -231,7 +238,7 @@ namespace Domain.Models.OrdInfs
                         var count = 0;
                         foreach (var detail in drugAfterDrugUsage)
                         {
-                            var validateResult = detail.Validation();
+                            var validateResult = detail.Validation(0);
                             if (validateResult != TodayOrdValidationStatus.Valid) return new(count, validateResult);
                             count++;
                         }
@@ -254,7 +261,7 @@ namespace Domain.Models.OrdInfs
                         var count = 0;
                         foreach (var detail in injectionBeforeInjectionUsage)
                         {
-                            var validateResult = detail.Validation();
+                            var validateResult = detail.Validation(flag);
                             if (TodayOrdValidationStatus.Valid != validateResult) return new(count, validateResult);
                             count++;
                         }
@@ -328,13 +335,73 @@ namespace Domain.Models.OrdInfs
                 var count = 0;
                 foreach (var ordInfDetail in OrdInfDetails)
                 {
-                    var status = ordInfDetail.Validation();
+                    var status = ordInfDetail.Validation(flag);
                     if (status != TodayOrdValidationStatus.Valid)
                     {
                         return new(count, status);
                     }
                     count++;
                 }
+            }
+
+            if (flag == 1)
+            {
+                if (OrdInfDetails?.Count == 1)
+                {
+                    var item = OrdInfDetails[0];
+
+                    if (item.ItemCd == ItemCdConst.GazoDensibaitaiHozon)
+                    {
+                        return new(-1, TodayOrdValidationStatus.InvalidGazoDensibaitaiHozon);
+                    }
+                }
+
+                var specialItems = OrdInfDetails?.Where(item => item.IsSpecialItem && item.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu);
+
+                var countItems = OrdInfDetails?.Where(item => (item.SinKouiKbn == 20 || item.SinKouiKbn == 30 || item.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || item.ItemCd == ItemCdConst.TouyakuChozaiGai) && !item.IsSpecialItem);
+
+                if (specialItems?.Any(x => x.ItemCd == ItemCdConst.ZanGigi || x.ItemCd == ItemCdConst.ZanTeiKyo) == true && countItems?.Any(x => x.ItemCd == ItemCdConst.Con_Refill) == true)
+                {
+                    countItems = OrdInfDetails?.Where(item => (item.SinKouiKbn == 20 || item.SinKouiKbn == 30 || item.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || item.ItemCd == ItemCdConst.TouyakuChozaiGai) && !item.IsSpecialItem && item.ItemCd != ItemCdConst.Con_Refill);
+                }
+
+                var countUsage = OrdInfDetails?.Count(item => item.SinKouiKbn == 28 || item.IsStandardUsage || item.IsInjectionUsage) ?? 0;
+
+                if (countItems?.Count() > 0 && countUsage == 0 && (IsDrug || OdrKouiKbn == 20))
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidHasDrugButNotUsage);
+                }
+
+                if (countItems?.Count() > 0 && countUsage == 0 && (IsInjection || OdrKouiKbn == 28))
+                {
+                    return new(-1, TodayOrdValidationStatus.InvalidHasInjectionButNotUsage);
+                }
+
+                if (countUsage == 1 && countItems?.Count() == 0)
+                {
+                    var tokuzaiCount = OrdInfDetails?.Count(item => item.MasterSbt.AsString().ToUpper() == "T") ?? 0;
+
+                    if (tokuzaiCount == 0)
+                    {
+                        return new(-1, TodayOrdValidationStatus.InvalidTokuzai);
+                    }
+                }
+
+                var tokuzaiFirstCount = OrdInfDetails?.Count(item => item.MasterSbt.AsString().ToUpper() == "T") ?? 0;
+
+                if (tokuzaiFirstCount > 0)
+                {
+                    if (OdrKouiKbn == 0)
+                    {
+                        return new(-1, TodayOrdValidationStatus.InvalidTokuzaiKouiKbn);
+                    }
+
+                    if (countItems?.Count() == 0 && (IsDrug || OdrKouiKbn == 20 || IsInjection))
+                    {
+                        return new(-1, TodayOrdValidationStatus.InvalidTokuzaiDrugOrInjection);
+                    }
+                }
+
             }
             #endregion
 

@@ -3,23 +3,22 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.OrdInf;
 using EmrCloudApi.Tenant.Responses.OrdInfs;
 using Helper.Constants;
-using UseCase.OrdInfs.Validation;
+using UseCase.OrdInfs.ValidationInputItem;
 
 namespace EmrCloudApi.Tenant.Presenters.OrdInfs
 {
-    public class ValidationOrdInfListPresenter : IValidationOrdInfListOutputPort
+    public class ValidationInputItemPresenter : IValidationInputItemOutputPort
     {
         public Response<ValidationOrdInfListResponse> Result { get; private set; } = default!;
 
-        public void Complete(ValidationOrdInfListOutputData outputData)
+        public void Complete(ValidationInputItemOutputData outputData)
         {
             var validations = new List<ValidationOrdInfListItemResponse>();
 
             Result = new Response<ValidationOrdInfListResponse>()
             {
-                Message = outputData.Status == ValidationOrdInfListStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
+                Message = outputData.Status == ValidationInputItemStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
                 Status = (byte)outputData.Status
-
             };
             foreach (var validation in outputData.Validations)
             {
@@ -254,6 +253,19 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidGazoDensibaitaiHozon:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzaiKouiKbn:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzai:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Join(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzaiDrugOrInjection:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Join(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
+                        break;
+
                     default:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, -1, -1, string.Empty, string.Empty));
                         break;

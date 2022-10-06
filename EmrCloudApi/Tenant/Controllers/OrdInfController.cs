@@ -8,6 +8,7 @@ using UseCase.Core.Sync;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
+using UseCase.OrdInfs.ValidationInputItem;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -97,6 +98,41 @@ namespace EmrCloudApi.Tenant.Controllers
             var output = _bus.Handle(input);
 
             var presenter = new ValidationOrdInfListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidationOrdInfListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.ValidateInputItem)]
+        public ActionResult<Response<ValidationOrdInfListResponse>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
+        {
+            var input = new ValidationInputItemInputData(request.OdrInfs.Select(o =>
+                    new ValidationInputItemItem(
+                        o.HpId,
+                        o.SinDate,
+                        o.OdrKouiKbn,
+                        o.InoutKbn,
+                        o.DaysCnt,
+                        o.OdrDetails.Select(od => new ValidationInputItemDetailItem(
+                            od.RowNo,
+                            od.SinKouiKbn,
+                            od.ItemCd,
+                            od.ItemName,
+                            od.Suryo,
+                            od.UnitName,
+                            od.KohatuKbn,
+                            od.SyohoKbn,
+                            od.DrugKbn,
+                            od.YohoKbn,
+                            od.Bunkatu,
+                            od.CmtName,
+                            od.CmtOpt
+                        )).ToList()
+                    )
+               ).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidationInputItemPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidationOrdInfListResponse>>(presenter.Result);

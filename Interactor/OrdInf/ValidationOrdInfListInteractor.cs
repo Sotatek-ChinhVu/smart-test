@@ -155,7 +155,7 @@ namespace Interactor.OrdInfs
                 count = 0;
                 foreach (var item in allOdrInfs)
                 {
-                    var modelValidation = item.Validation();
+                    var modelValidation = item.Validation(0);
                     if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
                     {
                         dicValidation.Add(count, modelValidation);
