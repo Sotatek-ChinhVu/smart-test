@@ -5,6 +5,8 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -312,29 +314,39 @@ namespace Infrastructure.Repositories
                     && phc.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
                     && phc.IsDeleted == DeleteTypes.None
                 group phc by phc.HokenId into phcGroup
-                select phcGroup.OrderByDescending(x => x.CheckDate).FirstOrDefault()
+                select new { HokenId = phcGroup.Key, ConfirmDateList = phcGroup.OrderByDescending(x => x.CheckDate).ToList() }
             ).ToList();
 
             var newPhcs = new List<PtHokenCheck>();
             foreach (var insurance in insurances)
             {
-                var latestPhc = latestPtHokenChecks.Find(x => x.HokenId == insurance.HokenId);
-                if (latestPhc is not null && latestPhc.CheckDate.ToUniversalTime() != insurance.UtcCheckDate)
+                var latestPhcList = latestPtHokenChecks.Where(x => x.HokenId == insurance.HokenId).Select(x => x.ConfirmDateList.Select(c => c.CheckDate).ToList()).FirstOrDefault();
+                if (latestPhcList == null)
                 {
-                    newPhcs.Add(new PtHokenCheck
+                    continue;
+                }
+
+                foreach (var confirmDate in insurance.ConfirmDateList) 
+                {
+                    var confirmDatetimeUtc = DateTime.ParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+
+                    if (latestPhcList is not null && !latestPhcList.Any(p => p == confirmDatetimeUtc))
                     {
-                        HpId = TempIdentity.HpId,
-                        PtID = ptId,
-                        HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
-                        HokenId = insurance.HokenId,
-                        CheckDate = insurance.UtcCheckDate,
-                        CheckCmt = string.Empty,
-                        CheckId = TempIdentity.UserId,
-                        CheckMachine = TempIdentity.ComputerName,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
-                    });
+                        newPhcs.Add(new PtHokenCheck
+                        {
+                            HpId = TempIdentity.HpId,
+                            PtID = ptId,
+                            HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
+                            HokenId = insurance.HokenId,
+                            CheckDate = confirmDatetimeUtc,
+                            CheckCmt = string.Empty,
+                            CheckId = TempIdentity.UserId,
+                            CheckMachine = TempIdentity.ComputerName,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName
+                        });
+                    }
                 }
             }
             _tenantNoTrackingDataContext.PtHokenChecks.AddRange(newPhcs);
@@ -723,7 +735,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
         {
-            var check = _tenantTrackingDataContext.RaiinInfs
+            var check = _tenantNoTrackingDataContext.RaiinInfs
                 .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
             return check;
         }

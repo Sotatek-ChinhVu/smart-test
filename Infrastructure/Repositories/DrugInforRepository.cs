@@ -117,7 +117,9 @@ namespace Infrastructure.Repositories
                                                         otherPicZai,
                                                         defaultPicHou,
                                                         customPathPicHou,
-                                                        otherPicHou
+                                                        otherPicHou,
+                                                        new List<string>(),
+                                                        new List<string>()
                                                     )).FirstOrDefault();
             if (result != null)
             {
