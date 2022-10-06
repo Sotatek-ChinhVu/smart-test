@@ -33,6 +33,7 @@ using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
+using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
@@ -44,14 +45,6 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.InsuranceMst.SaveHokenSyaMst;
-using EmrCloudApi.Tenant.Responses.HokenMst;
-using EmrCloudApi.Tenant.Requests.HokenMst;
-using UseCase.HokenMst.GetDetail;
-using EmrCloudApi.Tenant.Presenters.HokenMst;
-using UseCase.Insurance.ValidMainInsurance;
-using UseCase.Insurance.ValidateRousaiJibai;
-using UseCase.Insurance.ValidPatternOther;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
