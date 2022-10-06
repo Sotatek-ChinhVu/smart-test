@@ -62,6 +62,9 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        // Validate Insurance Other
+        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
+
         //Drug Infor
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
     }
