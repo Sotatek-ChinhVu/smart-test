@@ -7,6 +7,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.User;
+using Helper.Common;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -254,8 +255,8 @@ namespace Interactor.MedicalExamination
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchCategory;
             }
-
-            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
+            var searchText = CIUtil.ToHalfsize(inputData.SearchText);
+            if (string.IsNullOrEmpty(searchText.Trim()) && inputData.SearchType != 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchText;
             }
@@ -278,8 +279,8 @@ namespace Interactor.MedicalExamination
             long raiinNoMark = -1;
             if (inputData.SearchType != 0)
             {
-                var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
-                var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
+                var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, CIUtil.ToHalfsize(inputData.SearchText));
+                var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, CIUtil.ToHalfsize(inputData.SearchText));
 
                 if (inputData.SearchCategory == 1)
                 {
