@@ -151,23 +151,33 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
-        List<Karte1ByomeiModel> listByomeiModels = new();
+        List<Karte1ByomeiModel> listByomeiModels_p1 = new();
+        List<Karte1ByomeiModel> listByomeiModels_p2 = new();
+        int index = 1;
         if (ptByomeis != null && ptByomeis.Count > 0)
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei;
+                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
+                if (byomeiDisplay.Length >= 26)
+                {
+                    byomeiDisplay = byomeiDisplay.Substring(0, 26);
+                }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
-                var tenkiChusiMaru = byomei.TenkiKbn != TenkiKbnConst.Canceled ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                listByomeiModels.Add(new Karte1ByomeiModel(
+                //var tenkiChusiMaru = byomei.TenkiKbn != TenkiKbnConst.Canceled ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                //var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                //var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                //var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
+                var tenkiChusiMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
+                var tenkiSiboMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
+                var tenkiSonota = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
+                var tenkiTiyuMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
+                var byomeiModel = new Karte1ByomeiModel(
                                             byomeiDisplay,
                                             byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
                                             byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
@@ -175,7 +185,16 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                                             tenkiSiboMaru,
                                             tenkiSonota,
                                             tenkiTiyuMaru
-                                        ));
+                                        );
+                if (index <= 13)
+                {
+                    listByomeiModels_p1.Add(byomeiModel);
+                }
+                else
+                {
+                    listByomeiModels_p2.Add(byomeiModel);
+                }
+                index += 1;
             }
         }
 
@@ -209,7 +228,8 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 hokensyaName,
                 futansyaNo_K2,
                 jyukyusyaNo_K2,
-                listByomeiModels
+                listByomeiModels_p1,
+                listByomeiModels_p2
             );
 
         try
