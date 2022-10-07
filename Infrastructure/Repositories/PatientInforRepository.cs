@@ -16,6 +16,7 @@ using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 
 namespace Infrastructure.Repositories
 {
@@ -832,6 +833,9 @@ namespace Infrastructure.Repositories
                 _tenantTrackingDataContext.PtInfs.Add(patientInsert);
                 bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
+                if (resultCreatePatient)
+                    return false;
+
                 if (ptSantei != null)
                 {
                     var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
@@ -928,7 +932,7 @@ namespace Infrastructure.Repositories
                                     dest.HpId = hpId;
                                     return dest;
                                 });
-                                _tenantTrackingDataContext.Add(addPtHokenCheck);
+                                _tenantTrackingDataContext.PtHokenChecks.Add(addPtHokenCheck);
                             }
                         }
 

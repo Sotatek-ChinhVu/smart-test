@@ -24,7 +24,7 @@ namespace Domain.Models.PatientInfor
         {
             get
             {
-                return CIUtil.IntToDate(CheckDateInt);
+                return DateTime.SpecifyKind(CIUtil.IntToDate(CheckDateInt), DateTimeKind.Utc);
             }
         }
         public int CheckId { get; set; }
