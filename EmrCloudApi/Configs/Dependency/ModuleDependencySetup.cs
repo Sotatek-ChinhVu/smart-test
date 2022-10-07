@@ -142,6 +142,7 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
+using UseCase.OrdInfs.ValidationInputItem;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
@@ -462,6 +463,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //HokenMst
             busBuilder.RegisterUseCase<GetDetailHokenMstInputData, GetDetailHokenMstInteractor>();
+
+            //Validate InputItem 
+            busBuilder.RegisterUseCase<ValidationInputItemInputData, ValidationInputitemInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

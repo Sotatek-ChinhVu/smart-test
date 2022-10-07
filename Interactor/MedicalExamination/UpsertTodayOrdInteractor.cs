@@ -51,7 +51,7 @@ namespace Interactor.MedicalExamination
             {
                 if (inputDatas.OdrItems.Count == 0 && inputDatas.KarteInfs.Count == 0)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
                 }
 
                 //Raiin Info
@@ -71,7 +71,7 @@ namespace Interactor.MedicalExamination
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
                 }
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
@@ -123,11 +123,11 @@ namespace Interactor.MedicalExamination
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModels);
 
-                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
             }
             catch
             {
-                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
             }
         }
 
@@ -185,41 +185,46 @@ namespace Interactor.MedicalExamination
                     var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : ipnMinYakaMsts.FirstOrDefault(i => i.IpnNameCd == itemDetail?.IpnCd);
                     var isCheckIpnKasanExclude = checkIsGetYakkaPrices.FirstOrDefault(y => y.Item1 == inputItem?.IpnNameCd && y.Item2 == inputItem?.ItemCd)?.Item3 == true;
 
+                    if (itemDetail == null)
+                    {
+                        return;
+                    }
+
                     var ordInfDetail = new OrdInfDetailModel(
-                                itemDetail?.HpId ?? 0,
-                                itemDetail?.RaiinNo ?? 0,
-                                itemDetail?.RpNo ?? 0,
-                                itemDetail?.RpEdaNo ?? 0,
-                                itemDetail?.RowNo ?? 0,
-                                itemDetail?.PtId ?? 0,
-                                itemDetail?.SinDate ?? 0,
-                                itemDetail?.SinKouiKbn ?? 0,
-                                itemDetail?.ItemCd ?? string.Empty,
-                                itemDetail?.ItemName ?? string.Empty,
-                                itemDetail?.Suryo ?? 0,
-                                itemDetail?.UnitName ?? string.Empty,
-                                itemDetail?.UnitSbt ?? 0,
-                                itemDetail?.TermVal ?? 0,
-                                itemDetail?.KohatuKbn ?? 0,
-                                itemDetail?.SyohoKbn ?? 0,
-                                itemDetail?.SyohoLimitKbn ?? 0,
-                                itemDetail?.DrugKbn ?? 0,
-                                itemDetail?.YohoKbn ?? 0,
-                                itemDetail?.Kokuji1 ?? string.Empty,
-                                itemDetail?.Kokuji2 ?? string.Empty,
-                                itemDetail?.IsNodspRece ?? 0,
-                                itemDetail?.IpnCd ?? string.Empty,
-                                itemDetail?.IpnName ?? string.Empty,
-                                itemDetail?.JissiKbn ?? 0,
-                                itemDetail?.JissiDate ?? DateTime.MinValue,
-                                itemDetail?.JissiId ?? 0,
-                                itemDetail?.JissiMachine ?? string.Empty,
-                                itemDetail?.ReqCd ?? string.Empty,
-                                itemDetail?.Bunkatu ?? string.Empty,
-                                itemDetail?.CmtName ?? string.Empty,
-                                itemDetail?.CmtOpt ?? string.Empty,
-                                itemDetail?.FontColor ?? string.Empty,
-                                itemDetail?.CommentNewline ?? 0,
+                                itemDetail.HpId,
+                                itemDetail.RaiinNo,
+                                itemDetail.RpNo,
+                                itemDetail.RpEdaNo,
+                                itemDetail.RowNo,
+                                itemDetail.PtId,
+                                itemDetail.SinDate,
+                                itemDetail.SinKouiKbn,
+                                itemDetail.ItemCd,
+                                itemDetail.ItemName,
+                                itemDetail.Suryo,
+                                itemDetail.UnitName,
+                                itemDetail.UnitSbt,
+                                itemDetail.TermVal,
+                                itemDetail.KohatuKbn,
+                                itemDetail.SyohoKbn,
+                                itemDetail.SyohoLimitKbn,
+                                itemDetail.DrugKbn,
+                                itemDetail.YohoKbn,
+                                itemDetail.Kokuji1,
+                                itemDetail.Kokuji2,
+                                itemDetail.IsNodspRece,
+                                itemDetail.IpnCd,
+                                itemDetail.IpnName,
+                                itemDetail.JissiKbn,
+                                itemDetail.JissiDate,
+                                itemDetail.JissiId,
+                                itemDetail.JissiMachine,
+                                itemDetail.ReqCd,
+                                itemDetail.Bunkatu,
+                                itemDetail.CmtName,
+                                itemDetail.CmtOpt,
+                                itemDetail.FontColor,
+                                itemDetail.CommentNewline,
                                 inputItem?.MasterSbt ?? string.Empty,
                                 item?.InoutKbn ?? 0,
                                 ipnMinYakaMst?.Yakka ?? 0,
@@ -362,10 +367,9 @@ namespace Interactor.MedicalExamination
             return raiinInfStatus;
         }
 
-        private Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> CheckOrder(int hpId, long ptId, int sinDate, List<OrdInfModel> allOdrInfs, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
+        private Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> CheckOrder(int hpId, long ptId, int sinDate, List<OrdInfModel> allOdrInfs, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
         {
-
-            var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
+            var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
             object obj = new();
 
             if (inputDatas.OdrItems.Count > 0)
@@ -386,7 +390,7 @@ namespace Interactor.MedicalExamination
                                         var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                                         if (!check)
                                         {
-                                            dicValidation.Add(index, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                            dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                             return;
                                         }
                                     }
@@ -395,14 +399,14 @@ namespace Interactor.MedicalExamination
                                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                                     if (checkObjs.Count >= 2 && positionOrd == index)
                                     {
-                                        dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                                        dicValidation.Add(positionOrd.ToString(), new("-1", TodayOrdValidationStatus.DuplicateTodayOrd));
                                         return;
                                     }
 
                                     var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                                     if (!checkHokenPid)
                                     {
-                                        dicValidation.Add(index, new(-1, TodayOrdValidationStatus.HokenPidNoExist));
+                                        dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.HokenPidNoExist));
                                         return;
                                     }
 
@@ -412,7 +416,7 @@ namespace Interactor.MedicalExamination
 
                                 if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                                 {
-                                    dicValidation.Add(index, new(indexOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
+                                    dicValidation.Add(index.ToString(), new(indexOd.ToString(), TodayOrdValidationStatus.OdrNoMapOdrDetail));
                                 }
                             });
                                 }
@@ -424,10 +428,10 @@ namespace Interactor.MedicalExamination
                 {
                     var index = allOdrInfs.IndexOf(item);
 
-                    var modelValidation = item.Validation();
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index))
+                    var modelValidation = item.Validation(0);
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        dicValidation.Add(index, modelValidation);
+                        dicValidation.Add(index.ToString(), modelValidation);
                     }
                 });
             }

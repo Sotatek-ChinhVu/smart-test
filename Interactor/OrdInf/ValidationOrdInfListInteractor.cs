@@ -36,7 +36,7 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
+                var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
                 var inputDataList = inputDatas.ToList();
 
                 //Check common
@@ -46,22 +46,22 @@ namespace Interactor.OrdInfs
                 }
                 if (inputDataList.Select(i => i.HpId).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.HpId <= 0)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.InvalidHpId));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidHpId));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.PtId).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.PtId <= 0)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.InvalidPtId));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidPtId));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.RaiinNo).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.RaiinNo <= 0)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.InvalidRaiinNo));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidRaiinNo));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.SinDate).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.SinDate <= 0)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.InvalidSinDate));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidSinDate));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
@@ -75,21 +75,21 @@ namespace Interactor.OrdInfs
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
                 if (!checkHpId)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.HpIdNoExist));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.HpIdNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
                 var checkPtId = _patientInforRepository.CheckListId(new List<long> { ptId });
                 if (!checkPtId)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.PtIdNoExist));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.PtIdNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
                 if (!checkRaiinNo)
                 {
-                    dicValidation.Add(-1, new(-1, TodayOrdValidationStatus.RaiinNoNoExist));
+                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.RaiinNoNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
@@ -102,10 +102,10 @@ namespace Interactor.OrdInfs
                 {
                     var index = allOdrInfs.IndexOf(item);
 
-                    var modelValidation = item.Validation();
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index))
+                    var modelValidation = item.Validation(0);
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        dicValidation.Add(index, modelValidation);
+                        dicValidation.Add(index.ToString(), modelValidation);
                     }
                 });
 
@@ -113,7 +113,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
+                return new ValidationOrdInfListOutputData(new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
             }
         }
 
@@ -170,41 +170,46 @@ namespace Interactor.OrdInfs
                     var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : ipnMinYakaMsts.FirstOrDefault(i => i.IpnNameCd == itemDetail?.IpnCd);
                     var isCheckIpnKasanExclude = checkIsGetYakkaPrices.FirstOrDefault(y => y.Item1 == inputItem?.IpnNameCd && y.Item2 == inputItem?.ItemCd)?.Item3 == true;
 
+                    if (itemDetail == null)
+                    {
+                        return;
+                    }
+
                     var ordInfDetail = new OrdInfDetailModel(
-                                itemDetail?.HpId ?? 0,
-                                itemDetail?.RaiinNo ?? 0,
-                                itemDetail?.RpNo ?? 0,
-                                itemDetail?.RpEdaNo ?? 0,
-                                itemDetail?.RowNo ?? 0,
-                                itemDetail?.PtId ?? 0,
-                                itemDetail?.SinDate ?? 0,
-                                itemDetail?.SinKouiKbn ?? 0,
-                                itemDetail?.ItemCd ?? string.Empty,
-                                itemDetail?.ItemName ?? string.Empty,
-                                itemDetail?.Suryo ?? 0,
-                                itemDetail?.UnitName ?? string.Empty,
-                                itemDetail?.UnitSbt ?? 0,
-                                itemDetail?.TermVal ?? 0,
-                                itemDetail?.KohatuKbn ?? 0,
-                                itemDetail?.SyohoKbn ?? 0,
-                                itemDetail?.SyohoLimitKbn ?? 0,
-                                itemDetail?.DrugKbn ?? 0,
-                                itemDetail?.YohoKbn ?? 0,
-                                itemDetail?.Kokuji1 ?? string.Empty,
-                                itemDetail?.Kokuji2 ?? string.Empty,
-                                itemDetail?.IsNodspRece ?? 0,
-                                itemDetail?.IpnCd ?? string.Empty,
-                                itemDetail?.IpnName ?? string.Empty,
-                                itemDetail?.JissiKbn ?? 0,
-                                itemDetail?.JissiDate ?? DateTime.MinValue,
-                                itemDetail?.JissiId ?? 0,
-                                itemDetail?.JissiMachine ?? string.Empty,
-                                itemDetail?.ReqCd ?? string.Empty,
-                                itemDetail?.Bunkatu ?? string.Empty,
-                                itemDetail?.CmtName ?? string.Empty,
-                                itemDetail?.CmtOpt ?? string.Empty,
-                                itemDetail?.FontColor ?? string.Empty,
-                                itemDetail?.CommentNewline ?? 0,
+                                itemDetail.HpId,
+                                itemDetail.RaiinNo,
+                                itemDetail.RpNo,
+                                itemDetail.RpEdaNo,
+                                itemDetail.RowNo,
+                                itemDetail.PtId,
+                                itemDetail.SinDate,
+                                itemDetail.SinKouiKbn,
+                                itemDetail.ItemCd,
+                                itemDetail.ItemName,
+                                itemDetail.Suryo,
+                                itemDetail.UnitName,
+                                itemDetail.UnitSbt,
+                                itemDetail.TermVal,
+                                itemDetail.KohatuKbn,
+                                itemDetail.SyohoKbn,
+                                itemDetail.SyohoLimitKbn,
+                                itemDetail.DrugKbn,
+                                itemDetail.YohoKbn,
+                                itemDetail.Kokuji1,
+                                itemDetail.Kokuji2,
+                                itemDetail.IsNodspRece,
+                                itemDetail.IpnCd,
+                                itemDetail.IpnName,
+                                itemDetail.JissiKbn,
+                                itemDetail.JissiDate ?? DateTime.MinValue,
+                                itemDetail.JissiId,
+                                itemDetail.JissiMachine,
+                                itemDetail.ReqCd,
+                                itemDetail.Bunkatu,
+                                itemDetail.CmtName,
+                                itemDetail.CmtOpt,
+                                itemDetail.FontColor,
+                                itemDetail.CommentNewline,
                                 inputItem?.MasterSbt ?? string.Empty,
                                 item?.InoutKbn ?? 0,
                                 ipnMinYakaMst?.Yakka ?? 0,
@@ -231,7 +236,7 @@ namespace Interactor.OrdInfs
             return allOdrInfs;
         }
 
-        private void CheckAllItemsConvert(Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>> dicValidation, int hpId, long ptId, List<ValidationOdrInfItem> inputDataList)
+        private void CheckAllItemsConvert(Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> dicValidation, int hpId, long ptId, List<ValidationOdrInfItem> inputDataList)
         {
             var raiinNos = inputDataList.Select(i => i.RaiinNo).Distinct().ToList();
             var checkOderInfs = _ordInfRepository.GetListToCheckValidate(ptId, hpId, raiinNos ?? new List<long>());
@@ -250,7 +255,7 @@ namespace Interactor.OrdInfs
                         var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                         if (!check)
                         {
-                            dicValidation.Add(index, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                            dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
                             return;
                         }
                     }
@@ -259,14 +264,14 @@ namespace Interactor.OrdInfs
                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                     if (checkObjs.Count >= 2 && positionOrd == index)
                     {
-                        dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                        dicValidation.Add(positionOrd.ToString(), new("-1", TodayOrdValidationStatus.DuplicateTodayOrd));
                         return;
                     }
 
                     var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
                     if (!checkHokenPid)
                     {
-                        dicValidation.Add(index, new(-1, TodayOrdValidationStatus.HokenPidNoExist));
+                        dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.HokenPidNoExist));
                         return;
                     }
 
@@ -276,7 +281,7 @@ namespace Interactor.OrdInfs
 
                         if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                         {
-                            dicValidation.Add(index, new(indexOd, TodayOrdValidationStatus.OdrNoMapOdrDetail));
+                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), TodayOrdValidationStatus.OdrNoMapOdrDetail));
                         }
                     });
                 }
