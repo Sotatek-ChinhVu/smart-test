@@ -159,7 +159,8 @@ namespace Infrastructure.Repositories
                 tenMst?.IpnNameCd ?? string.Empty,
                 tenMst?.SinKouiKbn ?? 0,
                 tenMst?.YjCd ?? string.Empty,
-                tenMst?.CnvUnitName ?? string.Empty
+                tenMst?.CnvUnitName ?? string.Empty,
+                tenMst?.StartDate ?? 0
             );
         }
 
@@ -524,7 +525,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
                                                            item.TenMst?.SinKouiKbn ?? 0,
                                                            item.TenMst?.YjCd ?? string.Empty,
-                                                           item.TenMst?.CnvUnitName ?? string.Empty
+                                                           item.TenMst?.CnvUnitName ?? string.Empty,
+                                                           item.TenMst?.StartDate ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -728,6 +730,22 @@ namespace Infrastructure.Repositories
         public bool CheckItemCd(string ItemCd)
         {
             return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+        }
+
+        public TenItemModel FindTenMst(string itemCd, int sinDate)
+        {
+            var entity = dbService.TenMstRepository.FindListQueryableNoTrack(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   p.ItemCd == itemCd)
+               .FirstOrDefault();
+
+            if (entity != null)
+            {
+                return new TenMstModel(entity);
+            }
+            return null;
         }
 
         #region Private Function

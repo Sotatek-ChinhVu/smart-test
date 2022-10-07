@@ -6,7 +6,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn,string yjCd, string cnvUnitName)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn,string yjCd, string cnvUnitName, int startDate)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -31,6 +31,7 @@ namespace Domain.Models.MstItem
             SinKouiKbn = sinKouiKbn;
             YjCd = yjCd;
             CnvUnitName = cnvUnitName;
+            StartDate = startDate;
         }
 
         public TenItemModel()
@@ -104,6 +105,9 @@ namespace Domain.Models.MstItem
         public string YjCd { get; private set; }
 
         public string CnvUnitName { get; private set; }
+
+        public int StartDate { get; private set; }
+
 
         public string RousaiKbnDisplay
         {
