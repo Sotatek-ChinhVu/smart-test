@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, ref long totalCount)
         {
             List<FlowSheetModel> result;
 
@@ -34,10 +34,10 @@ namespace Infrastructure.Repositories
                         from commentInf in gjComment.DefaultIfEmpty()
                         select new
                         {
-                            RaiinNo = raiinInf.RaiinNo,
-                            SyosaisinKbn = raiinInf.SyosaisinKbn,
-                            Status = raiinInf.Status,
-                            SinDate = raiinInf.SinDate,
+                            raiinInf.RaiinNo,
+                            raiinInf.SyosaisinKbn,
+                            raiinInf.Status,
+                            raiinInf.SinDate,
                             Text = karteInf == null ? string.Empty : karteInf.Text,
                             TagNo = tagInf == null ? 0 : tagInf.TagNo,
                             TagSeqNo = tagInf == null ? 0 : tagInf.SeqNo,
@@ -136,8 +136,9 @@ namespace Infrastructure.Repositories
                         data.TagInf?.SeqNo ?? 0
                     ));
 
+            totalCount = todayOdr.Union(nextOdrs).Count();
             result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-
+            
             return result;
         }
 
