@@ -163,7 +163,7 @@ namespace Infrastructure.Repositories
             );
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -433,6 +433,10 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            if (!string.IsNullOrEmpty(itemCodeStartWith))
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.StartsWith(itemCodeStartWith));
+            }
 
             if (!string.IsNullOrEmpty(YJCode))
             {
@@ -485,8 +489,8 @@ namespace Infrastructure.Repositories
                                      join k in kensaMstQuery.AsEnumerable()
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
-            var totalCount = queryJoinWithKensa.Where(item => item.TenMst != null).Count();
+                                     select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
+            var totalCount = queryJoinWithKensa.Count(item => item.TenMst != null);
 
             var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
             if (pageCount > 0)
@@ -727,7 +731,7 @@ namespace Infrastructure.Repositories
         }
 
         #region Private Function
-        private ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
+        private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {
             return new ByomeiMstModel(
                     mst.ByomeiCd,
@@ -742,7 +746,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the ByomeiCdDisplay depend on ByomeiCd
-        private string ConvertByomeiCdDisplay(string byomeiCd)
+        private static string ConvertByomeiCdDisplay(string byomeiCd)
         {
             string result = "";
 
@@ -771,7 +775,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the SikkanCd for display
-        private string ConvertSikkanDisplay(int SikkanCd)
+        private static string ConvertSikkanDisplay(int SikkanCd)
         {
             string sikkanDisplay = "";
             switch (SikkanCd)
@@ -799,7 +803,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the Icd10Display depend on Icd101 and Icd102
-        private string ConvertIcd10Display(string icd101, string icd102)
+        private static string ConvertIcd10Display(string icd101, string icd102)
         {
             string result = icd101;
             if (!string.IsNullOrWhiteSpace(result))
@@ -817,7 +821,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the Icd10Display depend on Icd1012013 and Icd1022013
-        private string ConvertIcd102013Display(string icd1012013, string icd1022013)
+        private static string ConvertIcd102013Display(string icd1012013, string icd1022013)
         {
             string rs = icd1012013;
             if (!string.IsNullOrWhiteSpace(rs))
