@@ -9,6 +9,5 @@
         InvalidSindate = 5,
         Failed = 6,
         CanNotExportPdf = 7,
-        CanNotReturnPdfFile = 8,
     }
 }

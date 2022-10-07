@@ -158,25 +158,21 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei;
+                string byomeiDisplay = byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
-                if (byomeiDisplay.Length >= 26)
+                if (byomeiDisplay.Length >= 26 && index <= 12)
                 {
                     byomeiDisplay = byomeiDisplay.Substring(0, 26);
                 }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
-                //var tenkiChusiMaru = byomei.TenkiKbn != TenkiKbnConst.Canceled ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">中⽌•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                //var tenkiSiboMaru = byomei.TenkiKbn != TenkiKbnConst.Dead ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">死亡•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                //var tenkiSonota = byomei.TenkiKbn != TenkiKbnConst.Other ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">他<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                //var tenkiTiyuMaru = byomei.TenkiKbn != TenkiKbnConst.Cured ? "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•</div>" : "<div style=\"position: relative;display: inline-block;line-height: 12px;font-size: 9px;\">治ゆ•<div style=\"position: absolute;top: 0;left: 50%;font-size: 12px;transform: translateX(-50%);\">〇</div></div>";
-                var tenkiChusiMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
-                var tenkiSiboMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
-                var tenkiSonota = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
-                var tenkiTiyuMaru = "<img src=\"https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg\" height=\"10\">";
+                var tenkiChusiMaru = byomei.TenkiKbn == TenkiKbnConst.Canceled;
+                var tenkiSiboMaru = byomei.TenkiKbn == TenkiKbnConst.Dead;
+                var tenkiSonota = byomei.TenkiKbn == TenkiKbnConst.Other;
+                var tenkiTiyuMaru = byomei.TenkiKbn == TenkiKbnConst.Cured;
                 var byomeiModel = new Karte1ByomeiModel(
                                             byomeiDisplay,
                                             byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
@@ -186,7 +182,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         );
-                if (index <= 13)
+                if (index <= 12)
                 {
                     listByomeiModels_p1.Add(byomeiModel);
                 }
@@ -234,36 +230,15 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
 
         try
         {
-            var streamOutput = _karte1Export.ExportToPdf(model);
-            if (streamOutput.Length <= 0)
+            if (_karte1Export.ExportToPdf(model))
             {
-                return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
+                return new ExportKarte1OutputData(ExportKarte1Status.Success);
             }
-            var url = UploadAmazonS3(model.FileName, streamOutput);
-            if (url.Trim().Length == 0)
-            {
-                return new ExportKarte1OutputData(ExportKarte1Status.CanNotReturnPdfFile);
-            }
-            return new ExportKarte1OutputData(url, ExportKarte1Status.Success);
+            return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
         }
         catch (Exception)
         {
             return new ExportKarte1OutputData(ExportKarte1Status.Failed);
         }
-    }
-
-    private string UploadAmazonS3(string fileName, MemoryStream stream)
-    {
-        // Insert new file
-        var subFolder = CommonConstants.SubFolderKarte1Print;
-
-        if (stream.Length <= 0)
-        {
-            return String.Empty;
-        }
-
-        var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName + ".pdf", stream);
-        var url = responseUpload.Result;
-        return url;
     }
 }

@@ -9,24 +9,50 @@ namespace DevExpress.Export;
 
 public class Karte1Export : IKarte1Export
 {
-    public MemoryStream ExportToPdf(Karte1ExportModel data)
+    public bool ExportToPdf(Karte1ExportModel data)
     {
-        var report = new Karte1Template_page1();
-        var dataSource = new ObjectDataSource();
-
-        dataSource.DataSource = data;
-        report.DataSource = dataSource;
-        report.DataMember = "ListByomeiModels_p1";
-
-
-        PdfExportOptions pdfExportOptions = new PdfExportOptions()
+        try
         {
-            PdfACompatibility = PdfACompatibility.PdfA1b
-        };
+            var report = new Karte1Template_page1();
+            var dataSource = new ObjectDataSource();
+            dataSource.DataSource = data;
 
-        // Export the report.
-        MemoryStream stream = new();
-        report.ExportToPdf(stream, pdfExportOptions);
-        return stream;
+            report.DataSource = dataSource;
+            report.DataMember = "ListByomeiModels_p1";
+
+            if (data.ListByomeiModels_p2.Count > 0)
+            {
+                report.CreateDocument();
+                report.ModifyDocument(report =>
+                {
+                    var page2 = new Karte1Template_page2();
+                    page2.DataSource = dataSource;
+                    page2.DataMember = "ListByomeiModels_p2";
+                    page2.CreateDocument();
+                    report.AddPages(page2.Pages);
+                });
+            }
+
+            PdfExportOptions pdfExportOptions = new PdfExportOptions()
+            {
+                PdfACompatibility = PdfACompatibility.PdfA1b
+            };
+
+            // Specify the path for the exported PDF file.  
+            string pdfExportFile =
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+                @"\Downloads\" +
+                data.FileName +
+                ".pdf";
+
+            // Export the report.
+            report.ExportToPdf(pdfExportFile, pdfExportOptions);
+
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 }

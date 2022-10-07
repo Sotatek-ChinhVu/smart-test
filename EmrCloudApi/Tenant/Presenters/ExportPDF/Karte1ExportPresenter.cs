@@ -11,7 +11,6 @@ public class Karte1ExportPresenter : IExportKarte1OutputPort
 
     public void Complete(ExportKarte1OutputData output)
     {
-        Result.Data = new Karte1ExportResponse(output.Url);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
@@ -25,7 +24,6 @@ public class Karte1ExportPresenter : IExportKarte1OutputPort
         ExportKarte1Status.HokenNotFould => ResponseMessage.HokenNotFould,
         ExportKarte1Status.Failed => ResponseMessage.Failed,
         ExportKarte1Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
-        ExportKarte1Status.CanNotReturnPdfFile => ResponseMessage.CanNotReturnPdfFile,
         _ => string.Empty
     };
 }
