@@ -5,5 +5,5 @@ public enum UpsertUserListStatus
     Success = 1,
     DuplicateId = 2,
     ExistedId = 3,
-    False = 4,
+    Failed = 4,
 }

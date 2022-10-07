@@ -28,20 +28,13 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.DuplicateId);
                 }
 
-                //Check existedId in the upsertList
-                var idList = inputData.UpsertUserList.Select(u => u.Id).ToList();
-                if (_userRepository.CheckExistedId(idList))
-                {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.ExistedId);
-                }
-
                 _userRepository.Upsert(inputData.UpsertUserList);
 
                 return new UpsertUserListOutputData(UpsertUserListStatus.Success);
             }
             catch
             {
-                return new UpsertUserListOutputData(UpsertUserListStatus.False);
+                return new UpsertUserListOutputData(UpsertUserListStatus.Failed);
             }
         }
     }

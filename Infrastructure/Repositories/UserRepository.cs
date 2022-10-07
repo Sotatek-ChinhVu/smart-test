@@ -97,7 +97,7 @@ namespace Infrastructure.Repositories
             {
                 if(inputData.IsDeleted == DeleteTypes.Deleted)
                 {
-                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
                     if(userMsts != null)
                     {
                         userMsts.IsDeleted = DeleteTypes.Deleted;
@@ -112,7 +112,7 @@ namespace Infrastructure.Repositories
                         updateUser.UpdateId = TempIdentity.UserId;
                         updateUser.UpdateDate = DateTime.UtcNow;
                         updateUser.UpdateMachine = TempIdentity.ComputerName;
-                        _tenantTrackingDataContext.Update(inputData);
+                        _tenantTrackingDataContext.Update(updateUser);
                     }
                     else
                     {
@@ -152,17 +152,17 @@ namespace Infrastructure.Repositories
                 JobCd = u.JobCd,
                 ManagerKbn = u.ManagerKbn,
                 KaId = u.KaId,
-                KanaName = u.KanaName,
-                Name = u.Name,
-                Sname = u.Sname,
-                DrName = u.DrName,
-                LoginId = u.LoginId,
-                LoginPass = u.LoginPass,
-                MayakuLicenseNo = u.MayakuLicenseNo,
+                KanaName = u.KanaName ?? String.Empty,
+                Name = u.Name ?? String.Empty,
+                Sname = u.Sname ?? String.Empty,
+                DrName = u.DrName ?? String.Empty,
+                LoginId = u.LoginId ?? String.Empty,
+                LoginPass = u.LoginPass ?? String.Empty,
+                MayakuLicenseNo = u.MayakuLicenseNo ?? String.Empty,
                 StartDate = u.StartDate,
                 EndDate = u.EndDate,
                 SortNo = u.SortNo,
-                RenkeiCd1 = u.RenkeiCd1,
+                RenkeiCd1 = u.RenkeiCd1 ?? String.Empty,
                 IsDeleted = u.IsDeleted,
             };
                 
