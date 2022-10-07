@@ -238,13 +238,10 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SavePatientInfo")]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            var input = new SavePatientInfoInputData(request.PtInformation.HpId,
-                                                    request.PtInformation.Patient,
-                                                    request.PtInformation.Memo,
-                                                    request.PtInformation.PtSantei,
-                                                    request.PtInformation.HokenParterns,
-                                                    request.PtInformation.PtGrpInfs
-                                                    );
+            var input = new SavePatientInfoInputData(request.PtInformation.Patient,
+                                                     request.PtInformation.PtSantei,
+                                                     request.PtInformation.HokenParterns,
+                                                     request.PtInformation.PtGrpInfs);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);

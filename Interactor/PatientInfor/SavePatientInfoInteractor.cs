@@ -26,7 +26,7 @@ namespace Interactor.PatientInfor
             }
             try
             {
-                bool result = _patientInforRepository.SavePatientInfor(inputData.HpId,inputData.Memo,inputData.Patient,
+                bool result = _patientInforRepository.SavePatientInfor(inputData.Patient,
                     inputData.PtSanteis,inputData.HokenPartterns,inputData.PtGrps);
 
                 if (result)
@@ -44,7 +44,7 @@ namespace Interactor.PatientInfor
         {
             var result = new List<SavePatientInfoValidation>();
 
-            if (model.HpId <= 0)
+            if (model.Patient.HpId <= 0)
                 result.Add(SavePatientInfoValidation.InvalidHpId);
 
             if (model.Patient.Name == null || model.Patient.Name.Length > 100)

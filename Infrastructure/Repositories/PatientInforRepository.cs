@@ -813,9 +813,10 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public bool SavePatientInfor(int hpId,string memo,PatientInforModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)
+        public bool SavePatientInfor(PatientInforModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
+            int hpId = ptInf.HpId;
             if (ptInf.PtId == 0)
             {
                 PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
@@ -839,13 +840,13 @@ namespace Infrastructure.Repositories
                     _tenantDataContext.Add(ptSanteiInsert);
                 }
 
-                if (!string.IsNullOrEmpty(memo))
+                if (!string.IsNullOrEmpty(ptInf.Memo))
                 {
                     _tenantDataContext.Add(new PtMemo()
                     {
                         HpId = hpId,
                         PtId = patientInsert.PtId,
-                        Memo = memo,
+                        Memo = ptInf.Memo,
                         CreateId = TempIdentity.UserId,
                         UpdateMachine = TempIdentity.ComputerName,
                         CreateDate = DateTime.UtcNow
@@ -1081,7 +1082,7 @@ namespace Infrastructure.Repositories
                 PtMemo? memoCurrent = _tenantDataContext.PtMemos.FirstOrDefault(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == 0);
                 if (memoCurrent != null)
                 {
-                    if (string.IsNullOrEmpty(memo))
+                    if (string.IsNullOrEmpty(ptInf.Memo))
                     {
                         memoCurrent.IsDeleted = 1;
                         memoCurrent.UpdateDate = DateTime.UtcNow;
@@ -1091,7 +1092,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        if (memoCurrent.Memo != null && !memoCurrent.Memo.Equals(memo))
+                        if (memoCurrent.Memo != null && !memoCurrent.Memo.Equals(ptInf.Memo))
                         {
                             memoCurrent.IsDeleted = 1;
                             memoCurrent.UpdateDate = DateTime.UtcNow;
@@ -1102,7 +1103,7 @@ namespace Infrastructure.Repositories
                             {
                                 HpId = patientInfo.HpId,
                                 PtId = patientInfo.PtId,
-                                Memo = memo,
+                                Memo = ptInf.Memo,
                                 CreateId = TempIdentity.UserId,
                                 CreateDate = DateTime.UtcNow,
                                 CreateMachine = TempIdentity.ComputerName
@@ -1113,13 +1114,13 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(memo))
+                    if (!string.IsNullOrEmpty(ptInf.Memo))
                     {
                         _tenantDataContext.PtMemos.Add(new PtMemo()
                         {
                             HpId = patientInfo.HpId,
                             PtId = patientInfo.PtId,
-                            Memo = memo,
+                            Memo = ptInf.Memo,
                             CreateId = TempIdentity.UserId,
                             CreateDate = DateTime.UtcNow,
                             CreateMachine = TempIdentity.ComputerName
