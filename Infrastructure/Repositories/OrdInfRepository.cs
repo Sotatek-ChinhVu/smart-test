@@ -64,6 +64,20 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
 
+        public OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+
+            var odrInf = _tenantDataContext.OdrInfs.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn == 10 && odr.IsDeleted == 0) ?? new OdrInf();
+
+            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && odrInf.RpEdaNo == o.RpEdaNo)?.ToList();
+
+            var odrInfModel = ConvertToModel(odrInf);
+            var odrInfDetailModels = allOdrInfDetails?.Select(od => ConvertToDetailModel(od)).ToList();
+            odrInfModel.ChangeOdrDetail(odrInfDetailModels ?? new List<OrdInfDetailModel>());
+
+            return odrInfModel;
+        }
+
         public IEnumerable<OrdInfModel> GetListToCheckValidate(long ptId, int hpId, List<long> raiinNos)
         {
             var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo) && odr.IsDeleted == 0)?.ToList();
@@ -284,7 +298,7 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        private static OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0)
         {
             return new OrdInfDetailModel(
                             ordInfDetail.HpId,
@@ -334,7 +348,7 @@ namespace Infrastructure.Repositories
                             odrTermVal,
                             cnvTermVal,
                             yjCd,
-                            yohoSets,
+                            yohoSets ?? new List<YohoSetMstModel>(),
                             kasan1,
                             kasan2
                 );

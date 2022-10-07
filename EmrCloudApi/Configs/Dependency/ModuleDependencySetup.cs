@@ -139,6 +139,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
 using UseCase.OrdInfs.Validation;
@@ -299,6 +300,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Order Info
             busBuilder.RegisterUseCase<GetOrdInfListTreeInputData, GetOrdInfListTreeInteractor>();
             busBuilder.RegisterUseCase<GetMaxRpNoInputData, GetMaxRpNoInteractor>();
+            busBuilder.RegisterUseCase<GetHeaderInfInputData, GetHeaderInfInteractor>();
 
             //Reception
             busBuilder.RegisterUseCase<GetReceptionInputData, GetReceptionInteractor>();

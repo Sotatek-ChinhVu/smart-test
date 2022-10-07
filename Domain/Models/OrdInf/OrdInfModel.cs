@@ -61,6 +61,34 @@ namespace Domain.Models.OrdInfs
             UpdateDate = updateDate;
         }
 
+        public OrdInfModel()
+        {
+            HpId = 0;
+            RaiinNo = 0;
+            RpNo = 0;
+            RpEdaNo = 0;
+            PtId = 0;
+            SinDate = 0;
+            HokenPid = 0;
+            OdrKouiKbn = 0;
+            RpName = string.Empty;
+            InoutKbn = 0;
+            SikyuKbn = 0;
+            SyohoSbt = 0;
+            SanteiKbn = 0;
+            TosekiKbn = 0;
+            DaysCnt = 0;
+            SortNo = 0;
+            IsDeleted = 0;
+            Id = 0;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = new List<OrdInfDetailModel>();
+            CreateDate = DateTime.MinValue;
+            CreateId = 0;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+        }
+
         // 処方 - Drug
         public bool IsDrug
         {

@@ -34,5 +34,7 @@ namespace Domain.Models.OrdInfs
         List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds);
 
         List<Tuple<string, string, bool>> CheckIsGetYakkaPrices(int hpId, List<TenItemModel> tenMsts, int sinDate);
+
+        OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }
