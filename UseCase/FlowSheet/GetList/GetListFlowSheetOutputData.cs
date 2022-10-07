@@ -16,12 +16,14 @@ namespace UseCase.FlowSheet.GetList
         public List<RaiinListMstModel> ListRaiinListMstModels { get; private set; }
 
         public List<HolidayModel> ListHolidayModel { get; private set; }
+        public long TotalListFlowSheet { get; private set; }
 
-        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, List<HolidayModel> listHolidayModel)
+        public GetListFlowSheetOutputData(List<FlowSheetModel> listFlowSheetModel, List<RaiinListMstModel> listRaiinListMstModel, List<HolidayModel> listHolidayModel, long totalListFlowSheet = 0)
         {
             ListFlowSheetModel = listFlowSheetModel;
             ListRaiinListMstModels = listRaiinListMstModel;
             ListHolidayModel = listHolidayModel;
+            TotalListFlowSheet = totalListFlowSheet;
         }
     }
 }
