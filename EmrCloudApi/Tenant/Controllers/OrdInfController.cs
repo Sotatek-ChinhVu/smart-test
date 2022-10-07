@@ -106,30 +106,31 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateInputItem)]
         public ActionResult<Response<ValidationOrdInfListResponse>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
         {
-            var input = new ValidationInputItemInputData(request.OdrInfs.Select(o =>
-                    new ValidationInputItemItem(
-                        o.HpId,
-                        o.SinDate,
-                        o.OdrKouiKbn,
-                        o.InoutKbn,
-                        o.DaysCnt,
-                        o.OdrDetails.Select(od => new ValidationInputItemDetailItem(
-                            od.RowNo,
-                            od.SinKouiKbn,
-                            od.ItemCd,
-                            od.ItemName,
-                            od.Suryo,
-                            od.UnitName,
-                            od.KohatuKbn,
-                            od.SyohoKbn,
-                            od.DrugKbn,
-                            od.YohoKbn,
-                            od.Bunkatu,
-                            od.CmtName,
-                            od.CmtOpt
-                        )).ToList()
-                    )
-               ).ToList());
+            var input = new ValidationInputItemInputData(
+                        request.HpId,
+                        request.SinDate,
+                        request.OdrInfs.Select(o =>
+                            new ValidationInputItemItem(
+                                o.OdrKouiKbn,
+                                o.InoutKbn,
+                                o.DaysCnt,
+                                o.OdrDetails.Select(od => new ValidationInputItemDetailItem(
+                                    od.RowNo,
+                                    od.SinKouiKbn,
+                                    od.ItemCd,
+                                    od.ItemName,
+                                    od.Suryo,
+                                    od.UnitName,
+                                    od.KohatuKbn,
+                                    od.SyohoKbn,
+                                    od.DrugKbn,
+                                    od.YohoKbn,
+                                    od.Bunkatu,
+                                    od.CmtName,
+                                    od.CmtOpt
+                                )).ToList()
+                            )
+                    ).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new ValidationInputItemPresenter();

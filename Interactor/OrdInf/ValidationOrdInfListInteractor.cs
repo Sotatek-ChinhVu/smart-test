@@ -23,7 +23,7 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
+                var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
 
@@ -40,18 +40,18 @@ namespace Interactor.OrdInfs
 
                     if (!checkUpdate && item.Id > 0)
                     {
-                        dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                        dicValidation.Add(count.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
                     }
                     else if (checkInsert && item.Id == 0)
                     {
-                        dicValidation.Add(count, new(-1, TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
+                        dicValidation.Add(count.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdInsertedExist));
                     }
 
                     var checkObjs = inputDataList.Where(o => o.RpNo == item.RpNo && o.RpEdaNo == item.RpEdaNo).ToList();
                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
-                    if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd))
+                    if (checkObjs.Count >= 2 && !dicValidation.ContainsKey(positionOrd.ToString()))
                     {
-                        dicValidation.Add(positionOrd, new(-1, TodayOrdValidationStatus.DuplicateTodayOrd));
+                        dicValidation.Add(positionOrd.ToString(), new("-1", TodayOrdValidationStatus.DuplicateTodayOrd));
                     }
 
                     count++;
@@ -156,9 +156,9 @@ namespace Interactor.OrdInfs
                 foreach (var item in allOdrInfs)
                 {
                     var modelValidation = item.Validation(0);
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count.ToString()))
                     {
-                        dicValidation.Add(count, modelValidation);
+                        dicValidation.Add(count.ToString(), modelValidation);
                     }
 
                     count++;
@@ -168,7 +168,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationOrdInfListOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
+                return new ValidationOrdInfListOutputData(new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
             }
         }
     }

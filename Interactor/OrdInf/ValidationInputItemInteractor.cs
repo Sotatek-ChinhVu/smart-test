@@ -23,10 +23,18 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                var dicValidation = new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>();
+                var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
 
+                if (inputDatas.HpId < 0)
+                {
+                    return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
+                }
+                if (inputDatas.SinDate < 0)
+                {
+                    return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
+                }
                 if (inputDataList.Count == 0)
                 {
                     return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
@@ -63,17 +71,17 @@ namespace Interactor.OrdInfs
                     {
                         foreach (var itemDetail in item.OdrDetails)
                         {
-                            var inputItem = itemDetail == null ? null : _mstItemRepository.GetTenMst(item?.HpId ?? 0, item?.SinDate ?? 0, itemDetail?.ItemCd ?? string.Empty);
-                            var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(item?.HpId ?? 0, 2002, 0, item?.SinDate ?? 0, 999);
-                            var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(item?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, item?.SinDate ?? 0);
-                            var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(item?.HpId ?? 0, inputItem ?? new TenItemModel(), item?.SinDate ?? 0);
+                            var inputItem = itemDetail == null ? null : _mstItemRepository.GetTenMst(inputDatas?.HpId ?? 0, inputDatas?.SinDate ?? 0, itemDetail?.ItemCd ?? string.Empty);
+                            var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(inputDatas?.HpId ?? 0, 2002, 0, inputDatas?.SinDate ?? 0, 999);
+                            var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(inputDatas?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, inputDatas?.SinDate ?? 0);
+                            var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(inputDatas?.HpId ?? 0, inputItem ?? new TenItemModel(), inputDatas?.SinDate ?? 0);
 
                             var ordInfDetail = new OrdInfDetailModel(
                                          0,
                                          0,
                                          0,
                                          0,
-                                         0,
+                                         itemDetail?.RowNo ?? 0,
                                          0,
                                          0,
                                         itemDetail?.SinKouiKbn ?? 0,
@@ -132,9 +140,9 @@ namespace Interactor.OrdInfs
                 {
                     var modelValidation = item.Validation(1);
 
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count))
+                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count.ToString()))
                     {
-                        dicValidation.Add(count, modelValidation);
+                        dicValidation.Add(count.ToString(), modelValidation);
                     }
 
                     count++;
@@ -144,7 +152,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationInputItemOutputData(new Dictionary<int, KeyValuePair<int, TodayOrdValidationStatus>>(), ValidationInputItemStatus.Failed);
+                return new ValidationInputItemOutputData(new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), ValidationInputItemStatus.Failed);
             }
         }
     }
