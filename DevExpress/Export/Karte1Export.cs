@@ -9,7 +9,7 @@ namespace DevExpress.Export;
 
 public class Karte1Export : IKarte1Export
 {
-    public bool ExportToPdf(Karte1ExportModel data)
+    public MemoryStream ExportToPdf(Karte1ExportModel data)
     {
         try
         {
@@ -38,21 +38,22 @@ public class Karte1Export : IKarte1Export
                 PdfACompatibility = PdfACompatibility.PdfA1b
             };
 
-            // Specify the path for the exported PDF file.  
-            string pdfExportFile =
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
-                @"\Downloads\" +
-                data.FileName +
-                ".pdf";
+            //// Specify the path for the exported PDF file.  
+            //string pdfExportFile =
+            //    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+            //    @"\Downloads\" +
+            //    data.FileName +
+            //    ".pdf";
+            //report.ExportToPdf(pdfExportFile, pdfExportOptions);
 
             // Export the report.
-            report.ExportToPdf(pdfExportFile, pdfExportOptions);
-
-            return true;
+            MemoryStream stream = new();
+            report.ExportToPdf(stream, pdfExportOptions);
+            return stream;
         }
         catch (Exception)
         {
-            return false;
+            return new MemoryStream();
         }
     }
 }

@@ -11,6 +11,7 @@ public class Karte1ExportPresenter : IExportKarte1OutputPort
 
     public void Complete(ExportKarte1OutputData output)
     {
+        Result.Data = new Karte1ExportResponse(output.Base64String);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

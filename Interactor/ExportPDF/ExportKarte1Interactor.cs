@@ -230,9 +230,10 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
 
         try
         {
-            if (_karte1Export.ExportToPdf(model))
+            var res = _karte1Export.ExportToPdf(model);
+            if (res.Length > 0)
             {
-                return new ExportKarte1OutputData(ExportKarte1Status.Success);
+                return new ExportKarte1OutputData(Convert.ToBase64String(res.ToArray()), ExportKarte1Status.Success);
             }
             return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
         }

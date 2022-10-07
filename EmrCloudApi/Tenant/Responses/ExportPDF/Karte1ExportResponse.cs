@@ -2,10 +2,10 @@
 
 public class Karte1ExportResponse
 {
-    public Karte1ExportResponse(string urlPdf)
+    public Karte1ExportResponse(string base64String)
     {
-        UrlPdf = urlPdf;
+        Base64String = base64String;
     }
 
-    public string UrlPdf { get; private set; }
+    public string Base64String { get; private set; }
 }
