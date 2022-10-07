@@ -51,10 +51,22 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        //PatientInfor
+        public const string SearchEmptyId = "SearchEmptyId";
+        
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
 
         //Validate Main Insurance
         public const string ValidateMainInsurance = "ValidateMainInsurance";
+
+        //Validate Insurance rousai jibai
+        public const string ValidateRousaiJibai = "ValidateRousaiJibai";
+
+        //Validate Kohi
+        public const string ValidateKohi = "ValidateKohi";
+
+        // Validate Insurance Other
+        public const string ValidateInsuranceOther = "ValidateInsuranceOther";
     }
 }

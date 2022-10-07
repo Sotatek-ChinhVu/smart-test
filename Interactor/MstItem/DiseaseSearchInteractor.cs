@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Helper.Common;
 using UseCase.MstItem.DiseaseSearch;
 
 namespace Interactor.Byomei;
@@ -24,7 +25,9 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
             {
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageIndex);
             }
-            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.Keyword, inputData.PageIndex, inputData.PageCount);
+
+            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, keyword, inputData.PageIndex, inputData.PageCount);
             return new DiseaseSearchOutputData(listData, DiseaseSearchStatus.Successed);
         }
         catch (Exception)

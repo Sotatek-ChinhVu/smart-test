@@ -42,7 +42,8 @@ namespace Interactor.DrugInfor
             }
 
             var data = _drugInforRepository.GetDrugInfor(inputData.HpId, inputData.SinDate, inputData.ItemCd);
-
+            var listPicHou = new List<string>();
+            var listPicZai = new List<string>();
 
             if (!String.IsNullOrEmpty(data.OtherPicZai))
             {
@@ -50,7 +51,7 @@ namespace Interactor.DrugInfor
             }
             else
             {
-                data.PathPicZai = GetPathImagePic(data.YjCode, data.DefaultPathPicZai, data.CustomPathPicZai);
+                data.PathPicZai = GetPathImagePic(data.YjCode, data.DefaultPathPicZai, data.CustomPathPicZai, listPicZai);
             }
             
             if(!String.IsNullOrEmpty(data.OtherPicHou))
@@ -59,16 +60,19 @@ namespace Interactor.DrugInfor
             }  
             else
             {
-                data.PathPicHou = GetPathImagePic(data.YjCode, data.DefaultPathPicHou, data.CustomPathPicHou);
-            }    
+                data.PathPicHou = GetPathImagePic(data.YjCode, data.DefaultPathPicHou, data.CustomPathPicHou, listPicHou);
+            }
+
+            //set list image
+            data.ListPicHou = listPicHou;
+            data.ListPicZai = listPicZai;
 
             return new GetDrugInforOutputData(data, GetDrugInforStatus.Successed);
         }
 
-        private string GetPathImagePic(string yjCode, string defaultPath, string customPath)
+        private string GetPathImagePic(string yjCode, string defaultPath, string customPath, List<string> listPic)
         {
             var defaultImgPic = "";
-            var listPic = new List<string>();
 
             var _picStr = " ABCDEFGHIJZ";
             var pathServerS3 = _configuration["PathImageDrugServer"];

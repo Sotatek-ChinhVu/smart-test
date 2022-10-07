@@ -27,12 +27,6 @@ public class SystemConfRepository : ISystemConfRepository
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data.Param, data.Biko ?? String.Empty);
     }
-
-    private SystemConfModel ToModel(SystemConf s)
-    {
-        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s.Param, s.Biko ?? string.Empty);
-    }
-
     public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
         var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
@@ -52,5 +46,10 @@ public class SystemConfRepository : ISystemConfRepository
         }
 
         return string.Empty;
+    }
+
+    private SystemConfModel ToModel(SystemConf s)
+    {
+        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s.Param, s.Biko ?? string.Empty);
     }
 }

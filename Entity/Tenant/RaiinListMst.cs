@@ -33,7 +33,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("GRP_NAME")]
         [MaxLength(20)]
-        public string GrpName { get; set; } = string.Empty;
+        public string? GrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

@@ -40,7 +40,7 @@ namespace Domain.Models.MaxMoney
         {
             get => FutanKbn == 1 && MonthLimitFutan == 0;
         }
-        public bool IsToltalGakuDisplay
+        public bool IsTotalGakuDisplay
         {
             get => IsLimitListSum == 1;
         }

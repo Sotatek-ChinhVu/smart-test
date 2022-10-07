@@ -33,15 +33,15 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         return mstWithSorts.Select(x => new RaiinFilterMstModel(
             x.mst.FilterId,
             x.mst.SortNo,
-            x.mst.FilterName,
+            x.mst.FilterName ?? string.Empty,
             x.mst.SelectKbn,
-            x.mst.Shortcut,
+            x.mst.Shortcut ?? string.Empty,
             columnSortInfos: x.sorts.Select(s => new RaiinFilterSortModel(
                 s.Id,
                 s.FilterId,
                 s.SeqNo,
                 s.Priority,
-                s.ColumnName,
+                s.ColumnName ?? string.Empty,
                 s.KbnCd,
                 s.SortKbn
             )).ToList()

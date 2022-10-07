@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, ref long totalCount)
         {
             List<FlowSheetModel> result;
 
@@ -34,10 +34,10 @@ namespace Infrastructure.Repositories
                         from commentInf in gjComment.DefaultIfEmpty()
                         select new
                         {
-                            RaiinNo = raiinInf.RaiinNo,
-                            SyosaisinKbn = raiinInf.SyosaisinKbn,
-                            Status = raiinInf.Status,
-                            SinDate = raiinInf.SinDate,
+                            raiinInf.RaiinNo,
+                            raiinInf.SyosaisinKbn,
+                            raiinInf.Status,
+                            raiinInf.SinDate,
                             Text = karteInf == null ? string.Empty : karteInf.Text,
                             TagNo = tagInf == null ? 0 : tagInf.TagNo,
                             TagSeqNo = tagInf == null ? 0 : tagInf.SeqNo,
@@ -45,9 +45,9 @@ namespace Infrastructure.Repositories
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
                             RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
-                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                                             on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                             select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd ?? string.Empty)
+                                            join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                                            on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                                            select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
                                             .AsEnumerable()
                         };
@@ -114,7 +114,7 @@ namespace Infrastructure.Repositories
                                    RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == nextOdr.RsvkrtNo)
                                                     join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
                                                     on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                                    select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName, raiinListMst.ColorCd ?? string.Empty)
+                                                    select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
                                             .AsEnumerable()
                                };
@@ -136,8 +136,9 @@ namespace Infrastructure.Repositories
                         data.TagInf?.SeqNo ?? 0
                     ));
 
+            totalCount = todayOdr.Union(nextOdrs).Count();
             result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-
+            
             return result;
         }
 
@@ -152,7 +153,7 @@ namespace Infrastructure.Repositories
                             Detail = raiinListDetail.Where(c => c.HpId == mst.HpId && c.GrpId == mst.GrpId).ToList()
                         };
             var output = query.Select(
-                data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName, data.Mst.SortNo, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()));
+                data => new RaiinListMstModel(data.Mst.GrpId, data.Mst.GrpName ?? string.Empty, data.Mst.SortNo, data.Detail.Select(d => new RaiinListDetailModel(d.GrpId, d.KbnCd, d.SortNo, d.KbnName ?? string.Empty, d.ColorCd ?? String.Empty, d.IsDeleted)).ToList()));
             return output.ToList();
         }
 
