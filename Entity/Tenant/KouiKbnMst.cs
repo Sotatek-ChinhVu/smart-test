@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -30,27 +29,27 @@ namespace Entity.Tenant
         [Required]
         [Column("SORT_NO")]
         public int SortNo { get; set; }
-        
+
         /// <summary>
         /// 行為区分１
         /// </summary>
         [Required]
         [Column("KOUI_KBN1")]
         public int KouiKbn1 { get; set; }
-       
+
         /// <summary>
         /// 行為区分２
         /// </summary>
         [Required]
         [Column("KOUI_KBN2")]
         public int KouiKbn2 { get; set; }
-        
+
         /// <summary>
         /// 行為グループ名
         /// </summary>
         [Column("KOUI_GRP_NAME")]
         [MaxLength(20)]
-        public string KouiGrpName { get; set; } = string.Empty;
+        public string? KouiGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 行為グループ名

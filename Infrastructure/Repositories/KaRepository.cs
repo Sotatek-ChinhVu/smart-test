@@ -16,6 +16,12 @@ public class KaRepository : IKaRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
+    public bool CheckKaId(int kaId)
+    {
+        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
+        return check;
+    }
+
     public KaMstModel GetByKaId(int kaId)
     {
         var entity = _tenantNoTrackingDataContext.KaMsts
@@ -101,6 +107,8 @@ public class KaRepository : IKaRepository
             return status;
         }
     }
+
+
 
     private KaMstModel ConvertToKaMstModel(KaMst k)
     {

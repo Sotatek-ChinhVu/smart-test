@@ -2,7 +2,6 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Entity.Tenant;
-using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -431,6 +430,18 @@ namespace Infrastructure.Repositories
             if (hokenPIds.Count == 0) return true;
             var countPtHokens = _tenantDataContext.PtHokenInfs.Count(p => hokenPIds.Contains(p.HokenId) && p.IsDeleted != 1 && hpIds.Contains(p.HpId) && ptIds.Contains(p.PtId));
             return countPtHokens >= hokenPIds.Count;
+        }
+
+        public bool CheckHokenPid(int hokenPId)
+        {
+            var check = _tenantDataContext.PtHokenInfs.Any(h => h.HokenId == hokenPId && h.IsDeleted == 0);
+            return check;
+        }
+
+        public List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids)
+        {
+            var result = _tenantDataContext.PtHokenInfs.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenId) && h.PtId == ptId && h.IsDeleted == 0);
+            return result.Select(r => new HokenInfModel(r.HokenId, r.StartDate, r.EndDate)).ToList();
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)

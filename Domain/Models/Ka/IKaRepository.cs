@@ -11,4 +11,7 @@ public interface IKaRepository
     List<KaCodeMstModel> GetListKacode();
 
     bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels);
+
+    bool CheckKaId(int kaId);
+
 }
