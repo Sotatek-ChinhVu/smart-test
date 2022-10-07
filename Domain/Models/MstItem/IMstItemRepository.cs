@@ -24,6 +24,8 @@
 
         bool CheckItemCd(string ItemCd);
 
-        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
+        List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
+
+        TenItemModel FindTenMst(int hpId, string itemCd, int sinDate);
     }
 }

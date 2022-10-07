@@ -732,20 +732,40 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
         }
 
-        public TenItemModel FindTenMst(string itemCd, int sinDate)
+        public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
         {
-            var entity = dbService.TenMstRepository.FindListQueryableNoTrack(p =>
+            var entity = _tenantDataContext.TenMsts.FirstOrDefault(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
-                   p.ItemCd == itemCd)
-               .FirstOrDefault();
+                   p.ItemCd == itemCd);
 
-            if (entity != null)
-            {
-                return new TenMstModel(entity);
-            }
-            return null;
+            return new TenItemModel(
+                    entity?.HpId ?? 0,
+                    entity?.ItemCd ?? string.Empty,
+                    entity?.RousaiKbn ?? 0,
+                    entity?.KanaName1 ?? string.Empty,
+                    entity?.Name ?? string.Empty,
+                    entity?.KohatuKbn ?? 0,
+                    entity?.MadokuKbn ?? 0,
+                    entity?.KouseisinKbn ?? 0,
+                    entity?.OdrUnitName ?? string.Empty,
+                    entity?.EndDate ?? 0,
+                    entity?.DrugKbn ?? 0,
+                    entity?.MasterSbt ?? string.Empty,
+                    entity?.BuiKbn ?? 0,
+                    entity?.IsAdopted ?? 0,
+                    entity?.Ten != null ? entity.Ten : 0,
+                    entity?.TenId ?? 0,
+                    string.Empty,
+                    string.Empty,
+                    entity?.CmtCol1 ?? 0,
+                    entity?.IpnNameCd ?? string.Empty,
+                    entity?.SinKouiKbn ?? 0,
+                    entity?.YjCd ?? string.Empty,
+                    entity?.CnvUnitName ?? string.Empty,
+                    entity?.StartDate ?? 0
+               );
         }
 
         #region Private Function

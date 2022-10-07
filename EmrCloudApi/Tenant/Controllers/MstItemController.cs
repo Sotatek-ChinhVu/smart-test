@@ -6,6 +6,7 @@ using EmrCloudApi.Tenant.Responses.MstItem;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
+using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -124,6 +125,16 @@ namespace EmrCloudApi.Tenant.Controllers
             var input = new SearchPostCodeInputData(request.HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
             var presenter = new SearchPostCodePresenter();
+            presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.FindTenMst)]
+        public ActionResult<Response<FindtenMstResponse>> FindTenMst([FromQuery] FindTenMstRequest request)
+        {
+            var input = new FindTenMstInputData(request.HpId, request.SinDate, request.ItemCd);
+            var output = _bus.Handle(input);
+            var presenter = new FindTenMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }

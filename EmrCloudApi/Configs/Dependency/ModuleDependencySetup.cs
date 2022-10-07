@@ -128,6 +128,7 @@ using UseCase.MedicalExamination.GetHistory;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
+using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -409,6 +410,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiInputData, UpdateAdoptedByomeiInteractor>();
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
             busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
+            busBuilder.RegisterUseCase<FindTenMstInputData, FindTenMstInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
