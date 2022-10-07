@@ -36,9 +36,9 @@
         public int EndDate { get; private set; }
         public string HokenMemo { get; private set; }
         public PtInfPtHokenModel HokenInf { get; private set; }
-        public PtInfPtKohiModel Kohi1 { get; private set; }
-        public PtInfPtKohiModel Kohi2 { get; private set; }
-        public PtInfPtKohiModel Kohi3 { get; private set; }
-        public PtInfPtKohiModel Kohi4 { get; private set; }
+        public PtInfPtKohiModel? Kohi1 { get; private set; }
+        public PtInfPtKohiModel? Kohi2 { get; private set; }
+        public PtInfPtKohiModel? Kohi3 { get; private set; }
+        public PtInfPtKohiModel? Kohi4 { get; private set; }
     }
 }

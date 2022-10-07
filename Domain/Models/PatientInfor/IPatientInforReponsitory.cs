@@ -23,6 +23,6 @@ namespace Domain.Models.PatientInfor
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
         bool CheckListId(List<long> ptIds);
-        bool SavePatientInfor(PatientInforModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps);
+        bool SavePatientInfor(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps);
     }
 }

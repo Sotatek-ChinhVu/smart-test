@@ -34,8 +34,9 @@ namespace Interactor.PatientInfor
                 else
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
             }
-            catch
+            catch (Exception ex)
             {
+                var a = ex;
                 return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
             }
         }
@@ -47,10 +48,10 @@ namespace Interactor.PatientInfor
             if (model.Patient.HpId <= 0)
                 result.Add(SavePatientInfoValidation.InvalidHpId);
 
-            if (model.Patient.Name == null || model.Patient.Name.Length > 100)
+            if (string.IsNullOrEmpty(model.Patient.Name) || model.Patient.Name.Length > 100)
                 result.Add(SavePatientInfoValidation.InvalidName);
 
-            if (model.Patient.KanaName == null || model.Patient.KanaName.Length > 100)
+            if (string.IsNullOrEmpty(model.Patient.KanaName) || model.Patient.KanaName.Length > 100)
                 result.Add(SavePatientInfoValidation.InvalidKanaName);
 
             return result;
