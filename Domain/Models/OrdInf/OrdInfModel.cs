@@ -79,7 +79,7 @@ namespace Domain.Models.OrdInfs
             }
         }
 
-        private double SumBunkatu(string bunkatu)
+        private static double SumBunkatu(string bunkatu)
         {
             try
             {
@@ -112,11 +112,11 @@ namespace Domain.Models.OrdInfs
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
             }
-            if (RpNo <= 0)
+            if ((Id > 0 && RpNo <= 0) || (Id == 0 && RpNo != 0))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRpNo);
             }
-            if (RpEdaNo <= 0)
+            if ((Id > 0 && RpEdaNo <= 0) || (Id == 0 && RpEdaNo != 0))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
             }
@@ -171,7 +171,7 @@ namespace Domain.Models.OrdInfs
             #endregion
 
             #region Validate business
-            if (!TodayOrderConst.OdrKouiKbns.Values.Contains(OdrKouiKbn))
+            if (!OdrKouiKbns.ContainsValue(OdrKouiKbn))
             {
                 return new(-1, TodayOrdValidationStatus.InvalidOdrKouiKbn);
             }
