@@ -833,7 +833,7 @@ namespace Infrastructure.Repositories
                 _tenantTrackingDataContext.PtInfs.Add(patientInsert);
                 bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
-                if (resultCreatePatient)
+                if (!resultCreatePatient)
                     return false;
 
                 if (ptSantei != null)

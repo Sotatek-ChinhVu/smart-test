@@ -2,7 +2,7 @@
 {
     public class PatientInforSaveModel
     {
-        public PatientInforSaveModel(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string mail, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string setainusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, long referenceNo, int limitConsFlg, string memo)
+        public PatientInforSaveModel(int hpId, long ptId, long ptNum, string kanaName, string name, int sex, int birthday, int isDead, int deathDate, string mail, string homePost, string homeAddress1, string homeAddress2, string tel1, string tel2, string setanusi, string zokugara, string job, string renrakuName, string renrakuPost, string renrakuAddress1, string renrakuAddress2, string renrakuTel, string renrakuMemo, string officeName, string officePost, string officeAddress1, string officeAddress2, string officeTel, string officeMemo, int isRyosyoDetail, int primaryDoctor, int isTester, int mainHokenPid, long referenceNo, int limitConsFlg, string memo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -19,7 +19,7 @@
             HomeAddress2 = homeAddress2;
             Tel1 = tel1;
             Tel2 = tel2;
-            Setainusi = setainusi;
+            Setanusi = setanusi;
             Zokugara = zokugara;
             Job = job;
             RenrakuName = renrakuName;
@@ -58,7 +58,7 @@
         public string HomeAddress2 { get; private set; }
         public string Tel1 { get; private set; }
         public string Tel2 { get; private set; }
-        public string Setainusi { get; private set; }
+        public string Setanusi { get; private set; }
         public string Zokugara { get; private set; }
         public string Job { get; private set; }
         #region Popup right
