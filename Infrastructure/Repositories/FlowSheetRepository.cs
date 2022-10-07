@@ -34,10 +34,10 @@ namespace Infrastructure.Repositories
                         from commentInf in gjComment.DefaultIfEmpty()
                         select new
                         {
-                            RaiinNo = raiinInf.RaiinNo,
-                            SyosaisinKbn = raiinInf.SyosaisinKbn,
-                            Status = raiinInf.Status,
-                            SinDate = raiinInf.SinDate,
+                            raiinInf.RaiinNo,
+                            raiinInf.SyosaisinKbn,
+                            raiinInf.Status,
+                            raiinInf.SinDate,
                             Text = karteInf == null ? string.Empty : karteInf.Text,
                             TagNo = tagInf == null ? 0 : tagInf.TagNo,
                             TagSeqNo = tagInf == null ? 0 : tagInf.SeqNo,

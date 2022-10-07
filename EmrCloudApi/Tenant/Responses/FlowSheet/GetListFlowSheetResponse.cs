@@ -12,9 +12,9 @@ namespace EmrCloudApi.Tenant.Responses.FlowSheet
             TotalFlowSheet = totalFlowSheet;
         }
 
-        public List<FlowSheetModel> ListFlowSheet { get; private set; } = new List<FlowSheetModel>();
+        public List<FlowSheetModel> ListFlowSheet { get; private set; }
 
-        public List<RaiinListMstModel> ListRaiinListMstModels { get; private set; } = new List<RaiinListMstModel>();
-        public long TotalFlowSheet { get; private set; } = 0;
+        public List<RaiinListMstModel> ListRaiinListMstModels { get; private set; }
+        public long TotalFlowSheet { get; private set; }
     }
 }
