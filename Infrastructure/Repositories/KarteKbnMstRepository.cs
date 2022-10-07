@@ -25,8 +25,8 @@ namespace Infrastructure.Repositories
                     new KarteKbnMstModel(
                             k.HpId,
                             k.KarteKbn,
-                            k.KbnName,
-                            k.KbnShortName,
+                            k.KbnName ?? string.Empty,
+                            k.KbnShortName ?? string.Empty,
                             k.CanImg,
                             k.SortNo,
                             k.IsDeleted

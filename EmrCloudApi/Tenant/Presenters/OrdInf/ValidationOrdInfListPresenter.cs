@@ -249,10 +249,22 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case TodayOrderConst.TodayOrdValidationStatus.InvalidIsDeleted:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrIsDeleted));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdInsertedExist:
+                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
+                    case TodayOrderConst.TodayOrdValidationStatus.HpIdNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.PtIdNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.RaiinNoNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.HokenPidNoExist:
+                        validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
+                    case TodayOrderConst.TodayOrdValidationStatus.OdrNoMapOdrDetail:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
                     default:
@@ -261,6 +273,7 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                 }
             }
 
+            validations = validations.OrderBy(v => v.OrderInfPosition).ThenBy(v => v.OrderInfDetailPosition).ToList();
             Result.Data = new ValidationOrdInfListResponse(validations);
         }
     }

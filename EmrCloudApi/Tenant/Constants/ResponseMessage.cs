@@ -28,7 +28,7 @@
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
         public static readonly string InputDataNull = "Input data is null";
-
+        public static readonly string Valid = "Valid";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -109,6 +109,15 @@
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
         public static readonly string GetKarteInfSuccessed = "Successed";
+        public static readonly string UpsertKarteInfInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertKarteInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string UpsertKarteInfInvalidKarteKbn = "Invalid KarteKbn";
+        public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
+        public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
         //OrdInf controller
         public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -121,7 +130,6 @@
         //RaiinKubun controller
 
         //Calculation Inf
-
 
         //Medical examination controller
         public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
@@ -269,8 +277,6 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
-
-
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
@@ -320,6 +326,22 @@
         public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
         public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
+        //Raiin Info TodayOdr
+        public static readonly string RaiinInfTodayOdrInvalidSyosaiKbn = "Invalid SyosaiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidJikanKbn = "Invalid JikanKbn";
+        public static readonly string RaiinInfTodayOdrInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string RaiinInfTodayOdrHokenPidNoExist = "HokenPid no exist";
+        public static readonly string RaiinInfTodayOdrInvalidSanteiKbn = "Invalid SanteiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidTantoId = "Invalid TantoId";
+        public static readonly string RaiinInfTodayOdrTatoIdNoExist = "TantoId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidKaId = "Invalid KaId";
+        public static readonly string RaiinInfTodayOdrKaIdNoExist = "KaId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidUKetukeTime = "Invalid UKetukeTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinStartTime = "Invalid SinStartTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
+        public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
+        public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
 
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";

@@ -274,7 +274,7 @@ namespace Interactor.MedicalExamination
         private List<ReceptionModel>? SearchAndPagination(GetMedicalExaminationHistoryInputData inputData, List<ReceptionModel>? allRaiinInf, ref int startPageSearch)
         {
             var allRaiinNos = allRaiinInf?.Select(q => q.RaiinNo)?.ToList();
-            var raiinNoStartPage = !(allRaiinNos?.Count() > 0) ? 0 : allRaiinNos[inputData.StartPage];
+            var raiinNoStartPage = !(allRaiinNos?.Count > 0) ? 0 : allRaiinNos[inputData.StartPage];
 
             long raiinNoMark = -1;
             if (inputData.SearchType != 0)
@@ -352,7 +352,7 @@ namespace Interactor.MedicalExamination
         /// <param name="allOdrInfs"></param>
         /// <param name="historyKarteOdrRaiin"></param>
         /// <param name="historyKarteOdrRaiins"></param>
-        private void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
+        private static void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
         {
             var odrInfListByRaiinNo = allOdrInfs
          .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(

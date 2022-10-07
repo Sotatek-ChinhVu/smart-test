@@ -27,6 +27,10 @@ namespace Interactor.OrdInfs
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
 
+                if (inputDataList.Count == 0)
+                {
+                    return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
+                }
                 if (inputDatas.HpId < 0)
                 {
                     return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
@@ -71,31 +75,37 @@ namespace Interactor.OrdInfs
                     {
                         foreach (var itemDetail in item.OdrDetails)
                         {
+
                             var inputItem = itemDetail == null ? null : _mstItemRepository.GetTenMst(inputDatas?.HpId ?? 0, inputDatas?.SinDate ?? 0, itemDetail?.ItemCd ?? string.Empty);
                             var refillSetting = itemDetail == null ? 999 : _systemGenerationConfRepository.GetSettingValue(inputDatas?.HpId ?? 0, 2002, 0, inputDatas?.SinDate ?? 0, 999);
                             var ipnMinYakaMst = (inputItem == null || (inputItem.HpId == 0 && string.IsNullOrEmpty(inputItem.ItemCd))) ? null : _ordInfRepository.FindIpnMinYakkaMst(inputDatas?.HpId ?? 0, inputItem?.IpnNameCd ?? string.Empty, inputDatas?.SinDate ?? 0);
                             var isCheckIpnKasanExclude = _ordInfRepository.CheckIsGetYakkaPrice(inputDatas?.HpId ?? 0, inputItem ?? new TenItemModel(), inputDatas?.SinDate ?? 0);
+
+                            if (itemDetail == null)
+                            {
+                                continue;
+                            }
 
                             var ordInfDetail = new OrdInfDetailModel(
                                          0,
                                          0,
                                          0,
                                          0,
-                                         itemDetail?.RowNo ?? 0,
+                                         itemDetail.RowNo,
                                          0,
                                          0,
-                                        itemDetail?.SinKouiKbn ?? 0,
-                                        itemDetail?.ItemCd ?? string.Empty,
-                                        itemDetail?.ItemName ?? string.Empty,
-                                        itemDetail?.Suryo ?? 0,
-                                        itemDetail?.UnitName ?? string.Empty,
+                                        itemDetail.SinKouiKbn,
+                                        itemDetail.ItemCd,
+                                        itemDetail.ItemName,
+                                        itemDetail.Suryo,
+                                        itemDetail.UnitName,
                                         0,
                                         0,
                                          0,
-                                        itemDetail?.SyohoKbn ?? 0,
+                                        itemDetail.SyohoKbn,
                                         0,
-                                        itemDetail?.DrugKbn ?? 0,
-                                        itemDetail?.YohoKbn ?? 0,
+                                        itemDetail.DrugKbn,
+                                        itemDetail.YohoKbn,
                                         string.Empty,
                                         string.Empty,
                                         0,
@@ -106,9 +116,9 @@ namespace Interactor.OrdInfs
                                         0,
                                         string.Empty,
                                         string.Empty,
-                                        itemDetail?.Bunkatu ?? string.Empty,
-                                        itemDetail?.CmtName ?? string.Empty,
-                                        itemDetail?.CmtOpt ?? string.Empty,
+                                        itemDetail.Bunkatu,
+                                        itemDetail.CmtName,
+                                        itemDetail.CmtOpt,
                                         string.Empty,
                                         0,
                                         inputItem?.MasterSbt ?? string.Empty,

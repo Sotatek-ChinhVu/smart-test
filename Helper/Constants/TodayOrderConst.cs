@@ -78,12 +78,16 @@
             InvalidCmtOpt,
             InvalidFontColor,
             InvalidCommentNewline,
-            InvalidTodayOrdInsertedExist,
             InvalidTodayOrdUpdatedNoExist,
             InvalidGazoDensibaitaiHozon,
             InvalidTokuzai,
             InvalidTokuzaiKouiKbn,
             InvalidTokuzaiDrugOrInjection,
+            HpIdNoExist,
+            PtIdNoExist,
+            HokenPidNoExist,
+            RaiinNoNoExist,
+            OdrNoMapOdrDetail,
             Valid
         };
 

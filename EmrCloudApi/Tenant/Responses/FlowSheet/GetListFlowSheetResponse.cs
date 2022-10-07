@@ -5,8 +5,16 @@ namespace EmrCloudApi.Tenant.Responses.FlowSheet
 {
     public class GetListFlowSheetResponse
     {
-        public List<FlowSheetModel> ListFlowSheet { get; set; } = new List<FlowSheetModel>();
+        public GetListFlowSheetResponse(List<FlowSheetModel> listFlowSheet, List<RaiinListMstModel> listRaiinListMstModels, long totalFlowSheet)
+        {
+            ListFlowSheet = listFlowSheet;
+            ListRaiinListMstModels = listRaiinListMstModels;
+            TotalFlowSheet = totalFlowSheet;
+        }
 
-        public List<RaiinListMstModel> ListRaiinListMstModels { get; set; } = new List<RaiinListMstModel>();
+        public List<FlowSheetModel> ListFlowSheet { get; private set; }
+
+        public List<RaiinListMstModel> ListRaiinListMstModels { get; private set; }
+        public long TotalFlowSheet { get; private set; }
     }
 }
