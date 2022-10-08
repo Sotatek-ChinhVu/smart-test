@@ -4,8 +4,6 @@ using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Diagnostics;
-using System.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -165,7 +163,38 @@ namespace Infrastructure.Repositories
             );
         }
 
-        public (List<TenItemModel>,int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds)
+        {
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+
+            return tenMsts.Select(tenMst => new TenItemModel(
+                tenMst.HpId,
+                tenMst.ItemCd,
+                tenMst.RousaiKbn,
+                tenMst.KanaName1 ?? string.Empty,
+                tenMst.Name ?? string.Empty,
+                tenMst.KohatuKbn,
+                tenMst.MadokuKbn,
+                tenMst.KouseisinKbn,
+                tenMst.OdrUnitName ?? string.Empty,
+                tenMst.EndDate,
+                tenMst.DrugKbn,
+                tenMst.MasterSbt ?? string.Empty,
+                tenMst.BuiKbn,
+                tenMst.IsAdopted,
+                tenMst.Ten,
+                tenMst.TenId,
+                "",
+                "",
+                tenMst.CmtCol1,
+                tenMst.IpnNameCd ?? string.Empty,
+                tenMst.SinKouiKbn,
+                tenMst.YjCd ?? string.Empty,
+                tenMst.CnvUnitName ?? string.Empty
+            )).ToList();
+        }
+
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
             var listTenMstModels = new List<TenItemModel>();
 
@@ -491,7 +520,7 @@ namespace Infrastructure.Repositories
             var totalCount = queryJoinWithKensa.Where(item => item.TenMst != null).Count();
 
             var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
-            if(pageCount > 0)
+            if (pageCount > 0)
             {
                 listTenMst = listTenMst.Take(pageCount);
             }
@@ -697,7 +726,17 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
+        public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
+        {
+            var listDatas = _tenantDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
+            List<ByomeiMstModel> listByomeies = new();
 
+            if (listDatas != null)
+            {
+                listByomeies = listDatas.Select(mst => ConvertToByomeiMstModel(mst)).ToList();
+            }
+            return listByomeies;
+        }
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
@@ -826,5 +865,45 @@ namespace Infrastructure.Repositories
             return rs;
         }
         #endregion
+
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        {
+            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+
+            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+
+            else if (!string.IsNullOrEmpty(postCode1))
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+
+            else if (!string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+
+            if (!string.IsNullOrEmpty(address))
+            {
+                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
+                                                || (e.PrefName + e.CityName).Contains(address)
+                                                || e.PrefName.Contains(address));
+            }
+
+            var result = entities.OrderBy(x => x.PostCd)
+                                  .ThenBy(x => x.PrefName)
+                                  .ThenBy(x => x.CityName)
+                                  .ThenBy(x => x.Banti)
+                                  .Select(x => new PostCodeMstModel(
+                                      x.Id,
+                                      x.HpId,
+                                      x.PostCd ?? string.Empty,
+                                      x.PrefKana ?? string.Empty,
+                                      x.CityKana ?? string.Empty,
+                                      x.PostalTermKana ?? string.Empty,
+                                      x.PrefName ?? string.Empty,
+                                      x.CityName ?? string.Empty,
+                                      x.Banti ?? string.Empty,
+                                      x.IsDeleted))
+                                  .Skip(pageIndex).Take(pageSize)
+                                  .ToList();
+            return result;
+        }
     }
 }

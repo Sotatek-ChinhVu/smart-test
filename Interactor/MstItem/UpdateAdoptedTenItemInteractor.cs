@@ -23,14 +23,14 @@ namespace Interactor.MstItem
                 return new UpdateAdoptedTenItemOutputData(false, UpdateAdoptedTenItemStatus.InvalidItemCd);
             }
 
-            if (inputData.SinDateInputItem < 0)
+            if (inputData.StartDateInputItem < 0)
             {
-                return new UpdateAdoptedTenItemOutputData(false, UpdateAdoptedTenItemStatus.InvalidSinDate);
+                return new UpdateAdoptedTenItemOutputData(false, UpdateAdoptedTenItemStatus.InvalidStartDate);
             }
 
             try
             {
-                var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.SinDateInputItem);
+                var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.StartDateInputItem);
                 return new UpdateAdoptedTenItemOutputData(data, UpdateAdoptedTenItemStatus.Successed);
             }
             catch (Exception)

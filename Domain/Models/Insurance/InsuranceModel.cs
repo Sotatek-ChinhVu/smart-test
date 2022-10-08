@@ -9,7 +9,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
+        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted)
         {
             HpId = hpId;
             PtId = ptId;
@@ -25,6 +25,7 @@ namespace Domain.Models.InsuranceInfor
             Kohi2 = kohi2;
             Kohi3 = kohi3;
             Kohi4 = kohi4;
+            IsDeleted = isDeleted;
         }
 
         public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
@@ -62,6 +63,8 @@ namespace Domain.Models.InsuranceInfor
         public string HokenMemo { get; private set; }
 
         public int SinDate { get; private set; }
+
+        public int IsDeleted { get; private set; }
 
         private readonly HokenInfModel HokenInf;
 

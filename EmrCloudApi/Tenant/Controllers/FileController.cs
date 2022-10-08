@@ -19,7 +19,7 @@ public class FileController : ControllerBase
     [HttpPost("Upload")]
     public async Task<Response<string>> UploadAsync([FromQuery] string subFolder, [FromQuery] string fileName)
     {
-        var accessUrl = await _amazonS3Service.UploadAnObjectAsync(subFolder, fileName, Request.Body);
+        var accessUrl = await _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName, Request.Body);
         if (string.IsNullOrEmpty(accessUrl))
         {
             return new Response<string>

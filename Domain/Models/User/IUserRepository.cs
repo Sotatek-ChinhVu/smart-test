@@ -27,5 +27,7 @@
         bool CheckExistedId(List<long> idList);
 
         void Upsert(List<UserMstModel> upsertUserList);
+
+        bool CheckExistedUserId(int userId);
     }
 }

@@ -22,6 +22,11 @@ namespace Infrastructure.Repositories
             return _tenantNoTrackingDataContext.UserMsts.Any(u => idList.Contains(u.Id));
         }
 
+        public bool CheckExistedUserId(int userId)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+        }
+
         public void Create(UserMstModel user)
         {
             throw new NotImplementedException();

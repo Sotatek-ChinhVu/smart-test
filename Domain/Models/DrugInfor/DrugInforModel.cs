@@ -8,7 +8,7 @@ namespace Domain.Models.DrugInfor
 {
     public class DrugInforModel
     {
-        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark, string yjCode, string pathPicZai, string pathPicHou, string defaultPathPicZai, string customPathPicZai, string otherPicZai, string defaultPathPicHou, string customPathPicHou, string otherPicHou)
+        public DrugInforModel(string name, string genericName, string unit, string maker, string vender, int kohatuKbn, double ten, string receUnitName, string mark, string yjCode, string pathPicZai, string pathPicHou, string defaultPathPicZai, string customPathPicZai, string otherPicZai, string defaultPathPicHou, string customPathPicHou, string otherPicHou, List<string> listPicHou, List<string> listPicZai)
         {
             Name = name;
             GenericName = genericName;
@@ -28,28 +28,30 @@ namespace Domain.Models.DrugInfor
             DefaultPathPicHou = defaultPathPicHou;
             CustomPathPicHou = customPathPicHou;
             OtherPicHou = otherPicHou;
+            ListPicHou = listPicHou;
+            ListPicZai = listPicZai;
         }
 
         public DrugInforModel()
         {
-            Name = "";
-            GenericName = "";
-            Unit = "";
-            Maker = "";
-            Vender = "";
-            KohatuKbn = 0;
-            Ten = 0;
-            ReceUnitName = "";
-            Mark = "";
-            YjCode = "";
-            PathPicZai = "";
-            PathPicHou = "";
-            DefaultPathPicZai = "";
-            CustomPathPicZai = "";
-            OtherPicZai = "";
-            DefaultPathPicHou = "";
-            CustomPathPicHou = "";
-            OtherPicHou = "";
+            Name = string.Empty;
+            GenericName = string.Empty;
+            Unit = string.Empty;
+            Maker = string.Empty;
+            Vender = string.Empty;
+            ReceUnitName = string.Empty;
+            Mark = string.Empty;
+            YjCode = string.Empty;
+            PathPicZai = string.Empty;
+            PathPicHou = string.Empty;
+            DefaultPathPicZai = string.Empty;
+            CustomPathPicZai = string.Empty;
+            OtherPicZai = string.Empty;
+            DefaultPathPicHou = string.Empty;
+            CustomPathPicHou = string.Empty;
+            OtherPicHou = string.Empty;
+            ListPicHou = new List<string>();
+            ListPicZai = new List<string>();
         }
 
         public string Name { get; private set; }
@@ -88,6 +90,10 @@ namespace Domain.Models.DrugInfor
 
         public string OtherPicHou { get; set; }
 
+        public List<string> ListPicHou { get; set; }
+
+        public List<string> ListPicZai { get; set; }
+
         public string KohatuKbnName
         {
             get
@@ -104,7 +110,7 @@ namespace Domain.Models.DrugInfor
                         return "あり";
 
                     default:
-                        return "";
+                        return string.Empty;
                 }
             }
         }

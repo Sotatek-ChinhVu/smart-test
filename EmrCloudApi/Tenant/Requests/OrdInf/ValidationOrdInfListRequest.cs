@@ -4,6 +4,6 @@ namespace EmrCloudApi.Tenant.Requests.OrdInfs
 {
     public class ValidationOrdInfListRequest
     {
-        public List<OdrInfItem> OrdInfs { get; set; } = new();
+        public List<OdrInfItem> OdrInfs { get; set; } = new();
     }
 }

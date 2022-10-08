@@ -4,6 +4,33 @@ namespace Domain.Models.SuperSetDetail;
 
 public class SetOrderInfDetailModel
 {
+    public SetOrderInfDetailModel(int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline)
+    {
+        SinKouiKbn = sinKouiKbn;
+        ItemCd = itemCd;
+        ItemName = itemName;
+        DisplayItemName = displayItemName;
+        Suryo = suryo;
+        UnitName = unitName;
+        UnitSBT = unitSBT;
+        TermVal = termVal;
+        KohatuKbn = kohatuKbn;
+        SyohoKbn = syohoKbn;
+        SyohoLimitKbn = syohoLimitKbn;
+        DrugKbn = drugKbn;
+        YohoKbn = yohoKbn;
+        Kokuji1 = kokuji1;
+        Kokuji2 = kokuji2;
+        IsNodspRece = isNodspRece;
+        IpnCd = ipnCd;
+        IpnName = ipnName;
+        Bunkatu = bunkatu;
+        CmtName = cmtName;
+        CmtOpt = cmtOpt;
+        FontColor = fontColor;
+        CommentNewline = commentNewline;
+    }
+
     public SetOrderInfDetailModel(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd)
     {
         HpId = hpId;
@@ -103,7 +130,7 @@ public class SetOrderInfDetailModel
 
     public int CommentNewline { get; private set; }
 
-    public string MasterSbt { get; private set; }
+    public string MasterSbt { get; private set; } = string.Empty;
 
     public int InOutKbn { get; private set; }
 
@@ -123,7 +150,7 @@ public class SetOrderInfDetailModel
 
     public double CnvTermVal { get; private set; }
 
-    public string YjCd { get; private set; }
+    public string YjCd { get; private set; } = string.Empty;
 
     //Exposed properties
     public double Price

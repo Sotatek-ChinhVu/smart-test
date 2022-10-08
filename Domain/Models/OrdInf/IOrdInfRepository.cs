@@ -13,7 +13,7 @@ namespace Domain.Models.OrdInfs
 
         void Delete(int ordId);
 
-        bool CheckExistOrder(long rpNo, long rpEdaNo);
+        bool CheckExistOrder(int hpId, long ptId, long raiinNo, int sinDate, long rpNo, long rpEdaNo);
 
         bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate);
 
@@ -28,5 +28,13 @@ namespace Domain.Models.OrdInfs
         IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos);
 
         long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
+
+        IEnumerable<OrdInfModel> GetListToCheckValidate(long ptId, int hpId, List<long> raiinNos);
+
+        List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds);
+
+        List<Tuple<string, string, bool>> CheckIsGetYakkaPrices(int hpId, List<TenItemModel> tenMsts, int sinDate);
+
+        OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }
