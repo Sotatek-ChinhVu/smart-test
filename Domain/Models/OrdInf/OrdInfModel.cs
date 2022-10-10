@@ -1,11 +1,12 @@
 ﻿using Domain.Models.OrdInfDetails;
+using Domain.Types;
 using Helper.Constants;
 using Helper.Extension;
 using static Helper.Constants.TodayOrderConst;
 
 namespace Domain.Models.OrdInfs
 {
-    public class OrdInfModel
+    public class OrdInfModel: IOdrInfModel<OrdInfDetailModel>
     {
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
@@ -123,7 +124,6 @@ namespace Domain.Models.OrdInfs
                 return 0;
             }
         }
-
 
         public KeyValuePair<string, TodayOrdValidationStatus> Validation(int flag)
         {

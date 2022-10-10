@@ -1,11 +1,12 @@
-﻿using Helper.Common;
+﻿using Domain.Types;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using static Helper.Constants.TodayOrderConst;
 
 namespace Domain.Models.OrdInfDetails
 {
-    public class OrdInfDetailModel
+    public class OrdInfDetailModel: IOdrInfDetailModel
     {
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
