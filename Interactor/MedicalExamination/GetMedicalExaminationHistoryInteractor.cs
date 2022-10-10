@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Insurance;
-using Domain.Models.KaMst;
+using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.KarteKbnMst;
@@ -7,6 +7,7 @@ using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.User;
+using Helper.Common;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -20,10 +21,10 @@ namespace Interactor.MedicalExamination
         private readonly IReceptionRepository _receptionRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IKaMstRepository _kaRepository;
+        private readonly IKaRepository _kaRepository;
         private readonly IKarteFilterMstRepository _karteFilterMstRepository;
         private readonly IRaiinListTagRepository _rainListTagRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaMstRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -254,8 +255,8 @@ namespace Interactor.MedicalExamination
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchCategory;
             }
-
-            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
+            var searchText = CIUtil.ToHalfsize(inputData.SearchText);
+            if (string.IsNullOrEmpty(searchText.Trim()) && inputData.SearchType != 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchText;
             }
@@ -273,13 +274,13 @@ namespace Interactor.MedicalExamination
         private List<ReceptionModel>? SearchAndPagination(GetMedicalExaminationHistoryInputData inputData, List<ReceptionModel>? allRaiinInf, ref int startPageSearch)
         {
             var allRaiinNos = allRaiinInf?.Select(q => q.RaiinNo)?.ToList();
-            var raiinNoStartPage = !(allRaiinNos?.Count() > 0) ? 0 : allRaiinNos[inputData.StartPage];
+            var raiinNoStartPage = !(allRaiinNos?.Count > 0) ? 0 : allRaiinNos[inputData.StartPage];
 
             long raiinNoMark = -1;
             if (inputData.SearchType != 0)
             {
-                var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
-                var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, inputData.SearchText);
+                var rainNoMarkKarte = _karteInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, CIUtil.ToHalfsize(inputData.SearchText));
+                var rainNoMarkOdr = _ordInfRepository.GetRaiinNo(inputData.PtId, inputData.HpId, inputData.SearchType, raiinNoStartPage, CIUtil.ToHalfsize(inputData.SearchText));
 
                 if (inputData.SearchCategory == 1)
                 {
@@ -351,7 +352,7 @@ namespace Interactor.MedicalExamination
         /// <param name="allOdrInfs"></param>
         /// <param name="historyKarteOdrRaiin"></param>
         /// <param name="historyKarteOdrRaiins"></param>
-        private void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
+        private static void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
         {
             var odrInfListByRaiinNo = allOdrInfs
          .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(

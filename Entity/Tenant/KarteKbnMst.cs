@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -30,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NAME")]
         [MaxLength(10)]
-        public string KbnName { get; set; } = string.Empty;
+        public string? KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 区分略称
@@ -38,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_SHORT_NAME")]
         [MaxLength(1)]
-        public string KbnShortName { get; set; } = string.Empty;
+        public string? KbnShortName { get; set; } = string.Empty;
 
         /// <summary>
         /// 画像使用可否
@@ -85,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
-        public string CreateMachine { get; set; } = string.Empty;
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時
@@ -108,7 +107,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

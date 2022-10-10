@@ -6,7 +6,7 @@ using EmrCloudApi.Tenant.Responses.Schema;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImage;
+using UseCase.Schema.SaveImageTodayOrder;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -32,13 +32,13 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetListImageTemplatesResponse>>(presenter.Result);
         }
 
-        [HttpPost(ApiPath.Save)]
-        public ActionResult<Response<SaveImageResponse>> Save([FromQuery] SaveImageRequest request)
+        [HttpPost(ApiPath.SaveImageTodayOrder)]
+        public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
-            var input = new SaveImageInputData(request.HpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
+            var input = new SaveImageTodayOrderInputData(request.HpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
             var output = _bus.Handle(input);
 
-            var presenter = new SaveImagePresenter();
+            var presenter = new SaveImageTodayOrderPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<SaveImageResponse>>(presenter.Result);

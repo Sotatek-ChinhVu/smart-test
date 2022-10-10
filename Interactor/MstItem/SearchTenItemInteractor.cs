@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Helper.Common;
 using UseCase.MstItem.SearchTenItem;
 
 namespace Interactor.MstItem
@@ -48,7 +49,8 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InvalidPointTo);
             }
 
-            var data = _mstItemRepository.SearchTenMst(inputData.Keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired);
+            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
+            var data = _mstItemRepository.SearchTenMst(keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired, inputData.ItemCodeStartWith);
 
             return new SearchTenItemOutputData(data.Item1, data.Item2, SearchTenItemStatus.Successed);
         }
