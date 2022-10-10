@@ -2,5 +2,5 @@
 
 public interface IAccountDueRepository
 {
-    List<AccountDueListModel> GetAccountDueList(long ptId, int sinDate);
+    List<AccountDueListModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize);
 }

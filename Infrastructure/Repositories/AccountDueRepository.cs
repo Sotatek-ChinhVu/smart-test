@@ -1,4 +1,5 @@
 ﻿using Domain.Models.AccountDue;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -15,30 +16,43 @@ public class AccountDueRepository : IAccountDueRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<AccountDueListModel> GetAccountDueList(long ptId, int sinDate)
+    public List<AccountDueListModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
     {
         List<AccountDueListModel> accountDueList = new List<AccountDueListModel>();
 
-        var nyukinList = dbService.SyunoNyukinRepository
-                               .FindListQueryable(item => item.HpId == _hpId
+        // Right table
+        var seikyuList = _tenantNoTrackingDataContext.SyunoSeikyus
+                        .Where(item => item.HpId == hpId
+                                            && item.PtId == ptId).ToList();
+
+        if (isUnpaidChecked && seikyuList.Count > 0)
+        {
+            seikyuList = seikyuList?.Where(item => item.NyukinKbn == 1).ToList();
+        }
+
+
+        // Left table
+        var nyukinList = _tenantNoTrackingDataContext.SyunoNyukin
+                               .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
                                                    && item.IsDeleted == 0);
+       
+        
 
-        var seikyuList = dbService.SyunoSeikyuRepository
-                        .FindListQueryable(item => item.HpId == _hpId
-                                            && item.PtId == ptId);
-
-        var raiinList = dbService.RaiinInfRepository
-                        .FindListQueryable(item => item.HpId == _hpId
+        var raiinList = _tenantNoTrackingDataContext.RaiinInfs
+                        .Where(item => item.HpId == hpId
                                             && item.PtId == ptId
                                             && item.IsDeleted == DeleteTypes.None
                                             && item.Status > RaiinState.TempSave);
 
-        var kaMstList = dbService.KaMstRepositorycs
-                        .FindListQueryableNoTrack(item => item.HpId == _hpId
+        var kaMstList = _tenantNoTrackingDataContext.KaMsts
+                        .Where(item => item.HpId == hpId
                                             && item.IsDeleted == 0);
 
-
+        var listPtHokenPattern = _tenantNoTrackingDataContext.PtHokenPatterns
+                         .Where(pattern => pattern.HpId == hpId
+                                            && pattern.PtId == ptId
+                                            && (pattern.IsDeleted == DeleteTypes.None));
 
 
         return accountDueList;

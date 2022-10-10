@@ -2,13 +2,14 @@
 
 public class AccountDueListModel
 {
-    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, int nyukinCmt, int unPaid, string stateDisplay, string sinDateDisplay, string kaDisplay, string hokenPatternName, string seikyuGakuDisplay, string newSeikyuGakuDisplay, string seikyuAdjustFutanDisplay, string newAdjustFutanDisplay, bool isMenjo, bool isNotPayment)
+    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, int nyukinCmt, int unPaid, string stateDisplay, string sinDateDisplay, string kaDisplay, string hokenPatternName, string seikyuGakuDisplay, string newSeikyuGakuDisplay, string seikyuAdjustFutanDisplay, string newAdjustFutanDisplay, bool isMenjo, bool isNotPayment)
     {
         HpId = hpId;
         PtId = ptId;
         SinDate = sinDate;
         Month = month;
         RaiinNo = raiinNo;
+        HokenPid = hokenPid;
         OyaRaiinNo = oyaRaiinNo;
         NyukinKbn = nyukinKbn;
         SeikyuTensu = seikyuTensu;
@@ -32,7 +33,6 @@ public class AccountDueListModel
         IsNotPayment = isNotPayment;
     }
 
-
     public int HpId { get; private set; }
 
     public long PtId { get; private set; }
@@ -42,6 +42,8 @@ public class AccountDueListModel
     public int Month { get; private set; }
 
     public long RaiinNo { get; private set; }
+
+    public int HokenPid { get; private set; }
 
     public long OyaRaiinNo { get; private set; }
 
