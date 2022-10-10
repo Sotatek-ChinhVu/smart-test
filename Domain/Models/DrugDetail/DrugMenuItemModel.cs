@@ -24,9 +24,9 @@ namespace Domain.Models.DrugDetail
 
         public MenuItemModel MenuItem { get; private set; }
 
-        public int IndexOfChildren { get; set; }
+        public int IndexOfChildren { get; private set; }
 
-        public int IndexOfLevel0 { get; set; }
+        public int IndexOfLevel0 { get; private set; }
 
         public string YjCode { get; private set; }
     }

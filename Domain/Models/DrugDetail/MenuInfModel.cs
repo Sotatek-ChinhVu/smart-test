@@ -40,8 +40,8 @@ namespace Domain.Models.DrugDetail
 
         public string MenuName { get; private set; }
 
-        public int IndexOfChildren { get; set; }
+        public int IndexOfChildren { get; private set; }
 
-        public string YJCode { get; set; }
+        public string YJCode { get; private set; }
     }
 }
