@@ -22,6 +22,7 @@
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
         public static readonly string InvalidStartDate = "Invalid startDate";
+        public static readonly string InvalidIsDeleted = "Invalid isDeleted";
 
         //Common
         public static readonly string NotFound = "Not found";
