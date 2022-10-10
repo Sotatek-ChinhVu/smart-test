@@ -50,7 +50,7 @@ namespace Interactor.MstItem
             }
 
             string keyword = CIUtil.ToHalfsize(inputData.Keyword);
-            var data = _mstItemRepository.SearchTenMst(keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired);
+            var data = _mstItemRepository.SearchTenMst(keyword, inputData.KouiKbn, inputData.SinDate, inputData.PageIndex, inputData.PageCount, inputData.GenericOrSameItem, inputData.YJCd, inputData.HpId, inputData.PointFrom, inputData.PointTo, inputData.IsRosai, inputData.IsMirai, inputData.IsExpired, inputData.ItemCodeStartWith);
 
             return new SearchTenItemOutputData(data.Item1, data.Item2, SearchTenItemStatus.Successed);
         }
