@@ -13,6 +13,5 @@ namespace UseCase.MstItem.FindTenMst
 
         public TenItemModel TenItemModel { get; private set; }
         public FindTenMstStatus Status { get; private set; }
-
     }
 }

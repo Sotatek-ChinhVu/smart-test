@@ -33,7 +33,6 @@ namespace Interactor.MstItem
                 var data = _mstItemRepository.FindTenMst(inputData.HpId, inputData.ItemCd, inputData.SinDate);
 
                 return new FindTenMstOutputData(data, FindTenMstStatus.Successed);
-
             }
             catch
             {
