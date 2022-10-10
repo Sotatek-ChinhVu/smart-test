@@ -107,20 +107,20 @@ namespace Infrastructure.Repositories
                 for (int i = 0; i < drugMenuItems.Count; i++)
                 {
 
-                    var selectedIndex = drugMenuItems[0].MenuItem.Childrens.IndexOf(drugMenuItems[i].MenuItem.Menu);
-                    drugMenuItems[i].IndexOfChildrens = selectedIndex;
+                    var selectedIndex = drugMenuItems[0].MenuItem.Children.IndexOf(drugMenuItems[i].MenuItem.Menu);
+                    drugMenuItems[i].IndexOfChildren = selectedIndex;
                     if(selectedIndex < 0)
                     {
                         var indexLevel0 = drugMenuItems.IndexOf(drugMenuItems[i]);
                         drugMenuItems[i].IndexOfLevel0 = indexLevel0;
                     }    
 
-                    if (drugMenuItems[i].MenuItem.Childrens.Count > 0)
+                    if (drugMenuItems[i].MenuItem.Children.Count > 0)
                     {
-                        foreach (var item in drugMenuItems[i].MenuItem.Childrens)
+                        foreach (var item in drugMenuItems[i].MenuItem.Children)
                         {
-                            var selectedChildrens = drugMenuItems[0].MenuItem.Childrens.IndexOf(item);
-                            item.IndexOfChildrens = selectedChildrens;
+                            var selectedChildren = drugMenuItems[0].MenuItem.Children.IndexOf(item);
+                            item.IndexOfChildren = selectedChildren;
                         }
                     }
                 }
@@ -128,14 +128,14 @@ namespace Infrastructure.Repositories
             return drugMenuItems;
         }
         
-        public DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfChildrens, int indexSelectedLevel0, string drugName, string itemCd, string yjCode)
+        public DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfChildren, int indexSelectedLevel0, string drugName, string itemCd, string yjCode)
         {
             var piInfDetailCollection = _tenantDataContext.PiInfDetails.AsQueryable();
             var queryDrugInfs = _tenantDataContext.PiProductInfs.AsQueryable();
             var piProductInfCollections = queryDrugInfs.Where(pi => pi.YjCd == yjCode).AsQueryable();
             var kikakuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 1);
             var tenpuCollection = GetKikakuCollectionOrTenpuCollection(yjCode, piInfDetailCollection, piProductInfCollections, 2);
-            return GetDetail(selectedIndexOfChildrens, indexSelectedLevel0, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
+            return GetDetail(selectedIndexOfChildren, indexSelectedLevel0, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
         }
 
         private DrugDetailModel GetDetail(int selectedIndex,int indexSelectedLevel0, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
@@ -515,9 +515,9 @@ namespace Infrastructure.Repositories
             {
                 title = "\u3000" + title;
             }
-            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Childrens.Count + 1).ToString(), 0, yjcode);
+            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Children.Count + 1).ToString(), 0, yjcode);
 
-            rootItem.MenuItem.Childrens.Add(menuItemChildren);
+            rootItem.MenuItem.Children.Add(menuItemChildren);
         }
     }
 }

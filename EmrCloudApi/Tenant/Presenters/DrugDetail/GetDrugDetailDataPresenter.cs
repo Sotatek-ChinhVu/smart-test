@@ -29,7 +29,7 @@ namespace EmrCloudApi.Tenant.Presenters.DrugDetailData
                 case GetDrugDetailDataStatus.InvalidYJCode:
                     Result.Message = ResponseMessage.InvalidYJCode;
                     break;
-                case GetDrugDetailDataStatus.Faild:
+                case GetDrugDetailDataStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;
             }

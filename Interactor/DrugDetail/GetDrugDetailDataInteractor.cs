@@ -28,7 +28,7 @@ namespace Interactor.DrugDetailData
                 return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
             }    
 
-            var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfChildrens, inputData.SelectedIndexOfLevel0, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+            var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfChildren, inputData.SelectedIndexOfLevel0, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
 
             return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
         }

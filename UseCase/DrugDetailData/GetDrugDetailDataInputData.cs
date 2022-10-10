@@ -10,16 +10,16 @@ namespace UseCase.DrugDetailData
 {
     public class GetDrugDetailDataInputData: IInputData<GetDrugDetailDataOutputData>
     {
-        public GetDrugDetailDataInputData(int selectedIndexOfChildrens, int selectedIndexOfLevel0, string drugName, string itemCd, string yJCode)
+        public GetDrugDetailDataInputData(int selectedIndexOfChildren, int selectedIndexOfLevel0, string drugName, string itemCd, string yJCode)
         {
-            SelectedIndexOfChildrens = selectedIndexOfChildrens;
+            SelectedIndexOfChildren = selectedIndexOfChildren;
             SelectedIndexOfLevel0 = selectedIndexOfLevel0;
             DrugName = drugName;
             ItemCd = itemCd;
             YJCode = yJCode;
         }
 
-        public int SelectedIndexOfChildrens { get; private set; }
+        public int SelectedIndexOfChildren { get; private set; }
 
         public int SelectedIndexOfLevel0 { get; private set; }
 

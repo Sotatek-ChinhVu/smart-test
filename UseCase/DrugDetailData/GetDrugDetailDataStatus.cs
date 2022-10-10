@@ -11,6 +11,6 @@ namespace UseCase.DrugDetailData
         Successed = 1,
         InvalidItemCd = 2,
         InvalidYJCode = 3,
-        Faild = 4
+        Failed = 4
     }
 }

@@ -89,7 +89,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
         public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
-            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.SinDateInputItem);
+            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem);
             var output = _bus.Handle(input);
             var presenter = new UpdateAdoptedTenItemPresenter();
             presenter.Complete(output);

@@ -8,14 +8,14 @@ namespace Domain.Models.DrugDetail
 {
     public class MenuItemModel
     {
-        public MenuItemModel(MenuInfModel menu, List<MenuInfModel> childrens)
+        public MenuItemModel(MenuInfModel menu, List<MenuInfModel> children)
         {
             Menu = menu;
-            Childrens = childrens;
+            Children = children;
         }
 
         public MenuInfModel  Menu { get; private set; }
 
-        public List<MenuInfModel>  Childrens { get; private set; }
+        public List<MenuInfModel>  Children { get; private set; }
     }
 }
