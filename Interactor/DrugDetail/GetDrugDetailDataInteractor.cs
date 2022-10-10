@@ -18,12 +18,12 @@ namespace Interactor.DrugDetailData
 
         public GetDrugDetailDataOutputData Handle(GetDrugDetailDataInputData inputData)
         {
-            if(String.IsNullOrEmpty(inputData.ItemCd))
+            if(string.IsNullOrEmpty(inputData.ItemCd))
             {
                 return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
             }    
 
-            if(String.IsNullOrEmpty(inputData.YJCode))
+            if(string.IsNullOrEmpty(inputData.YJCode))
             {
                 return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
             }    

@@ -67,7 +67,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.DrugDataSelectedTree)]
         public ActionResult<Response<GetDrugDetailDataResponse>> DrugDataSelectedTree([FromQuery] GetDrugDetailDataRequest request)
         {
-            var input = new GetDrugDetailDataInputData(request.SelectedIndexOfChildrens, request.SelectedIndexOfLevel0, request.DrugName, request.ItemCd, request.YJCode);
+            var input = new GetDrugDetailDataInputData(request.SelectedIndexOfChildren, request.SelectedIndexOfLevel0, request.DrugName, request.ItemCd, request.YJCode);
             var output = _bus.Handle(input);
 
             var presenter = new GetDrugDetailDataPresenter();

@@ -2,7 +2,7 @@
 {
     public class GetDrugDetailDataRequest
     {
-        public int SelectedIndexOfChildrens { get; set; }
+        public int SelectedIndexOfChildren { get; set; }
 
         public int SelectedIndexOfLevel0 { get; set; }
 
