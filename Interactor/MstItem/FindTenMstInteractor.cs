@@ -28,9 +28,17 @@ namespace Interactor.MstItem
                 return new FindTenMstOutputData(new TenItemModel(), FindTenMstStatus.InvalidItemCd);
             }
 
-            var data = _mstItemRepository.FindTenMst(inputData.HpId, inputData.ItemCd, inputData.SinDate);
+            try
+            {
+                var data = _mstItemRepository.FindTenMst(inputData.HpId, inputData.ItemCd, inputData.SinDate);
 
-            return new FindTenMstOutputData(data, FindTenMstStatus.Successed);
+                return new FindTenMstOutputData(data, FindTenMstStatus.Successed);
+
+            }
+            catch
+            {
+                return new FindTenMstOutputData(new TenItemModel(), FindTenMstStatus.Failed);
+            }
         }
     }
 }
