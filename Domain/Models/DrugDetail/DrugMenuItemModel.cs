@@ -8,21 +8,26 @@ namespace Domain.Models.DrugDetail
 {
     public class DrugMenuItemModel
     {
-        public DrugMenuItemModel(MenuItemModel menuItem, DrugDetailModel detailInfor)
+        public DrugMenuItemModel(MenuItemModel menuItem, int indexOfChildren, int indexOfLevel0, string yjCode)
         {
             MenuItem = menuItem;
-            DetailInfor = detailInfor;
+            IndexOfChildren = indexOfChildren;
+            IndexOfLevel0 = indexOfLevel0;
+            YjCode = yjCode;
         }
 
         public DrugMenuItemModel()
         {
             MenuItem = new MenuItemModel(new MenuInfModel(), new List<MenuInfModel>());
-            DetailInfor = new DrugDetailModel();
+            YjCode = string.Empty;
         }
 
-        public MenuItemModel MenuItem { get; set; }
-        
-        public DrugDetailModel DetailInfor { get;  set; }
+        public MenuItemModel MenuItem { get; private set; }
 
+        public int IndexOfChildren { get; private set; }
+
+        public int IndexOfLevel0 { get; private set; }
+
+        public string YjCode { get; private set; }
     }
 }

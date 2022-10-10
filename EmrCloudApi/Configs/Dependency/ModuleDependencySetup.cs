@@ -191,6 +191,8 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.DrugDetailData;
+using Interactor.DrugDetailData;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -427,6 +429,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
+            busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
