@@ -27,8 +27,8 @@ namespace EmrCloudApi.Tenant.Presenters.MstItem
                 case UpdateAdoptedTenItemStatus.InvalidItemCd:
                     Result.Message = ResponseMessage.InvalidItemCd;
                     break;
-                case UpdateAdoptedTenItemStatus.InvalidSinDate:
-                    Result.Message = ResponseMessage.InvalidSinDate;
+                case UpdateAdoptedTenItemStatus.InvalidStartDate:
+                    Result.Message = ResponseMessage.InvalidStartDate;
                     break;
             }
         }

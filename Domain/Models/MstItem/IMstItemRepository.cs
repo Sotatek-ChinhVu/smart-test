@@ -22,6 +22,8 @@
 
         bool UpdateAdoptedByomei(int hpId, string byomeiCd);
 
+        List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
+
         bool CheckItemCd(string ItemCd);
 
         List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);

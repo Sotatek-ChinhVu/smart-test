@@ -21,6 +21,7 @@
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
+        public static readonly string InvalidStartDate = "Invalid startDate";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -28,7 +29,7 @@
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
         public static readonly string InputDataNull = "Input data is null";
-
+        public static readonly string Valid = "Valid";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -109,6 +110,15 @@
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
         public static readonly string GetKarteInfSuccessed = "Successed";
+        public static readonly string UpsertKarteInfInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertKarteInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string UpsertKarteInfInvalidKarteKbn = "Invalid KarteKbn";
+        public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
+        public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
         //OrdInf controller
         public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -121,7 +131,6 @@
         //RaiinKubun controller
 
         //Calculation Inf
-
 
         //Medical examination controller
         public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
@@ -215,86 +224,6 @@
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
 
-
-
-        // Today Validate Order
-        public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";
-        public static readonly string TodayOrdIInvalidSpecialStadardUsage = "Special item doesn't contain standard usage";
-        public static readonly string TodayOrdInvalidOdrKouiKbn = "Value of OdrKouiKbn is invalid ";
-        public static readonly string TodayOrdInvalidSpecialSuppUsage = "Special item doesn't contain supply usage";
-        public static readonly string TodayOrdInvalidHasUsageButNotDrug = "Item which differs drug item, it doesn't have drug usage";
-        public static readonly string TodayOrdInvalidHasUsageButNotInjectionOrDrug = "Item which differs drug item or injection item, it doesn't have injection usage";
-        public static readonly string TodayOrdInvalidHasDrugButNotUsage = "Drug item doesn't have usage";
-        public static readonly string TodayOrdInvalidHasInjectionButNotUsage = "Injection item doesn't have usage";
-        public static readonly string TodayOrdInvalidHasNotBothInjectionAndUsageOf28 = "Self Injection doesn't have self injection detail and usage";
-        public static readonly string TodayOrdInvalidStandardUsageOfDrugOrInjection = "Standard usage of drug item or usage of injection item don't more than 1";
-        public static readonly string TodayOrdInvalidSuppUsageOfDrugOrInjection = "Supply usage of drug item or usage of injection item don't more than 1";
-        public static readonly string TodayOrdInvalidBunkatu = "Bunkatu item of drug item doesn't more than 1";
-        public static readonly string TodayOrdInvalidUsageWhenBuntakuNull = "Bunkatu item doesn't have usage";
-        public static readonly string TodayOrdInvalidSumBunkatuDifferentSuryo = "Bunkatu item has sum of suryo not equal bunkatu";
-        public static readonly string TodayOrdInvalidQuantityUnit = "Has unit but doesn't have quantity";
-        public static readonly string TodayOrdInvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull = "Has unit but yohoKbn and Suryo don't invalid (YohoKbn != 1 and Suryo > 999)";
-        public static readonly string TodayOrdInvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu = "Bunkatu item doesn't have suryo and bunkatu";
-        public static readonly string TodayOrdInvalidPrice = "Price must more than 0 and (suryo * price) <= 999999999";
-        public static readonly string TodayOrdInvalidCmt840 = "CmtOpt is not null and CmtName is not null when CmtCol1 of Cmt840 > 0";
-        public static readonly string TodayOrdInvalidCmt842 = "CmtOpt of Cmt842 is not null and CmtName is not null";
-        public static readonly string TodayOrdInvalidCmt842CmtOptMoreThan38 = "CmtOpt of Cmt842 is not null and has length less than or equal 38";
-        public static readonly string TodayOrdInvalidCmt830CmtOpt = "CmtOpt of Cmt830 is not null and not white space";
-        public static readonly string TodayOrdInvalidCmt830CmtOptMoreThan38 = "CmtOpt of Cmt830 is not null and has length less than or equal 38";
-        public static readonly string TodayOrdInvalidCmt831 = "CmtOpt of Cmt831 is not null and CmtName is not null";
-        public static readonly string TodayOrdInvalidCmt850Date = "CmtOpt of Cmt850 is not map format and CmtName is not null when CmtName contain day";
-        public static readonly string TodayOrdInvalidCmt850OtherDate = "CmtOpt of Cmt850 is not map format and CmtName is not null when CmtName doesn't contain day";
-        public static readonly string TodayOrdInvalidCmt851 = "CmtOpt of Cmt851 is not map format and CmtName is not null";
-        public static readonly string TodayOrdInvalidCmt852 = "CmtOpt of Cmt852 is not map format and CmtName is not null";
-        public static readonly string TodayOrdInvalidCmt853 = "CmtOpt of Cmt853 is not map format and CmtName is not null";
-        public static readonly string TodayOrdInvalidCmt880 = "CmtOpt of Cmt880 is not null and CmtName is not null";
-        public static readonly string TodayOrdDuplicateTodayOrd = "Duplicate RpNo and RpNoEdaNo";
-        public static readonly string TodayOrdInvalidKohatuKbn = "Value of KohatuKbn is not invalid";
-        public static readonly string TodayOrdInvalidDrugKbn = "Value of DrugKbn is not invalid";
-        public static readonly string TodayOrdInvalidSuryoOfReffill = "Suryo must  more than refill setting";
-        public static readonly string TodayOrdInvalidRowNo = "RowNo must more than 0";
-        public static readonly string TodayOrdInvalidSinKouiKbn = "SinKouiKbn must more than 0 or equal 0";
-        public static readonly string TodayOrdInvalidItemCd = "Length of ItemCd must less than 10 or equal 10";
-        public static readonly string TodayOrdInvalidItemName = "Length of ItemName must less than 240 or equal 240";
-        public static readonly string TodayOrdInvalidSuryo = "Invalid Suryo";
-        public static readonly string TodayOrdInvalidUnitName = "Length of UnitName must less than 24 or equal 24";
-        public static readonly string TodayOrdInvalidUnitSbt = "UnitSbt must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidTermVal = "TermVal must more than 0 or equal 0";
-        public static readonly string TodayOrdInvalidSyohoKbn = "SyohoKbn must more than 0 or equal 0 and less than 3 or equal 3";
-        public static readonly string TodayOrdInvalidSyohoLimitKbn = "SyohoLimitKbn must more than 0 or equal 0 and less than 3 or equal 3";
-        public static readonly string TodayOrdInvalidYohoKbn = "YohoKbn must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidIsNodspRece = "IsNodspRece  must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidIpnCd = "Length of IpnCd must less than 12 or equal 12";
-        public static readonly string TodayOrdInvalidIpnName = "Length of IpnName must less than 120 or equal 120";
-        public static readonly string TodayOrdInvalidJissiKbn = "JissiKbn must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidJissiId = "JissiId must more than 0 equal 0";
-        public static readonly string TodayOrdInvalidJissiMachine = "Length of JissiMachine must less than 60 or equal 60";
-        public static readonly string TodayOrdInvalidReqCd = "Length of ReqCd must less than 10 or equal 10";
-        public static readonly string TodayOrdInvalidCmtName = "Length of CmtName must less than 240 or equal 240";
-        public static readonly string TodayOrdInvalidCmtOpt = "Length of CmtOpt must less than 38 or equal 38";
-        public static readonly string TodayOrdInvalidFontColor = "Length of FontColor must less than 8 or equal 8";
-        public static readonly string TodayOrdInvalidCommentNewline = "CommentNewline must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidRpNo = "RpNo must more than 0";
-        public static readonly string TodayOrdInvalidRpEdaNo = "RpEdaNo must more than 0";
-        public static readonly string TodayOrdInvalidHokenPId = "HokenPId must more than 0";
-        public static readonly string TodayOrdInvalidRpName = "Length of RpName must less than 240 or equal 240";
-        public static readonly string TodayOrdInvalidInoutKbn = "InoutKbn must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidSikyuKbn = "SikyuKbn must more than 0 or equal 0 and less than 1 or equal 1";
-        public static readonly string TodayOrdInvalidSyohoSbt = "SyohoSbt must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidSanteiKbn = "SanteiKbn must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidTosekiKbn = "TosekiKbn must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidDaysCnt = "DaysCnt must more than 0 or equal 0";
-        public static readonly string TodayOrdInvalidSortNo = "SortNo must more than 0";
-        public static readonly string TodayOrdInvalidId = "Id of OrdInf must more than 0 or equal 0";
-        public static readonly string TodayOrdInvalidPtId = "PtId must more than 0";
-        public static readonly string TodayOrdInvalidRaiinNo = "RaiinNo must more than 0";
-        public static readonly string TodayOrdInvalidSinDate = "SinDate must more than 0";
-        public static readonly string TodayOrdInvalidHpId = "HpId must more than 0";
-        public static readonly string TodayOrdInvalidBunkatuLength = "Length of Bunkatu must lest than 10 or equal 10";
-        public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
-        public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
-        public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
-
         //MaxMoney
         public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
@@ -349,8 +278,6 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
-
-
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
@@ -400,6 +327,22 @@
         public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
         public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
+        //Raiin Info TodayOdr
+        public static readonly string RaiinInfTodayOdrInvalidSyosaiKbn = "Invalid SyosaiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidJikanKbn = "Invalid JikanKbn";
+        public static readonly string RaiinInfTodayOdrInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string RaiinInfTodayOdrHokenPidNoExist = "HokenPid no exist";
+        public static readonly string RaiinInfTodayOdrInvalidSanteiKbn = "Invalid SanteiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidTantoId = "Invalid TantoId";
+        public static readonly string RaiinInfTodayOdrTatoIdNoExist = "TantoId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidKaId = "Invalid KaId";
+        public static readonly string RaiinInfTodayOdrKaIdNoExist = "KaId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidUKetukeTime = "Invalid UKetukeTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinStartTime = "Invalid SinStartTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
+        public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
+        public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
 
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
@@ -505,5 +448,40 @@
         public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
+
+        //Message Error Common
+        public static readonly string MInp00010 = "{0}を入力してください。";
+        public static readonly string MConf01020 = "{0}ため、{1}が確定できません。";
+        public static readonly string MEnt01020 = "既に登録されているため、{0}は登録できません。";
+        public static readonly string MInp00041 = "{0}は {1}を入力してください。";
+        public static readonly string MFree00030 = "{0}";
+        public static readonly string MInp00070 = "{0}は {1}以下を入力してください。";
+        public static readonly string MInp00040 = "{0}ため、{1}は登録できません。";
+
+        //Sup Message
+        public static readonly string MDrug = "薬剤";
+        public static readonly string MInjection = "手技";
+        public static readonly string MUsage = "用法";
+        public static readonly string MSupUsage1 = "用法";
+        public static readonly string MSupUsage2 = "補助用法";
+        public static readonly string MEnt01040 = "{0}ため、{1}は登録できません。";
+        public static readonly string ErrorCaptionDrugOrInject = "行為や加算が登録されている";
+        public static readonly string MQuantity = "数量";
+        public static readonly string MTooLargeQuantity = "数量が大きすぎます。";
+        public static readonly string MUsageQuantity = "用法の数量";
+        public static readonly string MMaxQuantity = "999";
+        public static readonly string MMaxLengthOfCmt = "コメントに対する入力値は３８文字以内にしてください。";
+        public static readonly string MCmtOptOf830 = "文字情報";
+        public static readonly string MCmt831 = "診療行為コード";
+        public static readonly string MDateInfor850_1 = "年月日情報";
+        public static readonly string MDateInfor850_2 = "年月情報";
+        public static readonly string MTimeInfor851 = "時刻情報";
+        public static readonly string MTimeInfor852 = "時間（分）情報";
+        public static readonly string MDateTimeInfor853 = "日時情報（日、時間及び分を6桁）";
+        public static readonly string MDateTimeInfor880 = "年月日情報及び数字情報を入力してください。" + "\r\n" + "※区切り文字「/」スラッシュを間に入力" + "\r\n" + @"　数字情報は数字または次の文字　．－＋≧≦＞＜±";
+        public static readonly string MBunkatu = "分割調剤";
+        public static readonly string MSumBunkatu = "分割調剤の合計";
+        public static readonly string MCommonError = "無効なデータを受信しました。";
+        public static readonly string MProcedure = "・手技が入力されているか確認してください。";
     }
 }

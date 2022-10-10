@@ -38,6 +38,7 @@
 
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
+        public const string GetHeaderInf = "GetHeaderInf";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -66,5 +67,9 @@
 
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
+
+        //Validate InputItem
+        public const string ValidateInputItem = "ValidateInputItem";
+
     }
 }
