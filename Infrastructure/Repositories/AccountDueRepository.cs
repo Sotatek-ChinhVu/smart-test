@@ -20,7 +20,7 @@ public class AccountDueRepository : IAccountDueRepository
     {
         List<AccountDueListModel> accountDueList = new List<AccountDueListModel>();
 
-        // Right table
+        // Left table
         var seikyuList = _tenantNoTrackingDataContext.SyunoSeikyus
                         .Where(item => item.HpId == hpId
                                             && item.PtId == ptId).ToList();
@@ -30,14 +30,11 @@ public class AccountDueRepository : IAccountDueRepository
             seikyuList = seikyuList?.Where(item => item.NyukinKbn == 1).ToList();
         }
 
-
-        // Left table
+        // Right table
         var nyukinList = _tenantNoTrackingDataContext.SyunoNyukin
                                .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
                                                    && item.IsDeleted == 0);
-       
-        
 
         var raiinList = _tenantNoTrackingDataContext.RaiinInfs
                         .Where(item => item.HpId == hpId
@@ -54,6 +51,7 @@ public class AccountDueRepository : IAccountDueRepository
                                             && pattern.PtId == ptId
                                             && (pattern.IsDeleted == DeleteTypes.None));
 
+        accountDueList = from nyukinList
 
         return accountDueList;
     }
