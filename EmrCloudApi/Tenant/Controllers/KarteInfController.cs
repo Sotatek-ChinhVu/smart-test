@@ -1,5 +1,4 @@
-﻿using DevExpress.Export;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.KarteInfs;
 using EmrCloudApi.Tenant.Requests.KarteInfs;
 using EmrCloudApi.Tenant.Responses;

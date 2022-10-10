@@ -1,4 +1,6 @@
-﻿using DevExpress.Models;
+﻿using DevExpress.Export;
+using DevExpress.Models;
+using DevExpress.Response.Karte1;
 using Domain.Constant;
 using Domain.Models.Diseases;
 using Domain.Models.Insurance;
@@ -6,45 +8,48 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Helper.Common;
-using UseCase.ExportPDF.ExportKarte1;
+using Interactor.ExportPDF;
+using Interactor.ExportPDF.Karte1;
 
-namespace Interactor.ExportPDF;
+namespace DevExpress.Implementation;
 
-public class ExportKarte1Interactor : IExportKarte1InputPort
+public class Reporting : IReporting
 {
     private readonly IPtDiseaseRepository _diseaseRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
+    private readonly Karte1Export _karte1Export;
 
-    public ExportKarte1Interactor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
+        _karte1Export = karte1Export;
     }
 
-    public ExportKarte1OutputData Handle(ExportKarte1InputData input)
+    public Karte1Output PrintKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
     {
-        if (input.HpId <= 0)
+        if (hpId <= 0)
         {
-            return new ExportKarte1OutputData(ExportKarte1Status.InvalidHpId);
+            return new Karte1Output(Karte1Status.InvalidHpId);
         }
-        else if (input.SinDate <= 10000000 || input.SinDate >= 99999999)
+        else if (sinDate <= 10000000 || sinDate >= 99999999)
         {
-            return new ExportKarte1OutputData(ExportKarte1Status.InvalidSindate);
+            return new Karte1Output(Karte1Status.InvalidSindate);
         }
 
-        var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, input.SinDate, 0);
+        var ptInf = _patientInforRepository.GetById(hpId, ptId, sinDate, 0);
         if (ptInf == null)
         {
-            return new ExportKarte1OutputData(ExportKarte1Status.PtInfNotFould);
+            return new Karte1Output(Karte1Status.PtInfNotFould);
         }
-        var hoken = _insuranceRepository.GetPtHokenInf(input.HpId, input.HokenPid, input.PtId, input.SinDate);
+        var hoken = _insuranceRepository.GetPtHokenInf(hpId, hokenPid, ptId, sinDate);
         if (hoken == null)
         {
-            return new ExportKarte1OutputData(ExportKarte1Status.HokenNotFould);
+            return new Karte1Output(Karte1Status.HokenNotFould);
         }
-        var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(input.HpId, input.PtId, input.HokenPid, input.SinDate, input.TenkiByomei);
+        var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
 
         var listByomeiModelsPage1 = ConvertToListKarte1ByomeiModel(ptByomeis).Item1;
         var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
@@ -55,13 +60,13 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             var res = _karte1Export.ExportToPdf(dataModel);
             if (res.Length > 0)
             {
-                return new ExportKarte1OutputData(Convert.ToBase64String(res.ToArray()), ExportKarte1Status.Success);
+                return new Karte1Output(Karte1Status.Success, res);
             }
-            return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
+            return new Karte1Output(Karte1Status.CanNotExportPdf);
         }
         catch (Exception)
         {
-            return new ExportKarte1OutputData(ExportKarte1Status.Failed);
+            return new Karte1Output(Karte1Status.Failed);
         }
     }
 

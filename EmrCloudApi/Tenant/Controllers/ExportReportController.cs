@@ -1,11 +1,9 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.ExportPDF;
+﻿using DevExpress.Response.Karte1;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Requests.ExportPDF;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.ExportPDF;
+using Interactor.ExportPDF;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.Core.Sync;
-using UseCase.ExportPDF.ExportKarte1;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -13,21 +11,35 @@ namespace EmrCloudApi.Tenant.Controllers;
 [ApiController]
 public class ExportReportController : ControllerBase
 {
-    private readonly UseCaseBus _bus;
-    public ExportReportController(UseCaseBus bus)
+    private readonly IReporting _reporting;
+
+    public ExportReportController(IReporting reporting)
     {
-        _bus = bus;
+        _reporting = reporting;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
-    public ActionResult<Response<Karte1ExportResponse>> GetList([FromQuery] Karte1ExportRequest request)
+    public ActionResult<Response<string>> GetList([FromQuery] Karte1ExportRequest request)
     {
-        var input = new ExportKarte1InputData(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
-        var output = _bus.Handle(input);
-
-        var presenter = new Karte1ExportPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<Karte1ExportResponse>>(presenter.Result);
+        var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
+        
+        Response<string> response = new();
+        response.Data = Convert.ToBase64String(output.DataStream.ToArray());
+        response.Status = (byte)output.Status;
+        response.Message = GetMessageKarte1(output.Status);
+        
+        return response;
     }
+
+    private string GetMessageKarte1(Karte1Status status) => status switch
+    {
+        Karte1Status.Success => ResponseMessage.Success,
+        Karte1Status.PtInfNotFould => ResponseMessage.PtInfNotFould,
+        Karte1Status.InvalidSindate => ResponseMessage.InvalidSinDate,
+        Karte1Status.InvalidHpId => ResponseMessage.InvalidHpId,
+        Karte1Status.HokenNotFould => ResponseMessage.HokenNotFould,
+        Karte1Status.Failed => ResponseMessage.Failed,
+        Karte1Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
+        _ => string.Empty
+    };
 }

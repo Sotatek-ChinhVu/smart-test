@@ -11,7 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UseCase\UseCase.csproj" />
+    <ProjectReference Include="..\Interactor\Interactor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Response\" />
   </ItemGroup>
 
 </Project>
