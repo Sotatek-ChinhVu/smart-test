@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
             //Root
             var newModelInfFirst = new MenuInfModel("医薬品情報", "", 0, 0, 0, "", 0, yjCode);
             var newModelItem = new MenuItemModel(newModelInfFirst, new List<MenuInfModel>());
-            DrugMenuItemModel rootMenu = new DrugMenuItemModel(newModelItem, 0, 0, yjCode);
+            DrugMenuItemModel rootMenu = new DrugMenuItemModel(newModelItem, -1, 0, yjCode);
             drugMenuItems.Add(rootMenu);
 
             var piInfDetailCollection = _tenantDataContext.PiInfDetails.AsQueryable(); //PI_INF_DETAIL
@@ -93,38 +93,14 @@ namespace Infrastructure.Repositories
             //Last
             var newModelInfLast = new MenuInfModel("患者向け情報", "", 0, 0, 0, "", 0, yjCode);
             var newModelItemLast = new MenuItemModel(newModelInfLast, new List<MenuInfModel>());
-            DrugMenuItemModel lastMenu = new DrugMenuItemModel(newModelItemLast, 0, 1, yjCode);
+            DrugMenuItemModel lastMenu = new DrugMenuItemModel(newModelItemLast, -1, 1, yjCode);
             drugMenuItems.Add(lastMenu);
 
             //適応病名
             var newModelInfTekyoByomeiMenu = new MenuInfModel("適応病名", "", 0, 0, 0, "", 0, yjCode);
             var newModelItemTekyoByomeiMenu = new MenuItemModel(newModelInfTekyoByomeiMenu, new List<MenuInfModel>());
-            DrugMenuItemModel tekyoByomeiMenu = new DrugMenuItemModel(newModelItemTekyoByomeiMenu, 0, 2, yjCode);
+            DrugMenuItemModel tekyoByomeiMenu = new DrugMenuItemModel(newModelItemTekyoByomeiMenu, -1, 2, yjCode);
             drugMenuItems.Add(tekyoByomeiMenu);
-
-            if (drugMenuItems.Count > 0)
-            {
-                for (int i = 0; i < drugMenuItems.Count; i++)
-                {
-
-                    var selectedIndex = drugMenuItems[0].MenuItem.Children.IndexOf(drugMenuItems[i].MenuItem.Menu);
-                    drugMenuItems[i].IndexOfChildren = selectedIndex;
-                    if(selectedIndex < 0)
-                    {
-                        var indexLevel0 = drugMenuItems.IndexOf(drugMenuItems[i]);
-                        drugMenuItems[i].IndexOfLevel0 = indexLevel0;
-                    }    
-
-                    if (drugMenuItems[i].MenuItem.Children.Count > 0)
-                    {
-                        foreach (var item in drugMenuItems[i].MenuItem.Children)
-                        {
-                            var selectedChildren = drugMenuItems[0].MenuItem.Children.IndexOf(item);
-                            item.IndexOfChildren = selectedChildren;
-                        }
-                    }
-                }
-            }
             return drugMenuItems;
         }
         
@@ -515,7 +491,7 @@ namespace Infrastructure.Repositories
             {
                 title = "\u3000" + title;
             }
-            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Children.Count + 1).ToString(), 0, yjcode);
+            var menuItemChildren = new MenuInfModel(title, menuItem.MenuItem.Menu.DrugMenuName, 1, 0, level - 1, (rootItem.MenuItem.Children.Count + 1).ToString(), rootItem.MenuItem.Children.Count, yjcode);
 
             rootItem.MenuItem.Children.Add(menuItemChildren);
         }
