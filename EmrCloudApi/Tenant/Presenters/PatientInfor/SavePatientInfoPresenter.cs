@@ -8,6 +8,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
     public class SavePatientInfoPresenter : ISavePatientInfoOutputPort
     {
         public Response<SavePatientInfoResponse> Result { get; private set; } = new Response<SavePatientInfoResponse>();
+
         public void Complete(SavePatientInfoOutputData outputData)
         {
             Result.Data = new SavePatientInfoResponse(outputData.Status);

@@ -14,12 +14,14 @@ namespace Domain.Models.PatientInfor
             SeqNo = seqNo;
         }
 
-        public int HokenGrp { get; set; }
-        public int HokenId { get; set; }
+        public int HokenGrp { get; private set; }
+        public int HokenId { get; private set; }
+
         public int CheckDateInt
         {
             get; set;
         }
+
         public DateTime CheckDate
         {
             get
@@ -27,8 +29,9 @@ namespace Domain.Models.PatientInfor
                 return DateTime.SpecifyKind(CIUtil.IntToDate(CheckDateInt), DateTimeKind.Utc);
             }
         }
-        public int CheckId { get; set; }
-        public string CheckCmt { get; set; }
-        public long SeqNo { get; set; }
+
+        public int CheckId { get; private set; }
+        public string CheckCmt { get; private set; }
+        public long SeqNo { get; private set; }
     }
 }

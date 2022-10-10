@@ -23,7 +23,7 @@
             HokenChecks = hokenChecks;
         }
 
-        public long SeqNo { get;private set; }
+        public long SeqNo { get; private set; }
         public int HokenId { get; private set; }
         public int PrefNo { get; private set; }
         public int HokenNo { get; private set; }

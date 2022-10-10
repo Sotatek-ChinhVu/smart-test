@@ -26,17 +26,19 @@ namespace Interactor.PatientInfor
             }
             try
             {
-                bool result = _patientInforRepository.SavePatientInfor(inputData.Patient,
-                    inputData.PtSanteis,inputData.HokenPartterns,inputData.PtGrps);
+                bool result = false;
+                if (inputData.Patient.PtId == 0)
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtSanteis, inputData.HokenPartterns, inputData.PtGrps);
+                else
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtSanteis, inputData.HokenPartterns, inputData.PtGrps);
 
                 if (result)
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful);
                 else
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
             }
-            catch (Exception ex)
+            catch
             {
-                var a = ex;
                 return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
             }
         }
@@ -54,7 +56,7 @@ namespace Interactor.PatientInfor
             if (string.IsNullOrEmpty(model.Patient.KanaName) || model.Patient.KanaName.Length > 100)
                 result.Add(SavePatientInfoValidation.InvalidKanaName);
 
-            if(model.Patient.IsDead == 1 && model.Patient.DeathDate == 0)
+            if (model.Patient.IsDead == 1 && model.Patient.DeathDate == 0)
                 result.Add(SavePatientInfoValidation.InvalidRequiredDeathDate);
 
             if (model.Patient.HomePost != null && model.Patient.HomePost.Length > 7)
