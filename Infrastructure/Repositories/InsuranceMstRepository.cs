@@ -69,7 +69,8 @@ namespace Infrastructure.Repositories
                                         item.HokenSname,
                                         prefName == null ? string.Empty : prefName,
                                         item.ReceKisai,
-                                        item.FutanKbn
+                                        item.FutanKbn,
+                                        item.FutanRate
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -220,7 +221,7 @@ namespace Infrastructure.Repositories
                     prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName;
                 }
 
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName, h.ReceKisai, h.FutanKbn));
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName, h.ReceKisai, h.FutanKbn, h.FutanRate));
             });
 
             return list;
@@ -304,7 +305,7 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(h =>
             {
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, "", h.ReceKisai, h.FutanKbn));
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, "", h.ReceKisai, h.FutanKbn, h.FutanRate));
             });
 
             // Get KohiMst

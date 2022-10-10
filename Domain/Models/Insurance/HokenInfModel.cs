@@ -199,7 +199,7 @@ namespace Domain.Models.Insurance
 
         public int HokenMstFutanKbn => HokenMst != null ? HokenMst.FutanKbn : 0;
 
-        public int HokenMstSubNumber => HokenMst != null ? HokenMst.HokenSubNumber : 0;
+        public int HokenMstSbtKbn => HokenMst != null ? HokenMst.HokenSbtKbn : 0;
 
         public int HokenMstStartDate => HokenMst != null ? HokenMst.StartDate : 0;
 
@@ -213,7 +213,7 @@ namespace Domain.Models.Insurance
             {
                 if (IsHaveHokenMst)
                 {
-                    return HokenMst.HokenSubNumber == 8;
+                    return HokenMst.HokenSbtKbn == 8;
                 }
                 return HokenKbn == 0 && (Houbetu == HokenConstant.HOUBETU_JIHI_108 || Houbetu == HokenConstant.HOUBETU_JIHI_109);
             }
