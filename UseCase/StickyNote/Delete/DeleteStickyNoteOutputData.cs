@@ -2,9 +2,9 @@
 
 namespace UseCase.StickyNote
 {
-    public class RevertStickyNoteOutputData : IOutputData
+    public class DeleteStickyNoteOutputData : IOutputData
     {
-        public RevertStickyNoteOutputData(bool successed, UpdateStickyNoteStatus status)
+        public DeleteStickyNoteOutputData(bool successed, UpdateStickyNoteStatus status)
         {
             Successed = successed;
             Status = status;

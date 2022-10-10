@@ -5,6 +5,5 @@
         Successed = 0,
         NoData = 1,
         InvalidHpId = 2,
-        InvalidIsDeleted = 3,
     }
 }

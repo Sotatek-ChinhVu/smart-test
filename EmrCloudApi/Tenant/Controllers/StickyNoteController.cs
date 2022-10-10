@@ -25,7 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get)]
         public ActionResult<Response<GetStickyNoteResponse>> Get([FromQuery] GetStickyNoteRequest request)
         {
-            var input = new GetStickyNoteInputData(request.HpId, request.PtId,request.IsDeleted);
+            var input = new GetStickyNoteInputData(request.HpId, request.PtId);
             var output = _bus.Handle(input);
 
             var presenter = new GetStickyNotePresenter();
@@ -33,7 +33,27 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetStickyNoteResponse>>(presenter.Result);
         }
+        [HttpGet(ApiPath.Revert)]
+        public ActionResult<Response<DeleteRevertStickyNoteResponse>> Revert([FromQuery] DeleteRevertStickyNoteRequest request)
+        {
+            var input = new RevertStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
+            var output = _bus.Handle(input);
 
+            var presenter = new RevertStickyNotePresenter();
+            presenter.Complete(output);
 
+            return new ActionResult<Response<DeleteRevertStickyNoteResponse>>(presenter.Result);
+        }
+        [HttpGet(ApiPath.Delete)]
+        public ActionResult<Response<DeleteRevertStickyNoteResponse>> Delete([FromQuery] DeleteRevertStickyNoteRequest request)
+        {
+            var input = new DeleteStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new DeleteStickyNotePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<DeleteRevertStickyNoteResponse>>(presenter.Result);
+        }
     }
 }

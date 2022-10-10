@@ -24,9 +24,6 @@ public class GetStickyNotePresenter : IGetStickyNoteOutputPort
             case GetStickyNoteStatus.InvalidHpId:
                 Result.Message = ResponseMessage.InvalidHpId;
                 break;
-            case GetStickyNoteStatus.InvalidIsDeleted:
-                Result.Message = ResponseMessage.InvalidIsDeleted;
-                break;
             case GetStickyNoteStatus.NoData:
                 Result.Message = ResponseMessage.NoData;
                 break;

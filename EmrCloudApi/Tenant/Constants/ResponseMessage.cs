@@ -23,6 +23,7 @@
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
         public static readonly string InvalidStartDate = "Invalid startDate";
         public static readonly string InvalidIsDeleted = "Invalid isDeleted";
+        public static readonly string InvalidSeqNo = "Invalid SeqNo";
 
         //Common
         public static readonly string NotFound = "Not found";

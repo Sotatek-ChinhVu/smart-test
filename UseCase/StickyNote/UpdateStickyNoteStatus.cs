@@ -1,6 +1,6 @@
 ﻿namespace UseCase.StickyNote
 {
-    public enum RevertStickyNoteStatus : byte
+    public enum UpdateStickyNoteStatus : byte
     {
         InvalidHpId = 0,
         InvalidPtId = 1,

@@ -2,15 +2,17 @@
 
 namespace UseCase.StickyNote
 {
-    public class GetStickyNoteInputData : IInputData<GetStickyNoteOutputData>
+    public class DeleteStickyNoteInputData : IInputData<DeleteStickyNoteOutputData>
     {
-        public GetStickyNoteInputData(int hpId, int ptId)
+        public DeleteStickyNoteInputData(int hpId, int ptId, int seqNo)
         {
             HpId = hpId;
             PtId = ptId;
+            SeqNo = seqNo;
         }
 
         public int HpId { get; private set; }
         public int PtId { get; private set; }
+        public int SeqNo { get; private set; }
     }
 }

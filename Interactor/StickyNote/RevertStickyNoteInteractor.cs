@@ -15,17 +15,17 @@ namespace Interactor.StickyNote
         public RevertStickyNoteOutputData Handle(RevertStickyNoteInputData inputData)
         {
             if (inputData.HpId <= 0)
-                return new RevertStickyNoteOutputData(false,RevertStickyNoteStatus.InvalidHpId);
+                return new RevertStickyNoteOutputData(false,UpdateStickyNoteStatus.InvalidHpId);
 
             if (inputData.PtId <= 0)
-                return new RevertStickyNoteOutputData(false,RevertStickyNoteStatus.InvalidPtId);
+                return new RevertStickyNoteOutputData(false,UpdateStickyNoteStatus.InvalidPtId);
 
             if (inputData.SeqNo <= 0)
-                return new RevertStickyNoteOutputData(false, RevertStickyNoteStatus.InvalidSeqNo);
+                return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidSeqNo);
 
             var result = _ptTagRepository.UpdateIsDeleted(inputData.HpId, inputData.PtId, inputData.SeqNo,0);
 
-            return new RevertStickyNoteOutputData(result, result ? RevertStickyNoteStatus.Successed : RevertStickyNoteStatus.Failed);
+            return new RevertStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
         }
     }
 }

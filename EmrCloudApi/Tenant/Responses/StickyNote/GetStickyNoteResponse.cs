@@ -11,8 +11,4 @@ namespace EmrCloudApi.Tenant.Responses.StickyNote
 
         public List<StickyNoteModel> StickyNoteModels { get; private set; }
     }
-    public class RevertStickyNoteResponse
-    {
-
-    }
 }

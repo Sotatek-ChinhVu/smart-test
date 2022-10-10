@@ -17,10 +17,7 @@ namespace Interactor.StickyNote
             if(inputData.HpId <= 0)
                 return new GetStickyNoteOutputData(GetStickyNoteStatus.InvalidHpId);
 
-            if (inputData.IsDeleted < 0 || inputData.IsDeleted >2)
-                return new GetStickyNoteOutputData(GetStickyNoteStatus.InvalidIsDeleted);
-
-            var result = _ptTagRepository.SearchByPtId(inputData.HpId,inputData.PtId,inputData.IsDeleted).ToList();
+            var result = _ptTagRepository.SearchByPtId(inputData.HpId,inputData.PtId).ToList();
             if (result == null || !result.Any())
                 return new GetStickyNoteOutputData(GetStickyNoteStatus.NoData);
 
