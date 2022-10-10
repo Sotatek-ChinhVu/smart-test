@@ -1,4 +1,4 @@
-﻿namespace DevExpress.Mode;
+﻿namespace DevExpress.Models;
 
 public class Karte1ByomeiModel
 {

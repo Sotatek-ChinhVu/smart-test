@@ -143,17 +143,17 @@
             this.xrTableCell9 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell11 = new DevExpress.XtraReports.UI.XRTableCell();
             this.xrTableCell10 = new DevExpress.XtraReports.UI.XRTableCell();
+            this.xrShape4 = new DevExpress.XtraReports.UI.XRShape();
+            this.xrShape3 = new DevExpress.XtraReports.UI.XRShape();
+            this.xrShape6 = new DevExpress.XtraReports.UI.XRShape();
+            this.xrShape5 = new DevExpress.XtraReports.UI.XRShape();
+            this.xrLabel46 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrTableCell15 = new DevExpress.XtraReports.UI.XRTableCell();
             this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.ReportHeader = new DevExpress.XtraReports.UI.ReportHeaderBand();
             this.PageHeader = new DevExpress.XtraReports.UI.PageHeaderBand();
             this.xrControlStyle1 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.xrControlStyle2 = new DevExpress.XtraReports.UI.XRControlStyle();
-            this.xrLabel46 = new DevExpress.XtraReports.UI.XRLabel();
-            this.xrShape3 = new DevExpress.XtraReports.UI.XRShape();
-            this.xrShape4 = new DevExpress.XtraReports.UI.XRShape();
-            this.xrShape5 = new DevExpress.XtraReports.UI.XRShape();
-            this.xrShape6 = new DevExpress.XtraReports.UI.XRShape();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
@@ -1879,6 +1879,61 @@
             this.xrTableCell10.StylePriority.UseBorders = false;
             this.xrTableCell10.Weight = 1.8269318039427829D;
             // 
+            // xrShape4
+            // 
+            this.xrShape4.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrShape4.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiSonota] == true")});
+            this.xrShape4.LocationFloat = new DevExpress.Utils.PointFloat(106.5256F, 7.999992F);
+            this.xrShape4.Name = "xrShape4";
+            this.xrShape4.SizeF = new System.Drawing.SizeF(18.41937F, 14.99998F);
+            this.xrShape4.StylePriority.UseBorders = false;
+            // 
+            // xrShape3
+            // 
+            this.xrShape3.Angle = 359;
+            this.xrShape3.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrShape3.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiChusiMaru] == true")});
+            this.xrShape3.LocationFloat = new DevExpress.Utils.PointFloat(78.62714F, 7.999998F);
+            this.xrShape3.Name = "xrShape3";
+            this.xrShape3.SizeF = new System.Drawing.SizeF(17.77615F, 14.99999F);
+            this.xrShape3.StylePriority.UseBorders = false;
+            // 
+            // xrShape6
+            // 
+            this.xrShape6.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrShape6.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiSiboMaru] == true")});
+            this.xrShape6.LocationFloat = new DevExpress.Utils.PointFloat(44.30832F, 7.999994F);
+            this.xrShape6.Name = "xrShape6";
+            this.xrShape6.SizeF = new System.Drawing.SizeF(18.2319F, 14.99998F);
+            this.xrShape6.StylePriority.UseBorders = false;
+            // 
+            // xrShape5
+            // 
+            this.xrShape5.Angle = 336;
+            this.xrShape5.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrShape5.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiTiyuMaru] == True")});
+            this.xrShape5.LocationFloat = new DevExpress.Utils.PointFloat(8.950745F, 7.999997F);
+            this.xrShape5.Name = "xrShape5";
+            this.xrShape5.SizeF = new System.Drawing.SizeF(18.53918F, 14.99998F);
+            this.xrShape5.StylePriority.UseBorders = false;
+            // 
+            // xrLabel46
+            // 
+            this.xrLabel46.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrLabel46.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.xrLabel46.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0.9999806F);
+            this.xrLabel46.Multiline = true;
+            this.xrLabel46.Name = "xrLabel46";
+            this.xrLabel46.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel46.SizeF = new System.Drawing.SizeF(131.9449F, 28.27192F);
+            this.xrLabel46.StylePriority.UseBorders = false;
+            this.xrLabel46.StylePriority.UseFont = false;
+            this.xrLabel46.Text = " 治ゆ・死亡・中⽌・他";
+            // 
             // xrTableCell15
             // 
             this.xrTableCell15.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
@@ -1978,62 +2033,7 @@
             this.xrControlStyle2.Name = "xrControlStyle2";
             this.xrControlStyle2.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             // 
-            // xrLabel46
-            // 
-            this.xrLabel46.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrLabel46.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel46.LocationFloat = new DevExpress.Utils.PointFloat(0F, 0.9999806F);
-            this.xrLabel46.Multiline = true;
-            this.xrLabel46.Name = "xrLabel46";
-            this.xrLabel46.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel46.SizeF = new System.Drawing.SizeF(131.9449F, 28.27192F);
-            this.xrLabel46.StylePriority.UseBorders = false;
-            this.xrLabel46.StylePriority.UseFont = false;
-            this.xrLabel46.Text = " 治ゆ・死亡・中⽌・他";
-            // 
-            // xrShape3
-            // 
-            this.xrShape3.Angle = 359;
-            this.xrShape3.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrShape3.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiChusiMaru] == true")});
-            this.xrShape3.LocationFloat = new DevExpress.Utils.PointFloat(78.62714F, 7.999998F);
-            this.xrShape3.Name = "xrShape3";
-            this.xrShape3.SizeF = new System.Drawing.SizeF(17.77615F, 14.99999F);
-            this.xrShape3.StylePriority.UseBorders = false;
-            // 
-            // xrShape4
-            // 
-            this.xrShape4.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrShape4.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiSonota] == true")});
-            this.xrShape4.LocationFloat = new DevExpress.Utils.PointFloat(106.5256F, 7.999992F);
-            this.xrShape4.Name = "xrShape4";
-            this.xrShape4.SizeF = new System.Drawing.SizeF(18.41937F, 14.99998F);
-            this.xrShape4.StylePriority.UseBorders = false;
-            // 
-            // xrShape5
-            // 
-            this.xrShape5.Angle = 336;
-            this.xrShape5.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrShape5.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiTiyuMaru] == True")});
-            this.xrShape5.LocationFloat = new DevExpress.Utils.PointFloat(8.950745F, 7.999997F);
-            this.xrShape5.Name = "xrShape5";
-            this.xrShape5.SizeF = new System.Drawing.SizeF(18.53918F, 14.99998F);
-            this.xrShape5.StylePriority.UseBorders = false;
-            // 
-            // xrShape6
-            // 
-            this.xrShape6.Borders = DevExpress.XtraPrinting.BorderSide.None;
-            this.xrShape6.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Visible", "[TenkiSiboMaru] == true")});
-            this.xrShape6.LocationFloat = new DevExpress.Utils.PointFloat(44.30832F, 7.999994F);
-            this.xrShape6.Name = "xrShape6";
-            this.xrShape6.SizeF = new System.Drawing.SizeF(18.2319F, 14.99998F);
-            this.xrShape6.StylePriority.UseBorders = false;
-            // 
-            // Karte1Template_page1
+            // Karte1TemplatePage1
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.TopMargin,
@@ -2043,7 +2043,7 @@
             this.PageHeader});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
             this.objectDataSource1});
-            this.DataMember = "ListByomeiModels_p1";
+            this.DataMember = "ListByomeiModelsPage1";
             this.DataSource = this.objectDataSource1;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
             this.Margins = new System.Drawing.Printing.Margins(99, 97, 2, 187);

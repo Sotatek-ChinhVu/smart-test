@@ -1,14 +1,11 @@
-﻿using DevExpress.Export;
-using DevExpress.Interface;
-using DevExpress.Mode;
-using DevExpress.Models;
+﻿using DevExpress.Models;
 using Domain.Constant;
 using Domain.Models.Diseases;
 using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
+using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Helper.Common;
-using Helper.Constants;
-using Infrastructure.Interfaces;
 using UseCase.ExportPDF.ExportKarte1;
 
 namespace Interactor.ExportPDF;
@@ -18,16 +15,12 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
     private readonly IPtDiseaseRepository _diseaseRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
-    private readonly IKarte1Export _karte1Export;
-    private readonly IAmazonS3Service _amazonS3Service;
 
-    public ExportKarte1Interactor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export, IAmazonS3Service amazonS3Service)
+    public ExportKarte1Interactor(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
-        _karte1Export = karte1Export;
-        _amazonS3Service = amazonS3Service;
     }
 
     public ExportKarte1OutputData Handle(ExportKarte1InputData input)
@@ -52,8 +45,76 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             return new ExportKarte1OutputData(ExportKarte1Status.HokenNotFould);
         }
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(input.HpId, input.PtId, input.HokenPid, input.SinDate, input.TenkiByomei);
-        var printoutDateTime = DateTime.UtcNow;
 
+        var listByomeiModelsPage1 = ConvertToListKarte1ByomeiModel(ptByomeis).Item1;
+        var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
+
+        var dataModel = ConvertToKarte1ExportModel(ptInf, hoken, listByomeiModelsPage1, listByomeiModelsPage2);
+        try
+        {
+            var res = _karte1Export.ExportToPdf(dataModel);
+            if (res.Length > 0)
+            {
+                return new ExportKarte1OutputData(Convert.ToBase64String(res.ToArray()), ExportKarte1Status.Success);
+            }
+            return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
+        }
+        catch (Exception)
+        {
+            return new ExportKarte1OutputData(ExportKarte1Status.Failed);
+        }
+    }
+
+    private Tuple<List<Karte1ByomeiModel>, List<Karte1ByomeiModel>> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis)
+    {
+        List<Karte1ByomeiModel> listByomeiModelsPage1 = new();
+        List<Karte1ByomeiModel> listByomeiModelsPage2 = new();
+        int index = 1;
+        if (ptByomeis != null && ptByomeis.Count > 0)
+        {
+            foreach (var byomei in ptByomeis)
+            {
+                string byomeiDisplay = byomei.Byomei;
+                if (byomei.SyubyoKbn == 1)
+                {
+                    byomeiDisplay = "（主）" + byomeiDisplay;
+                }
+                if (byomeiDisplay.Length >= 26 && index <= 12)
+                {
+                    byomeiDisplay = byomeiDisplay.Substring(0, 26);
+                }
+                var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
+                var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
+                var tenkiChusiMaru = byomei.TenkiKbn == TenkiKbnConst.Canceled;
+                var tenkiSiboMaru = byomei.TenkiKbn == TenkiKbnConst.Dead;
+                var tenkiSonota = byomei.TenkiKbn == TenkiKbnConst.Other;
+                var tenkiTiyuMaru = byomei.TenkiKbn == TenkiKbnConst.Cured;
+                var byomeiModel = new Karte1ByomeiModel(
+                                            byomeiDisplay,
+                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
+                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
+                                            tenkiChusiMaru,
+                                            tenkiSiboMaru,
+                                            tenkiSonota,
+                                            tenkiTiyuMaru
+                                        );
+                if (index <= 12)
+                {
+                    listByomeiModelsPage1.Add(byomeiModel);
+                }
+                else
+                {
+                    listByomeiModelsPage2.Add(byomeiModel);
+                }
+                index += 1;
+            }
+        }
+        return Tuple.Create(listByomeiModelsPage1, listByomeiModelsPage2);
+    }
+
+    private Karte1ExportModel ConvertToKarte1ExportModel(PatientInforModel ptInf, InsuranceModel hoken, List<Karte1ByomeiModel> listByomeiModelsPage1, List<Karte1ByomeiModel> listByomeiModelsPage2)
+    {
+        var printoutDateTime = DateTime.UtcNow;
         var ptNum = string.Empty;
         var hokensyaNo = string.Empty;
         var kigoBango = string.Empty;
@@ -151,50 +212,7 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
-        List<Karte1ByomeiModel> listByomeiModels_p1 = new();
-        List<Karte1ByomeiModel> listByomeiModels_p2 = new();
-        int index = 1;
-        if (ptByomeis != null && ptByomeis.Count > 0)
-        {
-            foreach (var byomei in ptByomeis)
-            {
-                string byomeiDisplay = byomei.Byomei;
-                if (byomei.SyubyoKbn == 1)
-                {
-                    byomeiDisplay = "（主）" + byomeiDisplay;
-                }
-                if (byomeiDisplay.Length >= 26 && index <= 12)
-                {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 26);
-                }
-                var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
-                var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
-                var tenkiChusiMaru = byomei.TenkiKbn == TenkiKbnConst.Canceled;
-                var tenkiSiboMaru = byomei.TenkiKbn == TenkiKbnConst.Dead;
-                var tenkiSonota = byomei.TenkiKbn == TenkiKbnConst.Other;
-                var tenkiTiyuMaru = byomei.TenkiKbn == TenkiKbnConst.Cured;
-                var byomeiModel = new Karte1ByomeiModel(
-                                            byomeiDisplay,
-                                            byomeiStartDateWFormat != null ? byomeiStartDateWFormat : string.Empty,
-                                            byomeiTenkiDateWFormat != null ? byomeiTenkiDateWFormat : string.Empty,
-                                            tenkiChusiMaru,
-                                            tenkiSiboMaru,
-                                            tenkiSonota,
-                                            tenkiTiyuMaru
-                                        );
-                if (index <= 12)
-                {
-                    listByomeiModels_p1.Add(byomeiModel);
-                }
-                else
-                {
-                    listByomeiModels_p2.Add(byomeiModel);
-                }
-                index += 1;
-            }
-        }
-
-        var model = new Karte1ExportModel(
+        return new Karte1ExportModel(
                 sysDateTimeS,
                 ptNum,
                 futansyaNo_K1,
@@ -224,22 +242,8 @@ public class ExportKarte1Interactor : IExportKarte1InputPort
                 hokensyaName,
                 futansyaNo_K2,
                 jyukyusyaNo_K2,
-                listByomeiModels_p1,
-                listByomeiModels_p2
+                listByomeiModelsPage1,
+                listByomeiModelsPage2
             );
-
-        try
-        {
-            var res = _karte1Export.ExportToPdf(model);
-            if (res.Length > 0)
-            {
-                return new ExportKarte1OutputData(Convert.ToBase64String(res.ToArray()), ExportKarte1Status.Success);
-            }
-            return new ExportKarte1OutputData(ExportKarte1Status.CanNotExportPdf);
-        }
-        catch (Exception)
-        {
-            return new ExportKarte1OutputData(ExportKarte1Status.Failed);
-        }
     }
 }
