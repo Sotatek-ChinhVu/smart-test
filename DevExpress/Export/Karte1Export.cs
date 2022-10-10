@@ -13,21 +13,21 @@ public class Karte1Export : IKarte1Export
     {
         try
         {
-            var report = new Karte1Template_page1();
+            var report = new Karte1TemplatePage1();
             var dataSource = new ObjectDataSource();
             dataSource.DataSource = data;
 
             report.DataSource = dataSource;
-            report.DataMember = "ListByomeiModels_p1";
+            report.DataMember = "ListByomeiModelsPage1";
 
-            if (data.ListByomeiModels_p2.Count > 0)
+            if (data.ListByomeiModelsPage2.Count > 0)
             {
                 report.CreateDocument();
                 report.ModifyDocument(report =>
                 {
-                    var page2 = new Karte1Template_page2();
+                    var page2 = new Karte1TemplatePage2();
                     page2.DataSource = dataSource;
-                    page2.DataMember = "ListByomeiModels_p2";
+                    page2.DataMember = "ListByomeiModelsPage2";
                     page2.CreateDocument();
                     report.AddPages(page2.Pages);
                 });
@@ -37,14 +37,6 @@ public class Karte1Export : IKarte1Export
             {
                 PdfACompatibility = PdfACompatibility.PdfA1b
             };
-
-            //// Specify the path for the exported PDF file.  
-            //string pdfExportFile =
-            //    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
-            //    @"\Downloads\" +
-            //    data.FileName +
-            //    ".pdf";
-            //report.ExportToPdf(pdfExportFile, pdfExportOptions);
 
             // Export the report.
             MemoryStream stream = new();

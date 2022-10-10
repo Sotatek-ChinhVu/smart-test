@@ -4,7 +4,7 @@ namespace DevExpress.Models;
 
 public class Karte1ExportModel
 {
-    public Karte1ExportModel(string sysDateTimeS, string ptNum, string futansyaNo_K1, string hokensyaNo, string jyukyusyaNo_K1, string kigoBango, string ptKanaName, string ptName, string hokenKigenW, string setainusi, string birthDateW, string age, string sex, string hokenSyutokuW, string ptPostCode, string ptAddress1, string ptAddress2, string officeAddress, string officeTel, string ptTel, string office, string ptRenrakuTel, string hokensyaAddress, string zokugara, string hokensyaTel, string job, string hokensyaName, string futansyaNo_K2, string jyukyusyaNo_K2, List<Karte1ByomeiModel> listByomeiModels_p1, List<Karte1ByomeiModel> listByomeiModels_p2)
+    public Karte1ExportModel(string sysDateTimeS, string ptNum, string futansyaNo_K1, string hokensyaNo, string jyukyusyaNo_K1, string kigoBango, string ptKanaName, string ptName, string hokenKigenW, string setainusi, string birthDateW, string age, string sex, string hokenSyutokuW, string ptPostCode, string ptAddress1, string ptAddress2, string officeAddress, string officeTel, string ptTel, string office, string ptRenrakuTel, string hokensyaAddress, string zokugara, string hokensyaTel, string job, string hokensyaName, string futansyaNo_K2, string jyukyusyaNo_K2, List<Karte1ByomeiModel> listByomeiModelsPage1, List<Karte1ByomeiModel> listByomeiModelsPage2)
     {
         SysDateTimeS = sysDateTimeS;
         PtNum = ptNum;
@@ -35,8 +35,8 @@ public class Karte1ExportModel
         HokensyaName = hokensyaName;
         FutansyaNo_K2 = futansyaNo_K2;
         JyukyusyaNo_K2 = jyukyusyaNo_K2;
-        ListByomeiModels_p1 = listByomeiModels_p1;
-        ListByomeiModels_p2 = listByomeiModels_p2;
+        ListByomeiModelsPage1 = listByomeiModelsPage1;
+        ListByomeiModelsPage2 = listByomeiModelsPage2;
     }
     public Karte1ExportModel()
     {
@@ -69,41 +69,41 @@ public class Karte1ExportModel
         HokensyaName = "hokensyaName";
         FutansyaNo_K2 = "futansyaNo_K2";
         JyukyusyaNo_K2 = "jyukyusyaNo_K2";
-        ListByomeiModels_p1 = new();
-        ListByomeiModels_p2 = new();
+        ListByomeiModelsPage1 = new();
+        ListByomeiModelsPage2 = new();
     }
 
-    public string SysDateTimeS { get; set; }
-    public string PtNum { get; set; }
-    public string FutansyaNo_K1 { get; set; }
-    public string HokensyaNo { get; set; }
-    public string JyukyusyaNo_K1 { get; set; }
-    public string KigoBango { get; set; }
-    public string PtKanaName { get; set; }
-    public string PtName { get; set; }
-    public string HokenKigenW { get; set; }
-    public string Setainusi { get; set; }
-    public string BirthDateW { get; set; }
-    public string Age { get; set; }
-    public string Sex { get; set; }
-    public string HokenSyutokuW { get; set; }
-    public string PtPostCode { get; set; }
-    public string PtAddress1 { get; set; }
-    public string PtAddress2 { get; set; }
-    public string OfficeAddress { get; set; }
-    public string OfficeTel { get; set; }
-    public string PtTel { get; set; }
-    public string Office { get; set; }
-    public string PtRenrakuTel { get; set; }
-    public string HokensyaAddress { get; set; }
-    public string Zokugara { get; set; }
-    public string HokensyaTel { get; set; }
-    public string Job { get; set; }
-    public string HokensyaName { get; set; }
-    public string FutansyaNo_K2 { get; set; }
-    public string JyukyusyaNo_K2 { get; set; }
-    public List<Karte1ByomeiModel> ListByomeiModels_p1 { get; set; }
-    public List<Karte1ByomeiModel> ListByomeiModels_p2 { get; set; }
+    public string SysDateTimeS { get; private set; }
+    public string PtNum { get; private set; }
+    public string FutansyaNo_K1 { get; private set; }
+    public string HokensyaNo { get; private set; }
+    public string JyukyusyaNo_K1 { get; private set; }
+    public string KigoBango { get; private set; }
+    public string PtKanaName { get; private set; }
+    public string PtName { get; private set; }
+    public string HokenKigenW { get; private set; }
+    public string Setainusi { get; private set; }
+    public string BirthDateW { get; private set; }
+    public string Age { get; private set; }
+    public string Sex { get; private set; }
+    public string HokenSyutokuW { get; private set; }
+    public string PtPostCode { get; private set; }
+    public string PtAddress1 { get; private set; }
+    public string PtAddress2 { get; private set; }
+    public string OfficeAddress { get; private set; }
+    public string OfficeTel { get; private set; }
+    public string PtTel { get; private set; }
+    public string Office { get; private set; }
+    public string PtRenrakuTel { get; private set; }
+    public string HokensyaAddress { get; private set; }
+    public string Zokugara { get; private set; }
+    public string HokensyaTel { get; private set; }
+    public string Job { get; private set; }
+    public string HokensyaName { get; private set; }
+    public string FutansyaNo_K2 { get; private set; }
+    public string JyukyusyaNo_K2 { get; private set; }
+    public List<Karte1ByomeiModel> ListByomeiModelsPage1 { get; private set; }
+    public List<Karte1ByomeiModel> ListByomeiModelsPage2 { get; private set; }
 
     public string FileName => PtNum == null ? string.Empty : PtNum + "_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmm");
 }

@@ -1,6 +1,6 @@
 ﻿namespace DevExpress.Template
 {
-    partial class Karte1Template_page2
+    partial class Karte1TemplatePage2
     {
         /// <summary>
         /// Required designer variable.
@@ -414,10 +414,10 @@
             // 
             // objectDataSource1
             // 
-            this.objectDataSource1.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource1.DataSourceType = null;
             this.objectDataSource1.Name = "objectDataSource1";
             // 
-            // Karte1Template_page2
+            // Karte1TemplatePage2
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
             this.Detail,
@@ -425,7 +425,6 @@
             this.BottomMargin});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
             this.objectDataSource1});
-            this.DataMember = "ListByomeiModels_p2";
             this.DataSource = this.objectDataSource1;
             this.Margins = new System.Drawing.Printing.Margins(100, 95, 84, 25);
             this.Version = "22.1";

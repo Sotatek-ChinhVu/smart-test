@@ -1,6 +1,6 @@
 ﻿namespace DevExpress.Template
 {
-    partial class Karte1Template_page1
+    partial class Karte1TemplatePage1
     {
         /// <summary>
         /// Required designer variable.
