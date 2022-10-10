@@ -71,5 +71,8 @@
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
 
+
+        //Drug Infor
+        public const string DrugDataSelectedTree = "DrugDataSelectedTree";
     }
 }
