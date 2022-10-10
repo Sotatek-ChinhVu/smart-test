@@ -129,7 +129,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return Ok(presenter.Result);
         }
 
-        [HttpPost(ApiPath.FindTenMst)]
+        [HttpGet(ApiPath.FindTenMst)]
         public ActionResult<Response<FindtenMstResponse>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
             var input = new FindTenMstInputData(request.HpId, request.SinDate, request.ItemCd);
