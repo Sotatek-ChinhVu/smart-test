@@ -79,7 +79,7 @@ namespace Infrastructure.Repositories
                     if(CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                     {
                         item.IsDeleted = 1;
-                        item.UpdateDate = DateTime.Now;
+                        item.UpdateDate = DateTime.UtcNow;
                         item.UpdateId = TempIdentity.UserId;
                         item.UpdateMachine = TempIdentity.ComputerName;
                     }
@@ -99,13 +99,14 @@ namespace Infrastructure.Repositories
                         SortKey = item.SortKey,
                         RaiinNo = item.RaiinNo,
                         FutanGaku = item.FutanGaku,
+                        KohiId = item.KohiId,
                         TotalGaku = item.TotalGaku,
                         Biko = item.Biko,
                         IsDeleted = 0,
                         CreateDate = DateTime.UtcNow,
                         CreateId = TempIdentity.UserId,
                         CreateMachine = TempIdentity.ComputerName
-                };
+                    };
                     _tenantDataContext.LimitListInfs.Add(create);
                 }
                 else

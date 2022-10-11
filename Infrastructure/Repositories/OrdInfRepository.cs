@@ -11,10 +11,12 @@ namespace Infrastructure.Repositories
 {
     public class OrdInfRepository : IOrdInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
         public OrdInfRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public void Create(OrdInfModel ord)
@@ -29,8 +31,8 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted)
         {
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon)?.ToList();
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
+            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon)?.ToList();
+            var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
 
             var result = ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sinDate, sinDate, userId, false);
             return result;
@@ -38,10 +40,10 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos)
         {
-            var allOdrInf = _tenantDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
+            var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
             var rpNo = allOdrInf?.Select(o => o.RpNo);
             var rpEdNo = allOdrInf?.Select(o => o.RpEdaNo);
-            var allOdrInfDetails = _tenantDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (rpNo != null && rpNo.Contains(o.RpNo)) && (rpEdNo != null && rpEdNo.Contains(o.RpEdaNo)))?.ToList();
+            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (rpNo != null && rpNo.Contains(o.RpNo)) && (rpEdNo != null && rpEdNo.Contains(o.RpEdaNo)))?.ToList();
 
             if (deleteCondition == 0)
             {
@@ -62,24 +64,62 @@ namespace Infrastructure.Repositories
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
 
-        public bool CheckExistOrder(long rpNo, long rpEdaNo)
+        public OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var check = _tenantDataContext.OdrInfs.Any(o => o.RpNo == rpNo && o.RpEdaNo == rpEdaNo);
+
+            var odrInf = _tenantNoTrackingDataContext.OdrInfs.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn == 10 && odr.IsDeleted == 0) ?? new OdrInf();
+
+            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.RpNo == odrInf.RpNo && odrInf.RpEdaNo == o.RpEdaNo)?.ToList();
+
+            var odrInfModel = ConvertToModel(odrInf);
+            var odrInfDetailModels = allOdrInfDetails?.Select(od => ConvertToDetailModel(od)).ToList();
+            odrInfModel.ChangeOdrDetail(odrInfDetailModels ?? new List<OrdInfDetailModel>());
+
+            return odrInfModel;
+        }
+
+        public IEnumerable<OrdInfModel> GetListToCheckValidate(long ptId, int hpId, List<long> raiinNos)
+        {
+            var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo) && odr.IsDeleted == 0)?.ToList();
+
+
+            return allOdrInf?.Select(o => ConvertToModel(o)) ?? new List<OrdInfModel>();
+        }
+
+        public bool CheckExistOrder(int hpId, long ptId, long raiinNo, int sinDate, long rpNo, long rpEdaNo)
+        {
+            var check = _tenantNoTrackingDataContext.OdrInfs.Any(o => o.RpNo == rpNo && o.RpEdaNo == rpEdaNo && o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.IsDeleted == 0);
             return check;
         }
 
         public bool CheckIsGetYakkaPrice(int hpId, TenItemModel tenMst, int sinDate)
         {
             if (tenMst == null) return false;
-            var ipnKasanExclude = _tenantDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            var ipnKasanExclude = _tenantNoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
 
-            var ipnKasanExcludeItem = _tenantDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+            var ipnKasanExcludeItem = _tenantNoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
+        }
+
+        public List<Tuple<string, string, bool>> CheckIsGetYakkaPrices(int hpId, List<TenItemModel> tenMsts, int sinDate)
+        {
+            var result = new List<Tuple<string, string, bool>>();
+            if (!(tenMsts?.Count > 0)) return result;
+            foreach (var tenMst in tenMsts)
+            {
+                var ipnKasanExclude = _tenantNoTrackingDataContext.ipnKasanExcludes.Where(u => u.HpId == hpId && u.IpnNameCd == tenMst.IpnNameCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+                var ipnKasanExcludeItem = _tenantNoTrackingDataContext.ipnKasanExcludeItems.Where(u => u.HpId == hpId && u.ItemCd == tenMst.ItemCd && u.StartDate <= sinDate && u.EndDate >= sinDate).FirstOrDefault();
+
+                result.Add(Tuple.Create(tenMst.IpnNameCd, tenMst.ItemCd, ipnKasanExclude == null && ipnKasanExcludeItem == null));
+            }
+
+            return result;
         }
 
         public IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate)
         {
-            var yakkaMst = _tenantDataContext.IpnMinYakkaMsts.Where(p =>
+            var yakkaMst = _tenantNoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
                   p.HpId == hpId &&
                   p.StartDate <= sinDate &&
                   p.EndDate >= sinDate &&
@@ -103,9 +143,29 @@ namespace Infrastructure.Repositories
             return new IpnMinYakkaMstModel(0, 0, string.Empty, 0, 0, 0, 0, 0);
         }
 
+        public List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds)
+        {
+            var yakkaMsts = _tenantNoTrackingDataContext.IpnMinYakkaMsts.Where(p =>
+               p.HpId == hpId &&
+               p.StartDate <= sinDate &&
+               p.EndDate >= sinDate &&
+               ipnNameCds.Contains(p.IpnNameCd)).ToList();
+
+            return !(yakkaMsts?.Count > 0) ? new List<IpnMinYakkaMstModel>() : yakkaMsts.Select(yakkaMst => new IpnMinYakkaMstModel(
+                    yakkaMst.Id,
+                    yakkaMst.HpId,
+                    yakkaMst.IpnNameCd,
+                    yakkaMst.StartDate,
+                    yakkaMst.EndDate,
+                    yakkaMst.Yakka,
+                    yakkaMst.SeqNo,
+                    yakkaMst.IsDeleted
+                )).ToList();
+        }
+
         public long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var odrList = _tenantDataContext.OdrInfs
+            var odrList = _tenantNoTrackingDataContext.OdrInfs
             .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate);
 
             if (odrList.Any())
@@ -116,13 +176,12 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-
         public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
         {
             if (searchType == 1)
-                return _tenantDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
             else
-                return _tenantDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.RaiinNo ?? -1;
         }
 
         private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId, int sinDateMin, int sinDateMax, int userId, bool isHistory = true)
@@ -137,30 +196,30 @@ namespace Infrastructure.Repositories
             var itemCds = allOdrInfDetails?.Select(od => od.ItemCd ?? string.Empty);
             var ipnCds = allOdrInfDetails?.Select(od => od.IpnCd ?? string.Empty);
             var sinKouiKbns = allOdrInfDetails?.Select(od => od.SinKouiKbn);
-            var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
-            var kensaMsts = _tenantDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
-            var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMax && t.EndDate >= sinDateMax) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
-            var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
-            var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
-            var ipnNameMsts = isHistory ? null : _tenantDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).ToList();
-            var ipnKansanMsts = isHistory ? null : _tenantDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.IsDeleted == 0).ToList();
-            var listYohoSets = isHistory ? null : _tenantDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
+            var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax) && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
+            var kensaMsts = _tenantNoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
+            var yakkas = _tenantNoTrackingDataContext.IpnMinYakkaMsts.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMax && t.EndDate >= sinDateMax) && (ipnCds != null && ipnCds.Contains(t.IpnNameCd))).ToList();
+            var ipnKasanExcludes = _tenantNoTrackingDataContext.ipnKasanExcludes.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
+            var ipnKasanExcludeItems = _tenantNoTrackingDataContext.ipnKasanExcludeItems.Where(t => t.HpId == hpId && (t.StartDate <= sinDateMin && t.EndDate >= sinDateMax)).ToList();
+            var ipnNameMsts = isHistory ? null : _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).ToList();
+            var ipnKansanMsts = isHistory ? null : _tenantNoTrackingDataContext.IpnKasanMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.IsDeleted == 0).ToList();
+            var listYohoSets = isHistory ? null : _tenantNoTrackingDataContext.YohoSetMsts.Where(y => y.HpId == hpId && y.IsDeleted == 0 && y.UserId == userId).ToList();
             var itemCdYohos = isHistory ? null : listYohoSets?.Select(od => od.ItemCd ?? string.Empty);
 
-            var tenMstYohos = isHistory ? null : _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDateMin && t.EndDate >= sinDateMax && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
+            var tenMstYohos = isHistory ? null : _tenantNoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.IsNosearch == 0 && t.StartDate <= sinDateMin && t.EndDate >= sinDateMax && (sinKouiKbns != null && sinKouiKbns.Contains(t.SinKouiKbn)) && (itemCdYohos != null && itemCdYohos.Contains(t.ItemCd))).ToList();
 
-            var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
+            var checkKensaIrai = _tenantNoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 0);
             var kensaIrai = checkKensaIrai?.Val ?? 0;
-            var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
+            var checkKensaIraiCondition = _tenantNoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
             var odrInfs = from odrInf in allOdrInf
-                          join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId)
+                          join user in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
                           on odrInf.CreateId equals user.UserId into odrUsers
                           from odrUser in odrUsers.DefaultIfEmpty()
                           select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
 
-            foreach (var rpOdrInf in odrInfs)
+            Parallel.ForEach(odrInfs, rpOdrInf =>
             {
                 var odrDetailModels = new List<OrdInfDetailModel>();
 
@@ -172,8 +231,9 @@ namespace Infrastructure.Repositories
                     int count = 0;
                     var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
 
-                    foreach (var odrInfDetail in odrInfDetails)
+                    Parallel.ForEach(odrInfDetails, odrInfDetail =>
                     {
+
                         var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd);
                         var ten = tenMst?.Ten ?? 0;
                         if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd)) odrInfDetail.IpnCd = tenMst.IpnNameCd;
@@ -200,17 +260,17 @@ namespace Infrastructure.Repositories
                         var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0);
                         odrDetailModels.Add(odrInfDetailModel);
                         count++;
-                    }
+                    });
+                    rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
+                    result.Add(rpOdrInf);
                 }
-                rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
-                result.Add(rpOdrInf);
-            }
+            });
 
             return result;
         }
 
 
-        private OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -238,7 +298,7 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka, double ten, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int alternationIndex, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0)
         {
             return new OrdInfDetailModel(
                             ordInfDetail.HpId,
@@ -288,13 +348,13 @@ namespace Infrastructure.Repositories
                             odrTermVal,
                             cnvTermVal,
                             yjCd,
-                            yohoSets,
+                            yohoSets ?? new List<YohoSetMstModel>(),
                             kasan1,
                             kasan2
                 );
         }
 
-        private bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
+        private static bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
         {
             if (tenMst == null) return false;
 
@@ -305,7 +365,7 @@ namespace Infrastructure.Repositories
             return ipnKasanExclude == null && ipnKasanExcludeItem == null;
         }
 
-        private int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
+        private static int GetKensaGaichu(OdrInfDetail? odrInfDetail, TenMst? tenMst, int inOutKbn, int odrKouiKbn, KensaMst? kensaMst, int kensaIraiCondition, int kensaIrai)
         {
             if (string.IsNullOrEmpty(odrInfDetail?.ItemCd) &&
                    string.IsNullOrEmpty(odrInfDetail?.ItemName?.Trim()) &&
@@ -364,7 +424,7 @@ namespace Infrastructure.Repositories
             return KensaGaichuTextConst.NONE;
         }
 
-        private List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
+        private static List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
             var query = from yoho in listYohoSetMst
                         join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
@@ -372,7 +432,7 @@ namespace Infrastructure.Repositories
                         {
                             Yoho = yoho,
                             ItemName = ten.Name,
-                            YohoKbn = ten.YohoKbn
+                            ten.YohoKbn
                         };
 
             return query.OrderBy(u => u.Yoho.SortNo).AsEnumerable().Select(u => new YohoSetMstModel(u.ItemName, u.YohoKbn, u.Yoho?.SetId ?? 0, u.Yoho?.UserId ?? 0, u.Yoho?.ItemCd ?? string.Empty)).ToList();
@@ -380,7 +440,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos)
         {
-            var result = _tenantDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
+            var result = _tenantNoTrackingDataContext.ApprovalInfs.Where(a => a.HpId == hpId && a.PtId == ptId && (isDeleted || a.IsDeleted == 0) && raiinNos.Contains(a.RaiinNo));
             return result.Select(
                     r => new ApproveInfModel(
                             r.Id,
@@ -400,7 +460,7 @@ namespace Infrastructure.Repositories
             string result = string.Empty;
             string info = string.Empty;
 
-            string docName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
+            string docName = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == updateId)?.Sname ?? string.Empty;
             if (!string.IsNullOrEmpty(docName))
             {
                 info += docName;

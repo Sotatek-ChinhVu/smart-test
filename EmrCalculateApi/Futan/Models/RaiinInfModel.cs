@@ -62,7 +62,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string SinStartTime
         {
-            get { return RaiinInf.SinStartTime; }
+            get { return RaiinInf.SinStartTime ?? string.Empty; }
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿using Domain.Models.KaMst;
+﻿using Domain.Models.Ka;
 using Domain.Models.PtCmtInf;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.Reception;
@@ -15,14 +15,14 @@ public class UpdateReceptionStaticCellInteractor : IUpdateReceptionStaticCellInp
     private readonly IRaiinCmtInfRepository _raiinCmtInfRepository;
     private readonly IUserRepository _userRepository;
     private readonly IUketukeSbtMstRepository _uketukeSbtMstRepository;
-    private readonly IKaMstRepository _kaMstRepository;
+    private readonly IKaRepository _kaMstRepository;
     private readonly IPtCmtInfRepository _ptCmtInfRepository;
 
     public UpdateReceptionStaticCellInteractor(IReceptionRepository receptionRepository,
         IRaiinCmtInfRepository raiinCmtInfRepository,
         IUserRepository userRepository,
         IUketukeSbtMstRepository uketukeSbtMstRepository,
-        IKaMstRepository kaMstRepository,
+        IKaRepository kaMstRepository,
         IPtCmtInfRepository ptCmtInfRepository)
     {
         _receptionRepository = receptionRepository;

@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// リッチテキスト
         /// </summary>
         [Column("RTEXT")]
-        public byte[] Rtext { get; set; } = default!;
+        public byte[]? Rtext { get; set; } = default!;
 
         /// <summary>
         /// 作成日時

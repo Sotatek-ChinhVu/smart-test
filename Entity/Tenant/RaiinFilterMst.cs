@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// フィルター名称
         /// </summary>
         [Column("FILTER_NAME")]
-        public string FilterName { get; set; } = string.Empty;
+        public string? FilterName { get; set; } = string.Empty;
 
         /// <summary>
         /// 選択区分
@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SHORTCUT")]
         [MaxLength(10)]
-        public string Shortcut { get; set; } = string.Empty;
+        public string? Shortcut { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時

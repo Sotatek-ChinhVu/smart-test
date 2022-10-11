@@ -3,6 +3,6 @@
     public enum ValidationOrdInfListStatus : byte
     {
         Successed = 1,
-        Faild = 2
+        Failed = 2
     }
 }

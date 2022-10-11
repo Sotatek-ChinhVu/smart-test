@@ -8,11 +8,23 @@ namespace Helper.Common
     {
         //Calculate age from yyyymmdd format
         private const int HEISEI_START_YEAR = 1989;
-
         private const int SHOWA_START_YEAR = 1926;
         private const int TAISHO_START_YEAR = 1912;
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
+
+        public static string ToHalfsize(string value)
+        {
+            if (value == null)
+            {
+                return string.Empty;
+            }
+
+            string kanaString = RomajiString.Instance.RomajiToKana(value);
+            string fullToHalf = HalfsizeString.Instance.ToHalfsize(kanaString);
+
+            return fullToHalf;
+        }
 
         // Format for param: yyyymmdd
         public static DateTime IntToDate(int iDateTime)
@@ -40,6 +52,12 @@ namespace Helper.Common
             {
                 return null;
             }
+        }
+
+        //日付チェック(西暦yyyymmdd)
+        public static bool CheckSDate(string input)
+        {
+            return DateTime.TryParseExact(input, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dateTimeResult);
         }
 
         /// <summary>
@@ -1277,6 +1295,35 @@ namespace Helper.Common
             return sTime;
         }
 
+        public static bool HokenNumberCheckDigits(int hokenNumber)
+        {
+            int WHokenNumber = hokenNumber / 10;
+            return hokenNumber == PtIDChkDgtMakeM10W21(WHokenNumber);
+        }
+
+        public static int PtIDChkDgtMakeM10W21(int PtID)
+        {
+            int digit = 0;
+            string ptStr = PtID.ToString("D7");
+            int wWait = 2;
+
+            for (int i = 0; i <= ptStr.Length - 1; i++)
+            {
+                int sumOf2Digits = (ptStr[i] - '0') * wWait;
+                sumOf2Digits = sumOf2Digits % 10 + sumOf2Digits / 10;
+                digit = digit + sumOf2Digits;
+                if (wWait == 2)
+                    wWait = 1;
+                else
+                    wWait = 2;
+            }
+
+            digit = digit % 10;
+            if (digit != 0)
+                digit = 10 - digit;
+
+            return (PtID * 10 + digit);
+        }
     }
 
     public enum WarekiFormat
@@ -1298,5 +1345,4 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
-
 }

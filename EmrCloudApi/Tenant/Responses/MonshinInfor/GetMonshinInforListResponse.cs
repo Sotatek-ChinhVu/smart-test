@@ -8,6 +8,7 @@ namespace EmrCloudApi.Tenant.Responses.MonshinInfor
         {
             MonshinInforModels = monshinInforModels;
         }
+        
         public List<MonshinInforModel> MonshinInforModels { get; private set; }
     }
 }

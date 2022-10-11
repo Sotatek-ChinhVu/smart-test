@@ -27,5 +27,7 @@
         public bool IsMirai { get; set; } = false;
 
         public bool IsExpired { get; set; } = false;
+
+        public string ItemCodeStartWith { get; set; } = string.Empty;
     }
 }
