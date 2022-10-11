@@ -196,6 +196,7 @@ using Interactor.DrugDetailData;
 using UseCase.StickyNote;
 using Domain.Models.PtTag;
 using Interactor.StickyNote;
+using UseCase.RaiinKubunMst.Save;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -347,7 +348,7 @@ namespace EmrCloudApi.Configs.Dependency
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
             busBuilder.RegisterUseCase<LoadDataKubunSettingInputData, LoadDataKubunSettingInteractor>();
-
+            busBuilder.RegisterUseCase<SaveDataKubunSettingInputData, SaveDataKubunSettingInteractor>();
 
             //Calculation Inf
             busBuilder.RegisterUseCase<CalculationInfInputData, CalculationInfInteractor>();
