@@ -2,7 +2,7 @@
 {
     public class RaiinKbnKouiModel
     {
-        public RaiinKbnKouiModel(int hpId,int grpId, int kbnCd, int seqNo, int kouiKbnId, int isDeleted)
+        public RaiinKbnKouiModel(int hpId, int grpId, int kbnCd, int seqNo, int kouiKbnId, int isDeleted)
         {
             HpId = hpId;
             GrpId = grpId;
@@ -12,6 +12,7 @@
             IsDeleted = isDeleted;
         }
         public int HpId { get; private set; }
+
         public int GrpId { get; private set; }
 
         public int KbnCd { get; private set; }
