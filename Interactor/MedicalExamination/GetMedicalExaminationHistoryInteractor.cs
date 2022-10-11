@@ -433,7 +433,7 @@ namespace Interactor.MedicalExamination
                                                                     rpOdrInf.SortNo,
                                                                     rpOdrInf.Id,
                                                                     rpOdrInf.GroupKoui.Value,
-                                                                    rpOdrInf.OrdInfDetails.Select(od =>
+                                                                    rpOdrInf.OrdInfDetails.OrderBy(o=>o.RowNo).Select(od =>
                                                                         new OdrInfDetailItem(
                                                                             od.HpId,
                                                                             od.RaiinNo,
@@ -494,7 +494,7 @@ namespace Interactor.MedicalExamination
                                     group.OdrInfs.Add(odrModel);
                                 }
                             });
-                   
+                       
                             hokenGrp.GroupOdrItems.Add(group);
                         }
                     });
