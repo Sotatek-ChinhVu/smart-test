@@ -1,6 +1,4 @@
 ﻿using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor;
 
 namespace Domain.Models.PatientInfor
 {

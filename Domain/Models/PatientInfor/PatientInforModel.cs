@@ -140,53 +140,52 @@
             Comment = string.Empty;
         }
 
-            public PatientInforModel(int hpId, long ptId, long ptNum, string name)
-            {
-                HpId = hpId;
-                PtId = ptId;
-                ReferenceNo = 0;
-                SeqNo = 0;
-                PtNum = ptNum;
-                KanaName = string.Empty;
-                Name = name;
-                Sex = 0;
-                Birthday = 0;
-                LimitConsFlg = 0;
-                IsDead = 0;
-                DeathDate = 0;
-                HomePost = string.Empty;
-                HomeAddress1 = string.Empty;
-                HomeAddress2 = string.Empty;
-                Tel1 = string.Empty;
-                Tel2 = string.Empty;
-                Mail = string.Empty;
-                Setanusi = string.Empty;
-                Zokugara = string.Empty;
-                Job = string.Empty;
-                RenrakuName = string.Empty;
-                RenrakuPost = string.Empty;
-                RenrakuAddress1 = string.Empty;
-                RenrakuAddress2 = string.Empty;
-                RenrakuTel = string.Empty;
-                RenrakuMemo = string.Empty;
-                OfficeName = string.Empty;
-                OfficePost = string.Empty;
-                OfficeAddress1 = string.Empty;
-                OfficeAddress2 = string.Empty;
-                OfficeTel = string.Empty;
-                OfficeMemo = string.Empty;
-                IsRyosyoDetail = 0;
-                PrimaryDoctor = 0;
-                IsTester = 0;
-                MainHokenPid = 0;
-                Memo = string.Empty;
-                LastVisitDate = 0;
-                FirstVisitDate = 0;
-                RainCount = string.Empty;
-                Comment = string.Empty;
-            }
+        public PatientInforModel(int hpId, long ptId, long ptNum, string name)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            ReferenceNo = 0;
+            SeqNo = 0;
+            PtNum = ptNum;
+            KanaName = string.Empty;
+            Name = name;
+            Sex = 0;
+            Birthday = 0;
+            LimitConsFlg = 0;
+            IsDead = 0;
+            DeathDate = 0;
+            HomePost = string.Empty;
+            HomeAddress1 = string.Empty;
+            HomeAddress2 = string.Empty;
+            Tel1 = string.Empty;
+            Tel2 = string.Empty;
+            Mail = string.Empty;
+            Setanusi = string.Empty;
+            Zokugara = string.Empty;
+            Job = string.Empty;
+            RenrakuName = string.Empty;
+            RenrakuPost = string.Empty;
+            RenrakuAddress1 = string.Empty;
+            RenrakuAddress2 = string.Empty;
+            RenrakuTel = string.Empty;
+            RenrakuMemo = string.Empty;
+            OfficeName = string.Empty;
+            OfficePost = string.Empty;
+            OfficeAddress1 = string.Empty;
+            OfficeAddress2 = string.Empty;
+            OfficeTel = string.Empty;
+            OfficeMemo = string.Empty;
+            IsRyosyoDetail = 0;
+            PrimaryDoctor = 0;
+            IsTester = 0;
+            MainHokenPid = 0;
+            Memo = string.Empty;
+            LastVisitDate = 0;
+            FirstVisitDate = 0;
+            RainCount = string.Empty;
+            Comment = string.Empty;
+        }
 
-            public int LastVisitDate { get; private set; }
         public int LastVisitDate { get; private set; }
 
         public int HpId { get; private set; }
