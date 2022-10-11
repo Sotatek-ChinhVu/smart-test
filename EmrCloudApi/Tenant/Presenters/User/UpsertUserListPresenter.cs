@@ -24,6 +24,23 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.Failed => ResponseMessage.Failed,
             UpsertUserListStatus.DuplicateId => ResponseMessage.DuplicateId,
             UpsertUserListStatus.ExistedId => ResponseMessage.ExistedId,
+            UpsertUserListStatus.UserListInputNoData => ResponseMessage.UserListInputNoData,
+            UpsertUserListStatus.UserListInvalidId => ResponseMessage.UserListInvalidId,
+            UpsertUserListStatus.UserListInvalidUserId => ResponseMessage.UserListInvalidUserId,
+            UpsertUserListStatus.UserListInvalidJobCd => ResponseMessage.UserListInvalidJobCd,
+            UpsertUserListStatus.UserListInvalidManagerKbn => ResponseMessage.UserListInvalidManagerKbn,
+            UpsertUserListStatus.UserListInvalidkaId => ResponseMessage.UserListInvalidkaId,
+            UpsertUserListStatus.UserListInvalidKanaName => ResponseMessage.UserListInvalidKanaName,
+            UpsertUserListStatus.UserListInvalidName => ResponseMessage.UserListInvalidName,
+            UpsertUserListStatus.UserListInvalidSname => ResponseMessage.UserListInvalidSname,
+            UpsertUserListStatus.UserListInvalidLoginId => ResponseMessage.UserListInvalidLoginId,
+            UpsertUserListStatus.UserListInvalidLoginPass => ResponseMessage.UserListInvalidLoginPass,
+            UpsertUserListStatus.UserListInvalidStartDate => ResponseMessage.UserListInvalidStartDate,
+            UpsertUserListStatus.UserListInvalidEndDate => ResponseMessage.UserListInvalidEndDate,
+            UpsertUserListStatus.UserListInvalidSortNo => ResponseMessage.UserListInvalidSortNo,
+            UpsertUserListStatus.UserListInvalidIsDeleted => ResponseMessage.UserListInvalidIsDeleted,
+            UpsertUserListStatus.UserListInvalidRenkeiCd1 => ResponseMessage.UserListInvalidRenkeiCd1,
+            UpsertUserListStatus.UserListInvalidDrName => ResponseMessage.UserListInvalidDrName,
             _ => string.Empty
         };
     }

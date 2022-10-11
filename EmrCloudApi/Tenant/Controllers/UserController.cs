@@ -51,7 +51,6 @@ public class UserController : ControllerBase
     public ActionResult<Response<UpsertUserResponse>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
         var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u)).ToList();
-
         var input = new UpsertUserListInputData(upsertUserList);
         var output = _bus.Handle(input);
         var presenter = new UpsertUserListPresenter();

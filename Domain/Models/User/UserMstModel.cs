@@ -1,4 +1,9 @@
-﻿namespace Domain.Models.User
+﻿using Domain.Constant;
+using Helper.Common;
+using Helper.Constants;
+using static Helper.Constants.UserConst;
+
+namespace Domain.Models.User
 {
     public class UserMstModel
     {
@@ -43,6 +48,64 @@
         public int IsDeleted { get; private set; }
         public string RenkeiCd1 { get; private set; }
         public string DrName { get; private set; }
+        public int HpId { get; private set; }
 
+        public ValidationStatus Validation()
+        {
+            #region common
+            if (Id < 0)
+            {
+                return ValidationStatus.InvalidId;
+            }
+            if (HpId <= 0)
+            {
+                return ValidationStatus.InvalidHpId;
+            }
+
+            if (UserId <= 0)
+            {
+                return ValidationStatus.InvalidUserId;
+            }
+
+            if (JobCd <= 0)
+            {
+                return ValidationStatus.InvalidJobCd;
+            }
+
+            if (ManagerKbn != 0 && ManagerKbn != 7 && ManagerKbn != 9)
+            {
+                return ValidationStatus.InvalidManagerKbn;
+            }
+
+            if (KanaName.Length >40)
+            {
+                return ValidationStatus.InvalidKanaName;
+            }
+
+            if (Name.Length >40)
+            {
+                return ValidationStatus.InvalidManagerKbn;
+            }
+
+            if (SortNo <= 0)
+            {
+                return ValidationStatus.InvalidSortNo;
+            }
+            if (StartDate < 0)
+            {
+                return ValidationStatus.InvalidStartDate;
+            }
+            if (EndDate < 0)
+            {
+                return ValidationStatus.InvalidEndDate;
+            }
+            if (IsDeleted != 0 && IsDeleted != 1)
+            {
+                return ValidationStatus.InvalidIsDeleted;
+            }
+            #endregion
+
+            return ValidationStatus.Valid;
+        }
     }
 }

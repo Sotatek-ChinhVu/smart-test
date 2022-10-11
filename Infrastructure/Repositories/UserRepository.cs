@@ -113,7 +113,7 @@ namespace Infrastructure.Repositories
                     var userMsts = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
-                        var updateUser = ConVertUserList(inputData);
+                        var updateUser = ConvertUserList(inputData);
                         updateUser.UpdateId = TempIdentity.UserId;
                         updateUser.UpdateDate = DateTime.UtcNow;
                         updateUser.UpdateMachine = TempIdentity.ComputerName;
@@ -121,7 +121,7 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        _tenantTrackingDataContext.UserMsts.Add(ConVertUserList(inputData));
+                        _tenantTrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
                     }
                 }
             }
@@ -149,7 +149,7 @@ namespace Infrastructure.Repositories
                 u.RenkeiCd1 ?? string.Empty,
                 u.IsDeleted);
         }
-        private static UserMst ConVertUserList(UserMstModel u)
+        private static UserMst ConvertUserList(UserMstModel u)
         {
             return new UserMst{
                 Id = u.Id,
@@ -157,17 +157,17 @@ namespace Infrastructure.Repositories
                 JobCd = u.JobCd,
                 ManagerKbn = u.ManagerKbn,
                 KaId = u.KaId,
-                KanaName = u.KanaName ?? String.Empty,
-                Name = u.Name ?? String.Empty,
-                Sname = u.Sname ?? String.Empty,
-                DrName = u.DrName ?? String.Empty,
-                LoginId = u.LoginId ?? String.Empty,
-                LoginPass = u.LoginPass ?? String.Empty,
-                MayakuLicenseNo = u.MayakuLicenseNo ?? String.Empty,
+                KanaName = u.KanaName ?? string.Empty,
+                Name = u.Name ?? string.Empty,
+                Sname = u.Sname ?? string.Empty,
+                DrName = u.DrName ?? string.Empty,
+                LoginId = u.LoginId ?? string.Empty,
+                LoginPass = u.LoginPass ?? string.Empty,
+                MayakuLicenseNo = u.MayakuLicenseNo ?? string.Empty,
                 StartDate = u.StartDate,
                 EndDate = u.EndDate,
                 SortNo = u.SortNo,
-                RenkeiCd1 = u.RenkeiCd1 ?? String.Empty,
+                RenkeiCd1 = u.RenkeiCd1 ?? string.Empty,
                 IsDeleted = u.IsDeleted,
             };
                 

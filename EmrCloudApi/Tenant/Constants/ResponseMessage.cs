@@ -88,6 +88,27 @@
         public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
+        //User controller
+        public static readonly string UserListInputNoData = "UserListInputNoData";
+        public static readonly string UserListInvalidId = "UserListInvalidId";
+        public static readonly string UserListInvalidUserId = "UserListInvalidUserId";
+        public static readonly string UserListInvalidJobCd = "UserListInvalidJobCd";
+        public static readonly string UserListInvalidManagerKbn = "UserListInvalidManagerKbn";
+        public static readonly string UserListInvalidkaId = "UserListInvalidkaId"; 
+        public static readonly string UserListInvalidKanaName = "UserListInvalidKanaName";
+        public static readonly string UserListInvalidName = "UserListInvalidName";
+        public static readonly string UserListInvalidSname = "UserListInvalidSname";
+        public static readonly string UserListInvalidLoginId = "UserListInvalidLoginId";
+        public static readonly string UserListInvalidLoginPass = "UserListInvalidLoginPass";
+        public static readonly string UserListInvalidStartDate = "UserListInvalidStartDate";
+        public static readonly string UserListInvalidEndDate = "UserListInvalidEndDate";
+        public static readonly string UserListInvalidSortNo = "UserListInvalidSortNo";
+        public static readonly string UserListInvalidIsDeleted = "UserListInvalidIsDeleted";
+        public static readonly string UserListInvalidRenkeiCd1 = "UserListInvalidRenkeiCd1";
+        public static readonly string UserListInvalidDrName = "UserListInvalidDrName";
+        public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
+
+
         //Insurance
         // Validate Main Insurance
         public static readonly string InvalidPtBirthday = "Invalid PtBirthday";
