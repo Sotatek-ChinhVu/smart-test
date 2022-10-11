@@ -30,6 +30,31 @@ namespace Domain.Models.PtTag
             Top = top;
         }
 
+        public StickyNoteModel()
+        {
+
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            Memo = String.Empty;
+            MemoData = Array.Empty<byte>();
+            StartDate = 0;
+            EndDate = 0;
+            IsDspUketuke = 0;
+            IsDspKarte = 0;
+            IsDspKaikei = 0;
+            IsDspRece = 0;
+            BackgroundColor = String.Empty;
+            TagGrpCd = 0;
+            AlphablendVal = 0;
+            FontSize = 0;
+            IsDeleted = 0;
+            Width = 0;
+            Height = 0;
+            Left = 0;
+            Top = 0;
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }

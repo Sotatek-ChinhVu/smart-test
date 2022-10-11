@@ -2,12 +2,8 @@
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories;
 
@@ -54,5 +50,83 @@ public class PtTagRepository : IPtTagRepository
         {
             return false;
         }
+    }
+    public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels)
+    {
+        var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
+
+        var result = executionStrategy.Execute(
+                () =>
+                {
+                    // execute your logic here
+                    using (var transaction = _tenantDataContextTracking.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var ptTags = stickyNoteModels.Select(x => new PtTag()
+                            {
+                                HpId = x.HpId,
+                                PtId = x.PtId,
+                                SeqNo = x.SeqNo,
+                                Memo = x.Memo,
+                                MemoData = x.MemoData,
+                                StartDate = x.StartDate,
+                                EndDate = x.EndDate,
+                                IsDspUketuke = x.IsDspUketuke,
+                                IsDspKarte = x.IsDspKarte,
+                                IsDspKaikei = x.IsDspKaikei,
+                                IsDspRece = x.IsDspRece,
+                                BackgroundColor = x.BackgroundColor,
+                                TagGrpCd = x.TagGrpCd,
+                                AlphablendVal = x.AlphablendVal,
+                                FontSize = x.FontSize,
+                                IsDeleted = x.IsDeleted,
+                                Width = x.Width,
+                                Height = x.Height,
+                                Left = x.Left,
+                                Top = x.Top,
+                            }).ToList();
+
+                            var updateList = ptTags.Where(x => x.SeqNo != 0).ToList();
+                            var addList = ptTags.Where(x => x.SeqNo == 0).ToList();
+
+                            updateList.ForEach(ptTag =>
+                            {
+                                ptTag.UpdateDate = DateTime.UtcNow;
+                                ptTag.UpdateId = TempIdentity.UserId;
+                                ptTag.UpdateMachine = TempIdentity.ComputerName;
+                                ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
+
+                            });
+
+                            addList.ForEach(ptTag =>
+                            {
+                                ptTag.CreateDate = DateTime.UtcNow;
+                                ptTag.CreateId = TempIdentity.UserId;
+                                ptTag.CreateMachine = TempIdentity.ComputerName;
+                            });
+
+                            _tenantDataContextTracking.PtTag.UpdateRange(updateList);
+                            _tenantDataContextTracking.PtTag.AddRange(addList);
+                            _tenantDataContextTracking.SaveChanges();
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception)
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+                    }
+                });
+        return result;
+    }
+
+    public StickyNoteModel GetStickyNoteModel(int hpId, long ptId, long seqNo)
+    {
+        var result = _tenantDataContextNoTracking.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo)
+                                                .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.MemoData ?? Array.Empty<byte>(), x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
+                                                .FirstOrDefault();
+        return result ?? new StickyNoteModel();
     }
 }

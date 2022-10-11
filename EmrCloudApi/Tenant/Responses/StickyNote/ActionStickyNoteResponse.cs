@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Tenant.Responses.StickyNote
 {
-    public class DeleteRevertStickyNoteResponse
+    public class ActionStickyNoteResponse
     {
-        public DeleteRevertStickyNoteResponse(bool successed)
+        public ActionStickyNoteResponse(bool successed)
         {
             Successed = successed;
         }

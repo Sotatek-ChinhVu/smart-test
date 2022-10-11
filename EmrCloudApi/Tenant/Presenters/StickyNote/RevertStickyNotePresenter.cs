@@ -5,13 +5,13 @@ using EmrCloudApi.Tenant.Responses.StickyNote;
 
 public class RevertStickyNotePresenter : IRevertStickyNoteOutputPort
 {
-    public Response<DeleteRevertStickyNoteResponse> Result { get; private set; } = default!;
+    public Response<ActionStickyNoteResponse> Result { get; private set; } = default!;
 
     public void Complete(RevertStickyNoteOutputData outputData)
     {
-        Result = new Response<DeleteRevertStickyNoteResponse>()
+        Result = new Response<ActionStickyNoteResponse>()
         {
-            Data = new DeleteRevertStickyNoteResponse(outputData.Successed),
+            Data = new ActionStickyNoteResponse(outputData.Successed),
             Status = (byte)outputData.Status
         };
         switch (outputData.Status)
@@ -30,8 +30,9 @@ public class RevertStickyNotePresenter : IRevertStickyNoteOutputPort
                 break;
             case UpdateStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
-                Result.Data = new DeleteRevertStickyNoteResponse(outputData.Successed);
+                Result.Data = new ActionStickyNoteResponse(outputData.Successed);
                 break;
         }
     }
 }
+        

@@ -3,11 +3,11 @@ using EmrCloudApi.Tenant.Responses;
 using UseCase.StickyNote;
 using EmrCloudApi.Tenant.Responses.StickyNote;
 
-public class DeleteStickyNotePresenter : IDeleteStickyNoteOutputPort
+public class SaveStickyNotePresenter : ISaveStickyNoteOutputPort
 {
     public Response<ActionStickyNoteResponse> Result { get; private set; } = default!;
 
-    public void Complete(DeleteStickyNoteOutputData outputData)
+    public void Complete(SaveStickyNoteOutputData outputData)
     {
         Result = new Response<ActionStickyNoteResponse>()
         {
@@ -28,6 +28,18 @@ public class DeleteStickyNotePresenter : IDeleteStickyNoteOutputPort
             case UpdateStickyNoteStatus.Failed:
                 Result.Message = ResponseMessage.Failed;
                 break;
+            case UpdateStickyNoteStatus.InvalidDate:
+                Result.Message = ResponseMessage.InvalidDate;
+                break;
+            case UpdateStickyNoteStatus.InvalidColor:
+                Result.Message = ResponseMessage.InvalidColor;
+                break;
+            case UpdateStickyNoteStatus.InvalidMemo:
+                Result.Message = ResponseMessage.InvalidMemo;
+                break;
+            case UpdateStickyNoteStatus.InvalidValue:
+                Result.Message = ResponseMessage.InvalidValue;
+                break;
             case UpdateStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
                 Result.Data = new ActionStickyNoteResponse(outputData.Successed);
@@ -35,3 +47,4 @@ public class DeleteStickyNotePresenter : IDeleteStickyNoteOutputPort
         }
     }
 }
+        

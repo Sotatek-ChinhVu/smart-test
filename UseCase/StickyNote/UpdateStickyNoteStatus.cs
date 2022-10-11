@@ -5,7 +5,11 @@
         InvalidHpId = 0,
         InvalidPtId = 1,
         InvalidSeqNo = 2,
-        Successed = 3,
-        Failed = 4,
+        InvalidDate = 3,
+        InvalidColor = 4,
+        InvalidValue = 5,
+        Successed = 6,
+        Failed = 7,
+        InvalidMemo = 8
     }
 }

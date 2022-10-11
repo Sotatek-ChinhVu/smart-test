@@ -33,8 +33,8 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<GetStickyNoteResponse>>(presenter.Result);
         }
-        [HttpGet(ApiPath.Revert)]
-        public ActionResult<Response<DeleteRevertStickyNoteResponse>> Revert([FromQuery] DeleteRevertStickyNoteRequest request)
+        [HttpPost(ApiPath.Revert)]
+        public ActionResult<Response<ActionStickyNoteResponse>> Revert([FromQuery] DeleteRevertStickyNoteRequest request)
         {
             var input = new RevertStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
             var output = _bus.Handle(input);
@@ -42,10 +42,10 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new RevertStickyNotePresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<DeleteRevertStickyNoteResponse>>(presenter.Result);
+            return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
-        [HttpGet(ApiPath.Delete)]
-        public ActionResult<Response<DeleteRevertStickyNoteResponse>> Delete([FromQuery] DeleteRevertStickyNoteRequest request)
+        [HttpPost(ApiPath.Delete)]
+        public ActionResult<Response<ActionStickyNoteResponse>> Delete([FromQuery] DeleteRevertStickyNoteRequest request)
         {
             var input = new DeleteStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
             var output = _bus.Handle(input);
@@ -53,7 +53,18 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new DeleteStickyNotePresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<DeleteRevertStickyNoteResponse>>(presenter.Result);
+            return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.Save)]
+        public ActionResult<Response<ActionStickyNoteResponse>> Save([FromBody] SaveStickyNoteRequest request)
+        {
+            var input = new SaveStickyNoteInputData(request.stickyNoteModels.Select(x=> x.Map()).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveStickyNotePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
     }
 }
