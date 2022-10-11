@@ -23,6 +23,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
 using Domain.Models.PtKyuseiInf;
+using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
@@ -91,6 +92,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
+using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
 using Interactor.SystemConf;
 using Interactor.UketukeSbtMst;
@@ -184,6 +186,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
+using UseCase.StickyNote;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SystemConf;
@@ -196,11 +199,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.DrugDetailData;
-using Interactor.DrugDetailData;
-using UseCase.StickyNote;
-using Domain.Models.PtTag;
-using Interactor.StickyNote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
