@@ -7,7 +7,6 @@ using Domain.Models.OrdInfs;
 using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using Domain.Models.User;
-using Helper.Common;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -258,8 +257,7 @@ namespace Interactor.MedicalExamination
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchCategory;
             }
-            var searchText = CIUtil.ToHalfsize(inputData.SearchText);
-            if (string.IsNullOrEmpty(searchText.Trim()) && inputData.SearchType != 0)
+            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSearchText;
             }
@@ -278,12 +276,21 @@ namespace Interactor.MedicalExamination
         {
             var allSinDates = allRaiinInf?.Select(q => q.SinDate)?.ToList();
             var sinDateStartPage = !(allSinDates?.Count > 0) ? 0 : allSinDates[inputData.StartPage];
-
             int sinDateMark = -1;
+            var listRaiiNoSameSinDate = new List<long>();
+            if (inputData.SearchType == 1)
+            {
+                listRaiiNoSameSinDate = allRaiinInf?.Take(inputData.StartPage).Where(r => r.SinDate == sinDateStartPage).Select(r => r.RaiinNo).ToList() ?? new List<long>();
+            }
+            else if (inputData.SearchType == 2)
+            {
+                listRaiiNoSameSinDate = allRaiinInf?.Skip(inputData.StartPage).Where(r => r.SinDate == sinDateStartPage).Select(r => r.RaiinNo).ToList() ?? new List<long>();
+            }
+
             if (inputData.SearchType != 0)
             {
-                var sinDateMarkKarte = _karteInfRepository.GetSinDate(inputData.PtId, inputData.HpId, inputData.SearchType, sinDateStartPage, CIUtil.ToHalfsize(inputData.SearchText));
-                var sinDateMarkOdr = _ordInfRepository.GetSinDate(inputData.PtId, inputData.HpId, inputData.SearchType, sinDateStartPage, CIUtil.ToHalfsize(inputData.SearchText));
+                var sinDateMarkKarte = _karteInfRepository.GetSinDate(inputData.PtId, inputData.HpId, inputData.SearchType, sinDateStartPage, listRaiiNoSameSinDate, inputData.SearchText.Trim());
+                var sinDateMarkOdr = _ordInfRepository.GetSinDate(inputData.PtId, inputData.HpId, inputData.SearchType, sinDateStartPage, listRaiiNoSameSinDate, inputData.SearchText.Trim());
 
                 if (inputData.SearchCategory == 1)
                 {
@@ -297,15 +304,14 @@ namespace Interactor.MedicalExamination
                 {
                     if (inputData.SearchType == 1)
                     {
+                        sinDateMark = Math.Max(sinDateMarkKarte, sinDateMarkOdr);
+                    }
+                    else
+                    {
                         if (sinDateMarkKarte >= 0 && sinDateMarkOdr >= 0)
                             sinDateMark = Math.Min(sinDateMarkKarte, sinDateMarkOdr);
                         else if (sinDateMarkKarte >= 0 || sinDateMarkOdr >= 0)
                             sinDateMark = Math.Max(sinDateMarkKarte, sinDateMarkOdr);
-                    }
-                    else
-                    {
-                        sinDateMark = Math.Max(sinDateMarkKarte, sinDateMarkOdr);
-
                     }
                 }
             }
@@ -433,7 +439,7 @@ namespace Interactor.MedicalExamination
                                                                     rpOdrInf.SortNo,
                                                                     rpOdrInf.Id,
                                                                     rpOdrInf.GroupKoui.Value,
-                                                                    rpOdrInf.OrdInfDetails.Select(od =>
+                                                                    rpOdrInf.OrdInfDetails.OrderBy(o => o.RowNo).Select(od =>
                                                                         new OdrInfDetailItem(
                                                                             od.HpId,
                                                                             od.RaiinNo,
@@ -494,7 +500,7 @@ namespace Interactor.MedicalExamination
                                     group.OdrInfs.Add(odrModel);
                                 }
                             });
-                   
+
                             hokenGrp.GroupOdrItems.Add(group);
                         }
                     });

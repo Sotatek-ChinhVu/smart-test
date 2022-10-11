@@ -176,12 +176,12 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public int GetSinDate(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
         {
             if (searchType == 1)
-                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.SinDate ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.SinDate <= sinDate && !listRaiiNoSameSinDate.Contains(od.RaiinNo))?.SinDate ?? -1;
             else
-                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.SinDate ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.SinDate >= sinDate && !listRaiiNoSameSinDate.Contains(od.RaiinNo))?.SinDate ?? -1;
         }
 
         private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId, int sinDateMin, int sinDateMax, int userId, bool isHistory = true)
@@ -218,51 +218,57 @@ namespace Infrastructure.Repositories
                           on odrInf.CreateId equals user.UserId into odrUsers
                           from odrUser in odrUsers.DefaultIfEmpty()
                           select ConvertToModel(odrInf, odrUser?.Sname ?? string.Empty);
-
+            var obj = new Object();
             Parallel.ForEach(odrInfs, rpOdrInf =>
             {
-                var odrDetailModels = new List<OrdInfDetailModel>();
-
-                var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
-                    .ToList();
-
-                if (odrInfDetails?.Count > 0)
+                lock (obj)
                 {
-                    int count = 0;
-                    var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
+                    var odrDetailModels = new List<OrdInfDetailModel>();
 
-                    Parallel.ForEach(odrInfDetails, odrInfDetail =>
+                    var odrInfDetails = allOdrInfDetails?.Where(detail => detail.RpNo == rpOdrInf.RpNo && detail.RpEdaNo == rpOdrInf.RpEdaNo)
+                        .ToList();
+
+                    if (odrInfDetails?.Count > 0)
                     {
+                        int count = 0;
+                        var usage = odrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
 
-                        var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd);
-                        var ten = tenMst?.Ten ?? 0;
-                        if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd)) odrInfDetail.IpnCd = tenMst.IpnNameCd;
-
-                        var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
-
-                        var ipnNameMst = ipnNameMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
-                        if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd) && ipnNameMst != null) odrInfDetail.IpnName = ipnNameMst.IpnName;
-
-                        var kasan = ipnKansanMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
-
-                        var alternationIndex = count % 2;
-                        var bunkatuKoui = 0;
-                        if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                        var objDetail = new Object();
+                        Parallel.ForEach(odrInfDetails, odrInfDetail =>
                         {
-                            bunkatuKoui = usage?.SinKouiKbn ?? 0;
-                        }
+                            lock (objDetail)
+                            {
+                                var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd);
+                                var ten = tenMst?.Ten ?? 0;
+                                if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd)) odrInfDetail.IpnCd = tenMst.IpnNameCd;
 
-                        var yakka = yakkas.FirstOrDefault(p => p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
+                                var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
 
-                        var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
+                                var ipnNameMst = ipnNameMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
+                                if (tenMst != null && string.IsNullOrEmpty(odrInfDetail.IpnCd) && ipnNameMst != null) odrInfDetail.IpnName = ipnNameMst.IpnName;
 
-                        int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
-                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0);
-                        odrDetailModels.Add(odrInfDetailModel);
-                        count++;
-                    });
-                    rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
-                    result.Add(rpOdrInf);
+                                var kasan = ipnKansanMsts?.FirstOrDefault(ipn => ipn.IpnNameCd == odrInfDetail.IpnCd);
+
+                                var alternationIndex = count % 2;
+                                var bunkatuKoui = 0;
+                                if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                                {
+                                    bunkatuKoui = usage?.SinKouiKbn ?? 0;
+                                }
+
+                                var yakka = yakkas.FirstOrDefault(p => p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
+
+                                var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
+
+                                int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
+                                var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0);
+                                odrDetailModels.Add(odrInfDetailModel);
+                                count++;
+                            }
+                        });
+                        rpOdrInf.OrdInfDetails.AddRange(odrDetailModels);
+                        result.Add(rpOdrInf);
+                    }
                 }
             });
 
