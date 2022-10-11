@@ -66,5 +66,16 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
+        [HttpGet(ApiPath.Get + "Setting")]
+        public ActionResult<Response<GetSettingStickyNoteResponse>> GetSetting([FromQuery] GetSettingStickyNoteRequest request)
+        {
+            var input = new GetSettingStickyNoteInputData(request.UserId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetSettingStickyNotePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetSettingStickyNoteResponse>>(presenter.Result);
+        }
     }
 }

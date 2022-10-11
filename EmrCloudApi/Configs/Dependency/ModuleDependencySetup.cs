@@ -418,6 +418,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<RevertStickyNoteInputData, RevertStickyNoteInteractor>();
             busBuilder.RegisterUseCase<DeleteStickyNoteInputData, DeleteStickyNoteInteractor>();
             busBuilder.RegisterUseCase<SaveStickyNoteInputData, SaveStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<GetSettingStickyNoteInputData, GetSettingStickyNoteInteractor>();
 
             //MS Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();

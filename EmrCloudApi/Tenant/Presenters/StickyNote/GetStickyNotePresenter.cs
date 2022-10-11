@@ -1,12 +1,7 @@
-﻿using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Models.SpecialNote.PatientInfo;
-using Domain.Models.SpecialNote.SummaryInf;
-using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Responses.SpecialNote;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using UseCase.SpecialNote.Get;
-using UseCase.StickyNote;
 using EmrCloudApi.Tenant.Responses.StickyNote;
+using UseCase.StickyNote;
 
 public class GetStickyNotePresenter : IGetStickyNoteOutputPort
 {
