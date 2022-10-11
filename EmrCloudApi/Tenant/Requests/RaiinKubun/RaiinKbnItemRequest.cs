@@ -5,6 +5,7 @@ namespace EmrCloudApi.Tenant.Requests.RaiinKubun
     public class RaiinKbnItemRequest
     {
         public int HpId { get;  set; }
+
         public int GrpCd { get;  set; }
 
         public int KbnCd { get;  set; }
@@ -16,6 +17,7 @@ namespace EmrCloudApi.Tenant.Requests.RaiinKubun
         public int IsExclude { get;  set; }
 
         public int IsDeleted { get;  set; }
+
         public int SortNo { get;  set; }
 
         public RaiinKbnItemModel Map()
