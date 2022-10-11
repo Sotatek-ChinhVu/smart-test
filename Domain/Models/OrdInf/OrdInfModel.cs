@@ -1,7 +1,6 @@
 ﻿using Domain.Common;
 using Domain.Models.OrdInfDetails;
 using Domain.Types;
-using Helper.Extension;
 using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfs
@@ -105,23 +104,6 @@ namespace Domain.Models.OrdInfs
             get
             {
                 return OdrKouiKbn >= 30 && OdrKouiKbn <= 34;
-            }
-        }
-
-        private static double SumBunkatu(string bunkatu)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(bunkatu))
-                    return 0;
-
-                var nums = bunkatu.Split('+');
-
-                return nums.Sum(n => n.AsDouble());
-            }
-            catch (Exception)
-            {
-                return 0;
             }
         }
 
