@@ -8,6 +8,7 @@ using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using Microsoft.EntityFrameworkCore;
+using Domain.Models.GroupInf;
 
 namespace Infrastructure.Repositories
 {
@@ -842,7 +843,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public bool CreatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)
+        public bool CreatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -891,11 +892,9 @@ namespace Infrastructure.Repositories
 
             if (ptGrps != null && ptGrps.Any())
             {
-                var listPtGrpInf = Mapper.Map<PtGrpInfModel, PtGrpInf>(ptGrps, (src, dest) => {
+                var listPtGrpInf = Mapper.Map<GroupInfModel, PtGrpInf>(ptGrps, (src, dest) => {
                     dest.CreateDate = DateTime.UtcNow;
                     dest.CreateId = TempIdentity.UserId;
-                    dest.GroupId = src.GrpId;
-                    dest.GroupCode = src.GrpCode;
                     dest.UpdateMachine = TempIdentity.ComputerName;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
@@ -1112,7 +1111,7 @@ namespace Infrastructure.Repositories
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)
+        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1219,8 +1218,8 @@ namespace Infrastructure.Repositories
             #region GrpInf
             var databaseGrpInfs = _tenantTrackingDataContext.PtGrpInfs.Where(x => x.PtId == patientInfo.PtId && x.IsDeleted == DeleteTypes.None).ToList();
             //Remove haven't in list or have but value codeGrp = null 
-            var GrpInRemoves = databaseGrpInfs.Where(c => !ptGrps.Any(_ => _.GrpId == c.GroupId)
-                                        || ptGrps.Any(_ => _.GrpId == c.GroupId && string.IsNullOrEmpty(_.GrpCode)));
+            var GrpInRemoves = databaseGrpInfs.Where(c => !ptGrps.Any(_ => _.GroupId == c.GroupId)
+                                        || ptGrps.Any(_ => _.GroupId == c.GroupId && string.IsNullOrEmpty(_.GroupCode)));
             foreach (var item in GrpInRemoves)
             {
                 item.UpdateId = TempIdentity.UserId;
@@ -1233,10 +1232,10 @@ namespace Infrastructure.Repositories
             foreach (var item in ptGrps)
             {
                 var info = databaseGrpInfs
-                   .Where(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GrpId)
+                   .Where(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GroupId)
                    .FirstOrDefault();
 
-                if (info != null && !string.IsNullOrEmpty(item.GrpCode))
+                if (info != null && !string.IsNullOrEmpty(item.GroupCode))
                 {
                     //Remove record old
                     info.UpdateId = TempIdentity.UserId;
@@ -1247,8 +1246,6 @@ namespace Infrastructure.Repositories
                     //clone new record
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
                         dest.CreateId = TempIdentity.UserId;
-                        dest.GroupId = source.GrpId;
-                        dest.GroupCode = source.GrpCode;
                         dest.CreateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
@@ -1257,12 +1254,10 @@ namespace Infrastructure.Repositories
                     });
                     _tenantTrackingDataContext.PtGrpInfs.Add(model);
                 }
-                else if (info == null && !string.IsNullOrEmpty(item.GrpCode))
+                else if (info == null && !string.IsNullOrEmpty(item.GroupCode))
                 {
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
                         dest.CreateId = TempIdentity.UserId;
-                        dest.GroupId = source.GrpId;
-                        dest.GroupCode = source.GrpCode;
                         dest.CreateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
@@ -1271,7 +1266,7 @@ namespace Infrastructure.Repositories
                     });
                     _tenantTrackingDataContext.PtGrpInfs.Add(model);
                 }
-                else if (info != null && string.IsNullOrEmpty(item.GrpCode))
+                else if (info != null && string.IsNullOrEmpty(item.GroupCode))
                 {
                     //delete it 
                     info.UpdateId = TempIdentity.UserId;
