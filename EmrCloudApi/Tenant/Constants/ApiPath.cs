@@ -25,13 +25,12 @@
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
         public const string GetFoodAlrgy = "GetFoodAlrgy";
-
         public const string SearchOTC = "SearchOTC";
         public const string SearchSupplement = "SearchSupplement";
         public const string SearchTenItem = "SearchTenItem";
-
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
+        public const string FindTenMst = "FindTenMst";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -75,5 +74,8 @@
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
 
+
+        //Drug Infor
+        public const string DrugDataSelectedTree = "DrugDataSelectedTree";
     }
 }
