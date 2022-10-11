@@ -5,16 +5,16 @@ namespace UseCase.RaiinKubunMst.Save
 {
     public class SaveDataKubunSettingOutputData : IOutputData
     {
-        public SaveDataKubunSettingOutputData(List<(bool, string)> message)
+        public SaveDataKubunSettingOutputData(List<string> message)
         {
             Message = message;
         }
 
-        public List<(bool, string)> Message { get; private set; }
+        public List<string> Message { get; private set; }
 
         public override string? ToString()
         {
-            return String.Join("|", Message.Select(x => x.Item2).ToList());
+            return String.Join("|", Message.ToList());
         }
     }
 }

@@ -21,7 +21,7 @@ namespace Interactor.RaiinKubunMst
                 var result = _raiinKubunMstRepository.SaveDataKubunSetting(inputData.RaiinKubunMstModels);
                 return new SaveDataKubunSettingOutputData(result);
             }
-            return new SaveDataKubunSettingOutputData(new List<(bool, string)>() { new(false, KubunSettingConstant.Nodata) });
+            return new SaveDataKubunSettingOutputData(new List<string>() { KubunSettingConstant.Nodata });
         }
     }
 }

@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.RaiinKubun
 
         public void Complete(SaveDataKubunSettingOutputData outputData)
         {
-            var result = outputData.Message.Any(x => !x.Item1);
+            var result = outputData.Message.Any();
             Result = new Response<SaveDataKubunSettingResponse>()
             {
                 Data = new SaveDataKubunSettingResponse(!result),

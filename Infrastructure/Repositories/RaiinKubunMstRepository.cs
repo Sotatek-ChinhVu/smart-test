@@ -167,9 +167,9 @@ namespace Infrastructure.Repositories
             return raiinKubunMstModels;
         }
 
-        public List<(bool, string)> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels)
+        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels)
         {
-            List<(bool, string)> result = new List<(bool, string)>();
+            List<string> result = new List<string>();
             var currentKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunDetailList = _tenantDataContextNoTracking.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
             var currentKubunKouiList = _tenantDataContextNoTracking.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
@@ -199,7 +199,7 @@ namespace Infrastructure.Repositories
 
             result = ValidateRaiinKbnMst(raiinKubunMstModels, currentKubunMstList, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>());
 
-            if (result.Any(x => !x.Item1))
+            if (result.Any())
             {
                 return result;
             }
@@ -285,13 +285,13 @@ namespace Infrastructure.Repositories
                             }
                             _tenantDataContextTracking.SaveChanges();
                             transaction.Commit();
-                            result.Add(new(true, KubunSettingConstant.Successed));
+                            result.Add( KubunSettingConstant.Successed);
                             return true;
                         }
                         catch (Exception)
                         {
                             transaction.Rollback();
-                            result.Add(new(false, KubunSettingConstant.Failed));
+                            result.Add( KubunSettingConstant.Failed);
                             return false;
                         }
                     }
@@ -564,13 +564,13 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region Validate
-        private List<(bool, string)> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnMst> currentKubunMstList, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
+        private List<string> ValidateRaiinKbnMst(List<RaiinKubunMstModel> raiinKubunMstModels, List<RaiinKbnMst> currentKubunMstList, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus)
         {
-            List<(bool, string)> result = new List<(bool, string)>();
+            List<string> result = new List<string>();
 
             if (raiinKubunMstModels.Any(x => string.IsNullOrEmpty(x.GroupName)))
             {
-                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnMstGroupName));
+                result.Add(KubunSettingConstant.InvalidRaiinKbnMstGroupName);
                 return result;
             }
 
@@ -579,7 +579,7 @@ namespace Infrastructure.Repositories
             var newSortNos = raiinKubunMstModels.Select(x => new Tuple<int, int>(x.GroupId, x.SortNo)).ToList();
             if (!ValidateSortNo(currentSortNos, newSortNos))
             {
-                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnMstSortNo));
+                result.Add(KubunSettingConstant.InvalidRaiinKbnMstSortNo);
                 return result;
             }
 
@@ -594,7 +594,7 @@ namespace Infrastructure.Repositories
 
             if (raiinKubunMstUpdate.Any(x => x.mst == null))
             {
-                result.Add(new(false, KubunSettingConstant.RaiinKbnMstNotExisted));
+                result.Add(KubunSettingConstant.RaiinKbnMstNotExisted);
                 return result;
             }
 
@@ -605,13 +605,13 @@ namespace Infrastructure.Repositories
                     var raiinKubunDetailModels = raiinKubunMst.RaiinKubunDetailModels;
                     if (raiinKubunDetailModels.Any(x => string.IsNullOrEmpty(x.KubunName)))
                     {
-                        result.Add(new(false, KubunSettingConstant.InvalidKubunName));
+                        result.Add( KubunSettingConstant.InvalidKubunName);
                         return result;
                     }
 
                     if (raiinKubunDetailModels.Any(x => x.GroupId != raiinKubunMst.GroupId))
                     {
-                        result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnDetailGroupId));
+                        result.Add( KubunSettingConstant.InvalidRaiinKbnDetailGroupId);
                         return result;
                     }
 
@@ -621,7 +621,7 @@ namespace Infrastructure.Repositories
 
                     if (!ValidateSortNo(currentRaiinKubunDetailSortNos, newSortRaiinKubunDetailNos))
                     {
-                        result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnDetailSortNo));
+                        result.Add( KubunSettingConstant.InvalidRaiinKbnDetailSortNo);
                         return result;
                     }
 
@@ -636,7 +636,7 @@ namespace Infrastructure.Repositories
 
                     if (raiinKbnDetailUpdate.Any(x => x.detail == null))
                     {
-                        result.Add(new(false, KubunSettingConstant.RaiinKbnDetailNotExisted));
+                        result.Add( KubunSettingConstant.RaiinKbnDetailNotExisted);
                         return result;
                     }
 
@@ -648,7 +648,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnKouiModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnKouiKbnCd));
+                                result.Add( KubunSettingConstant.InvalidRaiinKbnKouiKbnCd);
                                 return result;
                             }
 
@@ -657,7 +657,7 @@ namespace Infrastructure.Repositories
                             var newRaiinKbnKouiSortNos = raiinKbnKouiModels.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
                             if (!ValidateSortNo(currentRaiinKbnKouiSortNos, newRaiinKbnKouiSortNos))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnKouiSortNo));
+                                result.Add( KubunSettingConstant.InvalidRaiinKbnKouiSortNo);
                                 return result;
                             }
 
@@ -672,7 +672,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnKouiUpdate.Any(x => x.koui == null))
                             {
-                                result.Add(new(false, KubunSettingConstant.RaiinKbnKouiNotExisted));
+                                result.Add(KubunSettingConstant.RaiinKbnKouiNotExisted);
                                 return result;
                             }
                         }
@@ -680,13 +680,13 @@ namespace Infrastructure.Repositories
                         {
                             if (raiinKubunDetail.RaiinKbnItemModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnItemKbnCd));
+                                result.Add( KubunSettingConstant.InvalidRaiinKbnItemKbnCd);
                                 return result;
                             }
                             var raiinKbItemModels = raiinKubunDetail.RaiinKbnItemModels;
                             if (raiinKbItemModels.Any(x => string.IsNullOrEmpty(x.ItemCd)))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidItemCD));
+                                result.Add(KubunSettingConstant.InvalidItemCD);
                                 return result;
                             }
 
@@ -696,7 +696,7 @@ namespace Infrastructure.Repositories
 
                             if (!ValidateSortNo(currentRaiinKbnItemSortNos, newRRaiinKbnItemSortNos))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnItemSortNo));
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnItemSortNo);
                                 return result;
                             }
 
@@ -711,7 +711,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnItemUpdate.Any(x => x.item == null))
                             {
-                                result.Add(new(false, KubunSettingConstant.RaiinKbnItemNotExisted));
+                                result.Add( KubunSettingConstant.RaiinKbnItemNotExisted);
                                 return result;
                             }
                         }
@@ -720,7 +720,7 @@ namespace Infrastructure.Repositories
                             var raiinKbnYayokuModels = raiinKubunDetail.RaiinKbnYayokuModels;
                             if (raiinKbnYayokuModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnYoyakuKbnCd));
+                                result.Add( KubunSettingConstant.InvalidRaiinKbnYoyakuKbnCd);
                                 return result;
                             }
                             var currentRaiinKbnYayokus = raiinKbnYayokus.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
@@ -729,7 +729,7 @@ namespace Infrastructure.Repositories
 
                             if (!ValidateSortNo(currentRaiinKbnYayokuSortNos, newRaiinKbnYayokuSortNos))
                             {
-                                result.Add(new(false, KubunSettingConstant.InvalidRaiinKbnYayokuSortNo));
+                                result.Add( KubunSettingConstant.InvalidRaiinKbnYayokuSortNo);
                                 return result;
                             }
 
@@ -744,7 +744,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnYayokuUpdate.Any(x => x.yoyaku == null))
                             {
-                                result.Add(new(false, KubunSettingConstant.RaiinKbnYayokuNotExisted));
+                                result.Add( KubunSettingConstant.RaiinKbnYayokuNotExisted);
                                 return result;
                             }
                         }
