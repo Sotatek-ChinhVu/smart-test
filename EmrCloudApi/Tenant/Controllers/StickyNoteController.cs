@@ -34,7 +34,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetStickyNoteResponse>>(presenter.Result);
         }
         [HttpPost(ApiPath.Revert)]
-        public ActionResult<Response<ActionStickyNoteResponse>> Revert([FromQuery] DeleteRevertStickyNoteRequest request)
+        public ActionResult<Response<ActionStickyNoteResponse>> Revert([FromBody] DeleteRevertStickyNoteRequest request)
         {
             var input = new RevertStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
             var output = _bus.Handle(input);
@@ -45,7 +45,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
         [HttpPost(ApiPath.Delete)]
-        public ActionResult<Response<ActionStickyNoteResponse>> Delete([FromQuery] DeleteRevertStickyNoteRequest request)
+        public ActionResult<Response<ActionStickyNoteResponse>> Delete([FromBody] DeleteRevertStickyNoteRequest request)
         {
             var input = new DeleteStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
             var output = _bus.Handle(input);

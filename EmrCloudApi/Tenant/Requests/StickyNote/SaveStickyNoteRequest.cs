@@ -17,8 +17,6 @@ namespace EmrCloudApi.Tenant.Requests.StickyNote
 
         public string Memo { get; set; } = string.Empty;
 
-        public byte[] MemoData { get; set; } = default!;
-
         public int StartDate { get; set; }
 
         public int EndDate { get; set; }

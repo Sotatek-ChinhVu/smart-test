@@ -21,7 +21,6 @@ public class GetSettingStickyNotePresenter : IGetSettingStickyNoteOutputPort
                 break;
             case UpdateStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
-                Result.Data = new GetSettingStickyNoteResponse(outputData.StartDate, outputData.EndDate, outputData.FontSize, outputData.Opacity, outputData.Width, outputData.Height, outputData.IsDspUketuke, outputData.IsDspKarte, outputData.IsDspKaikei, outputData.TagGrpCd);
                 break;
         }
     }

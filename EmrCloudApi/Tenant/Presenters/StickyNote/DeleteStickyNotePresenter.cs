@@ -30,7 +30,6 @@ public class DeleteStickyNotePresenter : IDeleteStickyNoteOutputPort
                 break;
             case UpdateStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
-                Result.Data = new ActionStickyNoteResponse(outputData.Successed);
                 break;
         }
     }

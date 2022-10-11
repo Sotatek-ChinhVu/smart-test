@@ -42,7 +42,6 @@ public class SaveStickyNotePresenter : ISaveStickyNoteOutputPort
                 break;
             case UpdateStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
-                Result.Data = new ActionStickyNoteResponse(outputData.Successed);
                 break;
         }
     }

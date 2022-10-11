@@ -24,7 +24,6 @@ public class GetStickyNotePresenter : IGetStickyNoteOutputPort
                 break;
             case GetStickyNoteStatus.Successed:
                 Result.Message = ResponseMessage.Success;
-                Result.Data = new GetStickyNoteResponse(outputData.StickyNoteModels);
                 break;
         }
     }
