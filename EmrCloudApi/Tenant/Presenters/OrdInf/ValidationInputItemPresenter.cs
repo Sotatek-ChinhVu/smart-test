@@ -25,242 +25,242 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                 var value = validation.Value;
                 switch (value.Value)
                 {
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSpecialItem:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSpecialItem:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01040, ResponseMessage.ErrorCaptionDrugOrInject, ResponseMessage.MDrug), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSpecialStadardUsage:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSpecialStadardUsage:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01040, ResponseMessage.ErrorCaptionDrugOrInject, ResponseMessage.MUsage), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidOdrKouiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidOdrKouiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSpecialSuppUsage:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSpecialSuppUsage:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01040, ResponseMessage.ErrorCaptionDrugOrInject, ResponseMessage.MSupUsage1), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHasUsageButNotDrug:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasUsageButNotDrug:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHasUsageButNotInjectionOrDrug:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHasDrugButNotUsage:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasDrugButNotUsage:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MUsage), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHasInjectionButNotUsage:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasInjectionButNotUsage:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MInjection), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHasNotBothInjectionAndUsageOf28:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHasNotBothInjectionAndUsageOf28:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MInjection), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidStandardUsageOfDrugOrInjection:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidStandardUsageOfDrugOrInjection:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01020, ResponseMessage.MInjection), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuppUsageOfDrugOrInjection:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSuppUsageOfDrugOrInjection:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01020, ResponseMessage.MSupUsage2), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidBunkatu:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidBunkatu:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MEnt01020, ResponseMessage.MBunkatu), ResponseMessage.TodayOdrBunkatu));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidUsageWhenBuntakuNull:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidUsageWhenBuntakuNull:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MUsage), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSumBunkatuDifferentSuryo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00041, ResponseMessage.MUsageQuantity, ResponseMessage.MSumBunkatu), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidQuantityUnit:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidQuantityUnit:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrSuryo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00070, ResponseMessage.MUsageQuantity, ResponseMessage.MMaxQuantity), ResponseMessage.TodayOdrSuryoYohoKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrSuryoBunkatu));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidPrice:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidPrice:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MTooLargeQuantity), ResponseMessage.TodayOdrPriceSuryo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryoOfReffill:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSuryoOfReffill:
                         var keyAndRefill = value.Key.Split("_");
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, keyAndRefill?.Length > 0 ? keyAndRefill[0].ToString() : "-1", string.Format(ResponseMessage.MInp00070, ResponseMessage.MUsageQuantity, keyAndRefill?.Length > 1 ? keyAndRefill[1].ToString() : 0), ResponseMessage.TodayOdrSuryo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt840:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt840:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt842:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt842:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MQuantity), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt842CmtOptMoreThan38:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt842CmtOptMoreThan38:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MMaxLengthOfCmt), ResponseMessage.TodayOdrCmt842_830));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt830CmtOpt:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt830CmtOpt:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MCmtOptOf830), ResponseMessage.TodayOdrCmt842_830));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt830CmtOptMoreThan38:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt830CmtOptMoreThan38:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MMaxLengthOfCmt), ResponseMessage.TodayOdrCmt842_830));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt831:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt831:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MCmt831), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt850Date:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt850Date:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDateInfor850_1), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt850OtherDate:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt850OtherDate:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDateInfor850_2), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt851:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt851:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MTimeInfor851), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt852:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt852:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MTimeInfor852), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt853:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt853:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDateTimeInfor853), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmt880:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmt880:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MDateTimeInfor880), ResponseMessage.TodayOdrCmt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.DuplicateTodayOrd:
+                    case OrderInfConst.OrdInfValidationStatus.DuplicateTodayOrd:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidKohatuKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidKohatuKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrKohatuKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidDrugKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidDrugKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrDrugKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidId:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidId:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrId));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHpId:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHpId:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrHpId));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRaiinNo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidRaiinNo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRaiinNo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpNo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidRpNo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRpNo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpEdaNo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidRpEdaNo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRpEdaNo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidPtId:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidPtId:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrPtId));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSinDate:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSinDate:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSinDate));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidHokenPId:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidHokenPId:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrHokenPid));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRpName:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidRpName:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRpName));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidInoutKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidInoutKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrInOutKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSikyuKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSikyuKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSikyuKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoSbt:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSyohoSbt:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSyohoSbt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSanteiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSanteiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSanteiKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTosekiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTosekiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrTosekiKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidDaysCnt:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidDaysCnt:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrDaysCnt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSortNo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSortNo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSortNo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidRowNo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidRowNo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRowNo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSinKouiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSinKouiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSinKouiKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidItemCd:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidItemCd:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrItemCd));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidItemName:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidItemName:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrItemName));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSuryo:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSuryo:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSuryo));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidUnitName:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidUnitName:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrUnitName));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidUnitSbt:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidUnitSbt:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrUnitSbt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTermVal:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTermVal:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrTermVal));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSyohoKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSyohoKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidSyohoLimitKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidSyohoLimitKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSyohoLimitKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidYohoKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidYohoKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrYohoKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIsNodspRece:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidIsNodspRece:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrIsNodspRece));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIpnCd:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidIpnCd:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrIpnCd));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIpnName:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidIpnName:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrIpnName));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidJissiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrJissiKbn));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiId:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidJissiId:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrJissiId));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidJissiMachine:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidJissiMachine:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrJissiMachine));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidReqCd:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidReqCd:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrReqCd));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidBunkatuLength:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidBunkatuLength:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrBunkatu));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmtName:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmtName:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCmtOpt:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCmtOpt:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtName));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidFontColor:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidFontColor:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrFontColor));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidCommentNewline:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidCommentNewline:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCommentNewline));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidIsDeleted:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidIsDeleted:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrIsDeleted));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidGazoDensibaitaiHozon:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidGazoDensibaitaiHozon:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzaiKouiKbn:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzaiKouiKbn:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzai:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzai:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
                         break;
-                    case TodayOrderConst.TodayOrdValidationStatus.InvalidTokuzaiDrugOrInjection:
+                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzaiDrugOrInjection:
                         validations.Add(new ValidationOrdInfListItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
                         break;
 

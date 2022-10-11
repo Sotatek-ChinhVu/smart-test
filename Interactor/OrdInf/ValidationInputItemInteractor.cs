@@ -3,7 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemGenerationConf;
 using UseCase.OrdInfs.ValidationInputItem;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace Interactor.OrdInfs
 {
@@ -23,7 +23,7 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
+                var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
                 var allOdrInfs = new List<OrdInfModel>();
                 var inputDataList = inputDatas.ToList();
 
@@ -150,7 +150,7 @@ namespace Interactor.OrdInfs
                 {
                     var modelValidation = item.Validation(1);
 
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(count.ToString()))
+                    if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(count.ToString()))
                     {
                         dicValidation.Add(count.ToString(), modelValidation);
                     }
@@ -162,7 +162,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationInputItemOutputData(new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), ValidationInputItemStatus.Failed);
+                return new ValidationInputItemOutputData(new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), ValidationInputItemStatus.Failed);
             }
         }
     }

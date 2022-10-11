@@ -1,7 +1,7 @@
 ﻿using Domain.Core;
 using Helper.Common;
 
-namespace Domain.Models.OrdInfs
+namespace Domain.Types
 {
     public class GroupKoui : ValueObject
     {

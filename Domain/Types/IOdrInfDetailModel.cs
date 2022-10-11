@@ -104,8 +104,6 @@
         bool IsShohoBiko { get; }
 
         bool IsShohoComment { get; }
-
-        int RefillSetting { get; }
         #endregion
     }
 }
