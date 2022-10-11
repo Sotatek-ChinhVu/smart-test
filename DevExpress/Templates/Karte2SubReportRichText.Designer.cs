@@ -93,7 +93,8 @@
             // 
             // xrRichText1
             // 
-            this.xrRichText1.Borders = DevExpress.XtraPrinting.BorderSide.Left;
+            this.xrRichText1.BackColor = System.Drawing.Color.Tan;
+            this.xrRichText1.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrRichText1.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Html", "[RichText]")});
             this.xrRichText1.Font = new System.Drawing.Font("Times New Roman", 9.75F);
@@ -101,7 +102,8 @@
             this.xrRichText1.Name = "xrRichText1";
             this.xrRichText1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrRichText1.SerializableRtfString = resources.GetString("xrRichText1.SerializableRtfString");
-            this.xrRichText1.SizeF = new System.Drawing.SizeF(374.1626F, 130.2083F);
+            this.xrRichText1.SizeF = new System.Drawing.SizeF(374.1626F, 23F);
+            this.xrRichText1.StylePriority.UseBackColor = false;
             this.xrRichText1.StylePriority.UseBorders = false;
             // 
             // Detail
@@ -109,21 +111,21 @@
             this.Detail.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrSubreport1,
             this.xrRichText1});
-            this.Detail.HeightF = 130.2083F;
+            this.Detail.HeightF = 23F;
             this.Detail.Name = "Detail";
             this.Detail.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             this.Detail.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopLeft;
             // 
             // xrSubreport1
             // 
-            this.xrSubreport1.LocationFloat = new DevExpress.Utils.PointFloat(374.1626F, 0F);
+            this.xrSubreport1.LocationFloat = new DevExpress.Utils.PointFloat(374.1625F, 0F);
             this.xrSubreport1.Name = "xrSubreport1";
             this.xrSubreport1.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("HpId", null, "HpId"));
             this.xrSubreport1.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("PtId", null, "PtId"));
             this.xrSubreport1.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("RaiinNo", null, "RaiinNo"));
             this.xrSubreport1.ParameterBindings.Add(new DevExpress.XtraReports.UI.ParameterBinding("SinDate", null, "SinDate"));
             this.xrSubreport1.ReportSource = new DevExpress.Templates.Karte2HokenSubReport();
-            this.xrSubreport1.SizeF = new System.Drawing.SizeF(377.8374F, 23F);
+            this.xrSubreport1.SizeF = new System.Drawing.SizeF(377.8375F, 23F);
             // 
             // Karte2SubReportRichText
             // 
