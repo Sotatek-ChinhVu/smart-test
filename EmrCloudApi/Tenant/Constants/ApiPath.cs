@@ -10,6 +10,9 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+        public const string Revert = "Revert";
+        public const string Delete = "Delete";
+
 
         // SuperSet
         public const string Validate = "Validate";
@@ -71,5 +74,8 @@
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
 
+
+        //Drug Infor
+        public const string DrugDataSelectedTree = "DrugDataSelectedTree";
     }
 }

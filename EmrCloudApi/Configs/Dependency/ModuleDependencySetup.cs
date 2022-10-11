@@ -191,6 +191,11 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.DrugDetailData;
+using Interactor.DrugDetailData;
+using UseCase.StickyNote;
+using Domain.Models.PtTag;
+using Interactor.StickyNote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -283,6 +288,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
+            services.AddTransient<IPtTagRepository, PtTagRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -410,6 +416,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
 
+            // StickyNote
+            busBuilder.RegisterUseCase<GetStickyNoteInputData, GetStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<RevertStickyNoteInputData, RevertStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<DeleteStickyNoteInputData, DeleteStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<SaveStickyNoteInputData, SaveStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<GetSettingStickyNoteInputData, GetSettingStickyNoteInteractor>();
+
             //MS Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedTenItemInputData, UpdateAdoptedTenItemInteractor>();
@@ -427,6 +440,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
+            busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
