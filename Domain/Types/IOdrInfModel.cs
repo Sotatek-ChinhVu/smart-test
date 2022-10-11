@@ -44,13 +44,11 @@ namespace Domain.Types
         // 処方 - Drug
         bool IsDrug { get; }
 
-        public int RefillSetting { get;}
-
         // 注射 - Injection
         bool IsInjection { get; }
         #endregion
 
-        private static double SumBunkatu(string bunkatu)
+        double SumBunkatu(string bunkatu)
         {
             try
             {
