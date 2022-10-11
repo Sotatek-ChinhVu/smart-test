@@ -6,13 +6,12 @@ namespace Domain.Models.PtTag
 {
     public class StickyNoteModel
     {
-        public StickyNoteModel(int hpId, long ptId, long seqNo, string memo, byte[] memoData, int startDate, int endDate, int isDspUketuke, int isDspKarte, int isDspKaikei, int isDspRece, string backgroundColor, int tagGrpCd, int alphablendVal, int fontSize, int isDeleted, int width, int height, int left, int top)
+        public StickyNoteModel(int hpId, long ptId, long seqNo, string memo, int startDate, int endDate, int isDspUketuke, int isDspKarte, int isDspKaikei, int isDspRece, string backgroundColor, int tagGrpCd, int alphablendVal, int fontSize, int isDeleted, int width, int height, int left, int top)
         {
             HpId = hpId;
             PtId = ptId;
             SeqNo = seqNo;
             Memo = memo;
-            MemoData = memoData;
             StartDate = startDate;
             EndDate = endDate;
             IsDspUketuke = isDspUketuke;
@@ -37,7 +36,6 @@ namespace Domain.Models.PtTag
             PtId = 0;
             SeqNo = 0;
             Memo = String.Empty;
-            MemoData = Array.Empty<byte>();
             StartDate = 0;
             EndDate = 0;
             IsDspUketuke = 0;
@@ -62,8 +60,6 @@ namespace Domain.Models.PtTag
         public long SeqNo { get; private set; }
 
         public string Memo { get; private set; } = string.Empty;
-
-        public byte[] MemoData { get; private set; } = default!;
 
         public int StartDate { get; private set; }
 

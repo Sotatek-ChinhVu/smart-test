@@ -50,7 +50,7 @@ namespace EmrCloudApi.Tenant.Requests.StickyNote
         public int Top { get; set; }
         public StickyNoteModel Map()
         {
-            return new StickyNoteModel(HpId, PtId, SeqNo, Memo, MemoData ?? Array.Empty<byte>(), StartDate, EndDate, IsDspUketuke, IsDspKarte, IsDspKaikei, IsDspRece, BackgroundColor, TagGrpCd, AlphablendVal, FontSize, 1, Width, Height, Left, Top);
+            return new StickyNoteModel(HpId, PtId, SeqNo, Memo, StartDate, EndDate, IsDspUketuke, IsDspKarte, IsDspKaikei, IsDspRece, BackgroundColor, TagGrpCd, AlphablendVal, FontSize, 1, Width, Height, Left, Top);
         }
     }
 }

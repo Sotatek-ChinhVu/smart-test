@@ -22,7 +22,7 @@ public class PtTagRepository : IPtTagRepository
     public List<StickyNoteModel> SearchByPtId(int hpId, int ptId)
     {
         return _tenantDataContextNoTracking.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == 0 || x.IsDeleted == 1))
-            .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.MemoData ?? Array.Empty<byte>(), x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
+            .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
             .ToList();
     }
     public bool UpdateIsDeleted(int hpId, int ptId, int seqNo, int isDeleted)
@@ -69,7 +69,6 @@ public class PtTagRepository : IPtTagRepository
                                 PtId = x.PtId,
                                 SeqNo = x.SeqNo,
                                 Memo = x.Memo,
-                                MemoData = x.MemoData,
                                 StartDate = x.StartDate,
                                 EndDate = x.EndDate,
                                 IsDspUketuke = x.IsDspUketuke,
@@ -125,7 +124,7 @@ public class PtTagRepository : IPtTagRepository
     public StickyNoteModel GetStickyNoteModel(int hpId, long ptId, long seqNo)
     {
         var result = _tenantDataContextNoTracking.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo)
-                                                .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.MemoData ?? Array.Empty<byte>(), x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
+                                                .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
                                                 .FirstOrDefault();
         return result ?? new StickyNoteModel();
     }
