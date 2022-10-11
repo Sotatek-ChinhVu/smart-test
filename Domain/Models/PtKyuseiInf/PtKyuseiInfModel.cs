@@ -12,11 +12,31 @@
             IsDeleted = isDeleted;
         }
 
-        public int HpId { get; set; }
-        public long PtId { get; set; }
-        public string KanaName { get; set; }
-        public string Name { get; set; }
-        public int EndDate { get; set; }
-        public int IsDeleted { get; set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public string KanaName { get; private set; }
+        public string Name { get; private set; }
+        public int EndDate { get; private set; }
+        public int IsDeleted { get; private set; }
+
+        public string FirstName
+        {
+            get => Name.Substring(0, Name.IndexOf("　"));
+        }
+
+        public string LastName
+        {
+            get => Name.Substring(Name.IndexOf("　") + 1);
+        }
+
+        public string FirstKanaName
+        {
+            get => KanaName.Substring(0, KanaName.IndexOf(" "));
+        }
+
+        public string LastKanaName
+        {
+            get => KanaName.Substring(KanaName.IndexOf(" ") + 1);
+        }
     }
 }

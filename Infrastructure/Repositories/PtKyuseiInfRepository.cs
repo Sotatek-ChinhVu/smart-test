@@ -16,7 +16,7 @@ namespace Infrastructure.Repositories
         public List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted)
         {
             var listPtKyusei = _tenantDataContextTracking.PtKyuseis
-                .Where(x => x.HpId == hpId && x.PtId == hpId && (isDeleted || x.IsDeleted == 0))
+                .Where(x => x.HpId == hpId && x.PtId == ptId && (isDeleted || x.IsDeleted == 0))
                 .OrderByDescending(x => x.CreateDate)
                 .Select(x => new PtKyuseiInfModel(
                     x.HpId,
