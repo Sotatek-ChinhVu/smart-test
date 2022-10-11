@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NAME")]
         [MaxLength(20)]
-        public string KbnName { get; set; } = string.Empty;
+        public string? KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 配色

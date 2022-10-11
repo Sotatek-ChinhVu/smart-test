@@ -37,7 +37,7 @@
         {
             get => Houbetu + " " + HokenName;
         }
-        public bool IsToltalGakuDisplay
+        public bool IsTotalGakuDisplay
         {
             get => IsLimitListSum == 1;
         }

@@ -1,4 +1,5 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
@@ -667,6 +668,16 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
+        public List<TokkiMstModel> GetListTokki(int hpId, int sinDate)
+        {
+            return _tenantDataContext.TokkiMsts
+                    .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
+                    .OrderBy(entity => entity.HpId)
+                    .ThenBy(entity => entity.TokkiCd)
+                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName))
+                    .ToList();
+        }
+
         private PatientInforModel ToModel(PtInf p, string memo, int lastVisitDate)
         {
             return new PatientInforModel(
@@ -716,7 +727,7 @@ namespace Infrastructure.Repositories
         public PatientInforModel PatientCommentModels(int hpId, long ptId)
         {
             var data = _tenantDataContext.PtCmtInfs
-                .FirstOrDefault(x => x.HpId == hpId & x.PtId == ptId & x.IsDeleted == 0);
+                .FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0);
             if (data is null)
                 return new PatientInforModel();
 
@@ -732,20 +743,20 @@ namespace Infrastructure.Repositories
             var ptIdList = _tenantDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
             var ptInfWithLastVisitDate =
                 (from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
-                select new
-                {
-                    ptInf = p,
-                    lastVisitDate = (
-                        from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
-                            && r.PtId == p.PtId
-                            && r.Status >= RaiinState.TempSave
-                            && r.IsDeleted == DeleteTypes.None
-                        orderby r.SinDate descending
-                        select r.SinDate
-                    ).FirstOrDefault()
-                }).ToList();
+                 where p.IsDelete == 0 && ptIdList.Contains(p.PtId)
+                 select new
+                 {
+                     ptInf = p,
+                     lastVisitDate = (
+                         from r in _tenantDataContext.RaiinInfs
+                         where r.HpId == TempIdentity.HpId
+                             && r.PtId == p.PtId
+                             && r.Status >= RaiinState.TempSave
+                             && r.IsDeleted == DeleteTypes.None
+                         orderby r.SinDate descending
+                         select r.SinDate
+                     ).FirstOrDefault()
+                 }).ToList();
 
             return ptInfWithLastVisitDate.Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
@@ -759,8 +770,8 @@ namespace Infrastructure.Repositories
 
             var ptInfWithLastVisitDate =
             from p in _tenantDataContext.PtInfs
-            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) || 
-                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) || 
+            where p.IsDelete == 0 && (p.Tel1 != null && (isContainMode && p.Tel1.Contains(keyword) || p.Tel1.StartsWith(keyword)) ||
+                                      p.Tel2 != null && (isContainMode && p.Tel2.Contains(keyword) || p.Tel2.StartsWith(keyword)) ||
                                       p.Name == keyword)
             select new
             {
@@ -774,7 +785,7 @@ namespace Infrastructure.Repositories
                         orderby r.SinDate descending
                         select r.SinDate
                     ).FirstOrDefault()
-                };
+            };
 
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
@@ -805,6 +816,30 @@ namespace Infrastructure.Repositories
             };
 
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+        }
+
+        public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)
+        {
+            long endIndex = (pageIndex - 1) * pageSize + ptNum + pageSize;
+            long startIndex = (pageIndex - 1) * pageSize + ptNum;
+            var result = new List<PatientInforModel>();
+
+            var existPtNum = _tenantDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == 0 && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
+
+            for (long i = startIndex; i <= endIndex; i++)
+            {
+                var checkExistPtNum = existPtNum.FirstOrDefault(x => x.HpId == hpId && x.PtNum == i && x.IsDelete == 0);
+                if (checkExistPtNum == null)
+                {
+                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き) ", i)));
+                }
+                else
+                {
+                    result.Add(new PatientInforModel(checkExistPtNum.HpId, checkExistPtNum.PtId, checkExistPtNum.PtNum, string.Concat(checkExistPtNum.PtNum, " ", checkExistPtNum.Name)));
+                }
+            }
+
+            return result;
         }
 
         public bool CreatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps)

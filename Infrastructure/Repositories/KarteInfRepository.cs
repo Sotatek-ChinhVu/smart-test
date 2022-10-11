@@ -60,7 +60,7 @@ namespace Infrastructure.Repositories
             return karteInfs.ToList();
         }
 
-        private KarteInfModel ConvertToModel(KarteInf itemData, string updateName = "")
+        private static KarteInfModel ConvertToModel(KarteInf itemData, string updateName = "")
         {
             return new KarteInfModel(
                 itemData.HpId,
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
                 itemData.SeqNo,
                 itemData.PtId,
                 itemData.SinDate,
-                itemData.Text,
+                itemData.Text ?? string.Empty,
                 itemData.IsDeleted,
                 itemData.RichText == null ? string.Empty : Encoding.UTF8.GetString(itemData.RichText),
                 itemData.CreateDate,
@@ -91,10 +91,9 @@ namespace Infrastructure.Repositories
 
                 foreach (var model in listModel)
                 {
-                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName));
-                    if (karteImgInf == null)
+                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName)) ?? new KarteImgInf {Id = 0, PtId = 0, HpId = 0, RaiinNo = 0 };
+                    if (karteImgInf.Id == 0 && karteImgInf.HpId == 0 && karteImgInf.PtId == 0 && karteImgInf.RaiinNo == 0)
                     {
-                        karteImgInf = new KarteImgInf();
                         karteImgInf.HpId = model.HpId;
                         karteImgInf.RaiinNo = model.RaiinNo;
                         karteImgInf.FileName = model.FileName;
@@ -127,9 +126,9 @@ namespace Infrastructure.Repositories
         public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
         {
             if (searchType == 1)
-                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
             else
-                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.Text.Contains(searchText) && k.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.RaiinNo > raiinNo)?.RaiinNo ?? -1;
         }
     }
 }

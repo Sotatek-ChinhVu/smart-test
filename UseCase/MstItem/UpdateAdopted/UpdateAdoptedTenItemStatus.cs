@@ -5,7 +5,7 @@
         Successed = 1,
         InvalidValueAdopted = 2,
         InvalidItemCd = 3,
-        InvalidSinDate = 4,
+        InvalidStartDate = 4,
         Failed = 5,
     }
 }

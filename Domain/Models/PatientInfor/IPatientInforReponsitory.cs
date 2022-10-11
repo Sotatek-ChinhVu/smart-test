@@ -1,4 +1,6 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+using Domain.Models.PatientInfor;
 
 namespace Domain.Models.PatientInfor
 {
@@ -22,7 +24,11 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
+        List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
+
         bool CheckListId(List<long> ptIds);
+
+        List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 
         bool CreatePatientInfo(PatientInforSaveModel ptInf, PtInfSanteiConfModel ptSantei, List<PtInfHokenPartternModel> hokenPartterns, List<PtGrpInfModel> ptGrps);
         
