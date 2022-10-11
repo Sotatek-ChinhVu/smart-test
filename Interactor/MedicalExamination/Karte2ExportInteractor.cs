@@ -79,12 +79,7 @@ namespace Interactor.MedicalExamination
                 MemoryStream stream = new MemoryStream();
                 _karte2Export.ExportToPdf(karte2ExportModel,stream);
                 _karte2Export.ExportToPdf(karte2ExportModel);
-                var url = UploadAmazonS3(karte2ExportModel, stream);
-                if (string.IsNullOrEmpty(url))
-                {
-                    return new Karte2ExportOutputData(Karte2PrintStatus.InvalidUrl);
-                }
-                return new Karte2ExportOutputData(url, Karte2PrintStatus.Successed);
+                return new Karte2ExportOutputData(Karte2PrintStatus.Successed);
             }
             catch (Exception)
             {
@@ -130,30 +125,6 @@ namespace Interactor.MedicalExamination
                 }).ToList();
 
             return richTextKarte2s;
-        }
-        private string UploadAmazonS3(Karte2ExportModel karte2ExportModel, MemoryStream stream)
-        {
-            string fileName = CommonConstants.SubFolderKarte2Print + "/" + karte2ExportModel.FileName.Replace(" ","") + ".pdf";
-            if (_amazonS3Service.ObjectExistsAsync(fileName).Result)
-            {
-                var isDelete = _amazonS3Service.DeleteObjectAsync(fileName).Result;
-                if (!isDelete)
-                {
-                    return String.Empty;
-                }
-            }
-
-            // Insert new file
-            var subFolder = CommonConstants.SubFolderKarte2Print;
-
-            if (stream.Length <= 0)
-            {
-                return String.Empty;
-            }
-
-            var responseUpload = _amazonS3Service.UploadPdfAsync(true,subFolder, fileName, stream);
-            var url = responseUpload.Result;
-            return url;
         }
         private (List<HistoryKarteOdrRaiinItem>, Karte2PrintStatus) GetHistoryKarteOdrRaiinItem(Karte2ExportInputData inputData)
         {
