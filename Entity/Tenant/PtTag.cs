@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column(name: "MEMO_DATA")]
-        public byte[] MemoData { get; set; } = default!;
+        public byte[]? MemoData { get; set; } = Array.Empty<byte>();
 
         /// <summary>
         /// 適用開始日

@@ -194,6 +194,9 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.DrugDetailData;
 using Interactor.DrugDetailData;
+using UseCase.StickyNote;
+using Domain.Models.PtTag;
+using Interactor.StickyNote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -286,6 +289,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
+            services.AddTransient<IPtTagRepository, PtTagRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -413,6 +417,13 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSpecialNoteInputData, GetSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<SaveSpecialNoteInputData, SaveSpecialNoteInteractor>();
             busBuilder.RegisterUseCase<AddAlrgyDrugListInputData, AddAlrgyDrugListInteractor>();
+
+            // StickyNote
+            busBuilder.RegisterUseCase<GetStickyNoteInputData, GetStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<RevertStickyNoteInputData, RevertStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<DeleteStickyNoteInputData, DeleteStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<SaveStickyNoteInputData, SaveStickyNoteInteractor>();
+            busBuilder.RegisterUseCase<GetSettingStickyNoteInputData, GetSettingStickyNoteInteractor>();
 
             //MS Item
             busBuilder.RegisterUseCase<SearchTenItemInputData, SearchTenItemInteractor>();
