@@ -132,6 +132,8 @@ namespace PostgreDataContext
 
             modelBuilder.Entity<MonshinInfo>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RsvkrtOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.RpNo, e.RpEdaNo, e.Id });
+            modelBuilder.Entity<PtTag>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
