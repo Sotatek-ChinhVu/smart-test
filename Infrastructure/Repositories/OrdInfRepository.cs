@@ -176,12 +176,12 @@ namespace Infrastructure.Repositories
             return 0;
         }
 
-        public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        public int GetSinDate(long ptId, int hpId, int searchType, long raiinNo, string searchText)
         {
             if (searchType == 1)
-                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).LastOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo <= raiinNo)?.SinDate ?? -1;
             else
-                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.RaiinNo).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.OdrInfDetails.OrderBy(od => od.SinDate).FirstOrDefault(od => od.HpId == hpId && od.PtId == ptId && (od.ItemName != null && od.ItemName.Contains(searchText)) && od.RaiinNo > raiinNo)?.SinDate ?? -1;
         }
 
         private List<OrdInfModel> ConvertEntityToListOrdInfModel(List<OdrInf>? allOdrInf, List<OdrInfDetail>? allOdrInfDetails, int hpId, int sinDateMin, int sinDateMax, int userId, bool isHistory = true)
