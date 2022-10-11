@@ -264,7 +264,7 @@ namespace Domain.Models.OrdInfs
                         var count = 0;
                         foreach (var detail in drugAfterDrugUsage)
                         {
-                            var validateResult = detail.Validation(0);
+                            var validateResult = detail.Validation(flag);
                             if (validateResult != TodayOrdValidationStatus.Valid) return new(count.ToString(), validateResult);
                             count++;
                         }

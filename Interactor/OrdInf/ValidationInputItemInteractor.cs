@@ -31,11 +31,11 @@ namespace Interactor.OrdInfs
                 {
                     return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
                 }
-                if (inputDatas.HpId < 0)
+                if (inputDatas.HpId <= 0)
                 {
                     return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
                 }
-                if (inputDatas.SinDate < 0)
+                if (inputDatas.SinDate <= 0)
                 {
                     return new ValidationInputItemOutputData(dicValidation, ValidationInputItemStatus.Failed);
                 }
