@@ -198,9 +198,9 @@ namespace Infrastructure.Repositories
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
+            var convertHalfsizeKeyword = CIUtil.ToHalfsize(keyword);
             var listTenMstModels = new List<TenItemModel>();
-
-            string sBigKeyword = keyword.ToUpper()
+            string sBigKeyword = convertHalfsizeKeyword.ToUpper()
            .Replace("ｧ", "ｱ")
            .Replace("ｨ", "ｲ")
            .Replace("ｩ", "ｳ")
@@ -211,7 +211,7 @@ namespace Infrastructure.Repositories
            .Replace("ｮ", "ﾖ")
            .Replace("ｯ", "ﾂ");
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
-                                t.ItemCd.StartsWith(keyword)
+                                t.ItemCd.StartsWith(convertHalfsizeKeyword)
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
@@ -291,7 +291,6 @@ namespace Infrastructure.Repositories
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
-
 
             if (kouiKbn > 0)
             {
