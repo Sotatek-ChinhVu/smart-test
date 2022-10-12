@@ -21,8 +21,8 @@ namespace Infrastructure.Repositories
                 .Select(x => new PtKyuseiInfModel(
                     x.HpId,
                     x.PtId,
-                    x.KanaName,
-                    x.Name,
+                    x.KanaName ?? string.Empty,
+                    x.Name ?? string.Empty,
                     x.EndDate,
                     x.IsDeleted))
                 .ToList();

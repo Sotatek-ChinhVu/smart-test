@@ -21,22 +21,75 @@
 
         public string FirstName
         {
-            get => Name.Substring(0, Name.IndexOf("　"));
+            get => SetFirstName();
         }
 
         public string LastName
         {
-            get => Name.Substring(Name.IndexOf("　") + 1);
+            get => SetLastName();
         }
 
         public string FirstKanaName
         {
-            get => KanaName.Substring(0, KanaName.IndexOf(" "));
+            get => SetFirstKanaName();
         }
 
         public string LastKanaName
         {
-            get => KanaName.Substring(KanaName.IndexOf(" ") + 1);
+            get => SetLastKanaName();
         }
+
+        #region validation Name
+        private string SetFirstName()
+        {
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                try
+                {
+                    return Name.Substring(0, Name.IndexOf("　"));
+                }
+                catch (Exception)
+                {
+                    return Name;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private string SetLastName()
+        {
+            if (Name == FirstName)
+                return string.Empty;
+
+            return Name.Substring(Name.IndexOf("　") + 1);
+        }
+
+        private string SetFirstKanaName()
+        {
+            if (!string.IsNullOrWhiteSpace(KanaName))
+            {
+                try
+                {
+                    return KanaName.Substring(0, KanaName.IndexOf(" "));
+                }
+                catch (Exception)
+                {
+                    return KanaName;
+                }
+            }
+
+            return string.Empty;
+        }
+
+        private string SetLastKanaName()
+        {
+            if (KanaName == FirstKanaName)
+                return string.Empty;
+
+            return KanaName.Substring(KanaName.IndexOf(" ") + 1);
+        }
+        #endregion
+
     }
 }

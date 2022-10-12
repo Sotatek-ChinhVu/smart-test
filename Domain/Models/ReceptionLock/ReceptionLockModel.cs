@@ -23,11 +23,11 @@ namespace Domain.Models.LockInf
 
         public int HpId { get; set; }
         public long PtId { get; set; }
-        public string FunctionCd { get; set; } = string.Empty;
+        public string FunctionCd { get; set; }
         public long SinDate { get; set; }
         public long RaiinNo { get; set; }
         public long OyaRaiinNo { get; set; }
-        public string Machine { get; set; } = string.Empty;
+        public string Machine { get; set; }
         public int UserId { get; set; }
         public DateTime LockDate { get; set; }
     }
