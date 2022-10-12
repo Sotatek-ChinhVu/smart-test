@@ -59,10 +59,19 @@
 
         private string SetLastName()
         {
-            if (Name == FirstName)
-                return string.Empty;
+            if (!string.IsNullOrWhiteSpace(Name))
+            {
+                try
+                {
+                    return Name.Substring(Name.IndexOf("　") + 1);
+                }
+                catch (Exception)
+                {
+                    return string.Empty;
+                }
+            }
 
-            return Name.Substring(Name.IndexOf("　") + 1);
+            return string.Empty;
         }
 
         private string SetFirstKanaName()
@@ -84,10 +93,18 @@
 
         private string SetLastKanaName()
         {
-            if (KanaName == FirstKanaName)
-                return string.Empty;
-
-            return KanaName.Substring(KanaName.IndexOf(" ") + 1);
+            if (!string.IsNullOrWhiteSpace(KanaName))
+            {
+                try
+                {
+                    return KanaName.Substring(KanaName.IndexOf(" ") + 1);
+                }
+                catch (Exception)
+                {
+                    return string.Empty;
+                }
+            }
+            return string.Empty;
         }
         #endregion
 
