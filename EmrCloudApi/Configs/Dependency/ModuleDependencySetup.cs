@@ -161,6 +161,7 @@ using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.LoadData;
+using UseCase.RaiinKubunMst.Save;
 using UseCase.Reception.Get;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetSettings;
@@ -196,12 +197,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.DrugDetailData;
-using Interactor.DrugDetailData;
-using UseCase.StickyNote;
-using Domain.Models.PtTag;
-using Interactor.StickyNote;
-using UseCase.RaiinKubunMst.Save;
 
 namespace EmrCloudApi.Configs.Dependency
 {
