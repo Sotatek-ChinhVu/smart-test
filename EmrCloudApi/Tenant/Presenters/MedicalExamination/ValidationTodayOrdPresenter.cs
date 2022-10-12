@@ -1,25 +1,28 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.KarteInf;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
-using EmrCloudApi.Tenant.Responses.OrdInfs;
 using Helper.Constants;
-using UseCase.OrdInfs.ValidationInputItem;
+using UseCase.OrdInfs.ValidationTodayOrd;
 
-namespace EmrCloudApi.Tenant.Presenters.OrdInfs
+namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
 {
-    public class ValidationInputItemPresenter : IValidationInputItemOutputPort
+    public class ValidationTodayOrdPresenter : IValidationTodayOrdOutputPort
     {
-        public Response<ValidationInputItemOrdInfListResponse> Result { get; private set; } = default!;
+        public Response<ValidationTodayOrdResponse> Result { get; private set; } = default!;
 
-        public void Complete(ValidationInputItemOutputData outputData)
+        public void Complete(ValidationTodayOrdOutputData outputData)
         {
             var validations = new List<ValidationTodayOrdItemResponse>();
+            ValidationKarteInfResponse validationKarte;
 
-            Result = new Response<ValidationInputItemOrdInfListResponse>()
+            Result = new Response<ValidationTodayOrdResponse>()
             {
-                Message = outputData.Status == ValidationInputItemStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
+                Message = outputData.Status == ValidationTodayOrdStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
                 Status = (byte)outputData.Status
+
             };
+
             foreach (var validation in outputData.Validations)
             {
                 var value = validation.Value;
@@ -251,26 +254,85 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case OrderInfConst.OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case OrderInfConst.OrdInfValidationStatus.InvalidGazoDensibaitaiHozon:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
+                    case OrderInfConst.OrdInfValidationStatus.HpIdNoExist:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzaiKouiKbn:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MProcedure, string.Empty));
+                    case OrderInfConst.OrdInfValidationStatus.PtIdNoExist:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzai:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
+                    case OrderInfConst.OrdInfValidationStatus.RaiinNoNoExist:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-                    case OrderInfConst.OrdInfValidationStatus.InvalidTokuzaiDrugOrInjection:
-                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, string.Format(ResponseMessage.MInp00010, ResponseMessage.MDrug), string.Empty));
+                    case OrderInfConst.OrdInfValidationStatus.HokenPidNoExist:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
                         break;
-
+                    case OrderInfConst.OrdInfValidationStatus.OdrNoMapOdrDetail:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, string.Empty));
+                        break;
                     default:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, "-1", "-1", string.Empty, string.Empty));
                         break;
                 }
             }
 
-            Result.Data = new ValidationInputItemOrdInfListResponse(validations);
+            switch (outputData.ValidationKarte)
+            {
+                case KarteConst.KarteValidationStatus.InvalidHpId:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidHpId);
+                    break;
+                case KarteConst.KarteValidationStatus.InvalidRaiinNo:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidRaiinNo);
+                    break;
+                case KarteConst.KarteValidationStatus.InvalidPtId:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidPtId);
+                    break;
+                case KarteConst.KarteValidationStatus.InvalidSinDate:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidSinDate);
+                    break;
+                case KarteConst.KarteValidationStatus.InvalidIsDelted:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidIsDeleted);
+                    break;
+                case KarteConst.KarteValidationStatus.RaiinNoNoExist:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfRaiinNoNoExist);
+                    break;
+                case KarteConst.KarteValidationStatus.PtIdNoExist:
+                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfPtIdNoExist);
+                    break;
+                default:
+                    validationKarte = new ValidationKarteInfResponse(KarteConst.KarteValidationStatus.Valid, ResponseMessage.Valid);
+                    break;
+            }
+
+            validations = validations.OrderBy(v => v.OrderInfPosition).ThenBy(v => v.OrderInfDetailPosition).ToList();
+
+            Result.Data = new ValidationTodayOrdResponse(new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte);
+        }
+
+        private static string ConvertRaiinInfStatusToMessage(RaiinInfConst.RaiinInfTodayOdrValidationStatus status)
+        {
+            return status switch
+            {
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSyosaiKbn => ResponseMessage.RaiinInfTodayOdrInvalidSyosaiKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidJikanKbn => ResponseMessage.RaiinInfTodayOdrInvalidJikanKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHokenPid => ResponseMessage.RaiinInfTodayOdrInvalidHokenPid,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist => ResponseMessage.RaiinInfTodayOdrHokenPidNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSanteiKbn => ResponseMessage.RaiinInfTodayOdrInvalidSanteiKbn,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidTantoId => ResponseMessage.RaiinInfTodayOdrInvalidTantoId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.TatoIdNoExist => ResponseMessage.RaiinInfTodayOdrTatoIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidKaId => ResponseMessage.RaiinInfTodayOdrInvalidKaId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.KaIdNoExist => ResponseMessage.RaiinInfTodayOdrKaIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidUKetukeTime => ResponseMessage.RaiinInfTodayOdrInvalidUKetukeTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinStartTime => ResponseMessage.RaiinInfTodayOdrInvalidSinStartTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinEndTime => ResponseMessage.RaiinInfTodayOdrInvalidSinEndTime,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.HpIdNoExist => ResponseMessage.RaiinInfTodayOdrHpIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.PtIdNoExist => ResponseMessage.RaiinInfTodayOdrPtIdNoExist,
+                RaiinInfConst.RaiinInfTodayOdrValidationStatus.RaiinIdNoExist => ResponseMessage.RaiinInfTodayOdrRaiinNoExist,
+                _ => ResponseMessage.Valid,
+            };
         }
     }
 }

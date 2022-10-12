@@ -1,4 +1,4 @@
-﻿using static Helper.Constants.TodayKarteConst;
+﻿using static Helper.Constants.KarteConst;
 
 namespace Domain.Models.KarteInfs
 {
@@ -33,30 +33,30 @@ namespace Domain.Models.KarteInfs
         public DateTime UpdateDate { get; private set; }
         public string CreateName { get; private set; }
 
-        public TodayKarteValidationStatus Validation()
+        public KarteValidationStatus Validation()
         {
             if (HpId <= 0)
             {
-                return TodayKarteValidationStatus.InvalidHpId;
+                return KarteValidationStatus.InvalidHpId;
             }
             if (RaiinNo <= 0)
             {
-                return TodayKarteValidationStatus.InvalidRaiinNo;
+                return KarteValidationStatus.InvalidRaiinNo;
             }
             if (PtId <= 0)
             {
-                return TodayKarteValidationStatus.InvalidPtId;
+                return KarteValidationStatus.InvalidPtId;
             }
             if (SinDate <= 0)
             {
-                return TodayKarteValidationStatus.InvalidSinDate;
+                return KarteValidationStatus.InvalidSinDate;
             }
             if (IsDeleted < 0)
             {
-                return TodayKarteValidationStatus.InvalidIsDelted;
+                return KarteValidationStatus.InvalidIsDelted;
             }
 
-            return TodayKarteValidationStatus.Valid;
+            return KarteValidationStatus.Valid;
         }
     }
 }

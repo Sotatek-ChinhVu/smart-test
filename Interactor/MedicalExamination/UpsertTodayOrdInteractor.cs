@@ -11,9 +11,8 @@ using Domain.Models.SystemGenerationConf;
 using Domain.Models.TodayOdr;
 using Domain.Models.User;
 using Helper.Constants;
-using Microsoft.EntityFrameworkCore;
 using UseCase.MedicalExamination.UpsertTodayOrd;
-using static Helper.Constants.TodayKarteConst;
+using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 
 namespace Interactor.MedicalExamination
@@ -49,18 +48,20 @@ namespace Interactor.MedicalExamination
         {
             try
             {
-                if (inputDatas.OdrItems.Count == 0 && inputDatas.KarteInfs.Count == 0)
-                {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
-                }
-
                 //Raiin Info
                 var inputDataList = inputDatas.OdrItems.ToList();
-                var inputKarteDataList = inputDatas.KarteInfs.ToList();
-                var hpIds = inputDataList.Select(x => x.HpId).Union(inputKarteDataList.Select(x => x.HpId)).Distinct().ToList();
-                var ptIds = inputDataList.Select(x => x.PtId).Union(inputKarteDataList.Select(x => x.PtId)).Distinct().ToList();
-                var raiinNos = inputDataList.Select(x => x.RaiinNo).Union(inputKarteDataList.Select(x => x.RaiinNo)).Distinct().ToList();
-                var sinDates = inputDataList.Select(x => x.SinDate).Union(inputKarteDataList.Select(x => x.SinDate)).Distinct().ToList();
+                var hpIds = inputDataList.Select(x => x.HpId).ToList();
+                hpIds.Add(inputDatas.KarteInf.HpId);
+                hpIds = hpIds.Distinct().ToList();
+                var ptIds = inputDataList.Select(x => x.PtId).ToList();
+                ptIds.Add(inputDatas.KarteInf.PtId);
+                ptIds = ptIds.Distinct().ToList();
+                var raiinNos = inputDataList.Select(x => x.RaiinNo).ToList();
+                raiinNos.Add(inputDatas.KarteInf.RaiinNo);
+                raiinNos = raiinNos.Distinct().ToList();
+                var sinDates = inputDataList.Select(x => x.SinDate).ToList();
+                sinDates.Add(inputDatas.KarteInf.SinDate);
+                sinDates = sinDates.Distinct().ToList();
 
                 var hpId = hpIds[0];
                 var ptId = ptIds[0];
@@ -71,63 +72,47 @@ namespace Interactor.MedicalExamination
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
                 }
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
 
-                var dicKarteValidation = new Dictionary<int, TodayKarteValidationStatus>();
                 List<OrdInfModel> allOdrInfs = new();
-                var karteModels = new List<KarteInfModel>();
 
                 //Odr
                 var dicValidation = CheckOrder(hpId, ptId, sinDate, allOdrInfs, inputDatas, inputDataList);
 
                 // Karte
-                object obj = new();
-                if (inputDatas.KarteInfs.Count > 0)
-                {
-                    karteModels = inputKarteDataList.Select(k => new KarteInfModel(
-                            k.HpId,
-                            k.RaiinNo,
-                            1,
-                            0,
-                            k.PtId,
-                            k.SinDate,
-                            k.Text,
-                            k.IsDeleted,
-                            k.RichText,
-                            DateTime.MinValue,
-                            DateTime.MinValue,
-                            ""
-                        )).ToList();
+                var karteModel = new KarteInfModel(
+                        inputDatas.KarteInf.HpId,
+                        inputDatas.KarteInf.RaiinNo,
+                        1,
+                        0,
+                        inputDatas.KarteInf.PtId,
+                        inputDatas.KarteInf.SinDate,
+                        inputDatas.KarteInf.Text,
+                        inputDatas.KarteInf.IsDeleted,
+                        inputDatas.KarteInf.RichText,
+                        DateTime.MinValue,
+                        DateTime.MinValue,
+                        ""
+                    );
 
-                    Parallel.For(0, karteModels.Count, index =>
-                    {
-                        lock (obj)
-                        {
-                            var karte = karteModels[index];
-                            var modelValidation = karte.Validation();
-                            if (modelValidation != TodayKarteValidationStatus.Valid)
-                            {
-                                dicKarteValidation.Add(index, modelValidation);
-                            }
-                        }
-                    });
+                var validateKarte = karteModel.Validation();
+
+
+                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || dicValidation.Any())
+                {
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, validateKarte);
                 }
 
-                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || dicKarteValidation.Any() || dicValidation.Any())
-                {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, dicKarteValidation);
-                }
+                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel);
 
-                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModels);
-
-                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
             catch
             {
-                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
         }
 

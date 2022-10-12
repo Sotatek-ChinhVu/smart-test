@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, List<KarteInfModel> karteInfModels)
+        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel)
         {
 
             var executionStrategy = _tenantTrackingDataContext.Database.CreateExecutionStrategy();
@@ -37,8 +37,7 @@ namespace Infrastructure.Repositories
                             UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
 
-                        if (karteInfModels.Count > 0)
-                            UpsertKarteInfs(karteInfModels);
+                        UpsertKarteInfs(karteInfModel);
 
                         SaveRaiinListInf(odrInfs);
 
@@ -488,47 +487,69 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(List<KarteInfModel> kartes)
+        private void UpsertKarteInfs(KarteInfModel karte)
         {
-            if (kartes.Count == 0)
+            int hpId = karte.HpId;
+            long ptId = karte.HpId;
+            long raiinNo = karte.RaiinNo;
+            int karteKbn = karte.KarteKbn;
+
+            var seqNo = GetMaxSeqNo(ptId, hpId, raiinNo, karteKbn) + 1;
+
+            if (karte.IsDeleted == DeleteTypes.Deleted)
             {
-                return;
-            }
-
-            int hpId = kartes[0].HpId;
-            long ptId = kartes[0].HpId;
-            long raiinNo = kartes[0].RaiinNo;
-            int karteKbn = kartes[0].KarteKbn;
-
-            foreach (var item in kartes)
-            {
-                var seqNo = GetMaxSeqNo(ptId, hpId, raiinNo, karteKbn) + 1;
-
-                if (item.IsDeleted == DeleteTypes.Deleted)
+                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                if (karteMst != null)
                 {
-                    var karte = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.RaiinNo == item.RaiinNo && item.KarteKbn == o.KarteKbn);
-                    if (karte != null)
+                    karteMst.IsDeleted = DeleteTypes.Deleted;
+                }
+            }
+            else
+            {
+                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+
+                if (karteMst == null)
+                {
+                    if (!string.IsNullOrEmpty(karte.Text) && !string.IsNullOrEmpty(karte.RichText))
                     {
-                        karte.IsDeleted = DeleteTypes.Deleted;
+                        var karteEntity = new KarteInf
+                        {
+                            HpId = karte.HpId,
+                            PtId = karte.PtId,
+                            SinDate = karte.SinDate,
+                            RaiinNo = karte.RaiinNo,
+                            KarteKbn = karte.KarteKbn,
+                            SeqNo = seqNo,
+                            Text = karte.Text,
+                            RichText = Encoding.UTF8.GetBytes(karte.RichText),
+                            IsDeleted = karte.IsDeleted,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName
+                        };
+
+                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
                     }
                 }
                 else
                 {
-                    var karte = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.RaiinNo == item.RaiinNo && item.KarteKbn == o.KarteKbn);
-
-                    if (karte == null)
+                    if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
+                        karteMst.IsDeleted = DeleteTypes.Deleted;
                         var karteEntity = new KarteInf
                         {
-                            HpId = item.HpId,
-                            PtId = item.PtId,
-                            SinDate = item.SinDate,
-                            RaiinNo = item.RaiinNo,
-                            KarteKbn = item.KarteKbn,
+                            HpId = karte.HpId,
+                            PtId = karte.PtId,
+                            SinDate = karte.SinDate,
+                            RaiinNo = karte.RaiinNo,
+                            KarteKbn = karte.KarteKbn,
                             SeqNo = seqNo,
-                            Text = item.Text,
-                            RichText = Encoding.UTF8.GetBytes(item.RichText),
-                            IsDeleted = item.IsDeleted,
+                            Text = karte.Text,
+                            RichText = Encoding.UTF8.GetBytes(karte.RichText),
+                            IsDeleted = karte.IsDeleted,
                             CreateDate = DateTime.UtcNow,
                             CreateId = TempIdentity.UserId,
                             CreateMachine = TempIdentity.ComputerName,
@@ -539,36 +560,12 @@ namespace Infrastructure.Repositories
 
                         _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
                     }
-                    else
-                    {
-                        karte.IsDeleted = DeleteTypes.Deleted;
-                        var karteEntity = new KarteInf
-                        {
-                            HpId = item.HpId,
-                            PtId = item.PtId,
-                            SinDate = item.SinDate,
-                            RaiinNo = item.RaiinNo,
-                            KarteKbn = item.KarteKbn,
-                            SeqNo = seqNo,
-                            Text = item.Text,
-                            RichText = Encoding.UTF8.GetBytes(item.RichText),
-                            IsDeleted = item.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
-                            UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
-                        };
+                }
 
-                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
-                    }
-
-                    var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == item.HpId && k.PtId == item.PtId && item.RichText.Contains(k.FileName) && k.RaiinNo == 0);
-                    foreach (var img in karteImgs)
-                    {
-                        img.RaiinNo = item.RaiinNo;
-                    }
+                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName) && k.RaiinNo == 0);
+                foreach (var img in karteImgs)
+                {
+                    img.RaiinNo = karte.RaiinNo;
                 }
             }
 

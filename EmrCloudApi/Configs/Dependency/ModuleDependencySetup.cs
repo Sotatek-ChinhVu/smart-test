@@ -5,8 +5,8 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
-using Domain.Models.HpMst;
 using Domain.Models.HokenMst;
+using Domain.Models.HpMst;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -22,6 +22,7 @@ using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
+using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
 using Domain.Models.RaiinKbnInf;
@@ -59,6 +60,7 @@ using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.DrugDetail;
+using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
@@ -88,6 +90,7 @@ using Interactor.Schema;
 using Interactor.SetKbnMst;
 using Interactor.SetMst;
 using Interactor.SpecialNote;
+using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
 using Interactor.SystemConf;
 using Interactor.UketukeSbtMst;
@@ -102,6 +105,7 @@ using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.DrugDetail;
+using UseCase.DrugDetailData;
 using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -143,8 +147,8 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
-using UseCase.OrdInfs.Validation;
 using UseCase.OrdInfs.ValidationInputItem;
+using UseCase.OrdInfs.ValidationTodayOrd;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
@@ -179,6 +183,7 @@ using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
+using UseCase.StickyNote;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SystemConf;
@@ -191,11 +196,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.DrugDetailData;
-using Interactor.DrugDetailData;
-using UseCase.StickyNote;
-using Domain.Models.PtTag;
-using Interactor.StickyNote;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -457,7 +457,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
 
             //Validation TodayOrder
-            busBuilder.RegisterUseCase<ValidationOrdInfListInputData, ValidationOrdInfListInteractor>();
+            busBuilder.RegisterUseCase<ValidationTodayOrdInputData, ValidationTodayOrdInteractor>();
 
             //UsageTreeSet
             busBuilder.RegisterUseCase<GetUsageTreeSetInputData, GetUsageTreeSetInteractor>();

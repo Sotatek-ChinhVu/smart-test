@@ -1,8 +1,4 @@
-﻿using EmrCloudApi.Tenant.Responses.OrdInf;
-using UseCase.OrdInfs.GetListTrees;
-using static Helper.Constants.OrderInfConst;
-
-namespace EmrCloudApi.Tenant.Responses.SpecialNote
+﻿namespace EmrCloudApi.Tenant.Responses.SpecialNote
 {
     public class AddAlrgyDrugListResponse
     {
