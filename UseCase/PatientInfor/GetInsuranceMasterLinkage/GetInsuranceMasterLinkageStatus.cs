@@ -3,6 +3,9 @@
     public enum GetInsuranceMasterLinkageStatus
     {
         Successed = 1,
-        InvalidHpId = 2,
+        Failed = 2,
+        NoData = 3,
+        InvalidHpId = 4,
+        InvalidFutansyaNo = 5,
     }
 }
