@@ -59,10 +59,10 @@ public class UserController : ControllerBase
         return new ActionResult<Response<UpsertUserResponse>>(presenter.Result);
     }
 
-    private static UpsertUserListInputItem UserInfoRequestToModel(UserInfoRequest userInfoRequest)
+    private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest)
     {
         return
-            new UpsertUserListInputItem
+            new UserMstModel
             (
                 userInfoRequest.HpId,
                 userInfoRequest.Id,

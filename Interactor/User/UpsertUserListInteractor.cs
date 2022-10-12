@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.Insurance;
+using Domain.Models.Ka;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
 using System;
@@ -16,10 +17,12 @@ namespace Interactor.User
     public class UpsertUserListInteractor : IUpsertUserListInputPort
     {
         private readonly IUserRepository _userRepository;
+        private readonly IKaRepository _kaRepository;
 
-        public UpsertUserListInteractor(IUserRepository userRepository)
+        public UpsertUserListInteractor(IUserRepository userRepository, IKaRepository kaRepository)
         {
             _userRepository = userRepository;
+            _kaRepository = kaRepository;
         }
 
         public UpsertUserListOutputData Handle(UpsertUserListInputData inputData)
@@ -58,6 +61,22 @@ namespace Interactor.User
                         return new UpsertUserListOutputData(ConvertStatusUser(status));
                     }
                 }
+
+
+                if(!_kaRepository.CheckKaId(datas.Select(u => u.KaId).FirstOrDefault()))
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListIdNoExist);
+                }
+
+                if (!_userRepository.CheckExistedId(datas.Select(u => u.Id).ToList()))
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidId);
+                }
+
+                if(!_userRepository.CheckExistedUserId(datas.Select(u => u.UserId).FirstOrDefault()))
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidUserId);
+                }    
 
                 _userRepository.Upsert(datas);
 
