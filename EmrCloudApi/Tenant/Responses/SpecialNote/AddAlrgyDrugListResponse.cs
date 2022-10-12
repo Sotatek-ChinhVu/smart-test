@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Tenant.Responses.OrdInf;
 using UseCase.OrdInfs.GetListTrees;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace EmrCloudApi.Tenant.Responses.SpecialNote
 {

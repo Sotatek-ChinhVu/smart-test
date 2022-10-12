@@ -3,7 +3,7 @@ using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.SystemGenerationConf;
 using UseCase.OrdInfs.ValidationInputItem;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace Interactor.OrdInfs
 {

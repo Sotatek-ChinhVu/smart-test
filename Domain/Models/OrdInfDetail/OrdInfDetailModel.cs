@@ -1,7 +1,7 @@
 ﻿using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfDetails
 {
@@ -213,172 +213,172 @@ namespace Domain.Models.OrdInfDetails
             }
         }
 
-        public TodayOrdValidationStatus Validation(int flag)
+        public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
 
             if (RowNo <= 0)
             {
-                return TodayOrdValidationStatus.InvalidRowNo;
+                return OrdInfValidationStatus.InvalidRowNo;
             }
             if (SinKouiKbn < 0)
             {
-                return TodayOrdValidationStatus.InvalidSinKouiKbn;
+                return OrdInfValidationStatus.InvalidSinKouiKbn;
             }
             if (ItemCd.Length > 10)
             {
-                return TodayOrdValidationStatus.InvalidItemCd;
+                return OrdInfValidationStatus.InvalidItemCd;
             }
             if (ItemName.Length > 240)
             {
-                return TodayOrdValidationStatus.InvalidItemName;
+                return OrdInfValidationStatus.InvalidItemName;
             }
             if (Suryo < 0 || (ItemCd == ItemCdConst.JikanKihon && !(Suryo >= 0 && Suryo <= 7)) || (ItemCd == ItemCdConst.SyosaiKihon && !(Suryo >= 0 && Suryo <= 8)))
             {
-                return TodayOrdValidationStatus.InvalidSuryo;
+                return OrdInfValidationStatus.InvalidSuryo;
             }
             if (UnitName.Length > 24)
             {
-                return TodayOrdValidationStatus.InvalidUnitName;
+                return OrdInfValidationStatus.InvalidUnitName;
             }
             if (!(SyohoKbn >= 0 && SyohoKbn <= 3))
             {
-                return TodayOrdValidationStatus.InvalidSyohoKbn;
+                return OrdInfValidationStatus.InvalidSyohoKbn;
             }
             if (!(YohoKbn >= 0 && YohoKbn <= 2))
             {
-                return TodayOrdValidationStatus.InvalidYohoKbn;
+                return OrdInfValidationStatus.InvalidYohoKbn;
             }
             if (Bunkatu.Length > 10)
             {
-                return TodayOrdValidationStatus.InvalidBunkatuLength;
+                return OrdInfValidationStatus.InvalidBunkatuLength;
             }
             if (CmtName.Length > 240)
             {
-                return TodayOrdValidationStatus.InvalidCmtName;
+                return OrdInfValidationStatus.InvalidCmtName;
             }
             if (CmtOpt.Length > 38)
             {
-                return TodayOrdValidationStatus.InvalidCmtOpt;
+                return OrdInfValidationStatus.InvalidCmtOpt;
             }
 
             if (flag == 0)
             {
                 if (HpId <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidHpId;
+                    return OrdInfValidationStatus.InvalidHpId;
                 }
                 if (RaiinNo <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidRaiinNo;
+                    return OrdInfValidationStatus.InvalidRaiinNo;
                 }
                 if (RpNo <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidRpNo;
+                    return OrdInfValidationStatus.InvalidRpNo;
                 }
                 if (RpEdaNo <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidRpEdaNo;
+                    return OrdInfValidationStatus.InvalidRpEdaNo;
                 }
                 if (RowNo <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidRowNo;
+                    return OrdInfValidationStatus.InvalidRowNo;
                 }
                 if (PtId <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidPtId;
+                    return OrdInfValidationStatus.InvalidPtId;
                 }
                 if (SinDate <= 0)
                 {
-                    return TodayOrdValidationStatus.InvalidSinDate;
+                    return OrdInfValidationStatus.InvalidSinDate;
                 }
                 if (SinKouiKbn < 0)
                 {
-                    return TodayOrdValidationStatus.InvalidSinKouiKbn;
+                    return OrdInfValidationStatus.InvalidSinKouiKbn;
                 }
                 if (ItemCd.Length > 10)
                 {
-                    return TodayOrdValidationStatus.InvalidItemCd;
+                    return OrdInfValidationStatus.InvalidItemCd;
                 }
                 if (ItemName.Length > 240)
                 {
-                    return TodayOrdValidationStatus.InvalidItemName;
+                    return OrdInfValidationStatus.InvalidItemName;
                 }
                 if (Suryo < 0)
                 {
-                    return TodayOrdValidationStatus.InvalidSuryo;
+                    return OrdInfValidationStatus.InvalidSuryo;
                 }
                 if (UnitName.Length > 24)
                 {
-                    return TodayOrdValidationStatus.InvalidUnitName;
+                    return OrdInfValidationStatus.InvalidUnitName;
                 }
                 if (UnitSbt != 0 && UnitSbt != 1 && UnitSbt != 2)
                 {
-                    return TodayOrdValidationStatus.InvalidUnitSbt;
+                    return OrdInfValidationStatus.InvalidUnitSbt;
                 }
                 if (TermVal < 0)
                 {
-                    return TodayOrdValidationStatus.InvalidTermVal;
+                    return OrdInfValidationStatus.InvalidTermVal;
                 }
                 if (!(SyohoKbn >= 0 && SyohoKbn <= 3))
                 {
-                    return TodayOrdValidationStatus.InvalidSyohoKbn;
+                    return OrdInfValidationStatus.InvalidSyohoKbn;
                 }
                 if (!(SyohoLimitKbn >= 0 && SyohoLimitKbn <= 3))
                 {
-                    return TodayOrdValidationStatus.InvalidSyohoLimitKbn;
+                    return OrdInfValidationStatus.InvalidSyohoLimitKbn;
                 }
                 if (!(YohoKbn >= 0 && YohoKbn <= 2))
                 {
-                    return TodayOrdValidationStatus.InvalidYohoKbn;
+                    return OrdInfValidationStatus.InvalidYohoKbn;
                 }
                 if (!(IsNodspRece >= 0 && IsNodspRece <= 1))
                 {
-                    return TodayOrdValidationStatus.InvalidIsNodspRece;
+                    return OrdInfValidationStatus.InvalidIsNodspRece;
                 }
                 if (IpnCd.Length > 12)
                 {
-                    return TodayOrdValidationStatus.InvalidIpnCd;
+                    return OrdInfValidationStatus.InvalidIpnCd;
                 }
                 if (IpnName.Length > 120)
                 {
-                    return TodayOrdValidationStatus.InvalidIpnName;
+                    return OrdInfValidationStatus.InvalidIpnName;
                 }
                 if (!(JissiKbn >= 0 && JissiKbn <= 1))
                 {
-                    return TodayOrdValidationStatus.InvalidJissiKbn;
+                    return OrdInfValidationStatus.InvalidJissiKbn;
                 }
                 if (JissiId < 0)
                 {
-                    return TodayOrdValidationStatus.InvalidJissiId;
+                    return OrdInfValidationStatus.InvalidJissiId;
                 }
                 if (JissiMachine.Length > 60)
                 {
-                    return TodayOrdValidationStatus.InvalidJissiMachine;
+                    return OrdInfValidationStatus.InvalidJissiMachine;
                 }
                 if (ReqCd.Length > 10)
                 {
-                    return TodayOrdValidationStatus.InvalidReqCd;
+                    return OrdInfValidationStatus.InvalidReqCd;
                 }
                 if (Bunkatu.Length > 10)
                 {
-                    return TodayOrdValidationStatus.InvalidBunkatuLength;
+                    return OrdInfValidationStatus.InvalidBunkatuLength;
                 }
                 if (CmtName.Length > 240)
                 {
-                    return TodayOrdValidationStatus.InvalidCmtName;
+                    return OrdInfValidationStatus.InvalidCmtName;
                 }
                 if (CmtOpt.Length > 38)
                 {
-                    return TodayOrdValidationStatus.InvalidCmtOpt;
+                    return OrdInfValidationStatus.InvalidCmtOpt;
                 }
                 if (FontColor.Length > 8)
                 {
-                    return TodayOrdValidationStatus.InvalidFontColor;
+                    return OrdInfValidationStatus.InvalidFontColor;
                 }
                 if (!(CommentNewline >= 0 && CommentNewline <= 1))
                 {
-                    return TodayOrdValidationStatus.InvalidCommentNewline;
+                    return OrdInfValidationStatus.InvalidCommentNewline;
                 }
             }
             #endregion
@@ -387,59 +387,59 @@ namespace Domain.Models.OrdInfDetails
 
             if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0))
             {
-                return TodayOrdValidationStatus.InvalidSuryo;
+                return OrdInfValidationStatus.InvalidSuryo;
             }
             if (!KohatuKbns.ContainsValue(KohatuKbn))
             {
-                return TodayOrdValidationStatus.InvalidKohatuKbn;
+                return OrdInfValidationStatus.InvalidKohatuKbn;
             }
 
             if (!DrugKbns.ContainsValue(DrugKbn))
             {
-                return TodayOrdValidationStatus.InvalidDrugKbn;
+                return OrdInfValidationStatus.InvalidDrugKbn;
             }
 
             if (!string.IsNullOrWhiteSpace(DisplayedUnit))
             {
                 if (string.IsNullOrEmpty(DisplayedQuantity))
                 {
-                    return TodayOrdValidationStatus.InvalidQuantityUnit;
+                    return OrdInfValidationStatus.InvalidQuantityUnit;
                 }
                 else if (Suryo > 0 && (Price > 0 && Suryo * Price > 999999999))
                 {
-                    return TodayOrdValidationStatus.InvalidPrice;
+                    return OrdInfValidationStatus.InvalidPrice;
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(DisplayedUnit) && (YohoKbn == 1 && Suryo > 999))
             {
-                return TodayOrdValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull;
+                return OrdInfValidationStatus.InvalidSuryoAndYohoKbnWhenDisplayedUnitNotNull;
             }
 
             if (ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu && (Suryo == 0 && string.IsNullOrWhiteSpace(Bunkatu)))
             {
-                return TodayOrdValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu;
+                return OrdInfValidationStatus.InvalidSuryoBunkatuWhenIsCon_TouyakuOrSiBunkatu;
             }
 
             if (ItemCd == ItemCdConst.Con_Refill && Suryo > RefillSetting)
             {
-                return TodayOrdValidationStatus.InvalidSuryoOfReffill;
+                return OrdInfValidationStatus.InvalidSuryoOfReffill;
             }
 
             if (Is840Cmt && (CmtCol1 > 0 && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName))))
             {
-                return TodayOrdValidationStatus.InvalidCmt840;
+                return OrdInfValidationStatus.InvalidCmt840;
             }
 
             if (Is842Cmt)
             {
                 if (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName))
                 {
-                    return TodayOrdValidationStatus.InvalidCmt842;
+                    return OrdInfValidationStatus.InvalidCmt842;
                 }
                 else if (!string.IsNullOrEmpty(CmtOpt) && CmtOpt.Length > 38)
                 {
-                    return TodayOrdValidationStatus.InvalidCmt842CmtOptMoreThan38;
+                    return OrdInfValidationStatus.InvalidCmt842CmtOptMoreThan38;
                 }
             }
 
@@ -449,17 +449,17 @@ namespace Domain.Models.OrdInfDetails
 
                 if (string.IsNullOrEmpty(CmtOpt) && CmtOpt != fullSpace)
                 {
-                    return TodayOrdValidationStatus.InvalidCmt830CmtOpt;
+                    return OrdInfValidationStatus.InvalidCmt830CmtOpt;
                 }
                 else if (!string.IsNullOrEmpty(CmtOpt) && CmtOpt.Length > 38)
                 {
-                    return TodayOrdValidationStatus.InvalidCmt830CmtOptMoreThan38;
+                    return OrdInfValidationStatus.InvalidCmt830CmtOptMoreThan38;
                 }
             }
 
             if (Is831Cmt && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName)))
             {
-                return TodayOrdValidationStatus.InvalidCmt831;
+                return OrdInfValidationStatus.InvalidCmt831;
             }
 
             if (Is850Cmt)
@@ -469,11 +469,11 @@ namespace Domain.Models.OrdInfDetails
                 {
                     if (CmtName.Contains('日'))
                     {
-                        return TodayOrdValidationStatus.InvalidCmt850Date;
+                        return OrdInfValidationStatus.InvalidCmt850Date;
                     }
                     else
                     {
-                        return TodayOrdValidationStatus.InvalidCmt850OtherDate;
+                        return OrdInfValidationStatus.InvalidCmt850OtherDate;
                     }
                 }
             }
@@ -483,7 +483,7 @@ namespace Domain.Models.OrdInfDetails
                 string cmtOpt = OdrUtil.GetCmtOpt851(CmtOpt);
                 if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
                 {
-                    return TodayOrdValidationStatus.InvalidCmt851;
+                    return OrdInfValidationStatus.InvalidCmt851;
                 }
             }
 
@@ -492,7 +492,7 @@ namespace Domain.Models.OrdInfDetails
                 string cmtOpt = OdrUtil.GetCmtOpt852(CmtOpt);
                 if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
                 {
-                    return TodayOrdValidationStatus.InvalidCmt852;
+                    return OrdInfValidationStatus.InvalidCmt852;
                 }
             }
 
@@ -501,17 +501,17 @@ namespace Domain.Models.OrdInfDetails
                 string cmtOpt = OdrUtil.GetCmtOpt853(CmtOpt, SinDate);
                 if (string.IsNullOrEmpty(cmtOpt) || string.IsNullOrEmpty(CmtName))
                 {
-                    return TodayOrdValidationStatus.InvalidCmt853;
+                    return OrdInfValidationStatus.InvalidCmt853;
                 }
             }
 
             if (Is880Cmt && (string.IsNullOrEmpty(CmtOpt) || string.IsNullOrEmpty(CmtName)))
             {
-                return TodayOrdValidationStatus.InvalidCmt880;
+                return OrdInfValidationStatus.InvalidCmt880;
             }
             #endregion
 
-            return TodayOrdValidationStatus.Valid;
+            return OrdInfValidationStatus.Valid;
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿using UseCase.Core.Sync.Core;
 using static Helper.Constants.RaiinInfConst;
 using static Helper.Constants.TodayKarteConst;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace UseCase.MedicalExamination.UpsertTodayOrd
 {
     public class UpsertTodayOrdOutputData : IOutputData
     {
-        public UpsertTodayOrdOutputData(UpsertTodayOrdStatus status, RaiinInfTodayOdrValidationStatus validationRaiinInf, Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> validationOdrs, Dictionary<int, TodayKarteValidationStatus> validationKartes)
+        public UpsertTodayOrdOutputData(UpsertTodayOrdStatus status, RaiinInfTodayOdrValidationStatus validationRaiinInf, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOdrs, Dictionary<int, TodayKarteValidationStatus> validationKartes)
         {
             Status = status;
             ValidationRaiinInf = validationRaiinInf;
@@ -18,7 +18,7 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public UpsertTodayOrdStatus Status { get; private set; }
 
         public RaiinInfTodayOdrValidationStatus ValidationRaiinInf { get; private set; }
-        public Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> ValidationOdrs { get; private set; }
+        public Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> ValidationOdrs { get; private set; }
         public Dictionary<int, TodayKarteValidationStatus> ValidationKartes { get; private set; }
 
     }
