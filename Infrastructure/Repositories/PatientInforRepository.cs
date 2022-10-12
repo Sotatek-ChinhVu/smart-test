@@ -864,37 +864,5 @@ namespace Infrastructure.Repositories
 
             return listDefHoken;
         }
-
-        public List<HokenMstModel> GetHokenMstName(int hpId, string futansyaNo)
-        {
-            int hokenNo = Int32.Parse(string.Concat(futansyaNo.Substring(0, 1), futansyaNo.Substring(1, 2)));
-
-            var listHokenMstName = _tenantDataContext.HokenMsts
-                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
-                .OrderBy(x => x.SortNo)
-                .Select(x => new HokenMstModel(
-                    x.HpId,
-                    x.PrefNo,
-                    x.HokenNo,
-                    x.HokenSbtKbn,
-                    x.HokenKohiKbn,
-                    x.Houbetu,
-                    x.HokenName,
-                    x.HokenNameCd,
-                    x.HokenEdaNo,
-                    x.StartDate,
-                    x.EndDate,
-                    x.IsOtherPrefValid,
-                    x.HokenSname,
-                    string.Empty,
-                    x.ReceKisai,
-                    x.FutanKbn,
-                    x.FutanRate
-                    ))
-                .OrderBy(x => x.HokenEdaNo)
-                .ToList();
-
-            return listHokenMstName;
-        }
     }
 }
