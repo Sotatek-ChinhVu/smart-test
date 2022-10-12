@@ -53,7 +53,6 @@
                     return Name;
                 }
             }
-
             return string.Empty;
         }
 
@@ -70,7 +69,6 @@
                     return string.Empty;
                 }
             }
-
             return string.Empty;
         }
 
@@ -87,7 +85,6 @@
                     return KanaName;
                 }
             }
-
             return string.Empty;
         }
 
