@@ -1,5 +1,4 @@
 ﻿using Domain.Models.MstItem;
-using Helper.Common;
 using UseCase.MstItem.SearchTenItem;
 
 namespace Interactor.MstItem
@@ -34,7 +33,7 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InvalidPageIndex);
             }
 
-            if (inputData.PageCount <= 0)
+            if (inputData.PageCount < 0)
             {
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InvalidPageCount);
             }
