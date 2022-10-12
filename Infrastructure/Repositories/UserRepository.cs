@@ -110,15 +110,13 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    var userMsts = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if( userMsts != null)
                     {
                         var updateUser = ConvertUserList(inputData);
                         updateUser.UpdateId = TempIdentity.UserId;
                         updateUser.UpdateDate = DateTime.UtcNow;
-                        updateUser.UpdateMachine = TempIdentity.ComputerName;
-                        _tenantTrackingDataContext.Update(updateUser);
-                    }
+                        updateUser.UpdateMachine = TempIdentity.ComputerName;                    }
                     else
                     {
                         _tenantTrackingDataContext.UserMsts.Add(ConvertUserList(inputData));

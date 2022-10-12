@@ -60,23 +60,15 @@ namespace Interactor.User
                     {
                         return new UpsertUserListOutputData(ConvertStatusUser(status));
                     }
+                    if (!_kaRepository.CheckKaId(data.KaId))
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListIdNoExist);
+                    }
+                    if (!_userRepository.CheckExistedId(new List<long> { data.Id}))
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidId);
+                    }
                 }
-
-
-                if(!_kaRepository.CheckKaId(datas.Select(u => u.KaId).FirstOrDefault()))
-                {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListIdNoExist);
-                }
-
-                if (!_userRepository.CheckExistedId(datas.Select(u => u.Id).ToList()))
-                {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidId);
-                }
-
-                if(!_userRepository.CheckExistedUserId(datas.Select(u => u.UserId).FirstOrDefault()))
-                {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidUserId);
-                }    
 
                 _userRepository.Upsert(datas);
 
