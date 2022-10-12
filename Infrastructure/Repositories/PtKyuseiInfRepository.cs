@@ -1,4 +1,4 @@
-﻿using Domain.Models.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor.PtKyuseiInf;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

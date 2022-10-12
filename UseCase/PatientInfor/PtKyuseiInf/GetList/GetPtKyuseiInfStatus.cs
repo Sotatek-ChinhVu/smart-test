@@ -1,4 +1,4 @@
-﻿namespace UseCase.PtKyuseiInf.GetList
+﻿namespace UseCase.PatientInfor.PtKyuseiInf.GetList
 {
     public enum GetPtKyuseiInfStatus
     {

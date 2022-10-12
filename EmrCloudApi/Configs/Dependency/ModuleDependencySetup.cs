@@ -20,9 +20,9 @@ using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
+using Domain.Models.PatientInfor.PtKyuseiInf;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
-using Domain.Models.PtKyuseiInf;
 using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
@@ -80,8 +80,8 @@ using Interactor.MstItem;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
+using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientRaiinKubun;
-using Interactor.PtKyuseiInf;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
@@ -154,12 +154,12 @@ using UseCase.OrdInfs.ValidationInputItem;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
-using UseCase.PtKyuseiInf.GetList;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
@@ -347,6 +347,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SearchEmptyIdInputData, SearchEmptyIdInteractor>();
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
             busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
+            busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
@@ -488,9 +489,6 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validate InputItem 
             busBuilder.RegisterUseCase<ValidationInputItemInputData, ValidationInputitemInteractor>();
-
-            //PtKyusei Inf
-            busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

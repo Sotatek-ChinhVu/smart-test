@@ -1,7 +1,7 @@
-﻿using Domain.Models.PtKyuseiInf;
-using UseCase.PtKyuseiInf.GetList;
+﻿using Domain.Models.PatientInfor.PtKyuseiInf;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 
-namespace Interactor.PtKyuseiInf
+namespace Interactor.PatientInfor.PtKyuseiInf
 {
     public class GetPtKyuseiInfInteractor : IGetPtKyuseiInfInputPort
     {

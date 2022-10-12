@@ -1,7 +1,7 @@
-﻿using Domain.Models.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor.PtKyuseiInf;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.PtKyuseiInf.GetList
+namespace UseCase.PatientInfor.PtKyuseiInf.GetList
 {
     public class GetPtKyuseiInfOutputData : IOutputData
     {

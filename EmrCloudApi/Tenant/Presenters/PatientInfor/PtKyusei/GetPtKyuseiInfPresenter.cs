@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.PtKyuseiInf;
-using UseCase.PtKyuseiInf.GetList;
+using EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 
-namespace EmrCloudApi.Tenant.Presenters.PtKyusei
+namespace EmrCloudApi.Tenant.Presenters.PatientInfor.PtKyusei
 {
     public class GetPtKyuseiInfPresenter : IGetPtKyuseiInfOutputPort
     {

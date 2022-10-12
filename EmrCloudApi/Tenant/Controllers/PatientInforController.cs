@@ -7,6 +7,7 @@ using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using EmrCloudApi.Tenant.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
@@ -15,6 +16,7 @@ using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
@@ -24,6 +26,7 @@ using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
@@ -41,6 +44,7 @@ using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.PatientComment;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
@@ -338,6 +342,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidateMainInsuranceReponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtKyuseiInf)]
+        public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
+        {
+            var input = new GetPtKyuseiInfInputData(request.HpId, request.PtId, request.IsDeleted);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetPtKyuseiInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetPtKyuseiInfResponse>>(presenter.Result);
         }
     }
 }

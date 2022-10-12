@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.PtKyuseiInf
+﻿namespace Domain.Models.PatientInfor.PtKyuseiInf
 {
     public interface IPtKyuseiInfRepository
     {

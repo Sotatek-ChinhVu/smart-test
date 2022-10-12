@@ -1,6 +1,6 @@
-﻿using Domain.Models.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor.PtKyuseiInf;
 
-namespace EmrCloudApi.Tenant.Responses.PtKyuseiInf
+namespace EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf
 {
     public class GetPtKyuseiInfResponse
     {

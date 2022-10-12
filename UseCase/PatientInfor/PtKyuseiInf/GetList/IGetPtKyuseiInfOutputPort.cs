@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.PtKyuseiInf.GetList
+namespace UseCase.PatientInfor.PtKyuseiInf.GetList
 {
     public interface IGetPtKyuseiInfOutputPort : IOutputPort<GetPtKyuseiInfOutputData>
     {

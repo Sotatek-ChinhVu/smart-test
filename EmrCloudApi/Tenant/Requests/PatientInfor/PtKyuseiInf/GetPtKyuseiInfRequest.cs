@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.PtKyuseiInf
+﻿namespace EmrCloudApi.Tenant.Requests.PatientInfor.PtKyuseiInf
 {
     public class GetPtKyuseiInfRequest
     {
