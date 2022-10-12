@@ -5,9 +5,11 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinKubun;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.LoadData;
+using UseCase.RaiinKubunMst.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -43,6 +45,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<LoadDataKubunSettingResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SaveList + "KubunSetting")]
+        public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
+        {
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x=>x.Map()).ToList());
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveDataKubunSettingPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<SaveDataKubunSettingResponse>>(presenter.Result);
         }
     }
 }
