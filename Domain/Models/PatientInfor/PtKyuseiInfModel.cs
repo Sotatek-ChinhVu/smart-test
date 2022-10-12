@@ -58,7 +58,7 @@
 
         private string SetLastName()
         {
-            if (!string.IsNullOrWhiteSpace(Name))
+            if (!string.IsNullOrWhiteSpace(Name) && Name.Contains("　"))
             {
                 try
                 {
@@ -90,7 +90,7 @@
 
         private string SetLastKanaName()
         {
-            if (!string.IsNullOrWhiteSpace(KanaName))
+            if (!string.IsNullOrWhiteSpace(KanaName) && KanaName.Contains(" "))
             {
                 try
                 {
