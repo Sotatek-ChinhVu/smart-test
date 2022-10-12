@@ -4,6 +4,7 @@ using Helper.Common;
 using Helper.Constant;
 using Helper.Constants;
 using Helper.Extension;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.InsuranceInfor
 {
@@ -46,6 +47,26 @@ namespace Domain.Models.InsuranceInfor
             Kohi4 = new KohiInfModel(kohi4Id);
         }
 
+        [JsonConstructor]
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4)
+        {
+            HpId = hpId;
+            PtId = ptId;
+            PtBirthday = ptBirthday;
+            SeqNo = seqNo;
+            HokenSbtCd = hokenSbtCd;
+            HokenPid = hokenPid;
+            HokenKbn = hokenKbn;
+            HokenMemo = hokenMemo;
+            SinDate = sinDate;
+            IsDeleted = isDeleted;
+            HokenInf = hokenInf;
+            Kohi1 = kohi1 ?? new KohiInfModel(0);
+            Kohi2 = kohi2 ?? new KohiInfModel(0);
+            Kohi3 = kohi3 ?? new KohiInfModel(0);
+            Kohi4 = kohi4 ?? new KohiInfModel(0);
+        }
+
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
@@ -66,7 +87,7 @@ namespace Domain.Models.InsuranceInfor
 
         public int IsDeleted { get; private set; }
 
-        private readonly HokenInfModel HokenInf;
+        public HokenInfModel HokenInf { get; private set; }
 
         public KohiInfModel Kohi1 { get; private set; }
 

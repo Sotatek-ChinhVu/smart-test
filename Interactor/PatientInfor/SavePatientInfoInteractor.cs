@@ -28,9 +28,9 @@ namespace Interactor.PatientInfor
             {
                 bool result = false;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtSanteis, inputData.HokenPartterns, inputData.PtGrps);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient,inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtSanteis, inputData.HokenPartterns, inputData.PtGrps);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
 
                 if (result)
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful);

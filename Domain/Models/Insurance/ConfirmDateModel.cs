@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
@@ -31,6 +32,18 @@ namespace Domain.Models.Insurance
             CheckName = checkName;
             CheckComment = checkComment;
             ConfirmDate = int.Parse(confirmDate.ToString("yyyyMMdd"));
+        }
+
+        [JsonConstructor]
+        public ConfirmDateModel(int hokenGrp, int hokenId, long seqNo, int checkId, string checkName, string checkComment, int confirmDate)
+        {
+            HokenGrp = hokenGrp;
+            HokenId = hokenId;
+            SeqNo = seqNo;
+            CheckId = checkId;
+            CheckName = checkName;
+            CheckComment = checkComment;
+            ConfirmDate = confirmDate;
         }
     }
 }
