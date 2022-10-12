@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.PatientInfor.PtKyuseiInf
+﻿namespace Domain.Models.PatientInfor
 {
     public class PtKyuseiInfModel
     {

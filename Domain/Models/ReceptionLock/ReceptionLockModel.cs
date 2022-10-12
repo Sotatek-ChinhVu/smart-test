@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.LockInf
+﻿namespace Domain.Models.LockInf
 {
     public class ReceptionLockModel
     {
@@ -21,14 +15,14 @@ namespace Domain.Models.LockInf
             LockDate = lockDate;
         }
 
-        public int HpId { get; set; }
-        public long PtId { get; set; }
-        public string FunctionCd { get; set; }
-        public long SinDate { get; set; }
-        public long RaiinNo { get; set; }
-        public long OyaRaiinNo { get; set; }
-        public string Machine { get; set; }
-        public int UserId { get; set; }
-        public DateTime LockDate { get; set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public string FunctionCd { get; private set; }
+        public long SinDate { get; private set; }
+        public long RaiinNo { get; private set; }
+        public long OyaRaiinNo { get; private set; }
+        public string Machine { get; private set; }
+        public int UserId { get; private set; }
+        public DateTime LockDate { get; private set; }
     }
 }

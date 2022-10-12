@@ -1,4 +1,4 @@
-﻿using Domain.Models.PatientInfor.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor;
 
 namespace EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf
 {

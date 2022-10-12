@@ -20,7 +20,6 @@ using Domain.Models.MstItem;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.PtKyuseiInf;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
 using Domain.Models.PtTag;
@@ -292,7 +291,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            services.AddTransient<IPtKyuseiInfRepository, PtKyuseiInfRepository>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
         }
 

@@ -1,4 +1,4 @@
-﻿using Domain.Models.PatientInfor.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.PatientInfor.PtKyuseiInf.GetList

@@ -1,15 +1,15 @@
-﻿using Domain.Models.PatientInfor.PtKyuseiInf;
+﻿using Domain.Models.PatientInfor;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 
 namespace Interactor.PatientInfor.PtKyuseiInf
 {
     public class GetPtKyuseiInfInteractor : IGetPtKyuseiInfInputPort
     {
-        private readonly IPtKyuseiInfRepository _ptKyuseiInfRepository;
+        private readonly IPatientInforRepository _patientInforRepository;
 
-        public GetPtKyuseiInfInteractor(IPtKyuseiInfRepository ptKyuseiInfRepository)
+        public GetPtKyuseiInfInteractor(IPatientInforRepository patientInforRepository)
         {
-            _ptKyuseiInfRepository = ptKyuseiInfRepository;
+            _patientInforRepository = patientInforRepository;
         }
 
         public GetPtKyuseiInfOutputData Handle(GetPtKyuseiInfInputData inputData)
@@ -22,7 +22,7 @@ namespace Interactor.PatientInfor.PtKyuseiInf
                 if (inputData.PtId <= 0)
                     return new GetPtKyuseiInfOutputData(new List<PtKyuseiInfModel>(), GetPtKyuseiInfStatus.InValidPtId);
 
-                var listPtKyuseiInf = _ptKyuseiInfRepository.PtKyuseiInfModels(inputData.HpId, inputData.PtId, inputData.IsDeleted);
+                var listPtKyuseiInf = _patientInforRepository.PtKyuseiInfModels(inputData.HpId, inputData.PtId, inputData.IsDeleted);
 
                 if (!listPtKyuseiInf.Any())
                     return new GetPtKyuseiInfOutputData(new List<PtKyuseiInfModel>(), GetPtKyuseiInfStatus.NoData);
