@@ -837,5 +837,64 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo)
+        {
+            int hokenNo = Int32.Parse(string.Concat(futansyaNo.Substring(0, 1), futansyaNo.Substring(1, 2)));
+
+            var listDefHoken = _tenantDataContext.DefHokenNos
+                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
+                .OrderBy(x => x.SortNo)
+                .Select(x => new DefHokenNoModel(
+                    x.HpId,
+                    x.Digit1,
+                    x.Digit2,
+                    x.Digit3,
+                    x.Digit4,
+                    x.Digit5,
+                    x.Digit6,
+                    x.Digit7,
+                    x.Digit8,
+                    x.HokenNo,
+                    x.HokenEdaNo,
+                    x.SortNo,
+                    x.IsDeleted
+                    ))
+                .ToList();
+
+            return listDefHoken;
+        }
+
+        public List<HokenMstModel> GetHokenMstName(int hpId, string futansyaNo)
+        {
+            int hokenNo = Int32.Parse(string.Concat(futansyaNo.Substring(0, 1), futansyaNo.Substring(1, 2)));
+
+            var listHokenMstName = _tenantDataContext.HokenMsts
+                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
+                .OrderBy(x => x.SortNo)
+                .Select(x => new HokenMstModel(
+                    x.HpId,
+                    x.PrefNo,
+                    x.HokenNo,
+                    x.HokenSbtKbn,
+                    x.HokenKohiKbn,
+                    x.Houbetu,
+                    x.HokenName,
+                    x.HokenNameCd,
+                    x.HokenEdaNo,
+                    x.StartDate,
+                    x.EndDate,
+                    x.IsOtherPrefValid,
+                    x.HokenSname,
+                    string.Empty,
+                    x.ReceKisai,
+                    x.FutanKbn,
+                    x.FutanRate
+                    ))
+                .OrderBy(x => x.HokenEdaNo)
+                .ToList();
+
+            return listHokenMstName;
+        }
     }
 }

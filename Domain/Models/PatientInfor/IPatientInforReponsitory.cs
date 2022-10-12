@@ -28,5 +28,9 @@ namespace Domain.Models.PatientInfor
         bool CheckListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
+
+        List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
+
+        List<HokenMstModel> GetHokenMstName(int hpId, string futansyaNo);
     }
 }
