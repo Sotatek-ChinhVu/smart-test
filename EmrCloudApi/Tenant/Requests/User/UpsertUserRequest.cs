@@ -42,5 +42,6 @@
         public int IsDeleted { get; set; }
 
         public bool IsInsertModel { get; set; }
+        public int HpId { get; set; }
     }
 }

@@ -15,7 +15,7 @@ public class GetUserByLoginIdInteractorTest
         var testLoginId = "test login id";
         var mockUserRepo = new Mock<IUserRepository>();
         mockUserRepo.Setup(repo => repo.GetByLoginId(testLoginId))
-            .Returns(new UserMstModel(1, 1, 1, 1, 1, string.Empty, string.Empty,
+            .Returns(new UserMstModel(1, 1, 1, 1, 1, 1, string.Empty, string.Empty,
                 string.Empty, string.Empty, testLoginId, string.Empty,
                 string.Empty, 1, 1, 1, string.Empty, DeleteTypes.None));
         var interactor = new GetUserByLoginIdInteractor(mockUserRepo.Object);

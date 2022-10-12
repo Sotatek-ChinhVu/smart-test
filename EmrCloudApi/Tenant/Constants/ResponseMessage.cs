@@ -89,23 +89,23 @@
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //User controller
-        public static readonly string UserListInputNoData = "UserListInputNoData";
-        public static readonly string UserListInvalidId = "UserListInvalidId";
-        public static readonly string UserListInvalidUserId = "UserListInvalidUserId";
-        public static readonly string UserListInvalidJobCd = "UserListInvalidJobCd";
-        public static readonly string UserListInvalidManagerKbn = "UserListInvalidManagerKbn";
-        public static readonly string UserListInvalidkaId = "UserListInvalidkaId"; 
-        public static readonly string UserListInvalidKanaName = "UserListInvalidKanaName";
-        public static readonly string UserListInvalidName = "UserListInvalidName";
-        public static readonly string UserListInvalidSname = "UserListInvalidSname";
-        public static readonly string UserListInvalidLoginId = "UserListInvalidLoginId";
-        public static readonly string UserListInvalidLoginPass = "UserListInvalidLoginPass";
-        public static readonly string UserListInvalidStartDate = "UserListInvalidStartDate";
-        public static readonly string UserListInvalidEndDate = "UserListInvalidEndDate";
-        public static readonly string UserListInvalidSortNo = "UserListInvalidSortNo";
-        public static readonly string UserListInvalidIsDeleted = "UserListInvalidIsDeleted";
-        public static readonly string UserListInvalidRenkeiCd1 = "UserListInvalidRenkeiCd1";
-        public static readonly string UserListInvalidDrName = "UserListInvalidDrName";
+        public static readonly string UserListInputNoData = "Input NoData";
+        public static readonly string UserListInvalidId = "Invalid Id";
+        public static readonly string UserListInvalidUserId = "Invalid UserId";
+        public static readonly string UserListInvalidJobCd = "Invalid JobCd";
+        public static readonly string UserListInvalidManagerKbn = "Invalid ManagerKbn";
+        public static readonly string UserListInvalidKaId = "Invalid KaId"; 
+        public static readonly string UserListInvalidKanaName = "Invalid KanaName";
+        public static readonly string UserListInvalidName = "Invalid Name";
+        public static readonly string UserListInvalidSname = "Invalid Sname";
+        public static readonly string UserListInvalidLoginId = "Invalid LoginId";
+        public static readonly string UserListInvalidLoginPass = "Invalid LoginPass";
+        public static readonly string UserListInvalidStartDate = "Invalid StartDate";
+        public static readonly string UserListInvalidEndDate = "Invalid EndDate";
+        public static readonly string UserListInvalidSortNo = "Invalid SortNo";
+        public static readonly string UserListInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UserListInvalidRenkeiCd1 = "Invalid RenkeiCd1";
+        public static readonly string UserListInvalidDrName = "Invalid DrName";
         public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
 
 

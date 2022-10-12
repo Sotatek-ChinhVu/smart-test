@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
         {
             Result = new Response<UpsertUserResponse>()
             {
-                Data = new UpsertUserResponse(),
+                Data = new UpsertUserResponse(outputData.Status == UpsertUserListStatus.Success),
                 Message = GetMessage(outputData.Status),
                 Status = (int)outputData.Status
             };
@@ -29,7 +29,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.UserListInvalidUserId => ResponseMessage.UserListInvalidUserId,
             UpsertUserListStatus.UserListInvalidJobCd => ResponseMessage.UserListInvalidJobCd,
             UpsertUserListStatus.UserListInvalidManagerKbn => ResponseMessage.UserListInvalidManagerKbn,
-            UpsertUserListStatus.UserListInvalidkaId => ResponseMessage.UserListInvalidkaId,
+            UpsertUserListStatus.UserListInvalidKaId => ResponseMessage.UserListInvalidKaId,
             UpsertUserListStatus.UserListInvalidKanaName => ResponseMessage.UserListInvalidKanaName,
             UpsertUserListStatus.UserListInvalidName => ResponseMessage.UserListInvalidName,
             UpsertUserListStatus.UserListInvalidSname => ResponseMessage.UserListInvalidSname,
@@ -41,6 +41,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.UserListInvalidIsDeleted => ResponseMessage.UserListInvalidIsDeleted,
             UpsertUserListStatus.UserListInvalidRenkeiCd1 => ResponseMessage.UserListInvalidRenkeiCd1,
             UpsertUserListStatus.UserListInvalidDrName => ResponseMessage.UserListInvalidDrName,
+            UpsertUserListStatus.UserListInvalidHpId => ResponseMessage.InvalidHpId,
             _ => string.Empty
         };
     }

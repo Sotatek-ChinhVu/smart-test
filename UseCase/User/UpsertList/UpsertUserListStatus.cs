@@ -14,7 +14,7 @@ public enum UpsertUserListStatus
     UserListInvalidUserId,
     UserListInvalidJobCd,
     UserListInvalidManagerKbn,
-    UserListInvalidkaId,
+    UserListInvalidKaId,
     UserListInvalidKanaName,
     UserListInvalidName,
     UserListInvalidSname,

@@ -9,7 +9,7 @@ namespace UseCase.User.UpsertList
 {
     public class UpsertUserListInputItem
     {
-        public UpsertUserListInputItem(long id, int userId, int jobCd, int managerKbn, int kaId,
+        public UpsertUserListInputItem(int hpId, long id, int userId, int jobCd, int managerKbn, int kaId,
             string kanaName, string name, string sname, string drName, string loginId,
             string loginPass, string mayakuLicenseNo, int startDate, int endDate,
             int sortNo, string renkeiCd1, int isDeleted)
@@ -31,6 +31,7 @@ namespace UseCase.User.UpsertList
             RenkeiCd1 = renkeiCd1;
             DrName = drName;
             Id = id;
+            HpId = hpId;
         }
         public long Id { get; set; }
         public int UserId { get; private set; }

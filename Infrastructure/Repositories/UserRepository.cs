@@ -131,6 +131,7 @@ namespace Infrastructure.Repositories
         private static UserMstModel ToModel(UserMst u)
         {
             return new UserMstModel(
+                u.HpId,
                 u.Id,
                 u.UserId,
                 u.JobCd,

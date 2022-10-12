@@ -30,7 +30,8 @@ namespace Interactor.User
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInputNoData);
                 }
-                var datas = inputData.UserMstModel.Select(u => new UserMstModel(
+                var datas = inputData.UpsertUserList.Select(u => new UserMstModel(
+                        u.HpId,
                         u.Id,
                         u.UserId,
                         u.JobCd,
@@ -81,8 +82,8 @@ namespace Interactor.User
                 return UpsertUserListStatus.UserListInvalidManagerKbn;
             if (status == ValidationStatus.InvalidKanaName)
                 return UpsertUserListStatus.UserListInvalidKanaName;
-            if (status == ValidationStatus.InvalidkaId)
-                return UpsertUserListStatus.UserListInvalidkaId;
+            if (status == ValidationStatus.InvalidKaId)
+                return UpsertUserListStatus.UserListInvalidKaId;
             if (status == ValidationStatus.InvalidName)
                 return UpsertUserListStatus.UserListInvalidName;
             if (status == ValidationStatus.InvalidSortNo)

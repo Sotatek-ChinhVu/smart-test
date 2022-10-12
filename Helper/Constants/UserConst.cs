@@ -16,7 +16,7 @@ namespace Helper.Constants
             InvalidJobCd,
             InvalidManagerKbn,
             InvalidKanaName,
-            InvalidkaId,
+            InvalidKaId,
             InvalidName,
             InvalidSname,
             InvalidLoginId,
