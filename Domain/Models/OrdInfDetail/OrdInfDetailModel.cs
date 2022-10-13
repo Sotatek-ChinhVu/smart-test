@@ -385,7 +385,7 @@ namespace Domain.Models.OrdInfDetails
 
             #region Validate business
 
-            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0))
+            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu))
             {
                 return TodayOrdValidationStatus.InvalidSuryo;
             }
