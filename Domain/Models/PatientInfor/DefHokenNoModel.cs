@@ -19,18 +19,18 @@
             IsDeleted = isDeleted;
         }
 
-        public int HpId { get; set; }
-        public string Digit1 { get; set; }
-        public string Digit2 { get; set; }
-        public string Digit3 { get; set; }
-        public string Digit4 { get; set; }
-        public string Digit5 { get; set; }
-        public string Digit6 { get; set; }
-        public string Digit7 { get; set; }
-        public string Digit8 { get; set; }
-        public int HokenNo { get; set; }
-        public int HokenEdaNo { get; set; }
-        public int SortNo { get; set; }
-        public int IsDeleted { get; set; }
+        public int HpId { get; private set; }
+        public string Digit1 { get; private set; }
+        public string Digit2 { get; private set; }
+        public string Digit3 { get; private set; }
+        public string Digit4 { get; private set; }
+        public string Digit5 { get; private set; }
+        public string Digit6 { get; private set; }
+        public string Digit7 { get; private set; }
+        public string Digit8 { get; private set; }
+        public int HokenNo { get; private set; }
+        public int HokenEdaNo { get; private set; }
+        public int SortNo { get; private set; }
+        public int IsDeleted { get; private set; }
     }
 }
