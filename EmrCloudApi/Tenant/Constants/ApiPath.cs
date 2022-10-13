@@ -55,6 +55,7 @@
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
+        public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
