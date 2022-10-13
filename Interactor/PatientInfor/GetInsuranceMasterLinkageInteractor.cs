@@ -1,15 +1,9 @@
 ﻿using Domain.Models.PatientInfor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Insurance.GetList;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 
 namespace Interactor.PatientInfor
 {
-    public class GetInsuranceMasterLinkageInteractor: IGetInsuranceMasterLinkageInputPort
+    public class GetInsuranceMasterLinkageInteractor : IGetInsuranceMasterLinkageInputPort
     {
         private readonly IPatientInforRepository _patientInforRepository;
 
@@ -22,11 +16,18 @@ namespace Interactor.PatientInfor
         {
             try
             {
-                if(inputData.HpId <= 0)
+                if (inputData.HpId <= 0)
                     return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.InvalidHpId);
 
-                if(string.IsNullOrWhiteSpace(inputData.FutansyaNo))
-                    return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.In);
+                if ((inputData.FutansyaNo.Length < 2))
+                    return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.InvalidFutansyaNo);
+
+                var listInsuranceMstLinkage = _patientInforRepository.GetDefHokenNoModels(inputData.HpId, inputData.FutansyaNo);
+
+                if (!listInsuranceMstLinkage.Any())
+                    return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.NoData);
+
+                return new GetInsuranceMasterLinkageOutputData(listInsuranceMstLinkage, GetInsuranceMasterLinkageStatus.Success);
             }
             catch (Exception)
             {

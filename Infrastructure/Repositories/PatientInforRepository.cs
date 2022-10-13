@@ -840,10 +840,11 @@ namespace Infrastructure.Repositories
 
         public List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo)
         {
-            int hokenNo = Int32.Parse(string.Concat(futansyaNo.Substring(0, 1), futansyaNo.Substring(1, 2)));
-
-            var listDefHoken = _tenantDataContext.DefHokenNos
-                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
+            try
+            {
+                int hokenNo = Int32.Parse(futansyaNo.Substring(0, 2));
+                var listDefHoken = _tenantDataContext.DefHokenNos
+                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
                 .OrderBy(x => x.SortNo)
                 .Select(x => new DefHokenNoModel(
                     x.HpId,
@@ -861,8 +862,13 @@ namespace Infrastructure.Repositories
                     x.IsDeleted
                     ))
                 .ToList();
+                return listDefHoken;
 
-            return listDefHoken;
+            }
+            catch (Exception)
+            {
+                return new List<DefHokenNoModel>();
+            }
         }
     }
 }
