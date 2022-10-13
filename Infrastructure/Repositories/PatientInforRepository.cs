@@ -822,7 +822,7 @@ namespace Infrastructure.Repositories
 
             var existPtNum = _tenantDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == 0 && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
 
-            for (long i = startIndex; i <= endIndex; i++)
+            for (long i = startIndex; i < endIndex; i++)
             {
                 var checkExistPtNum = existPtNum.FirstOrDefault(x => x.HpId == hpId && x.PtNum == i && x.IsDelete == 0);
                 if (checkExistPtNum == null)
