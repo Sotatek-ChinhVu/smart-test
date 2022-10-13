@@ -30,5 +30,7 @@ namespace Domain.Models.PatientInfor
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 
         List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
+        
+        List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
     }
 }

@@ -870,5 +870,21 @@ namespace Infrastructure.Repositories
                 return new List<DefHokenNoModel>();
             }
         }
+        
+        public List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted)
+        {
+            var listPtKyusei = _tenantDataContext.PtKyuseis
+                .Where(x => x.HpId == hpId && x.PtId == ptId && (isDeleted || x.IsDeleted == 0))
+                .OrderByDescending(x => x.CreateDate)
+                .Select(x => new PtKyuseiInfModel(
+                    x.HpId,
+                    x.PtId,
+                    x.KanaName ?? string.Empty,
+                    x.Name ?? string.Empty,
+                    x.EndDate,
+                    x.IsDeleted))
+                .ToList();
+            return listPtKyusei;
+        }
     }
 }

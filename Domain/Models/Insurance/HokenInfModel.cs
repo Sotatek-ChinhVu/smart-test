@@ -77,6 +77,16 @@ namespace Domain.Models.Insurance
             HokenMst = new HokenMstModel();
         }
 
+        public HokenInfModel(int hokenId, long ptId, int hpId, int startDate, int endDate)
+        {
+            HokenId = hokenId;
+            HpId = hpId;
+            PtId = ptId;
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenMst = new HokenMstModel();
+        }
+
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
         public int HpId { get; private set; }

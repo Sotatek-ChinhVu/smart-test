@@ -78,5 +78,8 @@
 
         //Drug Infor
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+
+        //PtKyuseiInf
+        public const string GetPtKyuseiInf = "GetPtKyuseiInf";
     }
 }

@@ -79,6 +79,7 @@ using Interactor.MstItem;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
+using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientRaiinKubun;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
@@ -153,6 +154,7 @@ using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
@@ -346,6 +348,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
             busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceMasterLinkageInputData, GetInsuranceMasterLinkageInteractor>();
+            busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
