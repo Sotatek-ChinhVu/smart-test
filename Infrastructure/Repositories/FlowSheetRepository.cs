@@ -4,7 +4,7 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-
+using System.Dynamic;
 namespace Infrastructure.Repositories
 {
     public class FlowSheetRepository : IFlowSheetRepository
@@ -17,7 +17,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, ref long totalCount)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount)
         {
             List<FlowSheetModel> result;
 
@@ -45,9 +45,9 @@ namespace Infrastructure.Repositories
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
                             RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
-                                            join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                                            on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                            select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
+                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                                             on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                                             select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
                                             .AsEnumerable()
                         };
@@ -137,8 +137,12 @@ namespace Infrastructure.Repositories
                     ));
 
             totalCount = todayOdr.Union(nextOdrs).Count();
-            result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-            
+
+            if (string.IsNullOrEmpty(sort))
+                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+            else
+                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).OrderBy(sort).Skip(startIndex).Take(count).ToList();
+
             return result;
         }
 
