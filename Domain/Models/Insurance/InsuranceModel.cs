@@ -52,7 +52,7 @@ namespace Domain.Models.InsuranceInfor
         }
 
         [JsonConstructor]
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4, int startDate, int endDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -69,6 +69,8 @@ namespace Domain.Models.InsuranceInfor
             Kohi2 = kohi2 ?? new KohiInfModel(0);
             Kohi3 = kohi3 ?? new KohiInfModel(0);
             Kohi4 = kohi4 ?? new KohiInfModel(0);
+            StartDate = startDate;
+            EndDate = endDate;
         }
 
         public int HpId { get; private set; }
