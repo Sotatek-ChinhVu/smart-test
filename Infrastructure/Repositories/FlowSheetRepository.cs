@@ -4,7 +4,8 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Dynamic;
+using System.Linq.Dynamic.Core;
+
 namespace Infrastructure.Repositories
 {
     public class FlowSheetRepository : IFlowSheetRepository
@@ -49,7 +50,7 @@ namespace Infrastructure.Repositories
                                              on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                              select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable()
+                                            .AsEnumerable<RaiinListInfModel>()
                         };
 
 
@@ -69,7 +70,7 @@ namespace Infrastructure.Repositories
                     r.CommentKbn,
                     r.CommentSeqNo,
                     r.TagSeqNo)
-            ).AsEnumerable();
+            ).AsEnumerable<FlowSheetModel>();
 
             // Add NextOrder Information
             // Get next order information
@@ -87,7 +88,7 @@ namespace Infrastructure.Repositories
                                    .OrderBy(karte => karte.RsvDate)
                                    .ThenBy(karte => karte.KarteKbn);
 
-            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable()
+            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                 equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
                                join karte in nextOdrKarteInfs on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
@@ -116,7 +117,7 @@ namespace Infrastructure.Repositories
                                                     on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                                     select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable()
+                                            .AsEnumerable<RaiinListInfModel>()
                                };
             var nextOdrs = queryNextOdr.Select(
                     data => new FlowSheetModel(
@@ -138,10 +139,18 @@ namespace Infrastructure.Repositories
 
             totalCount = todayOdr.Union(nextOdrs).Count();
 
+
             if (string.IsNullOrEmpty(sort))
                 result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
             else
-                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                try
+                {
+                    result = todayOdr.Union(nextOdrs).AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                }
+                catch
+                {
+                    result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+                }
 
             return result;
         }

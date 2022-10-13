@@ -15,5 +15,7 @@
         public int Count { get; set; }
 
         public bool IsHolidayOnly { get; set; }
+
+        public string Sort { get; set; } = string.Empty;
     }
 }
