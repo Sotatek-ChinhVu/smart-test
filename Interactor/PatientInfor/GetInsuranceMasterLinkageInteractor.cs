@@ -19,7 +19,7 @@ namespace Interactor.PatientInfor
                 if (inputData.HpId <= 0)
                     return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.InvalidHpId);
 
-                if ((inputData.FutansyaNo.Length < 2))
+                if ((inputData.FutansyaNo.Length != 8))
                     return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.InvalidFutansyaNo);
 
                 var listInsuranceMstLinkage = _patientInforRepository.GetDefHokenNoModels(inputData.HpId, inputData.FutansyaNo);

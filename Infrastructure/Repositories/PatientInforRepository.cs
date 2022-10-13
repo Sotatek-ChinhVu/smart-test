@@ -862,8 +862,8 @@ namespace Infrastructure.Repositories
                     x.IsDeleted
                     ))
                 .ToList();
-                return listDefHoken;
 
+                return listDefHoken;
             }
             catch (Exception)
             {
