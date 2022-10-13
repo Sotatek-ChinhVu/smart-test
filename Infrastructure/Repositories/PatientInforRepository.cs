@@ -854,7 +854,15 @@ namespace Infrastructure.Repositories
 
             PtInf patientInsert = Mapper.Map(ptInf, new PtInf(), (source, dest) => { return dest; });
             if (patientInsert.PtNum == 0)
+            {
                 patientInsert.PtNum = GetAutoPtNum(hpId);
+            }
+            else
+            {
+                var ptExists = _tenantDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
+                if(ptExists != null)
+                    patientInsert.PtNum = GetAutoPtNum(hpId);
+            }
             patientInsert.CreateDate = DateTime.UtcNow;
             patientInsert.CreateId = TempIdentity.UserId;
             patientInsert.UpdateDate = DateTime.UtcNow;
