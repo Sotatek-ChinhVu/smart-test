@@ -1,4 +1,5 @@
-﻿using Domain.Models.InsuranceMst;
+﻿using Amazon.S3;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Entity.Tenant;
@@ -7,15 +8,19 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
     public class PatientInforRepository : IPatientInforRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
+
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum)
@@ -836,6 +841,107 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId)
+        {
+            var patientInf = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            if(patientInf != null)
+            {
+                patientInf.IsDelete = DeleteTypes.Deleted;
+                patientInf.UpdateId = TempIdentity.UserId;
+                patientInf.UpdateMachine = TempIdentity.ComputerName;
+                _tenantTrackingDataContext.PtInfs.Update(patientInf);
+
+                #region PtMemo
+                var ptMemos = _tenantTrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                foreach(var item in ptMemos)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                    item.UpdateId = TempIdentity.UserId;
+                    item.UpdateMachine = TempIdentity.ComputerName;
+                    _tenantTrackingDataContext.PtMemos.Update(item);
+                }
+                #endregion
+
+                #region ptKyuseis
+                var ptKyuseis = _tenantTrackingDataContext.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptKyuseis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtKyuseis.UpdateRange(ptKyuseis);
+                #endregion
+
+                #region ptSanteis
+                var ptSanteis = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptSanteis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtSanteiConfs.UpdateRange(ptSanteis);
+                #endregion
+
+                #region HokenParttern
+                var ptHokenParterns = _tenantTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenParterns.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtHokenPatterns.UpdateRange(ptHokenParterns);
+                #endregion
+
+                #region HokenInf
+                var ptHokenInfs = _tenantTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenInfs.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtHokenInfs.UpdateRange(ptHokenInfs);
+                #endregion
+
+                #region HokenKohi
+                var ptHokenKohis = _tenantTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenKohis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtKohis.UpdateRange(ptHokenKohis);
+                #endregion
+
+                #region HokenCheck
+                var ptHokenChecks = _tenantTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenChecks.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtHokenChecks.UpdateRange(ptHokenChecks);
+                #endregion
+
+                #region RousaiTenki
+                var ptRousaiTenkies = _tenantTrackingDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptRousaiTenkies.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                _tenantTrackingDataContext.PtRousaiTenkis.UpdateRange(ptRousaiTenkies);
+                #endregion
+            }
+            return _tenantTrackingDataContext.SaveChanges() > 0;
         }
     }
 }

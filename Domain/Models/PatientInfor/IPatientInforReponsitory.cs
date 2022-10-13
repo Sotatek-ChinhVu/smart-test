@@ -1,5 +1,6 @@
 ﻿using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+using Helper.Constants;
 
 namespace Domain.Models.PatientInfor
 {
@@ -28,5 +29,6 @@ namespace Domain.Models.PatientInfor
         bool CheckListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
+        bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
     }
 }
