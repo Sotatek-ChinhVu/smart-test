@@ -359,7 +359,7 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<GetInsuranceMasterLinkageResponse>>(presenter.Result);
         }
-        
+
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {

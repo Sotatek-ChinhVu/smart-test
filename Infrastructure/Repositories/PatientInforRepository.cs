@@ -870,7 +870,7 @@ namespace Infrastructure.Repositories
                 return new List<DefHokenNoModel>();
             }
         }
-        
+
         public List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted)
         {
             var listPtKyusei = _tenantDataContext.PtKyuseis
