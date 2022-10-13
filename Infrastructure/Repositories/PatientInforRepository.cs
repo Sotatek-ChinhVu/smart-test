@@ -827,7 +827,7 @@ namespace Infrastructure.Repositories
                 var checkExistPtNum = existPtNum.FirstOrDefault(x => x.HpId == hpId && x.PtNum == i && x.IsDelete == 0);
                 if (checkExistPtNum == null)
                 {
-                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き) ", i)));
+                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
                 }
                 else
                 {
