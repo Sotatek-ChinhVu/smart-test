@@ -160,7 +160,8 @@ namespace Infrastructure.Repositories
                 tenMst?.SinKouiKbn ?? 0,
                 tenMst?.YjCd ?? string.Empty,
                 tenMst?.CnvUnitName ?? string.Empty,
-                tenMst?.StartDate ?? 0
+                tenMst?.StartDate ?? 0,
+                tenMst?.YohoKbn ?? 0
             );
         }
 
@@ -192,7 +193,8 @@ namespace Infrastructure.Repositories
                 tenMst.SinKouiKbn,
                 tenMst.YjCd ?? string.Empty,
                 tenMst.CnvUnitName ?? string.Empty,
-                tenMst.StartDate
+                tenMst.StartDate,
+                tenMst.YohoKbn
             )).ToList();
         }
 
@@ -557,7 +559,8 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.SinKouiKbn ?? 0,
                                                            item.TenMst?.YjCd ?? string.Empty,
                                                            item.TenMst?.CnvUnitName ?? string.Empty,
-                                                           item.TenMst?.StartDate ?? 0
+                                                           item.TenMst?.StartDate ?? 0,
+                                                           item.TenMst?.YohoKbn ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -795,7 +798,8 @@ namespace Infrastructure.Repositories
                     entity?.SinKouiKbn ?? 0,
                     entity?.YjCd ?? string.Empty,
                     entity?.CnvUnitName ?? string.Empty,
-                    entity?.StartDate ?? 0
+                    entity?.StartDate ?? 0,
+                    entity?.YohoKbn ?? 0
                );
         }
 

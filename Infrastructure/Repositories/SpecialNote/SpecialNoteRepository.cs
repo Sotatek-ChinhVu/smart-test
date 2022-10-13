@@ -60,28 +60,6 @@ namespace Infrastructure.Repositories.SpecialNote
                     }
                 });
             return result;
-            //try
-            //{
-            //    _tenantDataContextTracking.Database.BeginTransaction();
-            //    if (summaryInfModel != null && summaryInfModel.Id == hpId && summaryInfModel.PtId == ptId)
-            //    {
-            //        SaveSummaryInf(hpId, ptId, summaryInfModel);
-            //    }
-            //    if (importantNoteModel != null)
-            //    {
-            //        SaveImportantNote(hpId,ptId, importantNoteModel);
-            //    }
-            //    if (patientInfoModel != null)
-            //    {
-            //        SavePatientInfo(hpId, ptId, patientInfoModel);
-            //    }
-            //    _tenantDataContextTracking.Database.CommitTransaction();
-            //}
-            //catch (Exception)
-            //{
-            //    _tenantDataContextTracking.Database.RollbackTransaction();
-            //    return false;
-            //}
         }
         private bool IsInvalidInputId(int hpId, long ptId)
         {

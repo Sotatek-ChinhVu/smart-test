@@ -91,7 +91,7 @@ namespace Infrastructure.Repositories
 
                 foreach (var model in listModel)
                 {
-                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName)) ?? new KarteImgInf {Id = 0, PtId = 0, HpId = 0, RaiinNo = 0 };
+                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName)) ?? new KarteImgInf { Id = 0, PtId = 0, HpId = 0, RaiinNo = 0 };
                     if (karteImgInf.Id == 0 && karteImgInf.HpId == 0 && karteImgInf.PtId == 0 && karteImgInf.RaiinNo == 0)
                     {
                         karteImgInf.HpId = model.HpId;
@@ -123,12 +123,12 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText)
+        public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
         {
             if (searchType == 1)
-                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.RaiinNo <= raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate <= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate))?.SinDate ?? -1;
             else
-                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.RaiinNo).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.RaiinNo > raiinNo)?.RaiinNo ?? -1;
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate >= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate))?.SinDate ?? -1;
         }
     }
 }
