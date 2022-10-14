@@ -822,12 +822,12 @@ namespace Infrastructure.Repositories
 
             var existPtNum = _tenantDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == 0 && p.PtNum >= startIndex && p.PtNum <= endIndex).ToList();
 
-            for (long i = startIndex; i <= endIndex; i++)
+            for (long i = startIndex; i < endIndex; i++)
             {
                 var checkExistPtNum = existPtNum.FirstOrDefault(x => x.HpId == hpId && x.PtNum == i && x.IsDelete == 0);
                 if (checkExistPtNum == null)
                 {
-                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き) ", i)));
+                    result.Add(new PatientInforModel(hpId, 0, i, string.Concat(i, " (空き)")));
                 }
                 else
                 {
@@ -836,6 +836,55 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo)
+        {
+            try
+            {
+                int hokenNo = Int32.Parse(futansyaNo.Substring(0, 2));
+                var listDefHoken = _tenantDataContext.DefHokenNos
+                .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
+                .OrderBy(x => x.SortNo)
+                .Select(x => new DefHokenNoModel(
+                    x.HpId,
+                    x.Digit1,
+                    x.Digit2,
+                    x.Digit3,
+                    x.Digit4,
+                    x.Digit5,
+                    x.Digit6,
+                    x.Digit7,
+                    x.Digit8,
+                    x.HokenNo,
+                    x.HokenEdaNo,
+                    x.SortNo,
+                    x.IsDeleted
+                    ))
+                .ToList();
+
+                return listDefHoken;
+            }
+            catch (Exception)
+            {
+                return new List<DefHokenNoModel>();
+            }
+        }
+
+        public List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted)
+        {
+            var listPtKyusei = _tenantDataContext.PtKyuseis
+                .Where(x => x.HpId == hpId && x.PtId == ptId && (isDeleted || x.IsDeleted == 0))
+                .OrderByDescending(x => x.CreateDate)
+                .Select(x => new PtKyuseiInfModel(
+                    x.HpId,
+                    x.PtId,
+                    x.KanaName ?? string.Empty,
+                    x.Name ?? string.Empty,
+                    x.EndDate,
+                    x.IsDeleted))
+                .ToList();
+            return listPtKyusei;
         }
     }
 }

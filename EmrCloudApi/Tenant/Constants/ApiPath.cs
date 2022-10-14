@@ -10,6 +10,9 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+        public const string Revert = "Revert";
+        public const string Delete = "Delete";
+
 
         // SuperSet
         public const string Validate = "Validate";
@@ -55,6 +58,7 @@
 
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
+        public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -77,5 +81,8 @@
 
         //Drug Infor
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+
+        //PtKyuseiInf
+        public const string GetPtKyuseiInf = "GetPtKyuseiInf";
     }
 }

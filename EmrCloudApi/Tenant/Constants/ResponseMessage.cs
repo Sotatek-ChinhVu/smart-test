@@ -23,6 +23,10 @@
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
         public static readonly string InvalidStartDate = "Invalid startDate";
         public static readonly string InvalidYJCode = "Invalid YJCode";
+        public static readonly string InvalidIsDeleted = "Invalid isDeleted";
+        public static readonly string InvalidSeqNo = "Invalid SeqNo";
+        public static readonly string InvalidDate = "Invalid Date";
+        public static readonly string InvalidValue = "Invalid Value ";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -175,6 +179,7 @@
         public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 60";
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
+        public static readonly string InvalidMemo = "Invalid Memo";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
