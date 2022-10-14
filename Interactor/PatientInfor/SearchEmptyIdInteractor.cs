@@ -1,5 +1,4 @@
 ﻿using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using UseCase.PatientInfor.SearchEmptyId;
 
 namespace Interactor.PatientInfor
@@ -22,6 +21,12 @@ namespace Interactor.PatientInfor
 
                 if (inputData.PtNum <= 0)
                     return new SearchEmptyIdOutputData(new List<PatientInforModel>(), SearchEmptyIdStatus.InvalidPtNum);
+
+                if (inputData.PageIndex <= 0)
+                    return new SearchEmptyIdOutputData(new List<PatientInforModel>(), SearchEmptyIdStatus.InvalidPageIndex);
+
+                if (inputData.PageSize <= 0)
+                    return new SearchEmptyIdOutputData(new List<PatientInforModel>(), SearchEmptyIdStatus.InvalidPageSize);
 
                 var listEmptyId = _patientInforRepository.SearchEmptyId(inputData.HpId, inputData.PtNum, inputData.PageIndex, inputData.PageSize);
 
