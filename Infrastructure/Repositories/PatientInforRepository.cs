@@ -886,5 +886,77 @@ namespace Infrastructure.Repositories
                 .ToList();
             return listPtKyusei;
         }
+
+        public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels)
+        {
+            int sortNo = 1;
+            foreach (var item in defHokenNoModels)
+            {
+                var defHokenNo = _tenantDataContext.DefHokenNos
+                    .FirstOrDefault(
+                    x => x.HpId == item.HpId
+                    && x.HokenNo == item.HokenNo
+                    && x.IsDeleted == 0); ;
+
+
+                //Update if digit or sortNo change
+                if (defHokenNo != null && (defHokenNo.Digit3 != item.Digit3 || defHokenNo.Digit4 != item.Digit4
+                        || defHokenNo.Digit5 != item.Digit5 || defHokenNo.Digit6 != item.Digit6 || defHokenNo.Digit7 != item.Digit7
+                        || defHokenNo.Digit8 != item.Digit8 || defHokenNo.SortNo != item.SortNo || defHokenNo.HokenEdaNo != item.HokenEdaNo))
+                {
+                    _tenantDataContext.DefHokenNos.Update(new DefHokenNo()
+                    {
+                        HpId = item.HpId,
+                        Digit1 = item.Digit1,
+                        Digit2 = item.Digit2,
+                        Digit3 = item.Digit3,
+                        Digit4 = item.Digit4,
+                        Digit5 = item.Digit5,
+                        Digit6 = item.Digit6,
+                        Digit7 = item.Digit7,
+                        Digit8 = item.Digit8,
+                        HokenNo = item.HokenNo,
+                        HokenEdaNo = item.HokenEdaNo,
+                        IsDeleted = 0,
+                        CreateDate = defHokenNo.CreateDate,
+                        CreateId = defHokenNo.CreateId,
+                        CreateMachine = defHokenNo.CreateMachine,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName,
+                        SortNo = sortNo
+                    });
+                    sortNo++;
+                }
+                //Add new
+                else
+                {
+                    _tenantDataContext.DefHokenNos.Add(new DefHokenNo()
+                    {
+                        HpId = item.HpId,
+                        Digit1 = item.Digit1,
+                        Digit2 = item.Digit2,
+                        Digit3 = item.Digit3,
+                        Digit4 = item.Digit4,
+                        Digit5 = item.Digit5,
+                        Digit6 = item.Digit6,
+                        Digit7 = item.Digit7,
+                        Digit8 = item.Digit8,
+                        HokenNo = item.HokenNo,
+                        HokenEdaNo = item.HokenEdaNo,
+                        IsDeleted = 0,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName,
+                        SortNo = sortNo
+                    });
+                    sortNo++;
+                }
+
+            }
+        }
     }
 }

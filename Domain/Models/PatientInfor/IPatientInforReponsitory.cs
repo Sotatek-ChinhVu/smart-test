@@ -32,5 +32,7 @@ namespace Domain.Models.PatientInfor
         List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
 
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
+
+        bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels);
     }
 }
