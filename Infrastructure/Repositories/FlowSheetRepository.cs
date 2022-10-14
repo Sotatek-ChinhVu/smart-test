@@ -152,6 +152,26 @@ namespace Infrastructure.Repositories
                     result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
                 }
 
+            if (!result.Any(r => r.SinDate == sinDate))
+            {
+                result.Insert(0,new FlowSheetModel(
+                        0,
+                        0,
+                        string.Empty,
+                        0,
+                        -1,
+                        string.Empty,
+                        0,
+                        true,
+                        false,
+                        new List<RaiinListInfModel>(),
+                        0,
+                        0,
+                        0,
+                        0
+                    ));
+            }
+
             return result;
         }
 
