@@ -276,7 +276,7 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return OrdInfValidationStatus.InvalidRpNo;
                 }
-                if (RpEdaNo <= 0)
+                if (RpEdaNo < 0)
                 {
                     return OrdInfValidationStatus.InvalidRpEdaNo;
                 }
