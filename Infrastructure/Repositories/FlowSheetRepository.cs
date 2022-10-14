@@ -138,10 +138,31 @@ namespace Infrastructure.Repositories
                     ));
 
             totalCount = todayOdr.Union(nextOdrs).Count();
+            var todayNextOdrs = todayOdr.Union(nextOdrs);
 
+            FlowSheetModel? sinDateCurrent = null;
+            if (!todayNextOdrs.Any(r => r.SinDate == sinDate))
+            {
+                sinDateCurrent = new FlowSheetModel(
+                        0,
+                        0,
+                        string.Empty,
+                        0,
+                        1,
+                        string.Empty,
+                        0,
+                        false,
+                        false,
+                        new List<RaiinListInfModel>(),
+                        0,
+                        0,
+                        0,
+                        0
+                    );
+            }
 
             if (string.IsNullOrEmpty(sort))
-                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+                result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
             else
                 try
                 {
@@ -149,50 +170,35 @@ namespace Infrastructure.Repositories
                     var checkGroupId = int.TryParse(childrenOfSort[0], out int groupId);
 
                     if (!checkGroupId)
-                        result = todayOdr.Union(nextOdrs).AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                        result = todayNextOdrs.AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
                     else
                     {
                         if (childrenOfSort.Length > 1)
                         {
                             if (childrenOfSort[1].ToLower() == "desc")
                             {
-                                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                                result = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
                             }
                             else
                             {
-                                result = todayOdr.Union(nextOdrs).OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                                result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
 
                             }
                         }
                         else
                         {
-                            result = todayOdr.Union(nextOdrs).OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                            result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
                         }
                     }
                 }
                 catch
                 {
-                    result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+                    result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
                 }
 
-            if (!result.Any(r => r.SinDate == sinDate))
+            if (sinDateCurrent != null && startIndex == 0)
             {
-                result.Insert(0, new FlowSheetModel(
-                        0,
-                        0,
-                        string.Empty,
-                        0,
-                        -1,
-                        string.Empty,
-                        0,
-                        true,
-                        false,
-                        new List<RaiinListInfModel>(),
-                        0,
-                        0,
-                        0,
-                        0
-                    ));
+                result.Insert(0, sinDateCurrent);
             }
 
             return result;
