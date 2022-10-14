@@ -45,7 +45,7 @@ namespace Domain.Common
             if (validateHasNotUsageOfDrug.Value != OrdInfValidationStatus.Valid)
             {
                 return validateHasNotUsageOfDrug;
-            } 
+            }
 
             var validateHasNotUsageOfInjection = ValidateHasNotUsageOfInjection(odrInf, flag, sinDate, refillSetting);
             if (validateHasNotUsageOfInjection.Value != OrdInfValidationStatus.Valid)
@@ -70,37 +70,12 @@ namespace Domain.Common
                 }
             }
 
-            if (odrInf.IsDrug)
+            var validateBunkatu = ValidateBunkatu(odrInf);
+            if (validateBunkatu.Value != OrdInfValidationStatus.Valid)
             {
-                int bunkatuItemCount = odrInf.OrdInfDetails?.Count(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu) ?? 0;
-
-                if (bunkatuItemCount > 1)
-                {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidBunkatu);
-                }
-
-                var bunkatuItem = odrInf.OrdInfDetails?.FirstOrDefault(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
-                if (bunkatuItem != null)
-                {
-                    var usageItem = odrInf.OrdInfDetails?.FirstOrDefault(item => item.IsStandardUsage);
-
-                    if (usageItem == null)
-                    {
-                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
-
-                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidUsageWhenBuntakuNull);
-                    }
-
-                    var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
-
-                    if (usageItem.Suryo != sumBukatu)
-                    {
-                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == usageItem) ?? 0;
-
-                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
-                    }
-                }
+                return validateBunkatu;
             }
+
             if (odrInf.OrdInfDetails?.Count > 0)
             {
                 var count = 0;
@@ -361,6 +336,43 @@ namespace Domain.Common
                 if (countItems?.Count() == 0 && (odrInf.IsDrug || odrInf.OdrKouiKbn == 20 || odrInf.IsInjection))
                 {
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidTokuzaiDrugOrInjection);
+                }
+            }
+
+            return new(odrValidateCode, OrdInfValidationStatus.Valid);
+        }
+
+        private static KeyValuePair<string, OrdInfValidationStatus> ValidateBunkatu(TOdrInf odrInf)
+        {
+            if (odrInf.IsDrug)
+            {
+                int bunkatuItemCount = odrInf.OrdInfDetails?.Count(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu) ?? 0;
+
+                if (bunkatuItemCount > 1)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidBunkatu);
+                }
+
+                var bunkatuItem = odrInf.OrdInfDetails?.FirstOrDefault(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
+                if (bunkatuItem != null)
+                {
+                    var usageItem = odrInf.OrdInfDetails?.FirstOrDefault(item => item.IsStandardUsage);
+
+                    if (usageItem == null)
+                    {
+                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
+
+                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidUsageWhenBuntakuNull);
+                    }
+
+                    var sumBukatu = odrInf.SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
+
+                    if (usageItem.Suryo != sumBukatu)
+                    {
+                        var usageIndex = odrInf.OrdInfDetails?.FindIndex(od => od == usageItem) ?? 0;
+
+                        return new(usageIndex.ToString(), OrdInfValidationStatus.InvalidSumBunkatuDifferentSuryo);
+                    }
                 }
             }
 
