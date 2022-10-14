@@ -268,11 +268,11 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return OrdInfValidationStatus.InvalidHpId;
                 }
-                if (RaiinNo <= 0)
+                if (RaiinNo < 0)
                 {
                     return OrdInfValidationStatus.InvalidRaiinNo;
                 }
-                if (RpNo <= 0)
+                if (RpNo < 0)
                 {
                     return OrdInfValidationStatus.InvalidRpNo;
                 }
