@@ -29,10 +29,28 @@ namespace Domain.Common
                 }
             }
 
-            var validateDrugInjectionAndUsage = ValidateDrugInjectionAndUsage(flag, sinDate, refillSetting, odrInf);
-            if (validateDrugInjectionAndUsage.Value != OrdInfValidationStatus.Valid)
+            var validateUsageOfSelfInjection = ValidateUsageOfSelfInjection(odrInf);
+            if (validateUsageOfSelfInjection.Value != OrdInfValidationStatus.Valid)
             {
-                return validateDrugInjectionAndUsage;
+                return validateUsageOfSelfInjection;
+            }
+
+            var validateHasUsageButNotHasDrugOrInjection = ValidateHasUsageButNotHasDrugOrInjection(odrInf);
+            if (validateHasUsageButNotHasDrugOrInjection.Value != OrdInfValidationStatus.Valid)
+            {
+                return validateHasUsageButNotHasDrugOrInjection;
+            }
+
+            var validateHasNotUsageOfDrug = ValidateHasNotUsageOfDrug(odrInf, flag, sinDate, refillSetting);
+            if (validateHasNotUsageOfDrug.Value != OrdInfValidationStatus.Valid)
+            {
+                return validateHasNotUsageOfDrug;
+            } 
+
+            var validateHasNotUsageOfInjection = ValidateHasNotUsageOfInjection(odrInf, flag, sinDate, refillSetting);
+            if (validateHasNotUsageOfInjection.Value != OrdInfValidationStatus.Valid)
+            {
+                return validateHasNotUsageOfInjection;
             }
 
             if (odrInf.IsDrug || odrInf.IsInjection)
@@ -349,10 +367,24 @@ namespace Domain.Common
             return new(odrValidateCode, OrdInfValidationStatus.Valid);
         }
 
-        private static KeyValuePair<string, OrdInfValidationStatus> ValidateDrugInjectionAndUsage(int flag, int sinDate, int refillSetting, TOdrInf odrInf)
+        private static KeyValuePair<string, OrdInfValidationStatus> ValidateUsageOfSelfInjection(TOdrInf odrInf)
         {
-            if (odrInf.OrdInfDetails?.Count(d => d.IsDrugUsage) > 0
-   && odrInf.OrdInfDetails?.Count(d => d.IsDrug || d.SinKouiKbn == 20 && d.ItemCd.StartsWith("Z")) == 0)
+            if (odrInf.OdrKouiKbn == 28)
+            {
+                var seflInjection = odrInf.OrdInfDetails?.FirstOrDefault(d => d.ItemCd == ItemCdConst.ChusyaJikocyu);
+                var usageCount = odrInf.OrdInfDetails?.Count(d => d.IsInjectionUsage);
+                if (seflInjection == null && usageCount == 0)
+                {
+                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasNotBothInjectionAndUsageOf28);
+                }
+            }
+
+            return new(odrValidateCode, OrdInfValidationStatus.Valid);
+        }
+
+        private static KeyValuePair<string, OrdInfValidationStatus> ValidateHasUsageButNotHasDrugOrInjection(TOdrInf odrInf)
+        {
+            if (odrInf.OrdInfDetails?.Count(d => d.IsDrugUsage) > 0 && odrInf.OrdInfDetails?.Count(d => d.IsDrug || d.SinKouiKbn == 20 && d.ItemCd.StartsWith("Z")) == 0)
             {
                 return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotDrug);
             }
@@ -363,6 +395,11 @@ namespace Domain.Common
                 return new(odrValidateCode, OrdInfValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
             }
 
+            return new(odrValidateCode, OrdInfValidationStatus.Valid);
+        }
+
+        private static KeyValuePair<string, OrdInfValidationStatus> ValidateHasNotUsageOfDrug(TOdrInf odrInf, int flag, int sinDate, int refillSetting)
+        {
             if (odrInf.IsDrug)
             {
                 var drugUsage = odrInf.OrdInfDetails?.LastOrDefault(d => d.IsDrugUsage);
@@ -385,7 +422,13 @@ namespace Domain.Common
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasDrugButNotUsage);
                 }
             }
-            else if (odrInf.IsInjection)
+
+            return new(odrValidateCode, OrdInfValidationStatus.Valid);
+        }
+
+        private static KeyValuePair<string, OrdInfValidationStatus> ValidateHasNotUsageOfInjection(TOdrInf odrInf, int flag, int sinDate, int refillSetting)
+        {
+            if (odrInf.IsInjection)
             {
                 var injectionUsage = odrInf.OrdInfDetails?.FirstOrDefault(d => d.IsInjectionUsage);
                 if (injectionUsage != null)
@@ -408,18 +451,10 @@ namespace Domain.Common
                     return new(odrValidateCode, OrdInfValidationStatus.InvalidHasInjectionButNotUsage);
                 }
             }
-            else if (odrInf.OdrKouiKbn == 28)
-            {
-                var seflInjection = odrInf.OrdInfDetails?.FirstOrDefault(d => d.ItemCd == ItemCdConst.ChusyaJikocyu);
-                var usageCount = odrInf.OrdInfDetails?.Count(d => d.IsInjectionUsage);
-                if (seflInjection == null && usageCount == 0)
-                {
-                    return new(odrValidateCode, OrdInfValidationStatus.InvalidHasNotBothInjectionAndUsageOf28);
-                }
-            }
 
             return new(odrValidateCode, OrdInfValidationStatus.Valid);
         }
+
         #endregion
 
         #region Seperate Validate OdrInfDetail
