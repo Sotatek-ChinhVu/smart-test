@@ -145,7 +145,30 @@ namespace Infrastructure.Repositories
             else
                 try
                 {
-                    result = todayOdr.Union(nextOdrs).AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                    var childrenOfSort = sort.Split(" ");
+                    var checkGroupId = int.TryParse(childrenOfSort[0], out int groupId);
+
+                    if (!checkGroupId)
+                        result = todayOdr.Union(nextOdrs).AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                    else
+                    {
+                        if (childrenOfSort.Length > 1)
+                        {
+                            if (childrenOfSort[1].ToLower() == "desc")
+                            {
+                                result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                            }
+                            else
+                            {
+                                result = todayOdr.Union(nextOdrs).OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+
+                            }
+                        }
+                        else
+                        {
+                            result = todayOdr.Union(nextOdrs).OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                        }
+                    }
                 }
                 catch
                 {
@@ -154,7 +177,7 @@ namespace Infrastructure.Repositories
 
             if (!result.Any(r => r.SinDate == sinDate))
             {
-                result.Insert(0,new FlowSheetModel(
+                result.Insert(0, new FlowSheetModel(
                         0,
                         0,
                         string.Empty,
