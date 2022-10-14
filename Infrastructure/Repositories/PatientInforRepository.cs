@@ -856,6 +856,7 @@ namespace Infrastructure.Repositories
                     x.Digit6,
                     x.Digit7,
                     x.Digit8,
+                    x.SeqNo,
                     x.HokenNo,
                     x.HokenEdaNo,
                     x.SortNo,
@@ -889,74 +890,77 @@ namespace Infrastructure.Repositories
 
         public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels)
         {
-            int sortNo = 1;
-            foreach (var item in defHokenNoModels)
+            try
             {
-                var defHokenNo = _tenantDataContext.DefHokenNos
-                    .FirstOrDefault(
-                    x => x.HpId == item.HpId
-                    && x.HokenNo == item.HokenNo
-                    && x.IsDeleted == 0); ;
-
-
-                //Update if digit or sortNo change
-                if (defHokenNo != null && (defHokenNo.Digit3 != item.Digit3 || defHokenNo.Digit4 != item.Digit4
-                        || defHokenNo.Digit5 != item.Digit5 || defHokenNo.Digit6 != item.Digit6 || defHokenNo.Digit7 != item.Digit7
-                        || defHokenNo.Digit8 != item.Digit8 || defHokenNo.SortNo != item.SortNo || defHokenNo.HokenEdaNo != item.HokenEdaNo))
+                foreach (var item in defHokenNoModels)
                 {
-                    _tenantDataContext.DefHokenNos.Update(new DefHokenNo()
+                    var checkExistDefHoken = _tenantDataContext.DefHokenNos
+                        .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
+
+                    //Add new if data does not exist
+                    if (checkExistDefHoken == null)
                     {
-                        HpId = item.HpId,
-                        Digit1 = item.Digit1,
-                        Digit2 = item.Digit2,
-                        Digit3 = item.Digit3,
-                        Digit4 = item.Digit4,
-                        Digit5 = item.Digit5,
-                        Digit6 = item.Digit6,
-                        Digit7 = item.Digit7,
-                        Digit8 = item.Digit8,
-                        HokenNo = item.HokenNo,
-                        HokenEdaNo = item.HokenEdaNo,
-                        IsDeleted = 0,
-                        CreateDate = defHokenNo.CreateDate,
-                        CreateId = defHokenNo.CreateId,
-                        CreateMachine = defHokenNo.CreateMachine,
-                        UpdateDate = DateTime.UtcNow,
-                        UpdateId = TempIdentity.UserId,
-                        UpdateMachine = TempIdentity.ComputerName,
-                        SortNo = sortNo
-                    });
-                    sortNo++;
-                }
-                //Add new
-                else
-                {
-                    _tenantDataContext.DefHokenNos.Add(new DefHokenNo()
+                        _tenantDataContext.DefHokenNos.Add(new DefHokenNo()
+                        {
+                            HpId = item.HpId,
+                            Digit1 = item.Digit1,
+                            Digit2 = item.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = 0,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = item.SortNo,
+                        });
+                    }
+                    else if (checkExistDefHoken.HpId == item.HpId && checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
+                        && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
+                        || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
+                        || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
                     {
-                        HpId = item.HpId,
-                        Digit1 = item.Digit1,
-                        Digit2 = item.Digit2,
-                        Digit3 = item.Digit3,
-                        Digit4 = item.Digit4,
-                        Digit5 = item.Digit5,
-                        Digit6 = item.Digit6,
-                        Digit7 = item.Digit7,
-                        Digit8 = item.Digit8,
-                        HokenNo = item.HokenNo,
-                        HokenEdaNo = item.HokenEdaNo,
-                        IsDeleted = 0,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName,
-                        UpdateDate = DateTime.UtcNow,
-                        UpdateId = TempIdentity.UserId,
-                        UpdateMachine = TempIdentity.ComputerName,
-                        SortNo = sortNo
-                    });
-                    sortNo++;
+                        _tenantDataContext.DefHokenNos.Update(new DefHokenNo()
+                        {
+                            HpId = item.HpId,
+                            Digit1 = item.Digit1,
+                            Digit2 = item.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = item.IsDeleted,
+                            CreateDate = checkExistDefHoken.CreateDate,
+                            CreateId = checkExistDefHoken.CreateId,
+                            CreateMachine = checkExistDefHoken.CreateMachine,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = item.SortNo,
+                        });
+                    }
                 }
 
+                _tenantDataContext.SaveChanges();
+                return true;
             }
+            catch (Exception)
+            {
+                return false;
+            }
+
         }
     }
 }
