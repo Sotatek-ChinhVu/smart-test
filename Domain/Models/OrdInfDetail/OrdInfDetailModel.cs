@@ -296,22 +296,6 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return TodayOrdValidationStatus.InvalidSinKouiKbn;
                 }
-                if (ItemCd.Length > 10)
-                {
-                    return TodayOrdValidationStatus.InvalidItemCd;
-                }
-                if (ItemName.Length > 240)
-                {
-                    return TodayOrdValidationStatus.InvalidItemName;
-                }
-                if (Suryo < 0)
-                {
-                    return TodayOrdValidationStatus.InvalidSuryo;
-                }
-                if (UnitName.Length > 24)
-                {
-                    return TodayOrdValidationStatus.InvalidUnitName;
-                }
                 if (UnitSbt != 0 && UnitSbt != 1 && UnitSbt != 2)
                 {
                     return TodayOrdValidationStatus.InvalidUnitSbt;
@@ -320,17 +304,9 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return TodayOrdValidationStatus.InvalidTermVal;
                 }
-                if (!(SyohoKbn >= 0 && SyohoKbn <= 3))
-                {
-                    return TodayOrdValidationStatus.InvalidSyohoKbn;
-                }
                 if (!(SyohoLimitKbn >= 0 && SyohoLimitKbn <= 3))
                 {
                     return TodayOrdValidationStatus.InvalidSyohoLimitKbn;
-                }
-                if (!(YohoKbn >= 0 && YohoKbn <= 2))
-                {
-                    return TodayOrdValidationStatus.InvalidYohoKbn;
                 }
                 if (!(IsNodspRece >= 0 && IsNodspRece <= 1))
                 {
@@ -360,18 +336,6 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return TodayOrdValidationStatus.InvalidReqCd;
                 }
-                if (Bunkatu.Length > 10)
-                {
-                    return TodayOrdValidationStatus.InvalidBunkatuLength;
-                }
-                if (CmtName.Length > 240)
-                {
-                    return TodayOrdValidationStatus.InvalidCmtName;
-                }
-                if (CmtOpt.Length > 38)
-                {
-                    return TodayOrdValidationStatus.InvalidCmtOpt;
-                }
                 if (FontColor.Length > 8)
                 {
                     return TodayOrdValidationStatus.InvalidFontColor;
@@ -385,7 +349,7 @@ namespace Domain.Models.OrdInfDetails
 
             #region Validate business
 
-            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu))
+            if (((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu)) && !(!string.IsNullOrEmpty(UnitName) && ItemCd.StartsWith("J")))
             {
                 return TodayOrdValidationStatus.InvalidSuryo;
             }
