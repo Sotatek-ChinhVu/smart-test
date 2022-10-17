@@ -49,13 +49,13 @@ using UseCase.PatientGroupMst.SaveList;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
+using UseCase.PatientInfor.Save;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -383,7 +383,7 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
         }
-        
+
         [HttpPost("SavePatientInfo")]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
