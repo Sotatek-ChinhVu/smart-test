@@ -196,16 +196,21 @@ namespace Domain.Models.MstItem
             }
         }
 
-        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn); }
+        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn, SinKouiKbn); }
 
-        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn)
+        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn, int sinKouiKbn)
         {
-            string rs = "検体";
+            string rs = "";
+            var sinKouiCollection = new SinkouiCollection();
+            var itemKoui = sinKouiCollection.FirstOrDefault(x => x.SinKouiCd == sinKouiKbn);
+            if (itemKoui != null)
+            {
+                rs = itemKoui.SinkouiName;
+            }
             if (itemCd == ItemCdConst.GazoDensibaitaiHozon)
             {
                 rs = "フィルム";
             }
-
             if (drugKbn > 0)
             {
                 switch (drugKbn)
