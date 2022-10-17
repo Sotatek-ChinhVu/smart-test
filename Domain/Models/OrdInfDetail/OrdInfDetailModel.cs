@@ -349,7 +349,7 @@ namespace Domain.Models.OrdInfDetails
 
             #region Validate business
 
-            if (((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu)) && !(!string.IsNullOrEmpty(UnitName) && ItemCd.StartsWith("J")))
+            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && ((Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (Suryo != 0 && ItemCd.StartsWith("J")))))
             {
                 return TodayOrdValidationStatus.InvalidSuryo;
             }
