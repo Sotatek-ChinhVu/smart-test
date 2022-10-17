@@ -13,8 +13,8 @@ using Domain.Models.User;
 using Helper.Constants;
 using Microsoft.EntityFrameworkCore;
 using UseCase.MedicalExamination.UpsertTodayOrd;
+using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.TodayKarteConst;
-using static Helper.Constants.TodayOrderConst;
 
 namespace Interactor.MedicalExamination
 {
@@ -51,7 +51,7 @@ namespace Interactor.MedicalExamination
             {
                 if (inputDatas.OdrItems.Count == 0 && inputDatas.KarteInfs.Count == 0)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
                 }
 
                 //Raiin Info
@@ -71,7 +71,7 @@ namespace Interactor.MedicalExamination
 
                 if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid)
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
                 }
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
@@ -123,11 +123,11 @@ namespace Interactor.MedicalExamination
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModels);
 
-                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>()) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
             }
             catch
             {
-                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
+                return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), new Dictionary<int, TodayKarteValidationStatus>());
             }
         }
 
@@ -367,9 +367,9 @@ namespace Interactor.MedicalExamination
             return raiinInfStatus;
         }
 
-        private Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> CheckOrder(int hpId, long ptId, int sinDate, List<OrdInfModel> allOdrInfs, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
+        private Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> CheckOrder(int hpId, long ptId, int sinDate, List<OrdInfModel> allOdrInfs, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
         {
-            var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
+            var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
             object obj = new();
 
             if (inputDatas.OdrItems.Count > 0)
@@ -390,7 +390,7 @@ namespace Interactor.MedicalExamination
                                         var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                                         if (!check)
                                         {
-                                            dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                             return;
                                         }
                                     }
@@ -399,14 +399,14 @@ namespace Interactor.MedicalExamination
                                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                                     if (checkObjs.Count >= 2 && positionOrd == index)
                                     {
-                                        dicValidation.Add(positionOrd.ToString(), new("-1", TodayOrdValidationStatus.DuplicateTodayOrd));
+                                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                                         return;
                                     }
 
                                     var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                                     if (!checkHokenPid)
                                     {
-                                        dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.HokenPidNoExist));
+                                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                                         return;
                                     }
 
@@ -416,20 +416,20 @@ namespace Interactor.MedicalExamination
 
                                 if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                                 {
-                                    dicValidation.Add(index.ToString(), new(indexOd.ToString(), TodayOrdValidationStatus.OdrNoMapOdrDetail));
+                                    dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                                 }
                             });
                                 }
                             });
 
-                allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
+                allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
 
                 Parallel.ForEach(allOdrInfs, item =>
                 {
                     var index = allOdrInfs.IndexOf(item);
 
                     var modelValidation = item.Validation(0);
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                    if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
                         dicValidation.Add(index.ToString(), modelValidation);
                     }

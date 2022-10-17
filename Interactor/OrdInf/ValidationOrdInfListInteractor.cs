@@ -7,7 +7,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.SystemGenerationConf;
 using UseCase.OrdInfs.Validation;
-using static Helper.Constants.TodayOrderConst;
+using static Helper.Constants.OrderInfConst;
 
 namespace Interactor.OrdInfs
 {
@@ -36,7 +36,7 @@ namespace Interactor.OrdInfs
         {
             try
             {
-                var dicValidation = new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>();
+                var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
                 var inputDataList = inputDatas.ToList();
 
                 //Check common
@@ -46,22 +46,22 @@ namespace Interactor.OrdInfs
                 }
                 if (inputDataList.Select(i => i.HpId).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.HpId <= 0)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidHpId));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.InvalidHpId));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.PtId).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.PtId <= 0)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidPtId));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.InvalidPtId));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.RaiinNo).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.RaiinNo <= 0)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidRaiinNo));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.InvalidRaiinNo));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
                 if (inputDataList.Select(i => i.SinDate).Distinct().Count() > 1 || inputDataList.FirstOrDefault()?.SinDate <= 0)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.InvalidSinDate));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.InvalidSinDate));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
@@ -75,21 +75,21 @@ namespace Interactor.OrdInfs
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
                 if (!checkHpId)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.HpIdNoExist));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.HpIdNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
                 var checkPtId = _patientInforRepository.CheckListId(new List<long> { ptId });
                 if (!checkPtId)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.PtIdNoExist));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.PtIdNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
                 if (!checkRaiinNo)
                 {
-                    dicValidation.Add("-1", new("-1", TodayOrdValidationStatus.RaiinNoNoExist));
+                    dicValidation.Add("-1", new("-1", OrdInfValidationStatus.RaiinNoNoExist));
                     return new ValidationOrdInfListOutputData(dicValidation, ValidationOrdInfListStatus.Successed);
                 }
 
@@ -103,7 +103,7 @@ namespace Interactor.OrdInfs
                     var index = allOdrInfs.IndexOf(item);
 
                     var modelValidation = item.Validation(0);
-                    if (modelValidation.Value != TodayOrdValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                    if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
                         dicValidation.Add(index.ToString(), modelValidation);
                     }
@@ -113,7 +113,7 @@ namespace Interactor.OrdInfs
             }
             catch
             {
-                return new ValidationOrdInfListOutputData(new Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>>(), ValidationOrdInfListStatus.Failed);
+                return new ValidationOrdInfListOutputData(new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), ValidationOrdInfListStatus.Failed);
             }
         }
 
@@ -236,7 +236,7 @@ namespace Interactor.OrdInfs
             return allOdrInfs;
         }
 
-        private void CheckAllItemsConvert(Dictionary<string, KeyValuePair<string, TodayOrdValidationStatus>> dicValidation, int hpId, long ptId, List<ValidationOdrInfItem> inputDataList)
+        private void CheckAllItemsConvert(Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, int hpId, long ptId, List<ValidationOdrInfItem> inputDataList)
         {
             var raiinNos = inputDataList.Select(i => i.RaiinNo).Distinct().ToList();
             var checkOderInfs = _ordInfRepository.GetListToCheckValidate(ptId, hpId, raiinNos ?? new List<long>());
@@ -255,7 +255,7 @@ namespace Interactor.OrdInfs
                         var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                         if (!check)
                         {
-                            dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                             return;
                         }
                     }
@@ -264,14 +264,14 @@ namespace Interactor.OrdInfs
                     var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                     if (checkObjs.Count >= 2 && positionOrd == index)
                     {
-                        dicValidation.Add(positionOrd.ToString(), new("-1", TodayOrdValidationStatus.DuplicateTodayOrd));
+                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                         return;
                     }
 
                     var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
                     if (!checkHokenPid)
                     {
-                        dicValidation.Add(index.ToString(), new("-1", TodayOrdValidationStatus.HokenPidNoExist));
+                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                         return;
                     }
 
@@ -281,7 +281,7 @@ namespace Interactor.OrdInfs
 
                         if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                         {
-                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), TodayOrdValidationStatus.OdrNoMapOdrDetail));
+                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                         }
                     });
                 }
