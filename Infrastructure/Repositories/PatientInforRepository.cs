@@ -883,6 +883,7 @@ namespace Infrastructure.Repositories
                 .Select(x => new PtKyuseiInfModel(
                     x.HpId,
                     x.PtId,
+                    x.SeqNo,
                     x.KanaName ?? string.Empty,
                     x.Name ?? string.Empty,
                     x.EndDate,
@@ -946,7 +947,7 @@ namespace Infrastructure.Repositories
                             SeqNo = checkExistDefHoken.SeqNo,
                             HokenNo = checkExistDefHoken.HokenNo,
                             HokenEdaNo = item.HokenEdaNo,
-                            IsDeleted = checkExistDefHoken.IsDeleted,
+                            IsDeleted = item.IsDeleted,
                             CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
                             CreateId = checkExistDefHoken.CreateId,
                             CreateMachine = checkExistDefHoken.CreateMachine,
