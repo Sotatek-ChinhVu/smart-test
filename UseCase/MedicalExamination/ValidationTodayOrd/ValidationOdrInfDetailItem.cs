@@ -1,4 +1,4 @@
-﻿namespace UseCase.OrdInfs.Validation
+﻿namespace UseCase.OrdInfs.ValidationTodayOrd
 {
     public class ValidationOdrInfDetailItem
     {

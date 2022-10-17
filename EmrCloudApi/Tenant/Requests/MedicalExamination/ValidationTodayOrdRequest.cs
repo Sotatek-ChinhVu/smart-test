@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.MedicalExamination
 {
-    public class UpsertTodayOdrRequest
+    public class ValidationTodayOrdRequest
     {
         public int SyosaiKbn { get; set; }
         public int JikanKbn { get; set; }
@@ -12,6 +12,6 @@
         public string SinStartTime { get; set; } = string.Empty;
         public string SinEndTime { get; set; } = string.Empty;
         public List<OdrInfItem> OdrInfs { get; set; } = new();
-        public KarteItem KarteItem { get; set; } = new();
+        public KarteItem Karte { get; set; } = new();
     }
 }
