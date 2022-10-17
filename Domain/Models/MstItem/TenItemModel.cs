@@ -212,7 +212,6 @@ namespace Domain.Models.MstItem
             {
                 rs = "フィルム";
             }
-
             if (drugKbn > 0)
             {
                 switch (drugKbn)
