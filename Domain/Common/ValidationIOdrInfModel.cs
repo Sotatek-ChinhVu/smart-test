@@ -127,7 +127,7 @@ namespace Domain.Common
 
             #region Validate business
 
-            if (!string.IsNullOrEmpty(odrInfDetail.UnitName) && odrInfDetail.Suryo == 0 || string.IsNullOrEmpty(odrInfDetail.UnitName) && odrInfDetail.Suryo > 0)
+            if ((!string.IsNullOrEmpty(odrInfDetail.UnitName) && odrInfDetail.Suryo == 0) || (string.IsNullOrEmpty(odrInfDetail.UnitName) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
@@ -488,7 +488,7 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidItemName;
             }
-            if (odrInfDetail.Suryo < 0 || odrInfDetail.ItemCd == ItemCdConst.JikanKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 7) || odrInfDetail.ItemCd == ItemCdConst.SyosaiKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 8))
+            if ((odrInfDetail.Suryo < 0 && !odrInfDetail.ItemCd.StartsWith("J")) || odrInfDetail.ItemCd == ItemCdConst.JikanKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 7) || odrInfDetail.ItemCd == ItemCdConst.SyosaiKihon && !(odrInfDetail.Suryo >= 0 && odrInfDetail.Suryo <= 8))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
@@ -538,26 +538,9 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidRowNo;
             }
-
             if (odrInfDetail.SinKouiKbn < 0)
             {
                 return OrdInfValidationStatus.InvalidSinKouiKbn;
-            }
-            if (odrInfDetail.ItemCd.Length > 10)
-            {
-                return OrdInfValidationStatus.InvalidItemCd;
-            }
-            if (odrInfDetail.ItemName.Length > 240)
-            {
-                return OrdInfValidationStatus.InvalidItemName;
-            }
-            if (odrInfDetail.Suryo < 0)
-            {
-                return OrdInfValidationStatus.InvalidSuryo;
-            }
-            if (odrInfDetail.UnitName.Length > 24)
-            {
-                return OrdInfValidationStatus.InvalidUnitName;
             }
             if (odrInfDetail.UnitSbt != 0 && odrInfDetail.UnitSbt != 1 && odrInfDetail.UnitSbt != 2)
             {
@@ -567,17 +550,9 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidTermVal;
             }
-            if (!(odrInfDetail.SyohoKbn >= 0 && odrInfDetail.SyohoKbn <= 3))
-            {
-                return OrdInfValidationStatus.InvalidSyohoKbn;
-            }
             if (!(odrInfDetail.SyohoLimitKbn >= 0 && odrInfDetail.SyohoLimitKbn <= 3))
             {
                 return OrdInfValidationStatus.InvalidSyohoLimitKbn;
-            }
-            if (!(odrInfDetail.YohoKbn >= 0 && odrInfDetail.YohoKbn <= 2))
-            {
-                return OrdInfValidationStatus.InvalidYohoKbn;
             }
             if (!(odrInfDetail.IsNodspRece >= 0 && odrInfDetail.IsNodspRece <= 1))
             {
@@ -590,18 +565,6 @@ namespace Domain.Common
             if (odrInfDetail.IpnName.Length > 120)
             {
                 return OrdInfValidationStatus.InvalidIpnName;
-            }
-            if (odrInfDetail.Bunkatu.Length > 10)
-            {
-                return OrdInfValidationStatus.InvalidBunkatuLength;
-            }
-            if (odrInfDetail.CmtName.Length > 240)
-            {
-                return OrdInfValidationStatus.InvalidCmtName;
-            }
-            if (odrInfDetail.CmtOpt.Length > 38)
-            {
-                return OrdInfValidationStatus.InvalidCmtOpt;
             }
             if (odrInfDetail.FontColor.Length > 8)
             {
