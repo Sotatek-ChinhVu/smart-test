@@ -14,8 +14,6 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
         public void Complete(ValidationTodayOrdOutputData outputData)
         {
             var validations = new List<ValidationTodayOrdItemResponse>();
-            ValidationKarteInfResponse validationKarte;
-
             Result = new Response<ValidationTodayOrdResponse>()
             {
                 Message = outputData.Status == ValidationTodayOrdStatus.Successed ? ResponseMessage.Success : ResponseMessage.Failed,
@@ -275,34 +273,17 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
                 }
             }
 
-            switch (outputData.ValidationKarte)
+            ValidationKarteInfResponse validationKarte = outputData.ValidationKarte switch
             {
-                case KarteConst.KarteValidationStatus.InvalidHpId:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidHpId);
-                    break;
-                case KarteConst.KarteValidationStatus.InvalidRaiinNo:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidRaiinNo);
-                    break;
-                case KarteConst.KarteValidationStatus.InvalidPtId:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidPtId);
-                    break;
-                case KarteConst.KarteValidationStatus.InvalidSinDate:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidSinDate);
-                    break;
-                case KarteConst.KarteValidationStatus.InvalidIsDelted:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidIsDeleted);
-                    break;
-                case KarteConst.KarteValidationStatus.RaiinNoNoExist:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfRaiinNoNoExist);
-                    break;
-                case KarteConst.KarteValidationStatus.PtIdNoExist:
-                    validationKarte = new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfPtIdNoExist);
-                    break;
-                default:
-                    validationKarte = new ValidationKarteInfResponse(KarteConst.KarteValidationStatus.Valid, ResponseMessage.Valid);
-                    break;
-            }
-
+                KarteConst.KarteValidationStatus.InvalidHpId => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidHpId),
+                KarteConst.KarteValidationStatus.InvalidRaiinNo => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidRaiinNo),
+                KarteConst.KarteValidationStatus.InvalidPtId => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidPtId),
+                KarteConst.KarteValidationStatus.InvalidSinDate => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidSinDate),
+                KarteConst.KarteValidationStatus.InvalidIsDelted => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfInvalidIsDeleted),
+                KarteConst.KarteValidationStatus.RaiinNoNoExist => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfRaiinNoNoExist),
+                KarteConst.KarteValidationStatus.PtIdNoExist => new ValidationKarteInfResponse(outputData.ValidationKarte, ResponseMessage.UpsertKarteInfPtIdNoExist),
+                _ => new ValidationKarteInfResponse(KarteConst.KarteValidationStatus.Valid, ResponseMessage.Valid),
+            };
             validations = validations.OrderBy(v => v.OrderInfPosition).ThenBy(v => v.OrderInfDetailPosition).ToList();
 
             Result.Data = new ValidationTodayOrdResponse(new RaiinInfItemResponse(outputData.ValidationRaiinInf, ConvertRaiinInfStatusToMessage(outputData.ValidationRaiinInf)), validations, validationKarte);
