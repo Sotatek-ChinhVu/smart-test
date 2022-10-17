@@ -21,6 +21,12 @@
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
+        public static readonly string InvalidStartDate = "Invalid startDate";
+        public static readonly string InvalidYJCode = "Invalid YJCode";
+        public static readonly string InvalidIsDeleted = "Invalid isDeleted";
+        public static readonly string InvalidSeqNo = "Invalid SeqNo";
+        public static readonly string InvalidDate = "Invalid Date";
+        public static readonly string InvalidValue = "Invalid Value ";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -28,7 +34,7 @@
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
         public static readonly string InputDataNull = "Input data is null";
-
+        public static readonly string Valid = "Valid";
 
         public static readonly string CreateUserInvalidName = "Please input user name";
         public static readonly string CreateUserSuccessed = "User created!!!";
@@ -109,6 +115,15 @@
         public static readonly string GetKarteInfInvalidSinDate = "Invalid SinDate";
         public static readonly string GetKarteInfNoData = "No Data";
         public static readonly string GetKarteInfSuccessed = "Successed";
+        public static readonly string UpsertKarteInfInvalidHpId = "Invalid HpId";
+        public static readonly string UpsertKarteInfInvalidRaiinNo = "Invalid RaiinNo";
+        public static readonly string UpsertKarteInfInvalidKarteKbn = "Invalid KarteKbn";
+        public static readonly string UpsertKarteInfInvalidPtId = "Invalid PtId";
+        public static readonly string UpsertKarteInfInvalidSinDate = "Invalid SinDate";
+        public static readonly string UpsertKarteInfInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertKarteInfRaiinNoNoExist = "RaiinNo No Exist";
+        public static readonly string UpsertKarteInfPtIdNoExist = "PtId No Exist";
+        public static readonly string UpsertKarteInfKarteKbnNoExist = "KarteKbn No Exist";
 
         //OrdInf controller
         public static readonly string GetOrdInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -121,7 +136,6 @@
         //RaiinKubun controller
 
         //Calculation Inf
-
 
         //Medical examination controller
         public static readonly string GetMedicalExaminationInvalidPtId = "Invalid PtId";
@@ -165,6 +179,7 @@
         public static readonly string InvalidSetName = "Invalid SetName, SetName maxlength is 60";
         public static readonly string InvalidWeightKbn = "Invalid WeightKbn, WeightKbn >= 0";
         public static readonly string InvalidColor = "Invalid Color, Color >= 0";
+        public static readonly string InvalidMemo = "Invalid Memo";
 
         //Set
         public static readonly string GetSetKbnListInvalidHpId = "Invalid HpId";
@@ -214,8 +229,6 @@
         public static readonly string InvalidOldImage = "Invalid old image.";
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
-
-
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";
@@ -349,8 +362,6 @@
         public static readonly string ReceKaCdNotFound = "ReceKaCd is NotFound";
         public static readonly string CanNotDuplicateKaId = "Can not duplicate KaId";
 
-
-
         //TodayOdr Field
         public static readonly string TodayOdrSuryo = "Suryo";
         public static readonly string TodayOdrCmt = "CmtOpt,CmtName";
@@ -400,6 +411,22 @@
         public static readonly string TodayOdrSuryoBunkatu = "Suryo,Bunkatu";
         public static readonly string TodayOdrPriceSuryo = "Suryo,Price";
 
+        //Raiin Info TodayOdr
+        public static readonly string RaiinInfTodayOdrInvalidSyosaiKbn = "Invalid SyosaiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidJikanKbn = "Invalid JikanKbn";
+        public static readonly string RaiinInfTodayOdrInvalidHokenPid = "Invalid HokenPid";
+        public static readonly string RaiinInfTodayOdrHokenPidNoExist = "HokenPid no exist";
+        public static readonly string RaiinInfTodayOdrInvalidSanteiKbn = "Invalid SanteiKbn";
+        public static readonly string RaiinInfTodayOdrInvalidTantoId = "Invalid TantoId";
+        public static readonly string RaiinInfTodayOdrTatoIdNoExist = "TantoId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidKaId = "Invalid KaId";
+        public static readonly string RaiinInfTodayOdrKaIdNoExist = "KaId no exist";
+        public static readonly string RaiinInfTodayOdrInvalidUKetukeTime = "Invalid UKetukeTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinStartTime = "Invalid SinStartTime";
+        public static readonly string RaiinInfTodayOdrInvalidSinEndTime = "Invalid SinEndTime";
+        public static readonly string RaiinInfTodayOdrPtIdNoExist = "PtId no exist";
+        public static readonly string RaiinInfTodayOdrHpIdNoExist = "HpId no exist";
+        public static readonly string RaiinInfTodayOdrRaiinNoExist = "RaiinNo no exist";
 
         //Monshin
         public static readonly string InputDataDoesNotExists = "Input Data does not exist";
@@ -505,5 +532,40 @@
         public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
+
+        //Message Error Common
+        public static readonly string MInp00010 = "{0}を入力してください。";
+        public static readonly string MConf01020 = "{0}ため、{1}が確定できません。";
+        public static readonly string MEnt01020 = "既に登録されているため、{0}は登録できません。";
+        public static readonly string MInp00041 = "{0}は {1}を入力してください。";
+        public static readonly string MFree00030 = "{0}";
+        public static readonly string MInp00070 = "{0}は {1}以下を入力してください。";
+        public static readonly string MInp00040 = "{0}ため、{1}は登録できません。";
+
+        //Sup Message
+        public static readonly string MDrug = "薬剤";
+        public static readonly string MInjection = "手技";
+        public static readonly string MUsage = "用法";
+        public static readonly string MSupUsage1 = "用法";
+        public static readonly string MSupUsage2 = "補助用法";
+        public static readonly string MEnt01040 = "{0}ため、{1}は登録できません。";
+        public static readonly string ErrorCaptionDrugOrInject = "行為や加算が登録されている";
+        public static readonly string MQuantity = "数量";
+        public static readonly string MTooLargeQuantity = "数量が大きすぎます。";
+        public static readonly string MUsageQuantity = "用法の数量";
+        public static readonly string MMaxQuantity = "999";
+        public static readonly string MMaxLengthOfCmt = "コメントに対する入力値は３８文字以内にしてください。";
+        public static readonly string MCmtOptOf830 = "文字情報";
+        public static readonly string MCmt831 = "診療行為コード";
+        public static readonly string MDateInfor850_1 = "年月日情報";
+        public static readonly string MDateInfor850_2 = "年月情報";
+        public static readonly string MTimeInfor851 = "時刻情報";
+        public static readonly string MTimeInfor852 = "時間（分）情報";
+        public static readonly string MDateTimeInfor853 = "日時情報（日、時間及び分を6桁）";
+        public static readonly string MDateTimeInfor880 = "年月日情報及び数字情報を入力してください。" + "\r\n" + "※区切り文字「/」スラッシュを間に入力" + "\r\n" + @"　数字情報は数字または次の文字　．－＋≧≦＞＜±";
+        public static readonly string MBunkatu = "分割調剤";
+        public static readonly string MSumBunkatu = "分割調剤の合計";
+        public static readonly string MCommonError = "無効なデータを受信しました。";
+        public static readonly string MProcedure = "・手技が入力されているか確認してください。";
     }
 }

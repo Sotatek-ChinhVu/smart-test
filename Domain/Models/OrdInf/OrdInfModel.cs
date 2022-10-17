@@ -1,11 +1,11 @@
-﻿using Domain.Models.OrdInfDetails;
-using Helper.Constants;
-using Helper.Extension;
-using static Helper.Constants.TodayOrderConst;
+﻿using Domain.Common;
+using Domain.Models.OrdInfDetails;
+using Domain.Types;
+using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.OrdInfs
 {
-    public class OrdInfModel
+    public class OrdInfModel : IOdrInfModel<OrdInfDetailModel>
     {
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
@@ -61,6 +61,34 @@ namespace Domain.Models.OrdInfs
             UpdateDate = updateDate;
         }
 
+        public OrdInfModel()
+        {
+            HpId = 0;
+            RaiinNo = 0;
+            RpNo = 0;
+            RpEdaNo = 0;
+            PtId = 0;
+            SinDate = 0;
+            HokenPid = 0;
+            OdrKouiKbn = 0;
+            RpName = string.Empty;
+            InoutKbn = 0;
+            SikyuKbn = 0;
+            SyohoSbt = 0;
+            SanteiKbn = 0;
+            TosekiKbn = 0;
+            DaysCnt = 0;
+            SortNo = 0;
+            IsDeleted = 0;
+            Id = 0;
+            GroupKoui = GroupKoui.From(0);
+            OrdInfDetails = new List<OrdInfDetailModel>();
+            CreateDate = DateTime.MinValue;
+            CreateId = 0;
+            CreateName = string.Empty;
+            UpdateDate = DateTime.MinValue;
+        }
+
         // 処方 - Drug
         public bool IsDrug
         {
@@ -79,268 +107,48 @@ namespace Domain.Models.OrdInfs
             }
         }
 
-        private double SumBunkatu(string bunkatu)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(bunkatu))
-                    return 0;
-
-                var nums = bunkatu.Split('+');
-
-                return nums.Sum(n => n.AsDouble());
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
-
-        public KeyValuePair<int, TodayOrdValidationStatus> Validation()
+        public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
 
             #region Validate common
-            if (Id < 0)
+
+            if (flag == 0)
             {
-                return new(-1, TodayOrdValidationStatus.InvalidId);
+                if (RaiinNo <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidRaiinNo);
+                }
+                if (PtId <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidPtId);
+                }
+                if (SinDate <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidSinDate);
+                }
+                if (HokenPid <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidHokenPId);
+                }
             }
-            if (HpId <= 0)
+
+            var count = 0;
+            foreach (var item in OrdInfDetails)
             {
-                return new(-1, TodayOrdValidationStatus.InvalidHpId);
-            }
-            if (RaiinNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRaiinNo);
-            }
-            if (RpNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpNo);
-            }
-            if (RpEdaNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpEdaNo);
-            }
-            if (PtId <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidPtId);
-            }
-            if (SinDate <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSinDate);
-            }
-            if (HokenPid <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidHokenPId);
-            }
-            if (RpName.Length > 240)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidRpName);
-            }
-            if (InoutKbn != 0 && InoutKbn != 1)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidInoutKbn);
-            }
-            if (SikyuKbn != 0 && SikyuKbn != 1)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSikyuKbn);
-            }
-            if (SyohoSbt != 0 && SyohoSbt != 1 && SyohoSbt != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSyohoSbt);
-            }
-            if (SanteiKbn != 0 && SanteiKbn != 1 && SanteiKbn != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSanteiKbn);
-            }
-            if (TosekiKbn != 0 && TosekiKbn != 1 && TosekiKbn != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidTosekiKbn);
-            }
-            if (DaysCnt < 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidDaysCnt);
-            }
-            if (SortNo <= 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidSortNo);
-            }
-            if (IsDeleted != 0 && IsDeleted != 1 && IsDeleted != 2)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidIsDeleted);
+                var validate = item.Validation(flag);
+                if (validate != OrdInfValidationStatus.Valid)
+                {
+                    return new(count.ToString(), OrdInfValidationStatus.InvalidHokenPId);
+                }
+                count++;
             }
             #endregion
 
             #region Validate business
-            if (!TodayOrderConst.OdrKouiKbns.Values.Contains(OdrKouiKbn))
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidOdrKouiKbn);
-            }
-            if (OrdInfDetails.Any(o => o.IsSpecialItem))
-            {
-                var countItem = OrdInfDetails.FirstOrDefault(item => (item.IsDrug || item.IsInjection) && !item.IsSpecialItem);
-                if (OrdInfDetails.Any(x => x.IsSpecialItem && x.ItemCd == ItemCdConst.ZanGigi || x.ItemCd == ItemCdConst.ZanTeiKyo) && countItem != null && countItem.ItemCd == ItemCdConst.Con_Refill)
-                {
-                    countItem = OrdInfDetails.FirstOrDefault(item => (item.IsDrug || item.IsInjection) && !item.IsSpecialItem && item.ItemCd != ItemCdConst.Con_Refill);
-                }
-                // Check main usage of drug and injection
-                var countUsage = OrdInfDetails.FirstOrDefault(item => item.IsStandardUsage || item.IsInjectionUsage);
-
-                // check supp usage of drug
-                var countUsage2 = OrdInfDetails.FirstOrDefault(item => item.IsSuppUsage);
-
-                if (countItem != null)
-                {
-                    var countIndex = OrdInfDetails.FindIndex(od => od == countItem);
-
-                    return new(countIndex, TodayOrdValidationStatus.InvalidSpecialItem);
-                }
-                else if (countUsage != null)
-                {
-                    var countUsage1Index = OrdInfDetails.FindIndex(od => od == countUsage);
-
-                    return new(countUsage1Index, TodayOrdValidationStatus.InvalidSpecialStadardUsage);
-                }
-                else if (countUsage2 != null)
-                {
-                    var countUsage2Index = OrdInfDetails.FindIndex(od => od == countUsage2);
-
-                    return new(countUsage2Index, TodayOrdValidationStatus.InvalidSpecialSuppUsage);
-                }
-            }
-
-            if (OrdInfDetails?.Count(d => d.IsDrugUsage) > 0
-                && OrdInfDetails?.Count(d => d.IsDrug || (d.SinKouiKbn == 20 && d.ItemCd.StartsWith("Z"))) == 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidHasUsageButNotDrug);
-            }
-
-            if (OrdInfDetails?.Count(d => d.IsInjectionUsage) > 0
-              && OrdInfDetails?.Count(d => d.IsInjection || d.IsDrug) == 0)
-            {
-                return new(-1, TodayOrdValidationStatus.InvalidHasUsageButNotInjectionOrDrug);
-            }
-
-            if (IsDrug)
-            {
-                var drugUsage = OrdInfDetails?.LastOrDefault(d => d.IsDrugUsage);
-                if (drugUsage != null)
-                {
-                    var drugAfterDrugUsage = OrdInfDetails?.Where(d => d.RowNo > drugUsage.RowNo && d.IsDrug && !d.IsEmpty).ToList();
-                    if (drugAfterDrugUsage?.Any() == true)
-                    {
-                        var count = 0;
-                        foreach (var detail in drugAfterDrugUsage)
-                        {
-                            var validateResult = detail.Validation();
-                            if (validateResult != TodayOrdValidationStatus.Valid) return new(count, validateResult);
-                            count++;
-                        }
-                    }
-                }
-                else
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidHasDrugButNotUsage);
-                }
-            }
-            else if (IsInjection)
-            {
-                var injectionUsage = OrdInfDetails?.FirstOrDefault(d => d.IsInjectionUsage);
-                if (injectionUsage != null)
-                {
-                    var injectionBeforeInjectionUsage = OrdInfDetails?.Where(d => d.RowNo < injectionUsage.RowNo && (d.IsInjection || d.IsDrug) && !d.IsEmpty).ToList();
-                    injectionBeforeInjectionUsage?.Reverse();
-                    if (injectionBeforeInjectionUsage?.Any() == true)
-                    {
-                        var count = 0;
-                        foreach (var detail in injectionBeforeInjectionUsage)
-                        {
-                            var validateResult = detail.Validation();
-                            if (TodayOrdValidationStatus.Valid != validateResult) return new(count, validateResult);
-                            count++;
-                        }
-                    }
-                }
-                else
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidHasInjectionButNotUsage);
-                }
-            }
-            else if (OdrKouiKbn == 28)
-            {
-                var seflInjection = OrdInfDetails?.FirstOrDefault(d => d.ItemCd == ItemCdConst.ChusyaJikocyu);
-                var usageCount = OrdInfDetails?.Count(d => d.IsInjectionUsage);
-                if (seflInjection == null && usageCount == 0)
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidHasNotBothInjectionAndUsageOf28);
-                }
-            }
-
-            if (IsDrug || IsInjection)
-            {
-                // 用法
-                var usageCount = OrdInfDetails?.Count(o => o.IsStandardUsage);
-                if (usageCount > 1)
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidStandardUsageOfDrugOrInjection);
-                }
-
-                // 補助用法
-                var usage2Count = OrdInfDetails?.Count(item => item.IsSuppUsage);
-                if (usage2Count > 1)
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidSuppUsageOfDrugOrInjection);
-                }
-            }
-
-            if (IsDrug)
-            {
-                int bunkatuItemCount = OrdInfDetails?.Count(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu) ?? 0;
-
-                if (bunkatuItemCount > 1)
-                {
-                    return new(-1, TodayOrdValidationStatus.InvalidBunkatu);
-                }
-
-                var bunkatuItem = OrdInfDetails?.FirstOrDefault(i => i.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu);
-                if (bunkatuItem != null)
-                {
-                    var usageItem = OrdInfDetails?.FirstOrDefault(item => item.IsStandardUsage);
-
-                    if (usageItem == null)
-                    {
-                        var usageIndex = OrdInfDetails?.FindIndex(od => od == bunkatuItem) ?? 0;
-
-                        return new(usageIndex, TodayOrdValidationStatus.InvalidUsageWhenBuntakuNull);
-                    }
-
-                    var sumBukatu = SumBunkatu(bunkatuItem?.Bunkatu ?? string.Empty);
-
-                    if (usageItem.Suryo != sumBukatu)
-                    {
-                        var usageIndex = OrdInfDetails?.FindIndex(od => od == usageItem) ?? 0;
-
-                        return new(usageIndex, TodayOrdValidationStatus.InvalidSumBunkatuDifferentSuryo);
-                    }
-                }
-            }
-            if (OrdInfDetails?.Count > 0)
-            {
-                var count = 0;
-                foreach (var ordInfDetail in OrdInfDetails)
-                {
-                    var status = ordInfDetail.Validation();
-                    if (status != TodayOrdValidationStatus.Valid)
-                    {
-                        return new(count, status);
-                    }
-                    count++;
-                }
-            }
+            var refillSetting = OrdInfDetails?.FirstOrDefault()?.RefillSetting ?? 999;
+            return ValidationIOdrInfModel<OrdInfModel, OrdInfDetailModel>.Validation(this, flag, SinDate, refillSetting);
             #endregion
-
-            return new(-1, TodayOrdValidationStatus.Valid);
         }
-
         public OrdInfModel ChangeOdrDetail(List<OrdInfDetailModel> ordInfDetails)
         {
             OrdInfDetails = ordInfDetails;

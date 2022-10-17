@@ -1,8 +1,8 @@
 ﻿namespace Helper.Constants
 {
-    public class TodayOrderConst
+    public class OrderInfConst
     {
-        public enum TodayOrdValidationStatus
+        public enum OrdInfValidationStatus
         {
             InvalidId = 1,
             InvalidHpId,
@@ -78,8 +78,16 @@
             InvalidCmtOpt,
             InvalidFontColor,
             InvalidCommentNewline,
-            InvalidTodayOrdInsertedExist,
             InvalidTodayOrdUpdatedNoExist,
+            InvalidGazoDensibaitaiHozon,
+            InvalidTokuzai,
+            InvalidTokuzaiKouiKbn,
+            InvalidTokuzaiDrugOrInjection,
+            HpIdNoExist,
+            PtIdNoExist,
+            HokenPidNoExist,
+            RaiinNoNoExist,
+            OdrNoMapOdrDetail,
             Valid
         };
 

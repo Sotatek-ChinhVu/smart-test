@@ -21,12 +21,20 @@ namespace Domain.Models.OrdInfs
 
         IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos);
 
-        long GetRaiinNo(long ptId, int hpId, int searchType, long raiinNo, string searchText);
+        int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText);
 
         IpnMinYakkaMstModel FindIpnMinYakkaMst(int hpId, string ipnNameCd, int sinDate);
 
         IEnumerable<ApproveInfModel> GetApproveInf(int hpId, long ptId, bool isDeleted, List<long> raiinNos);
 
         long GetMaxRpNo(int hpId, long ptId, long raiinNo, int sinDate);
+
+        IEnumerable<OrdInfModel> GetListToCheckValidate(long ptId, int hpId, List<long> raiinNos);
+
+        List<IpnMinYakkaMstModel> GetCheckIpnMinYakkaMsts(int hpId, int sinDate, List<string> ipnNameCds);
+
+        List<Tuple<string, string, bool>> CheckIsGetYakkaPrices(int hpId, List<TenItemModel> tenMsts, int sinDate);
+
+        OrdInfModel GetHeaderInfo(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }

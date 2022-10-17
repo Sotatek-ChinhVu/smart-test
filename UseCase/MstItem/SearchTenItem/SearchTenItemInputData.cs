@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MstItem.SearchTenItem
 {
     public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
@@ -24,6 +19,7 @@ namespace UseCase.MstItem.SearchTenItem
             IsRosai = isRosai;
             IsMirai = isMirai;
             IsExpired = isExpired;
+            ItemCodeStartWith = itemCodeStartWith;
         }
 
         public string Keyword { get; private set; }
@@ -51,5 +47,7 @@ namespace UseCase.MstItem.SearchTenItem
         public bool IsMirai { get; private set; }
 
         public bool IsExpired { get; private set; }
+
+        public string ItemCodeStartWith { get; private set; }
     }
 }

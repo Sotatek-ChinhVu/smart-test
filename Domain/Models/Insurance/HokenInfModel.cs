@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
 {
     public class HokenInfModel
     {
+        [JsonConstructor]
         public HokenInfModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenKbn, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int sinDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string houbetu, List<ConfirmDateModel> confirmDateList, List<RousaiTenkiModel> listRousaiTenki, bool isReceKisaiOrNoHoken, int isDeleted, HokenMstModel hokenMst)
         {
             HpId = hpId;
@@ -72,6 +74,16 @@ namespace Domain.Models.Insurance
         public HokenInfModel(int hokenId, int startDate, int endDate)
         {
             HokenId = hokenId;
+            StartDate = startDate;
+            EndDate = endDate;
+            HokenMst = new HokenMstModel();
+        }
+
+        public HokenInfModel(int hokenId, long ptId, int hpId, int startDate, int endDate)
+        {
+            HokenId = hokenId;
+            HpId = hpId;
+            PtId = ptId;
             StartDate = startDate;
             EndDate = endDate;
             HokenMst = new HokenMstModel();
@@ -199,7 +211,7 @@ namespace Domain.Models.Insurance
 
         public int HokenMstFutanKbn => HokenMst != null ? HokenMst.FutanKbn : 0;
 
-        public int HokenMstSubNumber => HokenMst != null ? HokenMst.HokenSubNumber : 0;
+        public int HokenMstSbtKbn => HokenMst != null ? HokenMst.HokenSbtKbn : 0;
 
         public int HokenMstStartDate => HokenMst != null ? HokenMst.StartDate : 0;
 
@@ -213,7 +225,7 @@ namespace Domain.Models.Insurance
             {
                 if (IsHaveHokenMst)
                 {
-                    return HokenMst.HokenSubNumber == 8;
+                    return HokenMst.HokenSbtKbn == 8;
                 }
                 return HokenKbn == 0 && (Houbetu == HokenConstant.HOUBETU_JIHI_108 || Houbetu == HokenConstant.HOUBETU_JIHI_109);
             }

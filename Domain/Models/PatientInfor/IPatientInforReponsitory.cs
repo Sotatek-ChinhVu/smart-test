@@ -1,5 +1,6 @@
-﻿using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
 
 namespace Domain.Models.PatientInfor
 {
@@ -28,5 +29,13 @@ namespace Domain.Models.PatientInfor
         bool CheckListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
+
+        List<DefHokenNoModel> GetDefHokenNoModels(int hpId, string futansyaNo);
+
+        List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
+
+        bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        
+        bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
     }
 }

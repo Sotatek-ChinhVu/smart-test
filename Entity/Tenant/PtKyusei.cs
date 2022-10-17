@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        //[Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public long SeqNo { get; set; }

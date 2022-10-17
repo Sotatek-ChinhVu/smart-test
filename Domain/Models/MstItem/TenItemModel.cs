@@ -1,12 +1,10 @@
 ﻿using Helper.Constants;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn,string yjCd, string cnvUnitName)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -31,6 +29,8 @@ namespace Domain.Models.MstItem
             SinKouiKbn = sinKouiKbn;
             YjCd = yjCd;
             CnvUnitName = cnvUnitName;
+            StartDate = startDate;
+            YohoKbn = yohoKbn;
         }
 
         public TenItemModel()
@@ -57,6 +57,7 @@ namespace Domain.Models.MstItem
             IpnNameCd = string.Empty;
             YjCd = String.Empty;
             CnvUnitName = String.Empty;
+            YohoKbn = 0;
         }
 
         public int HpId { get; private set; }
@@ -105,6 +106,10 @@ namespace Domain.Models.MstItem
 
         public string CnvUnitName { get; private set; }
 
+        public int StartDate { get; private set; }
+
+        public int YohoKbn { get; private set; }
+
         public string RousaiKbnDisplay
         {
             get
@@ -118,19 +123,14 @@ namespace Domain.Models.MstItem
         {
             get
             {
-                switch (KouseisinKbn)
+                return KouseisinKbn switch
                 {
-                    case 1:
-                        return "抗不";
-                    case 2:
-                        return "睡眠";
-                    case 3:
-                        return "うつ";
-                    case 4:
-                        return "抗精";
-                    default:
-                        return "";
-                }
+                    1 => "抗不",
+                    2 => "睡眠",
+                    3 => "うつ",
+                    4 => "抗精",
+                    _ => "",
+                };
             }
         }
 
@@ -138,19 +138,14 @@ namespace Domain.Models.MstItem
         {
             get
             {
-                switch (MadokuKbn)
+                return MadokuKbn switch
                 {
-                    case 1:
-                        return "麻";
-                    case 2:
-                        return "毒";
-                    case 3:
-                        return "覚";
-                    case 5:
-                        return "向";
-                    default:
-                        return "";
-                }
+                    1 => "麻",
+                    2 => "毒",
+                    3 => "覚",
+                    5 => "向",
+                    _ => "",
+                };
             }
         }
 
@@ -201,16 +196,21 @@ namespace Domain.Models.MstItem
             }
         }
 
-        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn); }
+        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn, SinKouiKbn); }
 
-        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn)
+        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn, int sinKouiKbn)
         {
-            string rs = "検体";
+            string rs = "";
+            var sinKouiCollection = new SinkouiCollection();
+            var itemKoui = sinKouiCollection.FirstOrDefault(x => x.SinKouiCd == sinKouiKbn);
+            if (itemKoui != null)
+            {
+                rs = itemKoui.SinkouiName;
+            }
             if (itemCd == ItemCdConst.GazoDensibaitaiHozon)
             {
                 rs = "フィルム";
             }
-
             if (drugKbn > 0)
             {
                 switch (drugKbn)

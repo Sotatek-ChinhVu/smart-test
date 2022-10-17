@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Domain.Models.Insurance
 {
     public class HokenMstModel
     {
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenShortName, string houbetu, int hokenSubNumber)
+        [JsonConstructor]
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -16,14 +18,14 @@ namespace Domain.Models.Insurance
             EndDate = endDate;
             HokenNo = hokenNo;
             HokenEdaNo = hokenEdaNo;
-            HokenShortName = hokenShortName;
+            HokenSName = hokenSName;
             Houbetu = houbetu;
-            HokenSubNumber = hokenSubNumber;
+            HokenSbtKbn = hokenSbtKbn;
         }
 
         public HokenMstModel()
         {
-            HokenShortName = string.Empty;
+            HokenSName = string.Empty;
             Houbetu = string.Empty;
         }
 
@@ -39,11 +41,11 @@ namespace Domain.Models.Insurance
 
         public int HokenEdaNo { get; private set; }
 
-        public string HokenShortName { get; private set; }
+        public string HokenSName { get; private set; }
 
         public string Houbetu { get; private set; }
 
-        public int HokenSubNumber { get; private set; }
+        public int HokenSbtKbn { get; private set; }
 
         public string SelectedValueMaster
         {
@@ -67,7 +69,7 @@ namespace Domain.Models.Insurance
         {
             get
             {
-                string DisplayText = SelectedValueMaster + " " + HokenShortName;
+                string DisplayText = SelectedValueMaster + " " + HokenSName;
                 return DisplayText;
             }
         }

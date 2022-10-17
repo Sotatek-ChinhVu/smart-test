@@ -6,7 +6,7 @@
 
         public string ItemCdInputItem { get; set; } = string.Empty;
 
-        public int SinDateInputItem { get; set; }
+        public int StartDateInputItem { get; set; }
 
     }
 }

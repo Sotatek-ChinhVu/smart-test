@@ -2,7 +2,6 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Entity.Tenant;
-using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -270,7 +269,9 @@ namespace Infrastructure.Repositories
                         kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
                         kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
                         kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
-                        item.PatternIsDeleted
+                        item.PatternIsDeleted,
+                        item.StartDate,
+                        item.EndDate
                     );
                     listInsurance.Add(insuranceModel);
                 }
@@ -408,8 +409,8 @@ namespace Infrastructure.Repositories
                                         item.Houbetu ?? string.Empty,
                                         item.HokenNo,
                                         item.HokenEdaNo,
-                                        item.PrefNo, 
-                                        new HokenMstModel(), 
+                                        item.PrefNo,
+                                        new HokenMstModel(),
                                         sinDate,
                                         GetConfirmDateList(2, item.HokenId), false,
                                         item.IsDeleted)
@@ -425,6 +426,18 @@ namespace Infrastructure.Repositories
             if (hokenPIds.Count == 0) return true;
             var countPtHokens = _tenantDataContext.PtHokenInfs.Count(p => hokenPIds.Contains(p.HokenId) && p.IsDeleted != 1 && hpIds.Contains(p.HpId) && ptIds.Contains(p.PtId));
             return countPtHokens >= hokenPIds.Count;
+        }
+
+        public bool CheckHokenPid(int hokenPId)
+        {
+            var check = _tenantDataContext.PtHokenInfs.Any(h => h.HokenId == hokenPId && h.IsDeleted == 0);
+            return check;
+        }
+
+        public List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids)
+        {
+            var result = _tenantDataContext.PtHokenInfs.Where(h => h.HpId == hpId && hokenPids.Contains(h.HokenId) && h.PtId == ptId && h.IsDeleted == 0);
+            return result.Select(r => new HokenInfModel(r.HokenId, r.PtId, r.HpId, r.StartDate, r.EndDate)).ToList();
         }
 
         private KohiInfModel GetKohiInfModel(PtKohi? kohiInf, PtHokenCheck? ptHokenCheck, HokenMst? hokenMst, int sinDate, List<ConfirmDateModel> confirmDateList)
@@ -517,7 +530,7 @@ namespace Infrastructure.Repositories
                         r.StartDate,
                         r.EndDate));
         }
-        
+
         private bool IsReceKisai(HokenMst HokenMasterModel)
         {
 

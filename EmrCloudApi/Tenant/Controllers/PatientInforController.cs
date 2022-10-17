@@ -7,6 +7,8 @@ using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.InsuranceMst;
 using EmrCloudApi.Tenant.Presenters.KohiHokenMst;
 using EmrCloudApi.Tenant.Presenters.PatientInfor;
+using EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage;
+using EmrCloudApi.Tenant.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
@@ -15,6 +17,8 @@ using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.InsuranceMst;
 using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
+using EmrCloudApi.Tenant.Requests.PatientInfor.InsuranceMasterLinkage;
+using EmrCloudApi.Tenant.Requests.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
@@ -24,6 +28,8 @@ using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
+using EmrCloudApi.Tenant.Responses.PatientInfor.InsuranceMasterLinkage;
+using EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
@@ -33,18 +39,22 @@ using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
+using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
+using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
+using UseCase.PatientInfor.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -317,6 +327,64 @@ namespace EmrCloudApi.Tenant.Controllers
 
             presenter.Complete(output);
             return new ActionResult<Response<ValidInsuranceOtherResponse>>(presenter.Result);
+        }
+
+        [HttpPost("ValidateMainInsurance")]
+        public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
+        {
+            var input = new ValidMainInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
+                request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
+                request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate, request.SelectedHokenInfHokensyaMstIsKigoNa, request.SelectedHokenInfKigo, request.SelectedHokenInfBango,
+                request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
+                request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
+                request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenMstHoubetu, request.SelectedHokenMstHokenNo,
+                request.SelectedHokenMstCheckDegit, request.SelectedHokenMstAgeStart, request.SelectedHokenMstAgeEnd, request.SelectedHokenMstStartDate, request.SelectedHokenMstEndDate,
+                request.SelectedHokenMstDisplayText, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidateMainInsurancePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateMainInsuranceReponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetInsuranceMasterLinkage)]
+        public ActionResult<Response<GetInsuranceMasterLinkageResponse>> GetInsuranceMasterLinkage([FromQuery] GetInsuranceMasterLinkageRequest request)
+        {
+            var input = new GetInsuranceMasterLinkageInputData(request.HpId, request.FutansyaNo);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetInsuranceMasterLinkagePresenter();
+
+            presenter.Complete(output);
+            return new ActionResult<Response<GetInsuranceMasterLinkageResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetPtKyuseiInf)]
+        public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
+        {
+            var input = new GetPtKyuseiInfInputData(request.HpId, request.PtId, request.IsDeleted);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetPtKyuseiInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetPtKyuseiInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost("SavePatientInfo")]
+        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        {
+            var input = new SavePatientInfoInputData(request.PtInformation.Patient,
+                                                     request.PtInformation.PtKyuseis,
+                                                     request.PtInformation.PtSantei,
+                                                     request.PtInformation.Insurances,
+                                                     request.PtInformation.PtGrpInfs);
+            var output = _bus.Handle(input);
+            var presenter = new SavePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
         }
     }
 }
