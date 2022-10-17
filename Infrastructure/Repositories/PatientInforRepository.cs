@@ -931,7 +931,7 @@ namespace Infrastructure.Repositories
                     else if (checkExistDefHoken.HpId == item.HpId && checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
                         && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
                         || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
-                        || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
+                        || checkExistDefHoken.SortNo != item.SortNo))
                     {
                         _tenantDataContextTracking.DefHokenNos.Update(new DefHokenNo()
                         {
