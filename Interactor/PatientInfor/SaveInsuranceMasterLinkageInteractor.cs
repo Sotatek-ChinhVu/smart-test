@@ -67,6 +67,8 @@ namespace Interactor.PatientInfor
             if (status == ValidationStatus.InvalidDigit8)
                 return SaveInsuranceMasterLinkageStatus.InvalidDigit8;
 
+            if (status == ValidationStatus.InvalidHokenNo)
+                return SaveInsuranceMasterLinkageStatus.InvalidHokenNo;
             return SaveInsuranceMasterLinkageStatus.Success;
         }
     }

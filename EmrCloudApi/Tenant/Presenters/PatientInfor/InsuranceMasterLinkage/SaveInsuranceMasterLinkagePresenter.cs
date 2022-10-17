@@ -30,6 +30,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage
             SaveInsuranceMasterLinkageStatus.InvalidDigit6 => ResponseMessage.InvalidDigit6,
             SaveInsuranceMasterLinkageStatus.InvalidDigit7 => ResponseMessage.InvalidDigit7,
             SaveInsuranceMasterLinkageStatus.InvalidDigit8 => ResponseMessage.InvalidDigit8,
+            SaveInsuranceMasterLinkageStatus.InvalidHokenNo => ResponseMessage.InvalidHokenNo,
             _ => string.Empty,
         };
     }

@@ -65,6 +65,9 @@ namespace Domain.Models.PatientInfor
 
             if (Int32.Parse(Digit8) < 0 || Int32.Parse(Digit8) > 9)
                 return ValidationStatus.InvalidDigit8;
+
+            if (HokenNo != Int32.Parse(string.Concat(Digit1 + Digit2)))
+                return ValidationStatus.InvalidHokenNo;
             #endregion
             return ValidationStatus.Valid;
         }

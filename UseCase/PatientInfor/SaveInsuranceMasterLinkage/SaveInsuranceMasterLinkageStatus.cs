@@ -13,6 +13,7 @@
         InvalidDigit6,
         InvalidDigit7,
         InvalidDigit8,
+        InvalidHokenNo,
         Failed
     }
 }
