@@ -233,7 +233,7 @@ namespace Domain.Models.OrdInfDetails
             {
                 return OrdInfValidationStatus.InvalidItemName;
             }
-            if (Suryo < 0 || (ItemCd == ItemCdConst.JikanKihon && !(Suryo >= 0 && Suryo <= 7)) || (ItemCd == ItemCdConst.SyosaiKihon && !(Suryo >= 0 && Suryo <= 8)))
+            if ((Suryo < 0 && !ItemCd.StartsWith("J")) || (ItemCd == ItemCdConst.JikanKihon && !(Suryo >= 0 && Suryo <= 7)) || (ItemCd == ItemCdConst.SyosaiKihon && !(Suryo >= 0 && Suryo <= 8)))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
@@ -296,22 +296,6 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return OrdInfValidationStatus.InvalidSinKouiKbn;
                 }
-                if (ItemCd.Length > 10)
-                {
-                    return OrdInfValidationStatus.InvalidItemCd;
-                }
-                if (ItemName.Length > 240)
-                {
-                    return OrdInfValidationStatus.InvalidItemName;
-                }
-                if (Suryo < 0)
-                {
-                    return OrdInfValidationStatus.InvalidSuryo;
-                }
-                if (UnitName.Length > 24)
-                {
-                    return OrdInfValidationStatus.InvalidUnitName;
-                }
                 if (UnitSbt != 0 && UnitSbt != 1 && UnitSbt != 2)
                 {
                     return OrdInfValidationStatus.InvalidUnitSbt;
@@ -320,17 +304,9 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return OrdInfValidationStatus.InvalidTermVal;
                 }
-                if (!(SyohoKbn >= 0 && SyohoKbn <= 3))
-                {
-                    return OrdInfValidationStatus.InvalidSyohoKbn;
-                }
                 if (!(SyohoLimitKbn >= 0 && SyohoLimitKbn <= 3))
                 {
                     return OrdInfValidationStatus.InvalidSyohoLimitKbn;
-                }
-                if (!(YohoKbn >= 0 && YohoKbn <= 2))
-                {
-                    return OrdInfValidationStatus.InvalidYohoKbn;
                 }
                 if (!(IsNodspRece >= 0 && IsNodspRece <= 1))
                 {
@@ -360,18 +336,6 @@ namespace Domain.Models.OrdInfDetails
                 {
                     return OrdInfValidationStatus.InvalidReqCd;
                 }
-                if (Bunkatu.Length > 10)
-                {
-                    return OrdInfValidationStatus.InvalidBunkatuLength;
-                }
-                if (CmtName.Length > 240)
-                {
-                    return OrdInfValidationStatus.InvalidCmtName;
-                }
-                if (CmtOpt.Length > 38)
-                {
-                    return OrdInfValidationStatus.InvalidCmtOpt;
-                }
                 if (FontColor.Length > 8)
                 {
                     return OrdInfValidationStatus.InvalidFontColor;
@@ -385,7 +349,7 @@ namespace Domain.Models.OrdInfDetails
 
             #region Validate business
 
-            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu))
+            if ((!string.IsNullOrEmpty(UnitName) && Suryo == 0) || (string.IsNullOrEmpty(UnitName) && ((Suryo > 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (Suryo != 0 && ItemCd.StartsWith("J")))))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
