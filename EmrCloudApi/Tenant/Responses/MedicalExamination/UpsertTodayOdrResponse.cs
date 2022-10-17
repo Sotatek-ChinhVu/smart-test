@@ -5,7 +5,7 @@ namespace EmrCloudApi.Tenant.Responses.MedicalExamination
 {
     public class UpsertTodayOdrResponse
     {
-        public UpsertTodayOdrResponse(UpsertTodayOrdStatus status, RaiinInfItemResponse validationRaiinInf, List<ValidationOrdInfListItemResponse> validationOdrInfs, ValidationKarteInfResponse validationKarte)
+        public UpsertTodayOdrResponse(UpsertTodayOrdStatus status, RaiinInfItemResponse validationRaiinInf, List<ValidationTodayOrdItemResponse> validationOdrInfs, ValidationKarteInfResponse validationKarte)
         {
             Status = status;
             ValidationRaiinInf = validationRaiinInf;
@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Responses.MedicalExamination
         }
         public UpsertTodayOrdStatus Status { get; private set; }
         public RaiinInfItemResponse ValidationRaiinInf { get; private set; }
-        public List<ValidationOrdInfListItemResponse> ValidationOdrInfs { get; private set; }
+        public List<ValidationTodayOrdItemResponse> ValidationOdrInfs { get; private set; }
         public ValidationKarteInfResponse ValidationKarte { get; private set; }
     }
 }
