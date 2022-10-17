@@ -1,5 +1,5 @@
-﻿using Domain.Models.OrdInfs;
-using Domain.Models.SuperSetDetail;
+﻿using Domain.Models.SuperSetDetail;
+using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;

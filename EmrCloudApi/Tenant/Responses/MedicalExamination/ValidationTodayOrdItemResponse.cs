@@ -1,10 +1,10 @@
 ﻿using Helper.Constants;
 
-namespace EmrCloudApi.Tenant.Responses.OrdInf
+namespace EmrCloudApi.Tenant.Responses.MedicalExamination
 {
-    public class ValidationOrdInfListItemResponse
+    public class ValidationTodayOrdItemResponse
     {
-        public ValidationOrdInfListItemResponse(TodayOrderConst.TodayOrdValidationStatus status, string orderInfPosition, string orderInfDetailPosition, string validationMessage, string validationField)
+        public ValidationTodayOrdItemResponse(OrderInfConst.OrdInfValidationStatus status, string orderInfPosition, string orderInfDetailPosition, string validationMessage, string validationField)
         {
             Status = status;
             OrderInfPosition = orderInfPosition;
@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Responses.OrdInf
             ValidationField = validationField;
         }
 
-        public TodayOrderConst.TodayOrdValidationStatus Status { get; private set; }
+        public OrderInfConst.OrdInfValidationStatus Status { get; private set; }
         public string OrderInfPosition { get; private set; }
         public string OrderInfDetailPosition { get; private set; }
         public string ValidationMessage { get; private set; }

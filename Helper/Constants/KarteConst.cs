@@ -1,8 +1,8 @@
 ﻿namespace Helper.Constants
 {
-    public static class TodayKarteConst
+    public static class KarteConst
     {
-        public enum TodayKarteValidationStatus
+        public enum KarteValidationStatus
         {
             InvalidHpId = 1,
             InvalidRaiinNo,

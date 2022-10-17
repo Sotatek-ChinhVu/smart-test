@@ -2,7 +2,7 @@
 {
     public enum UpsertTodayOrdStatus : byte
     {
-        Successed,
+        Successed = 1,
         Failed
     }
 }
