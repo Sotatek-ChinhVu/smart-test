@@ -382,7 +382,7 @@ namespace Interactor.MedicalExamination
             {
                 lock (obj)
                 {
-                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenId == hokenPid);
+                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenInf.HokenId == hokenPid);
                     var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
 
                     var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)

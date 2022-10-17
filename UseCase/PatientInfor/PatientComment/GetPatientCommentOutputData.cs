@@ -1,4 +1,4 @@
-﻿using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Domain.Models.PatientInfor;
 using System;
 using System.Collections.Generic;
 using System.Linq;

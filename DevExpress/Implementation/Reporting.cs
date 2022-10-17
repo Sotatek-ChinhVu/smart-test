@@ -6,7 +6,6 @@ using Domain.Models.Diseases;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
