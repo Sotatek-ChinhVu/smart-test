@@ -2201,6 +2201,7 @@ namespace Infrastructure.Repositories
             if(patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
+                patientInf.UpdateDate = DateTime.UtcNow;
                 patientInf.UpdateId = TempIdentity.UserId;
                 patientInf.UpdateMachine = TempIdentity.ComputerName;
                 _tenantTrackingDataContext.PtInfs.Update(patientInf);
@@ -2210,6 +2211,7 @@ namespace Infrastructure.Repositories
                 foreach(var item in ptMemos)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
+                    item.UpdateDate = DateTime.UtcNow;
                     item.UpdateId = TempIdentity.UserId;
                     item.UpdateMachine = TempIdentity.ComputerName;
                     _tenantTrackingDataContext.PtMemos.Update(item);
@@ -2222,6 +2224,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtKyuseis.UpdateRange(ptKyuseis);
@@ -2233,6 +2236,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtSanteiConfs.UpdateRange(ptSanteis);
@@ -2244,6 +2248,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtHokenPatterns.UpdateRange(ptHokenParterns);
@@ -2255,6 +2260,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtHokenInfs.UpdateRange(ptHokenInfs);
@@ -2265,6 +2271,7 @@ namespace Infrastructure.Repositories
                 ptHokenKohis.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateId = TempIdentity.UserId;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
@@ -2277,6 +2284,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtHokenChecks.UpdateRange(ptHokenChecks);
@@ -2288,6 +2296,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 _tenantTrackingDataContext.PtRousaiTenkis.UpdateRange(ptRousaiTenkies);

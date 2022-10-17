@@ -4,7 +4,6 @@
     {
         Successful,
         Failed,
-        Exception,
         InvalidPtId,
         InvalidHpId
     }

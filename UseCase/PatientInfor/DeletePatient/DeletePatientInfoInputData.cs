@@ -15,4 +15,4 @@ namespace UseCase.PatientInfor.DeletePatient
         }
     }
 }
-}
+

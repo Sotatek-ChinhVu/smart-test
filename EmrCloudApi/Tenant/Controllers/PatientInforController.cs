@@ -55,6 +55,7 @@ using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.PatientInfor.Save;
+using UseCase.PatientInfor.DeletePatient;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -386,5 +387,15 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
         }
+
+        [HttpPost("DeletePatientInfo")]
+        public ActionResult<Response<DeletePatientInfoResponse>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
+        {
+            var input = new DeletePatientInfoInputData(request.HpId, request.PtId);
+            var output = _bus.Handle(input);
+            var presenter = new DeletePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<DeletePatientInfoResponse>>(presenter.Result);
+        } 
     }
 }
