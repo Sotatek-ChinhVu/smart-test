@@ -25,15 +25,27 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedUserId(int userId)
         {
-            {
-                return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
-            }
-            
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
-        public bool CheckExistedLoginId(string loginId)
+        public bool CheckExistedUserIdCreate(long id, int userId)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId);
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+        }
+
+        public bool CheckExistedUserIdUpdate(long id, int userId)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.Id != id && u.IsDeleted == 0);
+        }
+
+        public bool CheckExistedLoginIdCreate(long id, string loginId)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.IsDeleted == 0);
+        }
+
+        public bool CheckExistedLoginIdUpdate(long id, string loginId)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.Id != id && u.IsDeleted == 0);
         }
 
         public void Create(UserMstModel user)

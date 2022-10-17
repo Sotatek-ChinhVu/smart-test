@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using PostgreDataContext;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,34 +67,24 @@ namespace Interactor.User
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
                     }
 
-                    if (data.Id >0 && !_userRepository.CheckExistedId(new List<long> { data.Id}))
+                    if(data.Id == 0 && _userRepository.CheckExistedUserIdCreate(data.Id, data.UserId))
                     {
-                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListIdNoExist);
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                     }
 
-                    if(_userRepository.CheckExistedUserId(data.UserId))
+                    if (data.Id > 0 && _userRepository.CheckExistedUserIdUpdate(data.Id, data.UserId))
                     {
-                        if(data.Id == 0) 
-                        { 
-                            return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
-                        }
-                        else
-                        {
-                            _userRepository.Upsert(datas);
-                        }
-                        
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                     }
 
-                    if (_userRepository.CheckExistedLoginId(data.LoginId))
+                    if (data.Id == 0 && _userRepository.CheckExistedLoginIdCreate(data.Id, data.LoginId))
                     {
-                        if (data.Id == 0)
-                        {
-                            return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
-                        }
-                        else
-                        {
-                            _userRepository.Upsert(datas);
-                        }
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
+                    }
+
+                    if (data.Id > 0 && _userRepository.CheckExistedLoginIdUpdate(data.Id, data.LoginId))
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                     }
 
                     if (inputData.ToList().Count == 0)

@@ -30,6 +30,11 @@
 
         bool CheckExistedUserId(int userId);
 
-        bool CheckExistedLoginId(string loginId);
+        bool CheckExistedUserIdCreate(long id, int userId);
+
+        bool CheckExistedUserIdUpdate(long id, int userId);
+
+        bool CheckExistedLoginIdCreate(long id, string loginId);
+        bool CheckExistedLoginIdUpdate(long id, string loginId);
     }
 }
