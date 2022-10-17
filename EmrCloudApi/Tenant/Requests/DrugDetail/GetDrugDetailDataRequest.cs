@@ -2,9 +2,9 @@
 {
     public class GetDrugDetailDataRequest
     {
-        public int SelectedIndexOfChildren { get; set; }
+        public int SelectedIndexOfMenuLevel { get; set; }
 
-        public int SelectedIndexOfLevel0 { get; set; }
+        public int Level { get; set; }
 
         public string DrugName { get; set; } = string.Empty;
 
