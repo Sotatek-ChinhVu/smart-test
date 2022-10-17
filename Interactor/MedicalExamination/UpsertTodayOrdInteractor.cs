@@ -422,7 +422,7 @@ namespace Interactor.MedicalExamination
                                 }
                             });
 
-                allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
+                allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
 
                 Parallel.ForEach(allOdrInfs, item =>
                 {
