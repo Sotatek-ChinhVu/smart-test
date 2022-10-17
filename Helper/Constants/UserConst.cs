@@ -13,6 +13,7 @@ namespace Helper.Constants
             InvalidHpId,
             InvalidId,
             InvalidUserId,
+            InvalidExistedUserId,
             InvalidJobCd,
             InvalidManagerKbn,
             InvalidKanaName,
@@ -20,6 +21,7 @@ namespace Helper.Constants
             InvalidName,
             InvalidSname,
             InvalidLoginId,
+            InvalidExistedLoginId,
             InvalidLoginPass,
             InvalidMayakuLicenseNo,
             InvalidStartDate,
@@ -28,6 +30,8 @@ namespace Helper.Constants
             InvalidRenkeiCd1,
             InvalidRDrName,
             InvalidIsDeleted,
+            UserListKaIdNoExist,
+            UserListIdNoExist,
             Valid
         };
     }

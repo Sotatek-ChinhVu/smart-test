@@ -4,6 +4,7 @@ using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -24,7 +25,15 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedUserId(int userId)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            {
+                return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            }
+            
+        }
+
+        public bool CheckExistedLoginId(string loginId)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId);
         }
 
         public void Create(UserMstModel user)
@@ -98,25 +107,41 @@ namespace Infrastructure.Repositories
         }
         public void Upsert(List<UserMstModel> upsertUserList)
         {
-            foreach(var inputData in upsertUserList)
+            foreach (var inputData in upsertUserList)
             {
-                if(inputData.IsDeleted == DeleteTypes.Deleted)
+                if (inputData.IsDeleted == DeleteTypes.Deleted)
                 {
                     var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id);
-                    if(userMsts != null)
+                    if (userMsts != null)
                     {
                         userMsts.IsDeleted = DeleteTypes.Deleted;
                     }
                 }
                 else
                 {
-                    var userMsts = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
-                    if( userMsts != null)
+                    var userMst = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
+                    if (userMst != null)
                     {
-                        var updateUser = ConvertUserList(inputData);
-                        updateUser.UpdateId = TempIdentity.UserId;
-                        updateUser.UpdateDate = DateTime.UtcNow;
-                        updateUser.UpdateMachine = TempIdentity.ComputerName;                    }
+                        userMst.UserId = inputData.UserId;
+                        userMst.JobCd = inputData.JobCd;
+                        userMst.ManagerKbn = inputData.ManagerKbn;
+                        userMst.KaId = inputData.KaId;
+                        userMst.KanaName = inputData.KanaName ?? string.Empty;
+                        userMst.Name = inputData.Name ?? string.Empty;
+                        userMst.Sname = inputData.Sname ?? string.Empty;
+                        userMst.DrName = inputData.DrName ?? string.Empty;
+                        userMst.LoginId = inputData.LoginId ?? string.Empty;
+                        userMst.LoginPass = inputData.LoginPass ?? string.Empty;
+                        userMst.MayakuLicenseNo = inputData.MayakuLicenseNo ?? string.Empty;
+                        userMst.StartDate = inputData.StartDate;
+                        userMst.EndDate = inputData.EndDate;
+                        userMst.SortNo = inputData.SortNo;
+                        userMst.RenkeiCd1 = inputData.RenkeiCd1 ?? string.Empty;
+                        userMst.IsDeleted = inputData.IsDeleted;
+                        userMst.UpdateId = TempIdentity.UserId;
+                        userMst.UpdateDate = DateTime.UtcNow;
+                        userMst.UpdateMachine = TempIdentity.ComputerName;
+                    }
                     else
                     {
                         _tenantTrackingDataContext.UserMsts.Add(ConvertUserList(inputData));
@@ -150,7 +175,8 @@ namespace Infrastructure.Repositories
         }
         private static UserMst ConvertUserList(UserMstModel u)
         {
-            return new UserMst{
+            return new UserMst
+            {
                 Id = u.Id,
                 UserId = u.UserId,
                 JobCd = u.JobCd,
@@ -169,7 +195,7 @@ namespace Infrastructure.Repositories
                 RenkeiCd1 = u.RenkeiCd1 ?? string.Empty,
                 IsDeleted = u.IsDeleted,
             };
-                
+
         }
     }
 }

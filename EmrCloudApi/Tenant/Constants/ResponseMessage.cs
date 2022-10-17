@@ -89,24 +89,29 @@
         public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //User controller
-        public static readonly string UserListInputNoData = "Input NoData";
-        public static readonly string UserListInvalidId = "Invalid Id";
-        public static readonly string UserListInvalidUserId = "Invalid UserId";
-        public static readonly string UserListInvalidJobCd = "Invalid JobCd";
-        public static readonly string UserListInvalidManagerKbn = "Invalid ManagerKbn";
-        public static readonly string UserListInvalidKaId = "Invalid KaId"; 
-        public static readonly string UserListInvalidKanaName = "Invalid KanaName";
-        public static readonly string UserListInvalidName = "Invalid Name";
-        public static readonly string UserListInvalidSname = "Invalid Sname";
-        public static readonly string UserListInvalidLoginId = "Invalid LoginId";
-        public static readonly string UserListInvalidLoginPass = "Invalid LoginPass";
-        public static readonly string UserListInvalidStartDate = "Invalid StartDate";
-        public static readonly string UserListInvalidEndDate = "Invalid EndDate";
-        public static readonly string UserListInvalidSortNo = "Invalid SortNo";
-        public static readonly string UserListInvalidIsDeleted = "Invalid IsDeleted";
-        public static readonly string UserListInvalidRenkeiCd1 = "Invalid RenkeiCd1";
-        public static readonly string UserListInvalidDrName = "Invalid DrName";
+        public static readonly string UpsertInputNoData = "Input NoData";
+        public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
+        public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
+        public static readonly string UpsertInvalidId = "Invalid Id";
+        public static readonly string UpsertInvalidUserId = "Invalid UserId";
+        public static readonly string UpsertInvalidJobCd = "Invalid JobCd";
+        public static readonly string UpsertInvalidManagerKbn = "Invalid ManagerKbn";
+        public static readonly string UpsertInvalidKaId = "Invalid KaId"; 
+        public static readonly string UpsertInvalidKanaName = "Invalid KanaName";
+        public static readonly string UpsertInvalidName = "Invalid Name";
+        public static readonly string UpsertInvalidSname = "Invalid Sname";
+        public static readonly string UpsertInvalidLoginId = "Invalid LoginId";
+        public static readonly string UpsertInvalidLoginPass = "Invalid LoginPass";
+        public static readonly string UpsertInvalidStartDate = "Invalid StartDate";
+        public static readonly string UpsertInvalidEndDate = "Invalid EndDate";
+        public static readonly string UpsertInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertInvalidRenkeiCd1 = "Invalid RenkeiCd1";
+        public static readonly string UpsertInvalidDrName = "Invalid DrName";
         public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
+        public static readonly string UpsertKaIdNoExist = "No Exist KaId";
+        public static readonly string UpsertIdNoExist = "No Exist Id";
+        public static readonly string UpsertUpdateNoSuccess = " UpsertUpdateNoSuccess";
 
 
         //Insurance

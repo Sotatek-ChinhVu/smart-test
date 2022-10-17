@@ -29,5 +29,7 @@
         void Upsert(List<UserMstModel> upsertUserList);
 
         bool CheckExistedUserId(int userId);
+
+        bool CheckExistedLoginId(string loginId);
     }
 }

@@ -60,13 +60,45 @@ namespace Interactor.User
                     {
                         return new UpsertUserListOutputData(ConvertStatusUser(status));
                     }
+
                     if (!_kaRepository.CheckKaId(data.KaId))
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
+                    }
+
+                    if (data.Id >0 && !_userRepository.CheckExistedId(new List<long> { data.Id}))
                     {
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListIdNoExist);
                     }
-                    if (!_userRepository.CheckExistedId(new List<long> { data.Id}))
+
+                    if(_userRepository.CheckExistedUserId(data.UserId))
                     {
-                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidId);
+                        if(data.Id == 0) 
+                        { 
+                            return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
+                        }
+                        else
+                        {
+                            _userRepository.Upsert(datas);
+                        }
+                        
+                    }
+
+                    if (_userRepository.CheckExistedLoginId(data.LoginId))
+                    {
+                        if (data.Id == 0)
+                        {
+                            return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
+                        }
+                        else
+                        {
+                            _userRepository.Upsert(datas);
+                        }
+                    }
+
+                    if (inputData.ToList().Count == 0)
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInputNoData);
                     }
                 }
 
@@ -79,42 +111,50 @@ namespace Interactor.User
                 return new UpsertUserListOutputData(UpsertUserListStatus.Failed);
             }
         }
-        private UpsertUserListStatus ConvertStatusUser(ValidationStatus status)
+        private static UpsertUserListStatus ConvertStatusUser(ValidationStatus status)
         {
             if (status == ValidationStatus.InvalidHpId)
-                return UpsertUserListStatus.UserListInvalidHpId;
+                return UpsertUserListStatus.InvalidHpId;
             if (status == ValidationStatus.InvalidId)
-                return UpsertUserListStatus.UserListInvalidId;
+                return UpsertUserListStatus.InvalidId;
             if (status == ValidationStatus.InvalidUserId)
-                return UpsertUserListStatus.UserListInvalidUserId;
+                return UpsertUserListStatus.InvalidUserId;
             if (status == ValidationStatus.InvalidJobCd)
-                return UpsertUserListStatus.UserListInvalidJobCd;
+                return UpsertUserListStatus.InvalidJobCd;
             if (status == ValidationStatus.InvalidManagerKbn)
-                return UpsertUserListStatus.UserListInvalidManagerKbn;
+                return UpsertUserListStatus.InvalidManagerKbn;
             if (status == ValidationStatus.InvalidKanaName)
-                return UpsertUserListStatus.UserListInvalidKanaName;
+                return UpsertUserListStatus.InvalidKanaName;
             if (status == ValidationStatus.InvalidKaId)
-                return UpsertUserListStatus.UserListInvalidKaId;
+                return UpsertUserListStatus.InvalidKaId;
             if (status == ValidationStatus.InvalidName)
-                return UpsertUserListStatus.UserListInvalidName;
+                return UpsertUserListStatus.InvalidName;
             if (status == ValidationStatus.InvalidSortNo)
-                return UpsertUserListStatus.UserListInvalidSortNo;
+                return UpsertUserListStatus.InvalidSortNo;
             if (status == ValidationStatus.InvalidSname)
-                return UpsertUserListStatus.UserListInvalidSname;
+                return UpsertUserListStatus.InvalidSname;
             if (status == ValidationStatus.InvalidLoginId)
-                return UpsertUserListStatus.UserListInvalidLoginId;
+                return UpsertUserListStatus.InvalidLoginId;
+            if (status == ValidationStatus.InvalidExistedLoginId)
+                return UpsertUserListStatus.UserListInvalidExistedLoginId;
             if (status == ValidationStatus.InvalidLoginPass)
-                return UpsertUserListStatus.UserListInvalidLoginPass;
+                return UpsertUserListStatus.InvalidLoginPass;
             if (status == ValidationStatus.InvalidMayakuLicenseNo)
-                return UpsertUserListStatus.UserListInvalidMayakuLicenseNo;
+                return UpsertUserListStatus.InvalidMayakuLicenseNo;
             if (status == ValidationStatus.InvalidStartDate)
-                return UpsertUserListStatus.UserListInvalidStartDate;
+                return UpsertUserListStatus.InvalidStartDate;
             if (status == ValidationStatus.InvalidEndDate)
-                return UpsertUserListStatus.UserListInvalidEndDate;
+                return UpsertUserListStatus.InvalidEndDate;
             if (status == ValidationStatus.InvalidRenkeiCd1)
-                return UpsertUserListStatus.UserListInvalidRenkeiCd1;
+                return UpsertUserListStatus.InvalidRenkeiCd1;
             if (status == ValidationStatus.InvalidIsDeleted)
-                return UpsertUserListStatus.UserListInvalidIsDeleted;
+                return UpsertUserListStatus.InvalidIsDeleted;
+            if (status == ValidationStatus.UserListIdNoExist)
+                return UpsertUserListStatus.UserListIdNoExist;
+            if (status == ValidationStatus.UserListKaIdNoExist)
+                return UpsertUserListStatus.UserListKaIdNoExist;
+            if (status == ValidationStatus.InvalidExistedUserId)
+                return UpsertUserListStatus.UserListInvalidExistedUserId;
 
             return UpsertUserListStatus.Success;
         }
