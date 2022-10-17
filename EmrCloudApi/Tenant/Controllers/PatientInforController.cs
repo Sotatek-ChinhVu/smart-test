@@ -362,7 +362,7 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             var input = new SavePatientInfoInputData(request.PtInformation.Patient,
                                                      request.PtInformation.PtKyuseis,
-                                                     request.PtInformation.PtSantei,
+                                                     request.PtInformation.PtSanteis,
                                                      request.PtInformation.Insurances,
                                                      request.PtInformation.PtGrpInfs);
             var output = _bus.Handle(input);

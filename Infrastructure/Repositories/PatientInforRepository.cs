@@ -863,7 +863,7 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
-        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -889,9 +889,10 @@ namespace Infrastructure.Repositories
             if (!resultCreatePatient)
                 return false;
 
-            if (ptSantei != null)
+            if (ptSanteis != null && ptSanteis.Any())
             {
-                var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
+                var ptSanteiInserts = Mapper.Map<PtInfSanteiConfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
+                {
                     dest.CreateId = TempIdentity.UserId;
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
@@ -901,7 +902,7 @@ namespace Infrastructure.Repositories
                     dest.UpdateDate = DateTime.UtcNow;
                     return dest;
                 });
-                _tenantTrackingDataContext.PtSanteiConfs.Add(ptSanteiInsert);
+                _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiInserts);
             }
 
             if (!string.IsNullOrEmpty(ptInf.Memo))
@@ -1165,7 +1166,7 @@ namespace Infrastructure.Repositories
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1236,36 +1237,42 @@ namespace Infrastructure.Repositories
             #endregion
 
             #region PtSantei
-            PtSanteiConf? ptSanteiConf = _tenantTrackingDataContext.PtSanteiConfs.FirstOrDefault(x => x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId);
-            if (ptSanteiConf == null && ptSantei != null)
+            var ptSanteiConfDb = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId).ToList();
+            var ptSanteiConfRemoves = ptSanteiConfDb.Where(c => !ptSanteis.Any(_ => _.SeqNo == c.SeqNo));
+
+            foreach (var item in ptSanteiConfRemoves)
             {
-                var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
-                    dest.CreateId = TempIdentity.UserId;
-                    dest.PtId = patientInfo.PtId;
-                    dest.HpId = hpId;
-                    dest.UpdateMachine = TempIdentity.ComputerName;
-                    dest.UpdateDate = DateTime.UtcNow;
-                    return dest;
-                });
-                _tenantTrackingDataContext.PtSanteiConfs.Add(ptSanteiInsert);
+                item.UpdateId = TempIdentity.UserId;
+                item.UpdateDate = DateTime.UtcNow;
+                item.IsDeleted = DeleteTypes.Deleted;
+                _tenantTrackingDataContext.PtSanteiConfs.Update(item);
             }
-            else if (ptSanteiConf != null && ptSantei == null)
+
+            var ptSanteiConfListAdd = Mapper.Map<PtInfSanteiConfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) => {
+                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateId = TempIdentity.UserId;
+                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.HpId = hpId;
+                dest.PtId = patientInfo.PtId;
+                dest.UpdateDate = DateTime.UtcNow;
+                return dest;
+            });
+            _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiConfListAdd);
+
+            foreach (var item in ptSanteis.Where(x => x.SeqNo != 0))
             {
-                ptSanteiConf.UpdateId = TempIdentity.UserId;
-                ptSanteiConf.UpdateDate = DateTime.UtcNow;
-                ptSanteiConf.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiConf);
-            }
-            else if (ptSanteiConf != null && ptSantei != null)
-            {
-                ptSanteiConf.KbnNo = ptSantei.KbnNo;
-                ptSanteiConf.EdaNo = ptSantei.EdaNo;
-                ptSanteiConf.KbnVal = ptSantei.KbnVal;
-                ptSanteiConf.StartDate = ptSantei.StartDate;
-                ptSanteiConf.EndDate = ptSantei.EndDate;
-                ptSanteiConf.UpdateId = TempIdentity.UserId;
-                ptSanteiConf.UpdateDate = DateTime.UtcNow;
-                _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiConf);
+                var ptSanteiUpdate = ptSanteiConfDb.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                if (ptSanteiUpdate != null)
+                {
+                    ptSanteiUpdate.KbnNo = item.KbnNo;
+                    ptSanteiUpdate.EdaNo = item.EdaNo;
+                    ptSanteiUpdate.KbnVal = item.KbnVal;
+                    ptSanteiUpdate.StartDate = item.StartDate;
+                    ptSanteiUpdate.EndDate = item.EndDate;
+                    ptSanteiUpdate.UpdateId = TempIdentity.UserId;
+                    ptSanteiUpdate.UpdateDate = DateTime.UtcNow;
+                    _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiUpdate);
+                }
             }
             #endregion
 
