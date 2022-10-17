@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Insurance
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Models.Insurance
 {
     public class KohiInfModel
     {
@@ -37,6 +39,32 @@
             HokenMstModel = new HokenMstModel();
             ConfirmDateList = new List<ConfirmDateModel>();
             IsHaveKohiMst = false;
+        }
+
+        [JsonConstructor]
+        public KohiInfModel(List<ConfirmDateModel> confirmDateList, string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, HokenMstModel hokenMstModel, int hokenNo, int hokenEdaNo, int prefNo, int sinDate, bool isHaveKohiMst, int isDeleted)
+        {
+            ConfirmDateList = confirmDateList;
+            FutansyaNo = futansyaNo;
+            JyukyusyaNo = jyukyusyaNo;
+            HokenId = hokenId;
+            StartDate = startDate;
+            EndDate = endDate;
+            ConfirmDate = confirmDate;
+            Rate = rate;
+            GendoGaku = gendoGaku;
+            SikakuDate = sikakuDate;
+            KofuDate = kofuDate;
+            TokusyuNo = tokusyuNo;
+            HokenSbtKbn = hokenSbtKbn;
+            Houbetu = houbetu;
+            HokenMstModel = hokenMstModel;
+            HokenNo = hokenNo;
+            HokenEdaNo = hokenEdaNo;
+            PrefNo = prefNo;
+            SinDate = sinDate;
+            IsHaveKohiMst = isHaveKohiMst;
+            IsDeleted = isDeleted;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }

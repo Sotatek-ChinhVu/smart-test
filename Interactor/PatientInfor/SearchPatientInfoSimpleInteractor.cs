@@ -1,6 +1,5 @@
 ﻿using Domain.Models.GroupInf;
 using Domain.Models.PatientInfor;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
 using Helper.Common;
 using Helper.Extension;
 using System.Text.RegularExpressions;
