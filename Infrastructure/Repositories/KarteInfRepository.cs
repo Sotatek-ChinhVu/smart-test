@@ -1,5 +1,6 @@
 ﻿using Domain.Models.KarteInfs;
 using Entity.Tenant;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Text;
@@ -28,18 +29,38 @@ namespace Infrastructure.Repositories
             return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
         }
 
-        public List<KarteInfModel> GetList(long ptId, int hpId)
+        public List<KarteInfModel> GetList(long ptId, int hpId, int deleteCondition, List<long> raiinNos)
         {
-            var karteInfEntity = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId).ToList();
+            var karteInfEntities = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.PtId == ptId && k.HpId == hpId && raiinNos.Contains(k.RaiinNo)).AsEnumerable();
 
-            if (karteInfEntity == null)
+            if (deleteCondition == 0)
+            {
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None);
+            }
+            else if (deleteCondition == 1)
+            {
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted);
+            }
+            else
+            {
+                karteInfEntities = karteInfEntities.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm);
+            }
+
+            if (karteInfEntities == null)
             {
                 return new List<KarteInfModel>();
             }
-            return karteInfEntity.Select(k => ConvertToModel(k)).ToList();
+
+            var karteInfs = from karte in karteInfEntities
+                            join user in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId)
+                          on karte.CreateId equals user.UserId into odrUsers
+                            from odrUser in odrUsers.DefaultIfEmpty()
+                            select ConvertToModel(karte, odrUser?.Sname ?? string.Empty);
+
+            return karteInfs.ToList();
         }
 
-        private KarteInfModel ConvertToModel(KarteInf itemData)
+        private static KarteInfModel ConvertToModel(KarteInf itemData, string updateName = "")
         {
             return new KarteInfModel(
                 itemData.HpId,
@@ -48,11 +69,12 @@ namespace Infrastructure.Repositories
                 itemData.SeqNo,
                 itemData.PtId,
                 itemData.SinDate,
-                itemData.Text,
+                itemData.Text ?? string.Empty,
                 itemData.IsDeleted,
                 itemData.RichText == null ? string.Empty : Encoding.UTF8.GetString(itemData.RichText),
                 itemData.CreateDate,
-                itemData.UpdateDate
+                itemData.UpdateDate,
+                updateName
                 );
         }
 
@@ -69,10 +91,9 @@ namespace Infrastructure.Repositories
 
                 foreach (var model in listModel)
                 {
-                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName));
-                    if (karteImgInf == null)
+                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName)) ?? new KarteImgInf { Id = 0, PtId = 0, HpId = 0, RaiinNo = 0 };
+                    if (karteImgInf.Id == 0 && karteImgInf.HpId == 0 && karteImgInf.PtId == 0 && karteImgInf.RaiinNo == 0)
                     {
-                        karteImgInf = new KarteImgInf();
                         karteImgInf.HpId = model.HpId;
                         karteImgInf.RaiinNo = model.RaiinNo;
                         karteImgInf.FileName = model.FileName;
@@ -100,6 +121,14 @@ namespace Infrastructure.Repositories
             {
                 return status;
             }
+        }
+
+        public int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText)
+        {
+            if (searchType == 1)
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate <= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate))?.SinDate ?? -1;
+            else
+                return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate >= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate))?.SinDate ?? -1;
         }
     }
 }

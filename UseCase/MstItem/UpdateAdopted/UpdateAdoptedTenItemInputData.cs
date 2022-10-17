@@ -9,17 +9,17 @@ namespace UseCase.MstItem.UpdateAdopted
 {
     public class UpdateAdoptedTenItemInputData : IInputData<UpdateAdoptedTenItemOutputData>
     {
-        public UpdateAdoptedTenItemInputData(int valueAdopted, string itemCdInputItem, int sinDateInputItem)
+        public UpdateAdoptedTenItemInputData(int valueAdopted, string itemCdInputItem, int startDateInputItem)
         {
             ValueAdopted = valueAdopted;
             ItemCdInputItem = itemCdInputItem;
-            SinDateInputItem = sinDateInputItem;
+            StartDateInputItem = startDateInputItem;
         }
 
         public int ValueAdopted { get; private set; }
 
         public string ItemCdInputItem { get; private set; }
 
-        public int SinDateInputItem { get; private set; }
+        public int StartDateInputItem { get; private set; }
     }
 }

@@ -5,15 +5,19 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Xml.Linq;
+using System;
 
 namespace Infrastructure.Repositories
 {
     public class InsuranceMstRepository : IInsuranceMstRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContextTracking;
         public InsuranceMstRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate)
@@ -65,7 +69,8 @@ namespace Infrastructure.Repositories
                                         item.HokenSname,
                                         prefName == null ? string.Empty : prefName,
                                         item.ReceKisai,
-                                        item.FutanKbn
+                                        item.FutanKbn,
+                                        item.FutanRate
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -216,7 +221,7 @@ namespace Infrastructure.Repositories
                     prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName;
                 }
 
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName, h.ReceKisai, h.FutanKbn));
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName, h.ReceKisai, h.FutanKbn, h.FutanRate));
             });
 
             return list;
@@ -300,7 +305,7 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(h =>
             {
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, "", h.ReceKisai, h.FutanKbn));
+                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, "", h.ReceKisai, h.FutanKbn, h.FutanRate));
             });
 
             // Get KohiMst
@@ -345,6 +350,58 @@ namespace Infrastructure.Repositories
 
             return new HokenMstModel();
 
+        }
+
+        public bool SaveHokenSyaMst(HokensyaMstModel model)
+        {
+            var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
+            if (hoken is null)
+            {
+                HokensyaMst create = new HokensyaMst()
+                {
+                    HpId = model.HpId,
+                    Name = model.Name,
+                    KanaName = model.KanaName,
+                    HoubetuKbn = model.HoubetuKbn,
+                    Houbetu = model.Houbetu,
+                    HokenKbn = model.HokenKbn,
+                    PrefNo = model.PrefNo,
+                    HokensyaNo = model.HokensyaNo,
+                    Kigo = model.Kigo,
+                    Bango = model.Bango,
+                    RateHonnin = model.RateHonnin,
+                    RateKazoku = model.RateKazoku,
+                    PostCode = model.PostCode,
+                    Address1 = model.Address1,
+                    Address2 = model.Address2,
+                    Tel1 = model.Tel1,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+                _tenantDataContextTracking.HokensyaMsts.Add(create);
+            }
+            else
+            {
+                hoken.Name = model.Name;
+                hoken.KanaName = model.KanaName;
+                hoken.HoubetuKbn = model.HoubetuKbn;
+                hoken.Houbetu = model.Houbetu;
+                hoken.HokenKbn = model.HokenKbn;
+                hoken.PrefNo = model.PrefNo;
+                hoken.Kigo = model.Kigo;
+                hoken.Bango = model.Bango;
+                hoken.RateHonnin = model.RateHonnin;
+                hoken.RateKazoku = model.RateKazoku;
+                hoken.PostCode = model.PostCode;
+                hoken.Address1 = model.Address1;
+                hoken.Address2 = model.Address2;
+                hoken.Tel1 = model.Tel1;
+                hoken.UpdateDate = DateTime.UtcNow;
+                hoken.UpdateId = TempIdentity.UserId;
+                hoken.UpdateMachine = TempIdentity.ComputerName;
+            }
+            return _tenantDataContextTracking.SaveChanges() > 0;
         }
     }
 }

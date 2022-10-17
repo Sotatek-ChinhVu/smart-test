@@ -1,5 +1,6 @@
 ﻿using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace PostgreDataContext
 {
@@ -22,7 +23,7 @@ namespace PostgreDataContext
                 optionsBuilder.UseNpgsql(_connectionString, buider =>
                 {
                     buider.EnableRetryOnFailure(maxRetryCount: 3);
-                });
+                }).LogTo(Console.WriteLine, LogLevel.Information);
             }
         }
 
@@ -109,8 +110,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<YakkaSyusaiMst>().HasKey(e => new { e.HpId, e.YakkaCd, e.ItemCd, e.StartDate });
             modelBuilder.Entity<SetOdrInf>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.Id });
             modelBuilder.Entity<SetOdrInfDetail>().HasKey(e => new { e.HpId, e.SetCd, e.RpNo, e.RpEdaNo, e.RowNo });
-            modelBuilder.Entity<SetKarteInf>().HasKey(e => new { e.HpId, e.SetCd, e.KarteKbn, e.SeqNo});
-            modelBuilder.Entity<SetByomei>().HasKey(e => new { e.Id, e.HpId, e.SetCd, e.SeqNo});
+            modelBuilder.Entity<SetKarteInf>().HasKey(e => new { e.HpId, e.SetCd, e.KarteKbn, e.SeqNo });
+            modelBuilder.Entity<SetByomei>().HasKey(e => new { e.Id, e.HpId, e.SetCd, e.SeqNo });
             modelBuilder.Entity<PiProductInf>().HasKey(e => new { e.PiIdFull, e.PiId, e.Branch, e.Jpn });
             modelBuilder.Entity<M28DrugMst>().HasKey(e => new { e.YjCd });
             modelBuilder.Entity<M34DrugInfoMain>().HasKey(e => new { e.YjCd });
@@ -124,6 +125,19 @@ namespace PostgreDataContext
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExclude>().HasKey(e => new { e.HpId, e.StartDate, e.IpnNameCd, e.SeqNo });
             modelBuilder.Entity<IpnKasanExcludeItem>().HasKey(e => new { e.HpId, e.StartDate, e.ItemCd });
+            modelBuilder.Entity<KouiKbnMst>().HasKey(e => new { e.HpId, e.KouiKbnId });
+            modelBuilder.Entity<RaiinListKoui>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
+            modelBuilder.Entity<RaiinListItem>().HasKey(e => new { e.HpId, e.KbnCd, e.SeqNo, e.GrpId });
+            modelBuilder.Entity<KarteInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo, e.KarteKbn });
+            modelBuilder.Entity<MonshinInfo>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.SeqNo });
+            modelBuilder.Entity<RsvkrtOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.RpNo, e.RpEdaNo, e.Id });
+            modelBuilder.Entity<PtTag>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<PtKyusei>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<RaiinKbnKoui>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
+            modelBuilder.Entity<RaiinKbItem>().HasKey(e => new { e.HpId, e.GrpCd, e.KbnCd, e.SeqNo });
+            modelBuilder.Entity<RaiinKbnMst>().HasKey(e => new { e.HpId, e.GrpCd });
+            modelBuilder.Entity<RaiinKbnYayoku>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
+            modelBuilder.Entity<RaiinKbnDetail>().HasKey(e => new { e.HpId, e.GrpCd, e.KbnCd });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

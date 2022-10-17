@@ -3,7 +3,6 @@ using Entity.Tenant;
 using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -19,6 +18,11 @@ namespace Infrastructure.Repositories
         public bool CheckExistedId(List<long> idList)
         {
             return _tenantDataContext.UserMsts.Any(u => idList.Contains(u.Id));
+        }
+
+        public bool CheckExistedUserId(int userId)
+        {
+            return _tenantDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
         public void Create(UserMstModel user)
@@ -52,7 +56,13 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
         {
-            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).ToList();
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && d.UserId == userId).AsEnumerable();
+            return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
+        }
+
+        public IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds)
+        {
+            var result = _tenantDataContext.UserMsts.Where(d => d.IsDeleted == 0 && d.JobCd == JobCdConstant.Doctor && userIds.Contains(d.UserId)).AsEnumerable();
             return result.Select(u => ToModel(u)).OrderBy(i => i.SortNo);
         }
 

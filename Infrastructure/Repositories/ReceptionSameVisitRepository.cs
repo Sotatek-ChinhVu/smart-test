@@ -116,9 +116,11 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0),
+                                        new HokenMstModel(),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        false,
+                                        ptKohi1Item.IsDeleted
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -137,9 +139,11 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0),
+                                        new HokenMstModel(),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        false,
+                                        ptKohi1Item.IsDeleted
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -158,9 +162,11 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0),
+                                        new HokenMstModel(),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        false,
+                                        ptKohi1Item.IsDeleted
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -179,9 +185,11 @@ namespace Infrastructure.Repositories
                                         ptKohi1Item.HokenNo,
                                         ptKohi1Item.HokenEdaNo,
                                         ptKohi1Item.PrefNo,
-                                        new HokenMstModel(0, 0),
+                                        new HokenMstModel(),
                                         sinDate,
-                                        new List<ConfirmDateModel>()
+                                        new List<ConfirmDateModel>(),
+                                        false,
+                                        ptKohi1Item.IsDeleted
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
@@ -195,6 +203,9 @@ namespace Infrastructure.Repositories
                     string houbetu = string.Empty;
                     int futanRate = 0;
                     long raiinNo = 0;
+                    int syosaisinKbn = 0;
+                    int jikanKbn = 0;
+                    int santeiKbn = 0;
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId &&  (dataHokenInf == null || x.HokenNo == dataHokenInf.HokenNo && x.HokenEdaNo == dataHokenInf.HokenEdaNo));
                     if (hokenMst != null)
                     {
@@ -204,6 +215,9 @@ namespace Infrastructure.Repositories
                     if(item.RaiinInf != null)
                     {
                         raiinNo = item.RaiinInf.RaiinNo;
+                        syosaisinKbn = item.RaiinInf.SyosaisinKbn;
+                        jikanKbn = item.RaiinInf.JikanKbn;
+                        santeiKbn = item.RaiinInf.SanteiKbn;
                     }    
 
                     if (item.PtHokenPatternItem != null)
@@ -226,7 +240,10 @@ namespace Infrastructure.Repositories
                                             sinDate,
                                             houbetu,
                                             futanRate,
-                                            raiinNo
+                                            raiinNo,
+                                            syosaisinKbn,
+                                            jikanKbn,
+                                            santeiKbn
                                             );
 
                         listHokenData.Add(itemHokenData);
@@ -244,6 +261,10 @@ namespace Infrastructure.Repositories
                     string doctorName = "";
                     string timePeriod = "";
                     string yoyakuInfo = "";
+                    int kaId = 0;
+                    int doctorId = 0;
+
+
                     if (listHokenData.Count > 0)
                     {
                         var hokenModel = listHokenData.FirstOrDefault(u => u.PtId == item.PtId && u.RaiinNo == item.RaiinNo);
@@ -254,6 +275,7 @@ namespace Infrastructure.Repositories
                     {
                         var tempKaMst = _departments.Find(p => p.KaId == item.KaId);
                         kaName = tempKaMst == null ? string.Empty : (tempKaMst.KaName ?? string.Empty);
+                        kaId = tempKaMst == null ? 0 : tempKaMst.KaId;
                     }
 
                     if (_comments != null)
@@ -266,6 +288,7 @@ namespace Infrastructure.Repositories
                     {
                         var tempDoctor = _doctors.Find(dr => dr.UserId == item.TantoId);
                         doctorName = tempDoctor == null ? string.Empty : (tempDoctor.Name ?? string.Empty);
+                        doctorId = tempDoctor == null ? 0 : tempDoctor.UserId;
                     }
 
                     if (_timePeriodModels != null)
@@ -274,6 +297,7 @@ namespace Infrastructure.Repositories
                         timePeriod = timePeriodModel == null ? string.Empty : timePeriodModel.KbnName;
                     }
                     yoyakuInfo = GetYoyaku(listDataRaiinInf, item.OyaRaiinNo, kaName) ?? string.Empty;
+
                     var itemModelDorai = new ReceptionSameVisitModel(
                                             item.HpId,
                                             item.PtId,
@@ -287,7 +311,12 @@ namespace Infrastructure.Repositories
                                             doctorName,
                                             comment,
                                             item.OyaRaiinNo,
-                                            item.HokenPid
+                                            item.HokenPid,
+                                            kaId,
+                                            doctorId,
+                                            item.SyosaisinKbn,
+                                            item.JikanKbn,
+                                            item.SanteiKbn
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);

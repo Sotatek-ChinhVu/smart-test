@@ -1,55 +1,377 @@
+using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
     public class ReceptionRepository : IReceptionRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
         public ReceptionRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public ReceptionModel? Get(long raiinNo)
+        public ReceptionModel Get(long raiinNo)
         {
-            var receptionEntity = _tenantDataContext.RaiinInfs.SingleOrDefault(r => r.RaiinNo == raiinNo);
-
-            if (receptionEntity == null)
-            {
-                return null;
-            }
+            var receptionEntity = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
+            var raiinCommentInf = _tenantNoTrackingDataContext.RaiinCmtInfs.FirstOrDefault(r => r.RaiinNo == raiinNo);
 
             return new ReceptionModel
                 (
-                    receptionEntity.HpId,
-                    receptionEntity.PtId,
-                    receptionEntity.SinDate,
-                    receptionEntity.RaiinNo,
-                    receptionEntity.OyaRaiinNo,
-                    receptionEntity.HokenPid,
-                    receptionEntity.SanteiKbn,
-                    receptionEntity.Status,
-                    receptionEntity.IsYoyaku,
-                    receptionEntity.YoyakuTime ?? string.Empty,
-                    receptionEntity.YoyakuId,
-                    receptionEntity.UketukeSbt,
-                    receptionEntity.UketukeTime ?? string.Empty,
-                    receptionEntity.UketukeId,
-                    receptionEntity.UketukeNo,
-                    receptionEntity.SinStartTime,
-                    receptionEntity.SinEndTime ?? string.Empty,
-                    receptionEntity.KaikeiTime ?? string.Empty,
-                    receptionEntity.KaikeiId,
-                    receptionEntity.KaId,
-                    receptionEntity.TantoId,
-                    receptionEntity.SyosaisinKbn,
-                    receptionEntity.JikanKbn
+                    receptionEntity?.HpId ?? 0,
+                    receptionEntity?.PtId ?? 0,
+                    receptionEntity?.SinDate ?? 0,
+                    receptionEntity?.RaiinNo ?? 0,
+                    receptionEntity?.OyaRaiinNo ?? 0,
+                    receptionEntity?.HokenPid ?? 0,
+                    receptionEntity?.SanteiKbn ?? 0,
+                    receptionEntity?.Status ?? 0,
+                    receptionEntity?.IsYoyaku ?? 0,
+                    receptionEntity?.YoyakuTime ?? string.Empty,
+                    receptionEntity?.YoyakuId ?? 0,
+                    receptionEntity?.UketukeSbt ?? 0,
+                    receptionEntity?.UketukeTime ?? string.Empty,
+                    receptionEntity?.UketukeId ?? 0,
+                    receptionEntity?.UketukeNo ?? 0,
+                    receptionEntity?.SinStartTime ?? string.Empty,
+                    receptionEntity?.SinEndTime ?? string.Empty,
+                    receptionEntity?.KaikeiTime ?? string.Empty,
+                    receptionEntity?.KaikeiId ?? 0,
+                    receptionEntity?.KaId ?? 0,
+                    receptionEntity?.TantoId ?? 0,
+                    receptionEntity?.SyosaisinKbn ?? 0,
+                    receptionEntity?.JikanKbn ?? 0,
+                    raiinCommentInf?.Text ?? string.Empty
                 );
+        }
+
+        public long Insert(ReceptionSaveDto dto)
+        {
+            var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
+            return executionStrategy.Execute(() =>
+            {
+                using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
+
+                // Insert RaiinInf
+                var raiinInf = CreateNewRaiinInf(dto.Reception);
+                _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
+                _tenantNoTrackingDataContext.SaveChanges();
+
+                if (raiinInf.OyaRaiinNo == 0)
+                {
+                    raiinInf.OyaRaiinNo = raiinInf.RaiinNo;
+                }
+
+                // Insert RaiinCmtInf
+                if (!string.IsNullOrWhiteSpace(dto.ReceptionComment))
+                {
+                    var raiinCmtInf = CreateNewRaiinCmtInf(raiinInf, dto.ReceptionComment);
+                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(raiinCmtInf);
+                }
+
+                // Insert RaiinKbnInfs
+                var raiinKbnInfs = dto.KubunInfs
+                    .Where(model => model.KbnCd != CommonConstants.KbnCdDeleteFlag)
+                    .Select(dto => CreateNewRaiinKbnInf(dto, raiinInf));
+                _tenantNoTrackingDataContext.RaiinKbnInfs.AddRange(raiinKbnInfs);
+
+                // Update insurances and diseases
+                AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
+                UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
+                _tenantNoTrackingDataContext.SaveChanges();
+
+                transaction.Commit();
+                return raiinInf.RaiinNo;
+            });
+
+            #region Helper methods
+
+            RaiinInf CreateNewRaiinInf(ReceptionModel model)
+            {
+                return new RaiinInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = model.PtId,
+                    SinDate = model.SinDate,
+                    OyaRaiinNo = model.OyaRaiinNo,
+                    HokenPid = model.HokenPid,
+                    SanteiKbn = model.SanteiKbn,
+                    Status = model.Status,
+                    IsYoyaku = model.IsYoyaku,
+                    YoyakuTime = model.YoyakuTime,
+                    YoyakuId = model.YoyakuId,
+                    UketukeSbt = model.UketukeSbt,
+                    UketukeTime = model.UketukeTime,
+                    UketukeId = model.UketukeId,
+                    UketukeNo = model.UketukeNo,
+                    SinStartTime = model.SinStartTime,
+                    SinEndTime = model.SinEndTime,
+                    KaikeiTime = model.KaikeiTime,
+                    KaikeiId = model.KaikeiId,
+                    KaId = model.KaId,
+                    TantoId = model.TantoId,
+                    SyosaisinKbn = model.SyosaisinKbn,
+                    JikanKbn = model.JikanKbn,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            RaiinCmtInf CreateNewRaiinCmtInf(RaiinInf raiinInf, string text)
+            {
+                return new RaiinCmtInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = raiinInf.PtId,
+                    SinDate = raiinInf.SinDate,
+                    RaiinNo = raiinInf.RaiinNo,
+                    CmtKbn = CmtKbns.Comment,
+                    Text = text,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            RaiinKbnInf CreateNewRaiinKbnInf(RaiinKbnInfDto dto, RaiinInf raiinInf)
+            {
+                return new RaiinKbnInf
+                {
+                    HpId = TempIdentity.HpId,
+                    PtId = raiinInf.PtId,
+                    SinDate = raiinInf.SinDate,
+                    RaiinNo = raiinInf.RaiinNo,
+                    GrpId = dto.GrpId,
+                    KbnCd = dto.KbnCd,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+            }
+
+            #endregion
+        }
+
+        public bool Update(ReceptionSaveDto dto)
+        {
+            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking()
+                .FirstOrDefault(r => r.HpId == TempIdentity.HpId
+                    && r.PtId == dto.Reception.PtId
+                    && r.SinDate == dto.Reception.SinDate
+                    && r.RaiinNo == dto.Reception.RaiinNo
+                    && r.IsDeleted == DeleteTypes.None);
+            if (raiinInf is null)
+            {
+                return false;
+            }
+
+            UpdateRaiinInfIfChanged(raiinInf, dto.Reception);
+            UpsertRaiinCmtInf(raiinInf, dto.ReceptionComment);
+            SaveRaiinKbnInfs(raiinInf, dto.KubunInfs);
+            // Update insurances and diseases
+            AddInsuraceConfirmationHistories(dto.Insurances, raiinInf.PtId);
+            UpdateDiseaseTenkis(dto.Diseases, raiinInf.PtId);
+
+            _tenantNoTrackingDataContext.SaveChanges();
+            return true;
+
+            #region Helper methods
+
+            void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
+            {
+                // Detect changes
+                if (entity.OyaRaiinNo != model.OyaRaiinNo || 
+                    entity.KaId != model.KaId || 
+                    entity.UketukeSbt != model.UketukeSbt || 
+                    entity.UketukeNo != model.UketukeNo || 
+                    entity.TantoId != model.TantoId ||
+                    entity.SyosaisinKbn != model.SyosaisinKbn ||
+                    entity.JikanKbn != model.JikanKbn ||
+                    entity.SanteiKbn != model.SanteiKbn || 
+                    entity.HokenPid != model.HokenPid)
+                {
+                    entity.OyaRaiinNo = model.OyaRaiinNo;
+                    entity.KaId = model.KaId;
+                    entity.UketukeSbt = model.UketukeSbt;
+                    entity.UketukeNo = model.UketukeNo;
+                    entity.TantoId = model.TantoId;
+                    entity.HokenPid = model.HokenPid;
+                    entity.SyosaisinKbn = model.SyosaisinKbn;
+                    entity.JikanKbn = model.JikanKbn;
+                    entity.SanteiKbn = model.SanteiKbn;
+                    entity.UpdateDate = DateTime.UtcNow;
+                    entity.UpdateId = TempIdentity.UserId;
+                    entity.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
+
+            void UpsertRaiinCmtInf(RaiinInf raiinInf, string text)
+            {
+                var raiinCmtInf = _tenantNoTrackingDataContext.RaiinCmtInfs.AsTracking()
+                   .FirstOrDefault(x => x.HpId == TempIdentity.HpId
+                        && x.RaiinNo == raiinInf.RaiinNo
+                        && x.CmtKbn == CmtKbns.Comment
+                        && x.IsDelete == DeleteTypes.None);
+                if (raiinCmtInf is null)
+                {
+                    _tenantNoTrackingDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
+                    {
+                        HpId = TempIdentity.HpId,
+                        PtId = raiinInf.PtId,
+                        SinDate = raiinInf.SinDate,
+                        RaiinNo = raiinInf.RaiinNo,
+                        CmtKbn = CmtKbns.Comment,
+                        Text = text,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = TempIdentity.UserId,
+                        UpdateMachine = TempIdentity.ComputerName
+                });
+                }
+                else if (raiinCmtInf.Text != text)
+                {
+                    raiinCmtInf.Text = text;
+                    raiinCmtInf.UpdateDate = DateTime.UtcNow;
+                    raiinCmtInf.UpdateId = TempIdentity.UserId;
+                    raiinCmtInf.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
+
+            void SaveRaiinKbnInfs(RaiinInf raiinInf, IEnumerable<RaiinKbnInfDto> kbnInfDtos)
+            {
+                var existingEntities = _tenantNoTrackingDataContext.RaiinKbnInfs.AsTracking()
+                    .Where(x => x.HpId == TempIdentity.HpId
+                        && x.PtId == raiinInf.PtId
+                        && x.SinDate == raiinInf.SinDate
+                        && x.RaiinNo == raiinInf.RaiinNo
+                        && x.IsDelete == DeleteTypes.None)
+                    .ToList();
+
+                foreach (var kbnInfDto in kbnInfDtos)
+                {
+                    var existingEntity = existingEntities.Find(x => x.GrpId == kbnInfDto.GrpId);
+                    if (kbnInfDto.KbnCd == CommonConstants.KbnCdDeleteFlag)
+                    {
+                        if (existingEntity is not null)
+                        {
+                            // Soft-delete
+                            existingEntity.IsDelete = DeleteTypes.Deleted;
+                        }
+                    }
+                    else
+                    {
+                        if (existingEntity is null)
+                        {
+                            // Insert
+                            _tenantNoTrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+                            {
+                                HpId = TempIdentity.HpId,
+                                PtId = raiinInf.PtId,
+                                SinDate = raiinInf.SinDate,
+                                RaiinNo = raiinInf.RaiinNo,
+                                GrpId = kbnInfDto.GrpId,
+                                KbnCd = kbnInfDto.KbnCd,
+                                CreateDate = DateTime.UtcNow,
+                                CreateId = TempIdentity.UserId,
+                                CreateMachine = TempIdentity.ComputerName
+                            });
+                        }
+                        else if (existingEntity.KbnCd != kbnInfDto.KbnCd)
+                        {
+                            // Update
+                            existingEntity.KbnCd = kbnInfDto.KbnCd;
+                            existingEntity.UpdateDate = DateTime.UtcNow;
+                            existingEntity.UpdateId = TempIdentity.UserId;
+                            existingEntity.UpdateMachine = TempIdentity.ComputerName;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        private void AddInsuraceConfirmationHistories(IEnumerable<InsuranceDto> insurances, long ptId)
+        {
+            var hokenIds = insurances.Select(i => i.HokenId).Distinct();
+            var latestPtHokenChecks = (
+                from phc in _tenantNoTrackingDataContext.PtHokenChecks.AsTracking()
+                where phc.HpId == TempIdentity.HpId
+                    && phc.PtID == ptId
+                    && hokenIds.Contains(phc.HokenId)
+                    && phc.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
+                    && phc.IsDeleted == DeleteTypes.None
+                group phc by phc.HokenId into phcGroup
+                select new { HokenId = phcGroup.Key, ConfirmDateList = phcGroup.OrderByDescending(x => x.CheckDate).ToList() }
+            ).ToList();
+
+            var newPhcs = new List<PtHokenCheck>();
+            foreach (var insurance in insurances)
+            {
+                var latestPhcList = latestPtHokenChecks.Where(x => x.HokenId == insurance.HokenId).Select(x => x.ConfirmDateList.Select(c => c.CheckDate).ToList()).FirstOrDefault();
+                if (latestPhcList == null)
+                {
+                    continue;
+                }
+
+                foreach (var confirmDate in insurance.ConfirmDateList) 
+                {
+                    var confirmDatetimeUtc = DateTime.ParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+
+                    if (latestPhcList is not null && !latestPhcList.Any(p => p == confirmDatetimeUtc))
+                    {
+                        newPhcs.Add(new PtHokenCheck
+                        {
+                            HpId = TempIdentity.HpId,
+                            PtID = ptId,
+                            HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
+                            HokenId = insurance.HokenId,
+                            CheckDate = confirmDatetimeUtc,
+                            CheckCmt = string.Empty,
+                            CheckId = TempIdentity.UserId,
+                            CheckMachine = TempIdentity.ComputerName,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName
+                        });
+                    }
+                }
+            }
+            _tenantNoTrackingDataContext.PtHokenChecks.AddRange(newPhcs);
+        }
+
+        private void UpdateDiseaseTenkis(IEnumerable<DiseaseDto> diseases, long ptId)
+        {
+            var ptByomeiIds = diseases.Select(d => d.Id);
+            var ptByomeis = _tenantNoTrackingDataContext.PtByomeis.AsTracking()
+                .Where(x => x.HpId == TempIdentity.HpId && x.PtId == ptId && ptByomeiIds.Contains(x.Id))
+                .ToList();
+
+            foreach (var disease in diseases)
+            {
+                var ptByomei = ptByomeis.Find(x => x.Id == disease.Id);
+                if (ptByomei is not null
+                    && (ptByomei.TenkiKbn != disease.TenkiKbn || ptByomei.TenkiDate != disease.TenkiDate))
+                {
+                    ptByomei.TenkiKbn = disease.TenkiKbn;
+                    ptByomei.TenkiDate = disease.TenkiDate;
+                    ptByomei.UpdateDate = DateTime.UtcNow;
+                    ptByomei.UpdateId = TempIdentity.UserId;
+                    ptByomei.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
         }
 
         public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId)
@@ -57,12 +379,12 @@ namespace Infrastructure.Repositories
             return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
         }
 
-        public List<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
+        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
         {
-            var result = _tenantDataContext.RaiinInfs.Where
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
                                 (r =>
                                     r.HpId == hpId && r.PtId == ptId && r.Status >= 3 &&
-                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2))).ToList();
+                                 (r.IsDeleted == DeleteTypes.None || karteDeleteHistory == 1 || (r.IsDeleted != DeleteTypes.Confirm && karteDeleteHistory == 2)));
             return result.Select(r => new ReceptionModel(
                         r.HpId,
                         r.PtId,
@@ -79,21 +401,56 @@ namespace Infrastructure.Repositories
                         r.UketukeTime ?? String.Empty,
                         r.UketukeId,
                         r.UketukeNo,
-                        r.SinStartTime,
+                        r.SinStartTime ?? string.Empty,
                         r.SinEndTime ?? String.Empty,
                         r.KaikeiTime ?? String.Empty,
                         r.KaikeiId,
                         r.KaId,
                         r.TantoId,
                         r.SyosaisinKbn,
-                        r.JikanKbn
-                   )).ToList();
+                        r.JikanKbn,
+                        string.Empty
+                   ));
+
+        }
+
+        public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
+        {
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where
+                                (r =>
+                                    r.HpId == hpId && r.PtId == ptId && r.Status >= 3 && r.IsDeleted == 0 && raiinNos.Contains(r.RaiinNo));
+            return result.Select(r => new ReceptionModel(
+                        r.HpId,
+                        r.PtId,
+                        r.SinDate,
+                        r.RaiinNo,
+                        r.OyaRaiinNo,
+                        r.HokenPid,
+                        r.SanteiKbn,
+                        r.Status,
+                        r.IsYoyaku,
+                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuId,
+                        r.UketukeSbt,
+                        r.UketukeTime ?? String.Empty,
+                        r.UketukeId,
+                        r.UketukeNo,
+                        r.SinStartTime ?? String.Empty,
+                        r.SinEndTime ?? String.Empty,
+                        r.KaikeiTime ?? String.Empty,
+                        r.KaikeiId,
+                        r.KaId,
+                        r.TantoId,
+                        r.SyosaisinKbn,
+                        r.JikanKbn,
+                        string.Empty
+                   ));
 
         }
 
         public bool CheckListNo(List<long> raininNos)
         {
-            var check = _tenantDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
+            var check = _tenantNoTrackingDataContext.RaiinInfs.Any(r => raininNos.Contains(r.RaiinNo) && r.IsDeleted != 1);
             return check;
         }
 
@@ -101,27 +458,27 @@ namespace Infrastructure.Repositories
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
-            var raiinInfs = _tenantDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var raiinCmtInfs = _tenantDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnInfs = _tenantDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var raiinKbnDetails = _tenantDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var raiinCmtInfs = _tenantNoTrackingDataContext.RaiinCmtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnInfs = _tenantNoTrackingDataContext.RaiinKbnInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var raiinKbnDetails = _tenantNoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == DeleteTypes.None);
             // Pt (Patient)
-            var ptInfs = _tenantDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
-            var ptCmtInfs = _tenantDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
-            var ptKohis = _tenantDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where(x => x.IsDelete == DeleteTypes.None);
+            var ptCmtInfs = _tenantNoTrackingDataContext.PtCmtInfs.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptHokenPatterns = _tenantNoTrackingDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteTypes.None);
+            var ptKohis = _tenantNoTrackingDataContext.PtKohis.Where(x => x.IsDeleted == DeleteTypes.None);
             // Rsv (Reservation)
-            var rsvInfs = _tenantDataContext.RsvInfs;
-            var rsvFrameMsts = _tenantDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var rsvInfs = _tenantNoTrackingDataContext.RsvInfs;
+            var rsvFrameMsts = _tenantNoTrackingDataContext.RsvFrameMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // User (Doctor)
-            var userMsts = _tenantDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var userMsts = _tenantNoTrackingDataContext.UserMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Ka (Department)
-            var kaMsts = _tenantDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where(x => x.IsDeleted == DeleteTypes.None);
             // Lock (Function lock)
-            var lockInfs = _tenantDataContext.LockInfs.Where(x =>
+            var lockInfs = _tenantNoTrackingDataContext.LockInfs.Where(x =>
                 x.FunctionCd == FunctionCode.MedicalExaminationCode || x.FunctionCd == FunctionCode.TeamKarte);
             // Uketuke
-            var uketukeSbtMsts = _tenantDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
+            var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
             var filteredRaiinInfs = raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
@@ -239,7 +596,7 @@ namespace Infrastructure.Repositories
                 };
 
             var raiins = raiinQuery.ToList();
-            var grpIds = _tenantDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
+            var grpIds = _tenantNoTrackingDataContext.RaiinKbnMsts.Where(x => x.HpId == hpId && x.IsDeleted == DeleteTypes.None).Select(x => x.GrpCd).ToList();
             var models = raiins.Select(r => new ReceptionRowModel(
                 r.raiinInf.RaiinNo,
                 r.raiinInf.PtId,
@@ -328,7 +685,7 @@ namespace Infrastructure.Repositories
 
         private bool Update(int hpId, long raiinNo, Action<RaiinInf> updateEntity)
         {
-            var raiinInf = _tenantDataContext.RaiinInfs.AsTracking().Where(r =>
+            var raiinInf = _tenantNoTrackingDataContext.RaiinInfs.AsTracking().Where(r =>
                 r.HpId == hpId
                 && r.RaiinNo == raiinNo
                 && r.IsDeleted == DeleteTypes.None).FirstOrDefault();
@@ -341,8 +698,46 @@ namespace Infrastructure.Repositories
             raiinInf.UpdateDate = DateTime.UtcNow;
             raiinInf.UpdateId = TempIdentity.UserId;
             raiinInf.UpdateMachine = TempIdentity.ComputerName;
-            _tenantDataContext.SaveChanges();
+            _tenantNoTrackingDataContext.SaveChanges();
             return true;
+        }
+
+        public ReceptionModel GetReceptionComments(int hpId, long raiinNo)
+        {
+            var receptionComment = _tenantNoTrackingDataContext.RaiinCmtInfs
+                .FirstOrDefault(x => x.RaiinNo == raiinNo && x.IsDelete == 0 && x.CmtKbn == 1);
+            if (receptionComment is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                receptionComment.HpId,
+                receptionComment.PtId,
+                receptionComment.RaiinNo,
+                receptionComment.Text
+                );
+        }
+
+        public ReceptionModel GetReceptionVisiting(int hpId, long raiinNo)
+        {
+            var DataRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+                .FirstOrDefault(x => x.HpId == hpId && x.RaiinNo == raiinNo);
+            if (DataRaiinInf is null)
+                return new ReceptionModel();
+            return new ReceptionModel(
+                DataRaiinInf.RaiinNo,
+                DataRaiinInf.UketukeId,
+                DataRaiinInf.KaId,
+                DataRaiinInf.UketukeTime ?? string.Empty,
+                DataRaiinInf.SinStartTime ?? string.Empty,
+                DataRaiinInf.Status,
+                DataRaiinInf.YoyakuId,
+                DataRaiinInf.TantoId);
+        }
+
+        public bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo)
+        {
+            var check = _tenantNoTrackingDataContext.RaiinInfs
+                .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
+            return check;
         }
     }
 }
