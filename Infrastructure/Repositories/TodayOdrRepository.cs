@@ -490,7 +490,7 @@ namespace Infrastructure.Repositories
         private void UpsertKarteInfs(KarteInfModel karte)
         {
             int hpId = karte.HpId;
-            long ptId = karte.HpId;
+            long ptId = karte.PtId;
             long raiinNo = karte.RaiinNo;
             int karteKbn = karte.KarteKbn;
 
@@ -539,6 +539,7 @@ namespace Infrastructure.Repositories
                     if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
                         karteMst.IsDeleted = DeleteTypes.Deleted;
+
                         var karteEntity = new KarteInf
                         {
                             HpId = karte.HpId,
