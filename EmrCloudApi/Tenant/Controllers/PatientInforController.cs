@@ -55,6 +55,7 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
+using UseCase.PatientInfor.Save;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -381,6 +382,20 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveInsuranceMasterLinkagePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
+        }
+        
+        [HttpPost("SavePatientInfo")]
+        public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
+        {
+            var input = new SavePatientInfoInputData(request.PtInformation.Patient,
+                                                     request.PtInformation.PtKyuseis,
+                                                     request.PtInformation.PtSantei,
+                                                     request.PtInformation.Insurances,
+                                                     request.PtInformation.PtGrpInfs);
+            var output = _bus.Handle(input);
+            var presenter = new SavePatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SavePatientInfoResponse>>(presenter.Result);
         }
     }
 }

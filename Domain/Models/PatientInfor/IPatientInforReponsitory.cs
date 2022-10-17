@@ -1,5 +1,6 @@
-﻿using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor.Domain.Models.PatientInfor;
+﻿using Domain.Models.GroupInf;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
 
 namespace Domain.Models.PatientInfor
 {
@@ -34,5 +35,9 @@ namespace Domain.Models.PatientInfor
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels);
+        
+        bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        
+        bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
     }
 }
