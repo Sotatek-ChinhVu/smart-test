@@ -1228,7 +1228,6 @@ namespace Infrastructure.Repositories
                     memoCurrent.UpdateDate = DateTime.UtcNow;
                     memoCurrent.UpdateMachine = TempIdentity.ComputerName;
                     memoCurrent.UpdateId = TempIdentity.UserId;
-                    _tenantTrackingDataContext.PtMemos.Update(memoCurrent);
                 }
                 else
                 {
@@ -1238,7 +1237,6 @@ namespace Infrastructure.Repositories
                         memoCurrent.UpdateDate = DateTime.UtcNow;
                         memoCurrent.UpdateMachine = TempIdentity.ComputerName;
                         memoCurrent.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtMemos.Update(memoCurrent);
                         _tenantTrackingDataContext.PtMemos.Add(new PtMemo()
                         {
                             HpId = patientInfo.HpId,
@@ -1278,7 +1276,6 @@ namespace Infrastructure.Repositories
                 item.UpdateId = TempIdentity.UserId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtSanteiConfs.Update(item);
             }
 
             var ptSanteiConfListAdd = Mapper.Map<PtInfSanteiConfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) => {
@@ -1304,7 +1301,6 @@ namespace Infrastructure.Repositories
                     ptSanteiUpdate.EndDate = item.EndDate;
                     ptSanteiUpdate.UpdateId = TempIdentity.UserId;
                     ptSanteiUpdate.UpdateDate = DateTime.UtcNow;
-                    _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiUpdate);
                 }
             }
             #endregion
@@ -1319,7 +1315,6 @@ namespace Infrastructure.Repositories
                 item.UpdateId = TempIdentity.UserId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtKyuseis.Update(item);
             }
 
             var ptKyuseiListAdd = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis.Where(x=>x.SeqNo == 0) , (src, dest) => {
@@ -1343,7 +1338,6 @@ namespace Infrastructure.Repositories
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
-                    _tenantTrackingDataContext.PtKyuseis.Update(kyuseiUpdate);
                 }
             }
             #endregion
@@ -1358,7 +1352,6 @@ namespace Infrastructure.Repositories
                 item.UpdateId = TempIdentity.UserId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtGrpInfs.Update(item);
             }
 
             foreach (var item in ptGrps)
@@ -1373,7 +1366,6 @@ namespace Infrastructure.Repositories
                     info.UpdateId = TempIdentity.UserId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
-                    _tenantTrackingDataContext.PtGrpInfs.Update(info);
 
                     //clone new record
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
@@ -1404,7 +1396,6 @@ namespace Infrastructure.Repositories
                     info.UpdateId = TempIdentity.UserId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
-                    _tenantTrackingDataContext.PtGrpInfs.Update(info);
                 }
             }
             #endregion
@@ -1432,7 +1423,6 @@ namespace Infrastructure.Repositories
                         hokenHokiDelete.IsDeleted = 1;
                         hokenHokiDelete.UpdateDate = DateTime.UtcNow;
                         hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
 
                         var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
                         if (hokenChecks != null && hokenChecks.Any())
@@ -1442,7 +1432,6 @@ namespace Infrastructure.Repositories
                                 check.IsDeleted = 1;
                                 check.UpdateId = TempIdentity.UserId;
                                 check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
                             }
                         }
                     }
@@ -1457,7 +1446,6 @@ namespace Infrastructure.Repositories
                         hokenHokiDelete.IsDeleted = 1;
                         hokenHokiDelete.UpdateDate = DateTime.UtcNow;
                         hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
 
                         var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
                         if (hokenChecks != null && hokenChecks.Any())
@@ -1467,7 +1455,6 @@ namespace Infrastructure.Repositories
                                 check.IsDeleted = 1;
                                 check.UpdateId = TempIdentity.UserId;
                                 check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
                             }
                         }
                     }
@@ -1482,7 +1469,6 @@ namespace Infrastructure.Repositories
                         hokenHokiDelete.IsDeleted = 1;
                         hokenHokiDelete.UpdateDate = DateTime.UtcNow;
                         hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
 
                         var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
                         if (hokenChecks != null && hokenChecks.Any())
@@ -1492,7 +1478,6 @@ namespace Infrastructure.Repositories
                                 check.IsDeleted = 1;
                                 check.UpdateId = TempIdentity.UserId;
                                 check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
                             }
                         }
                     }
@@ -1507,7 +1492,6 @@ namespace Infrastructure.Repositories
                         hokenHokiDelete.IsDeleted = 1;
                         hokenHokiDelete.UpdateDate = DateTime.UtcNow;
                         hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
 
                         var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
                         if (hokenChecks != null && hokenChecks.Any())
@@ -1517,7 +1501,6 @@ namespace Infrastructure.Repositories
                                 check.IsDeleted = 1;
                                 check.UpdateId = TempIdentity.UserId;
                                 check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
                             }
                         }
                     }
@@ -1531,13 +1514,11 @@ namespace Infrastructure.Repositories
                     hokenIfDelete.IsDeleted = 1;
                     hokenIfDelete.UpdateDate = DateTime.UtcNow;
                     hokenIfDelete.UpdateId = TempIdentity.UserId;
-                    _tenantTrackingDataContext.PtHokenInfs.Update(hokenIfDelete);
                 }
 
                 hokenPartternDelete.IsDeleted = 1;
                 hokenPartternDelete.UpdateDate = DateTime.UtcNow;
                 hokenPartternDelete.UpdateId = TempIdentity.UserId;
-                _tenantTrackingDataContext.PtHokenPatterns.Update(hokenPartternDelete);
 
                 var hokenPatternChecks = databaseHokenChecks.Where(c => c.CheckId == hokenPartternDelete.HokenId && c.HokenGrp == 1);
                 if (hokenPatternChecks != null && hokenPatternChecks.Any())
@@ -1547,7 +1528,6 @@ namespace Infrastructure.Repositories
                         check.IsDeleted = 1;
                         check.UpdateId = TempIdentity.UserId;
                         check.UpdateDate = DateTime.UtcNow;
-                        _tenantTrackingDataContext.PtHokenChecks.Update(check);
                     }
                 }
             }
@@ -1591,7 +1571,6 @@ namespace Infrastructure.Repositories
                                 kohiRemove.IsDeleted = 1;
                                 kohiRemove.UpdateDate = DateTime.UtcNow;
                                 kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
                             }
                             hokenPartternUpdate.Kohi1Id = 0;
                         }
@@ -1617,7 +1596,6 @@ namespace Infrastructure.Repositories
                                 kohiUpdate.Houbetu = hokenParttern.Kohi1.Houbetu;
                                 kohiUpdate.UpdateId = TempIdentity.UserId;
                                 kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
                             }
                         }
 
@@ -1657,7 +1635,6 @@ namespace Infrastructure.Repositories
                                 kohiRemove.IsDeleted = 1;
                                 kohiRemove.UpdateDate = DateTime.UtcNow;
                                 kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
                             }
                             hokenPartternUpdate.Kohi2Id = 0;
                         }
@@ -1683,7 +1660,6 @@ namespace Infrastructure.Repositories
                                 kohiUpdate.Houbetu = hokenParttern.Kohi2.Houbetu;
                                 kohiUpdate.UpdateId = TempIdentity.UserId;
                                 kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
                             }
                         }
 
@@ -1723,7 +1699,6 @@ namespace Infrastructure.Repositories
                                 kohiRemove.IsDeleted = 1;
                                 kohiRemove.UpdateDate = DateTime.UtcNow;
                                 kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
                             }
                             hokenPartternUpdate.Kohi3Id = 0;
                         }
@@ -1749,7 +1724,6 @@ namespace Infrastructure.Repositories
                                 kohiUpdate.Houbetu = hokenParttern.Kohi3.Houbetu;
                                 kohiUpdate.UpdateId = TempIdentity.UserId;
                                 kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
                             }
                         }
 
@@ -1791,7 +1765,6 @@ namespace Infrastructure.Repositories
                                 kohiRemove.IsDeleted = 1;
                                 kohiRemove.UpdateDate = DateTime.UtcNow;
                                 kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
                             }
                             hokenPartternUpdate.Kohi4Id = 0;
                         }
@@ -1817,7 +1790,6 @@ namespace Infrastructure.Repositories
                                 kohiUpdate.Houbetu = hokenParttern.Kohi4.Houbetu;
                                 kohiUpdate.UpdateId = TempIdentity.UserId;
                                 kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
                             }
                         }
 
@@ -1893,7 +1865,6 @@ namespace Infrastructure.Repositories
                             hokenIfUpdate.SikakuDate = hokenParttern.HokenInf.SikakuDate;
                             hokenIfUpdate.EdaNo = hokenParttern.HokenInf.EdaNo;
                             hokenIfUpdate.KeizokuKbn = hokenParttern.HokenInf.KeizokuKbn;
-                            _tenantTrackingDataContext.PtHokenInfs.Update(hokenIfUpdate);
 
                             if (hokenPartternUpdate != null && hokenParttern.HokenInf.ConfirmDateList != null)
                                 UpdateHokenCheck(databaseHokenChecks, hokenParttern.HokenInf.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.HokenId, TempIdentity.UserId);
@@ -2098,7 +2069,6 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
-            _tenantTrackingDataContext.PtInfs.Update(patientInfo);
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
