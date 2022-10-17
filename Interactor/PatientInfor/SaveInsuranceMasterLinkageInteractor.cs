@@ -19,12 +19,6 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.DefHokenNoModels.Any())
                 {
-                    //Parallel.ForEach(inputData.DefHokenNoModels, item =>
-                    //{
-                    //    var validationStatus = item.Validation();
-                    //    if (validationStatus != ValidationStatus.Valid)
-                    //        return new SaveInsuranceMasterLinkageOutputData(ConvertStatus(validationStatus));
-                    //});
                     foreach (var item in inputData.DefHokenNoModels)
                     {
                         var validationStatus = item.Validation();
@@ -35,7 +29,8 @@ namespace Interactor.PatientInfor
                 else
                     return new SaveInsuranceMasterLinkageOutputData(SaveInsuranceMasterLinkageStatus.InputDataNull);
                 bool success = _patientInforRepository.SaveInsuranceMasterLinkage(inputData.DefHokenNoModels);
-
+                var status = success ? SaveInsuranceMasterLinkageStatus.Success : SaveInsuranceMasterLinkageStatus.Failed;
+                return new SaveInsuranceMasterLinkageOutputData(status);
             }
             catch (Exception)
             {

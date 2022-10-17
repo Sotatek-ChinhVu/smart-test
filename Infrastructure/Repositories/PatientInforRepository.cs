@@ -13,9 +13,12 @@ namespace Infrastructure.Repositories
     public class PatientInforRepository : IPatientInforRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantDataContextTracking;
+
         public PatientInforRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
         (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum)
@@ -892,6 +895,7 @@ namespace Infrastructure.Repositories
         {
             try
             {
+                int sortNo = 1;
                 foreach (var item in defHokenNoModels)
                 {
                     var checkExistDefHoken = _tenantDataContext.DefHokenNos
@@ -900,7 +904,7 @@ namespace Infrastructure.Repositories
                     //Add new if data does not exist
                     if (checkExistDefHoken == null)
                     {
-                        _tenantDataContext.DefHokenNos.Add(new DefHokenNo()
+                        _tenantDataContextTracking.DefHokenNos.Add(new DefHokenNo()
                         {
                             HpId = item.HpId,
                             Digit1 = item.Digit1,
@@ -911,7 +915,7 @@ namespace Infrastructure.Repositories
                             Digit6 = item.Digit6,
                             Digit7 = item.Digit7,
                             Digit8 = item.Digit8,
-                            HokenNo = item.HokenNo,
+                            HokenNo = Int32.Parse(string.Concat(item.Digit1, item.Digit2)),
                             HokenEdaNo = item.HokenEdaNo,
                             IsDeleted = 0,
                             CreateDate = DateTime.UtcNow,
@@ -920,7 +924,7 @@ namespace Infrastructure.Repositories
                             UpdateDate = DateTime.UtcNow,
                             UpdateId = TempIdentity.UserId,
                             UpdateMachine = TempIdentity.ComputerName,
-                            SortNo = item.SortNo,
+                            SortNo = sortNo
                         });
                     }
                     else if (checkExistDefHoken.HpId == item.HpId && checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
@@ -928,32 +932,35 @@ namespace Infrastructure.Repositories
                         || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
                         || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
                     {
-                        _tenantDataContext.DefHokenNos.Update(new DefHokenNo()
+                        _tenantDataContextTracking.DefHokenNos.Update(new DefHokenNo()
                         {
-                            HpId = item.HpId,
-                            Digit1 = item.Digit1,
-                            Digit2 = item.Digit2,
+                            HpId = checkExistDefHoken.HpId,
+                            Digit1 = checkExistDefHoken.Digit1,
+                            Digit2 = checkExistDefHoken.Digit2,
                             Digit3 = item.Digit3,
                             Digit4 = item.Digit4,
                             Digit5 = item.Digit5,
                             Digit6 = item.Digit6,
                             Digit7 = item.Digit7,
                             Digit8 = item.Digit8,
-                            HokenNo = item.HokenNo,
+                            SeqNo = checkExistDefHoken.SeqNo,
+                            HokenNo = checkExistDefHoken.HokenNo,
                             HokenEdaNo = item.HokenEdaNo,
-                            IsDeleted = item.IsDeleted,
-                            CreateDate = checkExistDefHoken.CreateDate,
+                            IsDeleted = checkExistDefHoken.IsDeleted,
+                            CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
                             CreateId = checkExistDefHoken.CreateId,
                             CreateMachine = checkExistDefHoken.CreateMachine,
                             UpdateDate = DateTime.UtcNow,
                             UpdateId = TempIdentity.UserId,
                             UpdateMachine = TempIdentity.ComputerName,
-                            SortNo = item.SortNo,
+                            SortNo = sortNo
                         });
                     }
+
+                    sortNo++;
                 }
 
-                _tenantDataContext.SaveChanges();
+                _tenantDataContextTracking.SaveChanges();
                 return true;
             }
             catch (Exception)
