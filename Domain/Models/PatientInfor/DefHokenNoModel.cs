@@ -42,28 +42,29 @@ namespace Domain.Models.PatientInfor
             #region common
             if (HpId <= 0)
                 return ValidationStatus.InvalidHpId;
-            if (Int32.Parse(Digit1) < 0 || Int32.Parse(Digit1) > 9)
+
+            if (!int.TryParse(Digit1, out int d1) || d1 < 0 || d1 > 9)
                 return ValidationStatus.InvalidDigit1;
 
-            if (Int32.Parse(Digit2) < 0 || Int32.Parse(Digit2) > 9)
+            if (!int.TryParse(Digit2, out int d2) || d2 < 0 || d2 > 9)
                 return ValidationStatus.InvalidDigit2;
 
-            if (Int32.Parse(Digit3) < 0 || Int32.Parse(Digit3) > 9)
+            if (!int.TryParse(Digit3, out int d3) || d3 < 0 || d3 > 9)
                 return ValidationStatus.InvalidDigit3;
 
-            if (Int32.Parse(Digit4) < 0 || Int32.Parse(Digit4) > 9)
+            if (!int.TryParse(Digit4, out int d4) || d4 < 0 || d4 > 9)
                 return ValidationStatus.InvalidDigit4;
 
-            if (Int32.Parse(Digit5) < 0 || Int32.Parse(Digit5) > 9)
+            if (!int.TryParse(Digit5, out int d5) || d5 < 0 || d5 > 9)
                 return ValidationStatus.InvalidDigit5;
 
-            if (Int32.Parse(Digit6) < 0 || Int32.Parse(Digit6) > 9)
+            if (!int.TryParse(Digit6, out int d6) || d6 < 0 || d6 > 9)
                 return ValidationStatus.InvalidDigit6;
 
-            if (Int32.Parse(Digit7) < 0 || Int32.Parse(Digit7) > 9)
+            if (!int.TryParse(Digit7, out int d7) || d7 < 0 || d7 > 9)
                 return ValidationStatus.InvalidDigit7;
 
-            if (Int32.Parse(Digit8) < 0 || Int32.Parse(Digit8) > 9)
+            if (!int.TryParse(Digit8, out int d8) || d8 < 0 || d8 > 9)
                 return ValidationStatus.InvalidDigit8;
 
             if (HokenNo != Int32.Parse(string.Concat(Digit1 + Digit2)))
