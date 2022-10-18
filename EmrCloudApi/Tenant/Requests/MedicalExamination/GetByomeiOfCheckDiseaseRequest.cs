@@ -12,6 +12,6 @@ namespace EmrCloudApi.Tenant.Requests.MedicalExamination
 
         public int SinDate { get; set; }
 
-        public List<CheckedDiseaseModel> TodayByomeis { get; set; } = new();
+        public List<CheckedDiseaseItem> TodayByomeis { get; set; } = new();
     }
 }
