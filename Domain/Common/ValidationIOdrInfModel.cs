@@ -127,7 +127,7 @@ namespace Domain.Common
 
             #region Validate business
 
-            if ((!string.IsNullOrEmpty(odrInfDetail.UnitName) && odrInfDetail.Suryo == 0) || (string.IsNullOrEmpty(odrInfDetail.UnitName) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
+            if ((!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0) || (string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
@@ -492,7 +492,7 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidSuryo;
             }
-            if (odrInfDetail.UnitName.Length > 24)
+            if (odrInfDetail.UnitName.Trim().Length > 24)
             {
                 return OrdInfValidationStatus.InvalidUnitName;
             }
