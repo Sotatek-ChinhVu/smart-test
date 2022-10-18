@@ -95,8 +95,7 @@ namespace Domain.Models.User
                 return ValidationStatus.InvalidLoginPass;
             }
 
-            if (JobCd != 1 && JobCd != 2 && JobCd != 3 && JobCd != 4 && JobCd !=5 && JobCd !=6 && JobCd != 7 
-                && JobCd != 8 && JobCd != 9 && JobCd != 10 && JobCd != 11 && JobCd != 12 && JobCd != 13)
+            if (JobCd <= 0)
             {
                 return ValidationStatus.InvalidJobCd;
             }

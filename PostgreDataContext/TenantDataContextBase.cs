@@ -63,6 +63,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RsvInf>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.StartTime, e.RaiinNo });
             modelBuilder.Entity<RsvFrameMst>().HasKey(e => new { e.HpId, e.RsvFrameId });
             modelBuilder.Entity<UserMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<JobMst>().HasKey(e => new { e.JobCd, e.HpId });
             modelBuilder.Entity<KaMst>().HasKey(e => new { e.Id, e.HpId });
             modelBuilder.Entity<LockInf>().HasKey(e => new { e.HpId, e.PtId, e.FunctionCd, e.SinDate, e.RaiinNo, e.OyaRaiinNo });
             modelBuilder.Entity<UketukeSbtMst>().HasKey(e => new { e.HpId, e.KbnId });

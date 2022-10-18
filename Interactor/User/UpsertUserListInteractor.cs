@@ -19,7 +19,6 @@ namespace Interactor.User
     {
         private readonly IUserRepository _userRepository;
         private readonly IKaRepository _kaRepository;
-
         public UpsertUserListInteractor(IUserRepository userRepository, IKaRepository kaRepository)
         {
             _userRepository = userRepository;
@@ -62,12 +61,12 @@ namespace Interactor.User
                         return new UpsertUserListOutputData(ConvertStatusUser(status));
                     }
 
-                    if (!_kaRepository.CheckKaId(data.KaId))
+                    if (inputData.ToList().Count == 0)
                     {
-                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInputNoData);
                     }
 
-                    if(data.Id == 0 && _userRepository.CheckExistedUserIdCreate(data.Id, data.UserId))
+                    if (data.Id == 0 && _userRepository.CheckExistedUserIdCreate(data.UserId))
                     {
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                     }
@@ -77,7 +76,12 @@ namespace Interactor.User
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                     }
 
-                    if (data.Id == 0 && _userRepository.CheckExistedLoginIdCreate(data.Id, data.LoginId))
+                    if (!_kaRepository.CheckKaId(data.KaId))
+                    {
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
+                    }
+
+                    if (data.Id == 0 && _userRepository.CheckExistedLoginIdCreate(data.LoginId))
                     {
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                     }
@@ -86,10 +90,9 @@ namespace Interactor.User
                     {
                         return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                     }
-
-                    if (inputData.ToList().Count == 0)
+                    if(!_userRepository.CheckExistedJobCd(data.JobCd))
                     {
-                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListInputNoData);
+                        return new UpsertUserListOutputData(UpsertUserListStatus.UserListJobCdNoExist);
                     }
                 }
 
@@ -144,6 +147,8 @@ namespace Interactor.User
                 return UpsertUserListStatus.UserListIdNoExist;
             if (status == ValidationStatus.UserListKaIdNoExist)
                 return UpsertUserListStatus.UserListKaIdNoExist;
+            if (status == ValidationStatus.UserListJobCdNoExist)
+                return UpsertUserListStatus.UserListJobCdNoExist;
             if (status == ValidationStatus.InvalidExistedUserId)
                 return UpsertUserListStatus.UserListInvalidExistedUserId;
 

@@ -110,6 +110,7 @@
         public static readonly string UpsertInvalidDrName = "Invalid DrName";
         public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
         public static readonly string UpsertKaIdNoExist = "No Exist KaId";
+        public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
         public static readonly string UpsertIdNoExist = "No Exist Id";
         public static readonly string UpsertUpdateNoSuccess = " UpsertUpdateNoSuccess";
 

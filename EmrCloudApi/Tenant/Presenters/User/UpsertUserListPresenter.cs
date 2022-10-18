@@ -27,6 +27,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.UserListInputNoData => ResponseMessage.UpsertInputNoData,
             UpsertUserListStatus.UserListUpdateNoSuccess => ResponseMessage.UpsertUpdateNoSuccess,
             UpsertUserListStatus.UserListKaIdNoExist => ResponseMessage.UpsertKaIdNoExist,
+            UpsertUserListStatus.UserListJobCdNoExist => ResponseMessage.UpsertJobCdNoExist,
             UpsertUserListStatus.UserListIdNoExist => ResponseMessage.UpsertIdNoExist,
             UpsertUserListStatus.UserListInvalidExistedLoginId => ResponseMessage.UpsertInvalidExistedLoginId,
             UpsertUserListStatus.InvalidId => ResponseMessage.UpsertInvalidId,

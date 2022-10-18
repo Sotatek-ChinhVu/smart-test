@@ -28,7 +28,7 @@ namespace Infrastructure.Repositories
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
-        public bool CheckExistedUserIdCreate(long id, int userId)
+        public bool CheckExistedUserIdCreate(int userId)
         {
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.Id != id && u.IsDeleted == 0);
         }
 
-        public bool CheckExistedLoginIdCreate(long id, string loginId)
+        public bool CheckExistedLoginIdCreate(string loginId)
         {
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.IsDeleted == 0);
         }
@@ -46,6 +46,11 @@ namespace Infrastructure.Repositories
         public bool CheckExistedLoginIdUpdate(long id, string loginId)
         {
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.Id != id && u.IsDeleted == 0);
+        }
+
+        public bool CheckExistedJobCd(int jobCd)
+        {
+            return _tenantNoTrackingDataContext.JobMsts.Any(u => u.JobCd == jobCd);
         }
 
         public void Create(UserMstModel user)

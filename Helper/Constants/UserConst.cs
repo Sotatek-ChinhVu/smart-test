@@ -31,6 +31,7 @@ namespace Helper.Constants
             InvalidRDrName,
             InvalidIsDeleted,
             UserListKaIdNoExist,
+            UserListJobCdNoExist,
             UserListIdNoExist,
             Valid
         };
