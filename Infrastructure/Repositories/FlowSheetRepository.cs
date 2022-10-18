@@ -148,14 +148,14 @@ namespace Infrastructure.Repositories
                         0,
                         string.Empty,
                         0,
-                        1,
+                        2,
                         string.Empty,
                         0,
                         false,
                         true,
                         new List<RaiinListInfModel>(),
                         0,
-                        0,
+                        9,
                         0,
                         0
                     );
