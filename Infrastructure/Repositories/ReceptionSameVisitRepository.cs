@@ -316,7 +316,8 @@ namespace Infrastructure.Repositories
                                             doctorId,
                                             item.SyosaisinKbn,
                                             item.JikanKbn,
-                                            item.SanteiKbn
+                                            item.SanteiKbn,
+                                            item.RaiinNo
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);

@@ -1,4 +1,4 @@
-﻿using Domain.Models.OrdInfs;
+﻿using Domain.Types;
 
 namespace Domain.Models.SuperSetDetail;
 

@@ -53,6 +53,9 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        // ExportReport
+        public const string ExportKarte1 = "ExportKarte1";
+
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
@@ -78,6 +81,7 @@
 
 
         //Drug Infor
+        public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
 
         //PtKyuseiInf
