@@ -900,6 +900,10 @@ namespace Infrastructure.Repositories
         {
             try
             {
+                long CountDefHokenNo = _tenantDataContext.DefHokenNos.Count(x => x.IsDeleted == 0 && x.HokenNo == defHokenNoModels[0].HokenNo);
+                if (defHokenNoModels.Count != CountDefHokenNo)
+                    return false;
+
                 int sortNo = 1;
                 foreach (var item in defHokenNoModels)
                 {
