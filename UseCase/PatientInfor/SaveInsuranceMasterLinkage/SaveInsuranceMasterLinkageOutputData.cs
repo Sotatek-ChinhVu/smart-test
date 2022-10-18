@@ -1,14 +1,15 @@
 ﻿using UseCase.Core.Sync.Core;
+using static Helper.Constants.DefHokenNoConst;
 
 namespace UseCase.PatientInfor.SaveInsuranceMasterLinkage
 {
     public class SaveInsuranceMasterLinkageOutputData : IOutputData
     {
-        public SaveInsuranceMasterLinkageOutputData(SaveInsuranceMasterLinkageStatus status)
+        public SaveInsuranceMasterLinkageOutputData(ValidationStatus status)
         {
             Status = status;
         }
 
-        public SaveInsuranceMasterLinkageStatus Status { get; private set; }
+        public ValidationStatus Status { get; private set; }
     }
 }

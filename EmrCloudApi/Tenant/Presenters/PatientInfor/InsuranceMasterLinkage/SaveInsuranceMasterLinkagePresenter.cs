@@ -2,6 +2,7 @@
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.PatientInfor.InsuranceMasterLinkage;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
+using static Helper.Constants.DefHokenNoConst;
 
 namespace EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage
 {
@@ -11,26 +12,26 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage
 
         public void Complete(SaveInsuranceMasterLinkageOutputData outputData)
         {
-            Result.Data = new SaveInsuranceMasterLinkageResponse(outputData.Status == SaveInsuranceMasterLinkageStatus.Success);
+            Result.Data = new SaveInsuranceMasterLinkageResponse(outputData.Status == ValidationStatus.Success);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }
 
-        private string GetMessage(SaveInsuranceMasterLinkageStatus status) => status switch
+        private string GetMessage(ValidationStatus status) => status switch
         {
-            SaveInsuranceMasterLinkageStatus.Success => ResponseMessage.Success,
-            SaveInsuranceMasterLinkageStatus.Failed => ResponseMessage.Failed,
-            SaveInsuranceMasterLinkageStatus.InputDataNull => ResponseMessage.InputDataNull,
-            SaveInsuranceMasterLinkageStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit1 => ResponseMessage.InvalidDigit1,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit2 => ResponseMessage.InvalidDigit2,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit3 => ResponseMessage.InvalidDigit3,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit4 => ResponseMessage.InvalidDigit4,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit5 => ResponseMessage.InvalidDigit5,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit6 => ResponseMessage.InvalidDigit6,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit7 => ResponseMessage.InvalidDigit7,
-            SaveInsuranceMasterLinkageStatus.InvalidDigit8 => ResponseMessage.InvalidDigit8,
-            SaveInsuranceMasterLinkageStatus.InvalidHokenNo => ResponseMessage.InvalidHokenNo,
+            ValidationStatus.Success => ResponseMessage.Success,
+            ValidationStatus.Failed => ResponseMessage.Failed,
+            ValidationStatus.InputDataNull => ResponseMessage.InputDataNull,
+            ValidationStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            ValidationStatus.InvalidDigit1 => ResponseMessage.InvalidDigit1,
+            ValidationStatus.InvalidDigit2 => ResponseMessage.InvalidDigit2,
+            ValidationStatus.InvalidDigit3 => ResponseMessage.InvalidDigit3,
+            ValidationStatus.InvalidDigit4 => ResponseMessage.InvalidDigit4,
+            ValidationStatus.InvalidDigit5 => ResponseMessage.InvalidDigit5,
+            ValidationStatus.InvalidDigit6 => ResponseMessage.InvalidDigit6,
+            ValidationStatus.InvalidDigit7 => ResponseMessage.InvalidDigit7,
+            ValidationStatus.InvalidDigit8 => ResponseMessage.InvalidDigit8,
+            ValidationStatus.InvalidHokenNo => ResponseMessage.InvalidHokenNo,
             _ => string.Empty,
         };
     }
