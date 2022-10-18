@@ -1,28 +1,10 @@
-﻿using Helper.Common;
-using Helper.Constants;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Helper.Constants;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Domain.Models.VisitingListSetting
 {
     public class VisitingListSettingModel
     {
-        public string FontName { get; private set; } = "Yu Gothic UI";
-
-        public int FontSize { get; private set; } = 13;
-
-        public int AutoRefresh { get; private set; } = 60;
-
-        public int MouseWheel { get; private set; } = 3;
-
-        public int KanFocus { get; private set; } = 0;
-
-        public int SelectTodoSetting { get; private set; } = 0;
-
         public List<ReceptionTimeColorConfig> ReceptionTimeColorConfigs { get; private set; }
 
         public List<ReceptionStatusColorConfig> ReceptionStatusColorConfigs { get; private set; }
@@ -37,17 +19,12 @@ namespace Domain.Models.VisitingListSetting
             new(0, "TODO: Free comments.")
         };
 
-        public VisitingListSettingModel(string fontName, int fontSize, int autoRefresh, int mouseWheel, int kanFocus, int selectTodoSetting, List<ReceptionTimeColorConfig> receptionTimeColorConfigs, List<ReceptionStatusColorConfig> receptionStatusColorConfigs)
+        public VisitingListSettingModel(List<ReceptionTimeColorConfig> receptionTimeColorConfigs, List<ReceptionStatusColorConfig> receptionStatusColorConfigs)
         {
-            FontName = fontName;
-            FontSize = fontSize;
-            AutoRefresh = autoRefresh;
-            MouseWheel = mouseWheel;
-            KanFocus = kanFocus;
-            SelectTodoSetting = selectTodoSetting;
             ReceptionTimeColorConfigs = receptionTimeColorConfigs;
             ReceptionStatusColorConfigs = receptionStatusColorConfigs;
         }
+
     }
 
     public class ReceptionTimeColorConfig
