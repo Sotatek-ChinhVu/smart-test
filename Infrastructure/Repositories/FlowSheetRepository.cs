@@ -141,7 +141,7 @@ namespace Infrastructure.Repositories
             var todayNextOdrs = todayOdr.Union(nextOdrs);
 
             FlowSheetModel? sinDateCurrent = null;
-            if (!todayNextOdrs.Any(r => r.SinDate == sinDate))
+            if (!todayOdr.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
             {
                 sinDateCurrent = new FlowSheetModel(
                         0,
@@ -151,7 +151,7 @@ namespace Infrastructure.Repositories
                         1,
                         string.Empty,
                         0,
-                        false,
+                        true,
                         false,
                         new List<RaiinListInfModel>(),
                         0,
