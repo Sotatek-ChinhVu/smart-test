@@ -12,6 +12,8 @@ public interface IKaRepository
 
     bool SaveKaMst(int hpId, int userId, List<KaMstModel> kaMstModels);
 
-    bool CheckKaId(int kaId);
+    bool CheckKaId(int KaId);
+
+    bool CheckKaId0(List<int> KaIds);
 
 }

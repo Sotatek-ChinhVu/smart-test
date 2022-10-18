@@ -4,6 +4,7 @@ using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
@@ -28,29 +29,34 @@ namespace Infrastructure.Repositories
             return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
         }
 
-        public bool CheckExistedUserIdCreate(int userId)
+        public bool CheckExistedUserIdCreate(List<int> UserIds)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == 0);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && u.IsDeleted != 1);
+            return UserIds.Count <= countUsertMsts;
         }
 
-        public bool CheckExistedUserIdUpdate(long id, int userId)
+        public bool CheckExistedUserIdUpdate(List<long> Ids, List<int> UserIds)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.Id != id && u.IsDeleted == 0);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && !Ids.Contains(u.Id)&& u.IsDeleted != 1);
+            return UserIds.Count <= countUsertMsts;
         }
 
-        public bool CheckExistedLoginIdCreate(string loginId)
+        public bool CheckExistedLoginIdCreate(List<string> LoginIds)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.IsDeleted == 0);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => LoginIds.Contains(u.LoginId) && u.IsDeleted != 1);
+            return LoginIds.Count <= countUsertMsts;
         }
 
-        public bool CheckExistedLoginIdUpdate(long id, string loginId)
+        public bool CheckExistedLoginIdUpdate(List<long> Ids, List<string> LoginIds)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == loginId && u.Id != id && u.IsDeleted == 0);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => LoginIds.Contains(u.LoginId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
+            return LoginIds.Count <= countUsertMsts;
         }
 
-        public bool CheckExistedJobCd(int jobCd)
+        public bool CheckExistedJobCd(List<int> JobCds)
         {
-            return _tenantNoTrackingDataContext.JobMsts.Any(u => u.JobCd == jobCd);
+            var countUsertMsts = _tenantNoTrackingDataContext.JobMsts.Count(u => JobCds.Contains(u.JobCd));
+            return JobCds.Count <= countUsertMsts;
         }
 
         public void Create(UserMstModel user)
