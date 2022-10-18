@@ -1,4 +1,6 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.Diseases;
+using Domain.Models.KarteInfs;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
@@ -14,6 +16,8 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
+        private const string SUSPECT_FLAG = "の疑い";
+
         public TodayOdrRepository(ITenantProvider tenantProvider)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
@@ -54,6 +58,57 @@ namespace Infrastructure.Repositories
                     }
                 });
 
+        }
+
+        public List<OrdInfDetailModel> InitDrugOdr(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
+        {
+            var ptByomeis = todayByomeis.Where(p => p.IsDeleted == DeleteTypes.None && p.IsInMonth);
+            List<OrdInfDetailModel> drugOrders = new List<OrdInfDetailModel>();
+            int odrCount = 0;
+            foreach (var order in todayOdrs)
+            {
+                foreach (var odrDetail in order.OrdInfDetails)
+                {
+                    string itemCd = odrDetail.ItemCd;
+                    if (string.IsNullOrEmpty(itemCd) ||
+                        itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ||
+                        itemCd == ItemCdConst.Con_Refill) continue;
+
+                    string santeiItemCd = GetSanteiItemCd(hpId, itemCd, sinDate);
+
+                    var byomeisByOdr = GetTekiouByomeiByOrder(new List<string>() { itemCd, santeiItemCd });
+                    if (byomeisByOdr.Count == 0) continue;
+
+                    // No.6510 future byomei check
+                    List<string> byomeiCds = byomeisByOdr.Select(p => p.ByomeiCd).ToList();
+                    if (!drugOrders.Exists(p => p.ItemCd == odrDetail.ItemCd)
+                        && !ptByomeis.Where(p => (p.HokenPid == 0 || p.HokenPid == order.HokenPid)
+                        && p.StartDate <= sinDate && (!p.IsTenki || p.TenkiDate >= sinDate)
+                        && (odrDetail.IsDrug ? !p.FullByomei.AsString().Contains(SUSPECT_FLAG) : true))
+                        .Any(p => byomeiCds.Contains(p.ByomeiCd)))
+                    {
+                        //set item name for grid mode
+                        odrCount++;
+                        foreach (var byomei in byomeisByOdr)
+                        {
+                            byomei.OdrItemNo = odrCount;
+                            byomei.OdrItemName = odrDetail.ItemName;
+                        }
+                        drugOrders.Add(odrDetail);
+                        _allByomeis.AddRange(byomeisByOdr);
+                    }
+                }
+            }
+            foreach (var byomei in _allByomeis)
+            {
+                byomei.PropertyChanged += Byomei_PropertyChanged;
+            }
+            DrugOrders.PropertyChanged += DrugOrders_PropertyChanged;
+            DrugOrders.SetData(drugOrders);
+
+            IsUnAdopted = _tempIsUnAdopted;
+            IsListStyle = _tempIsListStyle;
+            return drugOrders.Count > 0;
         }
 
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime)
@@ -594,5 +649,43 @@ namespace Infrastructure.Repositories
 
             return 0;
         }
+
+        private string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
+        {
+            var tenMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(p => p.HpId == hpId &&
+                                                                                  p.ItemCd == itemCd &&
+                                                                                  p.StartDate <= sinDate &&
+                                                                                  p.EndDate >= sinDate);
+            if (tenMst != null)
+            {
+                return tenMst.SanteiItemCd ?? string.Empty;
+            }
+            return string.Empty;
+        }
+
+        public List<PtDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds)
+        {
+            var tekiouByomeiMsts = _tenantNoTrackingDataContext.TekiouByomeiMsts.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd) && p.IsInvalid == 0);
+            var byomeiMsts = _tenantNoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+
+            var query = from tekiByomei in tekiouByomeiMsts
+                        join byomeiMst in byomeiMsts
+                        on tekiByomei.ByomeiCd equals byomeiMst.ByomeiCd
+                        select new
+                        {
+                            ByomeiMst = byomeiMst,
+                            TekiByomei = tekiByomei
+                        };
+            var ptByomeiModels = new List<PtDiseaseModel>();
+            foreach (var entity in query)
+            {
+                if (!ptByomeiModels.Any(p => p.ByomeiCd == entity.ByomeiMst.ByomeiCd))
+                {
+                    ptByomeiModels.Add(new PtDiseaseModel(hpId, 0, 0, entity.ByomeiMst.ByomeiCd, 0, string.Empty, entity.ByomeiMst.Byomei, ));
+                }
+            }
+            return ptByomeiModels;
+        }
+
     }
 }

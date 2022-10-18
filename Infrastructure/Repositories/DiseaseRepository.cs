@@ -97,7 +97,8 @@ namespace Infrastructure.Repositories
                         icd1012013,
                         icd1022013,
                         ptByomei.HokenPid,
-                        ptByomei.HosokuCmt ?? string.Empty
+                        ptByomei.HosokuCmt ?? string.Empty,
+                        string.Empty
                         );
                 result.Add(ptDiseaseModel);
             }
