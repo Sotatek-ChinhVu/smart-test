@@ -1,4 +1,5 @@
-﻿using Domain.Models.InsuranceMst;
+﻿using Amazon.S3;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
@@ -13,6 +14,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using System.Collections.Generic;
 using Amazon.Auth.AccessControlPolicy;
+using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -2191,6 +2193,106 @@ namespace Infrastructure.Repositories
                 }
             }
             return Task.CompletedTask;
+        }
+
+        public bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId)
+        {
+            var patientInf = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            if (patientInf != null)
+            {
+                patientInf.IsDelete = DeleteTypes.Deleted;
+                patientInf.UpdateDate = DateTime.UtcNow;
+                patientInf.UpdateId = TempIdentity.UserId;
+                patientInf.UpdateMachine = TempIdentity.ComputerName;
+                #region PtMemo
+                var ptMemos = _tenantTrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                foreach(var item in ptMemos)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = TempIdentity.UserId;
+                    item.UpdateMachine = TempIdentity.ComputerName;
+                }
+                #endregion
+               
+                #region ptKyuseis
+                var ptKyuseis = _tenantTrackingDataContext.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptKyuseis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+                
+                #region ptSanteis
+                var ptSanteis = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptSanteis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+                
+                #region HokenParttern
+                var ptHokenParterns = _tenantTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenParterns.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+                
+                #region HokenInf
+                var ptHokenInfs = _tenantTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenInfs.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+                
+                #region HokenKohi
+                var ptHokenKohis = _tenantTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenKohis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+               
+                #region HokenCheck
+                var ptHokenChecks = _tenantTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenChecks.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+                
+                #region RousaiTenki
+                var ptRousaiTenkies = _tenantTrackingDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptRousaiTenkies.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+            }
+            return _tenantTrackingDataContext.SaveChanges() > 0;
         }
     }
 }
