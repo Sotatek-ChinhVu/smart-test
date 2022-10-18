@@ -1,9 +1,5 @@
-﻿using Domain.Constant;
-using Domain.Models.FlowSheet;
+﻿using Domain.Models.FlowSheet;
 using Domain.Models.RaiinListMst;
-using Helper.Common;
-using Helper.Constants;
-using Helper.Extendsions;
 using UseCase.FlowSheet.GetList;
 
 namespace Interactor.FlowSheet
@@ -18,6 +14,7 @@ namespace Interactor.FlowSheet
 
         public GetListFlowSheetOutputData Handle(GetListFlowSheetInputData inputData)
         {
+
             if (inputData.IsHolidayOnly)
             {
                 var holidayMstList = _flowsheetRepository.GetHolidayMst(inputData.HpId, inputData.HolidayFrom, inputData.HolidayTo);
@@ -27,7 +24,7 @@ namespace Interactor.FlowSheet
             {
                 long totalFlowSheet = 0;
                 int count = inputData.Count <= 0 ? 50 : inputData.Count;
-                var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.StartIndex, count, ref totalFlowSheet);
+                var flowsheetList = _flowsheetRepository.GetListFlowSheet(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.StartIndex, count, inputData.Sort, ref totalFlowSheet);
                 var raiinListMst = _flowsheetRepository.GetRaiinListMsts(inputData.HpId);
 
                 return new GetListFlowSheetOutputData(flowsheetList, raiinListMst, new List<HolidayModel>(), totalFlowSheet);

@@ -1295,6 +1295,89 @@ namespace Helper.Common
             return sTime;
         }
 
+
+        /// <summary>
+        /// 西暦を表示用和暦(ggg yy年mm月dd日)に変換
+        /// Example 平成 30年07月18日
+        /// </summary>
+        /// <param name="ymd"></param>
+        /// <returns></returns>
+        public static WarekiYmd SDateToShowWDate3(int ymd)
+        {
+            string workString;
+            int workInt;
+            DateTime workDate;
+
+            WarekiYmd warekiYmd = new WarekiYmd();
+            warekiYmd.Ymd = "";
+            warekiYmd.GYmd = "";
+            warekiYmd.Gengo = "";
+            warekiYmd.GengoId = 0;
+            warekiYmd.Year = 0;
+            warekiYmd.Month = 0;
+            warekiYmd.Day = 0;
+
+            // Do not convert before 1968/09/08
+            if (ymd < 18680908 || ymd == 99999999)
+            {
+                return warekiYmd;
+            }
+
+            // Zero padding if neccessary
+            workString = ymd.ToString("D8");
+            if (!DateTime.TryParseExact(workString, "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out workDate))
+            {
+                // Input string is not a validated date
+                return warekiYmd;
+            }
+
+            //明治
+            if (ymd < 19120730)
+            {
+                workInt = ymd - 18670000;
+                warekiYmd.Gengo = "明治";
+                warekiYmd.GengoId = 1;
+            }
+            //大正
+            else if (ymd < 19261225)
+            {
+                workInt = ymd - 19110000;
+                warekiYmd.Gengo = "大正";
+                warekiYmd.GengoId = 2;
+            }
+            //昭和
+            else if (ymd < 19890108)
+            {
+                workInt = ymd - 19250000;
+                warekiYmd.Gengo = "昭和";
+                warekiYmd.GengoId = 3;
+            }
+            //平成
+            else if (ymd < 20190501)
+            {
+                workInt = ymd - 19880000;
+                warekiYmd.Gengo = "平成";
+                warekiYmd.GengoId = 4;
+            }
+            //令和
+            else
+            {
+                workInt = ymd - 20180000;
+                warekiYmd.Gengo = "令和";
+                warekiYmd.GengoId = 5;
+            }
+
+            workString = workInt.ToString("D6");
+
+            warekiYmd.Year = workString.Substring(0, 2).AsInteger();
+            warekiYmd.Month = workString.Substring(2, 2).AsInteger();
+            warekiYmd.Day = workString.Substring(4, 2).AsInteger();
+
+            warekiYmd.Ymd = string.Format("{0} {1:D2}年{2:D2}月{3:D2}日", warekiYmd.Gengo, warekiYmd.Year, warekiYmd.Month, warekiYmd.Day);
+            warekiYmd.GYmd = string.Format("{0}{1:D2}{2:D2}{3:D2}", warekiYmd.GengoId, warekiYmd.Year, warekiYmd.Month, warekiYmd.Day);
+
+            return warekiYmd;
+        }
         public static bool HokenNumberCheckDigits(int hokenNumber)
         {
             int WHokenNumber = hokenNumber / 10;

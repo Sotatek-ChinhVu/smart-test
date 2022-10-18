@@ -4,6 +4,7 @@ using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -17,7 +18,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, ref long totalCount)
+        public List<FlowSheetModel> GetListFlowSheet(int hpId, long ptId, int sinDate, long raiinNo, int startIndex, int count, string sort, ref long totalCount)
         {
             List<FlowSheetModel> result;
 
@@ -45,11 +46,11 @@ namespace Infrastructure.Repositories
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
                             RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
-                                            join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
-                                            on raiinListInf.KbnCd equals raiinListMst.KbnCd
-                                            select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
+                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                                             on raiinListInf.KbnCd equals raiinListMst.KbnCd
+                                             select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable()
+                                            .AsEnumerable<RaiinListInfModel>()
                         };
 
 
@@ -69,7 +70,7 @@ namespace Infrastructure.Repositories
                     r.CommentKbn,
                     r.CommentSeqNo,
                     r.TagSeqNo)
-            ).AsEnumerable();
+            ).AsEnumerable<FlowSheetModel>();
 
             // Add NextOrder Information
             // Get next order information
@@ -87,7 +88,7 @@ namespace Infrastructure.Repositories
                                    .OrderBy(karte => karte.RsvDate)
                                    .ThenBy(karte => karte.KarteKbn);
 
-            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable()
+            var groupNextOdr = from rsvkrtOdrInf in rsvkrtOdrInfs.AsEnumerable<RsvkrtOdrInf>()
                                join rsvkrtMst in rsvkrtMsts on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
                                                 equals new { rsvkrtMst.HpId, rsvkrtMst.PtId, rsvkrtMst.RsvkrtNo }
                                join karte in nextOdrKarteInfs on new { rsvkrtOdrInf.HpId, rsvkrtOdrInf.PtId, rsvkrtOdrInf.RsvkrtNo }
@@ -116,7 +117,7 @@ namespace Infrastructure.Repositories
                                                     on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                                     select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable()
+                                            .AsEnumerable<RaiinListInfModel>()
                                };
             var nextOdrs = queryNextOdr.Select(
                     data => new FlowSheetModel(
@@ -137,8 +138,69 @@ namespace Infrastructure.Repositories
                     ));
 
             totalCount = todayOdr.Union(nextOdrs).Count();
-            result = todayOdr.Union(nextOdrs).OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-            
+            var todayNextOdrs = todayOdr.Union(nextOdrs);
+
+            FlowSheetModel? sinDateCurrent = null;
+            if (!todayOdr.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
+            {
+                sinDateCurrent = new FlowSheetModel(
+                        0,
+                        0,
+                        string.Empty,
+                        0,
+                        2,
+                        string.Empty,
+                        0,
+                        false,
+                        true,
+                        new List<RaiinListInfModel>(),
+                        0,
+                        9,
+                        0,
+                        0
+                    );
+            }
+
+            if (string.IsNullOrEmpty(sort))
+                result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+            else
+                try
+                {
+                    var childrenOfSort = sort.Split(" ");
+                    var checkGroupId = int.TryParse(childrenOfSort[0], out int groupId);
+
+                    if (!checkGroupId)
+                        result = todayNextOdrs.AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
+                    else
+                    {
+                        if (childrenOfSort.Length > 1)
+                        {
+                            if (childrenOfSort[1].ToLower() == "desc")
+                            {
+                                result = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                            }
+                            else
+                            {
+                                result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+
+                            }
+                        }
+                        else
+                        {
+                            result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
+                        }
+                    }
+                }
+                catch
+                {
+                    result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
+                }
+
+            if (sinDateCurrent != null && startIndex == 0)
+            {
+                result.Insert(0, sinDateCurrent);
+            }
+
             return result;
         }
 
