@@ -308,6 +308,7 @@ namespace Infrastructure.Repositories
                                     updCalcStatus.Status = 0;
                                 }
 
+                                UpdateCalcStatus(updCalcStatusies);
                             }
                             else
                             {
@@ -353,7 +354,7 @@ namespace Infrastructure.Repositories
                                 {
                                     // 正常終了
                                     //calcStatus.Status = 9;
-                                    foreach (CalcStatusModel updCalcStatus in calcStatusies)
+                                    foreach (CalcStatus updCalcStatus in calcStatusies)
                                     {
                                         updCalcStatus.Status = 9;
                                     }
@@ -362,7 +363,7 @@ namespace Infrastructure.Repositories
                                 {
                                     // エラー
                                     //calcStatus.Status = 8;
-                                    foreach (CalcStatusModel updCalcStatus in calcStatusies)
+                                    foreach (CalcStatus updCalcStatus in calcStatusies)
                                     {
                                         updCalcStatus.Status = 8;
                                     }
@@ -517,18 +518,6 @@ namespace Infrastructure.Repositories
                         calcStatusies = entities;
                     }
                     return calcStatusies;
-                }
-
-                bool UpdateCalcStatus(List<CalcStatus> calcStatusies)
-                {
-                    foreach (CalcStatus calcStatus in calcStatusies)
-                    {
-                        calcStatus.UpdateDate = DateTime.Now;
-                        calcStatus.UpdateId = TempIdentity.UserId;
-                        calcStatus.UpdateMachine = TempIdentity.ComputerName;
-                    }
-                    _tenantDataContext.SaveChanges();
-                    return true;
                 }
 
                 List<CalcStatus> GetSameCalcStatusInputModel(CalcStatus? calcStatus, string preFix)
