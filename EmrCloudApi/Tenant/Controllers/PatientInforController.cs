@@ -46,6 +46,7 @@ using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
@@ -56,8 +57,6 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.Save;
-using UseCase.PatientInfor.DeletePatient;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -408,6 +407,6 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new DeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<DeletePatientInfoResponse>>(presenter.Result);
-        } 
+        }
     }
 }

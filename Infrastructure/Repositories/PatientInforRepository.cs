@@ -1,7 +1,6 @@
 ﻿using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-﻿using Amazon.S3;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Entity.Tenant;
@@ -12,12 +11,6 @@ using Helper.Mapping;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using Domain.Models.GroupInf;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.Insurance;
-using System.Collections.Generic;
-using Amazon.Auth.AccessControlPolicy;
-using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories
 {
@@ -2320,7 +2313,7 @@ namespace Infrastructure.Repositories
                 patientInf.UpdateMachine = TempIdentity.ComputerName;
                 #region PtMemo
                 var ptMemos = _tenantTrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
-                foreach(var item in ptMemos)
+                foreach (var item in ptMemos)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
                     item.UpdateDate = DateTime.UtcNow;
@@ -2328,7 +2321,7 @@ namespace Infrastructure.Repositories
                     item.UpdateMachine = TempIdentity.ComputerName;
                 }
                 #endregion
-               
+
                 #region ptKyuseis
                 var ptKyuseis = _tenantTrackingDataContext.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptKyuseis.ForEach(x =>
@@ -2339,7 +2332,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-                
+
                 #region ptSanteis
                 var ptSanteis = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptSanteis.ForEach(x =>
@@ -2350,7 +2343,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-                
+
                 #region HokenParttern
                 var ptHokenParterns = _tenantTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptHokenParterns.ForEach(x =>
@@ -2361,7 +2354,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-                
+
                 #region HokenInf
                 var ptHokenInfs = _tenantTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptHokenInfs.ForEach(x =>
@@ -2372,7 +2365,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-                
+
                 #region HokenKohi
                 var ptHokenKohis = _tenantTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptHokenKohis.ForEach(x =>
@@ -2383,7 +2376,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-               
+
                 #region HokenCheck
                 var ptHokenChecks = _tenantTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptHokenChecks.ForEach(x =>
@@ -2394,7 +2387,7 @@ namespace Infrastructure.Repositories
                     x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
-                
+
                 #region RousaiTenki
                 var ptRousaiTenkies = _tenantTrackingDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 ptRousaiTenkies.ForEach(x =>
