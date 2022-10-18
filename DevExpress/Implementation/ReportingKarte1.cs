@@ -12,14 +12,14 @@ using Interactor.ExportPDF.Karte1;
 
 namespace DevExpress.Implementation;
 
-public class Reporting : IReporting
+public class ReportingKarte1 : IReporting
 {
     private readonly IPtDiseaseRepository _diseaseRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly Karte1Export _karte1Export;
 
-    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
+    public ReportingKarte1(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;

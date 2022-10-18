@@ -61,9 +61,11 @@
             this.xrLine3 = new DevExpress.XtraReports.UI.XRLine();
             this.BottomMargin = new DevExpress.XtraReports.UI.BottomMarginBand();
             this.objectDataSource1 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
+            this.objectDataSource2 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // Detail
@@ -417,6 +419,11 @@
             this.objectDataSource1.DataSourceType = null;
             this.objectDataSource1.Name = "objectDataSource1";
             // 
+            // objectDataSource2
+            // 
+            this.objectDataSource2.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource2.Name = "objectDataSource2";
+            // 
             // Karte1TemplatePage2
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
@@ -424,13 +431,16 @@
             this.TopMargin,
             this.BottomMargin});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
-            this.objectDataSource1});
-            this.DataSource = this.objectDataSource1;
+            this.objectDataSource1,
+            this.objectDataSource2});
+            this.DataMember = "ListByomeiModelsPage2";
+            this.DataSource = this.objectDataSource2;
             this.Margins = new System.Drawing.Printing.Margins(100, 95, 84, 25);
             this.Version = "22.1";
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -469,5 +479,6 @@
         private XtraReports.UI.XRShape xrShape3;
         private XtraReports.UI.XRShape xrShape2;
         private XtraReports.UI.XRLabel xrLabel1;
+        private DataAccess.ObjectBinding.ObjectDataSource objectDataSource2;
     }
 }

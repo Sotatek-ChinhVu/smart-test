@@ -154,9 +154,11 @@
             this.PageHeader = new DevExpress.XtraReports.UI.PageHeaderBand();
             this.xrControlStyle1 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.xrControlStyle2 = new DevExpress.XtraReports.UI.XRControlStyle();
+            this.objectDataSource2 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // TopMargin
@@ -1949,7 +1951,7 @@
             // 
             // objectDataSource1
             // 
-            this.objectDataSource1.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource1.DataSourceType = null;
             this.objectDataSource1.Name = "objectDataSource1";
             // 
             // ReportHeader
@@ -2033,6 +2035,11 @@
             this.xrControlStyle2.Name = "xrControlStyle2";
             this.xrControlStyle2.Padding = new DevExpress.XtraPrinting.PaddingInfo(0, 0, 0, 0, 100F);
             // 
+            // objectDataSource2
+            // 
+            this.objectDataSource2.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource2.Name = "objectDataSource2";
+            // 
             // Karte1TemplatePage1
             // 
             this.Bands.AddRange(new DevExpress.XtraReports.UI.Band[] {
@@ -2042,9 +2049,10 @@
             this.ReportHeader,
             this.PageHeader});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
-            this.objectDataSource1});
+            this.objectDataSource1,
+            this.objectDataSource2});
             this.DataMember = "ListByomeiModelsPage1";
-            this.DataSource = this.objectDataSource1;
+            this.DataSource = this.objectDataSource2;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
             this.Margins = new System.Drawing.Printing.Margins(99, 97, 2, 187);
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
@@ -2054,6 +2062,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -2185,5 +2194,6 @@
         private XtraReports.UI.XRShape xrShape4;
         private XtraReports.UI.XRShape xrShape6;
         private XtraReports.UI.XRShape xrShape5;
+        private DataAccess.ObjectBinding.ObjectDataSource objectDataSource2;
     }
 }
