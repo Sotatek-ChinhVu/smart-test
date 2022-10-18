@@ -80,6 +80,7 @@
 
 
         //Drug Infor
+        public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
 
         //PtKyuseiInf

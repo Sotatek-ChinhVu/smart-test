@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.MedicalExamination.UpsertTodayOrd
+namespace UseCase.OrdInfs.ValidationTodayOrd
 {
-    public class UpsertTodayOrdInputData : IInputData<UpsertTodayOrdOutputData>
+    public class ValidationTodayOrdInputData : IInputData<ValidationTodayOrdOutputData>
     {
-        public UpsertTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrItems, KarteItemInputData karteInf)
+        public ValidationTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<ValidationOdrInfItem> odrInfs, ValidationKarteItem karte)
         {
             SyosaiKbn = syosaiKbn;
             JikanKbn = jikanKbn;
@@ -12,11 +12,11 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
             SanteiKbn = santeiKbn;
             TantoId = tantoId;
             KaId = kaId;
-            OdrItems = odrItems;
-            KarteInf = karteInf;
             UketukeTime = uketukeTime;
             SinStartTime = sinStartTime;
             SinEndTime = sinEndTime;
+            OdrInfs = odrInfs;
+            Karte = karte;
         }
 
         public int SyosaiKbn { get; private set; }
@@ -28,7 +28,12 @@ namespace UseCase.MedicalExamination.UpsertTodayOrd
         public string UketukeTime { get; private set; }
         public string SinStartTime { get; private set; }
         public string SinEndTime { get; private set; }
-        public List<OdrInfItemInputData> OdrItems { get; private set; }
-        public KarteItemInputData KarteInf { get; private set; }
+        public List<ValidationOdrInfItem> OdrInfs { get; private set; }
+        public ValidationKarteItem Karte { get; private set; }
+
+        public List<ValidationOdrInfItem> ToList()
+        {
+            return OdrInfs;
+        }
     }
 }
