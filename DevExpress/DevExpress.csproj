@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\Karte2\" />
     <Folder Include="Response\" />
   </ItemGroup>
 

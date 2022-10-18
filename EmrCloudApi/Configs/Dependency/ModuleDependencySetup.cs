@@ -237,7 +237,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             // Export
-            services.AddTransient<IReporting, ReportingKarte1>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupRepositories(IServiceCollection services)

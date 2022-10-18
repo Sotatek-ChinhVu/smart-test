@@ -1,5 +1,5 @@
 ﻿using DevExpress.Export;
-using DevExpress.Models;
+using DevExpress.Models.Karte1;
 using DevExpress.Response.Karte1;
 using Domain.Constant;
 using Domain.Models.Diseases;
@@ -9,17 +9,18 @@ using Domain.Models.PatientInfor;
 using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
+using Interactor.ExportPDF.Karte2;
 
 namespace DevExpress.Implementation;
 
-public class ReportingKarte1 : IReporting
+public class Reporting : IReporting
 {
     private readonly IPtDiseaseRepository _diseaseRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly Karte1Export _karte1Export;
 
-    public ReportingKarte1(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
@@ -27,6 +28,7 @@ public class ReportingKarte1 : IReporting
         _karte1Export = karte1Export;
     }
 
+    #region Print Karte 1
     public Karte1Output PrintKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
     {
         if (hpId <= 0)
@@ -250,4 +252,13 @@ public class ReportingKarte1 : IReporting
                 listByomeiModelsPage2
             );
     }
+    #endregion
+
+    #region Print Karte 2
+    public Karte2Output PrintKarte2()
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
 }

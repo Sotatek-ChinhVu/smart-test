@@ -421,7 +421,7 @@
             // 
             // objectDataSource2
             // 
-            this.objectDataSource2.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource2.DataSource = typeof(global::DevExpress.Models.Karte1.Karte1ExportModel);
             this.objectDataSource2.Name = "objectDataSource2";
             // 
             // Karte1TemplatePage2

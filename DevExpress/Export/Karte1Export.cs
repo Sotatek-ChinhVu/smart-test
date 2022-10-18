@@ -1,5 +1,5 @@
 ﻿using DevExpress.DataAccess.ObjectBinding;
-using DevExpress.Models;
+using DevExpress.Models.Karte1;
 using DevExpress.Template;
 using DevExpress.XtraPrinting;
 

@@ -1,6 +1,4 @@
-﻿using DevExpress.Models;
-
-namespace DevExpress.Models;
+﻿namespace DevExpress.Models.Karte1;
 
 public class Karte1ExportModel
 {
