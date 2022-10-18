@@ -814,7 +814,8 @@ namespace Infrastructure.Repositories
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
+                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    mst.IsAdopted
                 );
         }
 

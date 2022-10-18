@@ -151,6 +151,8 @@
         public static readonly string GetMedicalExaminationInvalidSearchCategory = "Invalid Search Category";
         public static readonly string GetMedicalExaminationInvalidSearchText = "Invalid Search Text";
         public static readonly string GetMedicalExaminationInvalidUserId = "Invalid UserId";
+        public static readonly string GetMedicalExaminationInvalidDrugOrByomei = "DrugOrders Or Byomeis Is Null";
+        public static readonly string GetMedicalExaminationInvalidByomei = "Byomeis Is Null";
 
         //OrdInf controller
 
