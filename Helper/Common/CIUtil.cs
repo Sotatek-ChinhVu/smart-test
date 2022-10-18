@@ -1407,6 +1407,19 @@ namespace Helper.Common
 
             return (PtID * 10 + digit);
         }
+
+        public static string TimeToShowTime(int TimeValue)
+        {
+            string Result = string.Empty;
+            string WrkStr = string.Empty;
+            if (TimeValue.ToString().Length > 4)
+                WrkStr = TimeValue.ToString("D6");
+
+            else
+                WrkStr = TimeValue.ToString("D4");
+            Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
+            return Result;
+        }
     }
 
     public enum WarekiFormat

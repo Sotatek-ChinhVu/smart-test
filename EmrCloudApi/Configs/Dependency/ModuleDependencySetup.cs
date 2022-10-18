@@ -301,6 +301,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
             services.AddTransient<Karte1Export, Karte1Export>();
+            services.AddTransient<Karte2Export, Karte2Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
         }
 

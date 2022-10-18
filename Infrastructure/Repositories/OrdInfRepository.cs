@@ -58,8 +58,13 @@ namespace Infrastructure.Repositories
                 allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
             }
 
-            var sindateMin = allOdrInfDetails?.Min(o => o.SinDate) ?? 0;
-            var sindateMax = allOdrInfDetails?.Max(o => o.SinDate) ?? 0;
+            var sindateMin = 0;
+            var sindateMax = 0;
+            if (allOdrInfDetails?.Count > 0)
+            {
+                sindateMin = allOdrInfDetails.Min(o => o.SinDate);
+                sindateMax = allOdrInfDetails.Max(o => o.SinDate);
+            }
 
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }

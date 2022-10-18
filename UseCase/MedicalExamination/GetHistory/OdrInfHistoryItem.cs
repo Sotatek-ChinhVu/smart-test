@@ -14,11 +14,11 @@ namespace UseCase.MedicalExamination.GetHistory
         public DateTime UpdateDate { get; private set; }
         public string UpdateDateDisplay
         {
-            get => UpdateDate.ToString("yyyy/MM/dd hh:mm");
+            get => UpdateDate.ToString("yyyy/MM/dd HH:mm");
         }
         public string CreateDateDisplay
         {
-            get => CreateDate.ToString("yyyy/MM/dd hh:mm");
+            get => CreateDate.ToString("yyyy/MM/dd HH:mm");
         }
     }
 }

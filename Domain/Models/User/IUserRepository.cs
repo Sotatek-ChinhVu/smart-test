@@ -14,6 +14,8 @@
 
         IEnumerable<UserMstModel> GetDoctorsList(List<int> userIds);
 
+        IEnumerable<UserMstModel> GetListAnyUser(List<int> userIds);
+
         IEnumerable<UserMstModel> GetAll();
 
         List<UserMstModel> GetAll(int sinDate, bool isDoctorOnly);

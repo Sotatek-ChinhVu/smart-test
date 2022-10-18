@@ -2,7 +2,7 @@
 
 public class Karte2ExportModel
 {
-    public Karte2ExportModel(int hpId, long ptId, long raiinNo, int sinDate, string kanaName, string name, string sex, string birthday, string currentTime, string startDate, string endDate, string fileName, List<RichTextKarteOrder> richTextKarte2Models)
+    public Karte2ExportModel(int hpId, long ptId, long raiinNo, int sinDate, string kanaName, string name, string sex, string birthday, string currentTime, string startDate, string endDate, List<RichTextKarteOrder> richTextKarte2Models)
     {
         HpId = hpId;
         PtId = ptId;
@@ -15,7 +15,6 @@ public class Karte2ExportModel
         CurrentTime = currentTime;
         StartDate = startDate;
         EndDate = endDate;
-        FileName = fileName;
         RichTextKarte2Models = richTextKarte2Models;
     }
 
@@ -31,17 +30,15 @@ public class Karte2ExportModel
 
     public string Name { get; private set; }
 
-    public string Sex { get; private set; } 
+    public string Sex { get; private set; }
 
     public string Birthday { get; private set; }
 
-    public string CurrentTime { get; private set; } 
+    public string CurrentTime { get; private set; }
 
-    public string StartDate { get; private set; } 
+    public string StartDate { get; private set; }
 
-    public string EndDate { get; private set; } 
-
-    public string FileName { get; private set; } 
+    public string EndDate { get; private set; }
 
     public List<RichTextKarteOrder> RichTextKarte2Models { get; private set; }
 }

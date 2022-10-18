@@ -50,7 +50,9 @@ namespace Infrastructure.Repositories
                     receptionEntity?.TantoId ?? 0,
                     receptionEntity?.SyosaisinKbn ?? 0,
                     receptionEntity?.JikanKbn ?? 0,
-                    raiinCommentInf?.Text ?? string.Empty
+                    raiinCommentInf?.Text ?? string.Empty,
+                    raiinCommentInf?.CreateDate ?? DateTime.MinValue,
+                    raiinCommentInf?.CreateId ?? 0
                 );
         }
 
@@ -409,7 +411,9 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn,
-                        string.Empty
+                        string.Empty,
+                        r.CreateDate,
+                        r.CreateId
                    ));
 
         }
@@ -443,7 +447,9 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn,
-                        string.Empty
+                        string.Empty,
+                        r.CreateDate,
+                        r.CreateId
                    ));
 
         }
