@@ -201,6 +201,9 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using Interactor.ExportPDF;
+using DevExpress.Implementation;
+using DevExpress.Export;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -231,6 +234,9 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+
+            // Export
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -293,6 +299,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
+            services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
         }
 
