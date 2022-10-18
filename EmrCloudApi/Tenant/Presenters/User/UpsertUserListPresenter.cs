@@ -22,7 +22,6 @@ namespace EmrCloudApi.Tenant.Presenters.User
         {
             UpsertUserListStatus.Success => ResponseMessage.Success,
             UpsertUserListStatus.Failed => ResponseMessage.Failed,
-            UpsertUserListStatus.DuplicateId => ResponseMessage.DuplicateId,
             UpsertUserListStatus.ExistedId => ResponseMessage.ExistedId,
             UpsertUserListStatus.UserListInputNoData => ResponseMessage.UpsertInputNoData,
             UpsertUserListStatus.UserListUpdateNoSuccess => ResponseMessage.UpsertUpdateNoSuccess,
