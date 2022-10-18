@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Diseases;
+using EmrCloudApi.Tenant.Requests.Diseases;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 
 namespace EmrCloudApi.Tenant.Requests.MedicalExamination
@@ -9,7 +10,7 @@ namespace EmrCloudApi.Tenant.Requests.MedicalExamination
 
         public int SinDate { get; set; }
 
-        public List<PtDiseaseModel> TodayByomeis { get; set; } = new();
+        public List<UpsertPtDiseaseListItem> TodayByomeis { get; set; } = new();
 
         public List<OdrInfItem> TodayOdrs { get; set; } = new();
     }

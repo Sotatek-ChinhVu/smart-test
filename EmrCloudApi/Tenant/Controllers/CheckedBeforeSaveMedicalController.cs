@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.Diseases;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
@@ -24,7 +25,33 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.GetCheckDiseases)]
         public ActionResult<Response<GetCheckDiseaseResponse>> GetCheckDiseases([FromBody] GetCheckDiseaseRequest request)
         {
-            var input = new GetCheckDiseaseInputData(request.HpId, request.SinDate, request.TodayByomeis, request.TodayOdrs.Select(
+            var input = new GetCheckDiseaseInputData(request.HpId, request.SinDate, request.TodayByomeis.Select(b => new PtDiseaseModel(
+                    b.HpId,
+                    b.PtId,
+                    b.SeqNo,
+                    b.ByomeiCd,
+                    b.SortNo,
+                    b.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
+                    b.Byomei,
+                    b.StartDate,
+                    b.TenkiKbn,
+                    b.TenkiDate,
+                    b.SyubyoKbn,
+                    b.SikkanKbn,
+                    b.NanByoCd,
+                    b.IsNodspRece,
+                    b.IsNodspKarte,
+                    b.IsDeleted,
+                    b.Id,
+                    b.IsImportant,
+                    0,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    string.Empty,
+                    b.HokenPid,
+                    b.HosokuCmt
+                )).ToList(), request.TodayOdrs.Select(
                     o => new OdrInfItemInputData(
                             o.HpId,
                             o.RaiinNo,
