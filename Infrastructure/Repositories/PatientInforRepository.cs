@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using Amazon.Auth.AccessControlPolicy;
 using System.Linq.Expressions;
 using Domain.Models.CalculationInf;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Repositories
 {
@@ -1219,6 +1220,12 @@ namespace Infrastructure.Repositories
                     hoKenIndex++;
                 }
             }
+
+            int modified = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).Count();
+            int added = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added).Count();
+            if ((modified + added) == 0 && resultCreatePatient == true)
+                return true;
+
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
