@@ -648,7 +648,7 @@ public class Reporting : IReporting
                                     c.RichText,
                                     c.CreateName
                                 )).ToList())
-                select karteGrp);
+                                                             select karteGrp);
                 //Excute order
                 ExcuteOrder(insuranceData, allOdrInfs, historyKarteOdrRaiin, historyKarteOdrRaiins);
             }
