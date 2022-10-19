@@ -1,4 +1,5 @@
-﻿using Domain.Models.GroupInf;
+﻿using Domain.Models.CalculationInf;
+using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
@@ -11,13 +12,6 @@ using Helper.Mapping;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using Domain.Models.GroupInf;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.Insurance;
-using System.Collections.Generic;
-using Amazon.Auth.AccessControlPolicy;
-using System.Linq.Expressions;
-using Domain.Models.CalculationInf;
 
 namespace Infrastructure.Repositories
 {
@@ -985,7 +979,7 @@ namespace Infrastructure.Repositories
             }
 
         }
-        
+
         public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
@@ -1109,7 +1103,7 @@ namespace Infrastructure.Repositories
                     hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
                     _tenantTrackingDataContext.PtHokenInfs.Add(hokenInfModel);
 
-                    if(hokenParttern.HokenInf.ListRousaiTenki.Any())
+                    if (hokenParttern.HokenInf.ListRousaiTenki.Any())
                     {
                         var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(hokenParttern.HokenInf.ListRousaiTenki, (src, dest) =>
                         {
@@ -1391,7 +1385,7 @@ namespace Infrastructure.Repositories
             #region PtSantei
             var ptSanteiConfDb = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId).ToList();
             var ptSanteiConfRemoves = ptSanteiConfDb.Where(c => !ptSanteis.Any(_ => _.SeqNo == c.SeqNo));
-            
+
             foreach (var item in ptSanteiConfRemoves)
             {
                 item.UpdateId = TempIdentity.UserId;
@@ -1399,7 +1393,8 @@ namespace Infrastructure.Repositories
                 item.IsDeleted = DeleteTypes.Deleted;
             }
 
-            var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) => {
+            var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) =>
+            {
                 dest.CreateDate = DateTime.UtcNow;
                 dest.CreateId = TempIdentity.UserId;
                 dest.UpdateMachine = TempIdentity.ComputerName;
@@ -1640,7 +1635,7 @@ namespace Infrastructure.Repositories
                     hokenInfDelete.UpdateDate = DateTime.UtcNow;
                     hokenInfDelete.UpdateId = TempIdentity.UserId;
 
-                    foreach( var itemRsTk in databasePtRousaiTenkis.Where(x => x.HokenId == hokenInfDelete.HokenId))
+                    foreach (var itemRsTk in databasePtRousaiTenkis.Where(x => x.HokenId == hokenInfDelete.HokenId))
                     {
                         itemRsTk.IsDeleted = 1;
                         itemRsTk.UpdateDate = DateTime.UtcNow;
@@ -2007,7 +2002,7 @@ namespace Infrastructure.Repositories
 
 
 
-                            var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(hokenParttern.HokenInf.ListRousaiTenki.Where(x=>x.SeqNo == 0), (src, dest) =>
+                            var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(hokenParttern.HokenInf.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
                             {
                                 dest.CreateId = TempIdentity.UserId;
                                 dest.PtId = patientInfo.PtId;
@@ -2022,10 +2017,10 @@ namespace Infrastructure.Repositories
                             _tenantTrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
 
 
-                            foreach(var rsTkUpdate in hokenParttern.HokenInf.ListRousaiTenki.Where(x => x.SeqNo != 0))
+                            foreach (var rsTkUpdate in hokenParttern.HokenInf.ListRousaiTenki.Where(x => x.SeqNo != 0))
                             {
                                 var updateItem = databasePtRousaiTenkis.FirstOrDefault(x => x.HokenId == hokenInfUpdate.HokenId && x.SeqNo == rsTkUpdate.SeqNo);
-                                if(updateItem != null)
+                                if (updateItem != null)
                                 {
                                     updateItem.Sinkei = rsTkUpdate.RousaiTenkiSinkei;
                                     updateItem.Tenki = rsTkUpdate.RousaiTenkiTenki;
