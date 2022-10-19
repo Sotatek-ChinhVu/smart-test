@@ -14,6 +14,12 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
+        private readonly int headerOdrKouiKbn = 10;
+        private readonly string jikanItemCd = "@JIKAN";
+        private readonly string shinItemCd = "@SHIN";
+        private readonly string shinItemName = "診察料基本点数算定用";
+        private readonly string jikanItemName = "時間外算定用";
+
         public TodayOdrRepository(ITenantProvider tenantProvider)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
@@ -40,6 +46,8 @@ namespace Infrastructure.Repositories
                         UpsertKarteInfs(karteInfModel);
 
                         SaveRaiinListInf(odrInfs);
+
+                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
 
                         transaction.Commit();
 
@@ -77,6 +85,141 @@ namespace Infrastructure.Repositories
             }
         }
 
+        private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
+        {
+
+            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate);
+            var oldoldSyosaiKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
+            var oldJikanKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
+            var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
+
+            if (oldHeaderInfModel != null)
+            {
+                if (oldHeaderInfModel?.HokenPid == hokenPid &&
+                oldoldSyosaiKihon?.Suryo == syosaiKbn &&
+                oldJikanKihon?.Suryo == jikanKbn &&
+                oldHeaderInfModel.SanteiKbn == santeiKbn)
+                {
+                    if (oldHeaderInfModel.IsDeleted == DeleteTypes.Deleted)
+                    {
+                        oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                        oldHeaderInfModel.UpdateId = TempIdentity.UserId;
+                        oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+                    }
+                    oldHeaderInfModel.IsDeleted = 0;
+                }
+                else
+                {
+                    // Be sure old header is deleted
+                    oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
+                    oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                    oldHeaderInfModel.UpdateId = TempIdentity.UserId;
+                    oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+
+                    var newHeaderInf = new OdrInf
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = oldHeaderInfModel.RpNo,
+                        RpEdaNo = oldHeaderInfModel.RpEdaNo + 1,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        HokenPid = hokenPid,
+                        OdrKouiKbn = headerOdrKouiKbn,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName
+                    };
+
+                    var odrSyosaiKionDetail = new OdrInfDetail
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = newHeaderInf.RpNo,
+                        RpEdaNo = newHeaderInf.RpEdaNo,
+                        RowNo = 1,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        SinKouiKbn = headerOdrKouiKbn,
+                        ItemCd = shinItemCd,
+                        ItemName = shinItemName,
+                        Suryo = syosaiKbn
+                    };
+
+                    var odrJikanDetail = new OdrInfDetail
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = newHeaderInf.RpNo,
+                        RpEdaNo = newHeaderInf.RpEdaNo,
+                        RowNo = 2,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        SinKouiKbn = headerOdrKouiKbn,
+                        ItemCd = jikanItemCd,
+                        ItemName = jikanItemName,
+                        Suryo = jikanKbn
+                    };
+
+                    _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
+                    _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                    _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+                }
+            }
+            else
+            {
+                var newHeaderInf = new OdrInf
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = rpNoMax++,
+                    RpEdaNo = 1,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    HokenPid = hokenPid,
+                    OdrKouiKbn = headerOdrKouiKbn,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName
+                };
+
+                var odrSyosaiKionDetail = new OdrInfDetail
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = newHeaderInf.RpNo,
+                    RpEdaNo = 1,
+                    RowNo = 1,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    SinKouiKbn = headerOdrKouiKbn,
+                    ItemCd = shinItemCd,
+                    ItemName = shinItemName,
+                    Suryo = syosaiKbn
+                };
+
+                var odrJikanDetail = new OdrInfDetail
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = newHeaderInf.RpNo,
+                    RpEdaNo = 1,
+                    RowNo = 2,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    SinKouiKbn = headerOdrKouiKbn,
+                    ItemCd = jikanItemCd,
+                    ItemName = jikanItemName,
+                    Suryo = jikanKbn
+                };
+
+                _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
+                _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+            }
+
+            _tenantTrackingDataContext.SaveChanges();
+        }
 
         private void SaveRaiinListInf(List<OrdInfModel> ordInfs)
         {
