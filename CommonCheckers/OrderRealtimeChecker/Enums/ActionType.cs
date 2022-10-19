@@ -1,6 +1,6 @@
 ﻿namespace CommonCheckers.OrderRealtimeChecker.Enums
 {
-    public enum ActionType
+    public enum ActionResultType
     {
         OK,
         Edit,

@@ -1,8 +1,9 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
-    public class AgeChecker : UnitChecker<TOdrInf, TOdrDetail>
+    public class AgeChecker<TOdrInf, TOdrDetail> : UnitChecker<TOdrInf, TOdrDetail>
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {

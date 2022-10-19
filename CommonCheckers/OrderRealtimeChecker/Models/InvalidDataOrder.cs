@@ -4,7 +4,7 @@
     {
         public ErrorType ErrorType { get; set; }
 
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
     }
     public enum ErrorType
     {

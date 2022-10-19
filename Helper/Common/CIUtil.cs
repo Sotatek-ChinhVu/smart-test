@@ -12,7 +12,47 @@ namespace Helper.Common
         private const int TAISHO_START_YEAR = 1912;
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
+        public static bool IsDigitsOnly(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
 
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        // 切捨て
+        public static double RoundDown(double x, int Factor)
+        {
+            Double dFactor;
+            Factor = Factor - 1;
+            dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+            else
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+        }
+
+        // 切り上げ
+
+        public static double RoundUp(double x, int Factor)
+        {
+            double dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+            else
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+        }
+        private static double IntPower(int baseValue, int exponent)
+        {
+            return Math.Pow(baseValue, exponent);
+        }
         public static string ToHalfsize(string value)
         {
             if (value == null)

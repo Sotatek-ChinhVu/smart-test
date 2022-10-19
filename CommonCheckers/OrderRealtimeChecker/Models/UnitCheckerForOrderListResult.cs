@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Enums;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {
@@ -28,6 +29,8 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
             CheckingOrderList = checkingOrderList;
             Sinday = sinday;
             PtId = ptId;
+            ErrorOrderList = new List<TOdrInf>();
+            ErrorInfo = string.Empty;
         }
     }
 }

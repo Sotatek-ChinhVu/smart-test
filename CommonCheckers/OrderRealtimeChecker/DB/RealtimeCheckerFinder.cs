@@ -697,7 +697,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         }
         #endregion
 
-        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<string> listItemCode, int level, List<PtAlrgyFood> listPtAlrgyFoods)
+        public List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<string> listItemCode, int level, List<PtAlrgyFoodModel> listPtAlrgyFoods)
         {
             List<FoodAllergyResultModel> result = new List<FoodAllergyResultModel>();
             var allergyFoodAsPatient = listPtAlrgyFoods ?? GetFoodAllergyByPtId(hpID, ptID, sinDate);
@@ -819,7 +819,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  select new AgeResultModel()
                  {
                      ItemCd = itemInfo.ItemCd,
-                     YjCd = itemInfo.YjCd,
+                     YjCd = itemInfo.YjCd ?? string.Empty,
                      TenpuLevel = ageCheck.TenpuLevel,
                      AttentionCmtCd = ageCheck.AttentionCmtCd,
                      WorkingMechanism = ageCheck.WorkingMechanism
@@ -870,7 +870,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  {
                      DiseaseType = 0,
                      ItemCd = itemMst.ItemCd,
-                     YjCd = itemMst.YjCd,
+                     YjCd = itemMst.YjCd ?? string.Empty,
                      TenpuLevel = contraindication.TenpuLevel,
                      ByotaiCd = contraindication.ByotaiCd,
                      CmtCd = contraindication.CmtCd,
@@ -939,7 +939,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                  {
                      DiseaseType = 2,
                      ItemCd = itemMst.ItemCd,
-                     YjCd = itemMst.YjCd,
+                     YjCd = itemMst.YjCd ?? string.Empty,
                      TenpuLevel = contraindication.TenpuLevel,
                      ByotaiCd = contraindication.ByotaiCd,
                      CmtCd = contraindication.CmtCd,
@@ -1085,8 +1085,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             m => new KinkiResultModel()
                             {
-                                AYjCd = addedOrderSubYjCode.YjCd,
-                                BYjCd = currentOrderSubYjCode.YjCd,
+                                AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
+                                BYjCd = currentOrderSubYjCode.YjCd ?? string.Empty,
                                 SubAYjCd = m.ACd,
                                 SubBYjCd = m.BCd,
                                 CommentCode = m.CmtCd,
@@ -1144,8 +1144,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             List<KinkiResultModel> result = new List<KinkiResultModel>();
             listChecked.ForEach((c) =>
             {
-                string addedYjCd = listYjCd.Where(y => y.ItemCd == c.ACd).Select(y => y.YjCd).FirstOrDefault();
-                string currentYjCd = listYjCd.Where(y => y.ItemCd == c.BCd).Select(y => y.YjCd).FirstOrDefault();
+                string addedYjCd = listYjCd.Where(y => y.ItemCd == c.ACd).Select(y => y.YjCd).FirstOrDefault() ?? string.Empty;
+                string currentYjCd = listYjCd.Where(y => y.ItemCd == c.BCd).Select(y => y.YjCd).FirstOrDefault() ?? string.Empty;
                 result.Add(new KinkiResultModel()
                 {
                     AYjCd = addedYjCd,
@@ -1156,7 +1156,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return result;
         }
 
-        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtherDrug> listPtOtherDrug)
+        public List<KinkiResultModel> CheckKinkiTain(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtherDrugModel> listPtOtherDrug)
         {
             List<string> listTainCode = new List<string>();
             if (listPtOtherDrug == null)
@@ -1164,7 +1164,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 var listPtOtherDrugModel = _tenantNoTrackingDataContext.PtOtherDrug
                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
-                    .Select(p => new PtOtherDrugModel(p))
+                    .Select(p => new PtOtherDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
                     .ToList();
 
                 listTainCode = listPtOtherDrugModel
@@ -1297,7 +1297,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtcDrug> listPtOtcDrug)
+        public List<KinkiResultModel> CheckKinkiOTC(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtOtcDrugModel> listPtOtcDrug)
         {
             List<int> listSerialNum = new List<int>();
             if (listPtOtcDrug == null)
@@ -1305,7 +1305,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 listSerialNum = _tenantNoTrackingDataContext.PtOtcDrug
                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
-                    .Select(p => new PtOtcDrugModel(p))
+                    .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
                     .Where(p => p.FullStartDate <= sinday && sinday <= p.FullEndDate)
                     .Select(p => p.SerialNum)
                     .ToList();
@@ -1387,7 +1387,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                             m => new KinkiResultModel()
                             {
                                 ItemCd = addedOrderItemCode,
-                                AYjCd = addedOrderSubYjCode.YjCd,
+                                AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
                                 BYjCd = oTCSerialNum.ToString(),
                                 SubAYjCd = m.ACd,
                                 SubBYjCd = m.BCd,
@@ -1428,7 +1428,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return filteredResultAsLevel;
         }
 
-        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtSupple> listPtSupple)
+        public List<KinkiResultModel> CheckKinkiSupple(int hpID, long ptId, int sinday, int level, List<string> addedOrderItemCodeList, List<PtSuppleModel> listPtSupple)
         {
             List<string> listIndexWord = new List<string>();
 
@@ -1437,8 +1437,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 listIndexWord = _tenantNoTrackingDataContext.PtSupples
                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
-                    .Select(p => new PtSuppleModel(p))
-                    .Where(p => p.FullStartDate <= sinday && sinday <= p.FullEndDate)
+                    .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt, p.IsDeleted))
+                    .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
                     .Select(p => p.IndexWord)
                     .ToList();
             }
@@ -1509,7 +1509,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         (
                             m => new KinkiResultModel()
                             {
-                                AYjCd = addedOrderSubYjCode.YjCd,
+                                AYjCd = addedOrderSubYjCode.YjCd ?? string.Empty,
                                 BYjCd = seibunInfo.IndexCd,
                                 SubAYjCd = m.ACd,
                                 SubBYjCd = m.BCd,
@@ -2472,10 +2472,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
     class SeibunInfo
     {
-        public string IndexWord { get; set; }
+        public string IndexWord { get; set; } = string.Empty;
 
-        public string SeibunCd { get; set; }
+        public string SeibunCd { get; set; } = string.Empty;
 
-        public string IndexCd { get; set; }
+        public string IndexCd { get; set; } = string.Empty;
     }
 }

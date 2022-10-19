@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Enums;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {

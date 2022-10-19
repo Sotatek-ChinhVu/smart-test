@@ -4,16 +4,16 @@
     {
         public long PtId { get; set; }
 
-        public string AlrgyKbn { get; set; }
+        public string AlrgyKbn { get; set; } = string.Empty;
 
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
-        public string TenpuLevel { get; set; }
+        public string TenpuLevel { get; set; } = string.Empty;
 
-        public string AttentionCmt { get; set; }
+        public string AttentionCmt { get; set; } = string.Empty;
 
-        public string WorkingMechanism { get; set; }
+        public string WorkingMechanism { get; set; } = string.Empty;
     }
 }

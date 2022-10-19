@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SpecialNote.ImportantNote
+﻿using Helper.Extension;
+
+namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtOtcDrugModel
     {
@@ -35,5 +37,40 @@
         public string Cmt { get; private set; }
 
         public int IsDeleted { get; private set; }
+        public int FullStartDate
+        {
+            get
+            {
+                if (StartDate.AsString().Count() == 8)
+                {
+                    //Format of StartDate is yyyymmdd
+                    return StartDate;
+                }
+                else
+                {
+                    //Format of StartDate is yyyymm
+                    //Need to convert to yyyymm01
+                    return StartDate * 100 + 1;
+                }
+            }
+        }
+
+        public int FullEndDate
+        {
+            get
+            {
+                if (EndDate.AsString().Count() == 8)
+                {
+                    //Format of EndDate is yyyymmdd
+                    return EndDate;
+                }
+                else
+                {
+                    //Format of EndDate is yyyymm
+                    //Need to convert to yyyymm31
+                    return EndDate * 100 + 31;
+                }
+            }
+        }
     }
 }

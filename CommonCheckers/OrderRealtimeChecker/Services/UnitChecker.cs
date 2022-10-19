@@ -2,6 +2,7 @@
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services.Interface;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {

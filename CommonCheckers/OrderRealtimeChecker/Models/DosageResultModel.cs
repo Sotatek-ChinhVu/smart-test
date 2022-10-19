@@ -2,17 +2,17 @@
 {
     public class DosageResultModel
     {
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
-        public string ItemName { get; set; }
+        public string ItemName { get; set; } = string.Empty;
 
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
         public double CurrentValue { get; set; }
 
         public double SuggestedValue { get; set; }
 
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
 
         public DosageLabelChecking LabelChecking { get; set; }
 

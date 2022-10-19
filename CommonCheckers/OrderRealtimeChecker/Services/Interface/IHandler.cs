@@ -1,4 +1,6 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
+﻿using CommonCheckers.OrderRealtimeChecker.Enums;
+using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services.Interface
 {

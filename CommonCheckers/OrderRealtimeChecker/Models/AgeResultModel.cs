@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿namespace CommonCheckers.OrderRealtimeChecker.Models
 {
     public class AgeResultModel
     {
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
-        public string YjCd { get; set; }
+        public string YjCd { get; set; } = string.Empty;
 
-        public string TenpuLevel { get; set; }
+        public string TenpuLevel { get; set; } = string.Empty;
 
-        public string AttentionCmtCd { get; set; }
+        public string AttentionCmtCd { get; set; } = string.Empty;
 
-        public string WorkingMechanism { get; set; }
+        public string WorkingMechanism { get; set; } = string.Empty;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Types;
 using System.Text;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services

@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SpecialNote.ImportantNote
+﻿using Helper.Extension;
+
+namespace Domain.Models.SpecialNote.ImportantNote
 {
     public class PtKioRekiModel
     {
@@ -35,5 +37,29 @@
         public string Cmt { get; private set; }
 
         public int IsDeleted { get; private set; }
+        public int FullStartDate
+        {
+            get
+            {
+                if (StartDate == 0) return 0;
+
+                int startDateLength = StartDate.AsString().Length;
+                if (startDateLength == 8)
+                {
+                    //Format of StartDate is yyyymmdd
+                    return StartDate;
+                }
+                else if (startDateLength == 6)
+                {
+                    //Format of StartDate is yyyymm
+                    //Need to convert to yyyymm01
+                    return StartDate * 100 + 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
     }
 }

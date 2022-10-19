@@ -2,10 +2,10 @@
 {
     public class DayLimitResultModel
     {
-        public string YjCd;
+        public string YjCd = string.Empty;
         public double UsingDay;
         public double LimitDay;
-        public string ItemName;
-        public string ItemCd;
+        public string ItemName = string.Empty;
+        public string ItemC = string.Empty;
     }
 }
