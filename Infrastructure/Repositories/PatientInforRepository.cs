@@ -1379,9 +1379,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in ptGrps)
             {
-                var info = databaseGrpInfs
-                   .Where(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GroupId)
-                   .FirstOrDefault();
+                var info = databaseGrpInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GroupId);
 
                 if (info != null && !string.IsNullOrEmpty(item.GroupCode))
                 {
