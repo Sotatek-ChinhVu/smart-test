@@ -1,17 +1,26 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.DB
-{
-    public class RealtimeCheckerFinder : EmrServiceProvider, IRealtimeCheckerFinder
-    {
-        public RealtimeCheckerFinder(DBContextFactory dbService) : base(dbService)
-        {
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.SpecialNote.ImportantNote;
+using Entity.Tenant;
+using Helper.Common;
+using Helper.Extension;
+using PostgreDataContext;
 
+namespace CommonCheckers.OrderRealtimeChecker.DB
+{
+    public class RealtimeCheckerFinder : IRealtimeCheckerFinder
+    {
+        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+
+        public RealtimeCheckerFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+        {
+            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
         }
 
         public Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<string> itemCdList, int sinDate)
         {
-            return dbService
-                .TenMstRepository
-                .FindListQueryableNoTrack(i => i.HpId == hpId && itemCdList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+            return _tenantNoTrackingDataContext
+                .TenMsts
+                .First(i => i.HpId == hpId && itemCdList.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                 .Select(t => new { t.ItemCd, t.YjCd })
                 .ToDictionary(t => t.ItemCd, t => t.YjCd);
         }
@@ -19,7 +28,7 @@
         public List<PtAlrgyFood> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate)
         {
             var listPtAlrgyFood =
-                dbService.PtAlrgyFoodRepository
+                _tenantNoTrackingDataContext.PtAlrgyFoodRepository
                 .FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
                 .AsEnumerable()
                 .Select(p => new PtAlrgyFoodModel(p))
@@ -35,7 +44,7 @@
 
         public List<PtAlrgyDrug> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate)
         {
-            var listPtAlrgyDrug = dbService.PtAlrgyDrugRepository
+            var listPtAlrgyDrug = _tenantNoTrackingDataContext.PtAlrgyDrugRepository
                 .FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId && p.IsDeleted != 1)
                 .AsEnumerable()
                 .Select(p => new PtAlrgyDrugModel(p))
@@ -51,12 +60,12 @@
 
         public PtInf GetPatientInfo(int hpId, long ptId)
         {
-            return dbService.PatientInfoRepository.FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0).FirstOrDefault();
+            return _tenantNoTrackingDataContext.PatientInfoRepository.FindListQueryableNoTrack(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete == 0).FirstOrDefault();
         }
 
         public KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode)
         {
-            return dbService.KensaInfDetailRepository
+            return _tenantNoTrackingDataContext.KensaInfDetailRepository
                 .FindListQueryableNoTrack(k => k.HpId == hpId && k.PtId == ptId && k.IraiDate <= sinday && k.KensaItemCd == kensaItemCode && !string.IsNullOrEmpty(k.ResultVal))
                 .OrderByDescending(k => k.IraiDate).FirstOrDefault();
         }
@@ -69,7 +78,7 @@
             CIUtil.SDateToDecodeAge(birthDay, sinday, ref ageY, ref ageM, ref ageD);
 
             int sinYear = sinday / 10000;
-            return dbService.PhysicalAverageRepository
+            return _tenantNoTrackingDataContext.PhysicalAverageRepository
                 .FindListQueryableNoTrack
                 (
                     p =>
@@ -86,7 +95,7 @@
 
         private IQueryable<M56ExIngrdtMain> GetDrugTypeInfo(int haigouSetting)
         {
-            return dbService.M56ExIngrdtMainRepository.FindListQueryableNoTrack
+            return _tenantNoTrackingDataContext.M56ExIngrdtMainRepository.FindListQueryableNoTrack
                                                                             (
                                                                                 i => haigouSetting == 0 ||
                                                                                      haigouSetting == 1 && (i.HaigouFlg != "1" || i.YuekiFlg != "1") ||
@@ -101,7 +110,7 @@
         {
             bool IsNoMasterData()
             {
-                return dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack().Count() == 0;
+                return _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack().Count() == 0;
             }
             Stopwatch stopWatch = Stopwatch.StartNew();
 
@@ -111,8 +120,8 @@
             if (!IsNoMasterData())
             {
                 var listDrugAllergyAsPatientInfo =
-                    (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                     join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
+                    (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                     join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
                      select new
                      {
@@ -122,8 +131,8 @@
                      }).ToList();
 
                 var listCheckingDrugInfo =
-                    (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                     join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
+                    (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                     join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1 || i.Sbt == 2 && i.TenkabutuCheck == "1")
                      on drugMst.YjCd equals componentInfo.YjCd
                      select new
                      {
@@ -186,10 +195,10 @@
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugPro in dbService.M56ProdrugCdRepository.FindListQueryableNoTrack()
+                 join drugPro in _tenantNoTrackingDataContext.M56ProdrugCdRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -203,10 +212,10 @@
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0")  //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugPro in dbService.M56ProdrugCdRepository.FindListQueryableNoTrack()
+                 join drugPro in _tenantNoTrackingDataContext.M56ProdrugCdRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -257,10 +266,10 @@
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugAnalogue in dbService.M56ExAnalogueRepository.FindListQueryableNoTrack()
+                 join drugAnalogue in _tenantNoTrackingDataContext.M56ExAnalogueRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -274,10 +283,10 @@
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
-                 join drugAnalogue in dbService.M56ExAnalogueRepository.FindListQueryableNoTrack()
+                 join drugAnalogue in _tenantNoTrackingDataContext.M56ExAnalogueRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -328,10 +337,10 @@
             List<string> listDrugAllergyAsPatientCode = listComparedItemCode;
 
             var listCheckingDrugInfo =
-                 (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                  join componentInfo in dbService.M56AlrgyDerivativesRepository.FindListQueryableNoTrack()
+                 (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                  join componentInfo in _tenantNoTrackingDataContext.M56AlrgyDerivativesRepository.FindListQueryableNoTrack()
                   on drugMst.YjCd equals componentInfo.YjCd
-                  join drvalrgyCode in dbService.M56DrvalrgyCodeRepository.FindListQueryableNoTrack()
+                  join drvalrgyCode in _tenantNoTrackingDataContext.M56DrvalrgyCodeRepository.FindListQueryableNoTrack()
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
                   select new
                   {
@@ -343,10 +352,10 @@
                   }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                 (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                  join componentInfo in dbService.M56AlrgyDerivativesRepository.FindListQueryableNoTrack()
+                 (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listDrugAllergyAsPatientCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                  join componentInfo in _tenantNoTrackingDataContext.M56AlrgyDerivativesRepository.FindListQueryableNoTrack()
                   on drugMst.YjCd equals componentInfo.YjCd
-                  join drvalrgyCode in dbService.M56DrvalrgyCodeRepository.FindListQueryableNoTrack()
+                  join drvalrgyCode in _tenantNoTrackingDataContext.M56DrvalrgyCodeRepository.FindListQueryableNoTrack()
                   on componentInfo.DrvalrgyCd equals drvalrgyCode.DrvalrgyCd
                   select new
                   {
@@ -397,8 +406,8 @@
             List<DrugAllergyResultModel> checkedResult = new List<DrugAllergyResultModel>();
 
             var listDrugAllergyAsPatientInfo =
-                    (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                     join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1)
+                    (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                     join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1)
                      on drugMst.YjCd equals componentInfo.YjCd
                      join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                      on drugMst.YjCd equals drugTypeInfo.YjCd
@@ -415,8 +424,8 @@
                      }).ToList();
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1)
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.Sbt == 1)
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
@@ -485,12 +494,12 @@
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join drugPro in dbService.M56ProdrugCdRepository.FindListQueryableNoTrack()
+                 join drugPro in _tenantNoTrackingDataContext.M56ProdrugCdRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -509,12 +518,12 @@
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => !string.IsNullOrEmpty(i.ProdrugCheck) && i.ProdrugCheck != "0") //Filter ProDrug >= 1
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join drugPro in dbService.M56ProdrugCdRepository.FindListQueryableNoTrack()
+                 join drugPro in _tenantNoTrackingDataContext.M56ProdrugCdRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugPro.SeibunCd
                  select new
                  {
@@ -570,12 +579,12 @@
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join drugAnalogue in dbService.M56ExAnalogueRepository.FindListQueryableNoTrack()
+                 join drugAnalogue in _tenantNoTrackingDataContext.M56ExAnalogueRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -594,12 +603,12 @@
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join componentInfo in dbService.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join componentInfo in _tenantNoTrackingDataContext.M56ExEdIngredientsRepository.FindListQueryableNoTrack(i => i.AnalogueCheck == "1")
                  on drugMst.YjCd equals componentInfo.YjCd
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join drugAnalogue in dbService.M56ExAnalogueRepository.FindListQueryableNoTrack()
+                 join drugAnalogue in _tenantNoTrackingDataContext.M56ExAnalogueRepository.FindListQueryableNoTrack()
                  on componentInfo.SeibunCd equals drugAnalogue.SeibunCd
                  select new
                  {
@@ -655,12 +664,12 @@
             List<DrugAllergyResultModel> result = new List<DrugAllergyResultModel>();
 
             var listCheckingDrugInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join yjDrugClass in dbService.M56YjDrugClassRepository.FindListQueryableNoTrack()
+                 join yjDrugClass in _tenantNoTrackingDataContext.M56YjDrugClassRepository.FindListQueryableNoTrack()
                  on drugMst.YjCd equals yjDrugClass.YjCd
-                 join drugClass in dbService.M56DrugClassRepository.FindListQueryableNoTrack(d => d.ClassDuplication == "1")
+                 join drugClass in _tenantNoTrackingDataContext.M56DrugClassRepository.FindListQueryableNoTrack(d => d.ClassDuplication == "1")
                  on yjDrugClass.ClassCd equals drugClass.ClassCd
                  select new
                  {
@@ -675,12 +684,12 @@
                  }).ToList();
 
             var listDrugAllergyAsPatientInfo =
-                (from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                (from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listComparedItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
                  join drugTypeInfo in GetDrugTypeInfo(haigouSetting)
                  on drugMst.YjCd equals drugTypeInfo.YjCd
-                 join yjDrugClass in dbService.M56YjDrugClassRepository.FindListQueryableNoTrack()
+                 join yjDrugClass in _tenantNoTrackingDataContext.M56YjDrugClassRepository.FindListQueryableNoTrack()
                  on drugMst.YjCd equals yjDrugClass.YjCd
-                 join drugClass in dbService.M56DrugClassRepository.FindListQueryableNoTrack(d => d.ClassDuplication == "1")
+                 join drugClass in _tenantNoTrackingDataContext.M56DrugClassRepository.FindListQueryableNoTrack(d => d.ClassDuplication == "1")
                  on yjDrugClass.ClassCd equals drugClass.ClassCd
                  select new
                  {
@@ -732,7 +741,7 @@
 
             List<string> listAlrgyKbn = allergyFoodAsPatient.Where(a => a.AlrgyKbn != null).Select(a => a.AlrgyKbn).ToList();
             var checkedResult =
-                dbService.M12FoodAlrgyRepository.
+                _tenantNoTrackingDataContext.M12FoodAlrgyRepository.
                 FindListQueryableNoTrack(c => listItemCode.Contains(c.KikinCd) && listAlrgyKbn.Contains(c.FoodKbn))
                 .Select(c => new
                 {
@@ -839,8 +848,8 @@
                 }
 
                 checkedResult =
-                (from itemInfo in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
-                 join ageCheck in dbService.M14AgeCheckRepository.FindListQueryableNoTrack
+                (from itemInfo in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                 join ageCheck in _tenantNoTrackingDataContext.M14AgeCheckRepository.FindListQueryableNoTrack
                  (
                      m =>
                      listSettingLevel.Contains(m.TenpuLevel) &&
@@ -862,8 +871,8 @@
             else
             {
                 checkedResult =
-                (from itemInfo in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
-                 join ageCheck in dbService.M14AgeCheckRepository.FindListQueryableNoTrack
+                (from itemInfo in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                 join ageCheck in _tenantNoTrackingDataContext.M14AgeCheckRepository.FindListQueryableNoTrack
                  (
                      m =>
                      listSettingLevel.Contains(m.TenpuLevel) &&
@@ -895,14 +904,14 @@
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             List<string> listBYCode =
-                dbService.M42ContraindiDisConRepository
+                _tenantNoTrackingDataContext.M42ContraindiDisConRepository
                 .FindListNoTrack(m => listDiseaseCode.Contains(m.ReceCd))
                 .Select(m => m.ByotaiCd)
                 .ToList();
 
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
-                 join contraindication in dbService.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && listBYCode.Contains(c.ByotaiCd) && (string.IsNullOrEmpty(c.KioCd) || c.KioCd == "1") && (string.IsNullOrEmpty(c.FamilyCd) || c.FamilyCd == "1"))
+                (from itemMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinDate && sinDate <= i.EndDate)
+                 join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && listBYCode.Contains(c.ByotaiCd) && (string.IsNullOrEmpty(c.KioCd) || c.KioCd == "1") && (string.IsNullOrEmpty(c.FamilyCd) || c.FamilyCd == "1"))
                  on itemMst.YjCd equals contraindication.YjCd
                  select new DiseaseResultModel()
                  {
@@ -933,7 +942,7 @@
             }
             else
             {
-                listByomeiCd = dbService.PtKioRekiRepository
+                listByomeiCd = _tenantNoTrackingDataContext.PtKioRekiRepository
                     .FindListQueryableNoTrack(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && !string.IsNullOrEmpty(p.ByomeiCd))
                     .AsEnumerable()
                     .Select(p => new PtKioRekiModel(p))
@@ -943,10 +952,10 @@
             }
 
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
-                 join contraindication in dbService.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && (c.KioCd == "1" || c.KioCd == "2"))
+                (from itemMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                 join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && (c.KioCd == "1" || c.KioCd == "2"))
                  on itemMst.YjCd equals contraindication.YjCd
-                 join contraindiDisCon in dbService.M42ContraindiDisConRepository.FindListQueryableNoTrack(c => listByomeiCd.Contains(c.ReceCd))
+                 join contraindiDisCon in _tenantNoTrackingDataContext.M42ContraindiDisConRepository.FindListQueryableNoTrack(c => listByomeiCd.Contains(c.ReceCd))
                  on contraindication.ByotaiCd equals contraindiDisCon.ByotaiCd
                  select new DiseaseResultModel()
                  {
@@ -970,14 +979,14 @@
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             List<DiseaseResultModel> checkedResult =
-                (from itemMst in dbService.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
-                 join contraindication in dbService.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && (c.FamilyCd == "1" || c.FamilyCd == "2"))
+                (from itemMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(i => listItemCode.Contains(i.ItemCd) && i.StartDate <= sinday && sinday <= i.EndDate)
+                 join contraindication in _tenantNoTrackingDataContext.M42ContraindiDrugMainExRepository.FindListQueryableNoTrack(c => c.TenpuLevel <= level && (c.FamilyCd == "1" || c.FamilyCd == "2"))
                  on itemMst.YjCd equals contraindication.YjCd
-                 join contraindiDisCon in dbService.M42ContraindiDisConRepository.FindListQueryableNoTrack()
+                 join contraindiDisCon in _tenantNoTrackingDataContext.M42ContraindiDisConRepository.FindListQueryableNoTrack()
                  on contraindication.ByotaiCd equals contraindiDisCon.ByotaiCd
-                 join historyDisease in dbService.PtFamilyRekiRepository.FindListQueryableNoTrack(p => p.HpId == hpID && p.IsDeleted == 0)
+                 join historyDisease in _tenantNoTrackingDataContext.PtFamilyRekiRepository.FindListQueryableNoTrack(p => p.HpId == hpID && p.IsDeleted == 0)
                  on contraindiDisCon.ReceCd equals historyDisease.ByomeiCd
-                 join familyInfo in dbService.PtFamilyRepository.FindListQueryableNoTrack(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && p.ZokugaraCd != "OT")
+                 join familyInfo in _tenantNoTrackingDataContext.PtFamilyRepository.FindListQueryableNoTrack(p => p.HpId == hpID && p.PtId == ptID && p.IsDeleted == 0 && p.ZokugaraCd != "OT")
                  on historyDisease.FamilyId equals familyInfo.FamilyId
                  select new DiseaseResultModel()
                  {
@@ -1000,7 +1009,7 @@
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            var listCurrentOrderSubYjCode = dbService.TenMstRepository
+            var listCurrentOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => listCurrentOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1014,7 +1023,7 @@
                 })
                 .ToList();
 
-            var listAddedOrderSubYjCode = dbService.TenMstRepository
+            var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => listAddedOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1039,7 +1048,7 @@
             var listCurrentOrderSubYj8Code = listCurrentOrderSubYjCode.Select(o => o.YjCd8).ToList();
             var listCurrentOrderSubYj9Code = listCurrentOrderSubYjCode.Select(o => o.YjCd9).ToList();
             var listCurrentOrderSubYj12Code = listCurrentOrderSubYjCode.Select(o => o.YjCd12).ToList();
-            var filteredMasterData = dbService.M01KinkiRepository
+            var filteredMasterData = _tenantNoTrackingDataContext.M01KinkiRepository
                         .FindListQueryableNoTrack
                         (
                             k =>
@@ -1175,7 +1184,7 @@
         public List<KinkiResultModel> CheckKinkiUser(int hpID, int level, int sinday, List<string> listCurrentOrderCode, List<string> listAddedOrderCode)
         {
             if (level <= 0) return new List<KinkiResultModel>();
-            var listYjCd = dbService.TenMstRepository
+            var listYjCd = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => (listCurrentOrderCode.Contains(m.ItemCd) || listAddedOrderCode.Contains(m.ItemCd)) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1184,7 +1193,7 @@
                 }
                 );
 
-            var listChecked = dbService.KinkiMstRepository.FindListQueryableNoTrack(k => k.HpId == hpID &&
+            var listChecked = _tenantNoTrackingDataContext.KinkiMstRepository.FindListQueryableNoTrack(k => k.HpId == hpID &&
                                                                                          k.IsDeleted == 0 &&
                                                                                          (
                                                                                               listCurrentOrderCode.Contains(k.ACd) && listAddedOrderCode.Contains(k.BCd) ||
@@ -1214,7 +1223,7 @@
             List<string> listTainCode = new List<string>();
             if (listPtOtherDrug == null)
             {
-                var listPtOtherDrugModel = dbService.PtOtherDrugRepository
+                var listPtOtherDrugModel = _tenantNoTrackingDataContext.PtOtherDrugRepository
                     .FindListQueryableNoTrack(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
                     .Select(p => new PtOtherDrugModel(p))
@@ -1230,7 +1239,7 @@
                 listTainCode = listPtOtherDrug.Select(t => t.ItemCd).ToList();
             }
 
-            var listCurrentOrderSubYjCode = dbService.TenMstRepository
+            var listCurrentOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => listTainCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1244,7 +1253,7 @@
                 })
                 .ToList();
 
-            var listAddedOrderSubYjCode = dbService.TenMstRepository
+            var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1277,7 +1286,7 @@
                     }
 
                     var checkedResult =
-                        dbService.M01KinkiRepository
+                        _tenantNoTrackingDataContext.M01KinkiRepository
                         .FindListNoTrack
                         (
                             k =>
@@ -1359,7 +1368,7 @@
             List<int> listSerialNum = new List<int>();
             if (listPtOtcDrug == null)
             {
-                listSerialNum = dbService.PtOtcDrugRepository
+                listSerialNum = _tenantNoTrackingDataContext.PtOtcDrugRepository
                     .FindListQueryableNoTrack(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
                     .Select(p => new PtOtcDrugModel(p))
@@ -1372,7 +1381,7 @@
                 listSerialNum = listPtOtcDrug.Select(t => t.SerialNum).ToList();
             }
 
-            var listSubOTCCode = dbService.M38IngredientsRepository
+            var listSubOTCCode = _tenantNoTrackingDataContext.M38IngredientsRepository
                 .FindListQueryableNoTrack(m => listSerialNum.Contains(m.SerialNum))
                 .Select(m => new
                 {
@@ -1383,7 +1392,7 @@
                 })
                 .ToList();
 
-            var listAddedOrderSubYjCode = dbService.TenMstRepository
+            var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1411,7 +1420,7 @@
                 {
                     List<string> subOTCCode = listSubOTCCode.Where(s => s.SerialNum == oTCSerialNum).Select(s => s.Otc7).ToList();
                     var checkedResult =
-                        dbService.M01KinkiRepository
+                        _tenantNoTrackingDataContext.M01KinkiRepository
                         .FindListNoTrack
                         (
                             k =>
@@ -1495,7 +1504,7 @@
 
             if (listPtSupple == null)
             {
-                listIndexWord = dbService.PtSuppleRepository
+                listIndexWord = _tenantNoTrackingDataContext.PtSuppleRepository
                     .FindListQueryableNoTrack(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
                     .Select(p => new PtSuppleModel(p))
@@ -1511,8 +1520,8 @@
 
             List<SeibunInfo> listSeibunInfo =
                     (
-                        from indexdef in dbService.M41SuppleIndexdefRepository.FindListQueryableNoTrack(s => listIndexWord.Contains(s.IndexWord))
-                        join indexCode in dbService.M41SuppleIndexcodeRepository.FindListQueryableNoTrack()
+                        from indexdef in _tenantNoTrackingDataContext.M41SuppleIndexdefRepository.FindListQueryableNoTrack(s => listIndexWord.Contains(s.IndexWord))
+                        join indexCode in _tenantNoTrackingDataContext.M41SuppleIndexcodeRepository.FindListQueryableNoTrack()
                         on indexdef.SeibunCd equals indexCode.IndexCd
                         select new SeibunInfo
                         {
@@ -1522,7 +1531,7 @@
                         }
                     ).ToList();
 
-            var listAddedOrderSubYjCode = dbService.TenMstRepository
+            var listAddedOrderSubYjCode = _tenantNoTrackingDataContext.TenMstRepository
                 .FindListQueryableNoTrack(m => addedOrderItemCodeList.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
                 .Select(m => new
                 {
@@ -1550,7 +1559,7 @@
                 {
                     string seibunCd = seibunInfo.SeibunCd;
                     var checkedResult =
-                        dbService.M01KinkiRepository
+                        _tenantNoTrackingDataContext.M01KinkiRepository
                         .FindListNoTrack
                         (
                             k =>
@@ -1659,10 +1668,10 @@
 
             var listDosageInfoByUser =
                 (
-                    from tenMst in dbService.TenMstRepository.FindListQueryableNoTrack(t => listDrugCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
-                    join dosageDrug in dbService.DosageDrugRepository.FindListQueryableNoTrack(d => d.RikikaUnit != null)
+                    from tenMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(t => listDrugCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
+                    join dosageDrug in _tenantNoTrackingDataContext.DosageDrugRepository.FindListQueryableNoTrack(d => d.RikikaUnit != null)
                     on tenMst.YjCd equals dosageDrug.YjCd
-                    join dosageDMst in dbService.DosageMstRepository.FindListQueryableNoTrack(d => d.IsDeleted == 0)
+                    join dosageDMst in _tenantNoTrackingDataContext.DosageMstRepository.FindListQueryableNoTrack(d => d.IsDeleted == 0)
                     on tenMst.ItemCd equals dosageDMst.ItemCd
                     select new
                     {
@@ -1910,10 +1919,10 @@
             List<string> listRestCode = listDrugCode.Where(d => !listCheckedCode.Contains(d)).ToList();
 
             var listDosageInfo =
-                (from tenMst in dbService.TenMstRepository.FindListQueryableNoTrack(t => listRestCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
-                 join dosageDrug in dbService.DosageDrugRepository.FindListQueryableNoTrack(d => d.RikikaUnit != null)
+                (from tenMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(t => listRestCode.Contains(t.ItemCd) && t.StartDate <= sinday && sinday <= t.EndDate)
+                 join dosageDrug in _tenantNoTrackingDataContext.DosageDrugRepository.FindListQueryableNoTrack(d => d.RikikaUnit != null)
                  on tenMst.YjCd equals dosageDrug.YjCd
-                 join dosageDosage in dbService.DosageDosageRepository.FindListQueryableNoTrack(d => string.IsNullOrEmpty(d.KyugenCd)
+                 join dosageDosage in _tenantNoTrackingDataContext.DosageDosageRepository.FindListQueryableNoTrack(d => string.IsNullOrEmpty(d.KyugenCd)
                                                                                                      && d.DosageCheckFlg == "1"
                                                                                                      && (string.IsNullOrEmpty(d.AgeCd) || (d.AgeOver <= age && d.AgeUnder > age) || (d.AgeOver == 0 && d.AgeUnder == 0))
                                                                                                      && ((d.WeightOver <= weight && d.WeightUnder > weight) || (d.WeightOver == 0 && d.WeightUnder == 0))
@@ -2318,8 +2327,8 @@
         {
             var dayLimitInfoByUser =
                (
-                   from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(m => listAddedOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
-                   join dayLimit in dbService.DrugDayLimitRepository.FindListQueryableNoTrack(d => 0 < d.LimitDay &&
+                   from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(m => listAddedOrderCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                   join dayLimit in _tenantNoTrackingDataContext.DrugDayLimitRepository.FindListQueryableNoTrack(d => 0 < d.LimitDay &&
                                                                                                    d.LimitDay < 999 &&
                                                                                                    d.StartDate <= sinday &&
                                                                                                    sinday <= d.EndDate &&
@@ -2341,8 +2350,8 @@
 
             var dayLimitInfo =
                 (
-                from drugMst in dbService.TenMstRepository.FindListQueryableNoTrack(m => listRestedItemCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
-                join dayLimit in dbService.M10DayLimitRepository.FindListQueryableNoTrack(d => 0 < d.LimitDay && d.LimitDay < 999)
+                from drugMst in _tenantNoTrackingDataContext.TenMstRepository.FindListQueryableNoTrack(m => listRestedItemCode.Contains(m.ItemCd) && m.StartDate <= sinday && sinday <= m.EndDate)
+                join dayLimit in _tenantNoTrackingDataContext.M10DayLimitRepository.FindListQueryableNoTrack(d => 0 < d.LimitDay && d.LimitDay < 999)
                 on drugMst.YjCd equals dayLimit.YjCd
                 select new
                 {

@@ -1,5 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
-
+using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
