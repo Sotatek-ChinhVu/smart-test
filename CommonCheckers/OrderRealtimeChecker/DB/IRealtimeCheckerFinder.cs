@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.SpecialNote.ImportantNote;
 using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
@@ -7,7 +8,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
     {
         Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<string> itemCdList, int sinDate);
 
-        List<PtAlrgyFood> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate);
+        List<PtAlrgyFoodModel> GetFoodAllergyByPtId(int hpId, long ptId, int sinDate);
 
         List<PtAlrgyDrug> GetDrugAllergyByPtId(int hpId, long ptId, int sinDate);
 
