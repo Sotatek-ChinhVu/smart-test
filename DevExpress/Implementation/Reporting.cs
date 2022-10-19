@@ -326,7 +326,6 @@ public class Reporting : IReporting
 
     }
 
-
     private List<RichTextKarteOrder> ConvertToRichTextKarteOrder(List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, Karte2ExportInput inputData)
     {
         StringBuilder text_karte;
@@ -427,8 +426,7 @@ public class Reporting : IReporting
             text_order.Append(orderRaiinTitle);
             text_order.Append("）</span><br>");
 
-
-            if (karte_order.HokenGroups.Any())
+            if (karte_order.HokenGroups.Any() && inputData.IsCheckedHideOrder)
             {
                 foreach (var group in karte_order.HokenGroups.Where(hoken_group => hoken_group.GroupOdrItems.Count > 0).SelectMany(hoken_group => hoken_group.GroupOdrItems))
                 {
@@ -457,7 +455,7 @@ public class Reporting : IReporting
                                 }
                                 text_order.Append("</span>");
 
-                                if (rp.RpName != string.Empty)
+                                if (rp.RpName != string.Empty && inputData.IsCheckedSetName)
                                 {
                                     text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;【");
                                     text_order.Append(rp.RpName);
