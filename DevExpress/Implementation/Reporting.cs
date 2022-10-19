@@ -426,7 +426,7 @@ public class Reporting : IReporting
             text_order.Append(orderRaiinTitle);
             text_order.Append("）</span><br>");
 
-            if (karte_order.HokenGroups.Any() && inputData.IsCheckedHideOrder)
+            if (karte_order.HokenGroups.Any() && !inputData.IsCheckedHideOrder)
             {
                 foreach (var group in karte_order.HokenGroups.Where(hoken_group => hoken_group.GroupOdrItems.Count > 0).SelectMany(hoken_group => hoken_group.GroupOdrItems))
                 {
