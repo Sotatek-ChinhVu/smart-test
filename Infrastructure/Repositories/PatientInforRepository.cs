@@ -1939,9 +1939,6 @@ namespace Infrastructure.Repositories
                             });
                         }
                     }
-
-                    if (hokenPartternUpdate != null)
-                        _tenantTrackingDataContext.PtHokenPatterns.Update(hokenPartternUpdate);
                 }
                 else //Add Entity
                 {
@@ -2224,7 +2221,6 @@ namespace Infrastructure.Repositories
             foreach (var deleteItem in deleteList) //Removes
             {
                 deleteItem.IsDeleted = 1;
-                _tenantTrackingDataContext.PtHokenChecks.Update(deleteItem);
             }
 
             foreach (var createItem in savingList.Where(c => c.SeqNo == 0)) // Add new
@@ -2253,7 +2249,6 @@ namespace Infrastructure.Repositories
                     modelUpdate.CheckCmt = updateItem.CheckComment;
                     modelUpdate.CreateId = actUserId;
                     modelUpdate.UpdateDate = DateTime.UtcNow;
-                    _tenantTrackingDataContext.PtHokenChecks.Update(modelUpdate);
                 }
             }
             return Task.CompletedTask;
