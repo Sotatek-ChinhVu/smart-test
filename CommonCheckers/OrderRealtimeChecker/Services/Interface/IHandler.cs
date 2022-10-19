@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services.Interface
 {
-    internal class IHandler
+    public interface IHandler<TOdrInf, TOdrDetail>
+        where TOdrInf : class, IOdrInfModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfDetailModel
     {
+        ActionResultType ShowOrderErrorInfo(List<UnitCheckInfoModel> listError, bool allowEditOrder);
+
+        ActionResultType ShowOrderErrorInfo(UnitCheckerResult<TOdrInf, TOdrDetail> error);
+
+        TOdrInf EditOrder(TOdrInf currentOrder);
     }
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services.Interface
 {
-    internal class IUnitChecker
+    public interface IUnitChecker<TOdrInf, TOdrDetail>
+        where TOdrInf : class, IOdrInfModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfDetailModel
     {
+        UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult);
     }
 }

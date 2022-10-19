@@ -1,5 +1,6 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
 
+
 namespace CommonCheckers.OrderRealtimeChecker.DB
 {
     public interface IRealtimeCheckerFinder

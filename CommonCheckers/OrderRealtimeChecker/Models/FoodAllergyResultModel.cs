@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    internal class FoodAllergyResultModel
+    public class FoodAllergyResultModel
     {
+        public long PtId { get; set; }
+
+        public string AlrgyKbn { get; set; }
+
+        public string ItemCd { get; set; }
+
+        public string YjCd { get; set; }
+
+        public string TenpuLevel { get; set; }
+
+        public string AttentionCmt { get; set; }
+
+        public string WorkingMechanism { get; set; }
     }
 }

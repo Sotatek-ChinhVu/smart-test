@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommonCheckers.OrderRealtimeChecker.Enums;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    internal class UnitCheckInfoModel
+    public class UnitCheckInfoModel
     {
+        public RealtimeCheckerType CheckerType { get; set; }
+
+        public int Sinday { get; set; }
+
+        public long PtId { get; set; }
+
+        public bool IsError { get; set; }
+
+        public object ErrorInfo { get; set; }
     }
 }

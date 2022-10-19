@@ -1,12 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CommonCheckers.OrderRealtimeChecker.Models
+﻿namespace CommonCheckers.OrderRealtimeChecker.Models
 {
-    internal class InvalidDataOrder
+    public class InvalidDataOrder
     {
+        public ErrorType ErrorType { get; set; }
+
+        public string ItemName { get; set; }
+    }
+    public enum ErrorType
+    {
+        Expired = 1,
+        Quantity = 2,
+        QuantityLimit = 3,
+        Usage = 4,
+        InjectionUsage = 5,
+        BukantuItem = 6,
+        RefillQuantityLimit = 7,
     }
 }
