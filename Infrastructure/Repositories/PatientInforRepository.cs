@@ -1221,9 +1221,8 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            int modified = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).Count();
-            int added = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added).Count();
-            if ((modified + added) == 0 && resultCreatePatient == true)
+            int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added).Count();
+            if (changeDatas == 0 && resultCreatePatient == true)
                 return true;
 
             return _tenantTrackingDataContext.SaveChanges() > 0;
