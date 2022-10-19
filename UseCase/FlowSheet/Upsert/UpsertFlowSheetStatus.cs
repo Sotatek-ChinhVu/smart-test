@@ -9,9 +9,6 @@ public enum UpsertFlowSheetStatus
     PtIdNoValid,
     SinDateNoValid,
     TagNoNoValid,
-    CmtKbnNoValid,
-    RainListCmtSeqNoNoValid,
-    RainListTagSeqNoNoValid,
     PtIdNoExist,
     RaiinNoExist
 }
