@@ -19,6 +19,10 @@ namespace Infrastructure.Repositories
         private readonly string shinItemCd = "@SHIN";
         private readonly string shinItemName = "診察料基本点数算定用";
         private readonly string jikanItemName = "時間外算定用";
+        private readonly int jikanRow = 2;
+        private readonly int shinRow = 1;
+        private readonly int rpEdaNoDefault = 1;
+        private readonly int daysCntDefalt = 1;
 
         public TodayOdrRepository(ITenantProvider tenantProvider)
         {
@@ -121,14 +125,15 @@ namespace Infrastructure.Repositories
                         HpId = hpId,
                         RaiinNo = raiinNo,
                         RpNo = oldHeaderInfModel.RpNo,
-                        RpEdaNo = oldHeaderInfModel.RpEdaNo + 1,
+                        RpEdaNo = oldHeaderInfModel.RpEdaNo,
                         PtId = ptId,
                         SinDate = sinDate,
                         HokenPid = hokenPid,
                         OdrKouiKbn = headerOdrKouiKbn,
                         CreateDate = DateTime.UtcNow,
                         CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
+                        CreateMachine = TempIdentity.ComputerName,
+                        DaysCnt = daysCntDefalt
                     };
 
                     var odrSyosaiKionDetail = new OdrInfDetail
@@ -137,7 +142,7 @@ namespace Infrastructure.Repositories
                         RaiinNo = raiinNo,
                         RpNo = newHeaderInf.RpNo,
                         RpEdaNo = newHeaderInf.RpEdaNo,
-                        RowNo = 1,
+                        RowNo = shinRow,
                         PtId = ptId,
                         SinDate = sinDate,
                         SinKouiKbn = headerOdrKouiKbn,
@@ -152,7 +157,7 @@ namespace Infrastructure.Repositories
                         RaiinNo = raiinNo,
                         RpNo = newHeaderInf.RpNo,
                         RpEdaNo = newHeaderInf.RpEdaNo,
-                        RowNo = 2,
+                        RowNo = jikanRow,
                         PtId = ptId,
                         SinDate = sinDate,
                         SinKouiKbn = headerOdrKouiKbn,
@@ -173,14 +178,16 @@ namespace Infrastructure.Repositories
                     HpId = hpId,
                     RaiinNo = raiinNo,
                     RpNo = rpNoMax++,
-                    RpEdaNo = 1,
+                    RpEdaNo = rpEdaNoDefault,
                     PtId = ptId,
                     SinDate = sinDate,
                     HokenPid = hokenPid,
                     OdrKouiKbn = headerOdrKouiKbn,
                     CreateDate = DateTime.UtcNow,
                     CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    CreateMachine = TempIdentity.ComputerName,
+                    DaysCnt = daysCntDefalt
+
                 };
 
                 var odrSyosaiKionDetail = new OdrInfDetail
@@ -188,8 +195,8 @@ namespace Infrastructure.Repositories
                     HpId = hpId,
                     RaiinNo = raiinNo,
                     RpNo = newHeaderInf.RpNo,
-                    RpEdaNo = 1,
-                    RowNo = 1,
+                    RpEdaNo = rpEdaNoDefault,
+                    RowNo = shinRow,
                     PtId = ptId,
                     SinDate = sinDate,
                     SinKouiKbn = headerOdrKouiKbn,
@@ -203,8 +210,8 @@ namespace Infrastructure.Repositories
                     HpId = hpId,
                     RaiinNo = raiinNo,
                     RpNo = newHeaderInf.RpNo,
-                    RpEdaNo = 1,
-                    RowNo = 2,
+                    RpEdaNo = rpEdaNoDefault,
+                    RowNo = jikanRow,
                     PtId = ptId,
                     SinDate = sinDate,
                     SinKouiKbn = headerOdrKouiKbn,
