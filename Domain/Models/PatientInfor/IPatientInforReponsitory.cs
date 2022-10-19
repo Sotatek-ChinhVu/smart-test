@@ -1,4 +1,5 @@
-﻿using Domain.Models.GroupInf;
+﻿using Domain.Models.CalculationInf;
+using Domain.Models.GroupInf;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Helper.Constants;
@@ -35,9 +36,9 @@ namespace Domain.Models.PatientInfor
 
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
-        bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
         
-        bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
         bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
     }
 }

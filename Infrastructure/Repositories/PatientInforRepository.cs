@@ -15,6 +15,7 @@ using Domain.Models.Insurance;
 using System.Collections.Generic;
 using Amazon.Auth.AccessControlPolicy;
 using System.Linq.Expressions;
+using Domain.Models.CalculationInf;
 
 namespace Infrastructure.Repositories
 {
@@ -898,7 +899,7 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
-        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -926,7 +927,7 @@ namespace Infrastructure.Repositories
 
             if (ptSanteis != null && ptSanteis.Any())
             {
-                var ptSanteiInserts = Mapper.Map<PtInfSanteiConfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
+                var ptSanteiInserts = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
                 {
                     dest.CreateId = TempIdentity.UserId;
                     dest.PtId = patientInsert.PtId;
@@ -1221,7 +1222,7 @@ namespace Infrastructure.Repositories
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<PtInfSanteiConfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1300,7 +1301,7 @@ namespace Infrastructure.Repositories
                 item.IsDeleted = DeleteTypes.Deleted;
             }
 
-            var ptSanteiConfListAdd = Mapper.Map<PtInfSanteiConfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) => {
+            var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) => {
                 dest.CreateDate = DateTime.UtcNow;
                 dest.CreateId = TempIdentity.UserId;
                 dest.UpdateMachine = TempIdentity.ComputerName;
