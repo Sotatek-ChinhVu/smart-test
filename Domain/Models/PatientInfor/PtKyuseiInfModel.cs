@@ -15,7 +15,7 @@
 
         public int HpId { get; private set; }
         public long PtId { get; private set; }
-        public long SeqNo { get; set; }
+        public long SeqNo { get; private set; }
         public string KanaName { get; private set; }
         public string Name { get; private set; }
         public int EndDate { get; private set; }
