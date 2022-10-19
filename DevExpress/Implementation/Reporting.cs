@@ -284,7 +284,7 @@ public class Reporting : IReporting
     #region Print Karte 2
     public Karte2Output PrintKarte2(Karte2ExportInput inputData)
     {
-        var patientInfo = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, (int)inputData.RaiinNo);
+        var patientInfo = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, 0);
         if (patientInfo == null || patientInfo.PtId == 0)
         {
             return new Karte2Output(Karte2Status.InvalidUser);
@@ -307,7 +307,7 @@ public class Reporting : IReporting
             currentTime: DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm"),
             startDate: CIUtil.SDateToShowSDate(inputData.StartDate),
             endDate: CIUtil.SDateToShowSDate(inputData.EndDate),
-            richTextKarte2Models: ConvertToRichTextKarteOrder(historyKarteOdrRaiinItem)
+            richTextKarte2Models: ConvertToRichTextKarteOrder(historyKarteOdrRaiinItem, inputData)
         );
 
         try
@@ -326,7 +326,8 @@ public class Reporting : IReporting
 
     }
 
-    private List<RichTextKarteOrder> ConvertToRichTextKarteOrder(List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems)
+
+    private List<RichTextKarteOrder> ConvertToRichTextKarteOrder(List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, Karte2ExportInput inputData)
     {
         StringBuilder text_karte;
         StringBuilder text_order;
@@ -350,26 +351,32 @@ public class Reporting : IReporting
                             var data = karte.KarteData[j];
                             if (data.IsDeleted == 1)
                             {
-                                text_karte.Append("<span style=\"color: #3328fc \"><s> ");
-                                text_karte.Append(data.CreateDateDisplay);
-                                text_karte.Append("&nbsp;");
-                                text_karte.Append(data.CreateName);
-                                text_karte.Append("</s> ");
-                                text_karte.Append(data.UpdateDateDisplay);
-                                text_karte.Append("&nbsp;");
-                                text_karte.Append(data.CreateName);
-                                text_karte.Append("</span><br>");
+                                if (inputData.IsCheckedInputDate)
+                                {
+                                    text_karte.Append("<span style=\"color: #3328fc \"><s> ");
+                                    text_karte.Append(data.CreateDateDisplay);
+                                    text_karte.Append("&nbsp;");
+                                    text_karte.Append(data.CreateName);
+                                    text_karte.Append("</s> ");
+                                    text_karte.Append(data.UpdateDateDisplay);
+                                    text_karte.Append("&nbsp;");
+                                    text_karte.Append(data.CreateName);
+                                    text_karte.Append("</span><br>");
+                                }
                                 text_karte.Append("<s>");
                                 text_karte.Append(data.RichText);
                                 text_karte.Append("</s><br>");
                             }
                             else if (data.IsDeleted == 0)
                             {
-                                text_karte.Append("<span style=\"color: #a51652 \"> ");
-                                text_karte.Append(data.CreateDateDisplay);
-                                text_karte.Append("&nbsp;");
-                                text_karte.Append(data.CreateName);
-                                text_karte.Append("</span><br>");
+                                if (inputData.IsCheckedInputDate)
+                                {
+                                    text_karte.Append("<span style=\"color: #a51652 \"> ");
+                                    text_karte.Append(data.CreateDateDisplay);
+                                    text_karte.Append("&nbsp;");
+                                    text_karte.Append(data.CreateName);
+                                    text_karte.Append("</span><br>");
+                                }
                                 text_karte.Append(data.RichText);
                             }
                         }
@@ -379,21 +386,48 @@ public class Reporting : IReporting
 
             // order
             text_order.Append("<span style=\"color: #a51652\">&nbsp;");
-            text_order.Append("受付:&nbsp;");
-            text_order.Append(karte_order.UketukeTime);
-            text_order.Append("&nbsp;");
-            text_order.Append(karte_order.UketsukeName);
-            text_order.Append("&nbsp;診察:&nbsp;");
-            text_order.Append(karte_order.SinStartTime);
-            text_order.Append("&nbsp;-&nbsp;");
-            text_order.Append(karte_order.SinEndTime);
-            text_order.Append("&nbsp;");
-            text_order.Append(karte_order.TantoName);
-            text_order.Append("&nbsp;(&nbsp;承認:&nbsp;");
-            text_order.Append(karte_order.CreateUser);
-            text_order.Append("&nbsp;");
-            text_order.Append(karte_order.CreateDateDisplay);
-            text_order.Append(")</span><br>");
+
+            StringBuilder orderRaiinTitle = new();
+            if (inputData.IsCheckedVisitingTime)
+            {
+                orderRaiinTitle.Append("受付:&nbsp;");
+                orderRaiinTitle.Append(karte_order.UketukeTime);
+                orderRaiinTitle.Append("&nbsp;");
+            }
+            if (inputData.IsUketsukeNameChecked)
+            {
+                orderRaiinTitle.Append(karte_order.UketsukeName);
+            }
+            if (inputData.IsCheckedStartTime)
+            {
+                orderRaiinTitle.Append("&nbsp;診察:&nbsp;");
+                orderRaiinTitle.Append(karte_order.SinStartTime);
+                if (inputData.IsCheckedEndTime)
+                {
+                    orderRaiinTitle.Append("&nbsp;-&nbsp;");
+                    orderRaiinTitle.Append(karte_order.SinEndTime);
+                }
+            }
+            if (inputData.IsCheckedDoctor)
+            {
+                orderRaiinTitle.Append("&nbsp;");
+                orderRaiinTitle.Append(karte_order.TantoName);
+            }
+            if (inputData.IsCheckedApproved)
+            {
+                orderRaiinTitle.Append("&nbsp;（承認:&nbsp;");
+                orderRaiinTitle.Append(karte_order.UpdateUserDisplay);
+                orderRaiinTitle.Append("&nbsp;");
+                orderRaiinTitle.Append(karte_order.UpdateDateDisplay);
+            }
+            if (orderRaiinTitle.Length == 0)
+            {
+                orderRaiinTitle.Append("＊");
+            }
+            text_order.Append(orderRaiinTitle);
+            text_order.Append("）</span><br>");
+
+
             if (karte_order.HokenGroups.Any())
             {
                 foreach (var group in karte_order.HokenGroups.Where(hoken_group => hoken_group.GroupOdrItems.Count > 0).SelectMany(hoken_group => hoken_group.GroupOdrItems))
@@ -408,21 +442,26 @@ public class Reporting : IReporting
                             var rp = group.OdrInfs[i];
                             if (rp.IsDeleted == 1)
                             {
-                                text_order.Append("<span>&nbsp;*<span style=\"color: #3328fc \"><s> ");
-                                text_order.Append(rp.CreateDateDisplay);
-                                text_order.Append("&nbsp;");
-                                text_order.Append(rp.CreateName);
-                                text_order.Append("</s>&nbsp;");
-                                text_order.Append(rp.UpdateDateDisplay);
-                                text_order.Append("&nbsp;");
-                                text_order.Append(rp.CreateName);
-                                text_order.Append("</span></span><br>");
+                                text_order.Append("<span>&nbsp;＊");
+                                if (inputData.IsCheckedInputDate)
+                                {
+                                    text_order.Append("<span style=\"color: #3328fc \"><s> ");
+                                    text_order.Append(rp.CreateDateDisplay);
+                                    text_order.Append("&nbsp;");
+                                    text_order.Append(rp.CreateName);
+                                    text_order.Append("</s>&nbsp;");
+                                    text_order.Append(rp.UpdateDateDisplay);
+                                    text_order.Append("&nbsp;");
+                                    text_order.Append(rp.CreateName);
+                                    text_order.Append("</span><br>");
+                                }
+                                text_order.Append("</span>");
 
                                 if (rp.RpName != string.Empty)
                                 {
-                                    text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;");
+                                    text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;【");
                                     text_order.Append(rp.RpName);
-                                    text_order.Append("</s></span><br>");
+                                    text_order.Append("】</s></span><br>");
                                 }
                                 if (rp.OdrDetails.Count > 0)
                                 {
@@ -436,23 +475,48 @@ public class Reporting : IReporting
                             }
                             else if (rp.IsDeleted == 0)
                             {
-                                text_order.Append("<span>&nbsp;*<span style=\"color: #a51652 \">  ");
-                                text_order.Append(rp.CreateDateDisplay);
-                                text_order.Append("&nbsp;");
-                                text_order.Append(rp.CreateName);
-                                text_order.Append("</span></span><br>");
+                                text_order.Append("<span>&nbsp;＊");
+                                if (inputData.IsCheckedInputDate)
+                                {
+                                    text_order.Append("<span style=\"color: #a51652 \">&nbsp;");
+                                    text_order.Append(rp.CreateDateDisplay);
+                                    text_order.Append("&nbsp;");
+                                    text_order.Append(rp.CreateName);
+                                    text_order.Append("</span><br>");
+                                }
+                                text_order.Append("</span>");
                                 if (rp.RpName != string.Empty)
                                 {
-                                    text_order.Append("<span>&nbsp;&nbsp;&nbsp;");
+                                    text_order.Append("<span>&nbsp;&nbsp;&nbsp;【");
                                     text_order.Append(rp.RpName);
-                                    text_order.Append("</span><br>");
+                                    text_order.Append("】</span><br>");
                                 }
                                 if (rp.OdrDetails.Count > 0)
                                 {
                                     foreach (var detail in rp.OdrDetails.Where(detail => detail.ItemName != string.Empty))
                                     {
-                                        text_order.Append("<span>&nbsp;&nbsp;&nbsp;&nbsp;");
-                                        text_order.Append(detail.ItemName);
+                                        text_order.Append("<span>&nbsp;&nbsp;&nbsp;");
+
+                                        StringBuilder itemInfo = new();
+                                        bool isExistIpnName = !string.IsNullOrEmpty(detail.IpnName) && detail.SyohoKbn == 3 && group.IsDrug;
+                                        if (isExistIpnName && !inputData.IsIppanNameChecked && group.InOutKbn != 0) //Jira: AIN-6552
+                                        {
+                                            itemInfo.Append("【般】");
+                                        }
+                                        itemInfo.Append(detail.ItemName);
+                                        itemInfo.Append("&nbsp;");
+                                        itemInfo.Append(detail.DisplayedQuantity);
+                                        itemInfo.Append(detail.UnitName);
+                                        if (isExistIpnName && inputData.IsIppanNameChecked)
+                                        {
+                                            text_order.Append("（");
+                                            text_order.Append(itemInfo);
+                                            text_order.Append("）");
+                                        }
+                                        else
+                                        {
+                                            text_order.Append(itemInfo);
+                                        }
                                         text_order.Append("</span><br>");
                                     }
                                 }
@@ -469,7 +533,6 @@ public class Reporting : IReporting
         }
         return result;
     }
-
     private (List<HistoryKarteOdrRaiinItem>, Karte2Status) GetHistoryKarteOdrRaiinItem(Karte2ExportInput inputData)
     {
         var validate = Validate(inputData);
@@ -540,7 +603,7 @@ public class Reporting : IReporting
 
                 //Composite karte and order
                 var uketuke = listUsers?.FirstOrDefault(uke => uke.UserId == raiinInf.UketukeId);
-                var createUser = listUsers?.FirstOrDefault(uke => uke.UserId == raiinInf.CreateId);
+                var updateUser = listUsers?.FirstOrDefault(uke => uke.UserId == raiinInf.UpdateId);
                 var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem(
                                                     raiinInf.RaiinNo,
                                                     raiinInf.SinDate,
@@ -563,8 +626,8 @@ public class Reporting : IReporting
                                                     uketuke != null ? uketuke.Sname : string.Empty,
                                                     CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(raiinInf.SinStartTime, 1, 4))),
                                                     CIUtil.TimeToShowTime(int.Parse(CIUtil.Copy(raiinInf.SinEndTime, 1, 4))),
-                                                    raiinInf.CreateDate.ToString("yyyy/MM/dd HH:mm"),
-                                                    createUser != null ? createUser.Sname : string.Empty
+                                                    raiinInf.UpdateDate.ToString("yyyy/MM/dd HH:mm"),
+                                                    updateUser != null ? updateUser.Sname : string.Empty
                                                );
 
                 //Excute karte
@@ -587,23 +650,207 @@ public class Reporting : IReporting
                                     c.RichText,
                                     c.CreateName
                                 )).ToList())
-                                                             select karteGrp);
+                select karteGrp);
                 //Excute order
                 ExcuteOrder(insuranceData, allOdrInfs, historyKarteOdrRaiin, historyKarteOdrRaiins);
             }
         });
 
         var result = historyKarteOdrRaiins.OrderBy(x => x.SinDate).ToList();
-        //FilterData(ref result, inputData);
-
+        FilterData(ref result, inputData);
 
         #endregion
-        if (result?.Count > 0)
+        if (result.Any())
         {
             return (result, Karte2Status.Success);
         }
-        else
-            return new(new List<HistoryKarteOdrRaiinItem>(), Karte2Status.NoData);
+        return new(new List<HistoryKarteOdrRaiinItem>(), Karte2Status.NoData);
+    }
+
+    private void FilterData(ref List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, Karte2ExportInput inputData)
+    {
+        List<OrderHokenType> GetListAcceptedHokenType()
+        {
+            List<OrderHokenType> result = new();
+            if (inputData.IsCheckedHoken)
+            {
+                result.Add(OrderHokenType.Hoken);
+            }
+            if (inputData.IsCheckedJihi)
+            {
+                result.Add(OrderHokenType.Jihi);
+            }
+            if (inputData.IsCheckedHokenJihi)
+            {
+                result.Add(OrderHokenType.HokenJihi);
+            }
+            if (inputData.IsCheckedJihiRece)
+            {
+                result.Add(OrderHokenType.JihiRece);
+            }
+            if (inputData.IsCheckedHokenRousai)
+            {
+                result.Add(OrderHokenType.Rousai);
+            }
+            if (inputData.IsCheckedHokenJibai)
+            {
+                result.Add(OrderHokenType.Jibai);
+            }
+            return result;
+        }
+        if (!inputData.IsIncludeTempSave)
+        {
+            historyKarteOdrRaiinItems = historyKarteOdrRaiinItems.Where(k => k.Status != 3).ToList();
+        }
+
+        List<OrderHokenType> listAcceptedHokenType = GetListAcceptedHokenType();
+
+        //Filter raiin as hoken setting
+        List<HistoryKarteOdrRaiinItem> filteredKaruteList = new();
+        foreach (var history in historyKarteOdrRaiinItems)
+        {
+            if (history.HokenGroups == null || !history.HokenGroups.Any())
+            {
+                continue;
+            }
+
+            if (listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+            {
+                filteredKaruteList.Add(history);
+                continue;
+            }
+
+            if (inputData.DeletedOdrVisibilitySetting == 0)
+            {
+                foreach (var hokenGroup in history.HokenGroups)
+                {
+                    bool isDataExisted = false;
+                    foreach (var group in hokenGroup.GroupOdrItems)
+                    {
+                        isDataExisted = group.OdrInfs.Any(o => o.IsDeleted == 0);
+                        if (isDataExisted)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (isDataExisted && listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+                    {
+                        filteredKaruteList.Add(history);
+                        break;
+                    }
+                }
+            }
+            else if (inputData.DeletedOdrVisibilitySetting == 2)
+            {
+                foreach (var hokenGroup in history.HokenGroups)
+                {
+                    bool isDataExisted = false;
+                    foreach (var group in hokenGroup.GroupOdrItems)
+                    {
+                        isDataExisted = group.OdrInfs.Any(o => o.IsDeleted != 2);
+                        if (isDataExisted)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (isDataExisted && listAcceptedHokenType.Contains((OrderHokenType)history.HokenType))
+                    {
+                        filteredKaruteList.Add(history);
+                        break;
+                    }
+                }
+            }
+        }
+
+        historyKarteOdrRaiinItems = filteredKaruteList;
+
+        //historyKarteOdrRaiinItems.ForEach((karute) =>
+        //{
+        //    //Filter order as hoken setting
+        //    if (karute.HokenGroups != null && karute.HokenGroups.Any())
+        //    {
+        //        var listHoken = karute.HokenGroups.Where(h => listAcceptedHokenType.Contains((OrderHokenType)karute.HokenType)).ToList();
+        //        listHoken.ForEach((hoken) =>
+        //        {
+        //            if (!inputData.IsCheckedJihi)
+        //            {
+        //                hoken = new HokenGroupHistoryItem(hoken.HokenPid, hoken.HokenTitle, hoken.GroupOdrItems.Where(o => o.SanteiKbn == 0).ToList());
+        //            }
+        //            foreach (var group in hoken.GroupOdrItems.ToList())
+        //            {
+        //                if (!inputData.IsCheckedJihi && group != null && group.OdrInfs.Any())
+        //                {
+        //                    if (inputData.DeletedOdrVisibilitySetting == 0)
+        //                    {
+        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName,
+        //                            group.OdrInfs.Where(o => o.IsDeleted == 0)
+        //                            .OrderBy(o => o.SortNo)
+        //                            .ToList());
+        //                    }
+        //                    else if (inputData.DeletedOdrVisibilitySetting == 2)
+        //                    {
+        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName,
+        //                            group.OdrInfs.Where(o => o.IsDeleted != 2)
+        //                            .OrderBy(o => o.SortNo)
+        //                            .ToList());
+        //                    }
+        //                }
+        //            }
+        //            hoken.GroupOdrItems.ToList().ForEach((group) =>
+        //            {
+        //                if (!inputData.IsCheckedJihi && group != null && group.OdrInfs.Any())
+        //                {
+        //                    if (inputData.DeletedOdrVisibilitySetting == 0)
+        //                    {
+        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName, 
+        //                            group.OdrInfs.Where(o => o.IsDeleted == 0)
+        //                            .OrderBy(o => o.SortNo)
+        //                            .ToList());
+        //                    }
+        //                    else if (inputData.DeletedOdrVisibilitySetting == 2)
+        //                    {
+        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName, 
+        //                            group.OdrInfs?.Where(o => o.IsDeleted != 2)
+        //                            .OrderBy(o => o.SortNo)
+        //                            .ToList());
+        //                    }
+        //                }
+        //            });
+        //        });
+
+        //        karute = new HistoryKarteOdrRaiinItem(
+        //                karute.RaiinNo,
+        //                karute.SinDate,
+        //                karute.HokenPid,
+        //                karute.HokenTitle,
+        //                karute.HokenRate,
+        //                karute.SyosaisinKbn,
+        //                karute.JikanKbn,
+        //                karute.KaId,
+        //                karute.KaName,
+        //                karute.TantoId,
+        //                karute.TantoName,
+        //                karute.SanteiKbn,
+        //                karute.TagNo,
+        //                karute.SinryoTitle,
+        //                karute.HokenType,
+        //                karute.Status,
+        //                listHoken,
+        //                karute.KarteHistories,
+        //                karute.UketukeTime,
+        //                karute.UketsukeName,
+        //                karute.SinStartTime,
+        //                karute.SinEndTime,
+        //                karute.UpdateDateDisplay,
+        //                karute.UpdateUserDisplay
+        //            );
+        //    }
+        //});
+
+        //Filter karte and order empty
+        historyKarteOdrRaiinItems = historyKarteOdrRaiinItems.Where(k => k.HokenGroups != null && k.HokenGroups.Any() && k.KarteHistories != null && k.KarteHistories.Any()).ToList();
     }
     private static int GetHokenPatternType(int hokenKbn)
     {

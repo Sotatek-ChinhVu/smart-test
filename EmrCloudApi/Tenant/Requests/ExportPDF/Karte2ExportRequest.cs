@@ -3,29 +3,12 @@
 public class Karte2ExportRequest
 {
     public long PtId { get; set; }
-
     public int HpId { get; set; }
-
     public int UserId { get; set; }
-
     public int SinDate { get; set; }
-
-    public long RaiinNo { get; set; }
-
-    public bool EmptyMode { get; set; }
-
-
-    //FormInfo
-    public string FDisp { get; set; }
-
-    public int FDojitu { get; set; }
-
-    public int FSijiType { get; set; }
-
 
     //KanInfo
     public int StartDate { get; set; }
-
     public int EndDate { get; set; }
 
 
@@ -41,6 +24,7 @@ public class Karte2ExportRequest
     public bool IsCheckedHokenRousai { get; set; }
 
     public bool IsCheckedHokenJibai { get; set; }
+
 
     //Raiin
     public bool IsCheckedDoctor { get; set; }
@@ -74,16 +58,4 @@ public class Karte2ExportRequest
 
     //Order
     public bool IsCheckedHideOrder { get; set; }
-
-
-    //Other
-    public bool ChkDummy { get; set; }
-
-    public bool Chk_Gairaikanri { get; set; }
-
-    public bool ChkIppan { get; set; }
-
-    public bool ChkPrtDate { get; set; }
-
-    public int RaiinTermDelKbn { get; set; }
 }

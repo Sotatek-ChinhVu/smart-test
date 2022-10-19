@@ -52,7 +52,9 @@ namespace Infrastructure.Repositories
                     receptionEntity?.JikanKbn ?? 0,
                     raiinCommentInf?.Text ?? string.Empty,
                     raiinCommentInf?.CreateDate ?? DateTime.MinValue,
-                    raiinCommentInf?.CreateId ?? 0
+                    raiinCommentInf?.CreateId ?? 0,
+                    raiinCommentInf?.UpdateDate ?? DateTime.MinValue,
+                    raiinCommentInf?.UpdateId ?? 0
                 );
         }
 
@@ -413,7 +415,9 @@ namespace Infrastructure.Repositories
                         r.JikanKbn,
                         string.Empty,
                         r.CreateDate,
-                        r.CreateId
+                        r.CreateId,
+                        r.UpdateDate,
+                        r.UpdateId
                    ));
 
         }
@@ -449,7 +453,9 @@ namespace Infrastructure.Repositories
                         r.JikanKbn,
                         string.Empty,
                         r.CreateDate,
-                        r.CreateId
+                        r.CreateId,
+                        r.UpdateDate,
+                        r.UpdateId
                    ));
 
         }

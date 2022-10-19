@@ -67,14 +67,14 @@ namespace UseCase.MedicalExamination.GetHistory
 
         public string SinEndTime { get; set; }
 
-        public string CreateDateDisplay { get; set; }
+        public string UpdateDateDisplay { get; set; }
 
-        public string CreateUser { get; set; }
+        public string UpdateUserDisplay { get; set; }
 
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
         public List<GrpKarteHistoryItem> KarteHistories { get; private set; }
 
-        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, int status, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, string uketukeTime, string uketsukeName, string sinStartTime, string sinEndTime, string createDateDisplay, string createUser)
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, int status, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, string uketukeTime, string uketsukeName, string sinStartTime, string sinEndTime, string updateDateDisplay, string updateUserDisplay)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
@@ -100,8 +100,8 @@ namespace UseCase.MedicalExamination.GetHistory
             UketsukeName = uketsukeName;
             SinStartTime = sinStartTime;
             SinEndTime = sinEndTime;
-            CreateDateDisplay = createDateDisplay;
-            CreateUser = createUser;
+            UpdateDateDisplay = updateDateDisplay;
+            UpdateUserDisplay = updateUserDisplay;
         }
     }
 }

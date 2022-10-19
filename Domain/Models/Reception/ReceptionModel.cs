@@ -63,8 +63,12 @@ namespace Domain.Models.Reception
 
         public int CreateId { get; private set; }
 
+        public DateTime UpdateDate { get; private set; }
+
+        public int UpdateId { get; private set; }
+
         [JsonConstructor]
-        public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment, DateTime createDate, int createId)
+        public ReceptionModel(int hpId, long ptId, int sinDate, long raiinNo, long oyaRaiinNo, int hokenPid, int santeiKbn, int status, int isYoyaku, string yoyakuTime, int yoyakuId, int uketukeSbt, string uketukeTime, int uketukeId, int uketukeNo, string sinStartTime, string sinEndTime, string kaikeiTime, int kaikeiId, int kaId, int tantoId, int syosaisinKbn, int jikanKbn, string comment, DateTime createDate, int createId, DateTime updateDate, int updateId)
         {
             HpId = hpId;
             PtId = ptId;
@@ -92,6 +96,8 @@ namespace Domain.Models.Reception
             Comment = comment;
             CreateDate = createDate;
             CreateId = createId;
+            UpdateDate = updateDate;
+            UpdateId = updateId;
         }
 
         public ReceptionModel(int hpId, long ptId, long raiinNo, string comment)

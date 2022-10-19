@@ -1,4 +1,5 @@
 ﻿using Domain.Models.OrdInfDetails;
+using Helper.Constants;
 
 namespace UseCase.OrdInfs.GetListTrees
 {
@@ -102,5 +103,17 @@ namespace UseCase.OrdInfs.GetListTrees
         public List<YohoSetMstModel> YohoSets { get; private set; }
         public int Kasan1 { get; private set; }
         public int Kasan2 { get; private set; }
+        public string DisplayedQuantity
+        {
+            get
+            {
+                // If item don't have UniName => No quantity displayed
+                if (string.IsNullOrEmpty(UnitName))
+                {
+                    return string.Empty;
+                }
+                return Suryo != 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu ? Suryo.ToString() : string.Empty;
+            }
+        }
     }
 }

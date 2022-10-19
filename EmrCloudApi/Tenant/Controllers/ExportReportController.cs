@@ -23,25 +23,25 @@ public class ExportReportController : ControllerBase
     public ActionResult<Response<string>> GetListKarte1([FromQuery] Karte1ExportRequest request)
     {
         var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
-        
+
         Response<string> response = new();
         response.Data = Convert.ToBase64String(output.DataStream.ToArray());
         response.Status = (byte)output.Status;
         response.Message = GetMessageKarte1(output.Status);
-        
+
         return response;
     }
-    
+
     [HttpPost(ApiPath.ExportKarte2)]
     public ActionResult<Response<string>> GetListKarte2([FromBody] Karte2ExportRequest request)
     {
         var output = _reporting.PrintKarte2(ConvertToKarte2ExportInput(request));
-        
+
         Response<string> response = new();
         response.Data = Convert.ToBase64String(output.DataStream.ToArray());
         response.Status = (byte)output.Status;
         response.Message = GetMessageKarte2(output.Status);
-        
+
         return response;
     }
 
@@ -56,7 +56,7 @@ public class ExportReportController : ControllerBase
         Karte1Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
         _ => string.Empty
     };
-    
+
     private string GetMessageKarte2(Karte2Status status) => status switch
     {
         Karte2Status.Success => ResponseMessage.Success,
@@ -72,11 +72,6 @@ public class ExportReportController : ControllerBase
                 request.HpId,
                 request.UserId,
                 request.SinDate,
-                request.RaiinNo,
-                request.EmptyMode,
-                request.FDisp,
-                request.FDojitu,
-                request.FSijiType,
                 request.StartDate,
                 request.EndDate,
                 request.IsCheckedHoken,
@@ -97,12 +92,7 @@ public class ExportReportController : ControllerBase
                 request.IsCheckedSetName,
                 request.DeletedOdrVisibilitySetting,
                 request.IsIppanNameChecked,
-                request.IsCheckedHideOrder,
-                request.ChkDummy,
-                request.Chk_Gairaikanri,
-                request.ChkIppan,
-                request.ChkPrtDate,
-                request.RaiinTermDelKbn
+                request.IsCheckedHideOrder
             );
     }
 }
