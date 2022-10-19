@@ -23,7 +23,7 @@ namespace Interactor.PatientInfor
                     {
                         var validationStatus = item.Validation();
                         if (validationStatus != ValidationStatus.Valid)
-                            return new SaveInsuranceMasterLinkageOutputData(ConvertStatus(validationStatus));
+                            return new SaveInsuranceMasterLinkageOutputData(validationStatus);
                     }
                 }
                 else
@@ -36,40 +36,6 @@ namespace Interactor.PatientInfor
             {
                 return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.Failed);
             }
-        }
-
-        private ValidationStatus ConvertStatus(ValidationStatus status)
-        {
-            if (status == ValidationStatus.InvalidHpId)
-                return ValidationStatus.InvalidHpId;
-
-            if (status == ValidationStatus.InvalidDigit1)
-                return ValidationStatus.InvalidDigit1;
-
-            if (status == ValidationStatus.InvalidDigit2)
-                return ValidationStatus.InvalidDigit2;
-
-            if (status == ValidationStatus.InvalidDigit3)
-                return ValidationStatus.InvalidDigit3;
-
-            if (status == ValidationStatus.InvalidDigit4)
-                return ValidationStatus.InvalidDigit4;
-
-            if (status == ValidationStatus.InvalidDigit5)
-                return ValidationStatus.InvalidDigit5;
-
-            if (status == ValidationStatus.InvalidDigit6)
-                return ValidationStatus.InvalidDigit6;
-
-            if (status == ValidationStatus.InvalidDigit7)
-                return ValidationStatus.InvalidDigit7;
-
-            if (status == ValidationStatus.InvalidDigit8)
-                return ValidationStatus.InvalidDigit8;
-
-            if (status == ValidationStatus.InvalidHokenNo)
-                return ValidationStatus.InvalidHokenNo;
-            return ValidationStatus.Success;
         }
     }
 }
