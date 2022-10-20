@@ -1,4 +1,5 @@
 ﻿using Domain.Models.OrdInfs;
+using Domain.Models.RainListTag;
 using Domain.Models.Reception;
 using UseCase.OrdInfs.GetHeaderInf;
 
@@ -8,11 +9,13 @@ namespace Interactor.OrdInfs
     {
         private readonly IOrdInfRepository _ordInfRepository;
         private readonly IReceptionRepository _receptionRepository;
+        private readonly IRaiinListTagRepository _raiinListTagRepository;
 
-        public GetHeaderInfInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository)
+        public GetHeaderInfInteractor(IOrdInfRepository ordInfRepository, IReceptionRepository receptionRepository, IRaiinListTagRepository raiinListTagRepository)
         {
             _ordInfRepository = ordInfRepository;
             _receptionRepository = receptionRepository;
+            _raiinListTagRepository = raiinListTagRepository;
         }
 
         public GetHeaderInfOutputData Handle(GetHeaderInfInputData inputData)
@@ -37,15 +40,16 @@ namespace Interactor.OrdInfs
                     return new GetHeaderInfOutputData(GetHeaderInfStatus.InvalidSinDate);
                 }
 
-                var raiinNo = _receptionRepository.Get(inputData.RaiinNo);
+                var reception = _receptionRepository.Get(inputData.RaiinNo);
                 var odrInf = _ordInfRepository.GetHeaderInfo(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
+                var raiinTag = _raiinListTagRepository.Get(inputData.HpId, inputData.PtId, inputData.RaiinNo, inputData.SinDate);
 
-                if (odrInf.HpId == 0 && odrInf.PtId == 0 && odrInf.SinDate == 0 && odrInf.RaiinNo == 0 && raiinNo.HpId == 0 && raiinNo.PtId == 0 && raiinNo.RaiinNo == 0 && raiinNo.SinDate == 0)
+                if (odrInf.HpId == 0 && odrInf.PtId == 0 && odrInf.SinDate == 0 && odrInf.RaiinNo == 0 && reception.HpId == 0 && reception.PtId == 0 && reception.RaiinNo == 0 && reception.SinDate == 0)
                 {
                     return new GetHeaderInfOutputData(GetHeaderInfStatus.NoData);
                 }
 
-                return new GetHeaderInfOutputData(raiinNo.SyosaisinKbn, raiinNo.JikanKbn, raiinNo.HokenPid, raiinNo.SanteiKbn, raiinNo.TantoId, raiinNo.KaId, raiinNo.UketukeTime, raiinNo.SinStartTime, raiinNo.SinEndTime, odrInf, GetHeaderInfStatus.Successed);
+                return new GetHeaderInfOutputData(reception.SyosaisinKbn, reception.JikanKbn, reception.HokenPid, reception.SanteiKbn, reception.TantoId, reception.KaId, reception.UketukeTime, reception.SinStartTime, reception.SinEndTime, raiinTag.TagNo, odrInf, GetHeaderInfStatus.Successed);
             }
             catch
             {
