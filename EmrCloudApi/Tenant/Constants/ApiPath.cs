@@ -85,5 +85,8 @@
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
+
+        // Validate list pattern
+        public const string ValidateListPattern = "ValidateListPattern";
     }
 }
