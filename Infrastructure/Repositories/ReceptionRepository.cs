@@ -190,14 +190,14 @@ namespace Infrastructure.Repositories
             void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
             {
                 // Detect changes
-                if (entity.OyaRaiinNo != model.OyaRaiinNo || 
-                    entity.KaId != model.KaId || 
-                    entity.UketukeSbt != model.UketukeSbt || 
-                    entity.UketukeNo != model.UketukeNo || 
+                if (entity.OyaRaiinNo != model.OyaRaiinNo ||
+                    entity.KaId != model.KaId ||
+                    entity.UketukeSbt != model.UketukeSbt ||
+                    entity.UketukeNo != model.UketukeNo ||
                     entity.TantoId != model.TantoId ||
                     entity.SyosaisinKbn != model.SyosaisinKbn ||
                     entity.JikanKbn != model.JikanKbn ||
-                    entity.SanteiKbn != model.SanteiKbn || 
+                    entity.SanteiKbn != model.SanteiKbn ||
                     entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
@@ -238,7 +238,7 @@ namespace Infrastructure.Repositories
                         UpdateDate = DateTime.UtcNow,
                         UpdateId = TempIdentity.UserId,
                         UpdateMachine = TempIdentity.ComputerName
-                });
+                    });
                 }
                 else if (raiinCmtInf.Text != text)
                 {
@@ -326,7 +326,7 @@ namespace Infrastructure.Repositories
                     continue;
                 }
 
-                foreach (var confirmDate in insurance.ConfirmDateList) 
+                foreach (var confirmDate in insurance.ConfirmDateList)
                 {
                     var confirmDatetimeUtc = DateTime.ParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
 
@@ -738,6 +738,60 @@ namespace Infrastructure.Repositories
             var check = _tenantNoTrackingDataContext.RaiinInfs
                 .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
             return check;
+        }
+
+        public ReceptionDefautDataModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
+        {
+            var tantoId = 0;
+            var kaId = 0;
+            // Tanto Id
+            var mainDoctor = _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+            if (mainDoctor != null)
+            {
+                var userMst = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                if (userMst?.JobCd == 1)
+                {
+                    tantoId = mainDoctor.PrimaryDoctor;
+                }
+
+                // if DefaultDoctorSetting = 1 get doctor from last visit
+                if (defaultSettingDoctor == 1)
+                {
+                    var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
+                                                           p.PtId == ptId &&
+                                                           p.IsDeleted == DeleteTypes.None &&
+                                                           p.Status >= RaiinState.TempSave &&
+                                                           (sinDate <= 0 || p.SinDate < sinDate))
+                                                            .OrderByDescending(p => p.SinDate)
+                                                            .ThenByDescending(p => p.RaiinNo).FirstOrDefault();
+                    if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                    {
+                        tantoId = lastRaiinInf.TantoId;
+                    }
+                }
+
+                // if DefaultDoctorSetting = 2 get doctor from last reception
+                if (defaultSettingDoctor == 2)
+                {
+                    var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs.Where(p => p.HpId == hpId &&
+                                                           p.IsDeleted == DeleteTypes.None &&
+                                                           p.SinDate <= sinDate)
+                                                            .OrderByDescending(p => p.SinDate)
+                                                            .ThenByDescending(p => p.RaiinNo).FirstOrDefault();
+                    if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                    {
+                        tantoId = lastRaiinInf.TantoId;
+                    }
+                }
+            }
+
+            // KaId
+            var getKaIdDefault = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == tantoId && u.IsDeleted == 0);
+            if (getKaIdDefault != null)
+            {
+                kaId = getKaIdDefault.KaId;
+            }
+            return new ReceptionDefautDataModel(tantoId, kaId);
         }
     }
 }

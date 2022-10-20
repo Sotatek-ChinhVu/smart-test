@@ -573,5 +573,9 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
+
+        // Valid default settings 
+        public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
+
     }
 }
