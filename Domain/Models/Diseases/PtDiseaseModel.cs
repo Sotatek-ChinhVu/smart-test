@@ -179,9 +179,13 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidFreeWord;
             }
-            if ((TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0) || (TenkiKbn > TenkiKbnConst.Continued && TenkiDate == 0))
+            if (TenkiKbn == TenkiKbnConst.Continued && TenkiDate > 0)
             {
                 return ValidationStatus.InvalidTenkiDateContinue;
+            }
+            if (TenkiKbn > TenkiKbnConst.Continued && TenkiDate == 0)
+            {
+                return ValidationStatus.InvalidTenkiDateCommon;
             }
             if (TenkiKbn > TenkiKbnConst.Continued && TenkiDate < StartDate)
             {
