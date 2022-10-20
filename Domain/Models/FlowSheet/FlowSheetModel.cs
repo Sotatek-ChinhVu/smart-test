@@ -2,7 +2,7 @@
 {
     public class FlowSheetModel
     {
-        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId, int cmtKbn, long rainListCmtSeqNo, int rainListTagSeqNo)
+        public FlowSheetModel(int sinDate, int tagNo, string fullLineOfKarte, long raiinNo, int syosaisinKbn, string comment, int status, bool isNextOrder, bool isToDayOdr, List<RaiinListInfModel> raiinListInfs, long ptId)
         {
             SinDate = sinDate;
             TagNo = tagNo;
@@ -16,9 +16,6 @@
             IsToDayOdr = isToDayOdr;
             RaiinListInfs = raiinListInfs;
             PtId = ptId;
-            CmtKbn = cmtKbn;
-            RainListCmtSeqNo = rainListCmtSeqNo;
-            RainListTagSeqNo = rainListTagSeqNo;
         }
 
         public int SinDate { get; private set; }
@@ -44,12 +41,5 @@
         public List<RaiinListInfModel> RaiinListInfs { get; private set; }
 
         public long PtId { get; private set; }
-
-        public int CmtKbn { get; private set; }
-
-        public long RainListCmtSeqNo { get; private set; }
-
-        public int RainListTagSeqNo { get; private set; }
-
     }
 }
