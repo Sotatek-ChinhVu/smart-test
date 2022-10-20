@@ -4,9 +4,8 @@ namespace Domain.Models.PatientInfor
 {
     public class DefHokenNoModel
     {
-        public DefHokenNoModel(int hpId, string digit1, string digit2, string digit3, string digit4, string digit5, string digit6, string digit7, string digit8, long seqNo, int hokenNo, int hokenEdaNo, int sortNo, int isDeleted)
+        public DefHokenNoModel(string digit1, string digit2, string digit3, string digit4, string digit5, string digit6, string digit7, string digit8, long seqNo, int hokenNo, int hokenEdaNo, int sortNo, int isDeleted)
         {
-            HpId = hpId;
             Digit1 = digit1;
             Digit2 = digit2;
             Digit3 = digit3;
@@ -22,7 +21,6 @@ namespace Domain.Models.PatientInfor
             IsDeleted = isDeleted;
         }
 
-        public int HpId { get; private set; }
         public string Digit1 { get; private set; }
         public string Digit2 { get; private set; }
         public string Digit3 { get; private set; }
