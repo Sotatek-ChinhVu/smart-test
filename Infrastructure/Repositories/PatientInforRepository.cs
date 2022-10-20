@@ -1581,8 +1581,6 @@ namespace Infrastructure.Repositories
                         #region KohiId1
                         if (hokenPartternUpdate.Kohi1Id == 0 && hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel) // add new
                         {
-                            
-
                             var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
                                 dest.CreateId = TempIdentity.UserId;
                                 dest.CreateDate = DateTime.UtcNow;
@@ -1904,10 +1902,11 @@ namespace Infrastructure.Repositories
                             if (hokenPartternUpdate != null && hokenParttern.HokenInf.ConfirmDateList != null)
                                 UpdateHokenCheck(databaseHokenChecks, hokenParttern.HokenInf.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.HokenId, TempIdentity.UserId);
 
-
-
                             var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(hokenParttern.HokenInf.ListRousaiTenki.Where(x=>x.SeqNo == 0), (src, dest) =>
                             {
+                                dest.Sinkei = src.RousaiTenkiSinkei;
+                                dest.Tenki = src.RousaiTenkiTenki;
+                                dest.EndDate = src.RousaiTenkiEndDate;
                                 dest.CreateId = TempIdentity.UserId;
                                 dest.PtId = patientInfo.PtId;
                                 dest.HpId = hpId;
@@ -1919,7 +1918,6 @@ namespace Infrastructure.Repositories
                                 return dest;
                             });
                             _tenantTrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
-
 
                             foreach(var rsTkUpdate in hokenParttern.HokenInf.ListRousaiTenki.Where(x => x.SeqNo != 0))
                             {
@@ -2046,7 +2044,6 @@ namespace Infrastructure.Repositories
                             });
                             _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
                         }
-
                     }
 
                     if (hokenParttern.Kohi2 != null && !hokenParttern.Kohi2.IsEmptyModel)
@@ -2153,7 +2150,6 @@ namespace Infrastructure.Repositories
                             _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
                         }
                     }
-
                     _tenantTrackingDataContext.PtHokenPatterns.Add(hokenModel);
                     hoKenIndex++;
                 }
