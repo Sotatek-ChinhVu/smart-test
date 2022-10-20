@@ -5,7 +5,6 @@
         public enum ValidationStatus
         {
             Success,
-            InvalidHpId,
             InvalidDigit1,
             InvalidDigit2,
             InvalidDigit3,
@@ -15,6 +14,7 @@
             InvalidDigit7,
             InvalidDigit8,
             InvalidHokenNo,
+            InvalidHokenEdaNo,
             InputDataNull,
             Valid,
             Failed,

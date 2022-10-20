@@ -40,9 +40,6 @@ namespace Domain.Models.PatientInfor
         public ValidationStatus Validation()
         {
             #region common
-            if (HpId <= 0)
-                return ValidationStatus.InvalidHpId;
-
             if (!int.TryParse(Digit1, out int d1) || d1 < 0 || d1 > 9)
                 return ValidationStatus.InvalidDigit1;
 

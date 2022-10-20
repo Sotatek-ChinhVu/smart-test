@@ -916,7 +916,7 @@ namespace Infrastructure.Repositories
                     {
                         _tenantTrackingDataContext.DefHokenNos.Add(new DefHokenNo()
                         {
-                            HpId = item.HpId,
+                            HpId = TempIdentity.HpId,
                             Digit1 = item.Digit1,
                             Digit2 = item.Digit2,
                             Digit3 = item.Digit3,
@@ -944,7 +944,7 @@ namespace Infrastructure.Repositories
                     {
                         _tenantTrackingDataContext.DefHokenNos.Update(new DefHokenNo()
                         {
-                            HpId = checkExistDefHoken.HpId,
+                            HpId = TempIdentity.HpId,
                             Digit1 = checkExistDefHoken.Digit1,
                             Digit2 = checkExistDefHoken.Digit2,
                             Digit3 = item.Digit3,
