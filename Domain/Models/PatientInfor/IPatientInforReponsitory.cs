@@ -43,7 +43,5 @@ namespace Domain.Models.PatientInfor
         bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
 
         bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
-
-        bool CheckExistHokenEdaNo(int hokenNo, int hokenEdaNo);
     }
 }

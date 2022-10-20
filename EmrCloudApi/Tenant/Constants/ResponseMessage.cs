@@ -584,5 +584,6 @@
         public static readonly string InvalidDigit7 = "Invalid Digit 7";
         public static readonly string InvalidDigit8 = "Invalid Digit 8";
         public static readonly string InvalidHokenNo = "Invalid HokenNo";
+        public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
     }
 }

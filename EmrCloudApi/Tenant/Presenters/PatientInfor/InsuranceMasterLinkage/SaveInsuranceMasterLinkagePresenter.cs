@@ -22,7 +22,6 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage
             ValidationStatus.Success => ResponseMessage.Success,
             ValidationStatus.Failed => ResponseMessage.Failed,
             ValidationStatus.InputDataNull => ResponseMessage.InputDataNull,
-            ValidationStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             ValidationStatus.InvalidDigit1 => ResponseMessage.InvalidDigit1,
             ValidationStatus.InvalidDigit2 => ResponseMessage.InvalidDigit2,
             ValidationStatus.InvalidDigit3 => ResponseMessage.InvalidDigit3,
@@ -32,6 +31,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage
             ValidationStatus.InvalidDigit7 => ResponseMessage.InvalidDigit7,
             ValidationStatus.InvalidDigit8 => ResponseMessage.InvalidDigit8,
             ValidationStatus.InvalidHokenNo => ResponseMessage.InvalidHokenNo,
+            ValidationStatus.InvalidHokenEdaNo => ResponseMessage.InvalidHokenEdaNo,
             _ => string.Empty,
         };
     }
