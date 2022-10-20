@@ -8,7 +8,7 @@ namespace Domain.Models.CalculationInf
 {
     public class CalculationInfModel
     {
-        public CalculationInfModel(int hpId, long ptId, int kbnNo, int edaNo, int kbnVal, int startDate, int endDate)
+        public CalculationInfModel(int hpId, long ptId, int kbnNo, int edaNo, int kbnVal, int startDate, int endDate,long seqNo)
         {
             HpId = hpId;
             PtId = ptId;
@@ -26,5 +26,6 @@ namespace Domain.Models.CalculationInf
         public int KbnVal { get; private set; }
         public int StartDate { get; private set; }
         public int EndDate { get; private set; }
+        public long SeqNo { get; private set; }
     }
 }

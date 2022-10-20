@@ -5,12 +5,10 @@ namespace UseCase.VisitingList.SaveSettings;
 
 public class SaveVisitingListSettingsInputData : IInputData<SaveVisitingListSettingsOutputData>
 {
-    public SaveVisitingListSettingsInputData(int userId, VisitingListSettingModel settings)
+    public SaveVisitingListSettingsInputData(VisitingListSettingModel settings)
     {
-        UserId = userId;
         Settings = settings;
     }
 
-    public int UserId { get; private set; }
     public VisitingListSettingModel Settings { get; private set; }
 }

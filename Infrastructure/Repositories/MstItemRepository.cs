@@ -947,7 +947,7 @@ namespace Infrastructure.Repositories
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
                                       x.IsDeleted))
-                                  .Skip(pageIndex).Take(pageSize)
+                                  .Skip(pageIndex - 1).Take(pageSize)
                                   .ToList();
             return result;
         }
