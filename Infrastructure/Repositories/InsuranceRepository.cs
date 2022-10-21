@@ -254,7 +254,13 @@ namespace Infrastructure.Repositories
                                                               hokenMstHokenEdraNo,
                                                               hokenMstSName,
                                                               houbetu ?? string.Empty,
-                                                              hokenMstSubNumber)
+                                                              hokenMstSubNumber,
+                                                              item.hokenMst?.CheckDigit,
+                                                              item.hokenMst?.AgeStart,
+                                                              item.hokenMst?.AgeEnd,
+                                                              item.hokenMst?.IsKigoNa,
+
+                                                              )
                                             );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -274,7 +280,8 @@ namespace Infrastructure.Repositories
                         kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
                         item.PatternIsDeleted,
                         item.StartDate,
-                        item.EndDate
+                        item.EndDate,
+                        false
                     );
                     listInsurance.Add(insuranceModel);
                 }

@@ -10,7 +10,7 @@ namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted, int startDate, int endDate, bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
@@ -29,6 +29,7 @@ namespace Domain.Models.InsuranceInfor
             IsDeleted = isDeleted;
             StartDate = startDate;
             EndDate = endDate;
+            IsAddNew = isAddNew;
         }
 
         public InsuranceModel() // new model
@@ -215,6 +216,10 @@ namespace Domain.Models.InsuranceInfor
         public string EdaNo => HokenInf == null ? string.Empty : HokenInf.EdaNo;
 
         public int SikakuDate => HokenInf == null ? 0 : HokenInf.SikakuDate;
+
+        public bool IsAddNew { get; private set; }
+
+        public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);
         #endregion
 
         #region Function

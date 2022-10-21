@@ -1,5 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Helper.Common;
@@ -34,8 +35,8 @@ namespace Interactor.Insurance
                 }
 
                 var index = 0;
-                var listHokenPattern = new List<SelectedHokenPattern>();
-                var listHokenInf = new List<SelectedHokenInf>();
+                var listHokenPattern = new List<InsuranceModel>();
+                var listHokenInf = new List<HokenInfModel>();
                 if (inputData.ListDataModel.Any())
                 {
                     foreach (var item in inputData.ListDataModel)
@@ -201,12 +202,12 @@ namespace Interactor.Insurance
             }
 
             //IsValidKohi 1
-            var checkMessageKohi = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi1, itemModel.SelectedHokenPattern.Kohi1.IsKohiMst,
+            var checkMessageKohi = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi1, itemModel.SelectedHokenPattern.Kohi1.IsHaveKohiMst,
                                                itemModel.SelectedHokenPattern.Kohi1.FutansyaNo, itemModel.SelectedHokenPattern.Kohi1.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi1.TokusyuNo,
                                                itemModel.SelectedHokenPattern.Kohi1.StartDate, itemModel.SelectedHokenPattern.Kohi1.EndDate, itemModel.SelectedHokenPattern.Kohi1.ConfirmDate, 
-                                               itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.JyukyusyaCheckFlag, 
-                                               itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.StartDate, 
-                                               itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.EndDate, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.DisplayTextMaster, 1, 
+                                               itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.JyukyusyaCheckFlag, 
+                                               itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.StartDate, 
+                                               itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.EndDate, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.DisplayTextMaster, 1, 
                                                sinDate, itemModel.SelectedHokenPattern.Kohi1.IsAddNew, index);
             if (!checkMessageKohi.Result)
             {
@@ -214,22 +215,22 @@ namespace Interactor.Insurance
             }
 
             // check Kohi No Function1
-            var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi1, itemModel.SelectedHokenPattern.Kohi1.IsKohiMst, itemModel.SelectedHokenPattern.Kohi1.HokenNo,
-                                                           itemModel.SelectedHokenPattern.Kohi1.FutansyaNo, itemModel.SelectedHokenPattern.Kohi1.TokusyuNo, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.JyukyusyaCheckFlag, 
-                                                           itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.CheckDigit, 
-                                                           itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.Houbetu, itemModel.SelectedHokenPattern.Kohi1.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.AgeStart, itemModel.SelectedHokenPattern.Kohi1.KohiHokenMst.AgeEnd, 1, ptBirthday, index);
+            var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi1, itemModel.SelectedHokenPattern.Kohi1.IsHaveKohiMst, itemModel.SelectedHokenPattern.Kohi1.HokenNo,
+                                                           itemModel.SelectedHokenPattern.Kohi1.FutansyaNo, itemModel.SelectedHokenPattern.Kohi1.TokusyuNo, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.JyukyusyaCheckFlag, 
+                                                           itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.CheckDigit, 
+                                                           itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.Houbetu, itemModel.SelectedHokenPattern.Kohi1.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.AgeStart, itemModel.SelectedHokenPattern.Kohi1.HokenMstModel.AgeEnd, 1, ptBirthday, index);
             if (!checkMessageKohiNoFnc1.Result)
             {
                 return checkMessageKohiNoFnc1;
             }
 
             //IsValidKohi 2
-            var checkMessageKohi2 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi2, itemModel.SelectedHokenPattern.Kohi2.IsKohiMst,
+            var checkMessageKohi2 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi2, itemModel.SelectedHokenPattern.Kohi2.IsHaveKohiMst,
                                                itemModel.SelectedHokenPattern.Kohi2.FutansyaNo, itemModel.SelectedHokenPattern.Kohi2.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi2.TokusyuNo,
                                                itemModel.SelectedHokenPattern.Kohi2.StartDate, itemModel.SelectedHokenPattern.Kohi2.EndDate, itemModel.SelectedHokenPattern.Kohi2.ConfirmDate,
-                                               itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.JyukyusyaCheckFlag,
-                                               itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.StartDate,
-                                               itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.EndDate, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.DisplayTextMaster, 2,
+                                               itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.JyukyusyaCheckFlag,
+                                               itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.StartDate,
+                                               itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.EndDate, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.DisplayTextMaster, 2,
                                                sinDate, itemModel.SelectedHokenPattern.Kohi2.IsAddNew, index);
             if (!checkMessageKohi2.Result)
             {
@@ -237,22 +238,22 @@ namespace Interactor.Insurance
             }
 
             // check Kohi No Function2
-            var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi2, itemModel.SelectedHokenPattern.Kohi2.IsKohiMst, itemModel.SelectedHokenPattern.Kohi2.HokenNo,
-                                                           itemModel.SelectedHokenPattern.Kohi2.FutansyaNo, itemModel.SelectedHokenPattern.Kohi2.TokusyuNo, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.JyukyusyaCheckFlag,
-                                                           itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.CheckDigit,
-                                                           itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.Houbetu, itemModel.SelectedHokenPattern.Kohi2.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.AgeStart, itemModel.SelectedHokenPattern.Kohi2.KohiHokenMst.AgeEnd, 2, ptBirthday, index);
+            var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi2, itemModel.SelectedHokenPattern.Kohi2.IsHaveKohiMst, itemModel.SelectedHokenPattern.Kohi2.HokenNo,
+                                                           itemModel.SelectedHokenPattern.Kohi2.FutansyaNo, itemModel.SelectedHokenPattern.Kohi2.TokusyuNo, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.JyukyusyaCheckFlag,
+                                                           itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.CheckDigit,
+                                                           itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.Houbetu, itemModel.SelectedHokenPattern.Kohi2.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.AgeStart, itemModel.SelectedHokenPattern.Kohi2.HokenMstModel.AgeEnd, 2, ptBirthday, index);
             if (!checkMessageKohiNoFnc2.Result)
             {
                 return checkMessageKohiNoFnc2;
             }
 
             //IsValidKohi 3
-            var checkMessageKohi3 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi3, itemModel.SelectedHokenPattern.Kohi3.IsKohiMst,
+            var checkMessageKohi3 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi3, itemModel.SelectedHokenPattern.Kohi3.IsHaveKohiMst,
                                                itemModel.SelectedHokenPattern.Kohi3.FutansyaNo, itemModel.SelectedHokenPattern.Kohi3.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi3.TokusyuNo,
                                                itemModel.SelectedHokenPattern.Kohi3.StartDate, itemModel.SelectedHokenPattern.Kohi3.EndDate, itemModel.SelectedHokenPattern.Kohi3.ConfirmDate,
-                                               itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.JyukyusyaCheckFlag,
-                                               itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.StartDate,
-                                               itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.EndDate, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.DisplayTextMaster, 3,
+                                               itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.JyukyusyaCheckFlag,
+                                               itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.StartDate,
+                                               itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.EndDate, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.DisplayTextMaster, 3,
                                                sinDate, itemModel.SelectedHokenPattern.Kohi3.IsAddNew, index);
             if (!checkMessageKohi3.Result)
             {
@@ -260,22 +261,22 @@ namespace Interactor.Insurance
             }
 
             // check Kohi No Function3
-            var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi3, itemModel.SelectedHokenPattern.Kohi3.IsKohiMst, itemModel.SelectedHokenPattern.Kohi3.HokenNo,
-                                                           itemModel.SelectedHokenPattern.Kohi3.FutansyaNo, itemModel.SelectedHokenPattern.Kohi3.TokusyuNo, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.JyukyusyaCheckFlag,
-                                                           itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.CheckDigit,
-                                                           itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.Houbetu, itemModel.SelectedHokenPattern.Kohi3.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.AgeStart, itemModel.SelectedHokenPattern.Kohi3.KohiHokenMst.AgeEnd, 3, ptBirthday, index);
+            var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi3, itemModel.SelectedHokenPattern.Kohi3.IsHaveKohiMst, itemModel.SelectedHokenPattern.Kohi3.HokenNo,
+                                                           itemModel.SelectedHokenPattern.Kohi3.FutansyaNo, itemModel.SelectedHokenPattern.Kohi3.TokusyuNo, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.JyukyusyaCheckFlag,
+                                                           itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.CheckDigit,
+                                                           itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.Houbetu, itemModel.SelectedHokenPattern.Kohi3.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.AgeStart, itemModel.SelectedHokenPattern.Kohi3.HokenMstModel.AgeEnd, 3, ptBirthday, index);
             if (!checkMessageKohiNoFnc3.Result)
             {
                 return checkMessageKohiNoFnc3;
             }
 
             //IsValidKohi 4
-            var checkMessageKohi4 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi4, itemModel.SelectedHokenPattern.Kohi4.IsKohiMst,
+            var checkMessageKohi4 = IsValidKohi(itemModel.SelectedHokenPattern.IsEmptyKohi4, itemModel.SelectedHokenPattern.Kohi4.IsHaveKohiMst,
                                                itemModel.SelectedHokenPattern.Kohi4.FutansyaNo, itemModel.SelectedHokenPattern.Kohi4.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi4.TokusyuNo,
                                                itemModel.SelectedHokenPattern.Kohi4.StartDate, itemModel.SelectedHokenPattern.Kohi4.EndDate, itemModel.SelectedHokenPattern.Kohi4.ConfirmDate,
-                                               itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.JyukyusyaCheckFlag,
-                                               itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.StartDate,
-                                               itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.EndDate, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.DisplayTextMaster, 4,
+                                               itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.JyukyusyaCheckFlag,
+                                               itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.TokusyuCheckFlag, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.StartDate,
+                                               itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.EndDate, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.DisplayTextMaster, 4,
                                                sinDate, itemModel.SelectedHokenPattern.Kohi4.IsAddNew, index);
             if (!checkMessageKohi4.Result)
             {
@@ -283,10 +284,10 @@ namespace Interactor.Insurance
             }
 
             // check Kohi No Function4
-            var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi4, itemModel.SelectedHokenPattern.Kohi4.IsKohiMst, itemModel.SelectedHokenPattern.Kohi4.HokenNo,
-                                                           itemModel.SelectedHokenPattern.Kohi4.FutansyaNo, itemModel.SelectedHokenPattern.Kohi4.TokusyuNo, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.JyukyusyaCheckFlag,
-                                                           itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.CheckDigit,
-                                                           itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.Houbetu, itemModel.SelectedHokenPattern.Kohi4.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.AgeStart, itemModel.SelectedHokenPattern.Kohi4.KohiHokenMst.AgeEnd, 4, ptBirthday, index);
+            var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(itemModel.SelectedHokenPattern.IsEmptyKohi4, itemModel.SelectedHokenPattern.Kohi4.IsHaveKohiMst, itemModel.SelectedHokenPattern.Kohi4.HokenNo,
+                                                           itemModel.SelectedHokenPattern.Kohi4.FutansyaNo, itemModel.SelectedHokenPattern.Kohi4.TokusyuNo, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.JyukyusyaCheckFlag,
+                                                           itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.FutansyaCheckFlag, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.JyuKyuCheckDigit, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.CheckDigit,
+                                                           itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.Houbetu, itemModel.SelectedHokenPattern.Kohi4.JyukyusyaNo, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.AgeStart, itemModel.SelectedHokenPattern.Kohi4.HokenMstModel.AgeEnd, 4, ptBirthday, index);
             if (!checkMessageKohiNoFnc4.Result)
             {
                 return checkMessageKohiNoFnc4;
@@ -397,7 +398,7 @@ namespace Interactor.Insurance
             }
             else
             {
-                if (item.SelectedHokenMst.IsKigoNashi == 0 && (string.IsNullOrEmpty(item.SelectedHokenInf.Kigo)
+                if (item.SelectedHokenInf.HokensyaMst.IsKigoNa == 0 && (string.IsNullOrEmpty(item.SelectedHokenInf.Kigo)
                     || string.IsNullOrEmpty(item.SelectedHokenInf.Kigo.Trim(' '))))
                 {
                     var paramsMessage = new string[] { "被保険者証記号" };
@@ -1342,7 +1343,7 @@ namespace Interactor.Insurance
             }
         }
 
-        private ValidateInsuranceOutputData IsvalidKohiAll(int index, bool isKohiEmptyModel1, bool isKohiEmptyModel2, bool isKohiEmptyModel3, bool isKohiEmptyModel4, SelectedKohiModel kohi1, SelectedKohiModel kohi2, SelectedKohiModel kohi3, SelectedKohiModel kohi4)
+        private ValidateInsuranceOutputData IsvalidKohiAll(int index, bool isKohiEmptyModel1, bool isKohiEmptyModel2, bool isKohiEmptyModel3, bool isKohiEmptyModel4, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4)
         {
             var message = "";
             if (isKohiEmptyModel2 && isKohiEmptyModel1)
@@ -1662,41 +1663,41 @@ namespace Interactor.Insurance
             return new ValidateInsuranceOutputData(true, message, ValidateInsuranceStatus.Successed, 0);
         }
 
-        private bool CheckPatternDuplicate(SelectedHokenPattern pattern, SelectedHokenPattern item)
+        private bool CheckPatternDuplicate(InsuranceModel pattern, InsuranceModel item)
         {
             if (pattern.IsEmptyHoken != item.IsEmptyHoken)
                 return false;
 
-            if (!pattern.IsEmptyHoken && !item.IsEmptyHoken && pattern.HokenId != item.HokenId)
+            if (!pattern.IsEmptyHoken && !item.IsEmptyHoken && pattern.HokenInf.HokenId != item.HokenInf.HokenId)
                 return false;
 
             if (pattern.IsEmptyKohi1 != item.IsEmptyKohi1)
                 return false;
 
-            if (!pattern.IsEmptyKohi1 && !item.IsEmptyKohi1 && pattern.Kohi1Id != item.Kohi1Id)
+            if (!pattern.IsEmptyKohi1 && !item.IsEmptyKohi1 && pattern.Kohi1.HokenId != item.Kohi1.HokenId)
                 return false;
 
             if (pattern.IsEmptyKohi2 != item.IsEmptyKohi2)
                 return false;
 
-            if (!pattern.IsEmptyKohi2 && !item.IsEmptyKohi2 && pattern.Kohi2Id != item.Kohi2Id)
+            if (!pattern.IsEmptyKohi2 && !item.IsEmptyKohi2 && pattern.Kohi2.HokenId != item.Kohi2.HokenId)
                 return false;
 
             if (pattern.IsEmptyKohi3 != item.IsEmptyKohi3)
                 return false;
 
-            if (!pattern.IsEmptyKohi3 && !item.IsEmptyKohi3 && pattern.Kohi3Id != item.Kohi3Id)
+            if (!pattern.IsEmptyKohi3 && !item.IsEmptyKohi3 && pattern.Kohi3.HokenId != item.Kohi3.HokenId)
                 return false;
 
             if (pattern.IsEmptyKohi4 != item.IsEmptyKohi4)
                 return false;
 
-            if (!pattern.IsEmptyKohi4 && !item.IsEmptyKohi4 && pattern.Kohi4Id != item.Kohi4Id)
+            if (!pattern.IsEmptyKohi4 && !item.IsEmptyKohi4 && pattern.Kohi4.HokenId != item.Kohi4.HokenId)
                 return false;
             return true;
         }
 
-        private ValidateInsuranceOutputData CheckAge(ValidateInsuranceInputData inputData, List<SelectedHokenPattern> listHokenPattern, List<SelectedHokenInf> listHokenInf)
+        private ValidateInsuranceOutputData CheckAge(ValidateInsuranceInputData inputData, List<InsuranceModel> listHokenPattern, List<HokenInfModel> listHokenInf)
         {
             var messageError = "";
             if (inputData.SinDate >= 20080401 && (listHokenPattern.Count > 0 && listHokenInf.Count > 0))
@@ -1705,7 +1706,7 @@ namespace Interactor.Insurance
                 int age = CIUtil.SDateToAge(inputData.PtBirthday, inputData.SinDate);
                 // hoken exist in at least 1 pattern
                 var inUsedHokens = listHokenInf.Where(hoken => hoken.HokenId > 0 && hoken.IsDeleted == 0 && !hoken.IsExpirated
-                                                            && patternHokenOnlyCheckAge.Any(pattern => pattern.HokenId == hoken.HokenId));
+                                                            && patternHokenOnlyCheckAge.Any(pattern => pattern.HokenInf.HokenId == hoken.HokenId));
 
                 var elderHokenQuery = inUsedHokens.Where(hoken => hoken.EndDate >= inputData.SinDate
                                                                         && hoken.HokensyaNo != null && hoken.HokensyaNo != ""
@@ -1741,28 +1742,28 @@ namespace Interactor.Insurance
                         || (item.SelectedHokenPattern.HokenKbn == 1 && item.SelectedHokenInf.Houbetu == HokenConstant.HOUBETU_NASHI);
                 }
                 bool isEmptyKohi1 = true;
-                if (!item.SelectedHokenPattern.IsEmptyKohi1 && item.SelectedHokenPattern.Kohi1.IsKohiMst)
+                if (!item.SelectedHokenPattern.IsEmptyKohi1 && item.SelectedHokenPattern.Kohi1.IsHaveKohiMst)
                 {
                     //2:マル長
-                    isEmptyKohi1 = item.SelectedHokenPattern.Kohi1.KohiHokenMst.HokenSbtKbn == 2;
+                    isEmptyKohi1 = item.SelectedHokenPattern.Kohi1.HokenMstModel.HokenSbtKbn == 2;
                 }
                 bool isEmptyKohi2 = true;
-                if (!item.SelectedHokenPattern.IsEmptyKohi2 && item.SelectedHokenPattern.Kohi2.IsKohiMst)
+                if (!item.SelectedHokenPattern.IsEmptyKohi2 && item.SelectedHokenPattern.Kohi2.IsHaveKohiMst)
                 {
                     //2:マル長
-                    isEmptyKohi2 = item.SelectedHokenPattern.Kohi2.KohiHokenMst.HokenSbtKbn == 2;
+                    isEmptyKohi2 = item.SelectedHokenPattern.Kohi2.HokenMstModel.HokenSbtKbn == 2;
                 }
                 bool isEmptyKohi3 = true;
-                if (!item.SelectedHokenPattern.IsEmptyKohi3 && item.SelectedHokenPattern.Kohi3.IsKohiMst)
+                if (!item.SelectedHokenPattern.IsEmptyKohi3 && item.SelectedHokenPattern.Kohi3.IsHaveKohiMst)
                 {
                     //2:マル長
-                    isEmptyKohi3 = item.SelectedHokenPattern.Kohi3.KohiHokenMst.HokenSbtKbn == 2;
+                    isEmptyKohi3 = item.SelectedHokenPattern.Kohi3.HokenMstModel.HokenSbtKbn == 2;
                 }
                 bool isEmptyKohi4 = true;
-                if (!item.SelectedHokenPattern.IsEmptyKohi4 && item.SelectedHokenPattern.Kohi4.IsKohiMst)
+                if (!item.SelectedHokenPattern.IsEmptyKohi4 && item.SelectedHokenPattern.Kohi4.IsHaveKohiMst)
                 {
                     //2:マル長
-                    isEmptyKohi1 = item.SelectedHokenPattern.Kohi4.KohiHokenMst.HokenSbtKbn == 2;
+                    isEmptyKohi1 = item.SelectedHokenPattern.Kohi4.HokenMstModel.HokenSbtKbn == 2;
                 }
                 if (!item.SelectedHokenPattern.IsAddNew && isEmptyHoken && isEmptyKohi1 && isEmptyKohi2 && isEmptyKohi3 && isEmptyKohi4)
                 {
