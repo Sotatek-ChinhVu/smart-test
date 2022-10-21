@@ -115,7 +115,7 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidByomeiCd;
             }
-            if (StartDate < 0)
+            if (StartDate <= 0)
             {
                 return ValidationStatus.InvalidStartDate;
             }
