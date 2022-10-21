@@ -21,18 +21,11 @@ namespace Interactor.SwapHoken
                 return new SaveSwapHokenOutputData(SaveSwapHokenStatus.DesInsuranceHasNotSelected);
 
             if (inputData.StartDate > inputData.EndDate && inputData.StartDate > 0 && inputData.EndDate > 0)
-                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful);
+                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.StartDateGreaterThanEndDate);
 
-            bool validDate = true;
-            if (inputData.StartDate == 0 && inputData.EndDate == 0)
-                validDate = false;
-
-            if (!validDate)
-            {
-                long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
-                if (count == 0)
-                    return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate);
-            } 
+            long count = _swapHokenRepository.CountOdrInf(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
+            if (count == 0)
+                return new SaveSwapHokenOutputData(SaveSwapHokenStatus.CantExecCauseNotValidDate);
 
             var seikyuYms = _swapHokenRepository.GetListSeikyuYms(inputData.HpId,inputData.PtId,inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
             var seiKyuPendingYms = _swapHokenRepository.GetSeikyuYmsInPendingSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore);

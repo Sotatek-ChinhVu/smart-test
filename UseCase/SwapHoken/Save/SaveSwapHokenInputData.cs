@@ -15,7 +15,7 @@ namespace UseCase.SwapHoken.Save
             HokenPidBefore = hokenPidBefore;
             HokenPidAfter = hokenPidAfter;
             StartDate = startDate;
-            EndDate = endDate;
+            EndDate = endDate == 0 ? 99999999 : endDate;
         }
 
         public int HpId { get; private set; }
@@ -25,19 +25,6 @@ namespace UseCase.SwapHoken.Save
         public int HokenPidBefore { get; private set; }
         public int HokenPidAfter { get; private set; }
         public int StartDate { get; private set; }
-        public int EndDate
-        {
-            private set
-            {
-                EndDate = value;
-            }
-            get {
-                if (EndDate == 0)
-                    return 99999999;
-                else
-                    return EndDate; 
-            }
-            
-        }
+        public int EndDate { get; private set; }
     }
 }

@@ -402,7 +402,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<DeletePatientInfoResponse>>(presenter.Result);
         } 
         [HttpPost("SwapHoken")]
-        public ActionResult<Response<SaveSwapHokenResponse>> GetHokenMstByFutansyaNo([FromBody] SaveSwapHokenRequest request)
+        public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
             var input = new SaveSwapHokenInputData(request.HpId, 
                                                    request.PtId, 
