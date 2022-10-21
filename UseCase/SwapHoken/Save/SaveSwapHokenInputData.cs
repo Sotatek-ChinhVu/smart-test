@@ -1,10 +1,12 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using System.Xml.Linq;
+using UseCase.Core.Async.Core;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.SwapHoken.Save
 {
     public class SaveSwapHokenInputData : IInputData<SaveSwapHokenOutputData>
     {
-        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, bool isReCalculation, bool isReceCalculation, bool isReceCheckError)
+        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate)
         {
             HpId = hpId;
             PtId = ptId;
@@ -14,9 +16,6 @@ namespace UseCase.SwapHoken.Save
             HokenPidAfter = hokenPidAfter;
             StartDate = startDate;
             EndDate = endDate;
-            IsReCalculation = isReCalculation;
-            IsReceCalculation = isReceCalculation;
-            IsReceCheckError = isReceCheckError;
         }
 
         public int HpId { get; private set; }
@@ -26,9 +25,19 @@ namespace UseCase.SwapHoken.Save
         public int HokenPidBefore { get; private set; }
         public int HokenPidAfter { get; private set; }
         public int StartDate { get; private set; }
-        public int EndDate { get; set; }
-        public bool IsReCalculation { get; private set; }
-        public bool IsReceCalculation { get; private set; }
-        public bool IsReceCheckError { get; private set; }
+        public int EndDate
+        {
+            private set
+            {
+                EndDate = value;
+            }
+            get {
+                if (EndDate == 0)
+                    return 99999999;
+                else
+                    return EndDate; 
+            }
+            
+        }
     }
 }

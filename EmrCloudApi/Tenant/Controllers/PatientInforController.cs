@@ -411,16 +411,10 @@ namespace EmrCloudApi.Tenant.Controllers
                                                    request.HokenPidBefore,
                                                    request.HokenPidAfter,
                                                    request.StartDate,
-                                                   request.EndDate,
-                                                   request.IsReCalculation,
-                                                   request.IsReceCalculation,
-                                                   request.IsReceCheckError
-                                                   );
+                                                   request.EndDate);
             var output = _bus.Handle(input);
-
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
-
             return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
         }
     }
