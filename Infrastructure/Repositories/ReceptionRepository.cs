@@ -414,6 +414,41 @@ namespace Infrastructure.Repositories
 
         }
 
+        public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
+        {
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p => 
+                                                                        p.HpId == hpId 
+                                                                        && p.PtId == ptId 
+                                                                        && p.IsDeleted == DeleteTypes.None 
+                                                                        && p.SinDate < sinDate && p.Status >= RaiinState.TempSave);
+                return result.Select(r => new ReceptionModel(
+                        r.HpId,
+                        r.PtId,
+                        r.SinDate,
+                        r.RaiinNo,
+                        r.OyaRaiinNo,
+                        r.HokenPid,
+                        r.SanteiKbn,
+                        r.Status,
+                        r.IsYoyaku,
+                        r.YoyakuTime ?? String.Empty,
+                        r.YoyakuId,
+                        r.UketukeSbt,
+                        r.UketukeTime ?? String.Empty,
+                        r.UketukeId,
+                        r.UketukeNo,
+                        r.SinStartTime ?? string.Empty,
+                        r.SinEndTime ?? String.Empty,
+                        r.KaikeiTime ?? String.Empty,
+                        r.KaikeiId,
+                        r.KaId,
+                        r.TantoId,
+                        r.SyosaisinKbn,
+                        r.JikanKbn,
+                        string.Empty
+                   )).ToList();
+        }
+
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
         {
             var result = _tenantNoTrackingDataContext.RaiinInfs.Where
