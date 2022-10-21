@@ -45,10 +45,6 @@ namespace Domain.Models.SpecialNote.ImportantNote
             {
                 return ValidationStatus.InvalidPtId;
             }
-            if (SortNo <= 0)
-            {
-                return ValidationStatus.InvalidSortNo;
-            }
             if (ItemCd.Length > 10)
             {
                 return ValidationStatus.InvalidItemCd;
