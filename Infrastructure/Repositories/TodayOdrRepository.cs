@@ -8,6 +8,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -1341,7 +1342,7 @@ namespace Infrastructure.Repositories
         ///<param name="baseDate">基準日</param>
         ///<param name="term">月数</param>
         ///<returns>基準日の指定月数後の休日以外の日付</returns>
-        private int MonthsAfterExcludeHoliday(int hpId, int baseDate, int term, List<ItemCmtModel>)
+        private int MonthsAfterExcludeHoliday(int hpId, int baseDate, int term)
         {
             int retDate = CIUtil.MonthsAfter(baseDate, term);
 
@@ -1375,14 +1376,14 @@ namespace Infrastructure.Repositories
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items)
+        private List<CheckSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
         {
             List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
             foreach (var item in items)
             {
                 if (checkSpecialItemList.Any(p => p.ItemCd == item.Key)) continue;
 
-                if (IsShowCommentCheckMst(item.Key))
+                if (IsShowCommentCheckMst(item.Key, allCmtCheckMst, karteInfs))
                 {
                     checkSpecialItemList.Add(new CheckSpecialItemModel(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
                 }
@@ -1488,6 +1489,21 @@ namespace Infrastructure.Repositories
             {
                 return 0;
             }
+        }
+
+        private bool IsShowCommentCheckMst(string itemCd, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
+        {
+            var itemCmtModels = allCmtCheckMst.FindAll(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo).ToList();
+            if (itemCmtModels.Count == 0) return false;
+
+            foreach (var itemCmtModel in itemCmtModels)
+            {
+                if (karteInfs.Exists(p => p.KarteKbn == itemCmtModel.KarteKbn && p.Text.AsString().Contains(itemCmtModel.Comment)))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
