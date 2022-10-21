@@ -11,13 +11,13 @@ namespace UseCase.Reception.GetReceptionDefault
 {
     public class GetReceptionDefaultOutputData: IOutputData
     {
-        public GetReceptionDefaultOutputData(ReceptionDefautDataModel data, GetReceptionDefaultStatus status)
+        public GetReceptionDefaultOutputData(ReceptionModel data, GetReceptionDefaultStatus status)
         {
             Data = data;
             Status = status;
         }
 
-        public ReceptionDefautDataModel Data { get; set; }
+        public ReceptionModel Data { get; set; }
 
         public GetReceptionDefaultStatus Status { get; private set; }
     }

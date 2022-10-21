@@ -34,6 +34,6 @@
 
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
 
-        ReceptionDefautDataModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
+        ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
     }
 }

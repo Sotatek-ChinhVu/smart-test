@@ -175,5 +175,17 @@ namespace Domain.Models.Reception
                     Comment
                 );
         }
+
+        public ReceptionModel(int tantoId, int kaId)
+        {
+            Comment = String.Empty;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            KaId = kaId;
+            TantoId = tantoId;
+        }
     }
 }

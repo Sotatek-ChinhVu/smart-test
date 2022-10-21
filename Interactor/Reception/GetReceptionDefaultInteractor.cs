@@ -20,22 +20,22 @@ namespace Interactor.Reception
         {
             if (inputData.HpId < 0)
             {
-                return new GetReceptionDefaultOutputData(new ReceptionDefautDataModel(), GetReceptionDefaultStatus.InvalidHpId);
+                return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidHpId);
             }
 
             if (inputData.PtId < 0)
             {
-                return new GetReceptionDefaultOutputData(new ReceptionDefautDataModel(), GetReceptionDefaultStatus.InvalidPtId);
+                return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidPtId);
             }
 
             if (inputData.Sindate < 0)
             {
-                return new GetReceptionDefaultOutputData(new ReceptionDefautDataModel(), GetReceptionDefaultStatus.InvalidSindate);
+                return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidSindate);
             }
 
             if (inputData.DefaultDoctorSetting < 0)
             {
-                return new GetReceptionDefaultOutputData(new ReceptionDefautDataModel(), GetReceptionDefaultStatus.InvalidDefautDoctorSetting);
+                return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.InvalidDefautDoctorSetting);
             }
 
             var data = _receptionRepository.GetDataDefaultReception(inputData.HpId, inputData.PtId, inputData.Sindate, inputData.DefaultDoctorSetting);

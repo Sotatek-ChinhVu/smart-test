@@ -740,7 +740,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        public ReceptionDefautDataModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
+        public ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor)
         {
             var tantoId = 0;
             var kaId = 0;
@@ -791,7 +791,7 @@ namespace Infrastructure.Repositories
             {
                 kaId = getKaIdDefault.KaId;
             }
-            return new ReceptionDefautDataModel(tantoId, kaId);
+            return new ReceptionModel(tantoId, kaId);
         }
     }
 }
