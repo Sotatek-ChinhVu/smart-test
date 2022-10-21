@@ -125,7 +125,7 @@ namespace Infrastructure.Repositories
                         HpId = hpId,
                         RaiinNo = raiinNo,
                         RpNo = oldHeaderInfModel.RpNo,
-                        RpEdaNo = oldHeaderInfModel.RpEdaNo,
+                        RpEdaNo = oldHeaderInfModel.RpEdaNo + 1,
                         PtId = ptId,
                         SinDate = sinDate,
                         HokenPid = hokenPid,
@@ -177,7 +177,7 @@ namespace Infrastructure.Repositories
                 {
                     HpId = hpId,
                     RaiinNo = raiinNo,
-                    RpNo = rpNoMax++,
+                    RpNo = ++rpNoMax,
                     RpEdaNo = rpEdaNoDefault,
                     PtId = ptId,
                     SinDate = sinDate,
