@@ -17,7 +17,7 @@ namespace UseCase.Reception.GetReceptionDefault
             Status = status;
         }
 
-        public ReceptionModel Data { get; set; }
+        public ReceptionModel Data { get; private set; }
 
         public GetReceptionDefaultStatus Status { get; private set; }
     }
