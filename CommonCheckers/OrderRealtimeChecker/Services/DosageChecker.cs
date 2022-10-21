@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -6,7 +7,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public List<string> ListPtAlrgyDrugCode { private get; set; }
+        public double CurrentHeight { get; set; }
+
+        public double CurrentWeight { get; set; }
+
+        public bool TermLimitCheckingOnly { get; set; }
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
@@ -15,97 +20,68 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            // Get listItemCode
-            List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
-
-            List<DrugAllergyResultModel> checkedResult = new List<DrugAllergyResultModel>();
-
-            #region Handle duplication itemCode case
-
-            List<string> listDuplicatedItemCode = listItemCode.Where(i => ListPtAlrgyDrugCode.Contains(i)).ToList();
-
-            if (listDuplicatedItemCode.Count > 0)
+            bool isMinCheck = SystemConfig.Instance.DosageMinCheckSetting;
+            double ratioSetting = SystemConfig.Instance.DosageRatioSetting;
+            List<DosageResultModel> resultList = new List<DosageResultModel>();
+            List<TOdrInf> errorOrderList = new List<TOdrInf>();
+            foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-                var yjCdList = Finder.GetYjCdListByItemCdList(HpID, listDuplicatedItemCode, Sinday);
-
-                listDuplicatedItemCode.ForEach((i) =>
+                if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.Instance.DosageDrinkingDrugSetting ||
+                checkingOrder.OdrKouiKbn == 22 && !SystemConfig.Instance.DosageDrugAsOrderSetting ||
+                checkingOrder.OdrKouiKbn == 23 ||
+                checkingOrder.OdrKouiKbn == 28 ||
+                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !SystemConfig.Instance.DosageOtherDrugSetting)
                 {
-                    string yjCd = string.Empty;
-                    if (yjCdList.ContainsKey(i))
-                    {
-                        yjCd = yjCdList[i];
-                    }
-                    checkedResult.Add(new DrugAllergyResultModel()
-                    {
-                        Level = 0,
-                        ItemCd = i,
-                        AllergyItemCd = i,
-                        YjCd = yjCd,
-                        AllergyYjCd = yjCd
-                    });
-                });
-
-                listItemCode = listItemCode.Where(i => !listDuplicatedItemCode.Contains(i)).ToList();
-            }
-
-            #endregion
-
-            if (SystemConfig.Instance.IsDuplicatedComponentChecked && listItemCode.Count != 0)
-            {
-                List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode);
-                checkedResult.AddRange(checkedResultAsLevel);
-                List<string> listCheckedCode = checkedResultAsLevel.Select(r => r.ItemCd).ToList();
-                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
-            }
-
-            if ((SystemConfig.Instance.IsProDrugChecked || SystemConfig.Instance.IsSameComponentChecked) && listItemCode.Count != 0)
-            {
-                List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
-                if (SystemConfig.Instance.IsProDrugChecked && listItemCode.Count != 0)
-                {
-                    checkedResultAsLevel.AddRange(Finder.CheckProDrug(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
+                    continue;
                 }
 
-                if (SystemConfig.Instance.IsSameComponentChecked && listItemCode.Count != 0)
+                double usageQuantity = 0;
+                var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
+                if (usageItem != null)
                 {
-                    checkedResultAsLevel.AddRange(Finder.CheckSameComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
+                    usageQuantity = usageItem.Suryo;
+                }
+                // Get listItemCode
+                List<DrugInfo> itemList = checkingOrder.OdrInfDetailModelsIgnoreEmpty
+                    .Where(i => i.DrugKbn > 0)
+                    .Select(i => new DrugInfo()
+                    {
+                        ItemCD = i.ItemCd,
+                        ItemName = i.ItemName,
+                        Suryo = i.Suryo,
+                        UnitName = i.UnitName,
+                        TermVal = i.TermVal,
+                        SinKouiKbn = checkingOrder.OdrKouiKbn,
+                        UsageQuantity = usageQuantity
+                    })
+                    .ToList();
+
+                if (itemList.Count == 0)
+                {
+                    continue;
                 }
 
-                checkedResult.AddRange(checkedResultAsLevel);
-                List<string> listCheckedCode = checkedResultAsLevel.Select(r => r.ItemCd).ToList();
-                listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
+                List<DosageResultModel> checkedResult = Finder.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight);
+
+                if (TermLimitCheckingOnly)
+                {
+                    checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
+                }
+
+                if (checkedResult.Count > 0)
+                {
+                    errorOrderList.Add(checkingOrder);
+                    resultList.AddRange(checkedResult);
+                }
             }
 
-            if (SystemConfig.Instance.IsDuplicatedClassChecked && listItemCode.Count != 0)
+            if (resultList.Count > 0)
             {
-                checkedResult.AddRange(Finder.CheckDuplicatedClass(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
-            }
-
-            if (checkedResult != null && checkedResult.Count > 0)
-            {
-                unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(checkingOrderList, checkedResult);
+                unitCheckerForOrderListResult.ErrorInfo = resultList;
+                unitCheckerForOrderListResult.ErrorOrderList = errorOrderList;
             }
 
             return unitCheckerForOrderListResult;
-        }
-
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DrugAllergyResultModel> checkedResultList)
-        {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
-
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
-            {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd));
-                if (existed)
-                {
-                    resultList.Add(checkingOrder);
-                }
-            }
-
-            return resultList;
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Types;
+using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -6,81 +8,77 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public double CurrentHeight { get; set; }
+        public List<string> ListDiseaseCode { get; set; } = new List<string>();
 
-        public double CurrentWeight { get; set; }
-
-        public bool TermLimitCheckingOnly { get; set; }
+        public List<PtKioReki> ListPtKioReki { get; set; } = new List<PtKioReki>();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
         }
 
+        private int GetSettingLevel()
+        {
+            return SystemConfig.Instance.DiseaseLevelSetting;
+        }
+
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            bool isMinCheck = SystemConfig.Instance.DosageMinCheckSetting;
-            double ratioSetting = SystemConfig.Instance.DosageRatioSetting;
-            List<DosageResultModel> resultList = new List<DosageResultModel>();
-            List<TOdrInf> errorOrderList = new List<TOdrInf>();
-            foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
+            // Read setting from SystemConfig
+            int settingLevel = GetSettingLevel();
+            if (settingLevel <= 0 || settingLevel >= 4)
             {
-                if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.Instance.DosageDrinkingDrugSetting ||
-                checkingOrder.OdrKouiKbn == 22 && !SystemConfig.Instance.DosageDrugAsOrderSetting ||
-                checkingOrder.OdrKouiKbn == 23 ||
-                checkingOrder.OdrKouiKbn == 28 ||
-                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !SystemConfig.Instance.DosageOtherDrugSetting)
-                {
-                    continue;
-                }
-
-                double usageQuantity = 0;
-                var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
-                if (usageItem != null)
-                {
-                    usageQuantity = usageItem.Suryo;
-                }
-                // Get listItemCode
-                List<DrugInfo> itemList = checkingOrder.OdrInfDetailModelsIgnoreEmpty
-                    .Where(i => i.DrugKbn > 0)
-                    .Select(i => new DrugInfo()
-                    {
-                        ItemCD = i.ItemCd,
-                        ItemName = i.ItemName,
-                        Suryo = i.Suryo,
-                        UnitName = i.UnitName,
-                        TermVal = i.TermVal,
-                        SinKouiKbn = checkingOrder.OdrKouiKbn,
-                        UsageQuantity = usageQuantity
-                    })
-                    .ToList();
-
-                if (itemList.Count == 0)
-                {
-                    continue;
-                }
-
-                List<DosageResultModel> checkedResult = Finder.CheckDosage(HpID, PtID, Sinday, itemList, isMinCheck, ratioSetting, CurrentHeight, CurrentWeight);
-
-                if (TermLimitCheckingOnly)
-                {
-                    checkedResult = checkedResult.Where(r => r.LabelChecking == DosageLabelChecking.TermLimit).ToList();
-                }
-
-                if (checkedResult.Count > 0)
-                {
-                    errorOrderList.Add(checkingOrder);
-                    resultList.AddRange(checkedResult);
-                }
+                return unitCheckerForOrderListResult;
             }
 
-            if (resultList.Count > 0)
+            // Get listItemCode
+            List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
+            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
+
+            List<DiseaseResultModel> checkedResult = new List<DiseaseResultModel>();
+
+            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder.CheckContraindicationForCurrentDisease(HpID, settingLevel, Sinday, listItemCode, ListDiseaseCode);
+            if (checkedResultForCurrentDisease != null)
             {
-                unitCheckerForOrderListResult.ErrorInfo = resultList;
-                unitCheckerForOrderListResult.ErrorOrderList = errorOrderList;
+                checkedResult.AddRange(checkedResultForCurrentDisease);
+            }
+
+            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode, ListPtKioReki);
+            if (checkedResultForHistoryDisease != null)
+            {
+                checkedResult.AddRange(checkedResultForHistoryDisease);
+            }
+
+            List<DiseaseResultModel> checkedResultForFamilyDisease = Finder.CheckContraindicationForFamilyDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
+            if (checkedResultForFamilyDisease != null)
+            {
+                checkedResult.AddRange(checkedResultForFamilyDisease);
+            }
+
+            if (checkedResult.Count > 0)
+            {
+                unitCheckerForOrderListResult.ErrorInfo = checkedResult;
+                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(checkingOrderList, checkedResult);
             }
 
             return unitCheckerForOrderListResult;
+        }
+
+        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DiseaseResultModel> checkedResultList)
+        {
+            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
+
+            List<TOdrInf> resultList = new List<TOdrInf>();
+            foreach (var checkingOrder in checkingOrderList)
+            {
+                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd));
+                if (existed)
+                {
+                    resultList.Add(checkingOrder);
+                }
+            }
+
+            return resultList;
         }
     }
 }

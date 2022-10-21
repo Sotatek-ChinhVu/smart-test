@@ -1,4 +1,9 @@
-﻿namespace CommonCheckers.OrderRealtimeChecker.Services
+﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Enum;
+using Domain.Types;
+using Helper.Constants;
+
+namespace CommonCheckers.OrderRealtimeChecker.Services
 {
     public class DuplicationChecker<TOdrInf, TOdrDetail> : UnitChecker<TOdrInf, TOdrDetail>
         where TOdrInf : class, IOdrInfModel<TOdrDetail>

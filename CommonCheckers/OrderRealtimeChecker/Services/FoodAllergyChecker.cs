@@ -1,4 +1,6 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.SpecialNote.ImportantNote;
+using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -6,7 +8,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public List<PtAlrgyFood> ListPtAlrgyFoods { get; set; }
+        public List<PtAlrgyFoodModel>? ListPtAlrgyFoods { get; set; }
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {

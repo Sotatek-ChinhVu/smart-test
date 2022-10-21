@@ -18,7 +18,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         {
             TOdrInf checkingOdr = unitCheckerResult.CheckingData;
 
-            foreach (var detail in checkingOdr.OdrInfDetailModels)
+            foreach (var detail in checkingOdr.OrdInfDetails)
             {
                 if (string.IsNullOrEmpty(detail.ItemCd))
                 {
@@ -42,7 +42,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
                     foreach (var item in CurrentListOrder)
                     {
-                        foreach (var itemDetail in item.OdrInfDetailModels)
+                        foreach (var itemDetail in item.OrdInfDetails)
                         {
                             if (itemDetail.RpNo != detail.RpNo && itemDetail.ItemCd == detail.ItemCd)
                             {

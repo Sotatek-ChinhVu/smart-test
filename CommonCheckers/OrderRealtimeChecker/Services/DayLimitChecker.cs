@@ -1,6 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Types;
-using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -8,76 +7,57 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public List<string> ListDiseaseCode { get; set; } = new List<string>();
-
-        public List<PtKioReki> ListPtKioReki { get; set; } = new List<PtKioReki>();
-
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
         }
 
-        private int GetSettingLevel()
-        {
-            return SystemConfig.Instance.DiseaseLevelSetting;
-        }
-
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            // Read setting from SystemConfig
-            int settingLevel = GetSettingLevel();
-            if (settingLevel <= 0 || settingLevel >= 4)
+            List<DayLimitResultModel> resultList = new List<DayLimitResultModel>();
+            List<TOdrInf> errorOrderList = new List<TOdrInf>();
+            foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-                return unitCheckerForOrderListResult;
+                //◆内服（ODR_INF.ODR_KOUI_CD[21]）のみ
+                //9.投与日数
+                if (checkingOrder.OdrKouiKbn != 21)
+                {
+                    continue;
+                }
+
+                double usingDay = GetUsingDay(checkingOrder);
+
+                if (usingDay > 0)
+                {
+                    List<string> listItemCode = GetAllOdrDetailCodeByOrder(checkingOrder);
+                    List<DayLimitResultModel> checkedResult = Finder.CheckDayLimit(HpID, Sinday, listItemCode, usingDay);
+
+                    if (checkedResult != null && checkedResult.Count > 0)
+                    {
+                        resultList.AddRange(checkedResult);
+                        errorOrderList.Add(checkingOrder);
+                    }
+                }
             }
 
-            // Get listItemCode
-            List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
-            List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
-            List<DiseaseResultModel> checkedResult = new List<DiseaseResultModel>();
-
-            List<DiseaseResultModel> checkedResultForCurrentDisease = Finder.CheckContraindicationForCurrentDisease(HpID, settingLevel, Sinday, listItemCode, ListDiseaseCode);
-            if (checkedResultForCurrentDisease != null)
+            if (resultList.Count > 0)
             {
-                checkedResult.AddRange(checkedResultForCurrentDisease);
-            }
-
-            List<DiseaseResultModel> checkedResultForHistoryDisease = Finder.CheckContraindicationForHistoryDisease(HpID, PtID, settingLevel, Sinday, listItemCode, ListPtKioReki);
-            if (checkedResultForHistoryDisease != null)
-            {
-                checkedResult.AddRange(checkedResultForHistoryDisease);
-            }
-
-            List<DiseaseResultModel> checkedResultForFamilyDisease = Finder.CheckContraindicationForFamilyDisease(HpID, PtID, settingLevel, Sinday, listItemCode);
-            if (checkedResultForFamilyDisease != null)
-            {
-                checkedResult.AddRange(checkedResultForFamilyDisease);
-            }
-
-            if (checkedResult.Count > 0)
-            {
-                unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(checkingOrderList, checkedResult);
+                unitCheckerForOrderListResult.ErrorInfo = resultList;
+                unitCheckerForOrderListResult.ErrorOrderList = errorOrderList;
             }
 
             return unitCheckerForOrderListResult;
         }
 
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<DiseaseResultModel> checkedResultList)
+        private double GetUsingDay(TOdrInf order)
         {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
+            TOdrDetail usingInfo = order.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(o => o.IsDrugUsage);
 
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
+            if (usingInfo == null)
             {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd));
-                if (existed)
-                {
-                    resultList.Add(checkingOrder);
-                }
+                return -1;
             }
-
-            return resultList;
+            return usingInfo.Suryo;
         }
     }
 }
