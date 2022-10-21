@@ -40,7 +40,6 @@ namespace Domain.Models.SpecialNote.ImportantNote
 
         public ValidationStatus Validation()
         {
-
             if (PtId <= 0)
             {
                 return ValidationStatus.InvalidPtId;
