@@ -88,5 +88,6 @@
 
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
+        public const string GetDataReceptionDefault = "GetDataReceptionDefault";
     }
 }
