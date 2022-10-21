@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using System.Xml.Linq;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models.Reception
 {
@@ -145,6 +138,18 @@ namespace Domain.Models.Reception
             Comment = String.Empty;
         }
 
+        public ReceptionModel(int tantoId, int kaId)
+        {
+            Comment = String.Empty;
+            YoyakuTime = String.Empty;
+            UketukeTime = String.Empty;
+            SinStartTime = String.Empty;
+            SinEndTime = String.Empty;
+            KaikeiTime = String.Empty;
+            KaId = kaId;
+            TantoId = tantoId;
+        }
+
         public ReceptionDto ToDto()
         {
             return new ReceptionDto
@@ -174,18 +179,6 @@ namespace Domain.Models.Reception
                     JikanKbn,
                     Comment
                 );
-        }
-
-        public ReceptionModel(int tantoId, int kaId)
-        {
-            Comment = String.Empty;
-            YoyakuTime = String.Empty;
-            UketukeTime = String.Empty;
-            SinStartTime = String.Empty;
-            SinEndTime = String.Empty;
-            KaikeiTime = String.Empty;
-            KaId = kaId;
-            TantoId = tantoId;
         }
     }
 }
