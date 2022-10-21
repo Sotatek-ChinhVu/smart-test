@@ -33,6 +33,9 @@ namespace EmrCloudApi.Tenant.Presenters.Reception
                 case GetReceptionDefaultStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;
+                case GetReceptionDefaultStatus.Failed:
+                    Result.Message = ResponseMessage.Failed;
+                    break;
             }
         }
     }

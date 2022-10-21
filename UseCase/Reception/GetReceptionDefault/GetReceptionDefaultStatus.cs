@@ -12,6 +12,7 @@ namespace UseCase.Reception.GetReceptionDefault
         InvalidHpId = 1,
         InvalidPtId = 2,
         InvalidSindate = 3,
-        InvalidDefautDoctorSetting = 4
+        InvalidDefautDoctorSetting = 4,
+        Failed = 5
     }
 }
