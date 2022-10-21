@@ -23,24 +23,24 @@ namespace Interactor.PatientInfor
                 foreach (var item in validations)
                     msgValidation += string.IsNullOrEmpty(msgValidation) ? item : $",{item}";
 
-                return new SavePatientInfoOutputData(msgValidation, SavePatientInfoStatus.Failed);
+                return new SavePatientInfoOutputData(msgValidation, SavePatientInfoStatus.Failed, 0);
             }
             try
             {
-                bool result = false;
+                (bool,long) result;
                 if (inputData.Patient.PtId == 0)
                     result = _patientInforRepository.CreatePatientInfo(inputData.Patient,inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
 
-                if (result)
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful);
+                if (result.Item1)
+                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful,result.Item2);
                 else
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
+                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed,0);
             }
             catch
             {
-                return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
+                return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
         }
 

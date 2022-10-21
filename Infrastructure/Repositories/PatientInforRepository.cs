@@ -900,7 +900,7 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
-        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public (bool,long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -924,7 +924,7 @@ namespace Infrastructure.Repositories
             bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
             if (!resultCreatePatient)
-                return false;
+                return (false,0);
 
             if (ptSanteis != null && ptSanteis.Any())
             {
@@ -1223,12 +1223,12 @@ namespace Infrastructure.Repositories
 
             int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added).Count();
             if (changeDatas == 0 && resultCreatePatient == true)
-                return true;
+                return (true,patientInsert.PtId);
 
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            return (_tenantTrackingDataContext.SaveChanges() > 0,patientInsert.PtId);
         }
 
-        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1236,7 +1236,7 @@ namespace Infrastructure.Repositories
             #region Patient-info
             PtInf? patientInfo = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptInf.PtId);
             if (patientInfo is null)
-                return false;
+                return (false, ptInf.PtId);
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
@@ -2155,7 +2155,7 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            return (_tenantTrackingDataContext.SaveChanges() > 0,patientInfo.PtId);
         }
 
         private long GetAutoPtNum(int HpId)
