@@ -36,21 +36,20 @@ namespace Interactor.FlowSheet
             {
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.SinDateNoValid);
             }
-            if (inputData.Items.Any(i => i.TagNo < 0 || i.TagNo > 7))
+            if (inputData.Items.Any(i => i.Flag))
             {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
-            }
-            if (inputData.Items.Any(i => i.CmtKbn != 1 && i.CmtKbn != 9))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.CmtKbnNoValid);
-            }
-            if (inputData.Items.Any(i => i.RainListCmtSeqNo < 0))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RainListCmtSeqNoNoValid);
-            }
-            if (inputData.Items.Any(i => i.RainListTagSeqNo < 0))
-            {
-                return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.RainListTagSeqNoNoValid);
+                try
+                {
+                    var checkTagNo = inputData.Items.Where(i => i.Flag).Any(i => int.Parse(i.Value) < 0 || int.Parse(i.Value) > 7);
+                    if (checkTagNo)
+                    {
+                        return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
+                    }
+                }
+                catch
+                {
+                    return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
+                }
             }
             if (!_patientRepository.CheckListId(inputData.Items.Select(i => i.PtId).ToList()))
             {
@@ -63,23 +62,35 @@ namespace Interactor.FlowSheet
 
             try
             {
-                var datas = inputData?.ToList()?.Select(i => new FlowSheetModel(
+                var dataTags = inputData?.ToList()?.Where(i => i.Flag).Select(i => new FlowSheetModel(
                         i.SinDate,
-                        i.TagNo,
+                        int.Parse(i.Value),
                         "",
                         i.RainNo,
                         0,
-                        i.Text,
+                        string.Empty,
                         0,
                         true,
                         true,
                         new List<RaiinListInfModel>(),
-                        i.PtId,
-                        i.CmtKbn,
-                        0,
-                        0
+                        i.PtId
                     )).ToList() ?? new List<FlowSheetModel>();
-                _flowsheetRepository.Upsert(datas);
+                _flowsheetRepository.UpsertTag(dataTags);
+
+                var dataCmts = inputData?.ToList()?.Where(i => !i.Flag).Select(i => new FlowSheetModel(
+                       i.SinDate,
+                       0,
+                       "",
+                       i.RainNo,
+                       0,
+                       i.Value,
+                       0,
+                       true,
+                       true,
+                       new List<RaiinListInfModel>(),
+                       i.PtId
+                   )).ToList() ?? new List<FlowSheetModel>();
+                _flowsheetRepository.UpsertCmt(dataCmts);
 
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.Success);
             }

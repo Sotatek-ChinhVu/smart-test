@@ -60,11 +60,8 @@ namespace EmrCloudApi.Tenant.Controllers
                     i.RainNo,
                     i.PtId,
                     i.SinDate,
-                    i.TagNo,
-                    i.CmtKbn,
-                    i.Text,
-                    i.RainListCmtSeqNo,
-                    i.RainListTagSeqNo
+                    i.Value,
+                    i.Flag
                 )).ToList());
             var output = _bus.Handle(input);
             var presenter = new UpsertFlowSheetPresenter();

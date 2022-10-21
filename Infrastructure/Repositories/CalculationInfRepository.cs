@@ -23,7 +23,8 @@ namespace Infrastructure.Repositories
                         x.EdaNo,
                         x.KbnVal,
                         x.StartDate,
-                        x.EndDate
+                        x.EndDate,
+                        x.SeqNo
                     ))
                 .ToList();
 
