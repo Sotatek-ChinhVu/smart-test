@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, string minAge, string maxAge, string santeiItemCd)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -31,6 +31,9 @@ namespace Domain.Models.MstItem
             CnvUnitName = cnvUnitName;
             StartDate = startDate;
             YohoKbn = yohoKbn;
+            MinAge = minAge;
+            MaxAge = maxAge;
+            SanteiItemCd = santeiItemCd;
         }
 
         public TenItemModel()
@@ -55,9 +58,12 @@ namespace Domain.Models.MstItem
             IsAdopted = 0;
             CmtCol1 = 0;
             IpnNameCd = string.Empty;
-            YjCd = String.Empty;
-            CnvUnitName = String.Empty;
+            YjCd = string.Empty;
+            CnvUnitName = string.Empty;
             YohoKbn = 0;
+            MinAge = string.Empty;
+            MaxAge = string.Empty;
+            SanteiItemCd = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -109,6 +115,12 @@ namespace Domain.Models.MstItem
         public int StartDate { get; private set; }
 
         public int YohoKbn { get; private set; }
+
+        public string MaxAge { get; private set; }
+
+        public string MinAge { get; private set; }
+
+        public string SanteiItemCd { get; private set; }
 
         public string RousaiKbnDisplay
         {

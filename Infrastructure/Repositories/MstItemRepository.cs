@@ -161,7 +161,10 @@ namespace Infrastructure.Repositories
                 tenMst?.YjCd ?? string.Empty,
                 tenMst?.CnvUnitName ?? string.Empty,
                 tenMst?.StartDate ?? 0,
-                tenMst?.YohoKbn ?? 0
+                tenMst?.YohoKbn ?? 0,
+                tenMst?.MinAge ?? string.Empty,
+                tenMst?.MaxAge ?? string.Empty,
+                tenMst?.SanteiItemCd ?? string.Empty
             );
         }
 
@@ -194,7 +197,10 @@ namespace Infrastructure.Repositories
                 tenMst.YjCd ?? string.Empty,
                 tenMst.CnvUnitName ?? string.Empty,
                 tenMst.StartDate,
-                tenMst.YohoKbn
+                tenMst.YohoKbn,
+                tenMst.MinAge ?? string.Empty,
+                tenMst.MaxAge ?? string.Empty,
+                tenMst.SanteiItemCd ?? string.Empty
             )).ToList();
         }
 
@@ -560,7 +566,10 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.YjCd ?? string.Empty,
                                                            item.TenMst?.CnvUnitName ?? string.Empty,
                                                            item.TenMst?.StartDate ?? 0,
-                                                           item.TenMst?.YohoKbn ?? 0
+                                                           item.TenMst?.YohoKbn ?? 0,
+                                                           item.TenMst?.MinAge ?? string.Empty,
+                                                           item.TenMst?.MaxAge ?? string.Empty,
+                                                           item.TenMst?.SanteiItemCd ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -799,7 +808,10 @@ namespace Infrastructure.Repositories
                     entity?.YjCd ?? string.Empty,
                     entity?.CnvUnitName ?? string.Empty,
                     entity?.StartDate ?? 0,
-                    entity?.YohoKbn ?? 0
+                    entity?.YohoKbn ?? 0,
+                    entity?.MinAge ?? string.Empty,
+                    entity?.MaxAge ?? string.Empty,
+                    entity?.SanteiItemCd ?? string.Empty
                );
         }
 
