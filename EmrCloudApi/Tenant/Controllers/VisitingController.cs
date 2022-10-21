@@ -35,7 +35,7 @@ public class VisitingController : ControllerBase
         _bus = bus;
         _webSocketService = webSocketService;
     }
-    
+
     [HttpGet(ApiPath.Get + "ReceptionLock")]
     public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
     {
@@ -79,7 +79,7 @@ public class VisitingController : ControllerBase
     [HttpPost("SaveSettings")]
     public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
     {
-        var input = new SaveVisitingListSettingsInputData(req.UserId, req.Settings);
+        var input = new SaveVisitingListSettingsInputData(req.Settings);
         var output = _bus.Handle(input);
         var presenter = new SaveVisitingListSettingsPresenter();
         presenter.Complete(output);
