@@ -57,6 +57,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             return resultList;
-        }
+        }   
     }
 }

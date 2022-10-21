@@ -6,6 +6,6 @@
         public double UsingDay;
         public double LimitDay;
         public string ItemName = string.Empty;
-        public string ItemC = string.Empty;
+        public string ItemCd = string.Empty;
     }
 }
