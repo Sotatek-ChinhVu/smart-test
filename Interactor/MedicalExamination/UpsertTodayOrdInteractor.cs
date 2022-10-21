@@ -135,6 +135,7 @@ namespace Interactor.MedicalExamination
             var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
+            var obj = new object();
             Parallel.ForEach(inputDataList, item =>
             {
                 var ordInf = new OrdInfModel(
@@ -175,6 +176,7 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
+                    var objDetail = new object();
                     var ordInfDetail = new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
@@ -227,10 +229,15 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0
                             );
-                    ordInf.OrdInfDetails.Add(ordInfDetail);
+                    lock (objDetail)
+                    {
+                        ordInf.OrdInfDetails.Add(ordInfDetail);
+                    }
                 });
-
-                allOdrInfs.Add(ordInf);
+                lock (obj)
+                {
+                    allOdrInfs.Add(ordInf);
+                }
             });
 
             return allOdrInfs;
@@ -409,14 +416,18 @@ namespace Interactor.MedicalExamination
 
                 allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
 
+                var objDetail = new object();
                 Parallel.ForEach(allOdrInfs, item =>
                 {
-                    var index = allOdrInfs.IndexOf(item);
-
-                    var modelValidation = item.Validation(0);
-                    if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                    lock (objDetail)
                     {
-                        dicValidation.Add(index.ToString(), modelValidation);
+                        var index = allOdrInfs.IndexOf(item);
+
+                        var modelValidation = item.Validation(0);
+                        if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                        {
+                            dicValidation.Add(index.ToString(), modelValidation);
+                        }
                     }
                 });
             }

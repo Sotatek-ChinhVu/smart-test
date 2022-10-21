@@ -134,6 +134,7 @@ namespace Interactor.MedicalExamination
             var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
+            var obj = new object();
             Parallel.ForEach(inputDataList, item =>
             {
                 var ordInf = new OrdInfModel(
@@ -162,6 +163,7 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue
                     );
 
+                var objDetail = new object();
                 Parallel.ForEach(item.OdrDetails, itemDetail =>
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
@@ -226,10 +228,16 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0
                             );
-                    ordInf.OrdInfDetails.Add(ordInfDetail);
+                    lock (objDetail)
+                    {
+                        ordInf.OrdInfDetails.Add(ordInfDetail);
+                    }
                 });
+                lock (obj)
+                {
 
-                allOdrInfs.Add(ordInf);
+                    allOdrInfs.Add(ordInf);
+                }
             });
 
             return allOdrInfs;
@@ -274,13 +282,17 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
+                    var objDetail = new object();
                     Parallel.ForEach(item.OdrDetails, itemOd =>
                     {
-                        var indexOd = item.OdrDetails.IndexOf(itemOd);
-
-                        if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                        lock (objDetail)
                         {
-                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                            var indexOd = item.OdrDetails.IndexOf(itemOd);
+
+                            if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                            {
+                                dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                            }
                         }
                     });
                 }
