@@ -338,13 +338,14 @@ namespace Infrastructure.Repositories
 
                     if (ordInf == null)
                     {
+                        rpNoMax++;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
-                            RpNo = rpNoMax++,
+                            RpNo = rpNoMax,
                             RpEdaNo = 1,
                             Id = 0,
                             HokenPid = item.HokenPid,
