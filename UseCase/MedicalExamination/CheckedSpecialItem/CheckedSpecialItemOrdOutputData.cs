@@ -3,11 +3,11 @@ using static Helper.Constants.KarteConst;
 using static Helper.Constants.OrderInfConst;
 using static Helper.Constants.RaiinInfConst;
 
-namespace UseCase.OrdInfs.ValidationTodayOrd
+namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public class ValidationTodayOrdOutputData : IOutputData
+    public class CheckedSpecialItemOrdOutputData : IOutputData
     {
-        public ValidationTodayOrdOutputData(ValidationTodayOrdStatus status, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validations, RaiinInfTodayOdrValidationStatus validationRaiinInf, KarteValidationStatus validationKarte)
+        public CheckedSpecialItemOrdOutputData(CheckedSpecialItemStatus status, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validations, RaiinInfTodayOdrValidationStatus validationRaiinInf, KarteValidationStatus validationKarte)
         {
             Status = status;
             Validations = validations;
@@ -15,7 +15,7 @@ namespace UseCase.OrdInfs.ValidationTodayOrd
             ValidationKarte = validationKarte;
         }
 
-        public ValidationTodayOrdStatus Status { get; private set; }
+        public CheckedSpecialItemStatus Status { get; private set; }
         public Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> Validations { get; private set; }
         public RaiinInfTodayOdrValidationStatus ValidationRaiinInf { get; private set; }
         public KarteValidationStatus ValidationKarte { get; private set; }

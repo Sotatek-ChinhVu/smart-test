@@ -1,10 +1,12 @@
 ﻿using UseCase.Core.Sync.Core;
+using UseCase.MedicalExamination.UpsertTodayOrd;
+using UseCase.OrdInfs.ValidationTodayOrd;
 
-namespace UseCase.OrdInfs.ValidationTodayOrd
+namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public class ValidationTodayOrdInputData : IInputData<ValidationTodayOrdOutputData>
+    public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOrdOutputData>
     {
-        public ValidationTodayOrdInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<ValidationOdrInfItem> odrInfs, ValidationKarteItem karte)
+        public CheckedSpecialItemInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrInfs, CheckedSpecialItemStatus status)
         {
             SyosaiKbn = syosaiKbn;
             JikanKbn = jikanKbn;
@@ -16,7 +18,7 @@ namespace UseCase.OrdInfs.ValidationTodayOrd
             SinStartTime = sinStartTime;
             SinEndTime = sinEndTime;
             OdrInfs = odrInfs;
-            Karte = karte;
+            Status = status;
         }
 
         public int SyosaiKbn { get; private set; }
@@ -28,12 +30,7 @@ namespace UseCase.OrdInfs.ValidationTodayOrd
         public string UketukeTime { get; private set; }
         public string SinStartTime { get; private set; }
         public string SinEndTime { get; private set; }
-        public List<ValidationOdrInfItem> OdrInfs { get; private set; }
-        public ValidationKarteItem Karte { get; private set; }
-
-        public List<ValidationOdrInfItem> ToList()
-        {
-            return OdrInfs;
-        }
+        public List<OdrInfItemInputData> OdrInfs { get; private set; }
+        public CheckedSpecialItemStatus Status { get; private set; }
     }
 }
