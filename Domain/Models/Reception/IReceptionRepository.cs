@@ -16,6 +16,8 @@
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
 
+        List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate);
+
         bool UpdateStatus(int hpId, long raiinNo, int status);
 
         bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo);
@@ -33,5 +35,7 @@
         bool CheckListNo(List<long> raininNos);
 
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
+
+        ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
     }
 }

@@ -216,10 +216,7 @@
         public static readonly string UpsertFlowSheetInvalidPtId = "PtId must be greater than 0.";
         public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate is no valid.";
         public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn is no valid.";
         public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo is no valid";
-        public static readonly string UpsertFlowSheetInvalidRainCmtSeqNo = "RainCmtSeqNo must be greater than or equal 0.";
-        public static readonly string UpsertFlowSheetInvalidRainListTagSeqNo = "RainListTagSeqNo must be greater than or equal 0.";
         public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
         public static readonly string UpsertFlowSheetInputDataNoValid = "Input data no valid.";
         public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
@@ -573,5 +570,9 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
+
+        // Valid default settings 
+        public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
+
     }
 }

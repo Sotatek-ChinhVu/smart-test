@@ -24,6 +24,8 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastRaiinInfs;
+using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
@@ -65,6 +67,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLastRaiinInfs)]
+        public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
+        {
+            var input = new GetLastRaiinInfsInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLastRaiinInfsPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLastRaiinInfsResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Insert)]
@@ -176,6 +190,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidPatternExpiratedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDataReceptionDefault)]
+        public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
+        {
+            var input = new GetReceptionDefaultInputData(request.HpId , request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetReceptionDefaultPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetReceptionDefaultResponse>>(presenter.Result);
         }
     }
 }

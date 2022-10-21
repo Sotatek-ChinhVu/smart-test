@@ -85,5 +85,9 @@
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
+
+        // Reception
+        public const string GetLastRaiinInfs = "GetLastRaiinInfs";
+        public const string GetDataReceptionDefault = "GetDataReceptionDefault";
     }
 }
