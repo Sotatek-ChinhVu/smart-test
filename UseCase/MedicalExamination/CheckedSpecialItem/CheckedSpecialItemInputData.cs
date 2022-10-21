@@ -4,33 +4,27 @@ using UseCase.OrdInfs.ValidationTodayOrd;
 
 namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOrdOutputData>
+    public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOutputData>
     {
-        public CheckedSpecialItemInputData(int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OdrInfItemInputData> odrInfs, CheckedSpecialItemStatus status)
+        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfDetailItemInputData> odrInfs, CheckedSpecialItemStatus status)
         {
-            SyosaiKbn = syosaiKbn;
-            JikanKbn = jikanKbn;
-            HokenPid = hokenPid;
-            SanteiKbn = santeiKbn;
-            TantoId = tantoId;
-            KaId = kaId;
-            UketukeTime = uketukeTime;
-            SinStartTime = sinStartTime;
-            SinEndTime = sinEndTime;
-            OdrInfs = odrInfs;
+            HpId = hpId;
+            PtId = ptId;
+            SinDate = sinDate;
+            IBirthDay = iBirthDay;
+            CheckAge = checkAge;
+            RaiinNo = raiinNo;
+            OdrInfDetails = odrInfs;
             Status = status;
         }
 
-        public int SyosaiKbn { get; private set; }
-        public int JikanKbn { get; private set; }
-        public int HokenPid { get; private set; }
-        public int SanteiKbn { get; private set; }
-        public int TantoId { get; private set; }
-        public int KaId { get; private set; }
-        public string UketukeTime { get; private set; }
-        public string SinStartTime { get; private set; }
-        public string SinEndTime { get; private set; }
-        public List<OdrInfItemInputData> OdrInfs { get; private set; }
+        public int HpId { get; private set; }
+        public long PtId { get; private set; }
+        public int SinDate { get; private set; }
+        public int IBirthDay { get; private set; }
+        public int CheckAge { get; private set; }
+        public long RaiinNo { get; private set; }
+        public List<OdrInfDetailItemInputData> OdrInfDetails { get; private set; }
         public CheckedSpecialItemStatus Status { get; private set; }
     }
 }

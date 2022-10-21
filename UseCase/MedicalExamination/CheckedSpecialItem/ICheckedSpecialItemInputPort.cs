@@ -2,7 +2,7 @@
 
 namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public interface ICheckedSpecialItemInputPort : IInputPort<CheckedSpecialItemInputData, CheckedSpecialItemOrdOutputData>
+    public interface ICheckedSpecialItemInputPort : IInputPort<CheckedSpecialItemInputData, CheckedSpecialItemOutputData>
     {
     }
 }

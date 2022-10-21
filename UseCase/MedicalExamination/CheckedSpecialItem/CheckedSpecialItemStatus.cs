@@ -3,6 +3,13 @@
     public enum CheckedSpecialItemStatus : byte
     {
         Successed = 1,
-        Failed = 2
+        InvalidHpId,
+        InvalidPtId,
+        InvalidSinDate,
+        InvalidIBirthDay,
+        InvalidCheckAge,
+        InvalidRaiinNo,
+        InvalidOdrInfDetail,
+        Failed
     }
 }
