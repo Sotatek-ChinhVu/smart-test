@@ -205,6 +205,7 @@ using UseCase.VisitingList.SaveSettings;
 using Interactor.ExportPDF;
 using DevExpress.Implementation;
 using DevExpress.Export;
+using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
@@ -337,6 +338,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
             busBuilder.RegisterUseCase<GetReceptionCommentInputData, GetReceptionCommentInteractor>();
             busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
+            busBuilder.RegisterUseCase<GetLastRaiinInfsInputData, GetLastRaiinInfsInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
