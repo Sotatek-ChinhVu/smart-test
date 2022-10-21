@@ -37,6 +37,7 @@
             InvalidNanByoCd,
             InvalidFreeWord,
             InvalidTenkiDateContinue,
+            InvalidTenkiDateCommon,
             InvalidTekiDateAndStartDate,
             InvalidByomei,
             InvalidId,
