@@ -79,14 +79,18 @@ namespace Interactor.MedicalExamination
                 var allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
 
                 //Check in model
-                Parallel.ForEach(allOdrInfs, item =>
+                var obj = new object();
+                Parallel.For(0, allOdrInfs.Count, index =>
                 {
-                    var index = allOdrInfs.IndexOf(item);
+                    var item = allOdrInfs[index];
 
                     var modelValidation = item.Validation(0);
                     if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        dicValidation.Add(index.ToString(), modelValidation);
+                        lock (obj)
+                        {
+                            dicValidation.Add(index.ToString(), modelValidation);
+                        }
                     }
                 });
 
@@ -283,13 +287,14 @@ namespace Interactor.MedicalExamination
                     }
 
                     var objDetail = new object();
-                    Parallel.ForEach(item.OdrDetails, itemOd =>
+                    Parallel.For(0, item.OdrDetails.Count, indexOd =>
                     {
-                        lock (objDetail)
-                        {
-                            var indexOd = item.OdrDetails.IndexOf(itemOd);
 
-                            if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                        var itemOd = item.OdrDetails[indexOd];
+
+                        if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                        {
+                            lock (objDetail)
                             {
                                 dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                             }

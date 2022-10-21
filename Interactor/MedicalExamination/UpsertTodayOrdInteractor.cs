@@ -402,13 +402,17 @@ namespace Interactor.MedicalExamination
                                         return;
                                     }
 
-                                    Parallel.ForEach(item.OdrDetails, itemOd =>
+                                    var objDetail = new object();
+                                    Parallel.For(0, item.OdrDetails.Count, indexOd =>
                             {
-                                var indexOd = item.OdrDetails.IndexOf(itemOd);
+                                var itemOd = item.OdrDetails[indexOd];
 
                                 if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                                 {
-                                    dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                    lock (objDetail)
+                                    {
+                                        dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                    }
                                 }
                             });
                                 }
@@ -416,15 +420,15 @@ namespace Interactor.MedicalExamination
 
                 allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
 
-                var objDetail = new object();
-                Parallel.ForEach(allOdrInfs, item =>
+                Parallel.For(0, allOdrInfs.Count, index =>
                 {
-                    lock (objDetail)
-                    {
-                        var index = allOdrInfs.IndexOf(item);
 
-                        var modelValidation = item.Validation(0);
-                        if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                    var item = allOdrInfs[index];
+
+                    var modelValidation = item.Validation(0);
+                    if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
+                    {
+                        lock (obj)
                         {
                             dicValidation.Add(index.ToString(), modelValidation);
                         }
