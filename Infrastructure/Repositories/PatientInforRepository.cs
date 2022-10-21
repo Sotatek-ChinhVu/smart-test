@@ -900,10 +900,6 @@ namespace Infrastructure.Repositories
         {
             try
             {
-                long countDefHokenNo = _tenantDataContext.DefHokenNos.Count(x => x.IsDeleted == 0 && x.HokenNo == defHokenNoModels[0].HokenNo);
-                if (defHokenNoModels.Count != countDefHokenNo)
-                    return false;
-
                 int sortNo = 1;
                 foreach (var item in defHokenNoModels)
                 {
@@ -924,7 +920,7 @@ namespace Infrastructure.Repositories
                             Digit6 = item.Digit6,
                             Digit7 = item.Digit7,
                             Digit8 = item.Digit8,
-                            HokenNo = Int32.Parse(string.Concat(item.Digit1, item.Digit2)),
+                            HokenNo = item.HokenNo,
                             HokenEdaNo = item.HokenEdaNo,
                             IsDeleted = 0,
                             CreateDate = DateTime.UtcNow,
@@ -953,7 +949,7 @@ namespace Infrastructure.Repositories
                             Digit7 = item.Digit7,
                             Digit8 = item.Digit8,
                             SeqNo = checkExistDefHoken.SeqNo,
-                            HokenNo = checkExistDefHoken.HokenNo,
+                            HokenNo = item.HokenNo,
                             HokenEdaNo = item.HokenEdaNo,
                             IsDeleted = item.IsDeleted,
                             CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
@@ -976,7 +972,6 @@ namespace Infrastructure.Repositories
             {
                 return false;
             }
-
         }
 
         public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)

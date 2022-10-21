@@ -951,13 +951,5 @@ namespace Infrastructure.Repositories
                                   .ToList();
             return result;
         }
-        public bool CheckExistHokenEdaNo(int hokenNo, int hokenEdaNo)
-        {
-            var existHokenEdaNo = _tenantDataContext.HokenMsts.First(x => x.HpId == TempIdentity.HpId && x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
-
-            if (existHokenEdaNo == null)
-                return false;
-            return true;
-        }
     }
 }

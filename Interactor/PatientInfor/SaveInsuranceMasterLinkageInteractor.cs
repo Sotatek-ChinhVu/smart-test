@@ -1,4 +1,4 @@
-﻿using Domain.Models.MstItem;
+﻿using Domain.Models.HokenMst;
 using Domain.Models.PatientInfor;
 using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using static Helper.Constants.DefHokenNoConst;
@@ -8,12 +8,11 @@ namespace Interactor.PatientInfor
     public class SaveInsuranceMasterLinkageInteractor : ISaveInsuranceMasterLinkageInputPort
     {
         private readonly IPatientInforRepository _patientInforRepository;
-        private readonly IMstItemRepository _mstItemRepository;
-
-        public SaveInsuranceMasterLinkageInteractor(IPatientInforRepository patientInforRepository, IMstItemRepository mstItemRepository)
+        private readonly IHokenMstRepository _hokenMstRepository;
+        public SaveInsuranceMasterLinkageInteractor(IPatientInforRepository patientInforRepository, IHokenMstRepository hokenMstRepository)
         {
             _patientInforRepository = patientInforRepository;
-            _mstItemRepository = mstItemRepository;
+            _hokenMstRepository = hokenMstRepository;
         }
 
         public SaveInsuranceMasterLinkageOutputData Handle(SaveInsuranceMasterLinkageInputData inputData)
@@ -22,14 +21,20 @@ namespace Interactor.PatientInfor
             {
                 if (inputData.DefHokenNoModels.Any())
                 {
+                    var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo);
+
                     foreach (var item in inputData.DefHokenNoModels)
                     {
-                        if (!_mstItemRepository.CheckExistHokenEdaNo(item.HokenNo, item.HokenEdaNo))
-                            return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenEdaNo);
-
                         var validationStatus = item.Validation();
                         if (validationStatus != ValidationStatus.Valid)
                             return new SaveInsuranceMasterLinkageOutputData(validationStatus);
+
+                        if (item.HokenEdaNo == 0 && item.HokenNo == 0)
+                            continue;
+
+                        var checkExistsHokenEda = listHokenEdaNo.Where(x => x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
+                        if (!checkExistsHokenEda.Any())
+                            return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenEdaNo);
                     }
                 }
                 else
