@@ -207,6 +207,8 @@ using DevExpress.Implementation;
 using DevExpress.Export;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
+using Domain.Models.AccountDue;
+using UseCase.AccountDue.GetAccountDueList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -304,6 +306,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
             services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
+            services.AddTransient<IAccountDueRepository, AccountDueRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -505,6 +508,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validate InputItem 
             busBuilder.RegisterUseCase<ValidationInputItemInputData, ValidationInputitemInteractor>();
+
+            //AccoutDue
+            busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
+
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

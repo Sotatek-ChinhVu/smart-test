@@ -1,4 +1,5 @@
 ﻿using Domain.Models.AccountDue;
+using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -18,8 +19,6 @@ public class AccountDueRepository : IAccountDueRepository
 
     public List<AccountDueListModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
     {
-        List<AccountDueListModel> accountDueList = new List<AccountDueListModel>();
-
         // Left table
         var seikyuList = _tenantNoTrackingDataContext.SyunoSeikyus
                         .Where(item => item.HpId == hpId
@@ -46,13 +45,45 @@ public class AccountDueRepository : IAccountDueRepository
                         .Where(item => item.HpId == hpId
                                             && item.IsDeleted == 0);
 
-        var listPtHokenPattern = _tenantNoTrackingDataContext.PtHokenPatterns
-                         .Where(pattern => pattern.HpId == hpId
-                                            && pattern.PtId == ptId
-                                            && (pattern.IsDeleted == DeleteTypes.None));
-
-        accountDueList = from nyukinList
-
+        var accountDueList = (from seikyu in seikyuList
+                              join nyukin in nyukinList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
+                                                        equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo }
+                              join raiinItem in raiinList on new { seikyu.HpId, seikyu.PtId, seikyu.RaiinNo }
+                                                        equals new { raiinItem.HpId, raiinItem.PtId, raiinItem.RaiinNo }
+                              join kaMst in kaMstList on new { raiinItem.KaId }
+                                                        equals new { kaMst.KaId }
+                              select ConvertToAccountDueListModel(hpId, ptId, sinDate, seikyu, nyukin, raiinItem, kaMst)
+                         ).ToList();
         return accountDueList;
+    }
+
+    private AccountDueListModel ConvertToAccountDueListModel(int hpId, long ptId, int sinDate, SyunoSeikyu seikyu, SyunoNyukin nyukin, RaiinInf raiinItem, KaMst kaMst)
+    {
+        return new AccountDueListModel
+            (
+                hpId,
+                ptId,
+                sinDate,
+                GetMonth(sinDate),
+                seikyu.RaiinNo,
+                raiinItem.HokenPid,
+                raiinItem.OyaRaiinNo,
+                seikyu.NyukinKbn,
+                seikyu.SeikyuTensu,
+                seikyu.SeikyuGaku,
+                nyukin.AdjustFutan,
+                nyukin.NyukinGaku,
+                nyukin.PaymentMethodCd,
+                nyukin.NyukinDate,
+                nyukin.UketukeSbt,
+                nyukin.NyukinCmt,
+                seikyu.NewSeikyuGaku,
+                seikyu.NewAdjustFutan,
+                kaMst.KaSname ?? string.Empty
+            );
+    }
+    private int GetMonth(int date)
+    {
+        return (date / 100);
     }
 }
