@@ -113,6 +113,7 @@
         public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
         public static readonly string UpsertIdNoExist = "No Exist Id";
         public static readonly string UpsertUpdateNoSuccess = " UpsertUpdateNoSuccess";
+        public static readonly string UserListExistedInputData = "UserListExistedInputData";
 
 
         //Insurance

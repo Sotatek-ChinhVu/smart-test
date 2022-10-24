@@ -30,6 +30,7 @@ public enum UpsertUserListStatus
     InvalidSortNo,
     InvalidRenkeiCd1,
     InvalidDrName,
-    InvalidIsDeleted
+    InvalidIsDeleted,
+    UserListExistedInputData
 
 }

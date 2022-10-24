@@ -39,5 +39,7 @@
         bool CheckExistedJobCd(List<int> JobCds);
 
         bool CheckExistedLoginIdUpdate(List<long> Ids, List<string> LoginIds);
+
+        bool CheckInputData(List<int> UserIds, List<string> LoginIds);
     }
 }

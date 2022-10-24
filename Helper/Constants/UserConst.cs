@@ -33,6 +33,7 @@ namespace Helper.Constants
             UserListKaIdNoExist,
             UserListJobCdNoExist,
             UserListIdNoExist,
+            UserListInputData,
             Valid
         };
     }

@@ -19,6 +19,31 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
+        public bool CheckInputData(List<int> UserIds, List<string> LoginIds)
+        {
+            for (int i = 0; i < UserIds.Count; i++)
+            {
+                for (int j = 0; j < UserIds.Count; j++)
+                {
+                    if (i == j)
+                        continue;
+                    if (UserIds[j] == UserIds[i])
+                        break;
+                }
+            }
+
+            for (int i = 0; i < LoginIds.Count; i++)
+            {
+                for (int j = 0; j < LoginIds.Count; j++)
+                {
+                    if (i == j)
+                        continue;
+                    if (LoginIds[j] == LoginIds[i])
+                        break;
+                }
+            }
+            return false;
+        }
         public bool CheckExistedId(List<long> idList)
         {
             return _tenantNoTrackingDataContext.UserMsts.Any(u => idList.Contains(u.Id));
@@ -31,19 +56,19 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedUserIdCreate(List<int> UserIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && u.IsDeleted != 1);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && u.Id == 0 && u.IsDeleted != 1);
             return UserIds.Count <= countUsertMsts;
         }
 
         public bool CheckExistedUserIdUpdate(List<long> Ids, List<int> UserIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && !Ids.Contains(u.Id)&& u.IsDeleted != 1);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => UserIds.Contains(u.UserId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
             return UserIds.Count <= countUsertMsts;
         }
 
         public bool CheckExistedLoginIdCreate(List<string> LoginIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => LoginIds.Contains(u.LoginId) && u.IsDeleted != 1);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => LoginIds.Contains(u.LoginId) && u.Id == 0 && u.IsDeleted != 1);
             return LoginIds.Count <= countUsertMsts;
         }
 
@@ -145,6 +170,7 @@ namespace Infrastructure.Repositories
                     var userMst = _tenantTrackingDataContext.UserMsts.FirstOrDefault(u => u.Id == inputData.Id && u.IsDeleted == inputData.IsDeleted);
                     if (userMst != null)
                     {
+                        userMst.HpId = TempIdentity.HpId;
                         userMst.UserId = inputData.UserId;
                         userMst.JobCd = inputData.JobCd;
                         userMst.ManagerKbn = inputData.ManagerKbn;
