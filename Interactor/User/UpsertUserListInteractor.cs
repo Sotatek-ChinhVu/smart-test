@@ -52,7 +52,7 @@ namespace Interactor.User
                         u.SortNo,
                         u.RenkeiCd1,
                         u.IsDeleted
-                        )).Distinct().ToList();
+                        )).ToList();
 
                 var CheckInputId = datas.Where(u => u.Id > 0).Select(u => u.Id);
                 if (CheckInputId.Count() != CheckInputId.Distinct().Count())
@@ -81,7 +81,7 @@ namespace Interactor.User
                     }
                 }
 
-                if (_userRepository.CheckExistedUserIdCreate(datas.Select(u => u.UserId).ToList()))
+                if (_userRepository.CheckExistedUserIdCreate(datas.Where(u => u.Id == 0).Select(u => u.UserId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
@@ -91,7 +91,7 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
 
-                if (_userRepository.CheckExistedLoginIdCreate(datas.Select(u => u.LoginId).ToList()))
+                if (_userRepository.CheckExistedLoginIdCreate(datas.Where(u => u.Id == 0).Select(u => u.LoginId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }

@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedUserIdCreate(List<int> UserIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && u.Id == 0 && u.IsDeleted != 1);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && u.IsDeleted != 1);
             return countUsertMsts;
         }
 
@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedLoginIdCreate(List<string> LoginIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && u.Id == 0 && u.IsDeleted != 1);
+            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && u.IsDeleted != 1);
             return countUsertMsts;
         }
 
