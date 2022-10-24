@@ -35,5 +35,7 @@
         bool CheckListNo(List<long> raininNos);
 
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
+
+        ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
     }
 }

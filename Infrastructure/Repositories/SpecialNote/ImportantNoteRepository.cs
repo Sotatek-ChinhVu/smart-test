@@ -20,8 +20,8 @@ namespace Infrastructure.Repositories.SpecialNote
         public void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas)
         {
             var ptId = inputDatas.FirstOrDefault()?.PtId ?? 0;
-            var hpId = inputDatas.FirstOrDefault()?.HpId ?? 0;
-            var maxSortNo = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(a => a.HpId == hpId && a.PtId == ptId).Max(a => a.SortNo);
+            var alrgyDrugs = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(a => a.HpId == TempIdentity.HpId && a.PtId == ptId).ToList();
+            var maxSortNo = !(alrgyDrugs?.Count > 0) ? 0 : alrgyDrugs.Max(a => a.SortNo);
             foreach (var item in inputDatas)
             {
                 _tenantTrackingDataContext.Add(
