@@ -2,10 +2,14 @@
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.TodayOdr;
+using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
+using System.IO;
+using System.Linq.Dynamic.Core.Tokenizer;
+using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
 namespace Interactor.MedicalExamination
@@ -41,42 +45,152 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidHpId);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidPtId);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidPtId);
                 }
                 if (inputData.SinDate <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidSinDate);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidSinDate);
                 }
                 if (inputData.IBirthDay <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidIBirthDay);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidIBirthDay);
                 }
                 if (inputData.CheckAge < 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
                 }
                 if (inputData.CheckAge < 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
                 }
                 if (inputData.RaiinNo <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidRaiinNo);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidRaiinNo);
                 }
-                if (inputData.OdrInfDetails.Count == 0)
+                if (inputData.OdrInfs.Count == 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.InvalidOdrInfDetail);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidOdrInfDetail);
                 }
 
+                #region Param data
+                var allOdrInfDetail = new List<OdrInfDetailItemInputData>();
 
+                foreach (var item in inputData.OdrInfs)
+                {
+                    allOdrInfDetail.AddRange(item.OdrDetails);
+                }
+                var allOdrInfDetailModel = allOdrInfDetail.Select(o => new OrdInfDetailModel(
+                                o.HpId,
+                                o.RaiinNo,
+                                o.RpNo,
+                                o.RpEdaNo,
+                                o.RowNo,
+                                o.PtId,
+                                o.SinDate,
+                                o.SinKouiKbn,
+                                o.ItemCd,
+                                o.ItemName,
+                                o.Suryo,
+                                o.UnitName,
+                                o.UnitSbt,
+                                o.TermVal,
+                                o.KohatuKbn,
+                                o.SyohoKbn,
+                                o.SyohoLimitKbn,
+                                o.DrugKbn,
+                                o.YohoKbn,
+                                o.Kokuji1,
+                                o.Kokuji2,
+                                o.IsNodspRece,
+                                o.IpnCd,
+                                o.IpnName,
+                                o.JissiKbn,
+                                o.JissiDate,
+                                o.JissiId,
+                                o.JissiMachine,
+                                o.ReqCd,
+                                o.Bunkatu,
+                                o.CmtName,
+                                o.CmtOpt,
+                                o.FontColor,
+                                o.CommentNewline,
+                                String.Empty,
+                                0,
+                                0,
+                                false,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                0,
+                                "",
+                                new List<YohoSetMstModel>(),
+                                0,
+                                0
+                            )).ToList();
+
+                List<(long rpno, long edano, int hokenPid)> hokenPids = new List<(long rpno, long edano, int hokenPid)>();
+
+                foreach (var odrInf in inputData.OdrInfs)
+                {
+                    hokenPids.Add((odrInf.RpNo, odrInf.RpEdaNo, odrInf.HokenPid));
+                }
+                #endregion
+                List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+
+                //enable or disable Expired Check and SanteiCount Check
+                if (inputData.EnabledInputCheck)
+                {
+                    checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, new TenItemModel(), allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, new List<TenItemModel>(), allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, 0, 0, 0, new TenItemModel(), new List<DensiSanteiKaisuModel>(), new TenItemModel(), allOdrInfDetailModel, new List<ItemGrpMstModel>(), hokenPids));
+                    checkSpecialItemList.AddRange(DuplicateCheck(inputData.SinDate, new List<TenItemModel>() ,allOdrInfDetailModel));
+                }
+
+                //enable or disable Comment Check
+                if (inputData.EnabledCommentCheck)
+                {
+                    Dictionary<string, string> items = new Dictionary<string, string>();
+                    List<string> itemCds = new List<string>();
+                    foreach (var odrInfDetail in allOdrInfDetail)
+                    {
+                        if (string.IsNullOrEmpty(odrInfDetail.ItemCd)) continue;
+
+                        if (!items.ContainsKey(odrInfDetail.ItemCd))
+                        {
+                            itemCds.Add(odrInfDetail.ItemCd);
+                            items.Add(odrInfDetail.ItemCd, odrInfDetail.ItemName);
+                        }
+                    }
+                    foreach (var odrDetail in inputData.CheckedOrderModels)
+                    {
+                        if (string.IsNullOrEmpty(odrDetail.ItemCd)) continue;
+
+                        if (!items.ContainsKey(odrDetail.ItemCd))
+                        {
+                            itemCds.Add(odrDetail.ItemCd);
+                            if (odrDetail.Santei)
+                            {
+                                items.Add(odrDetail.ItemCd, odrDetail.ItemName);
+                            }
+                        }
+                    }
+                    _allCmtCheckMst = _checkingFinder.GetCmtCheckMsts(itemCds);
+                    checkSpecialItemList.AddRange(ItemCommentCheck(items));
+                }
+
+                return new CheckedSpecialItemOutputData(checkSpecialItemList, CheckedSpecialItemStatus.Failed);
             }
             catch
             {
-                return new CheckedSpecialItemOutputData(new List<CheckSpecialItemModel>(), CheckedSpecialItemStatus.Failed);
+                return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.Failed);
             }
         }
 
@@ -85,9 +199,9 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, TenItemModel tenMstItem, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, TenItemModel tenMstItem, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
+            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
 
             int iYear = 0;
             int iMonth = 0;
@@ -145,7 +259,7 @@ namespace Interactor.MedicalExamination
 
                 if (!string.IsNullOrEmpty(msg))
                 {
-                    CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.AgeLimit, string.Empty, msg, detail.ItemCd);
+                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.AgeLimit, string.Empty, msg, detail.ItemCd);
 
 
                     checkSpecialItemList.Add(checkSpecialItem);
@@ -281,9 +395,9 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItemModel> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
+            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
 
             List<string> checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
@@ -304,7 +418,7 @@ namespace Interactor.MedicalExamination
 
                 if (minStartDate > sinDate)
                 {
-                    CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
+                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -313,7 +427,7 @@ namespace Interactor.MedicalExamination
 
                 if (maxEndDate < sinDate)
                 {
-                    CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
+                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -331,9 +445,9 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItemModel> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
+            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
             List<string> checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
@@ -367,7 +481,7 @@ namespace Interactor.MedicalExamination
 
                 if (itemCount > 1)
                 {
-                    CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
+                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -383,16 +497,16 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
+        private List<CheckedSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
         {
-            List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
+            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
             foreach (var item in items)
             {
                 if (checkSpecialItemList.Any(p => p.ItemCd == item.Key)) continue;
 
                 if (IsShowCommentCheckMst(item.Key, allCmtCheckMst, karteInfs))
                 {
-                    checkSpecialItemList.Add(new CheckSpecialItemModel(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
+                    checkSpecialItemList.Add(new CheckedSpecialItemModel(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
                 }
             }
             return checkSpecialItemList;
@@ -418,146 +532,9 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, int hokenKbn, int hokensyuHandling, int syosinDate, TenItemModel santeiTenMst, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, TenItemModel tenMst, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
+        private List<CheckedSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, int hokenKbn, int hokensyuHandling, int syosinDate, TenItemModel santeiTenMst, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, TenItemModel tenMst, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
-            #region Sub function
-            int WeeksBefore(int baseDate, int term)
-            {
-                return CIUtil.WeeksBefore(baseDate, term);
-            }
-
-            int MonthsBefore(int baseDate, int term)
-            {
-                return CIUtil.MonthsBefore(baseDate, term);
-            }
-
-            int YearsBefore(int baseDate, int term)
-            {
-                return CIUtil.YearsBefore(baseDate, term);
-            }
-
-            int DaysBefore(int baseDate, int term)
-            {
-                return CIUtil.DaysBefore(baseDate, term);
-            }
-
-            int MonthsAfter(int baseDate, int term)
-            {
-                return CIUtil.MonthsAfter(baseDate, term);
-            }
-            int GetPtHokenKbn(long rpno, long edano)
-            {
-                int? ret = 0;
-                if (hokenIds.Any(p => p.rpno == rpno && p.edano == edano))
-                {
-                    ret = hokenKbn;
-                }
-
-                return ret == null ? 0 : ret.Value;
-            }
-
-            int GetHokenKbn(int odrHokenKbn)
-            {
-                int hokenKbn = 0;
-
-                if (new int[] { 0 }.Contains(odrHokenKbn))
-                {
-                    hokenKbn = 4;
-                }
-                else if (new int[] { 1, 2 }.Contains(odrHokenKbn))
-                {
-                    hokenKbn = 0;
-                }
-                else if (new int[] { 11, 12 }.Contains(odrHokenKbn))
-                {
-                    hokenKbn = 1;
-                }
-                else if (new int[] { 13 }.Contains(odrHokenKbn))
-                {
-                    hokenKbn = 2;
-                }
-                else if (new int[] { 14 }.Contains(odrHokenKbn))
-                {
-                    hokenKbn = 3;
-                }
-
-                return hokenKbn;
-            }
-            /// <summary>
-            /// チェック用保険区分を返す
-            /// 健保、労災、自賠の場合、オプションにより、同一扱いにするか別扱いにするか決定
-            /// 自費の場合、健保と自費を対象にする
-            /// </summary>
-            /// <param name="hokenKbn">
-            /// 0-健保、1-労災、2-アフターケア、3-自賠、4-自費
-            /// </param>
-            /// <returns></returns>
-            List<int> GetCheckHokenKbns(int odrHokenKbn)
-            {
-                List<int> results = new List<int>();
-
-                int hokenKbn = GetHokenKbn(odrHokenKbn);
-
-                if (hokensyuHandling == 0)
-                {
-                    // 同一に考える
-                    if (hokenKbn <= 3)
-                    {
-                        results.AddRange(new List<int> { 0, 1, 2, 3 });
-                    }
-                    else
-                    {
-                        results.Add(hokenKbn);
-                    }
-                }
-                else if (hokensyuHandling == 1)
-                {
-                    // すべて同一に考える
-                    results.AddRange(new List<int> { 0, 1, 2, 3, 4 });
-                }
-                else
-                {
-                    // 別に考える
-                    results.Add(hokenKbn);
-                }
-
-                if (hokenKbn == 4)
-                {
-                    results.Add(0);
-                }
-
-                return results;
-            }
-
-            List<int> GetCheckSanteiKbns(int odrHokenKbn)
-            {
-                List<int> results = new List<int> { 0 };
-
-                int hokenKbn = GetHokenKbn(odrHokenKbn);
-
-                if (hokensyuHandling == 0)
-                {
-                    // 同一に考える
-                    if (hokenKbn == 4)
-                    {
-                        //results.Add(2);
-                    }
-                }
-                else if (hokensyuHandling == 1)
-                {
-                    // すべて同一に考える
-                    results.Add(2);
-                }
-                else
-                {
-                    // 別に考える
-                }
-
-                return results;
-            }
-            #endregion
-
-            List<CheckSpecialItemModel> checkSpecialItemList = new List<CheckSpecialItemModel>();
+            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
             int endDate = sinDate;
             // MAX_COUNT>1の場合は注意扱いする単位のコード
 
@@ -598,235 +575,378 @@ namespace Interactor.MedicalExamination
                     suryo += (item.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(odrDetail.ItemCd)) ? 1 : item.Suryo;
                 }
 
-                //if (odrDetail.ItemCd != santeiItemCd)
-                //{
-                //    foreach (var odrInfDetail in allOdrInfDetail)
-                //    {
-                //        if (odrInfDetail.ItemCd == santeiItemCd)
-                //        {
-                //            suryo += (odrInfDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(odrInfDetail.ItemCd)) ? 1 : odrInfDetail.Suryo;
-                //        }
-                //    }
-                //}
+
 
                 densiSanteiKaisuModels = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
+
+                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, hokenKbn, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModels, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
                 // チェック期間と表記を取得する
-                foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
-                {
-                    string sTerm = string.Empty;
-                    int startDate = 0;
-
-                    List<int> checkHokenKbnTmp = new List<int>();
-                    checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo)));
-
-                    if (densiSanteiKaisu.TargetKbn == 1)
-                    {
-                        // 健保のみ対象の場合はすべて対象
-                    }
-                    else if (densiSanteiKaisu.TargetKbn == 2)
-                    {
-                        // 労災のみ対象の場合、健保は抜く
-                        checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
-                    }
-
-                    List<int> checkSanteiKbnTmp = new List<int>();
-                    checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo)));
-
-                    switch (densiSanteiKaisu.UnitCd)
-                    {
-                        case 53:    //患者あたり
-                            sTerm = "患者あたり";
-                            break;
-                        case 121:   //1日
-                            startDate = sinDate;
-                            sTerm = "日";
-                            break;
-                        case 131:   //1月
-                            startDate = sinDate / 100 * 100 + 1;
-                            sTerm = "月";
-                            break;
-                        case 138:   //1週
-                            startDate = WeeksBefore(sinDate, 1);
-                            sTerm = "週";
-                            break;
-                        case 141:   //一連
-                            startDate = -1;
-                            sTerm = "一連";
-                            break;
-                        case 142:   //2週
-                            startDate = WeeksBefore(sinDate, 2);
-                            sTerm = "2週";
-                            break;
-                        case 143:   //2月
-                            startDate = MonthsBefore(sinDate, 1);
-                            sTerm = "2月";
-                            break;
-                        case 144:   //3月
-                            startDate = MonthsBefore(sinDate, 2);
-                            sTerm = "3月";
-                            break;
-                        case 145:   //4月
-                            startDate = MonthsBefore(sinDate, 3);
-                            sTerm = "4月";
-                            break;
-                        case 146:   //6月
-                            startDate = MonthsBefore(sinDate, 5);
-                            sTerm = "6月";
-                            break;
-                        case 147:   //12月
-                            startDate = MonthsBefore(sinDate, 11);
-                            sTerm = "12月";
-                            break;
-                        case 148:   //5年
-                            startDate = YearsBefore(sinDate, 5);
-                            sTerm = "5年";
-                            break;
-                        case 997:   //初診から1カ月（休日除く）
-                            if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
-                            {
-                                // 初診関連項目を算定している場合、算定不可
-                                endDate = 99999999;
-                            }
-                            else
-                            {
-                                // 直近の初診日から１か月後を取得する（休日除く）
-                                endDate = syosinDate;
-                                endDate = _todayOdrRepository.MonthsAfterExcludeHoliday(hpId, endDate, 1);
-                            }
-                            break;
-                        case 998:   //初診から1カ月
-                            if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
-                            {
-                                // 初診関連項目を算定している場合、算定不可
-                                endDate = 99999999;
-                            }
-                            else
-                            {
-                                // 直近の初診日から１か月後を取得する（休日除く）
-                                endDate = syosinDate;
-                                endDate = MonthsAfter(endDate, 1);
-                            }
-                            break;
-                        case 999:   //カスタム
-                            if (densiSanteiKaisu.TermSbt == 2)
-                            {
-                                //日
-                                startDate = DaysBefore(sinDate, densiSanteiKaisu.TermCount);
-                                if (densiSanteiKaisu.TermCount == 1)
-                                {
-                                    sTerm = "日";
-                                }
-                                else
-                                {
-                                    sTerm = densiSanteiKaisu.TermCount + "日";
-                                }
-                            }
-                            else if (densiSanteiKaisu.TermSbt == 3)
-                            {
-                                //週
-                                startDate = WeeksBefore(sinDate, densiSanteiKaisu.TermCount);
-                                if (densiSanteiKaisu.TermCount == 1)
-                                {
-                                    sTerm = "週";
-                                }
-                                else
-                                {
-                                    sTerm = densiSanteiKaisu.TermCount + "週";
-                                }
-                            }
-                            else if (densiSanteiKaisu.TermSbt == 4)
-                            {
-                                //月
-                                startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount);
-                                if (densiSanteiKaisu.TermCount == 1)
-                                {
-                                    sTerm = "月";
-                                }
-                                else
-                                {
-                                    sTerm = densiSanteiKaisu.TermCount + "月";
-                                }
-                            }
-                            else if (densiSanteiKaisu.TermSbt == 5)
-                            {
-                                //年
-                                startDate = (sinDate / 10000 - (densiSanteiKaisu.TermCount - 1)) * 10000 + 101;
-                                if (densiSanteiKaisu.TermCount == 1)
-                                {
-                                    sTerm = "年間";
-                                }
-                                else
-                                {
-                                    sTerm = densiSanteiKaisu.TermCount + "年間";
-                                }
-                            }
-                            break;
-                        default:
-                            startDate = -1;
-                            break;
-                    }
-
-                    if (densiSanteiKaisu.UnitCd == 997 || densiSanteiKaisu.UnitCd == 998)
-                    {
-                        //初診から1カ月
-                        if (endDate > sinDate)
-                        {
-                            string conditionMsg = string.Empty;
-                            //算定不可
-                            if (densiSanteiKaisu.SpJyoken == 1)
-                            {
-                                conditionMsg = "算定できない可能性があります。";
-                            }
-                            else
-                            {
-                                conditionMsg = "算定できません。";
-                            }
-
-                            string errMsg = string.Format("'{0}' は、初診から1カ月以内のため、" + conditionMsg, odrDetail.ItemName);
-                            CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
-
-                            checkSpecialItemList.Add(checkSpecialItem);
-                        }
-                    }
-                    else
-                    {
-                        double count = 0;
-                        if (startDate >= 0)
-                        {
-                            List<string> itemCds = new List<string>();
-
-                            if (densiSanteiKaisu.ItemGrpCd > 0)
-                            {
-                                // 項目グループの設定がある場合
-                                itemGrpMsts = itemGrpMsts?.Where(i => i.ItemGrpCd == densiSanteiKaisu.ItemGrpCd).ToList() ?? new List<ItemGrpMstModel>();
-                            }
-
-                            if (itemGrpMsts != null && itemGrpMsts.Any())
-                            {
-                                // 項目グループの設定がある場合
-                                itemCds.AddRange(itemGrpMsts.Select(x => x.ItemCd));
-                            }
-                            else
-                            {
-                                itemCds.Add(odrDetail.ItemCd);
-                            }
-
-                            count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
-                        }
-                        if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
-                        || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
-                        {
-                            string errMsg = $"\"{itemName}\" {sTerm}{count + suryo}回算定({densiSanteiKaisu.MaxCount}回まで)";
-                            CheckSpecialItemModel checkSpecialItem = new CheckSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
-
-                            checkSpecialItemList.Add(checkSpecialItem);
-                        }
-                    }
-                }
                 checkedItem.Add(odrDetail.ItemCd);
             }
 
             return checkSpecialItemList;
+        }
+
+        private int WeeksBefore(int baseDate, int term)
+        {
+            return CIUtil.WeeksBefore(baseDate, term);
+        }
+
+        private int MonthsBefore(int baseDate, int term)
+        {
+            return CIUtil.MonthsBefore(baseDate, term);
+        }
+
+        private int YearsBefore(int baseDate, int term)
+        {
+            return CIUtil.YearsBefore(baseDate, term);
+        }
+
+        private int DaysBefore(int baseDate, int term)
+        {
+            return CIUtil.DaysBefore(baseDate, term);
+        }
+
+        private int MonthsAfter(int baseDate, int term)
+        {
+            return CIUtil.MonthsAfter(baseDate, term);
+        }
+
+        private int GetPtHokenKbn(long rpno, long edano, int hokenKbn, List<(long rpno, long edano, int hokenId)> hokenIds)
+        {
+            int? ret = 0;
+            if (hokenIds.Any(p => p.rpno == rpno && p.edano == edano))
+            {
+                ret = hokenKbn;
+            }
+
+            return ret == null ? 0 : ret.Value;
+        }
+
+        private int GetHokenKbn(int odrHokenKbn)
+        {
+            int hokenKbn = 0;
+
+            if (new int[] { 0 }.Contains(odrHokenKbn))
+            {
+                hokenKbn = 4;
+            }
+            else if (new int[] { 1, 2 }.Contains(odrHokenKbn))
+            {
+                hokenKbn = 0;
+            }
+            else if (new int[] { 11, 12 }.Contains(odrHokenKbn))
+            {
+                hokenKbn = 1;
+            }
+            else if (new int[] { 13 }.Contains(odrHokenKbn))
+            {
+                hokenKbn = 2;
+            }
+            else if (new int[] { 14 }.Contains(odrHokenKbn))
+            {
+                hokenKbn = 3;
+            }
+
+            return hokenKbn;
+        }
+
+        /// <summary>
+        /// チェック用保険区分を返す
+        /// 健保、労災、自賠の場合、オプションにより、同一扱いにするか別扱いにするか決定
+        /// 自費の場合、健保と自費を対象にする
+        /// </summary>
+        /// <param name="hokenKbn">
+        /// 0-健保、1-労災、2-アフターケア、3-自賠、4-自費
+        /// </param>
+        /// <returns></returns>
+        private List<int> GetCheckHokenKbns(int odrHokenKbn, int hokensyuHandling)
+        {
+            List<int> results = new List<int>();
+
+            int hokenKbn = GetHokenKbn(odrHokenKbn);
+
+            if (hokensyuHandling == 0)
+            {
+                // 同一に考える
+                if (hokenKbn <= 3)
+                {
+                    results.AddRange(new List<int> { 0, 1, 2, 3 });
+                }
+                else
+                {
+                    results.Add(hokenKbn);
+                }
+            }
+            else if (hokensyuHandling == 1)
+            {
+                // すべて同一に考える
+                results.AddRange(new List<int> { 0, 1, 2, 3, 4 });
+            }
+            else
+            {
+                // 別に考える
+                results.Add(hokenKbn);
+            }
+
+            if (hokenKbn == 4)
+            {
+                results.Add(0);
+            }
+
+            return results;
+        }
+
+        private List<int> GetCheckSanteiKbns(int odrHokenKbn, int hokensyuHandling)
+        {
+            List<int> results = new List<int> { 0 };
+
+            int hokenKbn = GetHokenKbn(odrHokenKbn);
+
+            if (hokensyuHandling == 0)
+            {
+                // 同一に考える
+                if (hokenKbn == 4)
+                {
+                    //results.Add(2);
+                }
+            }
+            else if (hokensyuHandling == 1)
+            {
+                // すべて同一に考える
+                results.Add(2);
+            }
+            else
+            {
+                // 別に考える
+            }
+
+            return results;
+        }
+
+        private List<CheckedSpecialItemModel> ExecuteDensiSantei(long ptId, int hpId, int endDate, int hokenKbn, long raiinNo, int hokensyuHandling, int sinDate, int syosinDate, double suryo, string itemName, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, OrdInfDetailModel odrDetail, List<(long rpno, long edano, int hokenId)> hokenIds, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts)
+        {
+            List<CheckedSpecialItemModel> checkSpecialItemList = new();
+
+            foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
+            {
+                string sTerm = string.Empty;
+                int startDate = 0;
+
+                List<int> checkHokenKbnTmp = new List<int>();
+                checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo, hokenKbn, hokenIds), hokensyuHandling));
+
+                if (densiSanteiKaisu.TargetKbn == 1)
+                {
+                    // 健保のみ対象の場合はすべて対象
+                }
+                else if (densiSanteiKaisu.TargetKbn == 2)
+                {
+                    // 労災のみ対象の場合、健保は抜く
+                    checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
+                }
+
+                List<int> checkSanteiKbnTmp = new List<int>();
+                checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo, hokenKbn, hokenIds), hokensyuHandling));
+
+                CommonDensiSantei(hpId, densiSanteiKaisu, odrDetail, allOdrInfDetail, startDate, endDate, sTerm, sinDate, syosinDate);
+
+                if (densiSanteiKaisu.UnitCd == 997 || densiSanteiKaisu.UnitCd == 998)
+                {
+                    //初診から1カ月
+                    if (endDate > sinDate)
+                    {
+                        string conditionMsg = string.Empty;
+                        //算定不可
+                        if (densiSanteiKaisu.SpJyoken == 1)
+                        {
+                            conditionMsg = "算定できない可能性があります。";
+                        }
+                        else
+                        {
+                            conditionMsg = "算定できません。";
+                        }
+
+                        string errMsg = string.Format("'{0}' は、初診から1カ月以内のため、" + conditionMsg, odrDetail.ItemName);
+                        CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+
+                        checkSpecialItemList.Add(checkSpecialItem);
+                    }
+                }
+                else
+                {
+                    double count = 0;
+                    if (startDate >= 0)
+                    {
+                        List<string> itemCds = new List<string>();
+
+                        if (densiSanteiKaisu.ItemGrpCd > 0)
+                        {
+                            // 項目グループの設定がある場合
+                            itemGrpMsts = itemGrpMsts?.Where(i => i.ItemGrpCd == densiSanteiKaisu.ItemGrpCd).ToList() ?? new List<ItemGrpMstModel>();
+                        }
+
+                        if (itemGrpMsts != null && itemGrpMsts.Any())
+                        {
+                            // 項目グループの設定がある場合
+                            itemCds.AddRange(itemGrpMsts.Select(x => x.ItemCd));
+                        }
+                        else
+                        {
+                            itemCds.Add(odrDetail.ItemCd);
+                        }
+
+                        count = _todayOdrRepository.SanteiCount(hpId, ptId, startDate, endDate, sinDate, raiinNo, itemCds, checkSanteiKbnTmp, checkHokenKbnTmp);
+                    }
+                    if (densiSanteiKaisu.MaxCount <= count // 上限値を超えるかチェックする
+                    || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
+                    {
+                        string errMsg = $"\"{itemName}\" {sTerm}{count + suryo}回算定({densiSanteiKaisu.MaxCount}回まで)";
+                        CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+
+                        checkSpecialItemList.Add(checkSpecialItem);
+                    }
+                }
+            }
+            return checkSpecialItemList;
+        }
+
+        private void CommonDensiSantei(int hpId, DensiSanteiKaisuModel densiSanteiKaisu, OrdInfDetailModel odrDetail, List<OrdInfDetailModel> allOdrInfDetail, int startDate, int endDate, string sTerm, int sinDate, int syosinDate)
+        {
+            switch (densiSanteiKaisu.UnitCd)
+            {
+                case 53:    //患者あたり
+                    sTerm = "患者あたり";
+                    break;
+                case 121:   //1日
+                    startDate = sinDate;
+                    sTerm = "日";
+                    break;
+                case 131:   //1月
+                    startDate = sinDate / 100 * 100 + 1;
+                    sTerm = "月";
+                    break;
+                case 138:   //1週
+                    startDate = WeeksBefore(sinDate, 1);
+                    sTerm = "週";
+                    break;
+                case 141:   //一連
+                    startDate = -1;
+                    sTerm = "一連";
+                    break;
+                case 142:   //2週
+                    startDate = WeeksBefore(sinDate, 2);
+                    sTerm = "2週";
+                    break;
+                case 143:   //2月
+                    startDate = MonthsBefore(sinDate, 1);
+                    sTerm = "2月";
+                    break;
+                case 144:   //3月
+                    startDate = MonthsBefore(sinDate, 2);
+                    sTerm = "3月";
+                    break;
+                case 145:   //4月
+                    startDate = MonthsBefore(sinDate, 3);
+                    sTerm = "4月";
+                    break;
+                case 146:   //6月
+                    startDate = MonthsBefore(sinDate, 5);
+                    sTerm = "6月";
+                    break;
+                case 147:   //12月
+                    startDate = MonthsBefore(sinDate, 11);
+                    sTerm = "12月";
+                    break;
+                case 148:   //5年
+                    startDate = YearsBefore(sinDate, 5);
+                    sTerm = "5年";
+                    break;
+                case 997:   //初診から1カ月（休日除く）
+                    if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
+                    {
+                        // 初診関連項目を算定している場合、算定不可
+                        endDate = 99999999;
+                    }
+                    else
+                    {
+                        // 直近の初診日から１か月後を取得する（休日除く）
+                        endDate = syosinDate;
+                        endDate = _todayOdrRepository.MonthsAfterExcludeHoliday(hpId, endDate, 1);
+                    }
+                    break;
+                case 998:   //初診から1カ月
+                    if (allOdrInfDetail.Where(d => d != odrDetail).Count(p => _syosinls.Contains(p.ItemCd)) > 0)
+                    {
+                        // 初診関連項目を算定している場合、算定不可
+                        endDate = 99999999;
+                    }
+                    else
+                    {
+                        // 直近の初診日から１か月後を取得する（休日除く）
+                        endDate = syosinDate;
+                        endDate = MonthsAfter(endDate, 1);
+                    }
+                    break;
+                case 999:   //カスタム
+                    if (densiSanteiKaisu.TermSbt == 2)
+                    {
+                        //日
+                        startDate = DaysBefore(sinDate, densiSanteiKaisu.TermCount);
+                        if (densiSanteiKaisu.TermCount == 1)
+                        {
+                            sTerm = "日";
+                        }
+                        else
+                        {
+                            sTerm = densiSanteiKaisu.TermCount + "日";
+                        }
+                    }
+                    else if (densiSanteiKaisu.TermSbt == 3)
+                    {
+                        //週
+                        startDate = WeeksBefore(sinDate, densiSanteiKaisu.TermCount);
+                        if (densiSanteiKaisu.TermCount == 1)
+                        {
+                            sTerm = "週";
+                        }
+                        else
+                        {
+                            sTerm = densiSanteiKaisu.TermCount + "週";
+                        }
+                    }
+                    else if (densiSanteiKaisu.TermSbt == 4)
+                    {
+                        //月
+                        startDate = MonthsBefore(sinDate, densiSanteiKaisu.TermCount);
+                        if (densiSanteiKaisu.TermCount == 1)
+                        {
+                            sTerm = "月";
+                        }
+                        else
+                        {
+                            sTerm = densiSanteiKaisu.TermCount + "月";
+                        }
+                    }
+                    else if (densiSanteiKaisu.TermSbt == 5)
+                    {
+                        //年
+                        startDate = (sinDate / 10000 - (densiSanteiKaisu.TermCount - 1)) * 10000 + 101;
+                        if (densiSanteiKaisu.TermCount == 1)
+                        {
+                            sTerm = "年間";
+                        }
+                        else
+                        {
+                            sTerm = densiSanteiKaisu.TermCount + "年間";
+                        }
+                    }
+                    break;
+                default:
+                    startDate = -1;
+                    break;
+            }
+
         }
     }
 }

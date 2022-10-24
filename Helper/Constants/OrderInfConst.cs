@@ -156,5 +156,18 @@
             {"外用薬", 6},
             {"歯科用薬剤", 8},
         };
+
+        public enum CheckingType
+        {
+            /// <summary>
+            /// 算定漏れ
+            /// </summary>
+            MissingCalculate = 1,
+
+            /// <summary>
+            /// オーダー
+            /// </summary>
+            Order = 2,
+        }
     }
 }

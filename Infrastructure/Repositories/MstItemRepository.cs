@@ -815,6 +815,46 @@ namespace Infrastructure.Repositories
                );
         }
 
+        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
+        {
+            var entities = _tenantDataContext.TenMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= minSinDate &&
+                   p.EndDate >= maxSinDate &&
+                   itemCds.Contains(p.ItemCd));
+
+            return entities.Select(entity => new TenItemModel(
+                    entity.HpId,
+                    entity.ItemCd,
+                    entity.RousaiKbn,
+                    entity.KanaName1 ?? string.Empty,
+                    entity.Name ?? string.Empty,
+                    entity.KohatuKbn,
+                    entity.MadokuKbn,
+                    entity.KouseisinKbn,
+                    entity.OdrUnitName ?? string.Empty,
+                    entity.EndDate,
+                    entity.DrugKbn,
+                    entity.MasterSbt ?? string.Empty,
+                    entity.BuiKbn,
+                    entity.IsAdopted,
+                    entity.Ten,
+                    entity.TenId,
+                    string.Empty,
+                    string.Empty,
+                    entity.CmtCol1,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.SinKouiKbn,
+                    entity.YjCd ?? string.Empty,
+                    entity.CnvUnitName ?? string.Empty,
+                    entity.StartDate,
+                    entity.YohoKbn,
+                    entity.MinAge ?? string.Empty,
+                    entity.MaxAge ?? string.Empty,
+                    entity.SanteiItemCd ?? string.Empty
+               )).ToList();
+        }
+
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {

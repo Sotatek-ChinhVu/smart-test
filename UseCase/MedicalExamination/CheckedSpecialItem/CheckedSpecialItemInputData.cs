@@ -1,4 +1,5 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.TodayOdr;
+using UseCase.Core.Sync.Core;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -6,7 +7,7 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
 {
     public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOutputData>
     {
-        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfDetailItemInputData> odrInfs, CheckedSpecialItemStatus status)
+        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo,  List<OdrInfItemInputData> odrInfs, List<CheckedOrderModel> checkedOrderModels, CheckedSpecialItemStatus status, bool enabledInputCheck, bool enabledCommentCheck)
         {
             HpId = hpId;
             PtId = ptId;
@@ -14,8 +15,11 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
             IBirthDay = iBirthDay;
             CheckAge = checkAge;
             RaiinNo = raiinNo;
-            OdrInfDetails = odrInfs;
+            OdrInfs = odrInfs;
             Status = status;
+            EnabledInputCheck = enabledInputCheck;
+            EnabledCommentCheck = enabledCommentCheck;
+            CheckedOrderModels = checkedOrderModels;
         }
 
         public int HpId { get; private set; }
@@ -24,7 +28,10 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
         public int IBirthDay { get; private set; }
         public int CheckAge { get; private set; }
         public long RaiinNo { get; private set; }
-        public List<OdrInfDetailItemInputData> OdrInfDetails { get; private set; }
+        public bool EnabledInputCheck { get; private set; }
+        public bool EnabledCommentCheck { get; private set; }
+        public List<OdrInfItemInputData> OdrInfs { get; private set; }
+        public List<CheckedOrderModel> CheckedOrderModels { get; private set; }
         public CheckedSpecialItemStatus Status { get; private set; }
     }
 }

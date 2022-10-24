@@ -2,7 +2,7 @@
 
 namespace Domain.Models.TodayOdr
 {
-    public class CheckSpecialItemModel
+    public class CheckedSpecialItemModel
     {
         /// <summary>
         /// 種別
@@ -46,7 +46,7 @@ namespace Domain.Models.TodayOdr
         /// </summary>
         public string ItemCd { get; private set; }
 
-        public CheckSpecialItemModel(CheckSpecialType checkingType, string label, string checkingContent, string itemCd)
+        public CheckedSpecialItemModel(CheckSpecialType checkingType, string label, string checkingContent, string itemCd)
         {
             CheckingType = checkingType;
             Label = label;

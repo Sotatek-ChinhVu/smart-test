@@ -29,5 +29,9 @@
         List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
         TenItemModel FindTenMst(int hpId, string itemCd, int sinDate);
+
+        List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate);
+
+        List<ItemCmtModel> GetCmtCheckMsts(List<string> itemCds);
     }
 }
