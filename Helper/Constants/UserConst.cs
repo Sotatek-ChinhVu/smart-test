@@ -21,6 +21,7 @@ namespace Helper.Constants
             InvalidName,
             InvalidSname,
             InvalidLoginId,
+            InvalidExistedId,
             InvalidExistedLoginId,
             InvalidLoginPass,
             InvalidMayakuLicenseNo,

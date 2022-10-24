@@ -18,9 +18,10 @@ namespace Infrastructure.Repositories
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
-        public bool CheckExistedId(List<long> idList)
+        public bool CheckExistedId(List<long> ids)
         {
-            return _tenantNoTrackingDataContext.UserMsts.Any(u => idList.Contains(u.Id));
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => ids.Contains(u.Id));
+            return anyUsertMsts;
         }
 
         public bool CheckExistedUserId(int userId)
@@ -30,26 +31,26 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedUserIdCreate(List<int> UserIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && u.IsDeleted != 1);
-            return countUsertMsts;
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && u.IsDeleted != 1);
+            return anyUsertMsts;
         }
 
         public bool CheckExistedUserIdUpdate(List<long> Ids, List<int> UserIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
-            return countUsertMsts;
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => UserIds.Contains(u.UserId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
+            return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdCreate(List<string> LoginIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && u.IsDeleted != 1);
-            return countUsertMsts;
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && u.IsDeleted != 1);
+            return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdUpdate(List<long> Ids, List<string> LoginIds)
         {
-            var countUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
-            return countUsertMsts;
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => LoginIds.Contains(u.LoginId) && !Ids.Contains(u.Id) && u.IsDeleted != 1);
+            return anyUsertMsts;
         }
 
         public bool CheckExistedJobCd(List<int> JobCds)

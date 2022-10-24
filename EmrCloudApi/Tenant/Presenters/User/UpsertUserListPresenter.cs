@@ -48,6 +48,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.InvalidDrName => ResponseMessage.UpsertInvalidDrName,
             UpsertUserListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             UpsertUserListStatus.UserListInvalidExistedUserId => ResponseMessage.UpsertInvalidExistedUserId,
+            UpsertUserListStatus.UserListInvalidExistedId => ResponseMessage.UpsertInvalidExistedId,
             UpsertUserListStatus.UserListExistedInputData => ResponseMessage.UserListExistedInputData,
             _ => string.Empty
         };

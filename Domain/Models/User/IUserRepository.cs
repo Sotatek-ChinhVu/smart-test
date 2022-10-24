@@ -24,7 +24,7 @@
 
         UserMstModel? GetByLoginId(string loginId);
 
-        bool CheckExistedId(List<long> idList);
+        bool CheckExistedId(List<long> ids);
 
         void Upsert(List<UserMstModel> upsertUserList);
 

@@ -54,20 +54,20 @@ namespace Interactor.User
                         u.IsDeleted
                         )).ToList();
 
-                var CheckInputId = datas.Where(u => u.Id > 0).Select(u => u.Id);
-                if (CheckInputId.Count() != CheckInputId.Distinct().Count())
+                var checkinputid = datas.Where(u => u.Id > 0).Select(u => u.Id);
+                if (checkinputid.Count() != checkinputid.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                var CheckInputUserId = datas.Select(u => u.UserId);
-                if (CheckInputUserId.Count() != CheckInputUserId.Distinct().Count())
+                var checkinputuserid = datas.Select(u => u.UserId);
+                if (checkinputuserid.Count() != checkinputuserid.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                var CheckInputLoginId = datas.Select(u => u.LoginId);
-                if (CheckInputLoginId.Count() != CheckInputLoginId.Distinct().Count())
+                var checkinputloginid = datas.Select(u => u.LoginId);
+                if (checkinputloginid.Count() != checkinputloginid.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
@@ -80,6 +80,11 @@ namespace Interactor.User
                         return new UpsertUserListOutputData(ConvertStatusUser(status));
                     }
                 }
+
+                if(_userRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedId);
+                }    
 
                 if (_userRepository.CheckExistedUserIdCreate(datas.Where(u => u.Id == 0).Select(u => u.UserId).ToList()))
                 {
@@ -166,6 +171,8 @@ namespace Interactor.User
                 return UpsertUserListStatus.UserListJobCdNoExist;
             if (status == ValidationStatus.InvalidExistedUserId)
                 return UpsertUserListStatus.UserListInvalidExistedUserId;
+            if (status == ValidationStatus.InvalidExistedId)
+                return UpsertUserListStatus.UserListInvalidExistedId;
             if (status == ValidationStatus.UserListInputData)
                 return UpsertUserListStatus.UserListExistedInputData;
 
