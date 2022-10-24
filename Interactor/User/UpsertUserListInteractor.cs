@@ -54,26 +54,23 @@ namespace Interactor.User
                         u.IsDeleted
                         )).Distinct().ToList();
 
-                if (datas.Select(u => u.Id).Count() != datas.Select(u => u.Id).Distinct().Count())
+                var CheckInputId = datas.Where(u => u.Id > 0).Select(u => u.Id);
+                if (CheckInputId.Count() != CheckInputId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                if (datas.Select(u => u.UserId).Count() != datas.Select(u => u.UserId).Distinct().Count())
+                var CheckInputUserId = datas.Select(u => u.UserId);
+                if (CheckInputUserId.Count() != CheckInputUserId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                if (datas.Select(u => u.JobCd).Count() != datas.Select(u => u.JobCd).Distinct().Count())
+                var CheckInputLoginId = datas.Select(u => u.LoginId);
+                if (CheckInputLoginId.Count() != CheckInputLoginId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
-
-                if (datas.Select(u => u.KaId).Count() != datas.Select(u => u.KaId).Distinct().Count())
-                {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
-                }
-
 
                 foreach (var data in datas)
                 {
@@ -84,22 +81,22 @@ namespace Interactor.User
                     }
                 }
 
-                if (_userRepository.CheckExistedUserIdCreate(datas.Select(u => u.UserId).Distinct().ToList()))
+                if (_userRepository.CheckExistedUserIdCreate(datas.Select(u => u.UserId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
 
-                if (_userRepository.CheckExistedUserIdUpdate(datas.Select(u => u.Id).Distinct().ToList(), datas.Select(u => u.UserId).Distinct().ToList()))
+                if (_userRepository.CheckExistedUserIdUpdate(datas.Select(u => u.Id).ToList(), datas.Select(u => u.UserId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
 
-                if (_userRepository.CheckExistedLoginIdCreate(datas.Select(u => u.LoginId).Distinct().ToList()))
+                if (_userRepository.CheckExistedLoginIdCreate(datas.Select(u => u.LoginId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }
 
-                if (_userRepository.CheckExistedLoginIdUpdate(datas.Select(u => u.Id).Distinct().ToList(), datas.Select(u => u.LoginId).Distinct().ToList()))
+                if (_userRepository.CheckExistedLoginIdUpdate(datas.Select(u => u.Id).ToList(), datas.Select(u => u.LoginId).ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }

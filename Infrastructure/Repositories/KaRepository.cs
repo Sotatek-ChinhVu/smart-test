@@ -24,7 +24,7 @@ public class KaRepository : IKaRepository
     public bool CheckKaId0(List<int> KaIds)
     {
         var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => KaIds.Contains(u.KaId));
-        return KaIds.Count <= countKaMsts;
+        return KaIds.Count == countKaMsts;
     }
 
     public KaMstModel GetByKaId(int kaId)
