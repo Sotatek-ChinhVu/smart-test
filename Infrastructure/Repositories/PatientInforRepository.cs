@@ -855,15 +855,15 @@ namespace Infrastructure.Repositories
                 .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
                 .OrderBy(x => x.SortNo)
                 .Select(x => new DefHokenNoModel(
-                    x.HpId,
                     x.Digit1,
                     x.Digit2,
-                    x.Digit3,
-                    x.Digit4,
-                    x.Digit5,
-                    x.Digit6,
-                    x.Digit7,
-                    x.Digit8,
+                    x.Digit3 ?? string.Empty,
+                    x.Digit4 ?? string.Empty,
+                    x.Digit5 ?? string.Empty,
+                    x.Digit6 ?? string.Empty,
+                    x.Digit7 ?? string.Empty,
+                    x.Digit8 ?? string.Empty,
+                    x.SeqNo,
                     x.HokenNo,
                     x.HokenEdaNo,
                     x.SortNo,
@@ -894,6 +894,84 @@ namespace Infrastructure.Repositories
                     x.IsDeleted))
                 .ToList();
             return listPtKyusei;
+        }
+
+        public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels)
+        {
+            try
+            {
+                int sortNo = 1;
+                foreach (var item in defHokenNoModels)
+                {
+                    var checkExistDefHoken = _tenantDataContext.DefHokenNos
+                        .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
+
+                    //Add new if data does not exist
+                    if (checkExistDefHoken == null)
+                    {
+                        _tenantTrackingDataContext.DefHokenNos.Add(new DefHokenNo()
+                        {
+                            HpId = TempIdentity.HpId,
+                            Digit1 = item.Digit1,
+                            Digit2 = item.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = 0,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = sortNo
+                        });
+                    }
+                    else if (checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
+                        && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
+                        || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
+                        || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
+                    {
+                        _tenantTrackingDataContext.DefHokenNos.Update(new DefHokenNo()
+                        {
+                            HpId = TempIdentity.HpId,
+                            Digit1 = checkExistDefHoken.Digit1,
+                            Digit2 = checkExistDefHoken.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            SeqNo = checkExistDefHoken.SeqNo,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = item.IsDeleted,
+                            CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
+                            CreateId = checkExistDefHoken.CreateId,
+                            CreateMachine = checkExistDefHoken.CreateMachine,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = sortNo
+                        });
+                    }
+
+                    sortNo++;
+                }
+
+                _tenantTrackingDataContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)

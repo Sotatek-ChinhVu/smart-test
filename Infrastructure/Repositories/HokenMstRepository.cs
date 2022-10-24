@@ -1,5 +1,5 @@
 ﻿using Domain.Models.HokenMst;
-using Helper.Extension;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -66,17 +66,17 @@ namespace Infrastructure.Repositories
                                         hokenMaster?.CountKbn ?? 0,
                                         hokenMaster?.CalcSpKbn ?? 0,
                                         hokenMaster?.MonthSpLimit ?? 0,
-                                        hokenMaster?.KogakuTekiyo ?? 0, 
-                                        hokenMaster?.KogakuTotalKbn ?? 0, 
+                                        hokenMaster?.KogakuTekiyo ?? 0,
+                                        hokenMaster?.KogakuTotalKbn ?? 0,
                                         hokenMaster?.FutanYusen ?? 0,
-                                        hokenMaster?.ReceSeikyuKbn ?? 0, 
-                                        hokenMaster?.ReceKisai ?? 0, 
-                                        hokenMaster?.ReceKisai2 ?? 0, 
+                                        hokenMaster?.ReceSeikyuKbn ?? 0,
+                                        hokenMaster?.ReceKisai ?? 0,
+                                        hokenMaster?.ReceKisai2 ?? 0,
                                         hokenMaster?.ReceTenKisai ?? 0,
-                                        hokenMaster?.ReceFutanHide ?? 0, 
+                                        hokenMaster?.ReceFutanHide ?? 0,
                                         hokenMaster?.ReceFutanRound ?? 0,
-                                        hokenMaster?.ReceZeroKisai ?? 0, 
-                                        hokenMaster?.ReceSpKbn ?? 0, 
+                                        hokenMaster?.ReceZeroKisai ?? 0,
+                                        hokenMaster?.ReceSpKbn ?? 0,
                                         string.Empty);
 
             string? roudou = _tenantDataContext.RoudouMsts.FirstOrDefault(u => u.RoudouCd == result.PrefNo.ToString())?.RoudouName;
@@ -84,6 +84,21 @@ namespace Infrastructure.Repositories
                 result.Roudou = "(" + roudou + ")";
 
             return result;
+        }
+        public List<HokenMasterModel> CheckExistHokenEdaNo(int hokenNo)
+        {
+            var existHokenEdaNo = _tenantDataContext.HokenMsts
+               .Where(x => x.HpId == TempIdentity.HpId && x.HokenNo == hokenNo)
+               .Select(x => new HokenMasterModel(
+                   x.HpId,
+                   x.HokenNo,
+                   x.HokenEdaNo,
+                   0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty
+                   ))
+               .ToList();
+
+            return existHokenEdaNo;
         }
     }
 }

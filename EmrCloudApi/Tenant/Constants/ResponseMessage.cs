@@ -548,7 +548,6 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
-
         public static readonly string MDisease = "薬剤";
         public static readonly string MTenkiContinue = "転帰区分";
         public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
@@ -558,6 +557,18 @@
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
+
+        //Insurance Master Linkage
+        public static readonly string InvalidDigit1 = "Invalid Digit 1";
+        public static readonly string InvalidDigit2 = "Invalid Digit 2";
+        public static readonly string InvalidDigit3 = "Invalid Digit 3";
+        public static readonly string InvalidDigit4 = "Invalid Digit 4";
+        public static readonly string InvalidDigit5 = "Invalid Digit 5";
+        public static readonly string InvalidDigit6 = "Invalid Digit 6";
+        public static readonly string InvalidDigit7 = "Invalid Digit 7";
+        public static readonly string InvalidDigit8 = "Invalid Digit 8";
+        public static readonly string InvalidHokenNo = "Invalid HokenNo";
+        public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
 
     }
 }

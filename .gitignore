@@ -52,8 +52,10 @@ ipch/
 *.sdf
 
 #env
+env.json
 env.Development.json
 env.Production.json
+env.Staging.json
 
 # Visual Studio profiler
 *.psess
