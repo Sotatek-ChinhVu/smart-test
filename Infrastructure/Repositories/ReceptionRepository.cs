@@ -453,7 +453,11 @@ namespace Infrastructure.Repositories
                         r.TantoId,
                         r.SyosaisinKbn,
                         r.JikanKbn,
-                        string.Empty
+                        string.Empty,
+                        r.CreateDate,
+                        r.CreateId,
+                        r.UpdateDate,
+                        r.UpdateId
                    )).ToList();
         }
 
