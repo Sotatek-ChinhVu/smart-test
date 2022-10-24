@@ -554,10 +554,10 @@
         public static readonly string MTenkiDate = "転帰日";
         public static readonly string MTenkiStartDate = "開始日";
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
-        
+
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
-        
+
         //Insurance Master Linkage
         public static readonly string InvalidDigit1 = "Invalid Digit 1";
         public static readonly string InvalidDigit2 = "Invalid Digit 2";
