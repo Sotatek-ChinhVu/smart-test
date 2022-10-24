@@ -10,6 +10,9 @@
         public const string UpsertList = "UpsertList";
         public const string SaveList = "SaveList";
         public const string Save = "Save";
+        public const string Revert = "Revert";
+        public const string Delete = "Delete";
+
 
         // SuperSet
         public const string Validate = "Validate";
@@ -50,8 +53,12 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        // ExportReport
+        public const string ExportKarte1 = "ExportKarte1";
+
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
+        public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -71,5 +78,16 @@
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
 
+
+        //Drug Infor
+        public const string GetDrugMenuTree = "GetDrugMenuTree";
+        public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+
+        //PtKyuseiInf
+        public const string GetPtKyuseiInf = "GetPtKyuseiInf";
+
+        // Reception
+        public const string GetLastRaiinInfs = "GetLastRaiinInfs";
+        public const string GetDataReceptionDefault = "GetDataReceptionDefault";
     }
 }

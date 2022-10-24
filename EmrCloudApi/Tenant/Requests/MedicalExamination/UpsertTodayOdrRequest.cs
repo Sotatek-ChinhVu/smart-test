@@ -12,6 +12,6 @@
         public string SinStartTime { get; set; } = string.Empty;
         public string SinEndTime { get; set; } = string.Empty;
         public List<OdrInfItem> OdrInfs { get; set; } = new();
-        public List<KarteItem> KarteItems { get; set; } = new();
+        public KarteItem KarteItem { get; set; } = new();
     }
 }

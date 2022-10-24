@@ -74,7 +74,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
 
         receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
 
-        return new VisitingListSettingModel(fontName, fontSize, autoRefresh, mouseWheel, kanFocus, selectToDoSetting, receptionTimeColorConfigs, receptionStatusColorConfigs);
+        return new VisitingListSettingModel(receptionTimeColorConfigs, receptionStatusColorConfigs);
     }
 
     private List<ReceptionStatusColorConfig> StandardizeReceptionStatusColorConfigs(List<ReceptionStatusColorConfig> configs)

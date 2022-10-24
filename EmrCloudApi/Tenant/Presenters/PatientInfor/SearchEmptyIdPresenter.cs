@@ -23,6 +23,8 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
             SearchEmptyIdStatus.NoData => ResponseMessage.NoData,
             SearchEmptyIdStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             SearchEmptyIdStatus.InvalidPtNum => ResponseMessage.InvalidPtNum,
+            SearchEmptyIdStatus.InvalidPageIndex => ResponseMessage.InvalidPageIndex,
+            SearchEmptyIdStatus.InvalidPageSize => ResponseMessage.InvalidPageSize,
             _ => string.Empty
         };
     }

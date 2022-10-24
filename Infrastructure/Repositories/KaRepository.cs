@@ -108,9 +108,7 @@ public class KaRepository : IKaRepository
         }
     }
 
-
-
-    private KaMstModel ConvertToKaMstModel(KaMst k)
+    private static KaMstModel ConvertToKaMstModel(KaMst k)
     {
         return new KaMstModel(
             k.Id,

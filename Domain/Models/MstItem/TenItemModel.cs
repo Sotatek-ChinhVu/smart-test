@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -30,6 +30,7 @@ namespace Domain.Models.MstItem
             YjCd = yjCd;
             CnvUnitName = cnvUnitName;
             StartDate = startDate;
+            YohoKbn = yohoKbn;
         }
 
         public TenItemModel()
@@ -56,6 +57,7 @@ namespace Domain.Models.MstItem
             IpnNameCd = string.Empty;
             YjCd = String.Empty;
             CnvUnitName = String.Empty;
+            YohoKbn = 0;
         }
 
         public int HpId { get; private set; }
@@ -106,6 +108,7 @@ namespace Domain.Models.MstItem
 
         public int StartDate { get; private set; }
 
+        public int YohoKbn { get; private set; }
 
         public string RousaiKbnDisplay
         {
@@ -193,16 +196,21 @@ namespace Domain.Models.MstItem
             }
         }
 
-        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn); }
+        public string KouiName { get => BuildKouiName(ItemCd, DrugKbn, MasterSbt, BuiKbn, SinKouiKbn); }
 
-        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn)
+        private static string BuildKouiName(string itemCd, int drugKbn, string masterSbt, int buiKbn, int sinKouiKbn)
         {
-            string rs = "検体";
+            string rs = "";
+            var sinKouiCollection = new SinkouiCollection();
+            var itemKoui = sinKouiCollection.FirstOrDefault(x => x.SinKouiCd == sinKouiKbn);
+            if (itemKoui != null)
+            {
+                rs = itemKoui.SinkouiName;
+            }
             if (itemCd == ItemCdConst.GazoDensibaitaiHozon)
             {
                 rs = "フィルム";
             }
-
             if (drugKbn > 0)
             {
                 switch (drugKbn)

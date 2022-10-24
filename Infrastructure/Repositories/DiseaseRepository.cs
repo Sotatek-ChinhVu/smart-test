@@ -19,6 +19,105 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
+        public List<PtDiseaseModel> GetListPatientDiseaseForReport(int hpId, long ptId, int hokenPid, int sinDate, bool tenkiByomei)
+        {
+            List<int> tenkiKbns = new List<int> { TenkiKbnConst.Continued };
+
+            if (tenkiByomei)
+            {
+                tenkiKbns.AddRange(new List<int> { TenkiKbnConst.Cured, TenkiKbnConst.Dead, TenkiKbnConst.Canceled, TenkiKbnConst.Other });
+            }
+
+            var ptByomeiList = _tenantNoTrackingDataContext.PtByomeis.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                (p.HokenPid == 0 || p.HokenPid == hokenPid) &&
+                tenkiKbns.Contains(p.TenkiKbn) &&
+                p.IsDeleted == DeleteStatus.None
+            )
+            .OrderBy(p => p.StartDate)
+            .ThenBy(p => p.TenkiDate)
+            .ThenBy(p => p.Byomei)
+            .ThenBy(p => p.SyubyoKbn)
+            .ToList();
+
+
+            var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
+                                                             .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
+
+            var byomeiMstList = (from ptByomei in ptByomeiList
+                                 join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
+                                 select ptByomeiMst).ToList();
+
+            List<PtDiseaseModel> result = new List<PtDiseaseModel>();
+            foreach (var ptByomei in ptByomeiList)
+            {
+                var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd);
+
+                string byomeiName = string.Empty;
+                string icd10 = string.Empty;
+                string icd102013 = string.Empty;
+                string icd1012013 = string.Empty;
+                string icd1022013 = string.Empty;
+
+                if (ptByomei.ByomeiCd != null && ptByomei.ByomeiCd.Equals(FREE_WORD))
+                {
+                    byomeiName = ptByomei.Byomei ?? string.Empty;
+                }
+                else
+                {
+                    if (byomeiMst != null)
+                    {
+                        byomeiName = byomeiMst.Sbyomei;
+
+                        icd10 = byomeiMst.Icd101;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd102))
+                        {
+                            icd10 += "/" + byomeiMst.Icd102;
+                        }
+                        icd102013 = byomeiMst.Icd1012013;
+                        if (!string.IsNullOrEmpty(byomeiMst.Icd1022013))
+                        {
+                            icd102013 += "/" + byomeiMst.Icd1022013;
+                        }
+
+                        icd1012013 = byomeiMst.Icd1012013;
+                        icd1022013 = byomeiMst.Icd1022013;
+                    }
+                }
+                PtDiseaseModel ptDiseaseModel = new PtDiseaseModel(
+                        ptByomei.HpId,
+                        ptByomei.PtId,
+                        ptByomei.SeqNo,
+                        ptByomei.ByomeiCd ?? string.Empty,
+                        ptByomei.SortNo,
+                        SyusyokuCdToList(ptByomei),
+                        byomeiName,
+                        ptByomei.StartDate,
+                        ptByomei.TenkiKbn,
+                        ptByomei.TenkiDate,
+                        ptByomei.SyubyoKbn,
+                        ptByomei.SikkanKbn,
+                        ptByomei.NanByoCd,
+                        ptByomei.IsNodspRece,
+                        ptByomei.IsNodspKarte,
+                        ptByomei.IsDeleted,
+                        ptByomei.Id,
+                        ptByomei.IsImportant,
+                        sinDate,
+                        icd10,
+                        icd102013,
+                        icd1012013,
+                        icd1022013,
+                        ptByomei.HokenPid,
+                        ptByomei.HosokuCmt ?? string.Empty
+                        );
+                result.Add(ptDiseaseModel);
+            }
+            return result;
+
+        }
+
         public List<PtDiseaseModel> GetPatientDiseaseList(int hpId, long ptId, int sinDate, int hokenId, DiseaseViewType openFrom)
         {
             var ptByomeiListQueryable = _tenantNoTrackingDataContext.PtByomeis

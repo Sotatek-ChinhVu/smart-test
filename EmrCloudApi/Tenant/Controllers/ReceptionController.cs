@@ -1,35 +1,36 @@
 ﻿using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Messages;
+using EmrCloudApi.Tenant.Presenters.MaxMoney;
 using EmrCloudApi.Tenant.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Presenters.Reception;
 using EmrCloudApi.Tenant.Presenters.ReceptionInsurance;
 using EmrCloudApi.Tenant.Presenters.ReceptionSameVisit;
+using EmrCloudApi.Tenant.Requests.MaxMoney;
 using EmrCloudApi.Tenant.Requests.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Requests.Reception;
 using EmrCloudApi.Tenant.Requests.ReceptionInsurance;
 using EmrCloudApi.Tenant.Requests.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.MaxMoney;
 using EmrCloudApi.Tenant.Responses.PatientRaiinKubun;
 using EmrCloudApi.Tenant.Responses.Reception;
 using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
 using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.ValidPatternExpirated;
+using UseCase.MaxMoney.GetMaxMoney;
+using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastRaiinInfs;
+using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.Insert;
+using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
-using UseCase.Insurance.ValidPatternExpirated;
-using UseCase.MaxMoney.GetMaxMoney;
-using EmrCloudApi.Tenant.Requests.MaxMoney;
-using EmrCloudApi.Tenant.Presenters.MaxMoney;
-using EmrCloudApi.Tenant.Responses.MaxMoney;
-using UseCase.MaxMoney.SaveMaxMoney;
-using EmrCloudApi.Tenant.Presenters.VisitingList;
-using UseCase.Reception.ReceptionComment;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -38,7 +39,7 @@ namespace EmrCloudApi.Tenant.Controllers
     public class ReceptionController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-    private readonly IWebSocketService _webSocketService;
+        private readonly IWebSocketService _webSocketService;
 
         public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService)
         {
@@ -66,6 +67,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLastRaiinInfs)]
+        public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
+        {
+            var input = new GetLastRaiinInfsInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLastRaiinInfsPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLastRaiinInfsResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Insert)]
@@ -129,7 +142,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListSameVisit")]
         public ActionResult<Response<GetReceptionSameVisitResponse>> GetListSameVisit([FromQuery] GetReceptionSameVisitRequest request)
         {
-            var input = new GetReceptionSameVisitInputData(request.HpId, request.PtId,  request.SinDate);
+            var input = new GetReceptionSameVisitInputData(request.HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionSameVisitPresenter();
@@ -177,6 +190,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidPatternExpiratedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDataReceptionDefault)]
+        public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
+        {
+            var input = new GetReceptionDefaultInputData(request.HpId , request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetReceptionDefaultPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetReceptionDefaultResponse>>(presenter.Result);
         }
     }
 }
