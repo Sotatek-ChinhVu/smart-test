@@ -24,7 +24,9 @@ namespace UseCase.FlowSheet.GetList
 
         public int Count { get; private set; }
 
-        public GetListFlowSheetInputData(int hpId, long ptId, int sinDate, long raiinNo, bool isHolidayOnly, int holidayFrom, int holidayTo, bool isRaiinListMstOnly, int startIndex, int count)
+        public string Sort { get; private set; }
+
+        public GetListFlowSheetInputData(int hpId, long ptId, int sinDate, long raiinNo, bool isHolidayOnly, int holidayFrom, int holidayTo, bool isRaiinListMstOnly, int startIndex, int count, string sort)
         {
             HpId = hpId;
             PtId = ptId;
@@ -36,6 +38,7 @@ namespace UseCase.FlowSheet.GetList
             IsRaiinListMstOnly = isRaiinListMstOnly;
             StartIndex = startIndex;
             Count = count;
+            Sort = sort;
         }
     }
 }

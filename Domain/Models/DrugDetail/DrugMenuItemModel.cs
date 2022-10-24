@@ -8,26 +8,42 @@ namespace Domain.Models.DrugDetail
 {
     public class DrugMenuItemModel
     {
-        public DrugMenuItemModel(MenuItemModel menuItem, int indexOfChildren, int indexOfLevel0, string yjCode)
+        public DrugMenuItemModel(string drugMenuName, string rawDrugMenuName, int level, int seqNo, int dbLevel, string menuName, int indexOfMenuLevel, string yjCode)
         {
-            MenuItem = menuItem;
-            IndexOfChildren = indexOfChildren;
-            IndexOfLevel0 = indexOfLevel0;
+            DrugMenuName = drugMenuName;
+            RawDrugMenuName = rawDrugMenuName;
+            Level = level;
+            SeqNo = seqNo;
+            DbLevel = dbLevel;
+            MenuName = menuName;
             YjCode = yjCode;
+            IndexOfMenuLevel = indexOfMenuLevel;
         }
 
         public DrugMenuItemModel()
         {
-            MenuItem = new MenuItemModel(new MenuInfModel(), new List<MenuInfModel>());
+            DrugMenuName = string.Empty;
+            RawDrugMenuName = string.Empty;
+            MenuName = string.Empty;
             YjCode = string.Empty;
         }
 
-        public MenuItemModel MenuItem { get; private set; }
+        public string DrugMenuName { get; private set; }
 
-        public int IndexOfChildren { get; private set; }
+        public string RawDrugMenuName { get; private set; }
 
-        public int IndexOfLevel0 { get; private set; }
+        public int Level { get; private set; }
+
+        public int SeqNo { get; private set; }
+
+        public int DbLevel { get; private set; }
+
+        public string MenuName { get; private set; }
 
         public string YjCode { get; private set; }
+
+        public int IndexOfMenuLevel { get; private set; }
+
+        public List<DrugMenuItemModel> Children { get; set; } = new List<DrugMenuItemModel>();
     }
 }
