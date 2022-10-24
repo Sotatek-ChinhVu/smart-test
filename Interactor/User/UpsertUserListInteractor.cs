@@ -52,12 +52,28 @@ namespace Interactor.User
                         u.SortNo,
                         u.RenkeiCd1,
                         u.IsDeleted
-                        )).ToList();
+                        )).Distinct().ToList();
 
-                if(_userRepository.CheckInputData(datas.Select(u => u.UserId).ToList(), datas.Select(u => u.LoginId).ToList()))
+                if (datas.Select(u => u.Id).Count() != datas.Select(u => u.Id).Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
+
+                if (datas.Select(u => u.UserId).Count() != datas.Select(u => u.UserId).Distinct().Count())
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
+                }
+
+                if (datas.Select(u => u.JobCd).Count() != datas.Select(u => u.JobCd).Distinct().Count())
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
+                }
+
+                if (datas.Select(u => u.KaId).Count() != datas.Select(u => u.KaId).Distinct().Count())
+                {
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
+                }
+
 
                 foreach (var data in datas)
                 {
@@ -68,17 +84,17 @@ namespace Interactor.User
                     }
                 }
 
-                if (_userRepository.CheckExistedUserIdCreate(datas.Select(u => u.UserId).ToList()))
+                if (_userRepository.CheckExistedUserIdCreate(datas.Select(u => u.UserId).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
 
-                if (_userRepository.CheckExistedUserIdUpdate(datas.Select(u => u.Id).ToList(), datas.Select(u => u.UserId).ToList()))
+                if (_userRepository.CheckExistedUserIdUpdate(datas.Select(u => u.Id).Distinct().ToList(), datas.Select(u => u.UserId).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedUserId);
                 }
 
-                if (_userRepository.CheckExistedLoginIdCreate(datas.Select(u => u.LoginId).ToList()))
+                if (_userRepository.CheckExistedLoginIdCreate(datas.Select(u => u.LoginId).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }
@@ -88,12 +104,12 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }
 
-                if (!_kaRepository.CheckKaId0(datas.Select(u => u.KaId).ToList()))
+                if (!_kaRepository.CheckKaId0(datas.Select(u => u.KaId).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
                 }
 
-                if (!_userRepository.CheckExistedJobCd(datas.Select(u => u.JobCd).ToList()))
+                if (!_userRepository.CheckExistedJobCd(datas.Select(u => u.JobCd).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListJobCdNoExist);
                 }

@@ -18,32 +18,6 @@ namespace Infrastructure.Repositories
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
-
-        public bool CheckInputData(List<int> UserIds, List<string> LoginIds)
-        {
-            for (int i = 0; i < UserIds.Count; i++)
-            {
-                for (int j = 0; j < UserIds.Count; j++)
-                {
-                    if (i == j)
-                        continue;
-                    if (UserIds[j] == UserIds[i])
-                        break;
-                }
-            }
-
-            for (int i = 0; i < LoginIds.Count; i++)
-            {
-                for (int j = 0; j < LoginIds.Count; j++)
-                {
-                    if (i == j)
-                        continue;
-                    if (LoginIds[j] == LoginIds[i])
-                        break;
-                }
-            }
-            return false;
-        }
         public bool CheckExistedId(List<long> idList)
         {
             return _tenantNoTrackingDataContext.UserMsts.Any(u => idList.Contains(u.Id));
