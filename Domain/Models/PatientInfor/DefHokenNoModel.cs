@@ -62,6 +62,9 @@ namespace Domain.Models.PatientInfor
             if ((!int.TryParse(Digit8, out int d8) || d8 < 0 || d8 > 9) && !string.IsNullOrEmpty(Digit8))
                 return ValidationStatus.InvalidDigit8;
 
+            if (HokenNo < 0)
+                return ValidationStatus.InvalidHokenNo;
+
             #endregion
             return ValidationStatus.Valid;
         }

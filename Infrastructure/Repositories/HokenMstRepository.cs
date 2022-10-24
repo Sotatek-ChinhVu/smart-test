@@ -93,8 +93,8 @@ namespace Infrastructure.Repositories
                    x.HpId,
                    x.HokenNo,
                    x.HokenEdaNo,
-                   0, 0, 0, String.Empty, String.Empty, String.Empty, String.Empty,
-                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, String.Empty
+                   0, 0, 0, string.Empty, string.Empty, string.Empty, string.Empty,
+                   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, string.Empty
                    ))
                .ToList();
 

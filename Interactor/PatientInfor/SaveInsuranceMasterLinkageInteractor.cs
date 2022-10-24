@@ -19,10 +19,13 @@ namespace Interactor.PatientInfor
         {
             try
             {
+                bool hasMatch = inputData.DefHokenNoModels.Select(x => x.HokenNo != inputData.DefHokenNoModels[0].HokenNo).Any();
+
+                if (hasMatch) return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenNo);
+
                 if (inputData.DefHokenNoModels.Any())
                 {
                     var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo);
-
                     foreach (var item in inputData.DefHokenNoModels)
                     {
                         var validationStatus = item.Validation();
@@ -33,6 +36,7 @@ namespace Interactor.PatientInfor
                             continue;
 
                         var checkExistsHokenEda = listHokenEdaNo.Where(x => x.HokenNo == item.HokenNo && x.HokenEdaNo == item.HokenEdaNo);
+
                         if (!checkExistsHokenEda.Any())
                             return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenEdaNo);
                     }
