@@ -40,14 +40,9 @@ namespace Domain.Models.SpecialNote.ImportantNote
 
         public ValidationStatus Validation()
         {
-
             if (PtId <= 0)
             {
                 return ValidationStatus.InvalidPtId;
-            }
-            if (SortNo <= 0)
-            {
-                return ValidationStatus.InvalidSortNo;
             }
             if (ItemCd.Length > 10)
             {

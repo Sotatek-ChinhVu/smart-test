@@ -12,6 +12,7 @@
         PtDiseaseListInvalidNanByoCd,
         PtDiseaseListInvalidFreeWord,
         PtDiseaseListInvalidTenkiDateContinue,
+        PtDiseaseListInvalidTenkiDateCommon,
         PtDiseaseListInvalidTekiDateAndStartDate,
         PtDiseaseListInvalidByomei,
         PtInvalidId,
