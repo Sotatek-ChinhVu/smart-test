@@ -133,7 +133,7 @@ namespace Domain.Common
             }
             if (!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0)
             {
-                return flag == 0 ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
+                return flag != 1 ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
             }
             if (!KohatuKbns.ContainsValue(odrInfDetail.KohatuKbn))
             {
