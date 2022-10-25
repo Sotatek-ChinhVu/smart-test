@@ -13,7 +13,6 @@
         public const string Revert = "Revert";
         public const string Delete = "Delete";
 
-
         // SuperSet
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
@@ -78,7 +77,6 @@
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
-
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
