@@ -27,6 +27,9 @@
         public static readonly string InvalidSeqNo = "Invalid SeqNo";
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
+        public static readonly string UpsertSuccess = "更新が成功しました";
+        public static readonly string UpsertFail = "更新に失敗しました。";
+        public static readonly string UpsertInputNoData = "無効なデータを受信しました。";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -63,33 +66,6 @@
         //Reception controller
 
         //PtDisease controller
-        public static readonly string UpsertPtDiseaseListSuccess = "Upsert value successfully.";
-        public static readonly string UpsertPtDiseaseListFail = "Upsert value fail.";
-        public static readonly string UpsertPtDiseaseListInputNoData = "Input no data.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiKbn = "Invalid TenKiKbn.";
-        public static readonly string UpsertPtDiseaseListInvalidSikkanKbn = "Invalid SikkanKbn.";
-        public static readonly string UpsertPtDiseaseListInvalidNanByoCd = "Invalid NanByoCd.";
-        public static readonly string UpsertPtDiseaseListPtIdNoExist = "PtId no exist.";
-        public static readonly string UpsertPtDiseaseListHokenPIdNoExist = "HokenPId no exist.";
-        public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
-        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
-        public static readonly string UpsertPtDiseaseListInvalidId = "Invalid Id";
-        public static readonly string UpsertPtDiseaseListInvalidHpId = "Invalid HpId";
-        public static readonly string UpsertPtDiseaseListInvalidPtId = "Invalid PtId";
-        public static readonly string UpsertPtDiseaseListInvalidSortNo = "Invalid SortNo";
-        public static readonly string UpsertPtDiseaseListInvalidByomeiCd = "Invalid ByomeiCd";
-        public static readonly string UpsertPtDiseaseListInvalidStartDate = "Invalid Byomei Start Date";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDate = "Invalid TenkiDate";
-        public static readonly string UpsertPtDiseaseListInvalidSyubyoKbn = "Invalid SyubyoKbn";
-        public static readonly string UpsertPtDiseaseListInvalidHosokuCmt = "Invalid HosokuCmt";
-        public static readonly string UpsertPtDiseaseListInvalidHokenPid = "Invalid HokenPid";
-        public static readonly string UpsertPtDiseaseListInvalidIsNodspRece = "Invalid IsNodspRece";
-        public static readonly string UpsertPtDiseaseListInvalidIsNodspKarte = "Invalid IsNodspKarte";
-        public static readonly string UpsertPtDiseaseListInvalidSeqNo = "Invalid SeqNo";
-        public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
-        public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
 
         //Insurance
         // Validate Main Insurance
@@ -341,10 +317,7 @@
         public static readonly string UpsertFlowSheetInvalidPtId = "PtId must be greater than 0.";
         public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate is no valid.";
         public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn is no valid.";
         public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo is no valid";
-        public static readonly string UpsertFlowSheetInvalidRainCmtSeqNo = "RainCmtSeqNo must be greater than or equal 0.";
-        public static readonly string UpsertFlowSheetInvalidRainListTagSeqNo = "RainListTagSeqNo must be greater than or equal 0.";
         public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
         public static readonly string UpsertFlowSheetInputDataNoValid = "Input data no valid.";
         public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
@@ -672,6 +645,8 @@
         public static readonly string MFree00030 = "{0}";
         public static readonly string MInp00070 = "{0}は {1}以下を入力してください。";
         public static readonly string MInp00040 = "{0}ため、{1}は登録できません。";
+        public static readonly string MInp00160_1 = "{0}が入力されていません。";
+        public static readonly string MEnt00040_1 = "補足コメントが全角20文字を超えています。";
 
         //Sup Message
         public static readonly string MDrug = "薬剤";
@@ -698,5 +673,27 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
+        public static readonly string MDisease = "薬剤";
+        public static readonly string MTenkiContinue = "転帰区分";
+        public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
+        public static readonly string MTenkiDate = "転帰日";
+        public static readonly string MTenkiStartDate = "開始日";
+        public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
+
+        // Valid default settings 
+        public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
+
+        //Insurance Master Linkage
+        public static readonly string InvalidDigit1 = "Invalid Digit 1";
+        public static readonly string InvalidDigit2 = "Invalid Digit 2";
+        public static readonly string InvalidDigit3 = "Invalid Digit 3";
+        public static readonly string InvalidDigit4 = "Invalid Digit 4";
+        public static readonly string InvalidDigit5 = "Invalid Digit 5";
+        public static readonly string InvalidDigit6 = "Invalid Digit 6";
+        public static readonly string InvalidDigit7 = "Invalid Digit 7";
+        public static readonly string InvalidDigit8 = "Invalid Digit 8";
+        public static readonly string InvalidHokenNo = "Invalid HokenNo";
+        public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
+
     }
 }

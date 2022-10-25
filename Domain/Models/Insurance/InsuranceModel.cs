@@ -217,6 +217,34 @@ namespace Domain.Models.InsuranceInfor
 
         public int SikakuDate => HokenInf == null ? 0 : HokenInf.SikakuDate;
 
+        public bool IsShaho
+        {
+            // not nashi
+            get => HokenKbn == 1 && HokenInf.Houbetu != HokenConstant.HOUBETU_NASHI;
+        }
+
+        public bool IsKokuho
+        {
+            get => HokenKbn == 2;
+        }
+
+        public bool IsNoHoken
+        {
+            get
+            {
+                if (HokenInf != null)
+                {
+                    return HokenInf.HokenMst.HokenSbtKbn == 0;
+                }
+                return HokenKbn == 1 && HokenInf?.Houbetu == HokenConstant.HOUBETU_NASHI;
+            }
+        }
+
+        public bool IsJibaiOrRosai
+        {
+            get { return HokenKbn >= 11 && HokenKbn <= 14; }
+        }
+
         public bool IsAddNew { get; private set; }
 
         public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);

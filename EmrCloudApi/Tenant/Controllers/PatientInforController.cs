@@ -46,9 +46,12 @@ using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
+using UseCase.PatientInfor.Save;
+using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
@@ -373,6 +376,16 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetPtKyuseiInfResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveInsuranceMasterLinkage)]
+        public ActionResult<Response<SaveInsuranceMasterLinkageResponse>> SaveInsuranceMasterLinkage([FromBody] SaveInsuranceMasterLinkageRequest request)
+        {
+            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels);
+            var output = _bus.Handle(input);
+            var presenter = new SaveInsuranceMasterLinkagePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
         }
 
         [HttpPost("SavePatientInfo")]
