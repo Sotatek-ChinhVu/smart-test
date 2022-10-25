@@ -191,6 +191,9 @@ namespace EmrCloudApi.Tenant.Presenters.OrdInfs
                     case OrderInfConst.OrdInfValidationStatus.InvalidSuryo:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSuryo));
                         break;
+                    case OrderInfConst.OrdInfValidationStatus.NoFillSuryo:
+                        validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MNoInputData, ResponseMessage.TodayOdrSuryo));
+                        break;
                     case OrderInfConst.OrdInfValidationStatus.InvalidUnitName:
                         validations.Add(new ValidationTodayOrdItemResponse(value.Value, validation.Key, value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrUnitName));
                         break;

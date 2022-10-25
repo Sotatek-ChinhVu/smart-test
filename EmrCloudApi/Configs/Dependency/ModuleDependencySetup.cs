@@ -205,6 +205,7 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
+using UseCase.Insurance.ValidateInsurance;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -363,6 +364,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
+            busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();
