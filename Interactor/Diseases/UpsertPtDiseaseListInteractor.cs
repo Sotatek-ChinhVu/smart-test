@@ -3,7 +3,6 @@ using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using UseCase.Diseases.Upsert;
 using static Helper.Constants.PtDiseaseConst;
-
 namespace Interactor.Diseases
 {
     public class UpsertPtDiseaseListInteractor : IUpsertPtDiseaseListInputPort

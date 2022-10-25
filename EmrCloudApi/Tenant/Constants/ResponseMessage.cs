@@ -36,6 +36,8 @@
         public static readonly string Success = "Success";
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
+        public static readonly string DuplicateId = "DuplicateId";
+        public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
 
@@ -66,6 +68,34 @@
         //Reception controller
 
         //PtDisease controller
+
+        //User controller
+        public static readonly string UpsertInputNoData = "Input NoData";
+        public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
+        public static readonly string UpsertInvalidNoExistedId = "No Exist Id";
+        public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
+        public static readonly string UpsertInvalidId = "Invalid Id";
+        public static readonly string UpsertInvalidUserId = "Invalid UserId";
+        public static readonly string UpsertInvalidJobCd = "Invalid JobCd";
+        public static readonly string UpsertInvalidManagerKbn = "Invalid ManagerKbn";
+        public static readonly string UpsertInvalidKaId = "Invalid KaId"; 
+        public static readonly string UpsertInvalidKanaName = "Invalid KanaName";
+        public static readonly string UpsertInvalidName = "Invalid Name";
+        public static readonly string UpsertInvalidSname = "Invalid Sname";
+        public static readonly string UpsertInvalidLoginId = "Invalid LoginId";
+        public static readonly string UpsertInvalidLoginPass = "Invalid LoginPass";
+        public static readonly string UpsertInvalidStartDate = "Invalid StartDate";
+        public static readonly string UpsertInvalidEndDate = "Invalid EndDate";
+        public static readonly string UpsertInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertInvalidRenkeiCd1 = "Invalid RenkeiCd1";
+        public static readonly string UpsertInvalidDrName = "Invalid DrName";
+        public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
+        public static readonly string UpsertKaIdNoExist = "No Exist KaId";
+        public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
+        public static readonly string UpsertIdNoExist = "No Exist Id";
+        public static readonly string UserListExistedInputData = "UserListExistedInputData";
+
 
         //Insurance
         // Validate Main Insurance

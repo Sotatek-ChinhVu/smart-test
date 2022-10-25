@@ -1,17 +1,20 @@
 ﻿using Domain.Models.User;
 using UseCase.Core.Sync.Core;
+using UseCase.User.UpsertList;
 
 namespace UseCase.User.UpsertList;
 
 public class UpsertUserListInputData : IInputData<UpsertUserListOutputData>
 {
-    public UpsertUserListInputData(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList)
+    public UpsertUserListInputData(List<UserMstModel> upsertUserList)
     {
-        UpdatedUserList = updatedUserList;
-        InserteddUserList = inserteddUserList;
+        this.UpsertUserList = upsertUserList;
     }
 
-    public List<UserMstModel> UpdatedUserList { get; set; }
+    public List<UserMstModel> UpsertUserList { get; private set; }
 
-    public List<UserMstModel> InserteddUserList { get; set; }
+    public List<UserMstModel> ToList()
+    {
+        return this.UpsertUserList;
+    }
 }
