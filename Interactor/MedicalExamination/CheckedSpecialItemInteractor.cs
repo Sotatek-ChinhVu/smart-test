@@ -38,7 +38,7 @@ namespace Interactor.MedicalExamination
         private readonly ISystemConfRepository _systemConfRepository;
         private readonly IReceptionRepository _receptionRepository;
 
-        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, InsuranceRepository insuranceRepository, ISystemConfRepository systemConfRepository, IReceptionRepository receptionRepository)
+        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, IInsuranceRepository insuranceRepository, ISystemConfRepository systemConfRepository, IReceptionRepository receptionRepository)
         {
             _todayOdrRepository = todayOdrRepository;
             _mstItemRepository = mstItemRepository;
@@ -79,7 +79,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidRaiinNo);
                 }
-                if (inputData.OdrInfs.Count == 0 || (inputData.KarteInf.HpId == 0 && inputData.KarteInf.PtId == 0 && inputData.KarteInf.RaiinNo == 0 && inputData.KarteInf.SinDate == 0))
+                if (inputData.OdrInfs.Count == 0 && (inputData.KarteInf.HpId == 0 && inputData.KarteInf.PtId == 0 && inputData.KarteInf.RaiinNo == 0 && inputData.KarteInf.SinDate == 0))
                 {
                     return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidOdrInfDetail);
                 }

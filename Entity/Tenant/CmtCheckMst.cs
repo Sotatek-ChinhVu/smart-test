@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "CMT_CHECK_MST   ")]
+    [Table(name: "CMT_CHECK_MST")]
     public class CmtCheckMst : EmrCloneable<CmtCheckMst>
     {
         /// <summary>
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(250)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
