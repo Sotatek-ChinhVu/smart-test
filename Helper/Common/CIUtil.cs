@@ -13,6 +13,80 @@ namespace Helper.Common
         private const int MEIJI_START_YEAR = 1868;
         private const int REIWA_START_YEAR = 2019;
 
+        public static int FullStartDate(int startDate)
+        {
+            if (startDate == 0) return 0;
+
+            int startDateLength = startDate.AsString().Length;
+            if (startDateLength == 8)
+            {
+                //Format of StartDate is yyyymmdd
+                return startDate;
+            }
+            else if (startDateLength == 6)
+            {
+                //Format of StartDate is yyyymm
+                //Need to convert to yyyymm01
+                return startDate * 100 + 1;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public static int FullEndDate(int endDate)
+        {
+            if (endDate.AsString().Count() == 8)
+            {
+                //Format of EndDate is yyyymmdd
+                return endDate;
+            }
+            //Format of EndDate is yyyymm
+            //Need to convert to yyyymm31
+            return endDate * 100 + 31;
+        }
+        public static bool IsDigitsOnly(string str)
+        {
+            if (string.IsNullOrWhiteSpace(str)) return false;
+
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        // 切り上げ
+
+        public static double RoundUp(double x, int Factor)
+        {
+            double dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+            else
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+        }
+        private static double IntPower(int baseValue, int exponent)
+        {
+            return Math.Pow(baseValue, exponent);
+        }
+
+        // 切捨て
+        public static double RoundDown(double x, int Factor)
+        {
+            Double dFactor;
+            Factor = Factor - 1;
+            dFactor = IntPower(10, Factor);
+            if (Factor < 0) Factor = Factor + 1;
+            if (x >= 0)
+                return Math.Round((double)(x * dFactor / dFactor), 3);
+            else
+                return Math.Round((double)((x * dFactor + 0.9) / dFactor), 3);
+        }
         public static string ToHalfsize(string value)
         {
             if (value == null)
@@ -1448,4 +1522,6 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
+
+
 }

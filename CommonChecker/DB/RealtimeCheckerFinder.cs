@@ -35,7 +35,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 .ToList();
 
             var listFilteredBySinData = listPtAlrgyFood
-                .Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
+                .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinDate && sinDate <= CIUtil.FullEndDate(p.EndDate))
                 .Select(p => new PtAlrgyFoodModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.AlrgyKbn ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted, string.Empty))
                 .ToList();
             return listFilteredBySinData;
@@ -51,7 +51,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
 
             var listFilteredBySinData = listPtAlrgyDrug
-                .Where(p => p.FullStartDate <= sinDate && sinDate <= p.FullEndDate)
+                .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinDate && sinDate <= CIUtil.FullEndDate(p.EndDate))
                 .Select(p => new PtAlrgyDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.ItemCd ?? string.Empty, p.DrugName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
                 .ToList();
             return listFilteredBySinData;
@@ -898,7 +898,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                         p.HpId, p.PtId, p.SeqNo, p.SortNo,
                         p.ByomeiCd ?? string.Empty, p.ByotaiCd ?? string.Empty,
                         p.Byomei ?? string.Empty, p.StartDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                    .Where(p => p.FullStartDate <= sinday)
+                    .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday)
                     .Select(p => p.ByomeiCd)
                     .ToList();
             }
@@ -1168,7 +1168,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     .ToList();
 
                 listTainCode = listPtOtherDrugModel
-                    .Where(p => p.FullStartDate <= sinday && sinday <= p.FullEndDate)
+                    .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
                     .Select(p => p.ItemCd)
                     .ToList();
             }
@@ -1306,7 +1306,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
                     .Select(p => new PtOtcDrugModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.SerialNum, p.TradeName ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
-                    .Where(p => p.FullStartDate <= sinday && sinday <= p.FullEndDate)
+                    .Where(p => CIUtil.FullStartDate(p.StartDate) <= sinday && sinday <= CIUtil.FullEndDate(p.EndDate))
                     .Select(p => p.SerialNum)
                     .ToList();
             }
