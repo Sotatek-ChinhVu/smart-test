@@ -1407,6 +1407,26 @@ namespace Helper.Common
 
             return (PtID * 10 + digit);
         }
+        public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
+        {
+            //法別番号を求める
+            houbetuNo = "0";
+            hokensyaNoSearch = hokensyaNo;
+            switch (hokensyaNo?.Length)
+            {
+                case 8:
+                    houbetuNo = Copy(hokensyaNo, 1, 2);
+                    break;
+                case 6:
+                    houbetuNo = "100";
+                    break;
+                case 4:
+                    houbetuNo = "01";
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public enum WarekiFormat

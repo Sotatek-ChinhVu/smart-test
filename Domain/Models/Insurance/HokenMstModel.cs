@@ -10,7 +10,7 @@ namespace Domain.Models.Insurance
     public class HokenMstModel
     {
         [JsonConstructor]
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn)
+        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int futansyaCheckFlag, int jyukyusyaCheckFlag, int jyuKyuCheckDigit, int tokusyuCheckFlag)
         {
             FutanKbn = futanKbn;
             FutanRate = futanRate;
@@ -21,6 +21,13 @@ namespace Domain.Models.Insurance
             HokenSName = hokenSName;
             Houbetu = houbetu;
             HokenSbtKbn = hokenSbtKbn;
+            CheckDigit = checkDigit;
+            AgeStart = ageStart;
+            AgeEnd = ageEnd;
+            FutansyaCheckFlag = futansyaCheckFlag;
+            JyukyusyaCheckFlag = jyukyusyaCheckFlag;
+            JyuKyuCheckDigit = jyuKyuCheckDigit;
+            TokusyuCheckFlag = tokusyuCheckFlag;
         }
 
         public HokenMstModel()
@@ -46,6 +53,20 @@ namespace Domain.Models.Insurance
         public string Houbetu { get; private set; }
 
         public int HokenSbtKbn { get; private set; }
+        
+        public int CheckDigit { get; private set; }
+
+        public int AgeStart { get; private set; }
+
+        public int AgeEnd { get; private set; }
+
+        public int FutansyaCheckFlag { get; private set; }
+
+        public int JyukyusyaCheckFlag { get; private set; }
+
+        public int JyuKyuCheckDigit { get; private set; }
+
+        public int TokusyuCheckFlag { get; private set; }
 
         public string SelectedValueMaster
         {

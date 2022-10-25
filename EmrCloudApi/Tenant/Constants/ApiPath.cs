@@ -90,5 +90,8 @@
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+
+        // Validate list pattern
+        public const string ValidateListPattern = "ValidateListPattern";
     }
 }
