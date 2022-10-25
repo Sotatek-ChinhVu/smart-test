@@ -2035,6 +2035,7 @@ namespace Infrastructure.Repositories
 
                     hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
                     _tenantTrackingDataContext.PtHokenInfs.Add(hokenInfModel);
+                    hokenModel.HokenId = hokenInfModel.HokenId;
 
                     if (hokenParttern.HokenInf != null && hokenParttern.HokenInf.ListRousaiTenki.Any())
                     {
