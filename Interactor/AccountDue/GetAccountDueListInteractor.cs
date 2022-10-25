@@ -59,11 +59,14 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
 
             // Calculate Unpaid
             AccountDueListModel tempModel = new();
-            foreach (AccountDueListModel model in listAccountDues)
+            foreach (var model in listAccountDues)
             {
+                var hokenPatternName = string.Empty;
+                var unPaid = 0;
+                var isSeikyuRow = true;
                 if (hokenPatternDict.ContainsKey(model.HokenPid))
                 {
-                    model.HokenPatternName = hokenPatternDict[model.HokenPid];
+                    hokenPatternName = hokenPatternDict[model.HokenPid];
                 }
                 if (model.NyukinKbn == 2 || model.NyukinKbn == 0)
                 {
@@ -72,13 +75,14 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 }
                 if (tempModel.RaiinNo == model.RaiinNo)
                 {
-                    model.UnPaid = tempModel.UnPaid - model.NyukinGaku - model.AdjustFutan;
-                    model.IsSeikyuRow = false;
+                    unPaid = tempModel.UnPaid - model.NyukinGaku - model.AdjustFutan;
+                    isSeikyuRow = false;
                 }
                 else
                 {
-                    model.UnPaid = model.SeikyuGaku - model.NyukinGaku - model.AdjustFutan;
+                    unPaid = model.SeikyuGaku - model.NyukinGaku - model.AdjustFutan;
                 }
+                model.UpdateAccountDueListModel(unPaid, hokenPatternName, isSeikyuRow);
                 tempModel = model;
             }
 

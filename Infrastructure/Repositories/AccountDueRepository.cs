@@ -100,7 +100,7 @@ public class AccountDueRepository : IAccountDueRepository
         var paymentMethodList = _tenantNoTrackingDataContext.PaymentMethodMsts.Where(item => item.HpId == hpId).OrderBy(item => item.SortNo).ToList();
         foreach (var paymentMethod in paymentMethodList)
         {
-            result.Add(paymentMethod.PaymentMethodCd, paymentMethod.PayName);
+            result.Add(paymentMethod.PaymentMethodCd, paymentMethod.PayName ?? string.Empty);
         }
         return result;
     }
