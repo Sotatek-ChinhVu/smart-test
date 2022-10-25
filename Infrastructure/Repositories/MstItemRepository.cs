@@ -918,7 +918,7 @@ namespace Infrastructure.Repositories
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(true, itemCd, entity.CmtCheckMst.KarteKbn, entity.KarteKbnMst.KbnShortName ?? string.Empty, KarteVisbleSOAPF(hpId, userId).Contains(entity.KarteKbnMst.KarteKbn.AsString()), entity.CmtCheckMst.Cmt, entity.CmtCheckMst.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.CmtCheckMst.KarteKbn, entity.KarteKbnMst.KbnShortName ?? string.Empty, KarteVisbleSOAPF(hpId, userId).Contains(entity.KarteKbnMst.KarteKbn.AsString()), entity.CmtCheckMst.Cmt ?? string.Empty, entity.CmtCheckMst.SortNo));
                 }
             }
             return result;
@@ -948,7 +948,7 @@ namespace Infrastructure.Repositories
                 .ToList();
             foreach (var entity in query)
             {
-                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd, entity.SeqNo));
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
             }
             return result;
         }

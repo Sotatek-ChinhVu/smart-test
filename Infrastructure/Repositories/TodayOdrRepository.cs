@@ -692,7 +692,7 @@ namespace Infrastructure.Repositories
                 p.PtId == ptId &&
                 p.SinYm >= startYm &&
                 p.SinYm <= endYm &&
-                itemCds.Contains(p.ItemCd) &&
+                itemCds.Contains(p.ItemCd ?? string.Empty) &&
                 p.FmtKbn != 10  // 在がん医総のダミー項目を除く
                 );
 
@@ -709,12 +709,12 @@ namespace Infrastructure.Repositories
                     sinKouiDetail.PtId == ptId &&
                     sinKouiDetail.SinYm >= startYm &&
                     sinKouiDetail.SinYm <= endYm &&
-                    itemCds.Contains(sinKouiDetail.ItemCd) &&
+                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
                     sinKouiCount.SinDate >= startDate &&
                     sinKouiCount.SinDate <= endDate &&
                     sinKouiCount.RaiinNo != raiinNo
                 group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
-                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd) ? 1 : a.sinKouiDetail.Suryo)) }
+                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
             );
 
             var result = joinQuery.ToList();

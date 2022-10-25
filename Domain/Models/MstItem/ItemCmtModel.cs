@@ -10,9 +10,8 @@ namespace Domain.Models.MstItem
 {
     public class ItemCmtModel
     {
-        public ItemCmtModel(bool isChecked, string itemCd, int karteKbn, string karteColumn, bool isVisible, string comment, int sortNo)
+        public ItemCmtModel(string itemCd, int karteKbn, string karteColumn, bool isVisible, string comment, int sortNo)
         {
-            IsChecked = isChecked;
             ItemCd = itemCd;
             KarteKbn = karteKbn;
             KarteColumn = karteColumn;
@@ -20,8 +19,6 @@ namespace Domain.Models.MstItem
             Comment = comment;
             SortNo = sortNo;
         }
-
-        public bool IsChecked { get; private set; }
 
         public string ItemCd { get; private set; }
 

@@ -9,7 +9,6 @@ using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
-using Infrastructure.Repositories;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
@@ -144,14 +143,14 @@ namespace Interactor.MedicalExamination
                                 0
                             )).ToList() ?? new List<OrdInfDetailModel>();
 
-                List<(long rpno, long edano, int hokenPid)> hokenPids = new List<(long rpno, long edano, int hokenPid)>();
+                var hokenPids = new List<(long rpno, long edano, int hokenPid)>();
 
                 foreach (var odrInf in inputData.OdrInfs)
                 {
                     hokenPids.Add((odrInf.RpNo, odrInf.RpEdaNo, odrInf.HokenPid));
                 }
                 #endregion
-                List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+                var checkSpecialItemList = new List<CheckedSpecialItemModel>();
                 var itemCdCs = allOdrInfDetailModel.Select(x => x.ItemCd).Distinct().ToList();
                 var minSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Min(o => o.SinDate);
                 var maxSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Max(o => o.SinDate);
@@ -173,8 +172,8 @@ namespace Interactor.MedicalExamination
                 //enable or disable Comment Check
                 if (inputData.EnabledCommentCheck)
                 {
-                    Dictionary<string, string> items = new Dictionary<string, string>();
-                    List<string> itemCds = new List<string>();
+                    var items = new Dictionary<string, string>();
+                    var itemCds = new List<string>();
                     foreach (var odrInfDetail in allOdrInfDetail)
                     {
                         if (string.IsNullOrEmpty(odrInfDetail.ItemCd)) continue;
@@ -215,7 +214,7 @@ namespace Interactor.MedicalExamination
                         )));
                 }
 
-                return new CheckedSpecialItemOutputData(checkSpecialItemList, CheckedSpecialItemStatus.Failed);
+                return new CheckedSpecialItemOutputData(checkSpecialItemList, CheckedSpecialItemStatus.Successed);
             }
             catch
             {
@@ -230,8 +229,7 @@ namespace Interactor.MedicalExamination
         /// <returns></returns>
         private List<CheckedSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
-
+            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
             int iYear = 0;
             int iMonth = 0;
             int iDay = 0;
@@ -250,7 +248,7 @@ namespace Interactor.MedicalExamination
                 return checkSpecialItemList;
             }
 
-            List<string> checkedItem = new List<string>();
+            var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
                 if (checkedItem.Contains(detail.ItemCd))
@@ -349,13 +347,12 @@ namespace Interactor.MedicalExamination
 
         private bool CheckInBirthMonth(int iYear, int iBirthDay, int sinDate, int tenMstAgeCheck)
         {
-            return (iYear > tenMstAgeCheck) ||
-                   ((iYear == tenMstAgeCheck) && ((iBirthDay % 10000 / 100) < (sinDate % 10000 / 100)));
+            return (iYear > tenMstAgeCheck) || ((iYear == tenMstAgeCheck) && ((iBirthDay % 10000 / 100) < (sinDate % 10000 / 100)));
         }
 
         private string FormatDisplayMessage(string tenMstAgeCheck, CheckAgeType checkAgeType)
         {
-            string formatedCheckKbn = string.Empty;
+            var formatedCheckKbn = string.Empty;
 
             if (tenMstAgeCheck == "AA")
             {
@@ -420,16 +417,12 @@ namespace Interactor.MedicalExamination
                 return $"\"{itemName}\"は{dateString}まで使用可能です。";
             }
         }
-        /// <summary>
-        /// 有効期限チェック
-        /// </summary>
-        /// <param name="allOdrInfDetail"></param>
-        /// <returns></returns>
+
         private List<CheckedSpecialItemModel> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
 
-            List<string> checkedItem = new List<string>();
+            var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
                 if (checkedItem.Contains(detail.ItemCd))
@@ -448,7 +441,7 @@ namespace Interactor.MedicalExamination
 
                 if (minStartDate > sinDate)
                 {
-                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -457,7 +450,7 @@ namespace Interactor.MedicalExamination
 
                 if (maxEndDate < sinDate)
                 {
-                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -468,17 +461,10 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-
-
-        /// <summary>
-        /// 重複チェック
-        /// </summary>
-        /// <param name="allOdrInfDetail"></param>
-        /// <returns></returns>
         private List<CheckedSpecialItemModel> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
-            List<string> checkedItem = new List<string>();
+            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
                 // ｺﾒﾝﾄや用法,特材、分割処方は対象外
@@ -511,7 +497,7 @@ namespace Interactor.MedicalExamination
 
                 if (itemCount > 1)
                 {
-                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -522,14 +508,9 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        /// <summary>
-        /// 項目コメント
-        /// </summary>
-        /// <param name="allOdrInfDetail"></param>
-        /// <returns></returns>
         private List<CheckedSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
             foreach (var item in items)
             {
                 if (checkSpecialItemList.Any(p => p.ItemCd == item.Key)) continue;
@@ -557,20 +538,15 @@ namespace Interactor.MedicalExamination
             return true;
         }
 
-        /// <summary>
-        /// 算定回数チェック
-        /// </summary>
-        /// <param name="allOdrInfDetail"></param>
-        /// <returns></returns>
         private List<CheckedSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
             int endDate = sinDate;
             // MAX_COUNT>1の場合は注意扱いする単位のコード
             var hokensyuHandling = (int)_systemConfRepository.GetSettingValue(3013, 0, hpId);
             var syosinDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
 
-            List<string> checkedItem = new List<string>();
+            var checkedItem = new List<string>();
             foreach (var odrDetail in allOdrInfDetail)
             {
                 if (string.IsNullOrEmpty(odrDetail.ItemCd))
@@ -608,8 +584,6 @@ namespace Interactor.MedicalExamination
                 {
                     suryo += (item.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(odrDetail.ItemCd)) ? 1 : item.Suryo;
                 }
-
-
 
                 densiSanteiKaisuModels = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
 
@@ -685,18 +659,9 @@ namespace Interactor.MedicalExamination
             return hokenKbn;
         }
 
-        /// <summary>
-        /// チェック用保険区分を返す
-        /// 健保、労災、自賠の場合、オプションにより、同一扱いにするか別扱いにするか決定
-        /// 自費の場合、健保と自費を対象にする
-        /// </summary>
-        /// <param name="hokenKbn">
-        /// 0-健保、1-労災、2-アフターケア、3-自賠、4-自費
-        /// </param>
-        /// <returns></returns>
         private List<int> GetCheckHokenKbns(int odrHokenKbn, int hokensyuHandling)
         {
-            List<int> results = new List<int>();
+            var results = new List<int>();
 
             int hokenKbn = GetHokenKbn(odrHokenKbn);
 
@@ -733,7 +698,7 @@ namespace Interactor.MedicalExamination
 
         private List<int> GetCheckSanteiKbns(int odrHokenKbn, int hokensyuHandling)
         {
-            List<int> results = new List<int> { 0 };
+            var results = new List<int> { 0 };
 
             int hokenKbn = GetHokenKbn(odrHokenKbn);
 
@@ -764,10 +729,10 @@ namespace Interactor.MedicalExamination
 
             foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
             {
-                string sTerm = string.Empty;
+                var sTerm = string.Empty;
                 int startDate = 0;
 
-                List<int> checkHokenKbnTmp = new List<int>();
+                var checkHokenKbnTmp = new List<int>();
                 checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
 
                 if (densiSanteiKaisu.TargetKbn == 1)
@@ -780,7 +745,7 @@ namespace Interactor.MedicalExamination
                     checkHokenKbnTmp.RemoveAll(p => new int[] { 0 }.Contains(p));
                 }
 
-                List<int> checkSanteiKbnTmp = new List<int>();
+                var checkSanteiKbnTmp = new List<int>();
                 checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
 
                 CommonDensiSantei(hpId, densiSanteiKaisu, odrDetail, allOdrInfDetail, startDate, endDate, sTerm, sinDate, syosinDate);
@@ -812,7 +777,7 @@ namespace Interactor.MedicalExamination
                     double count = 0;
                     if (startDate >= 0)
                     {
-                        List<string> itemCds = new List<string>();
+                        var itemCds = new List<string>();
 
                         if (densiSanteiKaisu.ItemGrpCd > 0)
                         {
