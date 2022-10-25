@@ -16,7 +16,7 @@ namespace Interactor.SystemConf
         {
             if (inputData.HpId <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidHpId);
             if (inputData.GrpCd <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidGrpCd);
-            var result = _systemConfRepository.GetByGrpCd(inputData.HpId, inputData.GrpCd);
+            var result = _systemConfRepository.GetByGrpCd(inputData.HpId, inputData.GrpCd, inputData.GrpEdaNo);
             return new GetSystemConfOutputData(result, GetSystemConfStatus.Successed);
         }
     }
