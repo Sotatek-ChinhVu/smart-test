@@ -211,6 +211,7 @@ using UseCase.Reception.GetReceptionDefault;
 using Domain.Models.AccountDue;
 using UseCase.AccountDue.GetAccountDueList;
 using Interactor.AccountDue;
+using UseCase.Insurance.ValidateInsurance;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -370,6 +371,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
+            busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

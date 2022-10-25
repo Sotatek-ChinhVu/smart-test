@@ -120,7 +120,8 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -143,7 +144,8 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -166,7 +168,8 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -189,7 +192,8 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
