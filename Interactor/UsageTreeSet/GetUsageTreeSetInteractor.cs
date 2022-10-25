@@ -1,5 +1,5 @@
 ﻿using Domain.Models.UsageTreeSet;
-using System.Collections.ObjectModel;
+using Helper.Common;
 using UseCase.UsageTreeSet.GetTree;
 
 namespace Interactor.UsageTreeSet
@@ -8,6 +8,8 @@ namespace Interactor.UsageTreeSet
     {
         private readonly IUsageTreeSetRepository _usageTreeSetRepository;
 
+        private readonly List<int> _listDug = new List<int> { 20, 21, 22, 23 };
+        private readonly List<int> _listInject = new List<int> { 28, 30, 31, 32, 33, 34 };
         private readonly List<int> _usageDrug = new List<int>() { 21, 22, 23 };
         private readonly List<int> _usageInject = new List<int>() { 28, 31, 32, 33, 34 };
         private readonly List<int> _listMedicalManagement = new List<int> { 11, 12, 13 };
@@ -25,31 +27,35 @@ namespace Interactor.UsageTreeSet
             if (inputData.SinDate < 0)
                 return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidSinDate);
 
-            if (inputData.SetUsageKbn < 0)
-                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidUsageKbn);
+            if (inputData.KouiKbn < 0)
+                return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.InvalidKouiKbn);
+
+            int setUsageKbn = 0;
+            int setDrugKbn = 0;
+
+            if (_listDug.Contains(inputData.KouiKbn))
+            {
+                setDrugKbn = 20;
+                setUsageKbn = 21;
+            }
+            else if (_listInject.Contains(inputData.KouiKbn))
+            {
+                setDrugKbn = 31;
+                setUsageKbn = 30;
+            }
+            else
+                setDrugKbn = OdrUtil.GetGroupKoui(inputData.KouiKbn);
 
             int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
 
-            var lstUsage = new List<ListSetMstModel>();
+            List<ListSetMstModel> listData = new List<ListSetMstModel>();
+            if (setDrugKbn != 0)
+                listData.AddRange(GetListTreeSet(setDrugKbn, generationId, inputData));
 
-            if (inputData.SetUsageKbn == 0)
-                lstUsage = _usageTreeSetRepository.GetAllTanSetInfs(inputData.HpId, generationId, inputData.SinDate);
-            else
-            {
-                if (_usageDrug.Contains(inputData.SetUsageKbn) || _usageInject.Contains(inputData.SetUsageKbn))
-                {
-                    if (_usageDrug.Contains(inputData.SetUsageKbn))
-                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId, inputData.SinDate);
-                    else
-                        lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId, inputData.SinDate);
-                }
-                else if (_listMedicalManagement.Contains(inputData.SetUsageKbn))
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId, inputData.SinDate);
-                else
-                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, inputData.SetUsageKbn, generationId, inputData.SinDate);
-            }
-            
-            var lstUsageLevel1 = lstUsage.Where(
+            if (setUsageKbn != 0)
+                listData.AddRange(GetListUsageTreeSet(setUsageKbn, generationId, inputData));
+
+            var lstUsageLevel1 = listData.Where(
                 item => item.Level1 > 0 &&
                 item.Level2 == 0 &&
                 item.Level3 == 0 &&
@@ -62,27 +68,57 @@ namespace Interactor.UsageTreeSet
            .ThenBy(item => item.Level5)
            .ToList();
 
-            var usageList = new List<ListSetMstModel>();
+            List<ListSetMstModel> result = new List<ListSetMstModel>();
             foreach (var item in lstUsageLevel1)
             {
-                ListSetMstModel usageModel = item;
-                usageModel.Level = 1;
-                //Sub level
-                LoadSubLevel(2, usageModel, lstUsage);
-
-                usageList.Add(usageModel);
+                ListSetMstModel model = item;
+                model.Level = 1;
+                LoadSubLevel(2, model, listData);
+                result.Add(model);
             }
-            if (usageList.Count == 0)
+
+            if (!result.Any())
                 return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.DataNotFound);
 
-            return new GetUsageTreeSetOutputData(usageList, GetUsageTreeStatus.Successed);
+            return new GetUsageTreeSetOutputData(result, GetUsageTreeStatus.Successed);
+        }
+
+        private List<ListSetMstModel> GetListTreeSet(int setDrugKbn, int generationId, GetUsageTreeSetInputData inputData)
+        {
+            var lstDrug = new List<ListSetMstModel>();
+            if (_usageDrug.Contains(setDrugKbn) || _usageInject.Contains(setDrugKbn))
+            {
+                if (_usageDrug.Contains(setDrugKbn))
+                    lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId, inputData.SinDate);
+                else
+                    lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId, inputData.SinDate);
+            }
+            else if (_listMedicalManagement.Contains(setDrugKbn))
+                lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId, inputData.SinDate);
+            else
+                lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, setDrugKbn, generationId, inputData.SinDate);
+            return lstDrug;
+        }
+
+        private List<ListSetMstModel> GetListUsageTreeSet(int setUsageKbn, int generationId, GetUsageTreeSetInputData inputData)
+        {
+            var lstUsage = new List<ListSetMstModel>();
+            if (_usageDrug.Contains(setUsageKbn) || _usageInject.Contains(setUsageKbn))
+            {
+                if (_usageDrug.Contains(setUsageKbn))
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageDrug, generationId, inputData.SinDate);
+                else
+                    lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _usageInject, generationId, inputData.SinDate);
+            }
+            else
+                lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, setUsageKbn, generationId, inputData.SinDate);
+            return lstUsage;
         }
 
         private void LoadSubLevel(int level, ListSetMstModel usageModel, List<ListSetMstModel> listSetMst)
         {
             if (level == 1 || level > 5) return;
             List<ListSetMstModel> subLevel = new List<ListSetMstModel>();
-            //
             switch (level)
             {
                 case 2:
@@ -142,26 +178,17 @@ namespace Interactor.UsageTreeSet
                     break;
             }
 
-            //Sub level
-
             if (subLevel == null || subLevel.Count == 0) return;
 
             var usageListSubLevel = new List<ListSetMstModel>();
             foreach (var item in subLevel)
             {
                 ListSetMstModel usageModelSubLevel = item;
-
                 usageModelSubLevel.Level = level;
-
                 LoadSubLevel(level + 1, usageModelSubLevel, listSetMst);
-
                 usageListSubLevel.Add(usageModelSubLevel);
             }
-
-            //
-            var usageItems = new ObservableCollection<ListSetMstModel>(usageListSubLevel);
-
-            usageModel.Childrens = usageItems;
+            usageModel.Childrens = usageListSubLevel;
         }
     }
 }

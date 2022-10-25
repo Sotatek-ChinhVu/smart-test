@@ -57,7 +57,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListUsageTreeSet")]
         public ActionResult<Response<GetUsageTreeSetListResponse>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
-            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.SetUsageKbn);
+            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.KouiKbn);
             var output = _bus.Handle(input);
             var present = new GetUsageTreeSetListPresenter();
             present.Complete(output);
