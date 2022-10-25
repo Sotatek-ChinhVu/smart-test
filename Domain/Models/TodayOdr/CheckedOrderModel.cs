@@ -1,18 +1,9 @@
-﻿using Domain.Models.SetMst;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Helper.Constants.OrderInfConst;
+﻿using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.TodayOdr
 {
     public class CheckedOrderModel
     {
-
-        private CheckingType _checkingType;
-
         public CheckedOrderModel(CheckingType checkingType, bool santei, string checkingContent, string itemCd, int sinKouiKbn, string itemName, int inOutKbn)
         {
             CheckingType = checkingType;
@@ -47,7 +38,7 @@ namespace Domain.Models.TodayOdr
 
         public bool Santei { get; private set; }
 
-        public string CheckingContent{ get; private set;  }
+        public string CheckingContent { get; private set; }
 
         public string ItemCd { get; private set; }
 

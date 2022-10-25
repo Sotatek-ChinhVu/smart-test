@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.TodayOdr
+﻿namespace Domain.Models.TodayOdr
 {
     public class DensiSanteiKaisuModel
     {
@@ -58,6 +49,6 @@ namespace Domain.Models.TodayOdr
 
         public int IsInvalid { get; private set; }
 
-        public int ItemGrpCd { get; private set; }
+        public long ItemGrpCd { get; private set; }
     }
 }

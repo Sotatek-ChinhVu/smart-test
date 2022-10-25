@@ -2,6 +2,7 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -855,6 +856,125 @@ namespace Infrastructure.Repositories
                )).ToList();
         }
 
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        {
+            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+
+            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+
+            else if (!string.IsNullOrEmpty(postCode1))
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+
+            else if (!string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+
+            if (!string.IsNullOrEmpty(address))
+            {
+                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
+                                                || (e.PrefName + e.CityName).Contains(address)
+                                                || e.PrefName.Contains(address));
+            }
+
+            var result = entities.OrderBy(x => x.PostCd)
+                                  .ThenBy(x => x.PrefName)
+                                  .ThenBy(x => x.CityName)
+                                  .ThenBy(x => x.Banti)
+                                  .Select(x => new PostCodeMstModel(
+                                      x.Id,
+                                      x.HpId,
+                                      x.PostCd ?? string.Empty,
+                                      x.PrefKana ?? string.Empty,
+                                      x.CityKana ?? string.Empty,
+                                      x.PostalTermKana ?? string.Empty,
+                                      x.PrefName ?? string.Empty,
+                                      x.CityName ?? string.Empty,
+                                      x.Banti ?? string.Empty,
+                                      x.IsDeleted))
+                                  .Skip(pageIndex - 1).Take(pageSize)
+                                  .ToList();
+            return result;
+        }
+
+        public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
+        {
+            var result = new List<ItemCmtModel>();
+            var cmtCheckMsts = _tenantDataContext.CmtCheckMsts.Where(p => p.HpId == hpId &&
+                                                                                    p.IsDeleted == DeleteTypes.None &&
+                                                                                    itemCds.Contains(p.ItemCd));
+            var kartKbnMsts = _tenantDataContext.KarteKbnMst.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
+
+            var query = from cmtCheckMst in cmtCheckMsts
+                        join karteKbnMst in kartKbnMsts
+                        on cmtCheckMst.KarteKbn equals karteKbnMst.KarteKbn
+                        select new
+                        {
+                            CmtCheckMst = cmtCheckMst,
+                            KarteKbnMst = karteKbnMst
+                        };
+            foreach (var itemCd in itemCds)
+            {
+                var entities = query.Where(p => p.CmtCheckMst.ItemCd == itemCd).OrderBy(p => p.CmtCheckMst.SortNo);
+                if (entities == null) continue;
+                foreach (var entity in entities)
+                {
+                    result.Add(new ItemCmtModel(true, itemCd, entity.CmtCheckMst.KarteKbn, entity.KarteKbnMst.KbnShortName ?? string.Empty, KarteVisbleSOAPF(hpId, userId).Contains(entity.KarteKbnMst.KarteKbn.AsString()), entity.CmtCheckMst.Cmt, entity.CmtCheckMst.SortNo));
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 項目グループマスタ取得
+        /// </summary>
+        /// <param name="sinDate">診療日</param>
+        /// <param name="grpSbt">項目グループ種別 1:算定回数マスタ</param>
+        /// <param name="itemGrpCd">項目グループコード</param>
+        /// <returns></returns>
+        public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds)
+        {
+            List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
+
+            var query =
+                _tenantDataContext.itemGrpMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.GrpSbt == grpSbt &&
+                    itemGrpCds.Contains(p.ItemGrpCd) &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+            foreach (var entity in query)
+            {
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd, entity.SeqNo));
+            }
+            return result;
+        }
+
+        private string KarteVisbleSOAPF(int hpId, int userId)
+        {
+            string visibleKarteConfig = string.Empty;
+            var karteKbnMsts = _tenantDataContext.KarteKbnMst.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo);
+            var karteVisibleConfs = _tenantDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId && u.GrpCd == 102);
+
+            foreach (var karteKbnMst in karteKbnMsts)
+            {
+                var karteVisibleConf = karteVisibleConfs.FirstOrDefault(p => p.GrpItemCd == karteKbnMst.KarteKbn);
+                if (karteVisibleConf == null && karteKbnMst.KarteKbn != 5)
+                {
+                    visibleKarteConfig += karteKbnMst.KarteKbn;
+                }
+                else if (karteVisibleConf != null && karteVisibleConf.Val == 1)
+                {
+                    visibleKarteConfig += karteKbnMst.KarteKbn;
+                }
+            }
+
+            return visibleKarteConfig;
+        }
+
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {
@@ -963,45 +1083,5 @@ namespace Infrastructure.Repositories
             return rs;
         }
         #endregion
-
-        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
-        {
-            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
-
-            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
-
-            else if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
-
-            else if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
-
-            if (!string.IsNullOrEmpty(address))
-            {
-                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
-                                                || (e.PrefName + e.CityName).Contains(address)
-                                                || e.PrefName.Contains(address));
-            }
-
-            var result = entities.OrderBy(x => x.PostCd)
-                                  .ThenBy(x => x.PrefName)
-                                  .ThenBy(x => x.CityName)
-                                  .ThenBy(x => x.Banti)
-                                  .Select(x => new PostCodeMstModel(
-                                      x.Id,
-                                      x.HpId,
-                                      x.PostCd ?? string.Empty,
-                                      x.PrefKana ?? string.Empty,
-                                      x.CityKana ?? string.Empty,
-                                      x.PostalTermKana ?? string.Empty,
-                                      x.PrefName ?? string.Empty,
-                                      x.CityName ?? string.Empty,
-                                      x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
-            return result;
-        }
     }
 }

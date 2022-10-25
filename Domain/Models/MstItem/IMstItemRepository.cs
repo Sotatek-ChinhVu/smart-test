@@ -32,6 +32,8 @@
 
         List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate);
 
-        List<ItemCmtModel> GetCmtCheckMsts(List<string> itemCds);
+        List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
+
+        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
     }
 }

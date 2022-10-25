@@ -1,14 +1,15 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.Insurance;
+using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
+using Domain.Models.Reception;
+using Domain.Models.SystemConf;
 using Domain.Models.TodayOdr;
-using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Enum;
 using Helper.Extension;
-using System.IO;
-using System.Linq.Dynamic.Core.Tokenizer;
+using Infrastructure.Repositories;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.CheckedSpecialItem;
 
@@ -32,11 +33,18 @@ namespace Interactor.MedicalExamination
                     ItemCdConst.IgakuSyouniKakarituke2SyosinKofuAri,
                     ItemCdConst.IgakuSyouniKakarituke2SyosinKofuNasi
             };
+        private readonly IMstItemRepository _mstItemRepository;
+        private readonly IInsuranceRepository _insuranceRepository;
+        private readonly ISystemConfRepository _systemConfRepository;
+        private readonly IReceptionRepository _receptionRepository;
 
-        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository)
+        public CheckedSpecialItemInteractor(ITodayOdrRepository todayOdrRepository, IMstItemRepository mstItemRepository, InsuranceRepository insuranceRepository, ISystemConfRepository systemConfRepository, IReceptionRepository receptionRepository)
         {
             _todayOdrRepository = todayOdrRepository;
-
+            _mstItemRepository = mstItemRepository;
+            _insuranceRepository = insuranceRepository;
+            _systemConfRepository = systemConfRepository;
+            _receptionRepository = receptionRepository;
         }
 
         public CheckedSpecialItemOutputData Handle(CheckedSpecialItemInputData inputData)
@@ -134,7 +142,7 @@ namespace Interactor.MedicalExamination
                                 new List<YohoSetMstModel>(),
                                 0,
                                 0
-                            )).ToList();
+                            )).ToList() ?? new List<OrdInfDetailModel>();
 
                 List<(long rpno, long edano, int hokenPid)> hokenPids = new List<(long rpno, long edano, int hokenPid)>();
 
@@ -144,14 +152,22 @@ namespace Interactor.MedicalExamination
                 }
                 #endregion
                 List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
+                var itemCdCs = allOdrInfDetailModel.Select(x => x.ItemCd).Distinct().ToList();
+                var minSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Min(o => o.SinDate);
+                var maxSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Max(o => o.SinDate);
+                var tenMsts = _mstItemRepository.FindTenMst(inputData.HpId, itemCdCs, minSinDate, maxSinDate);
+                var santeiItemCds = tenMsts.Select(t => t.SanteiItemCd).ToList();
+                var santeiTenMsts = _mstItemRepository.FindTenMst(inputData.HpId, santeiItemCds, minSinDate, maxSinDate);
+                var densiSanteiKaisuModels = _todayOdrRepository.FindDensiSanteiKaisuList(inputData.HpId, itemCdCs, minSinDate, maxSinDate);
+                var itemGrpMsts = _mstItemRepository.FindItemGrpMst(inputData.HpId, inputData.SinDate, 1, densiSanteiKaisuModels.Select(d => d.ItemGrpCd).ToList());
 
                 //enable or disable Expired Check and SanteiCount Check
                 if (inputData.EnabledInputCheck)
                 {
-                    checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, new TenItemModel(), allOdrInfDetailModel));
-                    checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, new List<TenItemModel>(), allOdrInfDetailModel));
-                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, 0, 0, 0, new TenItemModel(), new List<DensiSanteiKaisuModel>(), new TenItemModel(), allOdrInfDetailModel, new List<ItemGrpMstModel>(), hokenPids));
-                    checkSpecialItemList.AddRange(DuplicateCheck(inputData.SinDate, new List<TenItemModel>() ,allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, tenMsts, allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, tenMsts, allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels, tenMsts, allOdrInfDetailModel, itemGrpMsts, hokenPids));
+                    checkSpecialItemList.AddRange(DuplicateCheck(inputData.SinDate, tenMsts, allOdrInfDetailModel));
                 }
 
                 //enable or disable Comment Check
@@ -182,8 +198,21 @@ namespace Interactor.MedicalExamination
                             }
                         }
                     }
-                    _allCmtCheckMst = _checkingFinder.GetCmtCheckMsts(itemCds);
-                    checkSpecialItemList.AddRange(ItemCommentCheck(items));
+                    var allCmtCheckMst = _mstItemRepository.GetCmtCheckMsts(inputData.HpId, inputData.UserId, itemCds);
+                    checkSpecialItemList.AddRange(ItemCommentCheck(items, allCmtCheckMst, new KarteInfModel(
+                                 inputData.KarteInf.HpId,
+                                 inputData.KarteInf.RaiinNo,
+                                 1,
+                                 0,
+                                 inputData.KarteInf.PtId,
+                                 inputData.KarteInf.SinDate,
+                                 inputData.KarteInf.Text,
+                                 0,
+                                 inputData.KarteInf.RichText,
+                                 DateTime.MinValue,
+                                 DateTime.MinValue,
+                                 string.Empty
+                        )));
                 }
 
                 return new CheckedSpecialItemOutputData(checkSpecialItemList, CheckedSpecialItemStatus.Failed);
@@ -199,7 +228,7 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckedSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, TenItemModel tenMstItem, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
             List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
 
@@ -232,6 +261,7 @@ namespace Interactor.MedicalExamination
                 {
                     continue;
                 }
+                var tenMstItem = tenMstItems.FirstOrDefault(t => t.ItemCd == detail.ItemCd && t.StartDate <= detail.SinDate && t.EndDate >= detail.SinDate);
                 if (tenMstItem == null)
                 {
                     continue;
@@ -497,14 +527,14 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckedSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
+        private List<CheckedSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
             List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
             foreach (var item in items)
             {
                 if (checkSpecialItemList.Any(p => p.ItemCd == item.Key)) continue;
 
-                if (IsShowCommentCheckMst(item.Key, allCmtCheckMst, karteInfs))
+                if (IsShowCommentCheckMst(item.Key, allCmtCheckMst, karteInf))
                 {
                     checkSpecialItemList.Add(new CheckedSpecialItemModel(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
                 }
@@ -512,14 +542,14 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private bool IsShowCommentCheckMst(string itemCd, List<ItemCmtModel> allCmtCheckMst, List<KarteInfModel> karteInfs)
+        private bool IsShowCommentCheckMst(string itemCd, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
             var itemCmtModels = allCmtCheckMst.FindAll(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo).ToList();
             if (itemCmtModels.Count == 0) return false;
 
             foreach (var itemCmtModel in itemCmtModels)
             {
-                if (karteInfs.Exists(p => p.KarteKbn == itemCmtModel.KarteKbn && p.Text.AsString().Contains(itemCmtModel.Comment)))
+                if (karteInf.KarteKbn == itemCmtModel.KarteKbn && karteInf.Text.AsString().Contains(itemCmtModel.Comment))
                 {
                     return false;
                 }
@@ -532,11 +562,13 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckedSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, int hokenKbn, int hokensyuHandling, int syosinDate, TenItemModel santeiTenMst, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, TenItemModel tenMst, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
+        private List<CheckedSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
             List<CheckedSpecialItemModel> checkSpecialItemList = new List<CheckedSpecialItemModel>();
             int endDate = sinDate;
             // MAX_COUNT>1の場合は注意扱いする単位のコード
+            var hokensyuHandling = (int)_systemConfRepository.GetSettingValue(3013, 0, hpId);
+            var syosinDate = _receptionRepository.GetFirstVisitWithSyosin(hpId, ptId, sinDate);
 
             List<string> checkedItem = new List<string>();
             foreach (var odrDetail in allOdrInfDetail)
@@ -552,6 +584,7 @@ namespace Interactor.MedicalExamination
 
                 string santeiItemCd = odrDetail.ItemCd;
                 string itemName = odrDetail.DisplayItemName;
+                var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrDetail.ItemCd);
                 if (tenMst != null)
                 {
                     if (!string.IsNullOrEmpty(tenMst.ItemCd)
@@ -561,6 +594,7 @@ namespace Interactor.MedicalExamination
                         && !tenMst.ItemCd.StartsWith("Z"))
                     {
                         santeiItemCd = tenMst.SanteiItemCd;
+                        var santeiTenMst = santeiTenMsts.FirstOrDefault(s => s.SanteiItemCd == santeiItemCd && s.StartDate <= odrDetail.SinDate && s.EndDate >= odrDetail.SinDate);
                         if (santeiTenMst != null)
                         {
                             itemName = santeiTenMst.Name;
@@ -579,7 +613,7 @@ namespace Interactor.MedicalExamination
 
                 densiSanteiKaisuModels = densiSanteiKaisuModels.Where(d => d.ItemCd == santeiItemCd).ToList();
 
-                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, hokenKbn, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModels, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
+                checkSpecialItemList.AddRange(ExecuteDensiSantei(ptId, hpId, endDate, raiinNo, hokensyuHandling, sinDate, syosinDate, suryo, itemName, densiSanteiKaisuModels, odrDetail, hokenIds, allOdrInfDetail, itemGrpMsts));
                 // チェック期間と表記を取得する
                 checkedItem.Add(odrDetail.ItemCd);
             }
@@ -612,12 +646,12 @@ namespace Interactor.MedicalExamination
             return CIUtil.MonthsAfter(baseDate, term);
         }
 
-        private int GetPtHokenKbn(long rpno, long edano, int hokenKbn, List<(long rpno, long edano, int hokenId)> hokenIds)
+        private int GetPtHokenKbn(int hpId, long ptId, int sinDate, long rpno, long edano, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
             int? ret = 0;
             if (hokenIds.Any(p => p.rpno == rpno && p.edano == edano))
             {
-                ret = hokenKbn;
+                ret = _insuranceRepository.GetPtHokenInf(hpId, hokenIds.Find(p => p.rpno == rpno && p.edano == edano).hokenId, ptId, sinDate)?.HokenKbn;
             }
 
             return ret == null ? 0 : ret.Value;
@@ -724,7 +758,7 @@ namespace Interactor.MedicalExamination
             return results;
         }
 
-        private List<CheckedSpecialItemModel> ExecuteDensiSantei(long ptId, int hpId, int endDate, int hokenKbn, long raiinNo, int hokensyuHandling, int sinDate, int syosinDate, double suryo, string itemName, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, OrdInfDetailModel odrDetail, List<(long rpno, long edano, int hokenId)> hokenIds, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts)
+        private List<CheckedSpecialItemModel> ExecuteDensiSantei(long ptId, int hpId, int endDate, long raiinNo, int hokensyuHandling, int sinDate, int syosinDate, double suryo, string itemName, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, OrdInfDetailModel odrDetail, List<(long rpno, long edano, int hokenId)> hokenIds, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts)
         {
             List<CheckedSpecialItemModel> checkSpecialItemList = new();
 
@@ -734,7 +768,7 @@ namespace Interactor.MedicalExamination
                 int startDate = 0;
 
                 List<int> checkHokenKbnTmp = new List<int>();
-                checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo, hokenKbn, hokenIds), hokensyuHandling));
+                checkHokenKbnTmp.AddRange(GetCheckHokenKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
 
                 if (densiSanteiKaisu.TargetKbn == 1)
                 {
@@ -747,7 +781,7 @@ namespace Interactor.MedicalExamination
                 }
 
                 List<int> checkSanteiKbnTmp = new List<int>();
-                checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(odrDetail.RpNo, odrDetail.RpEdaNo, hokenKbn, hokenIds), hokensyuHandling));
+                checkSanteiKbnTmp.AddRange(GetCheckSanteiKbns(GetPtHokenKbn(hpId, ptId, sinDate, odrDetail.RpNo, odrDetail.RpEdaNo, hokenIds), hokensyuHandling));
 
                 CommonDensiSantei(hpId, densiSanteiKaisu, odrDetail, allOdrInfDetail, startDate, endDate, sTerm, sinDate, syosinDate);
 

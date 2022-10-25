@@ -728,5 +728,26 @@ namespace Infrastructure.Repositories
             }
         }
 
+        public List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
+        {
+            List<int> unitCds = new List<int> { 53, 121, 131, 138, 141, 142, 143, 144, 145, 146, 147, 148, 997, 998, 999 };
+
+            var entities = _tenantNoTrackingDataContext.DensiSanteiKaisus.Where((x) =>
+                    x.HpId == hpId &&
+                    itemCds.Contains(x.ItemCd) &&
+                    x.StartDate <= minSinDate &&
+                    x.EndDate >= maxSinDate &&
+                    x.IsInvalid == 0 &&
+                    unitCds.Contains(x.UnitCd)
+                ).ToList();
+
+            List<DensiSanteiKaisuModel> results = new List<DensiSanteiKaisuModel>();
+            entities?.ForEach(entity =>
+            {
+                results.Add(new DensiSanteiKaisuModel(entity.Id, entity.HpId, entity.ItemCd, entity.UnitCd, entity.MaxCount, entity.SpJyoken, entity.StartDate, entity.EndDate, entity.SeqNo, entity.UserSetting, entity.TargetKbn, entity.TermCount, entity.TermSbt, entity.IsInvalid, entity.ItemGrpCd));
+            });
+
+            return results;
+        }
     }
 }

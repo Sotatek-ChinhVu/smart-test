@@ -6,7 +6,6 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -190,14 +189,14 @@ namespace Infrastructure.Repositories
             void UpdateRaiinInfIfChanged(RaiinInf entity, ReceptionModel model)
             {
                 // Detect changes
-                if (entity.OyaRaiinNo != model.OyaRaiinNo || 
-                    entity.KaId != model.KaId || 
-                    entity.UketukeSbt != model.UketukeSbt || 
-                    entity.UketukeNo != model.UketukeNo || 
+                if (entity.OyaRaiinNo != model.OyaRaiinNo ||
+                    entity.KaId != model.KaId ||
+                    entity.UketukeSbt != model.UketukeSbt ||
+                    entity.UketukeNo != model.UketukeNo ||
                     entity.TantoId != model.TantoId ||
                     entity.SyosaisinKbn != model.SyosaisinKbn ||
                     entity.JikanKbn != model.JikanKbn ||
-                    entity.SanteiKbn != model.SanteiKbn || 
+                    entity.SanteiKbn != model.SanteiKbn ||
                     entity.HokenPid != model.HokenPid)
                 {
                     entity.OyaRaiinNo = model.OyaRaiinNo;
@@ -238,7 +237,7 @@ namespace Infrastructure.Repositories
                         UpdateDate = DateTime.UtcNow,
                         UpdateId = TempIdentity.UserId,
                         UpdateMachine = TempIdentity.ComputerName
-                });
+                    });
                 }
                 else if (raiinCmtInf.Text != text)
                 {
@@ -326,7 +325,7 @@ namespace Infrastructure.Repositories
                     continue;
                 }
 
-                foreach (var confirmDate in insurance.ConfirmDateList) 
+                foreach (var confirmDate in insurance.ConfirmDateList)
                 {
                     var confirmDatetimeUtc = DateTime.ParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
 
@@ -738,6 +737,27 @@ namespace Infrastructure.Repositories
             var check = _tenantNoTrackingDataContext.RaiinInfs
                 .Any(x => x.HpId == hpId && x.PtId == ptId && x.SinDate == sinDate && x.RaiinNo == raiinNo && x.IsDeleted == 0);
             return check;
+        }
+
+        public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
+        {
+            int firstDate = 0;
+            var syosinBi = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                                           && x.PtId == ptId
+                                                                           && x.SinDate < sinDate
+                                                                           && x.SyosaisinKbn == SyosaiConst.Syosin
+                                                                           && x.Status >= RaiinState.TempSave
+                                                                           && x.IsDeleted == DeleteTypes.None
+                )
+                .OrderByDescending(x => x.SinDate)
+                .FirstOrDefault();
+
+            if (syosinBi != null)
+            {
+                firstDate = syosinBi.SinDate;
+            }
+
+            return firstDate;
         }
     }
 }
