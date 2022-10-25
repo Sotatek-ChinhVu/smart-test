@@ -66,8 +66,8 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                var checkInputIoginId = datas.Select(u => u.LoginId);
-                if (checkInputIoginId.Count() != checkInputIoginId.Distinct().Count())
+                var checkInputLoginId = datas.Select(u => u.LoginId);
+                if (checkInputLoginId.Count() != checkInputLoginId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
