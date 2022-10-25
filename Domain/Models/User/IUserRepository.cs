@@ -30,14 +30,14 @@
 
         bool CheckExistedUserId(int userId);
 
-        bool CheckExistedUserIdCreate(List<int> UserIds);
+        bool CheckExistedUserIdCreate(List<int> userIds);
 
-        bool CheckExistedUserIdUpdate(List<long> Ids, List<int> UserIds);
+        bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds);
 
-        bool CheckExistedLoginIdCreate(List<string> LoginIds);
+        bool CheckExistedLoginIdCreate(List<string> loginIds);
 
-        bool CheckExistedJobCd(List<int> JobCds);
+        bool CheckExistedJobCd(List<int> jobCds);
 
-        bool CheckExistedLoginIdUpdate(List<long> Ids, List<string> LoginIds);
+        bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
     }
 }

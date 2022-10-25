@@ -21,10 +21,10 @@ public class KaRepository : IKaRepository
         var check = _tenantDataContext.KaMsts.Any(k => k.KaId == KaId && k.IsDeleted == 0);
         return check;
     }
-    public bool CheckKaId0(List<int> KaIds)
+    public bool CheckKaId0(List<int> kaIds)
     {
-        var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => KaIds.Contains(u.KaId));
-        return KaIds.Count == countKaMsts;
+        var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
+        return kaIds.Count == countKaMsts;
     }
 
     public KaMstModel GetByKaId(int kaId)

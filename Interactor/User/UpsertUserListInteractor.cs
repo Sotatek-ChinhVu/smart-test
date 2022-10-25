@@ -54,20 +54,20 @@ namespace Interactor.User
                         u.IsDeleted
                         )).ToList();
 
-                var checkinputid = datas.Where(u => u.Id > 0).Select(u => u.Id);
-                if (checkinputid.Count() != checkinputid.Distinct().Count())
+                var checkInputId = datas.Where(u => u.Id > 0).Select(u => u.Id);
+                if (checkInputId.Count() != checkInputId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                var checkinputuserid = datas.Select(u => u.UserId);
-                if (checkinputuserid.Count() != checkinputuserid.Distinct().Count())
+                var checkInputUserId = datas.Select(u => u.UserId);
+                if (checkInputUserId.Count() != checkInputUserId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }
 
-                var checkinputloginid = datas.Select(u => u.LoginId);
-                if (checkinputloginid.Count() != checkinputloginid.Distinct().Count())
+                var checkInputIoginId = datas.Select(u => u.LoginId);
+                if (checkInputIoginId.Count() != checkInputIoginId.Distinct().Count())
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListExistedInputData);
                 }

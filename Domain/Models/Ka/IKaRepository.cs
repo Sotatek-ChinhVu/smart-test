@@ -14,6 +14,6 @@ public interface IKaRepository
 
     bool CheckKaId(int KaId);
 
-    bool CheckKaId0(List<int> KaIds);
+    bool CheckKaId0(List<int> kaIds);
 
 }
