@@ -1539,6 +1539,26 @@ namespace Helper.Common
 
             return retDate;
         }
+        public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
+        {
+            //法別番号を求める
+            houbetuNo = "0";
+            hokensyaNoSearch = hokensyaNo;
+            switch (hokensyaNo?.Length)
+            {
+                case 8:
+                    houbetuNo = Copy(hokensyaNo, 1, 2);
+                    break;
+                case 6:
+                    houbetuNo = "100";
+                    break;
+                case 4:
+                    houbetuNo = "01";
+                    break;
+                default:
+                    break;
+            }
+        }
 
         ///<summary>
         ///指定の月数後の日付を取得する
@@ -1582,6 +1602,4 @@ namespace Helper.Common
         public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
     }
-
-  
 }

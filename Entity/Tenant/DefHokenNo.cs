@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -44,42 +39,42 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "DIGIT_3")]
         [MaxLength(1)]
-        public string Digit3 { get; set; } = string.Empty;
+        public string? Digit3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 4桁目
         /// </summary>
         [Column(name: "DIGIT_4")]
         [MaxLength(1)]
-        public string Digit4 { get; set; } = string.Empty;
+        public string? Digit4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 5桁目
         /// </summary>
         [Column(name: "DIGIT_5")]
         [MaxLength(1)]
-        public string Digit5 { get; set; } = string.Empty;
+        public string? Digit5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 6桁目
         /// </summary>
         [Column(name: "DIGIT_6")]
         [MaxLength(1)]
-        public string Digit6 { get; set; } = string.Empty;
+        public string? Digit6 { get; set; } = string.Empty;
 
         /// <summary>
         /// 7桁目
         /// </summary>
         [Column(name: "DIGIT_7")]
         [MaxLength(1)]
-        public string Digit7 { get; set; } = string.Empty;
+        public string? Digit7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 8桁目
         /// </summary>
         [Column(name: "DIGIT_8")]
         [MaxLength(1)]
-        public string Digit8 { get; set; } = string.Empty;
+        public string? Digit8 { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
@@ -94,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOKEN_NO")]
         [Required]
-        public  int HokenNo { get; set; }
+        public int HokenNo { get; set; }
 
         /// <summary>
         /// 保険番号枝番
@@ -157,6 +152,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

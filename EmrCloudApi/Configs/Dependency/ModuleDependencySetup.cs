@@ -116,6 +116,7 @@ using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
@@ -161,6 +162,7 @@ using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
+using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
@@ -172,7 +174,9 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
+using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
@@ -333,6 +337,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
             busBuilder.RegisterUseCase<GetReceptionCommentInputData, GetReceptionCommentInteractor>();
             busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
+            busBuilder.RegisterUseCase<GetLastRaiinInfsInputData, GetLastRaiinInfsInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -357,9 +363,11 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
             busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceMasterLinkageInputData, GetInsuranceMasterLinkageInteractor>();
+            busBuilder.RegisterUseCase<SaveInsuranceMasterLinkageInputData, SaveInsuranceMasterLinkageInteractor>();
             busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();
+            busBuilder.RegisterUseCase<ValidateInsuranceInputData, ValidateInsuranceInteractor>();
 
             //RaiinKubun
             busBuilder.RegisterUseCase<GetRaiinKubunMstListInputData, GetRaiinKubunMstListInteractor>();

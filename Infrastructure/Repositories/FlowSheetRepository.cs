@@ -12,6 +12,8 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
+        private readonly int cmtKbn = 9;
+
         public FlowSheetRepository(ITenantProvider tenantProvider)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
@@ -66,10 +68,8 @@ namespace Infrastructure.Repositories
                     false,
                     r.RaiinNo == raiinNo,
                     r.RaiinListInfs.ToList(),
-                    ptId,
-                    r.CommentKbn,
-                    r.CommentSeqNo,
-                    r.TagSeqNo)
+                    ptId
+                   )
             ).AsEnumerable<FlowSheetModel>();
 
             // Add NextOrder Information
@@ -131,10 +131,7 @@ namespace Infrastructure.Repositories
                         true,
                         false,
                         data.RaiinListInfs.ToList(),
-                        data.NextOdr?.PtId ?? 0,
-                        0,
-                        0,
-                        data.TagInf?.SeqNo ?? 0
+                        data.NextOdr?.PtId ?? 0
                     ));
 
             totalCount = todayOdr.Union(nextOdrs).Count();
@@ -154,9 +151,6 @@ namespace Infrastructure.Repositories
                         false,
                         true,
                         new List<RaiinListInfModel>(),
-                        0,
-                        9,
-                        0,
                         0
                     );
             }
@@ -225,51 +219,21 @@ namespace Infrastructure.Repositories
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty)).ToList();
         }
 
-        public void Upsert(List<FlowSheetModel> inputDatas)
+        public void UpsertTag(List<FlowSheetModel> inputDatas)
         {
             foreach (var inputData in inputDatas)
             {
-                var raiinListCmt = _tenantTrackingDataContext.RaiinListCmts
-                            .OrderByDescending(p => p.UpdateDate)
-                            .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo && p.CmtKbn == inputData.CmtKbn);
-
-                if (raiinListCmt is null)
-                {
-                    _tenantTrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
-                    {
-                        HpId = 1,
-                        PtId = inputData.PtId,
-                        SinDate = inputData.SinDate,
-                        RaiinNo = inputData.RaiinNo,
-                        CmtKbn = inputData.CmtKbn,
-                        SeqNo = inputData.RainListCmtSeqNo,
-                        Text = inputData.Comment,
-                        CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
-                    });
-                }
-                else
-                {
-                    raiinListCmt.Text = inputData.Comment;
-                    raiinListCmt.UpdateDate = DateTime.UtcNow;
-                    raiinListCmt.UpdateId = TempIdentity.UserId;
-                    raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
-                }
-
                 var raiinListTag = _tenantTrackingDataContext.RaiinListTags
                            .OrderByDescending(p => p.UpdateDate)
                            .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
-
                 if (raiinListTag is null)
                 {
                     _tenantTrackingDataContext.RaiinListTags.Add(new RaiinListTag
                     {
-                        HpId = 1,
+                        HpId = TempIdentity.HpId,
                         PtId = inputData.PtId,
                         SinDate = inputData.SinDate,
                         RaiinNo = inputData.RaiinNo,
-                        SeqNo = inputData.RainListTagSeqNo,
                         TagNo = inputData.TagNo,
                         CreateDate = DateTime.UtcNow,
                         CreateId = TempIdentity.UserId,
@@ -282,6 +246,39 @@ namespace Infrastructure.Repositories
                     raiinListTag.UpdateDate = DateTime.UtcNow;
                     raiinListTag.UpdateId = TempIdentity.UserId;
                     raiinListTag.UpdateMachine = TempIdentity.ComputerName;
+                }
+            }
+            _tenantTrackingDataContext.SaveChanges();
+        }
+        public void UpsertCmt(List<FlowSheetModel> inputDatas)
+        {
+            foreach (var inputData in inputDatas)
+            {
+                var raiinListCmt = _tenantTrackingDataContext.RaiinListCmts
+                               .OrderByDescending(p => p.UpdateDate)
+                               .FirstOrDefault(p => p.RaiinNo == inputData.RaiinNo);
+
+                if (raiinListCmt is null)
+                {
+                    _tenantTrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
+                    {
+                        HpId = TempIdentity.HpId,
+                        PtId = inputData.PtId,
+                        SinDate = inputData.SinDate,
+                        RaiinNo = inputData.RaiinNo,
+                        CmtKbn = cmtKbn,
+                        Text = inputData.Comment,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName
+                    });
+                }
+                else
+                {
+                    raiinListCmt.Text = inputData.Comment;
+                    raiinListCmt.UpdateDate = DateTime.UtcNow;
+                    raiinListCmt.UpdateId = TempIdentity.UserId;
+                    raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
                 }
             }
             _tenantTrackingDataContext.SaveChanges();
