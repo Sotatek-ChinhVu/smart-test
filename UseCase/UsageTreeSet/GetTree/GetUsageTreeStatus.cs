@@ -5,7 +5,7 @@
         Successed = 1,
         InvalidHpId = 2,
         InvalidSinDate = 3,
-        InvalidUsageKbn = 4,
+        InvalidKouiKbn = 4,
         DataNotFound = 5
     }
 }

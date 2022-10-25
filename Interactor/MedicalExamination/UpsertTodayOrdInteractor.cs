@@ -135,6 +135,7 @@ namespace Interactor.MedicalExamination
             var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
+            var obj = new object();
             Parallel.ForEach(inputDataList, item =>
             {
                 var ordInf = new OrdInfModel(
@@ -175,6 +176,7 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
+                    var objDetail = new object();
                     var ordInfDetail = new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
@@ -227,10 +229,15 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0
                             );
-                    ordInf.OrdInfDetails.Add(ordInfDetail);
+                    lock (objDetail)
+                    {
+                        ordInf.OrdInfDetails.Add(ordInfDetail);
+                    }
                 });
-
-                allOdrInfs.Add(ordInf);
+                lock (obj)
+                {
+                    allOdrInfs.Add(ordInf);
+                }
             });
 
             return allOdrInfs;
@@ -395,13 +402,17 @@ namespace Interactor.MedicalExamination
                                         return;
                                     }
 
-                                    Parallel.ForEach(item.OdrDetails, itemOd =>
+                                    var objDetail = new object();
+                                    Parallel.For(0, item.OdrDetails.Count, indexOd =>
                             {
-                                var indexOd = item.OdrDetails.IndexOf(itemOd);
+                                var itemOd = item.OdrDetails[indexOd];
 
                                 if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
                                 {
-                                    dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                    lock (objDetail)
+                                    {
+                                        dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                    }
                                 }
                             });
                                 }
@@ -409,14 +420,18 @@ namespace Interactor.MedicalExamination
 
                 allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
 
-                Parallel.ForEach(allOdrInfs, item =>
+                Parallel.For(0, allOdrInfs.Count, index =>
                 {
-                    var index = allOdrInfs.IndexOf(item);
+
+                    var item = allOdrInfs[index];
 
                     var modelValidation = item.Validation(0);
                     if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        dicValidation.Add(index.ToString(), modelValidation);
+                        lock (obj)
+                        {
+                            dicValidation.Add(index.ToString(), modelValidation);
+                        }
                     }
                 });
             }
