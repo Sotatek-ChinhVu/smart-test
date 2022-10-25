@@ -11,18 +11,16 @@ namespace UseCase.Insurance.ValidateInsurance
     {
         public bool Result { get; private set; }
 
-        public string Message { get; private set; }
 
         public ValidateInsuranceStatus Status { get; private set; }
 
-        public int IndexItemError { get; private set; }
+        public List<ValidateInsuranceListItem> ListResult { get; private set; }
 
-        public ValidateInsuranceOutputData(bool result, string message, ValidateInsuranceStatus status, int indexItemError)
+        public ValidateInsuranceOutputData(bool result, ValidateInsuranceStatus status, List<ValidateInsuranceListItem> listResult)
         {
             Result = result;
-            Message = message;
             Status = status;
-            IndexItemError = indexItemError;
+            ListResult = listResult;
         }
     }
 }

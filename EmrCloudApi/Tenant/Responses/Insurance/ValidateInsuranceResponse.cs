@@ -1,18 +1,20 @@
-﻿namespace EmrCloudApi.Tenant.Responses.Insurance
+﻿using UseCase.Insurance.ValidateInsurance;
+
+namespace EmrCloudApi.Tenant.Responses.Insurance
 {
     public class ValidateInsuranceResponse
     {
-        public ValidateInsuranceResponse(bool resultCheck, string message, int indexItemError)
+        public ValidateInsuranceResponse(bool resultCheck, string message, ValidateInsuranceListItem itemValidate)
         {
             ResultCheck = resultCheck;
             Message = message;
-            IndexItemError = indexItemError;
+            ItemValidate = itemValidate;
         }
 
         public bool ResultCheck { get; private set; }
 
         public string Message { get; private set; }
 
-        public int IndexItemError { get; private set; }
+        public ValidateInsuranceListItem ItemValidate { get; private set; }
     }
 }

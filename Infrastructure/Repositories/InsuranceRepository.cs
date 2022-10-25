@@ -2,6 +2,7 @@
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Entity.Tenant;
+using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -187,6 +188,11 @@ namespace Infrastructure.Repositories
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId).OrderBy(x => x.EndDate)
                         .Select(x => new RousaiTenkiModel(x.Sinkei, x.Tenki, x.EndDate, x.IsDeleted,x.SeqNo)).ToList();
 
+                    //get FindHokensyaMstByNoNotrack
+                    string houbetuNo = string.Empty;
+                    string hokensyaNoSearch = string.Empty;
+                    CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
+                    var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensyaNoSearch && x.Houbetu == houbetuNo).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
                     HokenInfModel hokenInf = new HokenInfModel(
                                             hpId,
                                             ptId,
@@ -255,12 +261,18 @@ namespace Infrastructure.Repositories
                                                               hokenMstSName,
                                                               houbetu ?? string.Empty,
                                                               hokenMstSubNumber,
-                                                              item.hokenMst?.CheckDigit,
-                                                              item.hokenMst?.AgeStart,
-                                                              item.hokenMst?.AgeEnd,
-                                                              item.hokenMst?.IsKigoNa,
-
-                                                              )
+                                                              item.hokenMst?.CheckDigit ?? 0,
+                                                              item.hokenMst?.AgeStart ?? 0,
+                                                              item.hokenMst?.AgeEnd ?? 0,
+                                                              item.hokenMst?.IsFutansyaNoCheck ?? 0,
+                                                              item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
+                                                              item.hokenMst?.JyukyuCheckDigit ?? 0,
+                                                              item.hokenMst?.IsTokusyuNoCheck ?? 0
+                                                              ),
+                                            hokensyaMst ?? new HokensyaMstModel(),
+                                            false,
+                                            false,
+                                            item.RousaiKofuNo ?? string.Empty
                                             );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -297,6 +309,11 @@ namespace Infrastructure.Repositories
                         .Select( x => new RousaiTenkiModel(x.Sinkei, x.Tenki, x.EndDate, x.IsDeleted,x.SeqNo)).ToList();
                     var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(h => h.HokenNo == item.HokenNo && h.HokenEdaNo == item.HokenEdaNo);
                     var dataHokenCheckHoken = _tenantDataContext.PtHokenChecks.FirstOrDefault(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteStatus.None && x.HokenId == item.HokenId);
+                    //get FindHokensyaMstByNoNotrack
+                    string houbetuNo = string.Empty;
+                    string hokensyaNoSearch = string.Empty;
+                    CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
+                    var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensyaNoSearch && x.Houbetu == houbetuNo).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
                     string houbetuHokenInf = string.Empty;
                     int futanRateHokenInf = 0;
                     int futanKbnHokenInf = 0;
@@ -389,8 +406,19 @@ namespace Infrastructure.Repositories
                                                 hokenMstHokenEdraNo,
                                                 hokenMstSName,
                                                 houbetuHokenInf ?? string.Empty,
-                                                hokenMstSubNumber
-                                                )
+                                                hokenMstSubNumber,
+                                                hokenMst?.CheckDigit ?? 0,
+                                                hokenMst?.AgeStart ?? 0,
+                                                hokenMst?.AgeEnd ?? 0,
+                                                hokenMst?.IsFutansyaNoCheck ?? 0,
+                                                hokenMst?.IsJyukyusyaNoCheck ?? 0,
+                                                hokenMst?.JyukyuCheckDigit ?? 0,
+                                                hokenMst?.IsTokusyuNoCheck ?? 0
+                                                ),
+                                            hokensyaMst ?? new HokensyaMstModel(),
+                                            false,
+                                            false,
+                                            item.RousaiKofuNo ?? string.Empty
                                             );
 
                     listHokenInf.Add(itemHokenInf);
@@ -426,7 +454,8 @@ namespace Infrastructure.Repositories
                                         new HokenMstModel(),
                                         sinDate,
                                         GetConfirmDateList(2, item.HokenId), false,
-                                        item.IsDeleted)
+                                        item.IsDeleted,
+                                        false)
                         );
                 }
             }
@@ -480,7 +509,8 @@ namespace Infrastructure.Repositories
                 sinDate,
                 confirmDateList,
                 false,
-                kohiInf.IsDeleted
+                kohiInf.IsDeleted,
+                false
                 );
         }
 
@@ -490,7 +520,7 @@ namespace Infrastructure.Repositories
             {
                 return new HokenMstModel();
             }
-            return new HokenMstModel(hokenMst.FutanKbn, hokenMst.FutanRate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.HokenSname, hokenMst.Houbetu, hokenMst.HokenSbtKbn);
+            return new HokenMstModel(hokenMst.FutanKbn, hokenMst.FutanRate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.HokenNo, hokenMst.HokenEdaNo, hokenMst.HokenSname, hokenMst.Houbetu, hokenMst.HokenSbtKbn, hokenMst.CheckDigit, hokenMst.AgeStart, hokenMst.AgeEnd, hokenMst.IsFutansyaNoCheck, hokenMst.IsJyukyusyaNoCheck, hokenMst.JyukyuCheckDigit, hokenMst.IsTokusyuNoCheck);
         }
 
         private string NenkinBango(string? rousaiKofuNo)
@@ -736,6 +766,12 @@ namespace Infrastructure.Repositories
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId).OrderBy(x => x.EndDate)
                         .Select(x => new RousaiTenkiModel(x.Sinkei, x.Tenki, x.EndDate, x.IsDeleted,x.SeqNo)).ToList();
 
+                    //get FindHokensyaMstByNoNotrack
+                    string houbetuNo = string.Empty;
+                    string hokensyaNoSearch = string.Empty;
+                    CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
+                    var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensyaNoSearch && x.Houbetu == houbetuNo).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
+
                     HokenInfModel hokenInf = new HokenInfModel(
                                             hpId,
                                             ptId,
@@ -803,7 +839,18 @@ namespace Infrastructure.Repositories
                                                               hokenMstHokenEdraNo,
                                                               hokenMstSName,
                                                               houbetu ?? string.Empty,
-                                                              hokenMstSubNumber)
+                                                              hokenMstSubNumber,
+                                                              item.hokenMst?.CheckDigit ?? 0,
+                                                              item.hokenMst?.AgeStart ?? 0,
+                                                              item.hokenMst?.AgeEnd ?? 0,
+                                                              item.hokenMst?.IsFutansyaNoCheck ?? 0,
+                                                              item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
+                                                              item.hokenMst?.JyukyuCheckDigit ?? 0,
+                                                              item.hokenMst?.IsTokusyuNoCheck ?? 0),
+                                            hokensyaMst ?? new HokensyaMstModel(),
+                                            false,
+                                            false,
+                                            item.RousaiKofuNo ?? string.Empty
                                             );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -823,7 +870,8 @@ namespace Infrastructure.Repositories
                         kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
                         0,
                         item.StartDate,
-                        item.EndDate
+                        item.EndDate,
+                        false
                     );
                     listInsurance.Add(insuranceModel);
                 }
