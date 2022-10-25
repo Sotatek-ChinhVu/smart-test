@@ -53,7 +53,13 @@ public class AccountDueRepository : IAccountDueRepository
                               join kaMst in kaMstList on new { raiinItem.KaId }
                                                         equals new { kaMst.KaId }
                               select ConvertToAccountDueListModel(hpId, ptId, sinDate, seikyu, nyukin, raiinItem, kaMst)
-                         ).ToList();
+                         )
+                         .OrderBy(item => item.SinDate)
+                         .ThenBy(item => item.RaiinNo)
+                         .ThenBy(item => item.SortNo)
+                         .Skip((pageIndex - 1) * pageSize)
+                         .Take(pageSize)
+                         .ToList();
         return accountDueList;
     }
 
@@ -79,11 +85,34 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin.NyukinCmt,
                 seikyu.NewSeikyuGaku,
                 seikyu.NewAdjustFutan,
-                kaMst.KaSname ?? string.Empty
+                kaMst.KaSname ?? string.Empty,
+                nyukin.SortNo
             );
     }
     private int GetMonth(int date)
     {
         return (date / 100);
+    }
+
+    public Dictionary<int, string> GetPaymentMethod(int hpId)
+    {
+        Dictionary<int, string> result = new();
+        var paymentMethodList = _tenantNoTrackingDataContext.PaymentMethodMsts.Where(item => item.HpId == hpId).OrderBy(item => item.SortNo).ToList();
+        foreach (var paymentMethod in paymentMethodList)
+        {
+            result.Add(paymentMethod.PaymentMethodCd, paymentMethod.PayName);
+        }
+        return result;
+    }
+
+    public Dictionary<int, string> GetUketsukeSbt(int hpId)
+    {
+        Dictionary<int, string> result = new();
+        var uketukeList = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
+        foreach (var uketuke in uketukeList)
+        {
+            result.Add(uketuke.KbnId, uketuke.KbnName);
+        }
+        return result;
     }
 }

@@ -210,6 +210,7 @@ using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
 using Domain.Models.AccountDue;
 using UseCase.AccountDue.GetAccountDueList;
+using Interactor.AccountDue;
 
 namespace EmrCloudApi.Configs.Dependency
 {

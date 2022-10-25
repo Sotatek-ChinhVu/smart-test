@@ -6,23 +6,23 @@ public class GetAccountDueListInputData : IInputData<GetAccountDueListOutputData
 {
     public GetAccountDueListInputData(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
     {
-        this.hpId = hpId;
-        this.ptId = ptId;
-        this.sinDate = sinDate;
-        this.isUnpaidChecked = isUnpaidChecked;
-        this.pageIndex = pageIndex;
-        this.pageSize = pageSize;
+        HpId = hpId;
+        PtId = ptId;
+        SinDate = sinDate;
+        IsUnpaidChecked = isUnpaidChecked;
+        PageIndex = pageIndex;
+        PageSize = pageSize;
     }
 
-    public int hpId { get; private set; }
+    public int HpId { get; private set; }
 
-    public long ptId { get; private set; }
+    public long PtId { get; private set; }
 
-    public int sinDate { get; private set; }
+    public int SinDate { get; private set; }
 
-    public bool isUnpaidChecked { get; private set; }
+    public bool IsUnpaidChecked { get; private set; }
 
-    public int pageIndex { get; private set; }
+    public int PageIndex { get; private set; }
 
-    public int pageSize { get; private set; }
+    public int PageSize { get; private set; }
 }

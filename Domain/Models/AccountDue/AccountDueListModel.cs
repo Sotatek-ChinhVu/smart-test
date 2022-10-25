@@ -4,7 +4,7 @@ namespace Domain.Models.AccountDue;
 
 public class AccountDueListModel
 {
-    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int unPaid, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, string hokenPatternName, bool isSeikyuRow)
+    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int unPaid, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, string hokenPatternName, bool isSeikyuRow, int sortNo)
     {
         HpId = hpId;
         PtId = ptId;
@@ -28,9 +28,10 @@ public class AccountDueListModel
         KaDisplay = kaDisplay;
         HokenPatternName = hokenPatternName;
         IsSeikyuRow = isSeikyuRow;
+        SortNo = sortNo;
     }
 
-    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay)
+    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, int sortNo)
     {
         HpId = hpId;
         PtId = ptId;
@@ -54,6 +55,7 @@ public class AccountDueListModel
         KaDisplay = kaDisplay;
         HokenPatternName = string.Empty;
         IsSeikyuRow = true;
+        SortNo = sortNo;
     }
 
     public AccountDueListModel()
@@ -80,6 +82,7 @@ public class AccountDueListModel
         KaDisplay = string.Empty;
         HokenPatternName = string.Empty;
         IsSeikyuRow = false;
+        SortNo = 0;
     }
 
     public AccountDueListModel UpdateAccountDueListModel(int unPaid, string hokenPatternName, bool isSeikyuRow)
@@ -133,6 +136,8 @@ public class AccountDueListModel
     public string HokenPatternName { get; private set; }
 
     public bool IsSeikyuRow { get; private set; }
+
+    public int SortNo { get; private set; }
 
     // properties only display
     public string StateDisplay
