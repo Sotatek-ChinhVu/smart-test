@@ -1671,8 +1671,6 @@ namespace Infrastructure.Repositories
                         #region KohiId1
                         if (hokenPartternUpdate.Kohi1Id == 0 && hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel) // add new
                         {
-
-
                             var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) =>
                             {
                                 dest.CreateId = TempIdentity.UserId;
@@ -2066,7 +2064,7 @@ namespace Infrastructure.Repositories
 
                     hokenInfModel.HokenId = hoKenIndex;
                     hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
-                    _tenantTrackingDataContext.Add(hokenInfModel);
+                    _tenantTrackingDataContext.PtHokenInfs.Add(hokenInfModel);
 
                     if (hokenParttern.HokenInf != null && hokenParttern.HokenInf.ListRousaiTenki.Any())
                     {
@@ -2262,6 +2260,9 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion
+
+            var changes = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added);
+
             return (_tenantTrackingDataContext.SaveChanges() > 0,patientInfo.PtId);
         }
 
