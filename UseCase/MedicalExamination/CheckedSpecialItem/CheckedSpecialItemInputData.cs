@@ -6,7 +6,7 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
 {
     public class CheckedSpecialItemInputData : IInputData<CheckedSpecialItemOutputData>
     {
-        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfItemInputData> odrInfs, List<CheckedOrderModel> checkedOrderModels, KarteItemInputData karteInf, CheckedSpecialItemStatus status, bool enabledInputCheck, bool enabledCommentCheck)
+        public CheckedSpecialItemInputData(int hpId, long ptId, int sinDate, int iBirthDay, int checkAge, long raiinNo, List<OdrInfItemInputData> odrInfs, List<CheckedOrderModel> checkedOrderModels, KarteItemInputData karteInf, bool enabledInputCheck, bool enabledCommentCheck)
         {
             HpId = hpId;
             PtId = ptId;
@@ -15,7 +15,6 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
             CheckAge = checkAge;
             RaiinNo = raiinNo;
             OdrInfs = odrInfs;
-            Status = status;
             EnabledInputCheck = enabledInputCheck;
             EnabledCommentCheck = enabledCommentCheck;
             CheckedOrderModels = checkedOrderModels;
@@ -45,7 +44,5 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
         public List<CheckedOrderModel> CheckedOrderModels { get; private set; }
 
         public KarteItemInputData KarteInf { get; private set; }
-
-        public CheckedSpecialItemStatus Status { get; private set; }
     }
 }

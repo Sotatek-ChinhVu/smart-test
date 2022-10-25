@@ -26,7 +26,7 @@ namespace EmrCloudApi.Tenant.Requests.MedicalExamination
 
         public List<OdrInfItemInputData> OdrInfs { get; set; } = new();
 
-        public List<CheckedOrderModel> CheckedOrderModels { get; set; } = new();
+        public List<CheckedOrderItem> CheckedOrderItems { get; set; } = new();
 
         public KarteItemInputData KarteInf { get; set; } = new();
 

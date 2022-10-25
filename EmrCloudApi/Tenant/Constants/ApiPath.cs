@@ -85,5 +85,8 @@
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
+
+        // Check before save medical
+        public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
     }
 }
