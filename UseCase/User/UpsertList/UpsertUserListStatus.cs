@@ -11,7 +11,7 @@ public enum UpsertUserListStatus
     UserListKaIdNoExist,
     UserListJobCdNoExist,
     UserListIdNoExist,
-    UserListInvalidExistedId,
+    UserListInvalidNoExistedId,
     UserListInvalidExistedLoginId,
     UserListInvalidExistedUserId,
     InvalidHpId,

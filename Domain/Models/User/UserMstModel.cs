@@ -65,7 +65,7 @@ namespace Domain.Models.User
                 return ValidationStatus.InvalidId;
             }
 
-            if (UserId < 0)
+            if (UserId <= 0)
             {
                 return ValidationStatus.InvalidUserId;
             }
@@ -119,11 +119,11 @@ namespace Domain.Models.User
             {
                 return ValidationStatus.InvalidSortNo;
             }
-            if (StartDate < 0)
+            if (StartDate < 0 && StartDate <= EndDate)
             {
                 return ValidationStatus.InvalidStartDate;
             }
-            if (EndDate < 0)
+            if (EndDate <= 0)
             {
                 return ValidationStatus.InvalidEndDate;
             }

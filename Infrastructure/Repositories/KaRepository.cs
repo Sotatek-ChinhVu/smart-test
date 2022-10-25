@@ -16,12 +16,12 @@ public class KaRepository : IKaRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public bool CheckKaId(int KaId)
+    public bool CheckKaId(int kaId)
     {
-        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == KaId && k.IsDeleted == 0);
+        var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
-    public bool CheckKaId0(List<int> kaIds)
+    public bool CheckKaId(List<int> kaIds)
     {
         var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
         return kaIds.Count == countKaMsts;

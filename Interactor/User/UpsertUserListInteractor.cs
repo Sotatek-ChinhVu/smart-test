@@ -81,9 +81,9 @@ namespace Interactor.User
                     }
                 }
 
-                if(_userRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
+                if(!_userRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
                 {
-                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedId);
+                    return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidNoExistedId);
                 }    
 
                 if (_userRepository.CheckExistedUserIdCreate(datas.Where(u => u.Id == 0).Select(u => u.UserId).ToList()))
@@ -106,7 +106,7 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListInvalidExistedLoginId);
                 }
 
-                if (!_kaRepository.CheckKaId0(datas.Select(u => u.KaId).Distinct().ToList()))
+                if (!_kaRepository.CheckKaId(datas.Select(u => u.KaId).Distinct().ToList()))
                 {
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListKaIdNoExist);
                 }
@@ -171,8 +171,8 @@ namespace Interactor.User
                 return UpsertUserListStatus.UserListJobCdNoExist;
             if (status == ValidationStatus.InvalidExistedUserId)
                 return UpsertUserListStatus.UserListInvalidExistedUserId;
-            if (status == ValidationStatus.InvalidExistedId)
-                return UpsertUserListStatus.UserListInvalidExistedId;
+            if (status == ValidationStatus.InvalidNoExistedId)
+                return UpsertUserListStatus.UserListInvalidNoExistedId;
             if (status == ValidationStatus.UserListInputData)
                 return UpsertUserListStatus.UserListExistedInputData;
 

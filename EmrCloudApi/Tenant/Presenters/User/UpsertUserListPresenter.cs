@@ -25,7 +25,6 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.DuplicateId => ResponseMessage.DuplicateId,
             UpsertUserListStatus.ExistedId => ResponseMessage.ExistedId,
             UpsertUserListStatus.UserListInputNoData => ResponseMessage.UpsertInputNoData,
-            UpsertUserListStatus.UserListUpdateNoSuccess => ResponseMessage.UpsertUpdateNoSuccess,
             UpsertUserListStatus.UserListKaIdNoExist => ResponseMessage.UpsertKaIdNoExist,
             UpsertUserListStatus.UserListJobCdNoExist => ResponseMessage.UpsertJobCdNoExist,
             UpsertUserListStatus.UserListIdNoExist => ResponseMessage.UpsertIdNoExist,
@@ -48,7 +47,7 @@ namespace EmrCloudApi.Tenant.Presenters.User
             UpsertUserListStatus.InvalidDrName => ResponseMessage.UpsertInvalidDrName,
             UpsertUserListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             UpsertUserListStatus.UserListInvalidExistedUserId => ResponseMessage.UpsertInvalidExistedUserId,
-            UpsertUserListStatus.UserListInvalidExistedId => ResponseMessage.UpsertInvalidExistedId,
+            UpsertUserListStatus.UserListInvalidNoExistedId => ResponseMessage.UpsertInvalidNoExistedId,
             UpsertUserListStatus.UserListExistedInputData => ResponseMessage.UserListExistedInputData,
             _ => string.Empty
         };

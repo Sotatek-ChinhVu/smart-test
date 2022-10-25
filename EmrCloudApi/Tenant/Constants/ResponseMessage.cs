@@ -91,7 +91,7 @@
         //User controller
         public static readonly string UpsertInputNoData = "Input NoData";
         public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
-        public static readonly string UpsertInvalidExistedId = "Existed Id";
+        public static readonly string UpsertInvalidNoExistedId = "No Exist Id";
         public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
         public static readonly string UpsertInvalidId = "Invalid Id";
         public static readonly string UpsertInvalidUserId = "Invalid UserId";
@@ -113,7 +113,6 @@
         public static readonly string UpsertKaIdNoExist = "No Exist KaId";
         public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
         public static readonly string UpsertIdNoExist = "No Exist Id";
-        public static readonly string UpsertUpdateNoSuccess = " UpsertUpdateNoSuccess";
         public static readonly string UserListExistedInputData = "UserListExistedInputData";
 
 

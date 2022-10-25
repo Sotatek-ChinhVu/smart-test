@@ -20,8 +20,8 @@ namespace Infrastructure.Repositories
         }
         public bool CheckExistedId(List<long> ids)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => ids.Contains(u.Id));
-            return anyUsertMsts;
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Count(u => ids.Contains(u.Id));
+            return ids.Count == anyUsertMsts;
         }
 
         public bool CheckExistedUserId(int userId)
