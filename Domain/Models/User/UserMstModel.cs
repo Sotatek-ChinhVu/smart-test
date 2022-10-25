@@ -119,7 +119,7 @@ namespace Domain.Models.User
             {
                 return ValidationStatus.InvalidSortNo;
             }
-            if (StartDate < 0 && StartDate <= EndDate)
+            if (StartDate < 0 || StartDate > EndDate)
             {
                 return ValidationStatus.InvalidStartDate;
             }
