@@ -6,13 +6,13 @@ namespace UseCase.UsageTreeSet.GetTree
     {
         public int HpId { get; private set; }
         public int SinDate { get; private set; }
-        public int SetUsageKbn { get; private set; }
+        public int KouiKbn { get; private set; }
 
-        public GetUsageTreeSetInputData(int hpId, int sinDate, int setUsageKbn)
+        public GetUsageTreeSetInputData(int hpId, int sinDate, int kouiKbn)
         {
             HpId = hpId;
             SinDate = sinDate;
-            SetUsageKbn = setUsageKbn;
+            KouiKbn = kouiKbn;
         }
     }
 }
