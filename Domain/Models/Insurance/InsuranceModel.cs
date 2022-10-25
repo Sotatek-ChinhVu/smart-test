@@ -142,6 +142,34 @@ namespace Domain.Models.InsuranceInfor
         public bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public string PatternRate => GetHokenRate();
+
+        public bool IsShaho
+        {
+            // not nashi
+            get => HokenKbn == 1 && HokenInf.Houbetu != HokenConstant.HOUBETU_NASHI;
+        }
+
+        public bool IsKokuho
+        {
+            get => HokenKbn == 2;
+        }
+
+        public bool IsNoHoken
+        {
+            get
+            {
+                if (HokenInf != null)
+                {
+                    return HokenInf.HokenMst.HokenSbtKbn == 0;
+                }
+                return HokenKbn == 1 && HokenInf?.Houbetu == HokenConstant.HOUBETU_NASHI;
+            }
+        }
+
+        public bool IsJibaiOrRosai
+        {
+            get { return HokenKbn >= 11 && HokenKbn <= 14; }
+        }
         #endregion
 
         #region Function

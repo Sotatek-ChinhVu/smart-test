@@ -157,6 +157,7 @@ using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
 using UseCase.PatientInfor.Save;
+using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
@@ -205,6 +206,8 @@ using UseCase.VisitingList.SaveSettings;
 using Interactor.ExportPDF;
 using DevExpress.Implementation;
 using DevExpress.Export;
+using UseCase.Reception.GetLastRaiinInfs;
+using UseCase.Reception.GetReceptionDefault;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -333,6 +336,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetPatientRaiinKubunInputData, GetPatientRaiinKubunInteractor>();
             busBuilder.RegisterUseCase<GetReceptionCommentInputData, GetReceptionCommentInteractor>();
             busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
+            busBuilder.RegisterUseCase<GetLastRaiinInfsInputData, GetLastRaiinInfsInteractor>();
+            busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();
@@ -357,6 +362,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidateRousaiJibaiInputData, ValidateRousaiJibaiInteractor>();
             busBuilder.RegisterUseCase<ValidKohiInputData, ValidateKohiInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceMasterLinkageInputData, GetInsuranceMasterLinkageInteractor>();
+            busBuilder.RegisterUseCase<SaveInsuranceMasterLinkageInputData, SaveInsuranceMasterLinkageInteractor>();
             busBuilder.RegisterUseCase<GetPtKyuseiInfInputData, GetPtKyuseiInfInteractor>();
             busBuilder.RegisterUseCase<SavePatientInfoInputData, SavePatientInfoInteractor>();
             busBuilder.RegisterUseCase<DeletePatientInfoInputData, DeletePatientInfoInteractor>();

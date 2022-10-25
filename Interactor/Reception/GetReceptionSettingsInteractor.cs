@@ -65,6 +65,8 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
         var receptionTimeColorConfigs = systemConfigs
                 .Where(c => c.GrpCd == SystemConfGroupCodes.ReceptionTimeColor)
                 .Select(c => new ReceptionTimeColorConfig(c.GrpEdaNo, c.Param))
+                .OrderBy(c => c.Duration)
+                .ThenBy(c => c.Color)
                 .ToList();
 
         var receptionStatusColorConfigs = systemConfigs
@@ -74,7 +76,7 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
 
         receptionStatusColorConfigs = StandardizeReceptionStatusColorConfigs(receptionStatusColorConfigs);
 
-        return new VisitingListSettingModel(fontName, fontSize, autoRefresh, mouseWheel, kanFocus, selectToDoSetting, receptionTimeColorConfigs, receptionStatusColorConfigs);
+        return new VisitingListSettingModel(receptionTimeColorConfigs, receptionStatusColorConfigs);
     }
 
     private List<ReceptionStatusColorConfig> StandardizeReceptionStatusColorConfigs(List<ReceptionStatusColorConfig> configs)

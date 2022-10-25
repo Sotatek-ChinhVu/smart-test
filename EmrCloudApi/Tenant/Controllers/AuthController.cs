@@ -53,7 +53,7 @@ public class AuthController : ControllerBase
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var token = CreateToken(claims);
-        var successResult = GetSuccessResult(token);
+        var successResult = GetSuccessResult(token, user.UserId);
         return Ok(successResult);
 
         #region Helper methods
@@ -62,17 +62,17 @@ public class AuthController : ControllerBase
         {
             return new Response<ExchangeTokenResponse>
             {
-                Data = new ExchangeTokenResponse(string.Empty),
+                Data = new ExchangeTokenResponse(string.Empty, 0),
                 Status = 0,
                 Message = errorMessage
             };
         }
 
-        Response<ExchangeTokenResponse> GetSuccessResult(string token)
+        Response<ExchangeTokenResponse> GetSuccessResult(string token, int userId)
         {
             return new Response<ExchangeTokenResponse>
             {
-                Data = new ExchangeTokenResponse(token),
+                Data = new ExchangeTokenResponse(token, userId),
                 Status = 1,
                 Message = ResponseMessage.Success
             };
