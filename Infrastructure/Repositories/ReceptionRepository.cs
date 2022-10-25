@@ -6,6 +6,7 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
@@ -374,9 +375,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool? isGetAccountDue)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue ?? false);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -416,37 +417,37 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
-            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p => 
-                                                                        p.HpId == hpId 
-                                                                        && p.PtId == ptId 
-                                                                        && p.IsDeleted == DeleteTypes.None 
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+                                                                        p.HpId == hpId
+                                                                        && p.PtId == ptId
+                                                                        && p.IsDeleted == DeleteTypes.None
                                                                         && p.SinDate < sinDate && p.Status >= RaiinState.TempSave);
-                return result.Select(r => new ReceptionModel(
-                        r.HpId,
-                        r.PtId,
-                        r.SinDate,
-                        r.RaiinNo,
-                        r.OyaRaiinNo,
-                        r.HokenPid,
-                        r.SanteiKbn,
-                        r.Status,
-                        r.IsYoyaku,
-                        r.YoyakuTime ?? String.Empty,
-                        r.YoyakuId,
-                        r.UketukeSbt,
-                        r.UketukeTime ?? String.Empty,
-                        r.UketukeId,
-                        r.UketukeNo,
-                        r.SinStartTime ?? string.Empty,
-                        r.SinEndTime ?? String.Empty,
-                        r.KaikeiTime ?? String.Empty,
-                        r.KaikeiId,
-                        r.KaId,
-                        r.TantoId,
-                        r.SyosaisinKbn,
-                        r.JikanKbn,
-                        string.Empty
-                   )).ToList();
+            return result.Select(r => new ReceptionModel(
+                    r.HpId,
+                    r.PtId,
+                    r.SinDate,
+                    r.RaiinNo,
+                    r.OyaRaiinNo,
+                    r.HokenPid,
+                    r.SanteiKbn,
+                    r.Status,
+                    r.IsYoyaku,
+                    r.YoyakuTime ?? String.Empty,
+                    r.YoyakuId,
+                    r.UketukeSbt,
+                    r.UketukeTime ?? String.Empty,
+                    r.UketukeId,
+                    r.UketukeNo,
+                    r.SinStartTime ?? string.Empty,
+                    r.SinEndTime ?? String.Empty,
+                    r.KaikeiTime ?? String.Empty,
+                    r.KaikeiId,
+                    r.KaId,
+                    r.TantoId,
+                    r.SyosaisinKbn,
+                    r.JikanKbn,
+                    string.Empty
+               )).ToList();
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, List<long> raiinNos)
@@ -489,7 +490,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -516,7 +517,11 @@ namespace Infrastructure.Repositories
             var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
-            var filteredRaiinInfs = raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            var filteredRaiinInfs = raiinInfs;
+            if (!isGetAccountDue)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            }
             if (raiinNo != CommonConstants.InvalidId)
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);

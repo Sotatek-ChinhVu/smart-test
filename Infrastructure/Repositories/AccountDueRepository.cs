@@ -26,67 +26,69 @@ public class AccountDueRepository : IAccountDueRepository
 
         if (isUnpaidChecked && seikyuList.Count > 0)
         {
-            seikyuList = seikyuList?.Where(item => item.NyukinKbn == 1).ToList();
+            seikyuList = seikyuList?.Where(item => item.NyukinKbn == 1 || !new List<int> { 1, 2, 3 }.Contains(item.NyukinKbn)).ToList();
         }
 
         // Right table
         var nyukinList = _tenantNoTrackingDataContext.SyunoNyukin
                                .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
-                                                   && item.IsDeleted == 0);
+                                                   && item.IsDeleted == 0).ToList();
 
         var raiinList = _tenantNoTrackingDataContext.RaiinInfs
                         .Where(item => item.HpId == hpId
                                             && item.PtId == ptId
                                             && item.IsDeleted == DeleteTypes.None
-                                            && item.Status > RaiinState.TempSave);
+                                            && item.Status > RaiinState.TempSave).ToList();
 
         var kaMstList = _tenantNoTrackingDataContext.KaMsts
                         .Where(item => item.HpId == hpId
-                                            && item.IsDeleted == 0);
+                                            && item.IsDeleted == 0).ToList();
 
         var accountDueList = (from seikyu in seikyuList
                               join nyukin in nyukinList on new { seikyu.HpId, seikyu.PtId, seikyu.SinDate, seikyu.RaiinNo }
-                                                        equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo }
+                                                          equals new { nyukin.HpId, nyukin.PtId, nyukin.SinDate, nyukin.RaiinNo } into nyukinLeft
+                              from nyukinItem in nyukinLeft.DefaultIfEmpty()
                               join raiinItem in raiinList on new { seikyu.HpId, seikyu.PtId, seikyu.RaiinNo }
-                                                        equals new { raiinItem.HpId, raiinItem.PtId, raiinItem.RaiinNo }
+                                                          equals new { raiinItem.HpId, raiinItem.PtId, raiinItem.RaiinNo }
                               join kaMst in kaMstList on new { raiinItem.KaId }
-                                                        equals new { kaMst.KaId }
-                              select ConvertToAccountDueListModel(hpId, ptId, sinDate, seikyu, nyukin, raiinItem, kaMst)
+                                                          equals new { kaMst.KaId } into kaMstLeft
+                              from kaMstItem in kaMstLeft.DefaultIfEmpty()
+                              select ConvertToAccountDueListModel(hpId, ptId, seikyu, nyukinItem, raiinItem, kaMstItem)
                          )
-                         .OrderBy(item => item.SinDate)
-                         .ThenBy(item => item.RaiinNo)
-                         .ThenBy(item => item.SortNo)
+                         .OrderByDescending(item => item.SinDate)
+                         .ThenByDescending(item => item.RaiinNo)
+                         .ThenByDescending(item => item.SortNo)
                          .Skip((pageIndex - 1) * pageSize)
                          .Take(pageSize)
                          .ToList();
         return accountDueList;
     }
 
-    private AccountDueListModel ConvertToAccountDueListModel(int hpId, long ptId, int sinDate, SyunoSeikyu seikyu, SyunoNyukin nyukin, RaiinInf raiinItem, KaMst kaMst)
+    private AccountDueListModel ConvertToAccountDueListModel(int hpId, long ptId, SyunoSeikyu seikyu, SyunoNyukin nyukin, RaiinInf raiinItem, KaMst kaMst)
     {
         return new AccountDueListModel
             (
                 hpId,
                 ptId,
-                sinDate,
-                GetMonth(sinDate),
+                seikyu.SinDate,
+                GetMonth(seikyu.SinDate),
                 seikyu.RaiinNo,
                 raiinItem.HokenPid,
                 raiinItem.OyaRaiinNo,
                 seikyu.NyukinKbn,
                 seikyu.SeikyuTensu,
                 seikyu.SeikyuGaku,
-                nyukin.AdjustFutan,
-                nyukin.NyukinGaku,
-                nyukin.PaymentMethodCd,
-                nyukin.NyukinDate,
-                nyukin.UketukeSbt,
-                nyukin.NyukinCmt,
+                nyukin != null ? nyukin.AdjustFutan : 0,
+                nyukin != null ? nyukin.NyukinGaku : 0,
+                nyukin != null ? nyukin.PaymentMethodCd : 0,
+                nyukin != null ? nyukin.NyukinDate : 0,
+                nyukin != null ? nyukin.UketukeSbt : 0,
+                nyukin != null ? nyukin.NyukinCmt ?? string.Empty : string.Empty,
                 seikyu.NewSeikyuGaku,
                 seikyu.NewAdjustFutan,
                 kaMst.KaSname ?? string.Empty,
-                nyukin.SortNo
+                nyukin != null ? nyukin.SortNo : 0
             );
     }
     private int GetMonth(int date)

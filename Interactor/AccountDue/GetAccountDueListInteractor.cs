@@ -45,7 +45,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             var uketsukeSbt = _accountDueRepository.GetUketsukeSbt(inputData.HpId);
             var paymentMethod = _accountDueRepository.GetPaymentMethod(inputData.HpId);
             var listAccountDues = _accountDueRepository.GetAccountDueList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsUnpaidChecked, inputData.PageIndex, inputData.PageSize);
-            var hokenPatternList = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, -1, inputData.PtId);
+            var hokenPatternList = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, -1, inputData.PtId, true);
 
             // Get HokenPattern List
             Dictionary<int, string> hokenPatternDict = new Dictionary<int, string>();
@@ -71,6 +71,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 if (model.NyukinKbn == 2 || model.NyukinKbn == 0)
                 {
                     tempModel = model;
+                    model.UpdateAccountDueListModel(unPaid, hokenPatternName, isSeikyuRow);
                     continue;
                 }
                 if (tempModel.RaiinNo == model.RaiinNo)
@@ -86,6 +87,10 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                 tempModel = model;
             }
 
+            listAccountDues = listAccountDues
+                                             .OrderBy(item => item.SinDate)
+                                             .ThenBy(item => item.RaiinNo)
+                                             .ThenBy(item => item.SortNo).ToList();
 
             var result = new AccountDueModel(listAccountDues, paymentMethod, uketsukeSbt);
             return new GetAccountDueListOutputData(result, GetAccountDueListStatus.Successed);
