@@ -33,28 +33,43 @@ namespace Domain.Models.User
         }
 
         public long Id { get; private set; }
+
         public int UserId { get; private set; }
+
         public int JobCd { get; private set; }
+
         public int ManagerKbn { get; private set; }
+
         public int KaId { get; private set; }
+
         public string KanaName { get; private set; }
+
         public string Name { get; private set; }
+
         public string Sname { get; private set; }
+
         public string LoginId { get; private set; }
+
         public string LoginPass { get; private set; }
+
         public string MayakuLicenseNo { get; private set; }
+
         public int StartDate { get; private set; }
+
         public int EndDate { get; private set; }
+
         public int SortNo { get; private set; }
+
         public int IsDeleted { get; private set; }
+
         public string RenkeiCd1 { get; private set; }
+
         public string DrName { get; private set; }
+
         public int HpId { get; private set; }
 
         public ValidationStatus Validation()
         {
-            #region common
-
             if (HpId <= 0)
             {
                 return ValidationStatus.InvalidHpId;
@@ -119,19 +134,21 @@ namespace Domain.Models.User
             {
                 return ValidationStatus.InvalidSortNo;
             }
+
             if (StartDate < 0 || StartDate > EndDate)
             {
                 return ValidationStatus.InvalidStartDate;
             }
+
             if (EndDate <= 0)
             {
                 return ValidationStatus.InvalidEndDate;
             }
+
             if (IsDeleted != 0 && IsDeleted != 1)
             {
                 return ValidationStatus.InvalidIsDeleted;
             }
-            #endregion
 
             return ValidationStatus.Valid;
         }
