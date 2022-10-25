@@ -1,7 +1,6 @@
 ﻿using Domain.Models.AccountDue;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
-using Domain.Models.User;
 using UseCase.AccountDue.GetAccountDueList;
 
 namespace Interactor.AccountDue;
@@ -46,7 +45,44 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             var uketsukeSbt = _accountDueRepository.GetUketsukeSbt(inputData.HpId);
             var paymentMethod = _accountDueRepository.GetPaymentMethod(inputData.HpId);
             var listAccountDues = _accountDueRepository.GetAccountDueList(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.IsUnpaidChecked, inputData.PageIndex, inputData.PageSize);
-            
+            var hokenPatternList = _receptionRepository.GetList(inputData.HpId, inputData.SinDate, -1, inputData.PtId);
+
+            // Get HokenPattern List
+            Dictionary<int, string> hokenPatternDict = new Dictionary<int, string>();
+            foreach (var model in hokenPatternList)
+            {
+                if (!hokenPatternDict.ContainsKey(model.HokenPid))
+                {
+                    hokenPatternDict.Add(model.HokenPid, model.HokenPatternName);
+                }
+            }
+
+            // Calculate Unpaid
+            AccountDueListModel tempModel = new();
+            foreach (AccountDueListModel model in listAccountDues)
+            {
+                if (hokenPatternDict.ContainsKey(model.HokenPid))
+                {
+                    model.HokenPatternName = hokenPatternDict[model.HokenPid];
+                }
+                if (model.NyukinKbn == 2 || model.NyukinKbn == 0)
+                {
+                    tempModel = model;
+                    continue;
+                }
+                if (tempModel.RaiinNo == model.RaiinNo)
+                {
+                    model.UnPaid = tempModel.UnPaid - model.NyukinGaku - model.AdjustFutan;
+                    model.IsSeikyuRow = false;
+                }
+                else
+                {
+                    model.UnPaid = model.SeikyuGaku - model.NyukinGaku - model.AdjustFutan;
+                }
+                tempModel = model;
+            }
+
+
             var result = new AccountDueModel(listAccountDues, paymentMethod, uketsukeSbt);
             return new GetAccountDueListOutputData(result, GetAccountDueListStatus.Successed);
         }
