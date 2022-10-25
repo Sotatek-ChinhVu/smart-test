@@ -179,7 +179,7 @@ namespace Infrastructure.Repositories
                         {
                             var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId
                                                                                 && item.KbnCd == kouiItem.KbnCd
-                                                                                && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN) ?? new RaiinListInf();
+                                                                                && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf != null)
                             {
                                 _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
@@ -201,7 +201,7 @@ namespace Infrastructure.Repositories
                         {
                             var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId
                                                                            && item.KbnCd == raiinListItem.KbnCd
-                                                                           && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                                                                           && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf != null)
                             {
                                 _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
@@ -338,13 +338,14 @@ namespace Infrastructure.Repositories
 
                     if (ordInf == null)
                     {
+                        rpNoMax++;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
-                            RpNo = rpNoMax++,
+                            RpNo = rpNoMax,
                             RpEdaNo = 1,
                             Id = 0,
                             HokenPid = item.HokenPid,

@@ -526,11 +526,11 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidHpId;
             }
-            if (odrInfDetail.RpNo <= 0)
+            if (odrInfDetail.RpNo < 0)
             {
                 return OrdInfValidationStatus.InvalidRpNo;
             }
-            if (odrInfDetail.RpEdaNo <= 0)
+            if (odrInfDetail.RpEdaNo < 0)
             {
                 return OrdInfValidationStatus.InvalidRpEdaNo;
             }
