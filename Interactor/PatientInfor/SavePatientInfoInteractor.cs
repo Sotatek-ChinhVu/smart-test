@@ -38,7 +38,7 @@ namespace Interactor.PatientInfor
                 else
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed,0);
             }
-            catch
+            catch(Exception ex)
             {
                 return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
