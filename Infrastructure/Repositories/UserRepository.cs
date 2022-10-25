@@ -43,13 +43,13 @@ namespace Infrastructure.Repositories
 
         public bool CheckExistedLoginIdCreate(List<string> loginIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId) && u.IsDeleted != 1);
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
         public bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds)
         {
-            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId) && !ids.Contains(u.Id) && u.IsDeleted != 1);
+            var anyUsertMsts = _tenantNoTrackingDataContext.UserMsts.Any(u => loginIds.Contains(u.LoginId ?? string.Empty) && !ids.Contains(u.Id) && u.IsDeleted != 1);
             return anyUsertMsts;
         }
 
