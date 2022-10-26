@@ -1,4 +1,6 @@
-﻿namespace Domain.Types
+﻿using Helper.Constants;
+
+namespace Domain.Types
 {
     public interface IOdrInfDetailModel
     {
@@ -106,6 +108,7 @@
         bool IsShohoBiko { get; }
 
         bool IsShohoComment { get; }
+        ReleasedDrugType ReleasedType { get; }
         #endregion
     }
 }

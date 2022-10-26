@@ -880,7 +880,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             return checkedResult;
         }
 
-        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode, List<PtKioReki> listPtKioReki)
+        public List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode, List<PtKioRekiModel> listPtKioReki)
         {
             List<string> listByomeiCd = new List<string>();
             if (listPtKioReki != null)

@@ -1,5 +1,6 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Types;
+using EmrCalculateApi.Implementation.Finder;
 using System.Text;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services

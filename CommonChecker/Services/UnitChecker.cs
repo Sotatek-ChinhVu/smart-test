@@ -13,6 +13,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         public IHandler<TOdrInf, TOdrDetail> Handler;
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder;
+      //  public IMasterFinder MasterFinder;
         public int HpID;
         public long PtID;
         public int Sinday;
