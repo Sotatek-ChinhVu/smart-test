@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Helper.Common;
-using Helper.Constant;
 using Helper.Constants;
 using Helper.Extension;
 using System.Text.Json.Serialization;
@@ -121,6 +120,43 @@ namespace Domain.Models.InsuranceInfor
         public KohiInfModel Kohi3 { get; private set; }
 
         public KohiInfModel Kohi4 { get; private set; }
+
+        public int HoubetuPoint(List<string> houbetuList)
+        {
+            int point = 0;
+            if (!IsEmptyHoken && !HokenInf.IsNoHoken) point++;
+            if (!IsEmptyKohi1 && houbetuList.Contains(Kohi1.Houbetu)) point++;
+            if (!IsEmptyKohi2 && houbetuList.Contains(Kohi2.Houbetu)) point++;
+            if (!IsEmptyKohi3 && houbetuList.Contains(Kohi3.Houbetu)) point++;
+            if (!IsEmptyKohi4 && houbetuList.Contains(Kohi4.Houbetu)) point++;
+            return point;
+        }
+
+        public int KohiCount
+        {
+            get
+            {
+                int count = 0;
+                if (!IsEmptyKohi1) count++;
+                if (!IsEmptyKohi2) count++;
+                if (!IsEmptyKohi3) count++;
+                if (!IsEmptyKohi4) count++;
+                return count;
+            }
+        }
+
+        public List<KohiInfModel> BuntenKohis
+        {
+            get
+            {
+                var result = new List<KohiInfModel>();
+                if (!IsEmptyKohi1 && Kohi1.HokenSbtKbn == 6) result.Add(Kohi1);
+                if (!IsEmptyKohi2 && Kohi2.HokenSbtKbn == 6) result.Add(Kohi2);
+                if (!IsEmptyKohi3 && Kohi3.HokenSbtKbn == 6) result.Add(Kohi3);
+                if (!IsEmptyKohi4 && Kohi4.HokenSbtKbn == 6) result.Add(Kohi4);
+                return result;
+            }
+        }
 
         #region Expose properties
 

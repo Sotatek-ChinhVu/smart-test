@@ -78,7 +78,7 @@
         public static readonly string UpsertInvalidUserId = "Invalid UserId";
         public static readonly string UpsertInvalidJobCd = "Invalid JobCd";
         public static readonly string UpsertInvalidManagerKbn = "Invalid ManagerKbn";
-        public static readonly string UpsertInvalidKaId = "Invalid KaId"; 
+        public static readonly string UpsertInvalidKaId = "Invalid KaId";
         public static readonly string UpsertInvalidKanaName = "Invalid KanaName";
         public static readonly string UpsertInvalidName = "Invalid Name";
         public static readonly string UpsertInvalidSname = "Invalid Sname";
@@ -114,6 +114,8 @@
         public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
         public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
         public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
+        public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
+        public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
