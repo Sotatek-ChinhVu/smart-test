@@ -10,7 +10,7 @@ namespace Domain.Models.Reception
 
         ReceptionModel Get(long raiinNo);
 
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool? isGetAccountDue);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue);
 
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
         

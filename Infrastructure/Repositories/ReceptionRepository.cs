@@ -375,9 +375,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool? isGetAccountDue)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue ?? false);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)

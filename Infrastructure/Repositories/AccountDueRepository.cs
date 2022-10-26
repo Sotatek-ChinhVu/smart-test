@@ -17,7 +17,7 @@ public class AccountDueRepository : IAccountDueRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public List<AccountDueListModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
+    public List<AccountDueItemModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize)
     {
         // Left table
         var seikyuList = _tenantNoTrackingDataContext.SyunoSeikyus
@@ -65,9 +65,9 @@ public class AccountDueRepository : IAccountDueRepository
         return accountDueList;
     }
 
-    private AccountDueListModel ConvertToAccountDueListModel(int hpId, long ptId, SyunoSeikyu seikyu, SyunoNyukin nyukin, RaiinInf raiinItem, KaMst kaMst)
+    private AccountDueItemModel ConvertToAccountDueListModel(int hpId, long ptId, SyunoSeikyu seikyu, SyunoNyukin nyukin, RaiinInf raiinItem, KaMst kaMst)
     {
-        return new AccountDueListModel
+        return new AccountDueItemModel
             (
                 hpId,
                 ptId,
