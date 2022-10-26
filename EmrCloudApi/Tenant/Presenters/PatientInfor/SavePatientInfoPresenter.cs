@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
 
         public void Complete(SavePatientInfoOutputData outputData)
         {
-            Result.Data = new SavePatientInfoResponse(outputData.Status,outputData.PtID);
+            Result.Data = new SavePatientInfoResponse(outputData.Status, outputData.PtID);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
             if (outputData.Status == SavePatientInfoStatus.Failed)
