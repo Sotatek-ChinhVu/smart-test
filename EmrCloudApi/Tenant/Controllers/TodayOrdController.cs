@@ -25,7 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertTodayOdrResponse>> Upsert([FromBody] UpsertTodayOdrRequest request)
+        public Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
@@ -101,11 +101,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpsertTodayOdrPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<UpsertTodayOdrResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<UpsertTodayOdrResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.Validate)]
-        public ActionResult<Response<ValidationTodayOrdResponse>> Validate([FromBody] ValidationTodayOrdRequest request)
+        public Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
@@ -190,11 +190,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new ValidationTodayOrdPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result));
         }
 
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public ActionResult<Response<GetDefaultSelectPatternResponse>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        public Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                             request.HpId,
@@ -208,7 +208,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetDefaultSelectPatternPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result));
         }
     }
 }

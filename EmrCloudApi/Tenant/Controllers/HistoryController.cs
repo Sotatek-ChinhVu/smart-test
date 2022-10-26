@@ -20,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
+        public Task<ActionResult<Response<GetMedicalExaminationHistoryResponse>>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
             var input = new GetMedicalExaminationHistoryInputData(request.PtId, request.HpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, request.UserId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);
             var output = _bus.Handle(input);
@@ -28,7 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetMedicalExaminationHistoryPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetMedicalExaminationHistoryResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetMedicalExaminationHistoryResponse>>(presenter.Result));
         }
     }
 }
