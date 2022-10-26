@@ -21,7 +21,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetKarteFilterMstResponse>> GetList()
+        public Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
         {
             var input = new GetKarteFilterInputData();
             var output = _bus.Handle(input);
@@ -29,11 +29,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetKarteFilterMstPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.SaveList)]
-        public ActionResult<Response<SaveKarteFilterMstResponse>> SaveList([FromBody] SaveKarteFilterMstRequest request)
+        public Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
             var input = new SaveKarteFilterInputData(request.KarteFilters);
             var output = _bus.Handle(input);
@@ -41,7 +41,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveKarteFilterMstPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result));
         }
     }
 }

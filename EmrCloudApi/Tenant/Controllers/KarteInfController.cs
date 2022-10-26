@@ -20,7 +20,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetListKarteInfResponse>> GetList([FromQuery] GetListKarteInfRequest request)
+        public Task<ActionResult<Response<GetListKarteInfResponse>>> GetList([FromQuery] GetListKarteInfRequest request)
         {
             var input = new GetListKarteInfInputData(request.PtId, request.RaiinNo, request.SinDate, request.IsDeleted);
             var output = _bus.Handle(input);
@@ -28,7 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetListKarteInfPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetListKarteInfResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetListKarteInfResponse>>(presenter.Result));
         }
     }
 }

@@ -32,7 +32,7 @@ public class RaiinFilterController : ControllerBase
     }
 
     [HttpPost(ApiPath.SaveList + "Mst")]
-    public async Task <ActionResult<Response<SaveRaiinFilterMstListResponse>>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
+    public ActionResult<Response<SaveRaiinFilterMstListResponse>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
     {
         var input = new SaveRaiinFilterMstListInputData(req.FilterMsts);
         var output = _bus.Handle(input);

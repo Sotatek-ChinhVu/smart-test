@@ -30,7 +30,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.GetDosageDrugList)]
-        public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
+        public Task<ActionResult<Response<GetDosageDrugListResponse>>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
         {
             var input = new GetDosageDrugListInputData(request.YjCds);
             var output = _bus.Handle(input);
@@ -38,11 +38,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetDosageDrugListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetDosageDrugListResponse>>(presenter.Result));
         }
 
         [HttpGet(ApiPath.GetFoodAlrgy)]
-        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
+        public Task<ActionResult<Response<GetFoodAlrgyMasterDataResponse>>> GetFoodAlrgy()
         {
             var input = new GetFoodAlrgyInputData();
             var output = _bus.Handle(input);
@@ -50,11 +50,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new FoodAlrgyMasterDataPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetFoodAlrgyMasterDataResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.SearchOTC)]
-        public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
+        public Task<ActionResult<Response<SearchOTCResponse>>> SearchOTC([FromBody] SearchOTCRequest request)
         {
             var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
@@ -62,11 +62,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SearchOTCPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<SearchOTCResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<SearchOTCResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.SearchSupplement)]
-        public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
+        public Task<ActionResult<Response<SearchSupplementResponse>>> SearchSupplement([FromBody] SearchSupplementRequest request)
         {
             var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
@@ -74,7 +74,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SearchSupplementPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<SearchSupplementResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<SearchSupplementResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.SearchTenItem)]
@@ -98,7 +98,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.DiseaseSearch)]
-        public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
+        public Task<ActionResult<Response<DiseaseSearchResponse>>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
             var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.Keyword, request.PageIndex, request.PageCount);
             var output = _bus.Handle(input);
@@ -106,7 +106,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new DiseaseSearchPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<DiseaseSearchResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.UpdateAdoptedByomei)]

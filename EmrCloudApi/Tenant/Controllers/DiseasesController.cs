@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetPtDiseaseListResponse>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
+        public Task<ActionResult<Response<GetPtDiseaseListResponse>>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
         {
             var input = new GetPtDiseaseListInputData(request.HpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom);
             var output = _bus.Handle(input);
@@ -30,11 +30,11 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetPtDiseaseListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetPtDiseaseListResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetPtDiseaseListResponse>>(presenter.Result));
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertPtDiseaseListResponse>> Upsert([FromBody] UpsertPtDiseaseListRequest request)
+        public Task<ActionResult<Response<UpsertPtDiseaseListResponse>>> Upsert([FromBody] UpsertPtDiseaseListRequest request)
         {
             var input = new UpsertPtDiseaseListInputData(request.PtDiseases.Select(r => new UpsertPtDiseaseListInputItem(
                     r.Id,
@@ -64,7 +64,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new UpsertPtDiseaseListPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<UpsertPtDiseaseListResponse>>(presenter.Result));
         }
 
     }

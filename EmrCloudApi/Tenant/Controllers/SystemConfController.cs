@@ -19,7 +19,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
         [HttpGet(ApiPath.Get)]
-        public ActionResult<Response<GetSystemConfResponse>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
+        public Task<ActionResult<Response<GetSystemConfResponse>>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {
             var input = new GetSystemConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo);
             var output = _bus.Handle(input);
@@ -27,7 +27,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetSystemConfPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetSystemConfResponse>>(presenter.Result);
+            return Task.FromResult(new ActionResult<Response<GetSystemConfResponse>>(presenter.Result));
         }
     }
 }

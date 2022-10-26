@@ -30,7 +30,7 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetSetMstListResponse>> GetList([FromQuery] GetSetMstListRequest request)
+    public Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
     {
         var input = new GetSetMstListInputData(request.HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
         var output = _bus.Handle(input);
@@ -38,11 +38,11 @@ public class SetController : ControllerBase
         var presenter = new GetSetMstListPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetSetMstListResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<GetSetMstListResponse>>(presenter.Result));
     }
 
     [HttpPost(ApiPath.Save)]
-    public ActionResult<Response<SaveSetMstResponse>> Save([FromBody] SaveSetMstRequest request)
+    public Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
         var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, request.IsGroup);
         var output = _bus.Handle(input);
@@ -50,11 +50,11 @@ public class SetController : ControllerBase
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveSetMstResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<SaveSetMstResponse>>(presenter.Result));
     }
 
     [HttpPost(ApiPath.Reorder)]
-    public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
+    public Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
         var input = new ReorderSetMstInputData(request.HpId, request.DragSetCd, request.DropSetCd);
         var output = _bus.Handle(input);
@@ -62,11 +62,11 @@ public class SetController : ControllerBase
         var presenter = new ReorderSetMstPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result));
     }
 
     [HttpPost(ApiPath.Paste)]
-    public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+    public Task <ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
         var input = new CopyPasteSetMstInputData(request.HpId, request.UserId, request.CopySetCd, request.PasteSetCd);
         var output = _bus.Handle(input);
@@ -74,11 +74,11 @@ public class SetController : ControllerBase
         var presenter = new CopyPasteSetMstPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result));
     }
 
     [HttpGet(ApiPath.GetSuperSetDetail)]
-    public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
+    public Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
         var input = new GetSuperSetDetailInputData(request.HpId, request.SetCd, request.Sindate);
         var output = _bus.Handle(input);
@@ -86,11 +86,11 @@ public class SetController : ControllerBase
         var presenter = new GetSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result));
     }
 
     [HttpPost(ApiPath.SaveSuperSetDetail)]
-    public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
+    public Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
         var input = new SaveSuperSetDetailInputData(
                 request.SetCd,
@@ -105,12 +105,12 @@ public class SetController : ControllerBase
         var presenter = new SaveSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result));
     }
 
 
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
-    public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
+    public Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
         var input = new SaveImageSuperSetDetailInputData(request.HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
         var output = _bus.Handle(input);
@@ -118,7 +118,7 @@ public class SetController : ControllerBase
         var presenter = new SaveImageSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<SaveImageResponse>>(presenter.Result));
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)
