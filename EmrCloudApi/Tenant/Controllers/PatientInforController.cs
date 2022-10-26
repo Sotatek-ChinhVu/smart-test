@@ -57,8 +57,6 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.Save;
-using UseCase.PatientInfor.DeletePatient;
 using UseCase.Insurance.ValidateInsurance;
 
 namespace EmrCloudApi.Tenant.Controllers

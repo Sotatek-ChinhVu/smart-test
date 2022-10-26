@@ -1,5 +1,4 @@
 ﻿using Domain.Models.PatientInfor;
-using Entity.Tenant;
 using Helper;
 using UseCase.PatientInfor.Save;
 
@@ -38,7 +37,7 @@ namespace Interactor.PatientInfor
                 else
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed,0);
             }
-            catch(Exception ex)
+            catch
             {
                 return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
