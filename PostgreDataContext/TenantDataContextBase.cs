@@ -139,6 +139,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RaiinKbnMst>().HasKey(e => new { e.HpId, e.GrpCd });
             modelBuilder.Entity<RaiinKbnYayoku>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
             modelBuilder.Entity<RaiinKbnDetail>().HasKey(e => new { e.HpId, e.GrpCd, e.KbnCd });
+            modelBuilder.Entity<PtRousaiTenki>().HasKey(e => new { e.HpId, e.PtId, e.HokenId, e.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

@@ -6,10 +6,12 @@ namespace UseCase.PatientInfor.Save
     {
         public string Message { get; private set; }
         public SavePatientInfoStatus Status { get; private set; }
-        public SavePatientInfoOutputData(string message, SavePatientInfoStatus status)
+        public long PtID { get; private set; }
+        public SavePatientInfoOutputData(string message, SavePatientInfoStatus status, long ptID)
         {
             Message = message;
             Status = status;
+            PtID = ptID;
         }
     }
 }

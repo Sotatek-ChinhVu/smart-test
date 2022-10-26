@@ -70,7 +70,7 @@
         public static readonly string PtDiseaseUpsertInputNoData = "無効なデータを受信しました。";
 
         //User controller
-        public static readonly string UpsertInputNoData = "Input NoData";
+        public static readonly string UpsertInputNoData = "Input No Data";
         public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
         public static readonly string UpsertInvalidNoExistedId = "No Exist Id";
         public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
