@@ -1,6 +1,7 @@
 ﻿using DevExpress.Export;
 using DevExpress.Implementation;
 using Domain.CalculationInf;
+using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -57,6 +58,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
+using Interactor.AccountDue;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
@@ -102,6 +104,7 @@ using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.VisitingList;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using UseCase.AccountDue.GetAccountDueList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -307,6 +310,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
             services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
+            services.AddTransient<IAccountDueRepository, AccountDueRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -511,6 +515,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validate InputItem 
             busBuilder.RegisterUseCase<ValidationInputItemInputData, ValidationInputitemInteractor>();
+
+            //AccoutDue
+            busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
+
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -134,7 +134,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string SeikyuDetail
         {
-            get { return SyunoSeikyu.SeikyuDetail; }
+            get { return SyunoSeikyu.SeikyuDetail ?? string.Empty; }
             set
             {
                 if (SyunoSeikyu.SeikyuDetail == value) return;
@@ -190,7 +190,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string NewSeikyuDetail
         {
-            get { return SyunoSeikyu.NewSeikyuDetail; }
+            get { return SyunoSeikyu.NewSeikyuDetail ?? string.Empty; }
             set
             {
                 if (SyunoSeikyu.NewSeikyuDetail == value) return;
