@@ -58,7 +58,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             }
 
             // Calculate Unpaid
-            AccountDueItemModel tempModel = new();
+            AccountDueModel tempModel = new();
             foreach (var model in listAccountDues)
             {
                 var hokenPatternName = string.Empty;
@@ -92,7 +92,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
                                              .ThenBy(item => item.RaiinNo)
                                              .ThenBy(item => item.SortNo).ToList();
 
-            var result = new AccountDueModel(listAccountDues, paymentMethod, uketsukeSbt);
+            var result = new AccountDueListModel(listAccountDues, paymentMethod, uketsukeSbt);
             return new GetAccountDueListOutputData(result, GetAccountDueListStatus.Successed);
         }
         catch
