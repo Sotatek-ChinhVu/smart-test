@@ -42,6 +42,7 @@
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
         public const string GetHeaderInf = "GetHeaderInf";
+        public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
