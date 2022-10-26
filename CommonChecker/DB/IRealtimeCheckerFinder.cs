@@ -38,7 +38,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         List<DiseaseResultModel> CheckContraindicationForCurrentDisease(int hpID, int level, int sinDate, List<string> listItemCode, List<string> listDiseaseCode);
 
-        List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode, List<PtKioReki> listPtKioReki);
+        List<DiseaseResultModel> CheckContraindicationForHistoryDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode, List<PtKioRekiModel> listPtKioReki);
 
         List<DiseaseResultModel> CheckContraindicationForFamilyDisease(int hpID, long ptID, int level, int sinday, List<string> listItemCode);
 

@@ -35,5 +35,9 @@ namespace Infrastructure.Repositories
             }
             return systemConf != null ? systemConf.Val : defaultValue;
         }
+        public int RefillSetting(int presentDate)
+        {
+            return GetSettingValue(2002, 0, presentDate: presentDate, defaultValue: 999);
+        }
     }
 }

@@ -9,8 +9,16 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
+
+        private readonly ISystemGenerationConfRepository _systemGenerationConfRepository;
+
+        public InvalidDataOrderChecker(ISystemGenerationConfRepository systemGenerationConfRepository)
+        {
+            _systemGenerationConfRepository = systemGenerationConfRepository;
+        }
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
+
             TOdrInf checkingOrder = unitCheckerResult.CheckingData;
 
             List<InvalidDataOrder> checkedResult = new List<InvalidDataOrder>();
