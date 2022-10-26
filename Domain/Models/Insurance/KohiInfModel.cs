@@ -4,7 +4,7 @@ namespace Domain.Models.Insurance
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst, int isDeleted)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst, int isDeleted, bool isAddNew)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -27,6 +27,7 @@ namespace Domain.Models.Insurance
             ConfirmDateList = confirmDateList;
             IsHaveKohiMst = isHaveKohiMst;
             IsDeleted = isDeleted;
+            IsAddNew = isAddNew;
         }
 
         public KohiInfModel(int hokenId)
@@ -118,5 +119,7 @@ namespace Domain.Models.Insurance
                 return !(StartDate <= SinDate && EndDate >= SinDate);
             }
         }
+
+        public bool IsAddNew { get; private set; }
     }
 }

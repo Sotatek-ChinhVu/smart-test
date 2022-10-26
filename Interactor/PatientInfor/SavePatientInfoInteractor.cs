@@ -1,5 +1,4 @@
 ﻿using Domain.Models.PatientInfor;
-using Entity.Tenant;
 using Helper;
 using UseCase.PatientInfor.Save;
 
@@ -23,24 +22,24 @@ namespace Interactor.PatientInfor
                 foreach (var item in validations)
                     msgValidation += string.IsNullOrEmpty(msgValidation) ? item : $",{item}";
 
-                return new SavePatientInfoOutputData(msgValidation, SavePatientInfoStatus.Failed);
+                return new SavePatientInfoOutputData(msgValidation, SavePatientInfoStatus.Failed, 0);
             }
             try
             {
-                bool result = false;
+                (bool, long) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient,inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
                 else
                     result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
 
-                if (result)
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful);
+                if (result.Item1)
+                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful, result.Item2);
                 else
-                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
+                    return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
             catch
             {
-                return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed);
+                return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
         }
 
@@ -49,6 +48,7 @@ namespace Interactor.PatientInfor
             var resultMessages = new List<string>();
 
             #region Patient Info
+
             if (model.Patient.HpId <= 0)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.HpId`"));
 
@@ -63,6 +63,9 @@ namespace Interactor.PatientInfor
 
             if (model.Patient.KanaName.Length > 100)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"));
+
+            if (model.Patient.Birthday == 0)
+                resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Birthday`"));
 
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"));
@@ -129,15 +132,17 @@ namespace Interactor.PatientInfor
 
             if (model.Patient.OfficeMemo != null && model.Patient.OfficeMemo.Length > 100)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.OfficeMemo`"));
-            #endregion
+
+            #endregion Patient Info
 
             #region PtKytsei
-            for(int i = 0; i < model.PtKyuseis.Count; i++)
+
+            for (int i = 0; i < model.PtKyuseis.Count; i++)
             {
                 if (model.PtKyuseis[i].SeqNo < 0)
                     resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtKyuseis[{i}].SeqNo`"));
 
-                if(string.IsNullOrEmpty(model.PtKyuseis[i].KanaName))
+                if (string.IsNullOrEmpty(model.PtKyuseis[i].KanaName))
                     resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), $"`PtKyuseis[{i}].KanaName`"));
 
                 if (model.PtKyuseis[i].KanaName.Length > 100)
@@ -152,9 +157,11 @@ namespace Interactor.PatientInfor
                 if (model.PtKyuseis[i].EndDate < 0)
                     resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtKyuseis[{i}].EndDate`"));
             }
-            #endregion
+
+            #endregion PtKytsei
 
             #region PtSanteis
+
             for (int i = 0; i < model.PtSanteis.Count; i++)
             {
                 if (model.PtSanteis[i].SeqNo < 0)
@@ -172,9 +179,11 @@ namespace Interactor.PatientInfor
                 if (model.PtSanteis[i].EndDate < 0)
                     resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtSanteis[{i}].EndDate`"));
             }
-            #endregion
+
+            #endregion PtSanteis
 
             #region PtGrps
+
             for (int i = 0; i < model.PtGrps.Count; i++)
             {
                 if (model.PtGrps[i].GroupId < 0)
@@ -186,7 +195,9 @@ namespace Interactor.PatientInfor
                 if (model.PtGrps[i].GroupCode.Length > 4)
                     resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`PtGrps[{i}].GroupCode`"));
             }
-            #endregion
+
+            #endregion PtGrps
+
             return resultMessages;
         }
     }

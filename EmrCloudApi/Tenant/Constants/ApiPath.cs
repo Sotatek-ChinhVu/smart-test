@@ -59,6 +59,7 @@
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
+        public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -89,5 +90,8 @@
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+
+        // Validate list pattern
+        public const string ValidateListPattern = "ValidateListPattern";
     }
 }

@@ -37,6 +37,7 @@ using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
@@ -46,16 +47,17 @@ using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.KohiHokenMst.Get;
 using UseCase.PatientGroupMst.GetList;
 using UseCase.PatientGroupMst.SaveList;
+using UseCase.PatientInfor.DeletePatient;
 using UseCase.PatientInfor.GetInsuranceMasterLinkage;
 using UseCase.PatientInfor.PatientComment;
 using UseCase.PatientInfor.PtKyuseiInf.GetList;
+using UseCase.PatientInfor.Save;
+using UseCase.PatientInfor.SaveInsuranceMasterLinkage;
 using UseCase.PatientInfor.SearchAdvanced;
 using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.Save;
-using UseCase.PatientInfor.DeletePatient;
 using EmrCloudApi.Tenant.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
 using EmrCloudApi.Tenant.Presenters.SwapHoken;
@@ -378,14 +380,24 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetPtKyuseiInfResponse>>(presenter.Result);
         }
 
+        [HttpPost(ApiPath.SaveInsuranceMasterLinkage)]
+        public ActionResult<Response<SaveInsuranceMasterLinkageResponse>> SaveInsuranceMasterLinkage([FromBody] SaveInsuranceMasterLinkageRequest request)
+        {
+            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels);
+            var output = _bus.Handle(input);
+            var presenter = new SaveInsuranceMasterLinkagePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
+        }
+
         [HttpPost("SavePatientInfo")]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            var input = new SavePatientInfoInputData(request.PtInformation.Patient,
-                                                     request.PtInformation.PtKyuseis,
-                                                     request.PtInformation.PtSanteis,
-                                                     request.PtInformation.Insurances,
-                                                     request.PtInformation.PtGrpInfs);
+            var input = new SavePatientInfoInputData(request.Patient,
+                                                     request.PtKyuseis,
+                                                     request.PtSanteis,
+                                                     request.Insurances,
+                                                     request.PtGrpInfs);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
@@ -400,7 +412,17 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new DeletePatientInfoPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<DeletePatientInfoResponse>>(presenter.Result);
-        } 
+        }
+
+        [HttpPost(ApiPath.ValidateListPattern)]
+        public ActionResult<Response<ValidateListInsuranceResponse>> ValidateListPattern([FromBody] ValidateInsuranceRequest request)
+        {
+            var input = new ValidateInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.ListDataModel);
+            var output = _bus.Handle(input);
+            var presenter = new ValidateInsurancePresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<ValidateListInsuranceResponse>>(presenter.Result);
+        }
         [HttpPost("SwapHoken")]
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
