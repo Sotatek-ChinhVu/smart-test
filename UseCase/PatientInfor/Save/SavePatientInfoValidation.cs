@@ -10,4 +10,3 @@ namespace UseCase.PatientInfor.Save
         PropertyIsInvalid
     }
 }
-

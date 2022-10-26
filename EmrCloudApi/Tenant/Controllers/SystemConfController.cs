@@ -21,7 +21,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get)]
         public ActionResult<Response<GetSystemConfResponse>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {
-            var input = new GetSystemConfInputData(request.HpId, request.GrpCd);
+            var input = new GetSystemConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemConfPresenter();

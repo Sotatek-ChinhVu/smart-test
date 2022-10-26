@@ -37,6 +37,7 @@ using UseCase.Core.Sync;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
@@ -57,9 +58,6 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using UseCase.PatientInfor.Save;
-using UseCase.PatientInfor.DeletePatient;
-using UseCase.Insurance.ValidateInsurance;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -391,11 +389,11 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SavePatientInfo")]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            var input = new SavePatientInfoInputData(request.PtInformation.Patient,
-                                                     request.PtInformation.PtKyuseis,
-                                                     request.PtInformation.PtSanteis,
-                                                     request.PtInformation.Insurances,
-                                                     request.PtInformation.PtGrpInfs);
+            var input = new SavePatientInfoInputData(request.Patient,
+                                                     request.PtKyuseis,
+                                                     request.PtSanteis,
+                                                     request.Insurances,
+                                                     request.PtGrpInfs);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);

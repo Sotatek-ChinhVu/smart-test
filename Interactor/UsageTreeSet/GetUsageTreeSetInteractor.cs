@@ -48,34 +48,12 @@ namespace Interactor.UsageTreeSet
 
             int generationId = _usageTreeSetRepository.GetGenerationId(inputData.SinDate);
 
-            List<ListSetMstModel> listData = new List<ListSetMstModel>();
+            List<ListSetMstModel> result = new List<ListSetMstModel>();
             if (setDrugKbn != 0)
-                listData.AddRange(GetListTreeSet(setDrugKbn, generationId, inputData));
+                result.AddRange(GetListTreeSet(setDrugKbn, generationId, inputData));
 
             if (setUsageKbn != 0)
-                listData.AddRange(GetListUsageTreeSet(setUsageKbn, generationId, inputData));
-
-            var lstUsageLevel1 = listData.Where(
-                item => item.Level1 > 0 &&
-                item.Level2 == 0 &&
-                item.Level3 == 0 &&
-                item.Level4 == 0 &&
-                item.Level5 == 0
-            ).OrderBy(item => item.Level1)
-           .ThenBy(item => item.Level2)
-           .ThenBy(item => item.Level3)
-           .ThenBy(item => item.Level4)
-           .ThenBy(item => item.Level5)
-           .ToList();
-
-            List<ListSetMstModel> result = new List<ListSetMstModel>();
-            foreach (var item in lstUsageLevel1)
-            {
-                ListSetMstModel model = item;
-                model.Level = 1;
-                LoadSubLevel(2, model, listData);
-                result.Add(model);
-            }
+                result.AddRange(GetListUsageTreeSet(setUsageKbn, generationId, inputData));
 
             if (!result.Any())
                 return new GetUsageTreeSetOutputData(new List<ListSetMstModel>(), GetUsageTreeStatus.DataNotFound);
@@ -97,7 +75,30 @@ namespace Interactor.UsageTreeSet
                 lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, _listMedicalManagement, generationId, inputData.SinDate);
             else
                 lstDrug = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, setDrugKbn, generationId, inputData.SinDate);
-            return lstDrug;
+
+            var lstUsageLevel1 = lstDrug.Where(
+                item => item.Level1 > 0 &&
+                item.Level2 == 0 &&
+                item.Level3 == 0 &&
+                item.Level4 == 0 &&
+                item.Level5 == 0
+            ).OrderBy(item => item.Level1)
+           .ThenBy(item => item.Level2)
+           .ThenBy(item => item.Level3)
+           .ThenBy(item => item.Level4)
+           .ThenBy(item => item.Level5)
+           .ToList();
+
+            List<ListSetMstModel> result = new List<ListSetMstModel>();
+            foreach (var item in lstUsageLevel1)
+            {
+                ListSetMstModel model = item;
+                model.Level = 1;
+                LoadSubLevel(2, model, lstDrug);
+                result.Add(model);
+            }
+
+            return result;
         }
 
         private List<ListSetMstModel> GetListUsageTreeSet(int setUsageKbn, int generationId, GetUsageTreeSetInputData inputData)
@@ -112,7 +113,29 @@ namespace Interactor.UsageTreeSet
             }
             else
                 lstUsage = _usageTreeSetRepository.GetTanSetInfs(inputData.HpId, setUsageKbn, generationId, inputData.SinDate);
-            return lstUsage;
+
+            var lstUsageLevel1 = lstUsage.Where(
+                item => item.Level1 > 0 &&
+                item.Level2 == 0 &&
+                item.Level3 == 0 &&
+                item.Level4 == 0 &&
+                item.Level5 == 0
+            ).OrderBy(item => item.Level1)
+           .ThenBy(item => item.Level2)
+           .ThenBy(item => item.Level3)
+           .ThenBy(item => item.Level4)
+           .ThenBy(item => item.Level5)
+           .ToList();
+
+            List<ListSetMstModel> result = new List<ListSetMstModel>();
+            foreach (var item in lstUsageLevel1)
+            {
+                ListSetMstModel model = item;
+                model.Level = 1;
+                LoadSubLevel(2, model, lstUsage);
+                result.Add(model);
+            }
+            return result;
         }
 
         private void LoadSubLevel(int level, ListSetMstModel usageModel, List<ListSetMstModel> listSetMst)
