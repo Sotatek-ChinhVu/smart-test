@@ -2,7 +2,7 @@
 
 public interface IAccountDueRepository
 {
-    List<AccountDueListModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize);
+    List<AccountDueItemModel> GetAccountDueList(int hpId, long ptId, int sinDate, bool isUnpaidChecked, int pageIndex, int pageSize);
 
     Dictionary<int, string> GetPaymentMethod(int hpId);
 

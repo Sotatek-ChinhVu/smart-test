@@ -14,7 +14,7 @@ public class GetAccountDueListOutputData : IOutputData
     public GetAccountDueListOutputData(GetAccountDueListStatus status)
     {
         AccountDueModel = new AccountDueModel(
-                    new List<AccountDueListModel>(),
+                    new List<AccountDueItemModel>(),
                     new Dictionary<int, string>(),
                     new Dictionary<int, string>()
                 );

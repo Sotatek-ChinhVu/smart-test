@@ -2,9 +2,9 @@
 
 namespace Domain.Models.AccountDue;
 
-public class AccountDueListModel
+public class AccountDueItemModel
 {
-    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int unPaid, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, string hokenPatternName, bool isSeikyuRow, int sortNo)
+    public AccountDueItemModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int unPaid, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, string hokenPatternName, bool isSeikyuRow, int sortNo)
     {
         HpId = hpId;
         PtId = ptId;
@@ -31,7 +31,7 @@ public class AccountDueListModel
         SortNo = sortNo;
     }
 
-    public AccountDueListModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, int sortNo)
+    public AccountDueItemModel(int hpId, long ptId, int sinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, int sortNo)
     {
         HpId = hpId;
         PtId = ptId;
@@ -58,7 +58,7 @@ public class AccountDueListModel
         SortNo = sortNo;
     }
 
-    public AccountDueListModel()
+    public AccountDueItemModel()
     {
         HpId = 0;
         PtId = 0;
@@ -85,7 +85,7 @@ public class AccountDueListModel
         SortNo = 0;
     }
 
-    public AccountDueListModel UpdateAccountDueListModel(int unPaid, string hokenPatternName, bool isSeikyuRow)
+    public AccountDueItemModel UpdateAccountDueListModel(int unPaid, string hokenPatternName, bool isSeikyuRow)
     {
         UnPaid = unPaid;
         HokenPatternName = hokenPatternName;
