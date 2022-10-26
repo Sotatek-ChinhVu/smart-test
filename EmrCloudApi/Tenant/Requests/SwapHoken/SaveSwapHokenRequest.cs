@@ -15,12 +15,19 @@
         }
 
         public int HpId { get; private set; }
+
         public long PtId { get; private set; }
+
         public int HokenIdBefore { get; private set; }
+
         public int HokenIdAfter { get; private set; }
+
         public int HokenPidBefore { get; private set; }
+
         public int HokenPidAfter { get; private set; }
+
         public int StartDate { get; private set; }
+
         public int EndDate { get; private set; }
     }
 }

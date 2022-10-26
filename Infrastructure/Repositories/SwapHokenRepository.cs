@@ -1,16 +1,19 @@
 ﻿using Domain.Models.SwapHoken;
 using Helper.Constants;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
     public class SwapHokenRepository : ISwapHokenRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
+        private readonly TenantNoTrackingDataContext _tenantDataContext;
+        private readonly TenantDataContext _tenantTrackingDataContext;
 
-        public SwapHokenRepository(TenantDataContext tenantDataContext)
+        public SwapHokenRepository(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantDataContext;
+            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public long CountOdrInf(int hpId, long ptId, int hokenPid, int startDate, int endDate)
@@ -56,7 +59,7 @@ namespace Infrastructure.Repositories
             var updateId = TempIdentity.UserId;
 
             #region UpdateHokenPatternInRaiin
-            var raiinInfList = _tenantDataContext.RaiinInfs.Where((x) =>
+            var raiinInfList = _tenantTrackingDataContext.RaiinInfs.Where((x) =>
                 x.HpId == hpId &&
                 x.PtId == PtId &&
                 x.HokenPid == OldHokenPid &&
@@ -75,7 +78,7 @@ namespace Infrastructure.Repositories
             #endregion UpdateHokenPatternInRaiin
 
             #region UpdateHokenPatternInOdrInf
-            var odrInfList = _tenantDataContext.OdrInfs.Where((x) =>
+            var odrInfList = _tenantTrackingDataContext.OdrInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.PtId == PtId &&
                     x.SinDate >= StartDate &&
@@ -91,7 +94,7 @@ namespace Infrastructure.Repositories
             });
             #endregion 
 
-            return _tenantDataContext.SaveChanges() > 0;
+            return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
         public bool ExistRaiinInfUsedOldHokenId(int hpId, long ptId, List<int> sinYms, int oldHokenPId)
@@ -106,7 +109,9 @@ namespace Infrastructure.Repositories
 
         public bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId)
         {
-            var receSeiKyus = _tenantDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
+            var receSeiKyus = _tenantTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
+            if (!receSeiKyus.Any())
+                return true;
             foreach (var receSeiKyu in receSeiKyus)
             {
                 if (oldHokenId != newHokenId && receSeiKyu.HokenId == newHokenId)
@@ -116,8 +121,7 @@ namespace Infrastructure.Repositories
                 receSeiKyu.UpdateId = TempIdentity.UserId;
                 receSeiKyu.UpdateMachine = TempIdentity.ComputerName;
             }
-            _tenantDataContext.SaveChanges();
-            return true;
+            return _tenantTrackingDataContext.SaveChanges() > 0;
         }
     }
 }

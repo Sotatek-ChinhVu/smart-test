@@ -423,7 +423,7 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
             return new ActionResult<Response<ValidateListInsuranceResponse>>(presenter.Result);
         }
-        [HttpPost("SwapHoken")]
+        [HttpPost(ApiPath.SwapHoken)]
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
             var input = new SaveSwapHokenInputData(request.HpId, 
