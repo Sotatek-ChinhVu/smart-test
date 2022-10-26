@@ -18,9 +18,9 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
 
         private string GetMessage(UpsertPtDiseaseListStatus status) => status switch
         {
-            UpsertPtDiseaseListStatus.Success => ResponseMessage.UpsertSuccess,
-            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.UpsertFail,
-            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.UpsertInputNoData,
+            UpsertPtDiseaseListStatus.Success => ResponseMessage.PtDiseaseUpsertSuccess,
+            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.PtDiseaseUpsertFail,
+            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.PtDiseaseUpsertInputNoData,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.MCommonError,

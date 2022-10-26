@@ -23,7 +23,7 @@ public class SystemConfRepository : ISystemConfRepository
     public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
         var data = _tenantDataContext.SystemConfs
-            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && (grpEdaNo == -1 || s.GrpEdaNo == grpEdaNo));
+            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data.Param, data.Biko ?? String.Empty);
     }
