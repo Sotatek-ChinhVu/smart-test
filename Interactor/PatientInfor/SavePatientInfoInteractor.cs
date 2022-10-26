@@ -64,6 +64,9 @@ namespace Interactor.PatientInfor
             if (model.Patient.KanaName.Length > 100)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"));
 
+            if(model.Patient.Birthday == 0)
+                resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Birthday`"));
+
             if (model.Patient.IsDead < 0 || model.Patient.IsDead > 1)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.IsDead`"));
 
