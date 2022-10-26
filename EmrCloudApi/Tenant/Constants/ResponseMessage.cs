@@ -27,9 +27,6 @@
         public static readonly string InvalidSeqNo = "Invalid SeqNo";
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
-        public static readonly string UpsertSuccess = "更新が成功しました";
-        public static readonly string UpsertFail = "更新に失敗しました。";
-        public static readonly string UpsertInputNoData = "無効なデータを受信しました。";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -68,6 +65,9 @@
         //Reception controller
 
         //PtDisease controller
+        public static readonly string PtDiseaseUpsertSuccess = "更新が成功しました";
+        public static readonly string PtDiseaseUpsertFail = "更新に失敗しました。";
+        public static readonly string PtDiseaseUpsertInputNoData = "無効なデータを受信しました。";
 
         //User controller
         public static readonly string UpsertInputNoData = "Input NoData";
