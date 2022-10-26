@@ -1,4 +1,7 @@
-﻿using Domain.CalculationInf;
+﻿using DevExpress.Export;
+using DevExpress.Implementation;
+using Domain.CalculationInf;
+using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.DrugDetail;
@@ -55,6 +58,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
+using Interactor.AccountDue;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
@@ -62,6 +66,7 @@ using Interactor.Diseases;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
+using Interactor.ExportPDF;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
@@ -99,6 +104,7 @@ using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.VisitingList;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using UseCase.AccountDue.GetAccountDueList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -112,7 +118,9 @@ using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
@@ -169,7 +177,9 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
+using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
@@ -203,12 +213,6 @@ using UseCase.User.GetList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using Interactor.ExportPDF;
-using DevExpress.Implementation;
-using DevExpress.Export;
-using UseCase.Reception.GetLastRaiinInfs;
-using UseCase.Reception.GetReceptionDefault;
-using UseCase.Insurance.ValidateInsurance;
 using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
@@ -309,6 +313,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
             services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
+            services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
         }
 
@@ -399,6 +404,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Insurance Mst
             busBuilder.RegisterUseCase<GetInsuranceMstInputData, GetInsuranceMstInteractor>();
+            busBuilder.RegisterUseCase<GetDefaultSelectPatternInputData, GetDefaultSelectPatternInteractor>();
 
             // RaiinFilter
             busBuilder.RegisterUseCase<GetRaiinFilterMstListInputData, GetRaiinFilterMstListInteractor>();
@@ -513,6 +519,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Validate InputItem 
             busBuilder.RegisterUseCase<ValidationInputItemInputData, ValidationInputitemInteractor>();
+
+            //AccoutDue
+            busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
+
 
 
             //SwapHoken

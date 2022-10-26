@@ -1,10 +1,14 @@
 ﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.MedicalExamination;
+using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -187,6 +191,24 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultSelectPattern)]
+        public ActionResult<Response<GetDefaultSelectPatternResponse>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        {
+            var input = new GetDefaultSelectPatternInputData(
+                            request.HpId,
+                            request.PtId,
+                            request.SinDate,
+                            request.HistoryPid,
+                            request.SelectedHokenPid);
+
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDefaultSelectPatternPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result);
         }
     }
 }

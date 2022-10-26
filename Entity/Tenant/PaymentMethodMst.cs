@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PAY_NAME")]
         [MaxLength(60)]
-        public string PayName { get; set; } = string.Empty;
+        public string? PayName { get; set; } = string.Empty;
 
         /// <summary>
         /// 支払方法略称
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PAY_SNAME")]
         [MaxLength(1)]
-        public string PaySname { get; set; } = string.Empty;
+        public string? PaySname { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
