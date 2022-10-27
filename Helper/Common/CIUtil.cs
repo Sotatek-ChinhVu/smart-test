@@ -1427,6 +1427,11 @@ namespace Helper.Common
                     break;
             }
         }
+
+        public static string DateTimeToTime(DateTime dateTime)
+        {
+            return dateTime.ToString("HHmmss");
+        }
     }
 
     public enum WarekiFormat

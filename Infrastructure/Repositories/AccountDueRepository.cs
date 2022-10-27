@@ -1,5 +1,6 @@
 ﻿using Domain.Models.AccountDue;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -88,7 +89,9 @@ public class AccountDueRepository : IAccountDueRepository
                 seikyu.NewSeikyuGaku,
                 seikyu.NewAdjustFutan,
                 kaMst.KaSname ?? string.Empty,
-                nyukin != null ? nyukin.SortNo : 0
+                nyukin != null ? nyukin.SortNo : 0,
+                nyukin != null ? nyukin.SeqNo : 0,
+                seikyu.SeikyuDetail ?? string.Empty
             );
     }
     private int GetMonth(int date)
@@ -116,5 +119,129 @@ public class AccountDueRepository : IAccountDueRepository
             result.Add(uketuke.KbnId, uketuke.KbnName);
         }
         return result;
+    }
+
+    public bool SaveAccountDueList(int hpId, int ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
+    {
+        var raiinLists = _tenantDataContext.RaiinInfs
+                                .Where(item => item.HpId == hpId
+                                                    && item.PtId == ptId
+                                                    && item.IsDeleted == DeleteTypes.None
+                                                    && item.Status > RaiinState.TempSave).ToList();
+
+        // Left table
+        var seikyuLists = _tenantDataContext.SyunoSeikyus
+                        .Where(item => item.HpId == hpId
+                                            && item.PtId == ptId).ToList();
+
+        // Right table
+        var nyukinLists = _tenantDataContext.SyunoNyukin
+                               .Where(item => item.HpId == hpId
+                                                   && item.PtId == ptId
+                                                   && item.IsDeleted == 0).ToList();
+        try
+        {
+            var dateTimeNow = DateTime.UtcNow;
+            foreach (var model in listAccountDues)
+            {
+                // Update raiin status
+                UpdateStatusRaiin(userId, dateTimeNow, model, raiinLists);
+
+                // Update left table SyunoSeikyu
+                UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
+
+                // Update right table SyunoNyukin
+                UpdateSyunoNyukin(userId, sinDate, dateTimeNow, model, nyukinLists);
+            }
+
+            _tenantDataContext.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void UpdateStatusRaiin(int userId, DateTime dateTimeNow, AccountDueModel model, List<RaiinInf> raiinLists)
+    {
+        var raiin = raiinLists.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
+        int tempStatus = model.NyukinKbn == 0 ? RaiinState.Waiting : RaiinState.Settled;
+        if (raiin != null)
+        {
+            if (tempStatus != raiin.Status)
+            {
+                raiin.Status = tempStatus;
+                raiin.KaikeiTime = CIUtil.DateTimeToTime(dateTimeNow);
+                raiin.UpdateDate = dateTimeNow;
+                raiin.UpdateId = userId;
+            }
+
+            // update menjo
+            if (model.NyukinKbn == 2)
+            {
+                raiin.UpdateDate = dateTimeNow;
+                raiin.UpdateId = userId;
+            }
+        }
+    }
+
+    private void UpdateStatusSyunoSeikyu(int userId, DateTime dateTimeNow, AccountDueModel model, List<SyunoSeikyu> seikyuLists)
+    {
+        var seikyu = seikyuLists.FirstOrDefault(item => item.RaiinNo == model.RaiinNo);
+        if (seikyu != null)
+        {
+            seikyu.NyukinKbn = model.NyukinKbn;
+            seikyu.UpdateDate = dateTimeNow;
+            seikyu.UpdateId = userId;
+        }
+    }
+
+    private void UpdateSyunoNyukin(int userId, int sinDate, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
+    {
+        if (model.SeqNo == 0) // Create new SyunoNyukin
+        {
+            SyunoNyukin nyukin = new();
+            nyukin.HpId = model.HpId;
+            nyukin.PtId = model.PtId;
+            nyukin.IsDeleted = 0;
+            nyukin.SinDate = sinDate;
+            nyukin.RaiinNo = model.RaiinNo;
+            nyukin.SortNo = model.SortNo;
+            nyukin.AdjustFutan = model.AdjustFutan;
+            nyukin.NyukinGaku = model.NyukinGaku;
+            nyukin.PaymentMethodCd = model.PaymentMethodCd;
+            nyukin.NyukinDate = model.NyukinDate;
+            nyukin.UketukeSbt = model.UketukeSbt;
+            nyukin.NyukinCmt = model.NyukinCmt;
+            nyukin.NyukinjiSeikyu = model.SeikyuGaku;
+            nyukin.NyukinjiTensu = model.SeikyuTensu;
+            nyukin.NyukinjiDetail = model.SeikyuDetail;
+            nyukin.CreateDate = dateTimeNow;
+            nyukin.UpdateDate = dateTimeNow;
+            nyukin.CreateId = userId;
+            nyukin.UpdateId = userId;
+            _tenantDataContext.SyunoNyukin.Add(nyukin);
+        }
+        else // Update SyunoNyukin
+        {
+            var nyukin = nyukinLists.FirstOrDefault(item => item.SeqNo == model.SeqNo);
+            if (nyukin != null)
+            {
+                nyukin.SortNo = model.SortNo;
+                nyukin.RaiinNo = model.RaiinNo;
+                nyukin.AdjustFutan = model.AdjustFutan;
+                nyukin.NyukinGaku = model.NyukinGaku;
+                nyukin.PaymentMethodCd = model.PaymentMethodCd;
+                nyukin.NyukinDate = model.NyukinDate;
+                nyukin.UketukeSbt = model.UketukeSbt;
+                nyukin.NyukinCmt = model.NyukinCmt;
+                nyukin.NyukinjiSeikyu = model.SeikyuGaku;
+                nyukin.NyukinjiTensu = model.SeikyuTensu;
+                nyukin.NyukinjiDetail = model.SeikyuDetail;
+                nyukin.UpdateDate = dateTimeNow;
+                nyukin.UpdateId = userId;
+            }
+        }
     }
 }
