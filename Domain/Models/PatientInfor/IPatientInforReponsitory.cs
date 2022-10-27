@@ -42,5 +42,6 @@ namespace Domain.Models.PatientInfor
         (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
 
         bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
+        bool IsAllowDeletePatient(int hpId, long ptId);
     }
 }

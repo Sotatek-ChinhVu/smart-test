@@ -732,5 +732,8 @@
         public static readonly string InvalidHokenNo = "Invalid HokenNo";
         public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
 
+        //DeletePatient
+        public static readonly string NotAllowDeletePatient = "This patient is not allowed to delete";
+
     }
 }
