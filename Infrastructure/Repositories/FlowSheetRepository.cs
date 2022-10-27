@@ -28,6 +28,11 @@ namespace Infrastructure.Repositories
             var karteInfsQueryable = _tenantNoTrackingDataContext.KarteInfs.Where(k => k.HpId == hpId && k.PtId == ptId && k.IsDeleted == 0);
             var tagsQueryable = _tenantNoTrackingDataContext.RaiinListTags.Where(tag => tag.HpId == hpId && tag.PtId == ptId);
             var commentsQueryable = _tenantNoTrackingDataContext.RaiinListCmts.Where(comment => comment.HpId == hpId && comment.PtId == ptId);
+            var raiinNos = raiinInfsQueryable.Select(r => r.RaiinNo);
+            var raiinInfs = _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && raiinNos.Contains(r.RaiinNo)).ToList();
+            var kbnCds = raiinInfs.Select(r => r.KbnCd);
+            var raiinListMsts = _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None && kbnCds.Contains(d.KbnCd));
+
             var query = from raiinInf in raiinInfsQueryable
                         join karteInf in karteInfsQueryable on raiinInf.RaiinNo equals karteInf.RaiinNo into gj
                         from karteInf in gj.DefaultIfEmpty()
@@ -47,12 +52,12 @@ namespace Infrastructure.Repositories
                             CommentContent = commentInf == null ? string.Empty : commentInf.Text,
                             CommentSeqNo = commentInf == null ? 0 : commentInf.SeqNo,
                             CommentKbn = commentInf == null ? 9 : commentInf.CmtKbn,
-                            RaiinListInfs = (from raiinListInf in _tenantNoTrackingDataContext.RaiinListInfs.Where(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinInf.RaiinNo)
-                                             join raiinListMst in _tenantNoTrackingDataContext.RaiinListDetails.Where(d => d.HpId == hpId && d.IsDeleted == DeleteTypes.None)
+                            RaiinListInfs = (from raiinListInf in raiinInfs.Where(r => r.RaiinNo == raiinInf.RaiinNo)
+                                             join raiinListMst in raiinListMsts
                                              on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                              select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable<RaiinListInfModel>()
+                                            //.AsEnumerable<RaiinListInfModel>()
                         };
 
 
@@ -117,7 +122,7 @@ namespace Infrastructure.Repositories
                                                     on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                                     select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            .AsEnumerable<RaiinListInfModel>()
+                                            //.AsEnumerable<RaiinListInfModel>()
                                };
             var nextOdrs = queryNextOdr.Select(
                     data => new FlowSheetModel(
@@ -134,8 +139,8 @@ namespace Infrastructure.Repositories
                         data.NextOdr?.PtId ?? 0
                     ));
 
-            totalCount = todayOdr.Union(nextOdrs).Count();
             var todayNextOdrs = todayOdr.Union(nextOdrs);
+            totalCount = todayNextOdrs.Count();
 
             FlowSheetModel? sinDateCurrent = null;
             if (!todayOdr.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
