@@ -10,7 +10,7 @@ namespace CommonCheckers
         // private DBContextFactory dbService;
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private List<SystemConf> _systemConfigs = new List<SystemConf>();
-        private static SystemConfig _instance;
+        private static SystemConfig? _instance;
 
         private static readonly object _threadsafelock = new object();
 

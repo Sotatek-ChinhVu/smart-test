@@ -1,3 +1,4 @@
+using Helper.Constants;
 using Helper.Extension;
 using System.Globalization;
 using System.Text;
@@ -1500,6 +1501,42 @@ namespace Helper.Common
                 default:
                     break;
             }
+        }
+
+        public static ReleasedDrugType SyohoToSempatu(int syohoKbn, int syohoLimitKbn)
+        {
+            switch (syohoKbn)
+            {
+                case 0:
+                    // 後発品のない先発品
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.None;
+                    break;
+                case 1:
+                    // 後発品への変更不可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Unchangeable;
+                    break;
+                case 2:
+                    // 後発品への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.Changeable;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.Changeable_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.Changeable_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+                case 3:
+                    // 一般名処方への変更可
+                    if (syohoLimitKbn == 0) return ReleasedDrugType.CommonName;
+                    // 剤形不可
+                    if (syohoLimitKbn == 1) return ReleasedDrugType.CommonName_DoNotChangeTheDosageForm;
+                    // 含量規格不可
+                    if (syohoLimitKbn == 2) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandard;
+                    // 含量規格・剤形不可
+                    if (syohoLimitKbn == 3) return ReleasedDrugType.CommonName_DoesNotChangeTheContentStandardOrDosageForm;
+                    break;
+            }
+            return ReleasedDrugType.None;
         }
     }
 

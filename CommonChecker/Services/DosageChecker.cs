@@ -36,7 +36,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 }
 
                 double usageQuantity = 0;
-                var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
+                var usageItem = checkingOrder.(d => d.IsStandardUsage);
                 if (usageItem != null)
                 {
                     usageQuantity = usageItem.Suryo;

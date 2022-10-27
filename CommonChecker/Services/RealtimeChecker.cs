@@ -221,33 +221,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return diseaseChecker.CheckOrderList(checkingOrderList);
         }
 
-        private UnitCheckerResult<TOdrInf, TOdrDetail> CheckValidDataOrder(TOdrInf checkingOrder)
-        {
-            UnitChecker<TOdrInf, TOdrDetail> validDataChecker =
-                new InvalidDataOrderChecker<TOdrInf, TOdrDetail>()
-                {
-                    CheckType = RealtimeCheckerType.InvaliData,
-                };
-            InitUnitCheck(validDataChecker);
-
-            return validDataChecker.CheckOrder(checkingOrder);
-        }
-
-        public UnitCheckerResult<TOdrInf, TOdrDetail> AutoCheck(List<TOdrInf> currentListOdr, TOdrInf checkingOrder)
-        {
-            UnitChecker<TOdrInf, TOdrDetail> autoCheckChecker =
-                new AutoCheckChecker<TOdrInf, TOdrDetail>()
-                {
-                    CheckType = RealtimeCheckerType.AutoCheck,
-                    CurrentListOrder = currentListOdr
-                };
-            InitUnitCheck(autoCheckChecker);
-
-            UnitCheckerResult<TOdrInf, TOdrDetail> autoCheckResult = autoCheckChecker.CheckOrder(checkingOrder);
-
-            return autoCheckResult;
-        }
-
         #endregion
 
         private List<PtAlrgyDrugModel> _listPtAlrgyDrug;
@@ -310,42 +283,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> checkedResult = dayLimitChecker.CheckOrderList(new List<TOdrInf>() { checkingOrder });
             List<DayLimitResultModel> result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
             return result ?? new List<DayLimitResultModel>();
-        }
-
-        private TOdrInf HandleValidDataOrder(TOdrInf checkingOrder)
-        {
-            TOdrInf result = checkingOrder;
-            while (true)
-            {
-                if (CheckerCondition.IsCheckingInvalidData)
-                {
-                    UnitCheckerResult<TOdrInf, TOdrDetail> invalidDataCheckResult = CheckValidDataOrder(result);
-
-                    if (invalidDataCheckResult.IsError)
-                    {
-                        invalidDataCheckResult.ActionType = _handler.ShowOrderErrorInfo(invalidDataCheckResult);
-
-                        if (invalidDataCheckResult.ActionType == ActionResultType.Edit)
-                        {
-                            TOdrInf newData = _handler.EditOrder(invalidDataCheckResult.CheckingData);
-                            invalidDataCheckResult.NewData = newData;
-                        }
-
-                        if (invalidDataCheckResult.ActionType == ActionResultType.Abort ||
-                            (invalidDataCheckResult.ActionType == ActionResultType.Edit && invalidDataCheckResult.NewData == null))
-                        {
-                            return null;
-                        }
-                        else if (invalidDataCheckResult.ActionType == ActionResultType.Edit)
-                        {
-                            result = invalidDataCheckResult.NewData;
-                            continue;
-                        }
-                    }
-                }
-                break;
-            }
-            return result;
         }
 
         private List<UnitCheckerResult<TOdrInf, TOdrDetail>> GetErrorFromOrder(List<TOdrInf> currentListOdr, TOdrInf checkingOrder)
@@ -455,123 +392,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             return listError;
-        }
-
-        public List<TOdrInf> CheckListOrder(List<TOdrInf> currentListOdr, List<TOdrInf> listCheckingOrder)
-        {
-            List<TOdrInf> checkedResult = new List<TOdrInf>();
-
-
-            foreach (TOdrInf checkingOrder in listCheckingOrder)
-            {
-                TOdrInf tempResult = HandleValidDataOrder(checkingOrder);
-                if (tempResult == null)
-                {
-                    return new List<TOdrInf>();
-                }
-
-                checkedResult.Add(tempResult);
-            }
-
-            while (true)
-            {
-                List<UnitCheckerResult<TOdrInf, TOdrDetail>> listErrorOfAllOrder = new List<UnitCheckerResult<TOdrInf, TOdrDetail>>();
-                List<TOdrInf> listOrderError = new List<TOdrInf>();
-                List<TOdrInf> tempCurrentListOdr = new List<TOdrInf>(currentListOdr);
-
-                checkedResult.ForEach((order) =>
-                {
-                    List<UnitCheckerResult<TOdrInf, TOdrDetail>> checkedOrderResult = GetErrorFromOrder(tempCurrentListOdr, order);
-
-                    if (checkedOrderResult.Count > 0)
-                    {
-                        listErrorOfAllOrder.AddRange(checkedOrderResult);
-                        listOrderError.Add(order);
-                    }
-
-                    tempCurrentListOdr.Add(order);
-                });
-
-                var checkListOrderResultList = GetErrorFromListOrder(checkedResult);
-
-                foreach (var checkListOrderResult in checkListOrderResultList)
-                {
-                    var notExistErrorOrderList = checkListOrderResult.ErrorOrderList.Where(o => !listOrderError.Contains(o)).ToList();
-                    if (notExistErrorOrderList.Count > 0)
-                    {
-                        listOrderError.AddRange(notExistErrorOrderList);
-                    }
-                }
-
-                List<UnitCheckInfoModel> listUnitCheckErrorInfo = new List<UnitCheckInfoModel>();
-                listErrorOfAllOrder.ForEach((error) =>
-                {
-                    listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
-                    {
-                        CheckerType = error.CheckerType,
-                        ErrorInfo = error.ErrorInfo,
-                        IsError = error.IsError,
-                        PtId = error.PtId,
-                        Sinday = error.Sinday,
-                    });
-                });
-
-                foreach (var error in checkListOrderResultList)
-                {
-                    listUnitCheckErrorInfo.Add(new UnitCheckInfoModel()
-                    {
-                        CheckerType = error.CheckerType,
-                        ErrorInfo = error.ErrorInfo,
-                        IsError = error.IsError,
-                        PtId = error.PtId,
-                        Sinday = error.Sinday,
-                    });
-                }
-
-                if (listUnitCheckErrorInfo.Count > 0)
-                {
-                    ActionResultType actionType = _handler.ShowOrderErrorInfo(listUnitCheckErrorInfo, IsOrderChecking);
-
-                    if (actionType == ActionResultType.Abort)
-                    {
-                        return new List<TOdrInf>();
-                    }
-
-                    if (actionType == ActionResultType.Edit)
-                    {
-                        for (int i = 0; i < listOrderError.Count; i++)
-                        {
-                            var orderError = listOrderError[i];
-                            TOdrInf newOrder = _handler.EditOrder(orderError);
-                            if (newOrder == null)
-                            {
-                                return new List<TOdrInf>();
-                            }
-                            int index = checkedResult.IndexOf(orderError);
-                            checkedResult[index] = newOrder;
-                        }
-                        continue;
-                    }
-                }
-                break;
-            }
-
-
-
-            return checkedResult;
-        }
-
-        public TOdrInf CheckOrder(List<TOdrInf> currentListOdr, TOdrInf checkingOrder)
-        {
-            var checkedResult = CheckListOrder(currentListOdr, new List<TOdrInf>() { checkingOrder });
-            if (checkedResult == null || checkedResult.Count == 0)
-            {
-                return null;
-            }
-            else
-            {
-                return checkedResult.First();
-            }
         }
     }
 }

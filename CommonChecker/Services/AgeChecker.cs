@@ -49,7 +49,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> resultList = new List<TOdrInf>();
             foreach (var checkingOrder in checkingOrderList)
             {
-                var existed = checkingOrder.OdrInfDetailModelsIgnoreEmpty.Any(o => listErrorItemCode.Contains(o.ItemCd));
+                var existed = checkingOrder.Any(o => listErrorItemCode.Contains(o.ItemCd));
                 if (existed)
                 {
                     resultList.Add(checkingOrder);

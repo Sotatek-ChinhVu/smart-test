@@ -1,4 +1,5 @@
 ﻿using Domain.Types;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using static Helper.Constants.OrderInfConst;
@@ -211,6 +212,68 @@ namespace Domain.Models.OrdInfDetails
                        string.IsNullOrEmpty(ItemName.Trim()) &&
                        SinKouiKbn == 0;
             }
+        }
+
+        public string DisplayItemName
+        {
+            get
+            {
+                if (ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                {
+                    return ItemName + TenUtils.GetBunkatu(BunkatuKoui, Bunkatu);
+                }
+                else if (Is840Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is842Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is830Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is831Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is850Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is851Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is852Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is853Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (Is880Cmt)
+                {
+                    return "" + ItemName;
+                }
+                else if (string.IsNullOrEmpty(ItemCd) && !IsShohoComment && !IsShohoBiko)
+                {
+                    return "" + ItemName;
+                }
+                return ItemName;
+            }
+        }
+
+        public bool IsUsage
+        {
+            get => IsStandardUsage || IsSuppUsage || IsInjectionUsage;
+        }
+        
+        public ReleasedDrugType ReleasedType
+        {
+            get => CIUtil.SyohoToSempatu(SyohoKbn, SyohoLimitKbn);
         }
 
         public OrdInfValidationStatus Validation(int flag)
