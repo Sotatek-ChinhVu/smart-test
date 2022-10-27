@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Models.Insurance;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace Domain.Models.InsuranceMst
         IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword);
 
         HokenMstModel GetHokenMstByFutansyaNo(int hpId, int sinDate, string futansyaNo);
+
         bool SaveHokenSyaMst(HokensyaMstModel model);
     }
 }

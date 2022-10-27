@@ -1,4 +1,5 @@
-﻿using Domain.Models.InsuranceMst;
+﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using System;
 using System.Collections.Generic;
 using System.Linq;

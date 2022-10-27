@@ -7,6 +7,7 @@ using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Xml.Linq;
 using System;
+using Domain.Models.Insurance;
 
 namespace Infrastructure.Repositories
 {
@@ -54,23 +55,50 @@ namespace Infrastructure.Repositories
                 {
                     var prefName = RoudouMsts.FirstOrDefault(x => x.RoudouCd == item.PrefNo.ToString())?.RoudouName;
                     var itemModelNew = new HokenMstModel(
-                                        item.HpId,
-                                        item.PrefNo,
-                                        item.HokenNo,
-                                        item.HokenSbtKbn,
-                                        item.HokenKohiKbn,
-                                        item.Houbetu,
-                                        item.HokenName,
-                                        item.HokenNameCd,
-                                        item.HokenEdaNo,
+                                        item.FutanKbn,
+                                        item.FutanRate,
                                         item.StartDate,
                                         item.EndDate,
-                                        item.IsOtherPrefValid,
+                                        item.HokenNo,
+                                        item.HokenEdaNo,
                                         item.HokenSname,
-                                        prefName == null ? string.Empty : prefName,
+                                        item.Houbetu,
+                                        item.HokenSbtKbn,
+                                        item.CheckDigit,
+                                        item.AgeStart,
+                                        item.AgeEnd,
+                                        item.IsFutansyaNoCheck,
+                                        item.IsJyukyusyaNoCheck,
+                                        item.JyukyuCheckDigit,
+                                        item.IsTokusyuNoCheck,
+                                        item.HokenName,
+                                        item.HokenNameCd,
+                                        item.HokenKohiKbn,
+                                        item.IsOtherPrefValid,
                                         item.ReceKisai,
-                                        item.FutanKbn,
-                                        item.FutanRate
+                                        item.IsLimitList,
+                                        item.IsLimitListSum,
+                                        item.EnTen,
+                                        item.KaiLimitFutan,
+                                        item.DayLimitFutan,
+                                        item.MonthLimitFutan,
+                                        item.MonthLimitCount,
+                                        item.LimitKbn,
+                                        item.CountKbn,
+                                        item.FutanYusen,
+                                        item.CalcSpKbn,
+                                        item.MonthSpLimit,
+                                        item.KogakuTekiyo,
+                                        item.KogakuTotalKbn,
+                                        item.KogakuHairyoKbn,
+                                        item.ReceSeikyuKbn,
+                                        item.ReceKisaiKokho,
+                                        item.ReceKisai2,
+                                        item.ReceTenKisai,
+                                        item.ReceFutanRound,
+                                        item.ReceZeroKisai,
+                                        item.ReceSpKbn,
+                                        prefName == null ? string.Empty : prefName
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -221,8 +249,51 @@ namespace Infrastructure.Repositories
                     prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName;
                 }
 
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, prefName, h.ReceKisai, h.FutanKbn, h.FutanRate));
-            });
+                list.Add(new HokenMstModel( h.FutanKbn,
+                                            h.FutanRate,
+                                            h.StartDate,
+                                            h.EndDate,
+                                            h.HokenNo,
+                                            h.HokenEdaNo,
+                                            h.HokenSname,
+                                            h.Houbetu,
+                                            h.HokenSbtKbn,
+                                            h.CheckDigit,
+                                            h.AgeStart,
+                                            h.AgeEnd,
+                                            h.IsFutansyaNoCheck,
+                                            h.IsJyukyusyaNoCheck,
+                                            h.JyukyuCheckDigit,
+                                            h.IsTokusyuNoCheck,
+                                            h.HokenName,
+                                            h.HokenNameCd,
+                                            h.HokenKohiKbn,
+                                            h.IsOtherPrefValid,
+                                            h.ReceKisai,
+                                            h.IsLimitList,
+                                            h.IsLimitListSum,
+                                            h.EnTen,
+                                            h.KaiLimitFutan,
+                                            h.DayLimitFutan,
+                                            h.MonthLimitFutan,
+                                            h.MonthLimitCount,
+                                            h.LimitKbn,
+                                            h.CountKbn,
+                                            h.FutanYusen,
+                                            h.CalcSpKbn,
+                                            h.MonthSpLimit,
+                                            h.KogakuTekiyo,
+                                            h.KogakuTotalKbn,
+                                            h.KogakuHairyoKbn,
+                                            h.ReceSeikyuKbn,
+                                            h.ReceKisaiKokho,
+                                            h.ReceKisai2,
+                                            h.ReceTenKisai,
+                                            h.ReceFutanRound,
+                                            h.ReceZeroKisai,
+                                            h.ReceSpKbn,
+                                            prefName == null ? string.Empty : prefName));
+                });
 
             return list;
         }
@@ -259,9 +330,10 @@ namespace Infrastructure.Repositories
                                                                 item.PostCode ?? string.Empty,
                                                                 item.Address1 ?? string.Empty,
                                                                 item.Address2 ?? string.Empty,
-                                                                item.Tel1 ?? string.Empty
+                                                                item.Tel1 ?? string.Empty,
+                                                                item.IsKigoNa
                                                             ))
-                                .OrderBy(item => item.HokensyaNo).Skip(pageIndex).Take(pageCount);
+                                .OrderBy(item => item.HokensyaNo).Skip((pageIndex - 1) * pageCount).Take(pageCount);
             return listDataPaging;
         }
 
@@ -305,7 +377,50 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(h =>
             {
-                list.Add(new HokenMstModel(h.HpId, h.PrefNo, h.HokenNo, h.HokenSbtKbn, h.HokenKohiKbn, h.Houbetu, h.HokenName, h.HokenNameCd, h.HokenEdaNo, h.StartDate, h.EndDate, h.IsOtherPrefValid, h.HokenSname, "", h.ReceKisai, h.FutanKbn, h.FutanRate));
+                list.Add(new HokenMstModel( h.FutanKbn,
+                                            h.FutanRate,
+                                            h.StartDate,
+                                            h.EndDate,
+                                            h.HokenNo,
+                                            h.HokenEdaNo,
+                                            h.HokenSname,
+                                            h.Houbetu,
+                                            h.HokenSbtKbn,
+                                            h.CheckDigit,
+                                            h.AgeStart,
+                                            h.AgeEnd,
+                                            h.IsFutansyaNoCheck,
+                                            h.IsJyukyusyaNoCheck,
+                                            h.JyukyuCheckDigit,
+                                            h.IsTokusyuNoCheck,
+                                            h.HokenName,
+                                            h.HokenNameCd,
+                                            h.HokenKohiKbn,
+                                            h.IsOtherPrefValid,
+                                            h.ReceKisai,
+                                            h.IsLimitList,
+                                            h.IsLimitListSum,
+                                            h.EnTen,
+                                            h.KaiLimitFutan,
+                                            h.DayLimitFutan,
+                                            h.MonthLimitFutan,
+                                            h.MonthLimitCount,
+                                            h.LimitKbn,
+                                            h.CountKbn,
+                                            h.FutanYusen,
+                                            h.CalcSpKbn,
+                                            h.MonthSpLimit,
+                                            h.KogakuTekiyo,
+                                            h.KogakuTotalKbn,
+                                            h.KogakuHairyoKbn,
+                                            h.ReceSeikyuKbn,
+                                            h.ReceKisaiKokho,
+                                            h.ReceKisai2,
+                                            h.ReceTenKisai,
+                                            h.ReceFutanRound,
+                                            h.ReceZeroKisai,
+                                            h.ReceSpKbn,
+                                            string.Empty));
             });
 
             // Get KohiMst

@@ -291,7 +291,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                    , request.PostCode
                                                    , request.Address1
                                                    , request.Address2
-                                                   , request.Tel1);
+                                                   , request.Tel1
+                                                   , request.IsKigoNa);
 
             var output = _bus.Handle(input);
             var presenter = new SaveHokenSyaMstPresenter();
