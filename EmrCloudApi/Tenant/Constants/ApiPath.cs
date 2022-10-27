@@ -94,5 +94,8 @@
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
+
+        //Swaphoken
+        public const string SwapHoken = "SwapHoken";
     }
 }

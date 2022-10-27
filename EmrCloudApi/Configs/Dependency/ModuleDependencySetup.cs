@@ -215,6 +215,9 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.SwapHoken.Save;
+using Interactor.SwapHoken;
+using Domain.Models.SwapHoken;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -313,6 +316,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
+            services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -523,6 +527,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
+
+
+            //SwapHoken
+            busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
