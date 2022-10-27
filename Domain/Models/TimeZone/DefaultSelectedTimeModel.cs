@@ -11,18 +11,22 @@ public class DefaultSelectedTimeModel
         IsShowPopup = false;
         JikanKbnDefault = 0;
         CurrentTimeKbn = 0;
+        BeforeTimeKbn = 0;
     }
 
-    public DefaultSelectedTimeModel(string timeKbnName, int uketukeTime, string startTime, string endTime, int currentTimeKbn, bool isShowPopup, int jikanKbnDefault)
+    public DefaultSelectedTimeModel(string timeKbnName, int uketukeTime, string startTime, string endTime, int currentTimeKbn, int beforeTimeKbn, bool isShowPopup, int jikanKbnDefault)
     {
         TimeKbnName = timeKbnName;
         UketukeTime = uketukeTime;
         StartTime = startTime;
         EndTime = endTime;
         CurrentTimeKbn = currentTimeKbn;
+        BeforeTimeKbn = beforeTimeKbn;
         IsShowPopup = isShowPopup;
         JikanKbnDefault = jikanKbnDefault;
     }
+
+
 
 
     // for message popup
@@ -35,6 +39,8 @@ public class DefaultSelectedTimeModel
     public string EndTime { get; private set; }
 
     public int CurrentTimeKbn { get; private set; }
+
+    public int BeforeTimeKbn { get; private set; }
 
     public bool IsShowPopup { get; private set; }
 

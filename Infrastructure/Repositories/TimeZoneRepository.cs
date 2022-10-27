@@ -63,6 +63,7 @@ public class TimeZoneRepository : ITimeZoneRepository
                         startTime,
                         endTime,
                         currentTimeKbn,
+                        beforeTimeKbn,
                         isShowPopup,
                         GetJikanKbnDefaultValue(isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
                     );
