@@ -103,6 +103,7 @@ using Interactor.SystemConf;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
+using Interactor.UserConf;
 using Interactor.VisitingList;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.AccountDue.GetAccountDueList;
@@ -212,6 +213,7 @@ using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
+using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
@@ -524,6 +526,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //DefaultSelectedTime
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();
+
+            //UserConf
+            busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
