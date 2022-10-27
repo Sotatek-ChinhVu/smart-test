@@ -32,7 +32,6 @@ public class TimeZoneRepository : ITimeZoneRepository
         //Adult Patient
         var listTimeZoneConfig = GetTimeZoneConfs(hpId);
 
-
         var timeZoneConfig = listTimeZoneConfig.FirstOrDefault(item => item.YoubiKbn == dayOfWeek && item.StartTime <= uketukeTime && item.EndTime > uketukeTime);
         if (timeZoneConfig != null)
         {

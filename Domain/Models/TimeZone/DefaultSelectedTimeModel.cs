@@ -26,9 +26,6 @@ public class DefaultSelectedTimeModel
         JikanKbnDefault = jikanKbnDefault;
     }
 
-
-
-
     // for message popup
     public string TimeKbnName { get; private set; }
 

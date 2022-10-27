@@ -1458,17 +1458,16 @@ namespace Helper.Common
             return result;
         }
 
-        public static string TimeToShowTime(int TimeValue)
+        public static string TimeToShowTime(int timeValue)
         {
-            string Result = string.Empty;
-            string WrkStr = string.Empty;
-            if (TimeValue.ToString().Length > 4)
-                WrkStr = TimeValue.ToString("D6");
-
+            var result = string.Empty;
+            var wrkStr = string.Empty;
+            if (timeValue.ToString().Length > 4)
+                wrkStr = timeValue.ToString("D6");
             else
-                WrkStr = TimeValue.ToString("D4");
-            Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
-            return Result;
+                wrkStr = timeValue.ToString("D4");
+            result = Copy(wrkStr, 1, 2) + ":" + Copy(wrkStr, 3, 2);
+            return result;
         }
     }
 
