@@ -1427,6 +1427,49 @@ namespace Helper.Common
                     break;
             }
         }
+
+        public static int DayOfWeek(DateTime dateTime)
+        {
+            int result = 0;
+            switch (dateTime.DayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    result = 1;
+                    break;
+                case System.DayOfWeek.Monday:
+                    result = 2;
+                    break;
+                case System.DayOfWeek.Tuesday:
+                    result = 3;
+                    break;
+                case System.DayOfWeek.Wednesday:
+                    result = 4;
+                    break;
+                case System.DayOfWeek.Thursday:
+                    result = 5;
+                    break;
+                case System.DayOfWeek.Friday:
+                    result = 6;
+                    break;
+                case System.DayOfWeek.Saturday:
+                    result = 7;
+                    break;
+            }
+            return result;
+        }
+
+        public static string TimeToShowTime(int TimeValue)
+        {
+            string Result = string.Empty;
+            string WrkStr = string.Empty;
+            if (TimeValue.ToString().Length > 4)
+                WrkStr = TimeValue.ToString("D6");
+
+            else
+                WrkStr = TimeValue.ToString("D4");
+            Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
+            return Result;
+        }
     }
 
     public enum WarekiFormat

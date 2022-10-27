@@ -45,6 +45,7 @@ using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SuperSetDetail;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
+using Domain.Models.TimeZone;
 using Domain.Models.TodayOdr;
 using Domain.Models.UketukeSbtDayInf;
 using Domain.Models.UketukeSbtMst;
@@ -177,6 +178,7 @@ using UseCase.RaiinKubunMst.GetList;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetReceptionDefault;
@@ -311,6 +313,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<Karte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
+            services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -519,6 +522,8 @@ namespace EmrCloudApi.Configs.Dependency
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
 
+            //DefaultSelectedTime
+            busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
