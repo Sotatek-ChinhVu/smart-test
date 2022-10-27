@@ -5,6 +5,7 @@
         Successful,
         Failed,
         InvalidPtId,
-        InvalidHpId
+        InvalidHpId,
+        NotAllowDeletePatient
     }
 }
