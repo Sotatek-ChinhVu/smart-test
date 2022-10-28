@@ -99,5 +99,8 @@
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+
+        //RaiinKubun
+        public const string GetColumnName = "GetColumnName";
     }
 }
