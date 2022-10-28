@@ -1,34 +1,27 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Models.Insurance;
 
-namespace Domain.Models.Insurance
+namespace EmrCloudApi.Tenant.Responses.Insurance
 {
-    public class HokenMstModel
+    public class HokenMstDto
     {
-        [JsonConstructor]
-        public HokenMstModel(int futanKbn, int futanRate, int startDate, int endDate, int hokenNo, int hokenEdaNo, string hokenSName, string houbetu, int hokenSbtKbn, int checkDigit, int ageStart, int ageEnd, int futansyaCheckFlag, int jyukyusyaCheckFlag, int jyuKyuCheckDigit, int tokusyuCheckFlag)
+        public HokenMstDto(HokenMstModel hokenMstModel)
         {
-            FutanKbn = futanKbn;
-            FutanRate = futanRate;
-            StartDate = startDate;
-            EndDate = endDate;
-            HokenNo = hokenNo;
-            HokenEdaNo = hokenEdaNo;
-            HokenSName = hokenSName;
-            Houbetu = houbetu;
-            HokenSbtKbn = hokenSbtKbn;
-            CheckDigit = checkDigit;
-            AgeStart = ageStart;
-            AgeEnd = ageEnd;
-            FutansyaCheckFlag = futansyaCheckFlag;
-            JyukyusyaCheckFlag = jyukyusyaCheckFlag;
-            JyuKyuCheckDigit = jyuKyuCheckDigit;
-            TokusyuCheckFlag = tokusyuCheckFlag;
-        }
-
-        public HokenMstModel()
-        {
-            HokenSName = string.Empty;
-            Houbetu = string.Empty;
+            FutanKbn = hokenMstModel.FutanKbn;
+            FutanRate = hokenMstModel.FutanRate;
+            StartDate = hokenMstModel.StartDate;
+            EndDate = hokenMstModel.EndDate;
+            HokenNo = hokenMstModel.HokenNo;
+            HokenEdaNo = hokenMstModel.HokenEdaNo;
+            HokenSName = hokenMstModel.HokenSName;
+            Houbetu = hokenMstModel.Houbetu;
+            HokenSbtKbn = hokenMstModel.HokenSbtKbn;
+            CheckDigit = hokenMstModel.CheckDigit;
+            AgeStart = hokenMstModel.AgeStart;
+            AgeEnd = hokenMstModel.AgeEnd;
+            JyuKyuCheckDigit = hokenMstModel.JyuKyuCheckDigit;
+            FutansyaCheckFlag = hokenMstModel.FutansyaCheckFlag;
+            JyukyusyaCheckFlag = hokenMstModel.JyukyusyaCheckFlag;
+            TokusyuCheckFlag = hokenMstModel.TokusyuCheckFlag;
         }
 
         public int FutanKbn { get; private set; }
