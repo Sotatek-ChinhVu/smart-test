@@ -1336,7 +1336,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
                     YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
                     YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
-                    YjCd12 = m.YjCd?? string.Empty.Substring(0, 12),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1830,7 +1830,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         dosageResultModel.ItemCd = d.ItemCd;
                         dosageResultModel.YjCd = d.YjCd;
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                         dosageResultModel.CurrentValue = itemInfo.Suryo;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                         dosageResultModel.UnitName = itemInfo.UnitName;
                         dosageResultModel.ItemName = itemInfo.ItemName;
                         dosageResultModel.IsFromUserDefined = true;

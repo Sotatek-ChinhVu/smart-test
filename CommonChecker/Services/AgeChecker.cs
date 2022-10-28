@@ -1,4 +1,5 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
+using Domain.Models.Insurance;
 using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
@@ -7,14 +8,19 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
+        private readonly SystemConfig _systemConf;
+
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
             throw new NotImplementedException();
         }
-
+        public AgeChecker(SystemConfig systemConf)
+        {
+            _systemConf = systemConf;
+        }
         private int GetSettingLevel()
         {
-            return SystemConfig.Instance.AgeLevelSetting;
+            return _systemConf.AgeLevelSetting;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
@@ -29,34 +35,16 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
-            int ageTypeCheckSetting = SystemConfig.Instance.AgeTypeCheckSetting;
+            int ageTypeCheckSetting = _systemConf.AgeTypeCheckSetting;
 
             List<AgeResultModel> checkedResult = Finder.CheckAge(HpID, PtID, Sinday, settingLevel, ageTypeCheckSetting, listItemCode);
 
             if (checkedResult != null && checkedResult.Count > 0)
             {
                 unitCheckerForOrderListResult.ErrorInfo = checkedResult;
-                unitCheckerForOrderListResult.ErrorOrderList = GetErrorOrderList(checkingOrderList, checkedResult);
             }
 
             return unitCheckerForOrderListResult;
         }
-
-        private List<TOdrInf> GetErrorOrderList(List<TOdrInf> checkingOrderList, List<AgeResultModel> checkedResultList)
-        {
-            List<string> listErrorItemCode = checkedResultList.Select(r => r.ItemCd).ToList();
-
-            List<TOdrInf> resultList = new List<TOdrInf>();
-            foreach (var checkingOrder in checkingOrderList)
-            {
-                var existed = checkingOrder.Any(o => listErrorItemCode.Contains(o.ItemCd));
-                if (existed)
-                {
-                    resultList.Add(checkingOrder);
-                }
-            }
-
-            return resultList;
-        }   
     }
 }

@@ -51,13 +51,13 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         private double GetUsingDay(TOdrInf order)
         {
-            TOdrDetail usingInfo = order.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(o => o.IsDrugUsage);
+            var usingInfo = order.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(o => o.IsDrugUsage);
 
             if (usingInfo == null)
             {
                 return -1;
             }
-            return usingInfo.Suryo;
+            return usingInfo?.Suryo  ?? 0;
         }
     }
 }

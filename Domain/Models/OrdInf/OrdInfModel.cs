@@ -107,6 +107,18 @@ namespace Domain.Models.OrdInfs
             }
         }
 
+        public List<OrdInfDetailModel> OdrInfDetailModelsIgnoreEmpty
+        {
+            get
+            {
+                if (OrdInfDetails == null)
+                {
+                    return new List<OrdInfDetailModel>();
+                }
+                return new List<OrdInfDetailModel>(OrdInfDetails.Where(o => !o.IsEmpty).ToList());
+            }
+        }
+
         public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
         {
 

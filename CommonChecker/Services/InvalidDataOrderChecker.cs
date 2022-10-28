@@ -106,12 +106,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 }
             }
 
-
-            if (checkedResult.Count > 0)
-            {
-                unitCheckerResult.IsError = true;
-                unitCheckerResult.ErrorInfo = checkedResult;
-            }
             return unitCheckerResult;
         }
 

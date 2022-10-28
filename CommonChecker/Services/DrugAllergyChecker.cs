@@ -7,6 +7,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
+        private readonly SystemConfig _systemConf;
+        public DrugAllergyChecker(SystemConfig systemConf)
+        {
+            _systemConf = systemConf;
+        }
         public List<string> ListPtAlrgyDrugCode { private get; set; } = new List<string>();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
@@ -52,7 +57,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             #endregion
 
-            if (SystemConfig.Instance.IsDuplicatedComponentChecked && listItemCode.Count != 0)
+            if (_systemConf.IsDuplicatedComponentChecked && listItemCode.Count != 0)
             {
                 List<DrugAllergyResultModel> checkedResultAsLevel = Finder.CheckDuplicatedComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode);
                 checkedResult.AddRange(checkedResultAsLevel);
@@ -60,15 +65,15 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if ((SystemConfig.Instance.IsProDrugChecked || SystemConfig.Instance.IsSameComponentChecked) && listItemCode.Count != 0)
+            if ((_systemConf.IsProDrugChecked || _systemConf.IsSameComponentChecked) && listItemCode.Count != 0)
             {
                 List<DrugAllergyResultModel> checkedResultAsLevel = new List<DrugAllergyResultModel>();
-                if (SystemConfig.Instance.IsProDrugChecked && listItemCode.Count != 0)
+                if (_systemConf.IsProDrugChecked && listItemCode.Count != 0)
                 {
                     checkedResultAsLevel.AddRange(Finder.CheckProDrug(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
                 }
 
-                if (SystemConfig.Instance.IsSameComponentChecked && listItemCode.Count != 0)
+                if (_systemConf.IsSameComponentChecked && listItemCode.Count != 0)
                 {
                     checkedResultAsLevel.AddRange(Finder.CheckSameComponent(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
                 }
@@ -78,7 +83,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 listItemCode = listItemCode.Where(l => !listCheckedCode.Contains(l)).ToList();
             }
 
-            if (SystemConfig.Instance.IsDuplicatedClassChecked && listItemCode.Count != 0)
+            if (_systemConf.IsDuplicatedClassChecked && listItemCode.Count != 0)
             {
                 checkedResult.AddRange(Finder.CheckDuplicatedClass(HpID, PtID, Sinday, listItemCode, ListPtAlrgyDrugCode));
             }

@@ -7,6 +7,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
+        private readonly SystemConfig _systemConf;
+        public DosageChecker(SystemConfig systemConf)
+        {
+            _systemConf = systemConf;
+        }
         public double CurrentHeight { get; set; }
 
         public double CurrentWeight { get; set; }
@@ -20,17 +25,17 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            bool isMinCheck = SystemConfig.Instance.DosageMinCheckSetting;
-            double ratioSetting = SystemConfig.Instance.DosageRatioSetting;
+            bool isMinCheck = _systemConf.DosageMinCheckSetting;
+            double ratioSetting = _systemConf.DosageRatioSetting;
             List<DosageResultModel> resultList = new List<DosageResultModel>();
             List<TOdrInf> errorOrderList = new List<TOdrInf>();
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-                if (checkingOrder.OdrKouiKbn == 21 && !SystemConfig.Instance.DosageDrinkingDrugSetting ||
-                checkingOrder.OdrKouiKbn == 22 && !SystemConfig.Instance.DosageDrugAsOrderSetting ||
+                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting ||
+                checkingOrder.OdrKouiKbn == 22 && !_systemConf.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
                 checkingOrder.OdrKouiKbn == 28 ||
-                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !SystemConfig.Instance.DosageOtherDrugSetting)
+                !new List<int>() { 21, 22, 23, 28 }.Contains(checkingOrder.OdrKouiKbn) && !_systemConf.DosageOtherDrugSetting)
                 {
                     continue;
                 }
