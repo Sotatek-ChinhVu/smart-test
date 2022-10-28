@@ -94,5 +94,8 @@
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
+
+        //RaiinKubun
+        public const string GetColumnName = "GetColumnName";
     }
 }
