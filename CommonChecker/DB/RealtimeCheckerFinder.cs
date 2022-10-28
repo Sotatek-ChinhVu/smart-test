@@ -1830,11 +1830,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     {
                         dosageResultModel.ItemCd = d.ItemCd;
                         dosageResultModel.YjCd = d.YjCd;
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-                        dosageResultModel.CurrentValue = itemInfo.Suryo;
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-                        dosageResultModel.UnitName = itemInfo.UnitName;
-                        dosageResultModel.ItemName = itemInfo.ItemName;
+                        dosageResultModel.CurrentValue = itemInfo?.Suryo ?? 0;
+                        dosageResultModel.UnitName = itemInfo?.UnitName ?? string.Empty;
+                        dosageResultModel.ItemName = itemInfo?.ItemName ?? string.Empty;
                         dosageResultModel.IsFromUserDefined = true;
                         checkedResult.Add(dosageResultModel);
                     }
@@ -2411,12 +2409,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         {
             KensaInfDetail weightInfo = GetBodyInfo(hpId, ptID, sinday, "V0002");
 
-#pragma warning disable CS8604 // Possible null reference argument.
-            if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo.ResultVal))
+            if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo?.ResultVal ?? string.Empty))
             {
-                return weightInfo.ResultVal.AsDouble();
+                return weightInfo?.ResultVal?.AsDouble() ?? 0;
             }
-#pragma warning restore CS8604 // Possible null reference argument.
 
             return GetCommonWeight(hpId, ptID, birdthDay, sinday, sex);
         }

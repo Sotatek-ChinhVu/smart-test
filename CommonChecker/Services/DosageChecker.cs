@@ -32,6 +32,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             List<TOdrInf> errorOrderList = new List<TOdrInf>();
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting||
                 checkingOrder.OdrKouiKbn == 22 && !_systemConf.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
@@ -40,6 +41,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
                 {
                     continue;
                 }
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
                 double usageQuantity = 0;
                 var usageItem = checkingOrder.OdrInfDetailModelsIgnoreEmpty.FirstOrDefault(d => d.IsStandardUsage);
