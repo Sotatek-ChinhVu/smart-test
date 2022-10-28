@@ -1,5 +1,4 @@
 ﻿using Domain.Models.RaiinKubunMst;
-using UseCase.KarteInfs.GetListColumnName;
 using UseCase.RaiinKubunMst.GetListColumnName;
 
 namespace Interactor.RaiinKubunMst
