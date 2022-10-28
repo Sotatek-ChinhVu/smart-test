@@ -21,7 +21,7 @@ public class UpdateTimeZoneDayInfPresenter
         UpdateTimeZoneDayInfStatus.Successed => ResponseMessage.Success,
         UpdateTimeZoneDayInfStatus.Failed => ResponseMessage.Failed,
         UpdateTimeZoneDayInfStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-        UpdateTimeZoneDayInfStatus.InvalidUserId => ResponseMessage.InvalidUserId,
+        UpdateTimeZoneDayInfStatus.InvalidUserId => ResponseMessage.UpsertInvalidUserId,
         UpdateTimeZoneDayInfStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
         UpdateTimeZoneDayInfStatus.InvalidCurrentTimeKbn => ResponseMessage.InvalidCurrentTimeKbn,
         UpdateTimeZoneDayInfStatus.InvalidBeforeTimeKbn => ResponseMessage.InvalidBeforeTimeKbn,

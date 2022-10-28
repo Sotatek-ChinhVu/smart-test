@@ -1,4 +1,6 @@
-﻿using Domain.Models.TimeZone;
+﻿using Domain.Models.HpMst;
+using Domain.Models.TimeZone;
+using Domain.Models.User;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 
 namespace Interactor.Reception;
@@ -6,18 +8,23 @@ namespace Interactor.Reception;
 public class UpdateTimeZoneDayInfInteractor : IUpdateTimeZoneDayInfInputPort
 {
     private readonly ITimeZoneRepository _timeZoneRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IHpInfRepository _hpInfRepository;
 
-    public UpdateTimeZoneDayInfInteractor(ITimeZoneRepository timeZoneRepository)
+    public UpdateTimeZoneDayInfInteractor(ITimeZoneRepository timeZoneRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository)
     {
         _timeZoneRepository = timeZoneRepository;
+        _userRepository = userRepository;
+        _hpInfRepository = hpInfRepository;
     }
+
     public UpdateTimeZoneDayInfOutputData Handle(UpdateTimeZoneDayInfInputData inputData)
     {
-        if (inputData.HpId <= 0)
+        if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
         {
             return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidHpId);
         }
-        else if (inputData.UserId <= 0)
+        else if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
         {
             return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUserId);
         }
