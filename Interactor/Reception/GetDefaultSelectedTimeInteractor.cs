@@ -45,11 +45,11 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
         string startTime = string.Empty, endTime = string.Empty;
         int currentTimeKbn = 0, beforeTimeKbn = 0;
         bool isShowPopup = false;
-        bool isPatientChildren = _timeZoneRepository.IsPatientChildren(hpId, birthDay, sinDate);
+        bool isPatientChildren = IsPatientChildren(hpId, birthDay, sinDate);
         bool isHoliday = _timeZoneRepository.IsHoliday(hpId, sinDate);
 
         //Child Patient
-        int timeKbnForChild = _timeZoneRepository.GetTimeKbnForChild(isPatientChildren, dayOfWeek, uketukeTime);
+        int timeKbnForChild = GetTimeKbnForChild(isPatientChildren, dayOfWeek, uketukeTime);
 
         //Adult Patient
         var listTimeZoneConfig = _timeZoneRepository.GetTimeZoneConfs(hpId);
@@ -119,5 +119,38 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
             return timeKbnForChild;
         }
         return currentTimeKbn;
+    }
+
+    private int GetTimeKbnForChild(bool isPatientChildren, int dayOfWeek, int uketukeTime)
+    {
+        int timeKbnForChild = 0;
+        if (isPatientChildren)
+        {
+            //夜間小特 : 6h-8h or 18h-22h
+            if ((uketukeTime >= 600 && uketukeTime < 800) ||
+                ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
+            {
+                timeKbnForChild = JikanConst.YakanKotoku;
+            }
+            //深夜小特 : 22h-6h
+            else if (uketukeTime >= 2200 || uketukeTime < 600)
+            {
+                timeKbnForChild = JikanConst.SinyaKotoku;
+            }
+        }
+        return timeKbnForChild;
+    }
+
+    private bool IsPatientChildren(int hpId, int birthDay, int sinDate)
+    {
+        if (_timeZoneRepository.GetShonikaSetting(hpId, sinDate) == 1)
+        {
+            int age = CIUtil.SDateToAge(birthDay, sinDate);
+            if (age >= 0 && age < 6)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

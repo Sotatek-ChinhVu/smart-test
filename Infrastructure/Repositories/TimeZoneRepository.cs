@@ -15,38 +15,6 @@ public class TimeZoneRepository : ITimeZoneRepository
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
-    public int GetTimeKbnForChild(bool isPatientChildren, int dayOfWeek, int uketukeTime)
-    {
-        int timeKbnForChild = 0;
-        if (isPatientChildren)
-        {
-            //夜間小特 : 6h-8h or 18h-22h
-            if ((uketukeTime >= 600 && uketukeTime < 800) ||
-                ((dayOfWeek == 7 ? uketukeTime >= 1200 : uketukeTime >= 1800) && uketukeTime < 2200))
-            {
-                timeKbnForChild = JikanConst.YakanKotoku;
-            }
-            //深夜小特 : 22h-6h
-            else if (uketukeTime >= 2200 || uketukeTime < 600)
-            {
-                timeKbnForChild = JikanConst.SinyaKotoku;
-            }
-        }
-        return timeKbnForChild;
-    }
-
-    public bool IsPatientChildren(int hpId, int birthDay, int sinDate)
-    {
-        if (GetShonikaSetting(hpId, sinDate) == 1)
-        {
-            int age = CIUtil.SDateToAge(birthDay, sinDate);
-            if (age >= 0 && age < 6)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public bool IsHoliday(int hpId, int sinDate)
     {
