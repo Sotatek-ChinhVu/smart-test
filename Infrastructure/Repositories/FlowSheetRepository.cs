@@ -134,8 +134,8 @@ namespace Infrastructure.Repositories
                         data.NextOdr?.PtId ?? 0
                     ));
 
-            totalCount = todayOdr.Union(nextOdrs).Count();
             var todayNextOdrs = todayOdr.Union(nextOdrs);
+            totalCount = todayNextOdrs.Count();
 
             FlowSheetModel? sinDateCurrent = null;
             if (!todayOdr.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
