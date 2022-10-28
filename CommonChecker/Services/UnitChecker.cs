@@ -10,7 +10,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public IHandler<TOdrInf, TOdrDetail> Handler;
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder;
       //  public IMasterFinder MasterFinder;

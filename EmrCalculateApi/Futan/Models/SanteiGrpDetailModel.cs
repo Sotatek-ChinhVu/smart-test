@@ -4,7 +4,7 @@ namespace EmrCalculateApi.Futan.Models
 {
     public class SanteiGrpDetailModel
     {
-        public SanteiGrpDetail SanteiGrpDetail { get; } = null;
+        public SanteiGrpDetail SanteiGrpDetail { get; }
 
         public SanteiGrpDetailModel(SanteiGrpDetail santeiGrpDetail)
         {

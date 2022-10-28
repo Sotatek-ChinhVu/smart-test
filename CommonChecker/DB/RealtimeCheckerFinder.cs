@@ -792,16 +792,16 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
             KensaInfDetail weightInfo = GetBodyInfo(hpID, ptID, sinday, "V0002");
             if (weightInfo != null)
             {
-                weight = weightInfo.ResultVal.AsDouble();
+                weight = weightInfo.ResultVal?.AsDouble() ?? 0;
             }
 
             List<string> listSettingLevel = GetLevelRange();
-            List<AgeResultModel> checkedResult = null;
+            List<AgeResultModel> checkedResult;
             if (ageTypeCheckSetting == 0)
             {
                 if (weight < 0.0 && age < 0.0)
                 {
-                    return null;
+                    return new List<AgeResultModel>();
                 }
 
                 checkedResult =
@@ -957,11 +957,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -971,11 +971,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1183,11 +1183,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1197,11 +1197,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1332,11 +1332,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1437,7 +1437,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 listIndexWord = _tenantNoTrackingDataContext.PtSupples
                     .Where(o => o.HpId == hpID && o.PtId == ptId && o.IsDeleted == 0)
                     .AsEnumerable()
-                    .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt, p.IsDeleted))
+                    .Select(p => new PtSuppleModel(p.HpId, p.PtId, p.SeqNo, p.SortNo, p.IndexCd ?? string.Empty, p.IndexWord ?? string.Empty, p.StartDate, p.EndDate, p.Cmt ?? string.Empty, p.IsDeleted))
                     .Where(p => p.StartDate <= sinday && sinday <= p.EndDate)
                     .Select(p => p.IndexWord)
                     .ToList();
@@ -1467,11 +1467,11 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                 {
                     m.YjCd,
                     m.ItemCd,
-                    YjCd4 = m.YjCd.Substring(0, 4),
-                    YjCd7 = m.YjCd.Substring(0, 7),
-                    YjCd8 = m.YjCd.Substring(0, 8),
-                    YjCd9 = m.YjCd.Substring(0, 9),
-                    YjCd12 = m.YjCd.Substring(0, 12),
+                    YjCd4 = m.YjCd ?? string.Empty.Substring(0, 4),
+                    YjCd7 = m.YjCd ?? string.Empty.Substring(0, 7),
+                    YjCd8 = m.YjCd ?? string.Empty.Substring(0, 8),
+                    YjCd9 = m.YjCd ?? string.Empty.Substring(0, 9),
+                    YjCd12 = m.YjCd ?? string.Empty.Substring(0, 12),
                 })
                 .ToList();
 
@@ -1623,7 +1623,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
             listDosageInfoByUser.ForEach((d) =>
             {
-                var itemInfo = listItem.FirstOrDefault(i => i.ItemCD == d.ItemCd);
+                var itemInfo = listItem.FirstOrDefault(i => i.ItemCD == d.ItemCd) ?? new DrugInfo();
                 // Caculate dosage
                 double factor = 0;
                 double odrCnv = 1;
@@ -1772,8 +1772,8 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     }
 
                     // Execute checking
-                    DosageResultModel dosageResultModel = null;
-                    if (itemInfo.SinKouiKbn == 21)
+                    DosageResultModel? dosageResultModel = null;
+                    if (itemInfo?.SinKouiKbn == 21)
                     {
                         // 内服
                         if (minCheck && minDay > dosage && minDay != -1)
@@ -1787,7 +1787,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                             dosageResultModel.SuggestedValue = GetSuggestedValue(maxByDayToCheck, factor, odrCnv, false);
                         }
                     }
-                    else if (itemInfo.SinKouiKbn == 22)
+                    else if (itemInfo?.SinKouiKbn == 22)
                     {
                         // 頓服
                         if (minCheck && minOnce > dosage && minOnce != -1)
@@ -2117,7 +2117,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
                     dosageResult.ItemName = itemInfo.ItemName;
                 }
                 // Execute checking
-                DosageResultModel dosageResultModel = null;
+                DosageResultModel? dosageResultModel = null;
 
                 //Follow this document: https://wiki.sotatek.com/pages/viewpage.action?pageId=29130796
                 bool isOnceLimitFoundIntoAllOfRecord = listFilteredDosageInfo.Where(f => string.IsNullOrEmpty(f.OnceLimitUnit)).Count() == 0;
@@ -2409,10 +2409,12 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         {
             KensaInfDetail weightInfo = GetBodyInfo(hpId, ptID, sinday, "V0002");
 
+#pragma warning disable CS8604 // Possible null reference argument.
             if (weightInfo != null && CIUtil.IsDigitsOnly(weightInfo.ResultVal))
             {
                 return weightInfo.ResultVal.AsDouble();
             }
+#pragma warning restore CS8604 // Possible null reference argument.
 
             return GetCommonWeight(hpId, ptID, birdthDay, sinday, sex);
         }
@@ -2421,9 +2423,10 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
         {
             KensaInfDetail heightInfo = GetBodyInfo(hpId, ptID, sinday, "V0001");
 
-            if (heightInfo != null && CIUtil.IsDigitsOnly(heightInfo.ResultVal))
+            if (heightInfo != null && CIUtil.IsDigitsOnly(heightInfo.ResultVal ?? string.Empty))
             {
-                return heightInfo.ResultVal.AsDouble();
+                var value = heightInfo.ResultVal ?? string.Empty;
+                return value.AsDouble();
             }
 
             return GetCommonHeight(hpId, ptID, birdthDay, sinday, sex);

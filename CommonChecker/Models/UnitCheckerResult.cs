@@ -13,11 +13,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public ActionResultType ActionType = ActionResultType.OK;
 
-        public TOdrInf NewData { get; set; } = null;
+        public TOdrInf NewData { get; set; }
 
         public bool IsError = false;
 
-        public object ErrorInfo = null;
+        public object ErrorInfo;
 
         public RealtimeCheckerType CheckerType { get; private set; }
 
@@ -31,6 +31,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
             CheckingData = checkingData;
             Sinday = sinday;
             PtId = ptId;
+
         }
     }
 }

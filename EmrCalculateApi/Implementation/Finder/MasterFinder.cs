@@ -24,12 +24,8 @@ namespace EmrCalculateApi.Implementation.Finder
                    p.EndDate >= sinDate &&
                    p.IpnNameCd == ipnNameCd)
                .FirstOrDefault();
+            return new IpnNameMstModel(entity ?? new IpnNameMst());
 
-            if (entity != null)
-            {
-                return new IpnNameMstModel(entity);
-            }
-            return null;
         }
 
         public SanteiCntCheckModel FindSanteiCntCheck(int santeiGrpCd, int sinDate)
@@ -40,12 +36,8 @@ namespace EmrCalculateApi.Implementation.Finder
                  e.StartDate <= sinDate &&
                  e.EndDate >= sinDate)
                  .FirstOrDefault();
+            return new SanteiCntCheckModel(entity ?? new SanteiCntCheck());
 
-            if (entity != null)
-            {
-                return new SanteiCntCheckModel(entity);
-            }
-            return null;
         }
 
         public SanteiGrpDetailModel FindSanteiGrpDetail(string itemCd)
@@ -55,11 +47,8 @@ namespace EmrCalculateApi.Implementation.Finder
                  e.ItemCd == itemCd)
                  .FirstOrDefault();
 
-            if (entity != null)
-            {
-                return new SanteiGrpDetailModel(entity);
-            }
-            return null;
+            return new SanteiGrpDetailModel(entity ?? new SanteiGrpDetail());
+
         }
 
         public TenMstModel FindTenMst(string itemCd, int sinDate)
@@ -71,11 +60,8 @@ namespace EmrCalculateApi.Implementation.Finder
                    p.ItemCd == itemCd)
                .FirstOrDefault();
 
-            if (entity != null)
-            {
-                return new TenMstModel(entity);
-            }
-            return null;
+            return new TenMstModel(entity ?? new TenMst());
+
         }
 
         public double GetOdrCountInMonth(long ptId, int sinDate, string itemCd)

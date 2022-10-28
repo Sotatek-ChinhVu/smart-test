@@ -14,7 +14,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
     {
         public RealtimeChecker()
         {
-             
         }
 
         public void InjectProperties(int hpID, long ptID, int sinday, bool termLimitCheckingOnly = false)
@@ -25,10 +24,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             _termLimitCheckingOnly = termLimitCheckingOnly;
         }
 
-        public void InjectHandler(IHandler<TOdrInf, TOdrDetail> handler)
-        {
-            _handler = handler;
-        }
 
         public void InjectFinder(IRealtimeCheckerFinder finder)
         {
@@ -37,7 +32,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         #region properties
 
-        private IHandler<TOdrInf, TOdrDetail> _handler;
         private IRealtimeCheckerFinder _finder;
         private int _hpID;
         private long _ptID;
@@ -57,7 +51,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         #region UnitCheck
         private void InitUnitCheck(UnitChecker<TOdrInf, TOdrDetail> unitChecker)
         {
-            unitChecker.Handler = _handler;
             unitChecker.Finder = _finder;
             unitChecker.HpID = _hpID;
             unitChecker.PtID = _ptID;
@@ -281,7 +274,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             InitUnitCheck(dayLimitChecker);
 
             UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> checkedResult = dayLimitChecker.CheckOrderList(new List<TOdrInf>() { checkingOrder });
-            List<DayLimitResultModel> result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
+            List<DayLimitResultModel>? result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
             return result ?? new List<DayLimitResultModel>();
         }
 
