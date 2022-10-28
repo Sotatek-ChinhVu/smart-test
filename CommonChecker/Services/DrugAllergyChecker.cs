@@ -7,10 +7,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        private readonly SystemConfig _systemConf;
+        private readonly SystemConfig? _systemConf;
         public DrugAllergyChecker(SystemConfig systemConf)
         {
             _systemConf = systemConf;
+        }
+        public DrugAllergyChecker()
+        {
+
         }
         public List<string> ListPtAlrgyDrugCode { private get; set; } = new List<string>();
 

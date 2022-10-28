@@ -1,5 +1,4 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Models.Insurance;
 using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
@@ -8,7 +7,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        private readonly SystemConfig _systemConf;
+        private readonly SystemConfig? _systemConf;
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {
@@ -18,9 +17,10 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         {
             _systemConf = systemConf;
         }
+        public AgeChecker() { }
         private int GetSettingLevel()
         {
-            return _systemConf.AgeLevelSetting;
+            return _systemConf?.AgeLevelSetting ?? default;
         }
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
@@ -35,7 +35,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             // Get listItemCode
             List<TOdrInf> checkingOrderList = unitCheckerForOrderListResult.CheckingOrderList;
             List<string> listItemCode = GetAllOdrDetailCodeByOrderList(checkingOrderList);
-            int ageTypeCheckSetting = _systemConf.AgeTypeCheckSetting;
+            int ageTypeCheckSetting = _systemConf?.AgeTypeCheckSetting ?? 0;
 
             List<AgeResultModel> checkedResult = Finder.CheckAge(HpID, PtID, Sinday, settingLevel, ageTypeCheckSetting, listItemCode);
 

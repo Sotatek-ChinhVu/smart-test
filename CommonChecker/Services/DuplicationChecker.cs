@@ -1,5 +1,4 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Enum;
 using Domain.Types;
 using Helper.Constants;
 
@@ -9,10 +8,14 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        private readonly SystemConfig _systemConf;
+        private readonly SystemConfig? _systemConf;
         public DuplicationChecker(SystemConfig systemConf)
         {
             _systemConf = systemConf;
+        }
+        public DuplicationChecker()
+        {
+
         }
         public List<TOdrInf> CurrentListOrder = new();
 
@@ -37,7 +40,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             }
 
             #region Check duplicated item
-            int checkDuplicationSetting = _systemConf.CheckDupicatedSetting;
+            int checkDuplicationSetting = _systemConf?.CheckDupicatedSetting ?? 0;
             bool allowCheckDuplicatedItemCode = checkDuplicationSetting != 2;
             bool allowCheckDuplicatedIppanCode = checkDuplicationSetting == 1;
 

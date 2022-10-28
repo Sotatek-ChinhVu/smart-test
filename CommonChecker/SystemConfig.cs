@@ -18,6 +18,7 @@ namespace CommonCheckers
             _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
         }
 
+
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
         {
             lock (_threadsafelock)

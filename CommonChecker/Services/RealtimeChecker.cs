@@ -1,10 +1,8 @@
 ﻿using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
-using CommonCheckers.OrderRealtimeChecker.Services.Interface;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Types;
-using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -12,7 +10,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        
+
         public void InjectProperties(int hpID, long ptID, int sinday, bool termLimitCheckingOnly = false)
         {
             _hpID = hpID;
@@ -57,11 +55,11 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         private UnitCheckerResult<TOdrInf, TOdrDetail> CheckKinki(List<TOdrInf> currentListOdr, TOdrInf checkingOrder)
         {
             UnitChecker<TOdrInf, TOdrDetail> kinkiChecker =
-                new KinkiChecker<TOdrInf, TOdrDetail>()
-                {
-                    CurrentListOrder = currentListOdr,
-                    CheckType = RealtimeCheckerType.Kinki
-                };
+               new KinkiChecker<TOdrInf, TOdrDetail>()
+               {
+                   CurrentListOrder = currentListOdr,
+                   CheckType = RealtimeCheckerType.Kinki
+               };
             InitUnitCheck(kinkiChecker);
 
             return kinkiChecker.CheckOrder(checkingOrder);

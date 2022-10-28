@@ -7,11 +7,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        private readonly SystemConfig _systemConf;
+        private readonly SystemConfig? _systemConf;
         public DosageChecker(SystemConfig systemConf)
         {
             _systemConf = systemConf;
         }
+        public DosageChecker() { }
         public double CurrentHeight { get; set; }
 
         public double CurrentWeight { get; set; }
@@ -25,13 +26,13 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         public override UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> HandleCheckOrderList(UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> unitCheckerForOrderListResult)
         {
-            bool isMinCheck = _systemConf.DosageMinCheckSetting;
-            double ratioSetting = _systemConf.DosageRatioSetting;
+            bool isMinCheck = _systemConf?.DosageMinCheckSetting ?? default;
+            double ratioSetting = _systemConf?.DosageRatioSetting ?? default;
             List<DosageResultModel> resultList = new List<DosageResultModel>();
             List<TOdrInf> errorOrderList = new List<TOdrInf>();
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
-                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting ||
+                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting||
                 checkingOrder.OdrKouiKbn == 22 && !_systemConf.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
                 checkingOrder.OdrKouiKbn == 28 ||
