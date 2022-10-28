@@ -30,6 +30,7 @@ using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
+using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 
@@ -215,6 +216,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDefaultSelectedTimeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateTimeZoneDayInf)]
+        public ActionResult<Response<UpdateTimeZoneDayInfResponse>> UpdateTimeZoneDayInf([FromBody] UpdateTimeZoneDayInfRequest request)
+        {
+            var input = new UpdateTimeZoneDayInfInputData(request.HpId, request.UserId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateTimeZoneDayInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateTimeZoneDayInfResponse>>(presenter.Result);
         }
     }
 }

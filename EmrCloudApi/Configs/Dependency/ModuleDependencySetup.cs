@@ -220,6 +220,7 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
+using UseCase.Reception.UpdateTimeZoneDayInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -528,12 +529,12 @@ namespace EmrCloudApi.Configs.Dependency
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
 
-            //DefaultSelectedTime
+            //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();
+            busBuilder.RegisterUseCase<UpdateTimeZoneDayInfInputData, UpdateTimeZoneDayInfInteractor>();
 
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
-
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
