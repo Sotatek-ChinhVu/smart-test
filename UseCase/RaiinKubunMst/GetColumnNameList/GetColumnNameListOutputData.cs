@@ -1,5 +1,4 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.KarteInfs.GetListColumnName;
 
 namespace UseCase.RaiinKubunMst.GetListColumnName
 {

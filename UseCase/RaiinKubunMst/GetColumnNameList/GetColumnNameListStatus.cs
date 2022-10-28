@@ -1,4 +1,4 @@
-﻿namespace UseCase.KarteInfs.GetListColumnName
+﻿namespace UseCase.RaiinKubunMst.GetListColumnName
 {
     public enum GetColumnNameListStatus : byte
     {
