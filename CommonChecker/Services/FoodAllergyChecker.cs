@@ -8,7 +8,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public List<PtAlrgyFoodModel>? ListPtAlrgyFoods { get; set; }
+        public List<PtAlrgyFoodModel> ListPtAlrgyFoods { get; set; } = new List<PtAlrgyFoodModel>();
 
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {

@@ -13,12 +13,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public ActionResultType ActionType = ActionResultType.OK;
 
-        public TOdrInf NewData { get; set; }
-
-        public bool IsError = false;
-
-        public object ErrorInfo;
-
         public RealtimeCheckerType CheckerType { get; private set; }
 
         public TOdrInf CheckingData { get; private set; }

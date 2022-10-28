@@ -95,7 +95,7 @@ namespace EmrCalculateApi.Implementation.Finder
             {
                 allDetail.AddRange(detailList);
             }
-            return allDetail.Sum(d => (d.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(d.ItemCd)) ? 1 : d.Suryo);
+            return allDetail.Sum(d => (d.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(d.ItemCd ?? string.Empty)) ? 1 : d.Suryo);
         }
     }
 }

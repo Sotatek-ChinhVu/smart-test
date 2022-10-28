@@ -16,7 +16,7 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
 
         KensaInfDetail GetBodyInfo(int hpId, long ptId, int sinday, string kensaItemCode);
 
-        List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<string> listItemCode, int level, List<PtAlrgyFoodModel>? listPtAlrgyFoods);
+        List<FoodAllergyResultModel> CheckFoodAllergy(int hpID, long ptID, int sinDate, List<string> listItemCode, int level, List<PtAlrgyFoodModel> listPtAlrgyFoods);
 
         List<DrugAllergyResultModel> CheckDuplicatedComponent(int hpID, long ptID, int sinDate, List<string> listItemCode, List<string> listComparedItemCode);
 

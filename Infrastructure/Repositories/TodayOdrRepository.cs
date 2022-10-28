@@ -115,7 +115,9 @@ namespace Infrastructure.Repositories
                 else
                 {
                     // Be sure old header is deleted
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
                     oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
                     oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
                     oldHeaderInfModel.UpdateId = TempIdentity.UserId;
                     oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;

@@ -121,13 +121,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
             #endregion
 
-            if (listErrorInfo.Count > 0)
-            {
-                listErrorInfo = RemoveDuplicatedItem(listErrorInfo);
-                unitCheckerResult.IsError = true;
-                unitCheckerResult.ErrorInfo = listErrorInfo;
-            }
-
             return unitCheckerResult;
         }
 

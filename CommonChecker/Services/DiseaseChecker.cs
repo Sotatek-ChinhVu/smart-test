@@ -1,4 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
+﻿using CommonCheckers.OrderRealtimeChecker.DB;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Types;
 

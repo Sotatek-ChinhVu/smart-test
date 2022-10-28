@@ -12,10 +12,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
         where TOdrInf : class, IOdrInfModel<TOdrDetail>
         where TOdrDetail : class, IOdrInfDetailModel
     {
-        public RealtimeChecker()
-        {
-        }
-
+        
         public void InjectProperties(int hpID, long ptID, int sinday, bool termLimitCheckingOnly = false)
         {
             _hpID = hpID;
@@ -216,17 +213,23 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
 
         #endregion
 
-        private List<PtAlrgyDrugModel> _listPtAlrgyDrug;
-        private List<PtAlrgyFoodModel> _listPtAlrgyFood;
-        private List<PtOtherDrugModel> _listPtOtherDrug;
-        private List<PtOtcDrugModel> _listPtOtcDrug;
-        private List<PtSuppleModel> _listPtSupple;
-        private List<PtKioRekiModel> _listPtKioReki;
-        private List<string> _listDiseaseCode;
+        private List<PtAlrgyDrugModel> _listPtAlrgyDrug = new List<PtAlrgyDrugModel>();
+        private List<PtAlrgyFoodModel> _listPtAlrgyFood = new List<PtAlrgyFoodModel>();
+        private List<PtOtherDrugModel> _listPtOtherDrug = new List<PtOtherDrugModel>();
+        private List<PtOtcDrugModel> _listPtOtcDrug = new List<PtOtcDrugModel>();
+        private List<PtSuppleModel> _listPtSupple = new List<PtSuppleModel>();
+        private List<PtKioRekiModel> _listPtKioReki = new List<PtKioRekiModel>();
+        private List<string> _listDiseaseCode = new List<string>();
         private double _currentHeight = 0;
         private double _currentWeight = 0;
 
-        private List<string> _listPtAlrgyDrugCode;
+        private List<string> _listPtAlrgyDrugCode = new List<string>();
+
+        public RealtimeChecker(IRealtimeCheckerFinder finder)
+        {
+            _finder = finder;
+        }
+
         public List<string> ListPtAlrgyDrugCode
         {
             get
@@ -276,36 +279,6 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             UnitCheckerForOrderListResult<TOdrInf, TOdrDetail> checkedResult = dayLimitChecker.CheckOrderList(new List<TOdrInf>() { checkingOrder });
             List<DayLimitResultModel>? result = checkedResult.ErrorInfo as List<DayLimitResultModel>;
             return result ?? new List<DayLimitResultModel>();
-        }
-
-        private List<UnitCheckerResult<TOdrInf, TOdrDetail>> GetErrorFromOrder(List<TOdrInf> currentListOdr, TOdrInf checkingOrder)
-        {
-            List<UnitCheckerResult<TOdrInf, TOdrDetail>> listError = new List<UnitCheckerResult<TOdrInf, TOdrDetail>>();
-            if (CheckerCondition.IsCheckingDuplication)
-            {
-                UnitCheckerResult<TOdrInf, TOdrDetail> duplicationCheckResult = CheckDuplication(currentListOdr, checkingOrder);
-                if (duplicationCheckResult.IsError)
-                {
-                    listError.Add(duplicationCheckResult);
-                }
-            }
-
-            if (CheckerCondition.IsCheckingKinki)
-            {
-                UnitCheckerResult<TOdrInf, TOdrDetail> kinkiCheckResult = CheckKinki(currentListOdr, checkingOrder);
-                if (kinkiCheckResult.IsError)
-                {
-                    listError.Add(kinkiCheckResult);
-                }
-
-                UnitCheckerResult<TOdrInf, TOdrDetail> kinkiUserCheckResult = CheckKinkiUser(currentListOdr, checkingOrder);
-                if (kinkiUserCheckResult.IsError)
-                {
-                    listError.Add(kinkiUserCheckResult);
-                }
-            }
-
-            return listError;
         }
 
         private List<UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>> GetErrorFromListOrder(List<TOdrInf> checkingOrderList)
