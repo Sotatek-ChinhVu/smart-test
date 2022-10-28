@@ -11,10 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.SwapHoken
 
         public void Complete(SaveSwapHokenOutputData outputData)
         {
-            Result.Data = new SaveSwapHokenResponse()
-            {
-                State = outputData.Status
-            };
+            Result.Data = new SaveSwapHokenResponse(outputData.Status);
             Result.Status = (int)outputData.Status;
             Result.Message = GetMessage(outputData.Status);
         }
