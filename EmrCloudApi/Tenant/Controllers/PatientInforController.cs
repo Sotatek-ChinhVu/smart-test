@@ -58,6 +58,10 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
+using EmrCloudApi.Tenant.Requests.SwapHoken;
+using UseCase.SwapHoken.Save;
+using EmrCloudApi.Tenant.Presenters.SwapHoken;
+using EmrCloudApi.Tenant.Responses.SwapHoken;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -420,6 +424,22 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new ValidateInsurancePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ValidateListInsuranceResponse>>(presenter.Result);
+        }
+        [HttpPost(ApiPath.SwapHoken)]
+        public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
+        {
+            var input = new SaveSwapHokenInputData(request.HpId, 
+                                                   request.PtId, 
+                                                   request.HokenIdBefore, 
+                                                   request.HokenIdAfter,
+                                                   request.HokenPidBefore,
+                                                   request.HokenPidAfter,
+                                                   request.StartDate,
+                                                   request.EndDate);
+            var output = _bus.Handle(input);
+            var presenter = new SaveSwapHokenPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
         }
     }
 }

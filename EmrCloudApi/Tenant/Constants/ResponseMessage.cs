@@ -289,6 +289,13 @@
 
         //RaiinKubun controller
 
+        //TimeZone
+        public static readonly string InvalidBirthDay = "Invalid BirthDay";
+        public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn >= 0";
+        public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
+
         //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
         public static readonly string GetSetListSinDate = "Invalid SinDate";
@@ -732,5 +739,11 @@
         //DeletePatient
         public static readonly string NotAllowDeletePatient = "This patient is not allowed to delete";
 
+
+        //SwapHoken
+        public static readonly string SwapHokenSourceInsuranceHasNotSelected = "Please select the source insurance.";
+        public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
+        public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
+        public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
     }
 }

@@ -1,7 +1,6 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.InsuranceList;
-using Microsoft.AspNetCore.Mvc;
+using EmrCloudApi.Tenant.Responses.Insurance;
 using UseCase.Insurance.GetList;
 
 namespace EmrCloudApi.Tenant.Presenters.InsuranceList
@@ -16,13 +15,13 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceList
 
                 Data = new GetInsuranceListResponse()
                 {
-                    Data = output.Data
+                    Data = new PatientInsuranceDto(output.Data.ListInsurance, output.Data.ListHokenInf, output.Data.ListKohi)
                 },
                 Status = (byte)output.Status,
             };
             switch (output.Status)
             {
-                
+
                 case GetInsuranceListStatus.InvalidPtId:
                     Result.Message = ResponseMessage.InvalidPtId;
                     break;
