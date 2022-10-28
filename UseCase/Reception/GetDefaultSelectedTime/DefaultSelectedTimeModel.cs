@@ -1,4 +1,4 @@
-﻿namespace Domain.Models.TimeZone;
+﻿namespace UseCase.Reception.GetDefaultSelectedTime;
 
 public class DefaultSelectedTimeModel
 {

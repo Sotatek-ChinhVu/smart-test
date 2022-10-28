@@ -1,4 +1,4 @@
-﻿using Domain.Models.TimeZone;
+﻿using UseCase.Reception.GetDefaultSelectedTime;
 
 namespace EmrCloudApi.Tenant.Responses.Reception;
 

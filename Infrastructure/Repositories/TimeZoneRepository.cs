@@ -1,5 +1,4 @@
 ﻿using Domain.Models.TimeZone;
-using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -16,90 +15,7 @@ public class TimeZoneRepository : ITimeZoneRepository
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
-    public DefaultSelectedTimeModel GetDefaultSelectedTime(int hpId, int sinDate, int birthDay)
-    {
-        int dayOfWeek = CIUtil.DayOfWeek(CIUtil.IntToDate(sinDate));
-        int uketukeTime = int.Parse(DateTime.Now.ToString("HHmm"));
-        string startTime = string.Empty, endTime = string.Empty;
-        int currentTimeKbn = 0, beforeTimeKbn = 0;
-        bool isShowPopup = false;
-        bool isPatientChildren = IsPatientChildren(hpId, birthDay, sinDate);
-        bool isHoliday = IsHoliday(hpId, sinDate);
-
-        //Child Patient
-        int timeKbnForChild = GetTimeKbnForChild(isPatientChildren, dayOfWeek, uketukeTime);
-
-        //Adult Patient
-        var listTimeZoneConfig = GetTimeZoneConfs(hpId);
-
-        var timeZoneConfig = listTimeZoneConfig.FirstOrDefault(item => item.YoubiKbn == dayOfWeek && item.StartTime <= uketukeTime && item.EndTime > uketukeTime);
-        if (timeZoneConfig != null)
-        {
-            currentTimeKbn = timeZoneConfig.TimeKbn;
-        }
-
-        var timeZoneDayInf = GetLatestTimeZoneDayInf(hpId, sinDate, uketukeTime);
-        if (timeZoneDayInf != null)
-        {
-            beforeTimeKbn = timeZoneDayInf.TimeKbn;
-        }
-
-        string timeKbnName = string.Empty;
-        if (currentTimeKbn != beforeTimeKbn)
-        {
-            //GetDataForMessage
-            isShowPopup = true;
-            timeKbnName = JikanConst.JikanKotokuDict[currentTimeKbn];
-            if (currentTimeKbn != JikanConst.JikanNai && timeZoneConfig != null)
-            {
-                startTime = CIUtil.TimeToShowTime(timeZoneConfig.StartTime);
-                endTime = CIUtil.TimeToShowTime(timeZoneConfig.EndTime);
-            }
-        }
-        return new DefaultSelectedTimeModel(
-                        timeKbnName,
-                        uketukeTime,
-                        startTime,
-                        endTime,
-                        currentTimeKbn,
-                        beforeTimeKbn,
-                        isShowPopup,
-                        GetJikanKbnDefaultValue(isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
-                    );
-    }
-
-    private int GetJikanKbnDefaultValue(bool isPatientChildren, bool isHoliday, int uketukeTime, int sinDate, int currentTimeKbn, int timeKbnForChild, List<TimeZoneConf> listTimeZoneConfig)
-    {
-        if (isPatientChildren && isHoliday && uketukeTime >= 600 && uketukeTime < 2200)
-        {
-            return JikanConst.KyujituKotoku;
-        }
-        else if (isHoliday)
-        {
-            return JikanConst.Kyujitu;
-        }
-        else if (sinDate != int.Parse(DateTime.Now.ToString("yyyyMMdd")))
-        {
-            return JikanConst.JikanNai;
-        }
-        else if (!listTimeZoneConfig.Any())
-        {
-            return JikanConst.JikanNai;
-        }
-        else if (currentTimeKbn == 0)
-        {
-            return currentTimeKbn;
-        }
-        else if (timeKbnForChild > 0 &&
-          (timeKbnForChild == JikanConst.YakanKotoku && currentTimeKbn == JikanConst.Yasou) ||
-          (timeKbnForChild == JikanConst.SinyaKotoku && currentTimeKbn == JikanConst.Sinya))
-        {
-            return timeKbnForChild;
-        }
-        return currentTimeKbn;
-    }
-
-    private int GetTimeKbnForChild(bool isPatientChildren, int dayOfWeek, int uketukeTime)
+    public int GetTimeKbnForChild(bool isPatientChildren, int dayOfWeek, int uketukeTime)
     {
         int timeKbnForChild = 0;
         if (isPatientChildren)
@@ -119,7 +35,7 @@ public class TimeZoneRepository : ITimeZoneRepository
         return timeKbnForChild;
     }
 
-    private bool IsPatientChildren(int hpId, int birthDay, int sinDate)
+    public bool IsPatientChildren(int hpId, int birthDay, int sinDate)
     {
         if (GetShonikaSetting(hpId, sinDate) == 1)
         {
@@ -132,13 +48,13 @@ public class TimeZoneRepository : ITimeZoneRepository
         return false;
     }
 
-    private bool IsHoliday(int hpId, int sinDate)
+    public bool IsHoliday(int hpId, int sinDate)
     {
         var holidayMst = _tenantNoTrackingDataContext.HolidayMsts.FirstOrDefault(item => item.HpId == hpId && item.SinDate == sinDate && item.IsDeleted != 1);
         return holidayMst != null && holidayMst.HolidayKbn != 0 && holidayMst.KyusinKbn == 1;
     }
 
-    private int GetShonikaSetting(int hpId, int presentDate)
+    public int GetShonikaSetting(int hpId, int presentDate)
     {
         var systemConfig = _tenantNoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(
                                 item => item.HpId == hpId
@@ -154,12 +70,21 @@ public class TimeZoneRepository : ITimeZoneRepository
         return 0;
     }
 
-    private List<TimeZoneConf> GetTimeZoneConfs(int hpId)
+    public List<TimeZoneConfModel> GetTimeZoneConfs(int hpId)
     {
-        return _tenantNoTrackingDataContext.TimeZoneConfs.Where(t => t.HpId == hpId && t.IsDelete == DeleteTypes.None).ToList();
+        return _tenantNoTrackingDataContext.TimeZoneConfs.Where(item => item.HpId == hpId && item.IsDelete == DeleteTypes.None)
+                                                         .Select(item => new TimeZoneConfModel(
+                                                                item.HpId,
+                                                                item.YoubiKbn,
+                                                                item.SeqNo,
+                                                                item.StartTime,
+                                                                item.EndTime,
+                                                                item.TimeKbn
+                                                             ))
+                                                         .ToList();
     }
 
-    private TimeZoneDayInf GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime)
+    public TimeZoneDayInfModel GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime)
     {
         var result = _tenantNoTrackingDataContext.TimeZoneDayInfs.Where(item => item.HpId == hpId &&
                                                                                       item.SinDate == sinDate &&
@@ -167,6 +92,13 @@ public class TimeZoneRepository : ITimeZoneRepository
                                                                                       (item.EndTime == 0 ? uketukeTime <= 2400 : uketukeTime <= item.EndTime))
                                                                 .OrderByDescending(item => item.Id)
                                                                 .FirstOrDefault();
-        return result != null ? result : new TimeZoneDayInf();
+        return new TimeZoneDayInfModel(
+                result != null ? result.HpId : 0,
+                result != null ? result.Id : 0,
+                result != null ? result.SinDate : 0,
+                result != null ? result.StartTime : 0,
+                result != null ? result.EndTime : 0,
+                result != null ? result.TimeKbn : 0
+            );
     }
 }
