@@ -289,6 +289,9 @@
 
         //RaiinKubun controller
 
+        //DefaultSelectedTime
+        public static readonly string InvalidBirthDay = "Invalid BirthDay";
+
         //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
         public static readonly string GetSetListSinDate = "Invalid SinDate";
