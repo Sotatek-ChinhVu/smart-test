@@ -1,5 +1,5 @@
 ﻿using Domain.Models.TimeZone;
-using Helper.Common;
+using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -68,5 +68,44 @@ public class TimeZoneRepository : ITimeZoneRepository
                 result != null ? result.EndTime : 0,
                 result != null ? result.TimeKbn : 0
             );
+    }
+
+    public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime)
+    {
+        try
+        {
+            //update latest timeZoneDayInf in sindate
+            var updateTimeZoneDayInf = _tenantDataContext.TimeZoneDayInfs.Where(t => t.HpId == hpId &&
+                                                                t.SinDate == sinDate &&
+                                                                uketukeTime >= t.StartTime &&
+                                                                (t.EndTime == 0 ? uketukeTime <= 2400 : uketukeTime <= t.EndTime))
+                                                                .OrderByDescending(t => t.Id)
+                                                                .FirstOrDefault();
+            if (updateTimeZoneDayInf != null)
+            {
+                updateTimeZoneDayInf.EndTime = int.Parse(DateTime.Now.ToString("HHmm"));
+            }
+
+            //then add new timeZoneDayInf
+            TimeZoneDayInf timeDayInf = new TimeZoneDayInf()
+            {
+                HpId = hpId,
+                SinDate = sinDate,
+                TimeKbn = currentTimeKbn,
+                StartTime = uketukeTime,
+                EndTime = 0,
+                CreateId = userId,
+                UpdateId = userId,
+                CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow
+            };
+            _tenantDataContext.TimeZoneDayInfs.Add(timeDayInf);
+            _tenantDataContext.SaveChanges();
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

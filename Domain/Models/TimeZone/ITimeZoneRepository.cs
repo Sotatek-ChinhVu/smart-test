@@ -9,4 +9,6 @@ public interface ITimeZoneRepository
     public List<TimeZoneConfModel> GetTimeZoneConfs(int hpId);
 
     public TimeZoneDayInfModel GetLatestTimeZoneDayInf(int hpId, int sinDate, int uketukeTime);
+
+    public bool UpdateTimeZoneDayInf(int hpId, int userId, int sinDate, int currentTimeKbn, int uketukeTime);
 }
