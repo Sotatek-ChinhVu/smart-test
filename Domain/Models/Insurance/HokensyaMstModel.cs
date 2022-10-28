@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.Insurance
+﻿namespace Domain.Models.Insurance
 {
     public class HokensyaMstModel
     {
@@ -12,7 +6,7 @@ namespace Domain.Models.Insurance
         {
             IsKigoNa = isKigoNa;
         }
-        
+
         public HokensyaMstModel()
         {
         }
