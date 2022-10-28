@@ -100,8 +100,8 @@ public class TimeZoneRepository : ITimeZoneRepository
                 UpdateDate = DateTime.UtcNow
             };
             _tenantDataContext.TimeZoneDayInfs.Add(timeDayInf);
-            _tenantDataContext.SaveChanges();
-            return true;
+
+            return _tenantDataContext.SaveChanges() > 0;
         }
         catch
         {
