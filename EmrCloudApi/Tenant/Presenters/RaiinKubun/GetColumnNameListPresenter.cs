@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Presenters.RaiinKubun
             {
                 Data = new GetColumnNameListResponse(outputData.ColumnName),
                 Message = ResponseMessage.Success,
-                Status = 1
+                Status = (byte)outputData.Status
             };
         }
     }
