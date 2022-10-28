@@ -91,8 +91,12 @@
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+        public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
+
+        //Swaphoken
+        public const string SwapHoken = "SwapHoken";
     }
 }

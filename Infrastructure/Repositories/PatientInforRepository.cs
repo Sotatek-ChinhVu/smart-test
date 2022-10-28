@@ -2427,5 +2427,15 @@ namespace Infrastructure.Repositories
             }
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
+
+        public bool IsAllowDeletePatient(int hpId,long ptId)
+        {
+            var raiinInfCount = _tenantDataContext.RaiinInfs
+                .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
+
+            if (raiinInfCount > 0)
+                return false;
+            return true;
+        }
     }
 }

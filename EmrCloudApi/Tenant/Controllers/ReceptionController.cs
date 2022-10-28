@@ -24,6 +24,7 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.Insert;
@@ -195,13 +196,25 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDataReceptionDefault)]
         public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
         {
-            var input = new GetReceptionDefaultInputData(request.HpId , request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var input = new GetReceptionDefaultInputData(request.HpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionDefaultPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionDefaultResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultSelectedTime)]
+        public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
+        {
+            var input = new GetDefaultSelectedTimeInputData(request.HpId, request.SinDate, request.BirthDay);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDefaultSelectedTimePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDefaultSelectedTimeResponse>>(presenter.Result);
         }
     }
 }
