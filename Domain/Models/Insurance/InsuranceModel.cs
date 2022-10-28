@@ -3,6 +3,7 @@ using Domain.Models.Insurance;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.InsuranceInfor
@@ -70,7 +71,7 @@ namespace Domain.Models.InsuranceInfor
         }
 
         [JsonConstructor]
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int startDate, int endDate, int hokenId , int kohi1Id , int kohi2Id,int kohi3Id, int kohi4Id)
         {
             HpId = hpId;
             PtId = ptId;
@@ -83,12 +84,17 @@ namespace Domain.Models.InsuranceInfor
             SinDate = sinDate;
             IsDeleted = isDeleted;
             HokenInf = hokenInf;
-            Kohi1 = kohi1 ?? new KohiInfModel(0);
-            Kohi2 = kohi2 ?? new KohiInfModel(0);
-            Kohi3 = kohi3 ?? new KohiInfModel(0);
-            Kohi4 = kohi4 ?? new KohiInfModel(0);
+            Kohi1 = kohi1;
+            Kohi2 = kohi2;
+            Kohi3 = kohi3;
+            Kohi4 = kohi4;
             StartDate = startDate;
             EndDate = endDate;
+            HokenId = hokenId;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
         }
 
         public int HpId { get; private set; }
@@ -163,6 +169,16 @@ namespace Domain.Models.InsuranceInfor
         public int StartDate { get; private set; }
 
         public int EndDate { get; private set; }
+
+        public int HokenId { get; private set; }
+
+        public int Kohi1Id { get; private set; }
+
+        public int Kohi2Id { get; private set; }
+
+        public int Kohi3Id { get; private set; }
+
+        public int Kohi4Id { get; private set; }
 
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 

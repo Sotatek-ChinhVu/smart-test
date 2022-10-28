@@ -393,6 +393,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                      request.PtKyuseis,
                                                      request.PtSanteis,
                                                      request.Insurances,
+                                                     request.HokenInfs,
+                                                     request.HokenKohis,
                                                      request.PtGrpInfs);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();

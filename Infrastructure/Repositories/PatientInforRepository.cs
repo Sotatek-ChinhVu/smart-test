@@ -1501,7 +1501,6 @@ namespace Infrastructure.Repositories
                         x.UpdateId = TempIdentity.UserId;
                         x.UpdateDate = DateTime.UtcNow;
                     });
-
                 }
             }
             #endregion HokenInf
