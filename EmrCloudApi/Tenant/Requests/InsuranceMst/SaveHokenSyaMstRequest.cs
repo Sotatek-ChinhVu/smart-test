@@ -33,5 +33,7 @@
         public string Address2 { get; set; } = string.Empty;
 
         public string Tel1 { get; set; } = string.Empty;
+
+        public int IsKigoNa { get; set; }
     }
 }
