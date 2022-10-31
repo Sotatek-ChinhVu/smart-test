@@ -61,16 +61,10 @@ using EmrCloudApi.Tenant.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
 using EmrCloudApi.Tenant.Presenters.SwapHoken;
 using EmrCloudApi.Tenant.Responses.SwapHoken;
-using Helper.Mapping;
 using Domain.Models.PatientInfor;
-using DevExpress.CodeParser;
-using System;
 using Domain.Models.InsuranceInfor;
-using DevExpress.XtraRichEdit.Model;
-using System.Linq.Dynamic.Core.Tokenizer;
 using Domain.Models.Insurance;
-using Entity.Tenant;
-using System.Linq;
+using Domain.Models.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
