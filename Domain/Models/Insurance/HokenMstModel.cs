@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
 {
@@ -84,7 +79,7 @@ namespace Domain.Models.Insurance
         public string Houbetu { get; private set; }
 
         public int HokenSbtKbn { get; private set; }
-        
+
         public int CheckDigit { get; private set; }
 
         public int AgeStart { get; private set; }
