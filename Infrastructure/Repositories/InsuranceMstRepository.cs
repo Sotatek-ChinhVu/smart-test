@@ -7,7 +7,6 @@ using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System.Xml.Linq;
 using System;
-using Domain.Models.Insurance;
 
 namespace Infrastructure.Repositories
 {

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Domain.Models.Insurance
+namespace Domain.Models.InsuranceMst
 {
     public class HokenMstModel
     {
