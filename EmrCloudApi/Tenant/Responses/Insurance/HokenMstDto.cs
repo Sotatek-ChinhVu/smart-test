@@ -1,4 +1,4 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Responses.Insurance
 {
@@ -19,9 +19,9 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
             AgeStart = hokenMstModel.AgeStart;
             AgeEnd = hokenMstModel.AgeEnd;
             JyuKyuCheckDigit = hokenMstModel.JyuKyuCheckDigit;
-            FutansyaCheckFlag = hokenMstModel.FutansyaCheckFlag;
-            JyukyusyaCheckFlag = hokenMstModel.JyukyusyaCheckFlag;
-            TokusyuCheckFlag = hokenMstModel.TokusyuCheckFlag;
+            IsFutansyaNoCheck = hokenMstModel.IsFutansyaNoCheck;
+            IsJyukyusyaNoCheck = hokenMstModel.IsJyukyusyaNoCheck;
+            IsTokusyuNoCheck = hokenMstModel.IsTokusyuNoCheck;
         }
 
         public int FutanKbn { get; private set; }
@@ -48,13 +48,13 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
 
         public int AgeEnd { get; private set; }
 
-        public int FutansyaCheckFlag { get; private set; }
+        public int IsFutansyaNoCheck { get; private set; }
 
-        public int JyukyusyaCheckFlag { get; private set; }
+        public int IsJyukyusyaNoCheck { get; private set; }
 
         public int JyuKyuCheckDigit { get; private set; }
 
-        public int TokusyuCheckFlag { get; private set; }
+        public int IsTokusyuNoCheck { get; private set; }
 
         public string SelectedValueMaster
         {

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Models.InsuranceMst;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
 {
