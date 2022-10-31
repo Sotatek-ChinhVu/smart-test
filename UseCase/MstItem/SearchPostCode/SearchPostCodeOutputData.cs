@@ -13,6 +13,7 @@ namespace UseCase.MstItem.SearchPostCode
         }
 
         public int TotalCount { get; private set; }
+
         public List<PostCodeMstModel> PostCodeMstModels { get; private set; }
 
         public SearchPostCodeStatus Status { get; private set; }
