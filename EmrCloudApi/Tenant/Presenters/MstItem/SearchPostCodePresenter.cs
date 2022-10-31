@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.MstItem
 
         public void Complete(SearchPostCodeOutputData outputData)
         {
-            Result.Data = new SearchPostCodeRespone(outputData.PostCodeMstModels);
+            Result.Data = new SearchPostCodeRespone(outputData.TotalCount, outputData.PostCodeMstModels);
             Result.Message = GetMessage(outputData.Status);
             Result.Status = (int)outputData.Status;
         }

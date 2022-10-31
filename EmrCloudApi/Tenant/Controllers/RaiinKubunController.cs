@@ -3,11 +3,10 @@ using EmrCloudApi.Tenant.Presenters.RaiinKubun;
 using EmrCloudApi.Tenant.Requests.RaiinKubun;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinKubun;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
+using UseCase.RaiinKubunMst.GetListColumnName;
 using UseCase.RaiinKubunMst.LoadData;
 using UseCase.RaiinKubunMst.Save;
 
@@ -46,16 +45,29 @@ namespace EmrCloudApi.Tenant.Controllers
 
             return new ActionResult<Response<LoadDataKubunSettingResponse>>(presenter.Result);
         }
+
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
         public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x=>x.Map()).ToList());
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList());
             var output = _bus.Handle(input);
 
             var presenter = new SaveDataKubunSettingPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<SaveDataKubunSettingResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetColumnName)]
+        public Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
+        {
+            var input = new GetColumnNameListInputData(request.HpId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetColumnNameListPresenter();
+            presenter.Complete(output);
+
+            return Task.FromResult(new ActionResult<Response<GetColumnNameListResponse>>(presenter.Result));
         }
     }
 }
