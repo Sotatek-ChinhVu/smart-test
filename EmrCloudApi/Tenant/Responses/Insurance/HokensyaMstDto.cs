@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Responses.Insurance
 {

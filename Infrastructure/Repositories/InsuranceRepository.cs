@@ -1079,8 +1079,6 @@ namespace Infrastructure.Repositories
                             };
             var itemList = joinQuery.ToList();
             List<InsuranceModel> listInsurance = new List<InsuranceModel>();
-            var listHokenInf = new List<HokenInfModel>();
-            var listKohi = new List<KohiInfModel>();
 
             var confirmDateList =
                 (
@@ -1112,26 +1110,10 @@ namespace Infrastructure.Repositories
                 foreach (var item in itemList)
                 {
                     string houbetu = string.Empty;
-                    int futanRate = 0;
-                    int futanKbn = 0;
-                    int hokenMstSubNumber = 0;
-                    int hokenMstStartDate = 0;
-                    int hokenMstEndDate = 0;
-                    int hokenMstHokenNo = 0;
-                    int hokenMstHokenEdraNo = 0;
-                    string hokenMstSName = string.Empty;
                     bool isReceKisaiOrNoHoken = false;
                     if (item.hokenMst != null)
                     {
                         houbetu = item.hokenMst.Houbetu;
-                        futanRate = item.hokenMst.FutanRate;
-                        futanKbn = item.hokenMst.FutanKbn;
-                        hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
-                        hokenMstStartDate = item.hokenMst.StartDate;
-                        hokenMstEndDate = item.hokenMst.EndDate;
-                        hokenMstHokenNo = item.hokenMst.HokenNo;
-                        hokenMstHokenEdraNo = item.hokenMst.HokenEdaNo;
-                        hokenMstSName = item.hokenMst.HokenSname;
                         isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
                     }
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId).OrderBy(x => x.EndDate)
@@ -1201,23 +1183,10 @@ namespace Infrastructure.Repositories
                                             ptRousaiTenkis,
                                             isReceKisaiOrNoHoken,
                                             item.HokenInfIsDeleted,
-                                            new HokenMstModel(futanKbn,
-                                                              futanRate,
-                                                              hokenMstStartDate,
-                                                              hokenMstEndDate,
-                                                              hokenMstHokenNo,
-                                                              hokenMstHokenEdraNo,
-                                                              hokenMstSName,
-                                                              houbetu ?? string.Empty,
-                                                              hokenMstSubNumber,
-                                                              item.hokenMst?.CheckDigit ?? 0,
-                                                              item.hokenMst?.AgeStart ?? 0,
-                                                              item.hokenMst?.AgeEnd ?? 0,
-                                                              item.hokenMst?.IsFutansyaNoCheck ?? 0,
-                                                              item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
-                                                              item.hokenMst?.JyukyuCheckDigit ?? 0,
-                                                              item.hokenMst?.IsTokusyuNoCheck ?? 0
-                                                              ),
+                                            Mapper.Map(item.hokenMst, new HokenMstModel(), (src, dest) =>
+                                            {
+                                                return dest;
+                                            }),
                                             hokensyaMst ?? new HokensyaMstModel(),
                                             false,
                                             false,
