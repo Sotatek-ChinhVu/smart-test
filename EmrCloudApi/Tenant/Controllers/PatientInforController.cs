@@ -418,7 +418,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateListPattern)]
         public ActionResult<Response<ValidateListInsuranceResponse>> ValidateListPattern([FromBody] ValidateInsuranceRequest request)
         {
-            var input = new ValidateInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.ListDataModel);
+
+
+            var input = new ValidateInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.ListInsurance);
             var output = _bus.Handle(input);
             var presenter = new ValidateInsurancePresenter();
             presenter.Complete(output);

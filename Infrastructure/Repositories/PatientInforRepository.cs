@@ -975,7 +975,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool,long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -999,7 +999,7 @@ namespace Infrastructure.Repositories
             bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
             if (!resultCreatePatient)
-                return (false,0);
+                return (false, 0);
 
             if (ptSanteis != null && ptSanteis.Any())
             {
@@ -1293,9 +1293,9 @@ namespace Infrastructure.Repositories
 
             int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified || x.State == EntityState.Added).Count();
             if (changeDatas == 0 && resultCreatePatient == true)
-                return (true,patientInsert.PtId);
+                return (true, patientInsert.PtId);
 
-            return (_tenantTrackingDataContext.SaveChanges() > 0,patientInsert.PtId);
+            return (_tenantTrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
         public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
@@ -2229,7 +2229,7 @@ namespace Infrastructure.Repositories
             var listAdded = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Added).ToList();
             var listUpdate = _tenantTrackingDataContext.ChangeTracker.Entries().Where(x => x.State == EntityState.Modified).ToList();
 
-            return (_tenantTrackingDataContext.SaveChanges() > 0,patientInfo.PtId);
+            return (_tenantTrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
 
         private long GetAutoPtNum(int HpId)
@@ -2428,7 +2428,7 @@ namespace Infrastructure.Repositories
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool IsAllowDeletePatient(int hpId,long ptId)
+        public bool IsAllowDeletePatient(int hpId, long ptId)
         {
             var raiinInfCount = _tenantDataContext.RaiinInfs
                 .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
@@ -2436,6 +2436,21 @@ namespace Infrastructure.Repositories
             if (raiinInfCount > 0)
                 return false;
             return true;
+        }
+
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        {
+            var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
+            {
+                return dest;
+            });
+        }
+
+        public HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya)
+        {
+            var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
+            return hokensyaMst;
         }
     }
 }
