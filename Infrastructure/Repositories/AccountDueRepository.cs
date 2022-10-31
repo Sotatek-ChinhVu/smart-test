@@ -91,7 +91,9 @@ public class AccountDueRepository : IAccountDueRepository
                 kaMst.KaSname ?? string.Empty,
                 nyukin != null ? nyukin.SortNo : 0,
                 nyukin != null ? nyukin.SeqNo : 0,
-                seikyu.SeikyuDetail ?? string.Empty
+                seikyu.SeikyuDetail ?? string.Empty,
+                raiinItem.Status,
+                seikyu.AdjustFutan
             );
     }
     private int GetMonth(int date)
@@ -121,7 +123,7 @@ public class AccountDueRepository : IAccountDueRepository
         return result;
     }
 
-    public bool SaveAccountDueList(int hpId, int ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
+    public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
     {
         var raiinLists = _tenantDataContext.RaiinInfs
                                 .Where(item => item.HpId == hpId
@@ -151,7 +153,7 @@ public class AccountDueRepository : IAccountDueRepository
                 UpdateStatusSyunoSeikyu(userId, dateTimeNow, model, seikyuLists);
 
                 // Update right table SyunoNyukin
-                UpdateSyunoNyukin(userId, sinDate, dateTimeNow, model, nyukinLists);
+                UpdateSyunoNyukin(hpId, ptId, userId, sinDate, dateTimeNow, model, nyukinLists);
             }
 
             _tenantDataContext.SaveChanges();
@@ -197,13 +199,13 @@ public class AccountDueRepository : IAccountDueRepository
         }
     }
 
-    private void UpdateSyunoNyukin(int userId, int sinDate, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
+    private void UpdateSyunoNyukin(int hpId, long ptId, int userId, int sinDate, DateTime dateTimeNow, AccountDueModel model, List<SyunoNyukin> nyukinLists)
     {
         if (model.SeqNo == 0) // Create new SyunoNyukin
         {
             SyunoNyukin nyukin = new();
-            nyukin.HpId = model.HpId;
-            nyukin.PtId = model.PtId;
+            nyukin.HpId = hpId;
+            nyukin.PtId = ptId;
             nyukin.IsDeleted = 0;
             nyukin.SinDate = sinDate;
             nyukin.RaiinNo = model.RaiinNo;
@@ -243,5 +245,28 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin.UpdateId = userId;
             }
         }
+    }
+
+    public List<SyunoNyukinViewModel> GetListSyunoNyukinViewModel(List<long> listRaiinNo)
+    {
+        var result = _tenantNoTrackingDataContext.SyunoNyukin.Where(item => item.IsDeleted == 0 && listRaiinNo.Contains(item.RaiinNo))
+                                                             .Select(item => new SyunoNyukinViewModel(
+                                                                    item.HpId,
+                                                                    item.PtId,
+                                                                    item.SinDate,
+                                                                    item.RaiinNo,
+                                                                    item.SeqNo,
+                                                                    item.SortNo,
+                                                                    item.AdjustFutan,
+                                                                    item.NyukinGaku,
+                                                                    item.PaymentMethodCd,
+                                                                    item.NyukinDate,
+                                                                    item.UketukeSbt,
+                                                                    item.NyukinCmt ?? string.Empty,
+                                                                    item.NyukinjiTensu,
+                                                                    item.NyukinjiSeikyu,
+                                                                    item.NyukinjiDetail ?? string.Empty
+                                                             )).ToList();
+        return result;
     }
 }

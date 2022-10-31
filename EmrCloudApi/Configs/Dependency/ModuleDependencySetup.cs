@@ -220,6 +220,7 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
+using Domain.Models.AuditTrailLog;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -320,6 +321,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
+            services.AddTransient<IAuditTrailLogRepository, AuditTrailLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
