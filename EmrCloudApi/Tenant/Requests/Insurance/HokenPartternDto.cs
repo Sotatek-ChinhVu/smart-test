@@ -47,5 +47,7 @@
         public int StartDate { get; private set; }
 
         public int EndDate { get; private set; }
+
+        public bool IsAddNew { get; private set; }
     }
 }

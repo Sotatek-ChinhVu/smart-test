@@ -5,7 +5,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
 {
     public class HokenInfDto
     {
-        public HokenInfDto(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, string hokensyaName, string hokensyaPost, string hokensyaAddress, string hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, int isDeleted, List<ConfirmDateDto> confirmDates, List<RousaiTenkiDto> rousaiTenkis)
+        public HokenInfDto(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, string edaNo, int hokenEdaNo, string hokensyaNo, string kigo, string bango, int honkeKbn, int hokenKbn, string houbetu, string hokensyaName, string hokensyaPost, string hokensyaAddress, string hokensyaTel, int keizokuKbn, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendogaku, int kogakuKbn, int kogakuType, int tokureiYm1, int tokureiYm2, int tasukaiYm, int syokumuKbn, int genmenKbn, int genmenRate, int genmenGaku, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, int rousaiSaigaiKbn, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiSyobyoDate, string rousaiSyobyoCd, string rousaiRoudouCd, string rousaiKantokuCd, int rousaiReceCount, int ryoyoStartDate, int ryoyoEndDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, int isDeleted, List<ConfirmDateDto> confirmDates, List<RousaiTenkiDto> rousaiTenkis,bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
@@ -64,6 +64,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
             IsDeleted = isDeleted;
             ConfirmDates = confirmDates;
             RousaiTenkis = rousaiTenkis;
+            IsAddNew = isAddNew;
         }
 
         public int HpId { get; private set; }
@@ -175,8 +176,10 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
 
         public int IsDeleted { get; private set; }
 
-        public List<ConfirmDateDto> ConfirmDates { get; private set; }
+        public List<ConfirmDateDto> ConfirmDates { get; private set; } = new List<ConfirmDateDto>();
 
-        public List<RousaiTenkiDto> RousaiTenkis { get; private set; }
+        public List<RousaiTenkiDto> RousaiTenkis { get; private set; } = new List<RousaiTenkiDto>();
+
+        public bool IsAddNew { get; private set; }
     }
 }

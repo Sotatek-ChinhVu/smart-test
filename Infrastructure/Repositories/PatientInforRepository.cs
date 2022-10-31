@@ -1063,7 +1063,7 @@ namespace Infrastructure.Repositories
             }
 
             #region Hoken parterrn
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances, (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1077,7 +1077,7 @@ namespace Infrastructure.Repositories
             #endregion Hoken parterrn
 
             #region HokenInf
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs, (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=> x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1122,7 +1122,7 @@ namespace Infrastructure.Repositories
             #endregion HokenInf
 
             #region PtKohiInf
-            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis, (src, dest) =>
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1375,7 +1375,7 @@ namespace Infrastructure.Repositories
                 x.UpdateId = TempIdentity.UserId;
             });
 
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.SeqNo == 0), (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1403,7 +1403,7 @@ namespace Infrastructure.Repositories
 
             #region HokenInf
             //Add New
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=>x.SeqNo == 0), (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1553,7 +1553,6 @@ namespace Infrastructure.Repositories
                 }
             }
             #endregion HokenKohi
-
             return (_tenantTrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
 

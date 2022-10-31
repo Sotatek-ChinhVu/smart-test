@@ -31,6 +31,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
+
         public int HokenId { get; private set; }
 
         public long SeqNo { get; private set; }
@@ -63,6 +64,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
         public int GendoGaku { get; private set; }
 
         public int IsDeleted { get; private set; }
-        public List<ConfirmDateDto> ConfirmDates { get; private set; }
+
+        public List<ConfirmDateDto> ConfirmDates { get; private set; } = new List<ConfirmDateDto>();
     }
 }

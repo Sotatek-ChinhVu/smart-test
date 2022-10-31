@@ -24,7 +24,6 @@ using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
 using EmrCloudApi.Tenant.Responses.HokenMst;
 using EmrCloudApi.Tenant.Responses.Insurance;
-using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.InsuranceMst;
 using EmrCloudApi.Tenant.Responses.KohiHokenMst;
 using EmrCloudApi.Tenant.Responses.PatientInfor;
@@ -62,6 +61,16 @@ using EmrCloudApi.Tenant.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
 using EmrCloudApi.Tenant.Presenters.SwapHoken;
 using EmrCloudApi.Tenant.Responses.SwapHoken;
+using Helper.Mapping;
+using Domain.Models.PatientInfor;
+using DevExpress.CodeParser;
+using System;
+using Domain.Models.InsuranceInfor;
+using DevExpress.XtraRichEdit.Model;
+using System.Linq.Dynamic.Core.Tokenizer;
+using Domain.Models.Insurance;
+using Entity.Tenant;
+using System.Linq;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -390,16 +399,175 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(presenter.Result);
         }
 
-        [HttpPost("SavePatientInfo")]
+        [HttpPost(ApiPath.SavePatientInfo)]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            var input = new SavePatientInfoInputData(request.Patient,
+            PatientInforSaveModel patient = new PatientInforSaveModel(request.Patient.HpId,
+                                                                      request.Patient.PtId,
+                                                                      request.Patient.PtNum,
+                                                                      request.Patient.KanaName,
+                                                                      request.Patient.Name,
+                                                                      request.Patient.Sex,
+                                                                      request.Patient.Birthday,
+                                                                      request.Patient.IsDead,
+                                                                      request.Patient.DeathDate,
+                                                                      request.Patient.Mail,
+                                                                      request.Patient.HomePost,
+                                                                      request.Patient.HomeAddress1,
+                                                                      request.Patient.HomeAddress2,
+                                                                      request.Patient.Tel1,
+                                                                      request.Patient.Tel2,
+                                                                      request.Patient.Setanusi,
+                                                                      request.Patient.Zokugara,
+                                                                      request.Patient.Job,
+                                                                      request.Patient.RenrakuName,
+                                                                      request.Patient.RenrakuPost,
+                                                                      request.Patient.RenrakuAddress1,
+                                                                      request.Patient.RenrakuAddress2,
+                                                                      request.Patient.RenrakuTel,
+                                                                      request.Patient.RenrakuMemo,
+                                                                      request.Patient.OfficeName,
+                                                                      request.Patient.OfficePost,
+                                                                      request.Patient.OfficeAddress1,
+                                                                      request.Patient.OfficeAddress2,
+                                                                      request.Patient.OfficeTel,
+                                                                      request.Patient.OfficeMemo,
+                                                                      request.Patient.IsRyosyoDetail,
+                                                                      request.Patient.PrimaryDoctor,
+                                                                      request.Patient.IsTester,
+                                                                      request.Patient.MainHokenPid,
+                                                                      request.Patient.ReferenceNo,
+                                                                      request.Patient.LimitConsFlg,
+                                                                      request.Patient.Memo);
+
+            List<InsuranceModel> insurances = request.Insurances.Select(x => new InsuranceModel(x.HpId,
+                                                                                               x.PtId,
+                                                                                               0,
+                                                                                               x.SeqNo,
+                                                                                               x.HokenSbtCd,
+                                                                                               x.HokenPid,
+                                                                                               x.HokenKbn,
+                                                                                               x.HokenMemo,
+                                                                                               0,
+                                                                                               x.StartDate,
+                                                                                               x.EndDate,
+                                                                                               x.HokenId,
+                                                                                               x.Kohi1Id,
+                                                                                               x.Kohi2Id,
+                                                                                               x.Kohi3Id,
+                                                                                               x.Kohi4Id,
+                                                                                               x.IsAddNew)).ToList();
+
+            List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(x.HpId,
+                                                                                           x.PtId,
+                                                                                           x.HokenId,
+                                                                                           x.SeqNo,
+                                                                                           x.HokenNo,
+                                                                                           x.HokenEdaNo,
+                                                                                           x.HokenKbn,
+                                                                                           x.HokensyaNo,
+                                                                                           x.Kigo,
+                                                                                           x.Bango,
+                                                                                           x.EdaNo,
+                                                                                           x.HonkeKbn,
+                                                                                           x.StartDate,
+                                                                                           x.EndDate,
+                                                                                           x.SikakuDate,
+                                                                                           x.KofuDate,
+                                                                                           0,
+                                                                                           x.KogakuKbn,
+                                                                                           x.TasukaiYm,
+                                                                                           x.TokureiYm1,
+                                                                                           x.TokureiYm2,
+                                                                                           x.GenmenKbn,
+                                                                                           x.GenmenRate,
+                                                                                           x.GenmenGaku,
+                                                                                           x.SyokumuKbn,
+                                                                                           x.KeizokuKbn,
+                                                                                           x.Tokki1,
+                                                                                           x.Tokki2,
+                                                                                           x.Tokki3,
+                                                                                           x.Tokki4,
+                                                                                           x.Tokki5,
+                                                                                           x.RousaiKofuNo,
+                                                                                           string.Empty,
+                                                                                           x.RousaiRoudouCd,
+                                                                                           string.Empty,
+                                                                                           x.RousaiSaigaiKbn,
+                                                                                           x.RousaiKantokuCd,
+                                                                                           x.RousaiSyobyoDate,
+                                                                                           x.RyoyoStartDate,
+                                                                                           x.RyoyoEndDate,
+                                                                                           x.RousaiSyobyoCd,
+                                                                                           x.RousaiJigyosyoName,
+                                                                                           x.RousaiPrefName,
+                                                                                           x.RousaiCityName,
+                                                                                           x.RousaiReceCount,
+                                                                                           x.HokensyaName,
+                                                                                           x.HokensyaAddress,
+                                                                                           x.HokensyaTel,
+                                                                                           0,
+                                                                                           x.JibaiHokenName,
+                                                                                           x.JibaiHokenTanto,
+                                                                                           x.JibaiHokenTel,
+                                                                                           x.JibaiJyusyouDate,
+                                                                                           x.Houbetu,
+                                                                                           x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
+                                                                                                                                           c.HokenId,
+                                                                                                                                           c.SeqNo,
+                                                                                                                                           c.CheckId, 
+                                                                                                                                           c.CheckName,
+                                                                                                                                           c.CheckComment,
+                                                                                                                                           c.ConfirmDate)).ToList(),
+                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei, 
+                                                                                                                                           m.RousaiTenkiTenki,
+                                                                                                                                           m.RousaiTenkiEndDate,
+                                                                                                                                           m.RousaiTenkiIsDeleted,
+                                                                                                                                           m.SeqNo)).ToList(),
+                                                                                           false,
+                                                                                           x.IsDeleted,
+                                                                                           new HokenMstModel(),
+                                                                                           new HokensyaMstModel(),
+                                                                                           x.IsAddNew,
+                                                                                           false,
+                                                                                           string.Empty)).ToList();
+
+            List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
+                                                                                                                                            c.HokenId,
+                                                                                                                                            c.SeqNo,
+                                                                                                                                            c.CheckId,
+                                                                                                                                            c.CheckName,
+                                                                                                                                            c.CheckComment,
+                                                                                                                                            c.ConfirmDate)).ToList(),
+                                                                                            x.FutansyaNo,
+                                                                                            x.JyukyusyaNo, 
+                                                                                            x.HokenId,
+                                                                                            x.StartDate,
+                                                                                            x.EndDate,
+                                                                                            0,
+                                                                                            x.Rate,
+                                                                                            x.GendoGaku,
+                                                                                            x.SikakuDate,
+                                                                                            x.KofuDate,
+                                                                                            x.TokusyuNo,
+                                                                                            x.HokenSbtKbn,
+                                                                                            x.Houbetu,
+                                                                                            new HokenMstModel(),
+                                                                                            x.HokenNo,
+                                                                                            x.HokenEdaNo, 
+                                                                                            x.PrefNo,
+                                                                                            0,
+                                                                                            false,
+                                                                                            x.IsDeleted)).ToList();
+
+
+            var input = new SavePatientInfoInputData(patient,
                                                      request.PtKyuseis,
                                                      request.PtSanteis,
-                                                     request.Insurances,
-                                                     request.HokenInfs,
-                                                     request.HokenKohis,
-                                                     request.PtGrpInfs);
+                                                     insurances,
+                                                     hokenInfs,
+                                                     hokenKohis,
+                                                     request.PtGrps);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
