@@ -1,8 +1,10 @@
 ﻿using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Helper.Constants;
+using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Domain.Models.PatientInfor
 {
@@ -37,9 +39,9 @@ namespace Domain.Models.PatientInfor
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
         bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels);
-        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps);
 
-        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps);
+        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps);
 
         bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
         bool IsAllowDeletePatient(int hpId, long ptId);
