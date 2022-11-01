@@ -85,6 +85,7 @@ public class GetDefaultSelectedTimeInteractor : IGetDefaultSelectedTimeInputPort
                         endTime,
                         currentTimeKbn,
                         beforeTimeKbn,
+                        isPatientChildren,
                         isShowPopup,
                         GetJikanKbnDefaultValue(isPatientChildren, isHoliday, uketukeTime, sinDate, currentTimeKbn, timeKbnForChild, listTimeZoneConfig)
                     );
