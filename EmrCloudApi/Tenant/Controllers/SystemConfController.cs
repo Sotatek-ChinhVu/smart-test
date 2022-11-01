@@ -18,6 +18,7 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             _bus = bus;
         }
+
         [HttpGet(ApiPath.Get)]
         public Task<ActionResult<Response<GetSystemConfResponse>>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {

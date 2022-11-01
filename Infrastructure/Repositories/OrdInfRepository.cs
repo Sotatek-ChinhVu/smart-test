@@ -31,8 +31,9 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(int hpId, long ptId, int userId, long raiinNo, int sinDate, bool isDeleted)
         {
-            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon)?.ToList();
             var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.OdrKouiKbn != 10 && (isDeleted || odr.IsDeleted == 0))?.ToList();
+            var rpNos = allOdrInf?.Select(o => o.RpNo);
+            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.SinDate == sinDate && o.RaiinNo == raiinNo && o.ItemCd != ItemCdConst.JikanKihon && o.ItemCd != ItemCdConst.SyosaiKihon && (rpNos != null && rpNos.Contains(o.RpNo)))?.ToList();
 
             var result = ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sinDate, sinDate, userId, false);
             return result;

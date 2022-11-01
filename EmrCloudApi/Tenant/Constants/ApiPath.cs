@@ -12,6 +12,7 @@
         public const string Save = "Save";
         public const string Revert = "Revert";
         public const string Delete = "Delete";
+        public const string GetSettingValue = "GetSettingValue";
 
 
         // SuperSet
@@ -82,7 +83,6 @@
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
-
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";

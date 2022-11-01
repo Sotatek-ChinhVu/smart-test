@@ -119,7 +119,7 @@ namespace Interactor.OrdInfs
                 .GroupBy(odr => odr.HokenPid)
                 .Select(grp => grp.FirstOrDefault())
                 .ToList();
-            var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false);
+            var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
 
             if (hokenOdrInfs == null || hokenOdrInfs.Count == 0)
             {

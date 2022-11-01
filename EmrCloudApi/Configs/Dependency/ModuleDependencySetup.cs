@@ -43,6 +43,7 @@ using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Domain.Models.SuperSetDetail;
+using Domain.Models.SwapHoken;
 using Domain.Models.SystemConf;
 using Domain.Models.SystemGenerationConf;
 using Domain.Models.TimeZone;
@@ -99,7 +100,9 @@ using Interactor.SetMst;
 using Interactor.SpecialNote;
 using Interactor.StickyNote;
 using Interactor.SuperSetDetail;
+using Interactor.SwapHoken;
 using Interactor.SystemConf;
+using Interactor.SystemGenerationConf;
 using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
@@ -191,6 +194,7 @@ using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
 using UseCase.Reception.UpdateDynamicCell;
 using UseCase.Reception.UpdateStaticCell;
+using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
@@ -209,7 +213,9 @@ using UseCase.SpecialNote.Save;
 using UseCase.StickyNote;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
+using UseCase.SwapHoken.Save;
 using UseCase.SystemConf;
+using UseCase.SystemGenerationConf;
 using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
@@ -220,10 +226,6 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.SwapHoken.Save;
-using Interactor.SwapHoken;
-using Domain.Models.SwapHoken;
-using UseCase.Reception.UpdateTimeZoneDayInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -544,6 +546,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
+
+            //System Config Generation 
+            busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
