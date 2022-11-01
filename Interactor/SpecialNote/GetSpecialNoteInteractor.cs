@@ -2,10 +2,6 @@
 using Domain.Models.SpecialNote.ImportantNote;
 using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
-using Infrastructure.Interfaces;
-using Infrastructure.Repositories.SpecialNote;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UseCase.SpecialNote.Get;
 
 namespace Interactor.SpecialNote
@@ -17,12 +13,12 @@ namespace Interactor.SpecialNote
         private readonly IImportantNoteRepository _importantNoteRepository;
         private readonly IPatientInfoRepository _patientInfoRepository;
 
-        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, ITenantProvider tenant)
+        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, IImportantNoteRepository importantNoteRepository, IPatientInfoRepository patientInfoRepository)
         {
             _ptCmtInfRepository = ptCmtInfRepository;
             _summaryInfRepository = summaryInfRepository;
-            _importantNoteRepository = new ImportantNoteRepository(tenant);
-            _patientInfoRepository = new PatientInfoRepository(tenant);
+            _importantNoteRepository = importantNoteRepository;
+            _patientInfoRepository = patientInfoRepository;
         }
 
         public GetSpecialNoteOutputData Handle(GetSpecialNoteInputData inputData)

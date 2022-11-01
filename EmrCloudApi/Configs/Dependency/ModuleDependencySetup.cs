@@ -196,6 +196,7 @@ using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SpecialNote.AddAlrgyDrugList;
@@ -392,6 +393,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveSetMstInputData, SaveSetMstInteractor>();
             busBuilder.RegisterUseCase<ReorderSetMstInputData, ReorderSetMstInteractor>();
             busBuilder.RegisterUseCase<CopyPasteSetMstInputData, CopyPasteSetMstInteractor>();
+            busBuilder.RegisterUseCase<GetSetMstToolTipInputData, GetSetMstToolTipInteractor>();
 
             //Medical Examination
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();

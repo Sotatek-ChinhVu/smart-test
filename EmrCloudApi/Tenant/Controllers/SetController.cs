@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
+using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
@@ -41,6 +42,18 @@ public class SetController : ControllerBase
         return Task.FromResult(new ActionResult<Response<GetSetMstListResponse>>(presenter.Result));
     }
 
+    [HttpGet(ApiPath.GetToolTip)]
+    public Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
+    {
+        var input = new GetSetMstToolTipInputData(request.HpId, request.SetCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetSetMstToolTipPresenter();
+        presenter.Complete(output);
+
+        return Task.FromResult(new ActionResult<Response<GetSetMstToolTipResponse>>(presenter.Result));
+    }
+
     [HttpPost(ApiPath.Save)]
     public Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
@@ -66,7 +79,7 @@ public class SetController : ControllerBase
     }
 
     [HttpPost(ApiPath.Paste)]
-    public Task <ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+    public Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
         var input = new CopyPasteSetMstInputData(request.HpId, request.UserId, request.CopySetCd, request.PasteSetCd);
         var output = _bus.Handle(input);
@@ -158,7 +171,7 @@ public class SetController : ControllerBase
                         mst.DaysCnt,
                         mst.SortNo,
                         mst.IsDeleted,
-                        mst.OrdInfDetails.Select(detail=> 
+                        mst.OrdInfDetails.Select(detail =>
                             new SetOrderInfDetailInputItem(
                                     detail.SinKouiKbn,
                                     detail.ItemCd,

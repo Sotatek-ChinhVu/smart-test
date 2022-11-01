@@ -21,6 +21,7 @@
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
+        public const string GetToolTip = "GetToolTip";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
