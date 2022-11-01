@@ -1774,7 +1774,7 @@ namespace Infrastructure.Repositories
         public HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya)
         {
             var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
-            return hokensyaMst;
+            return hokensyaMst ?? new HokensyaMstModel();
         }
     }
 }
