@@ -553,7 +553,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                             x.PrefNo,
                                                                                             0,
                                                                                             false,
-                                                                                            x.IsDeleted)).ToList();
+                                                                                            x.IsDeleted,
+                                                                                            x.SeqNo)).ToList();
 
 
             var input = new SavePatientInfoInputData(patient,
