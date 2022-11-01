@@ -7,6 +7,7 @@ using Helper.Common;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -401,7 +402,8 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         GetConfirmDateList(2, item.HokenId), false,
                                         item.IsDeleted,
-                                        false)
+                                        false,
+                                        item.SeqNo)
                         );
                 }
             }
@@ -456,7 +458,8 @@ namespace Infrastructure.Repositories
                 confirmDateList,
                 false,
                 kohiInf.IsDeleted,
-                false
+                false,
+                kohiInf.SeqNo
                 );
         }
 

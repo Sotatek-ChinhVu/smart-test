@@ -1507,7 +1507,7 @@ namespace Infrastructure.Repositories
 
             #region HokenKohi
             //Add new
-            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew), (src, dest) =>
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew && x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1534,9 +1534,9 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.PtKohis.AddRange(ptKohiInfs);
 
             //Update
-            foreach (var item in hokenKohis.Where(x => !x.IsAddNew))
+            foreach (var item in hokenKohis.Where(x => !x.IsAddNew && x.SeqNo != 0))
             {
-                PtKohi? updateKohi = databasePtKohis.FirstOrDefault(c => c.HokenId == item.HokenId);
+                PtKohi? updateKohi = databasePtKohis.FirstOrDefault(c => c.HokenId == item.HokenId && c.SeqNo == item.SeqNo);
                 if (updateKohi != null)
                 {
                     //Info Kohi
