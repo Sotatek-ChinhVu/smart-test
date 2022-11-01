@@ -1,11 +1,12 @@
-﻿using EmrCalculateApi.Futan.DB.Finder;
-using EmrCalculateApi.Futan.Models;
+﻿using Domain.Models.Finder;
+using Domain.Models.Futan;
+using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using PostgreDataContext;
 
-namespace EmrCalculateApi.Implementation.Finder
+namespace Infrastructure.Repositories.Finder
 {
     public class MasterFinder : IMasterFinder
     {

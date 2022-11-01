@@ -1,7 +1,7 @@
-﻿using Domain.Models.SetMst;
-using EmrCalculateApi.Futan.Models;
+﻿using Domain.Models.Futan;
+using Domain.Models.MstItem;
 
-namespace EmrCalculateApi.Futan.DB.Finder
+namespace Domain.Models.Finder
 {
     public interface IMasterFinder
     {

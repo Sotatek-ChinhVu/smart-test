@@ -1,6 +1,6 @@
 ﻿using Entity.Tenant;
 
-namespace EmrCalculateApi.Futan.Models
+namespace Domain.Models.Futan
 {
     public class SanteiCntCheckModel
     {
