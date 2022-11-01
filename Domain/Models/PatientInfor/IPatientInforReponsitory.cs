@@ -45,5 +45,9 @@ namespace Domain.Models.PatientInfor
 
         bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
         bool IsAllowDeletePatient(int hpId, long ptId);
+
+        HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo);
+
+        HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya);
     }
 }

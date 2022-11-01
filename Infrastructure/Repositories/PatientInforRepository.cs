@@ -1761,5 +1761,20 @@ namespace Infrastructure.Repositories
                 return false;
             return true;
         }
+
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        {
+            var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
+            {
+                return dest;
+            });
+        }
+
+        public HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya)
+        {
+            var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
+            return hokensyaMst ?? new HokensyaMstModel();
+        }
     }
 }
