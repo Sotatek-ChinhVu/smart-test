@@ -29,7 +29,7 @@ namespace Interactor.SetMst
 
             var tooltip = _setRepository.GetToolTip(inputData.HpId, inputData.SetCd);
 
-            return (tooltip.ListOrders.Count > 0 && tooltip.ListByomeis.Count > 0 && tooltip.ListKarteNames.Count > 0) ? new GetSetMstToolTipOutputData(tooltip, GetSetMstToolTipStatus.Successed) : new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.NoData);
+            return !(tooltip.ListOrders.Count > 0 && tooltip.ListByomeis.Count > 0 && tooltip.ListKarteNames.Count > 0) ? new GetSetMstToolTipOutputData(tooltip, GetSetMstToolTipStatus.Successed) : new GetSetMstToolTipOutputData(new(), GetSetMstToolTipStatus.NoData);
         }
     }
 }

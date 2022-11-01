@@ -131,42 +131,47 @@ namespace Interactor.OrdInfs
             var obj = new object();
             Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
             {
-                lock (obj)
-                {
-                    var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
-                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
-                    // Find By Group
-                    var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
-                        .GroupBy(odr => new
-                        {
-                            odr.HokenPid,
-                            odr.GroupOdrKouiKbn,
-                            odr.InoutKbn,
-                            odr.SyohoSbt,
-                            odr.SikyuKbn,
-                            odr.TosekiKbn,
-                            odr.SanteiKbn
-                        })
-                        .Select(grp => grp.FirstOrDefault())
-                        .ToList();
-                    if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
-                    {
-                        Parallel.ForEach(groupOdrInfs, groupOdrInf =>
-                        {
-                            var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
-                                                    && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
-                                                    && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                    && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                    && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                    && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                    && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                                .ToList();
 
-                            var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
+                var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
+                var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
+                // Find By Group
+                var groupOdrInfs = allOdrInfs.Where(odr => odr.HokenPid == hokenId)
+                    .GroupBy(odr => new
+                    {
+                        odr.HokenPid,
+                        odr.GroupOdrKouiKbn,
+                        odr.InoutKbn,
+                        odr.SyohoSbt,
+                        odr.SikyuKbn,
+                        odr.TosekiKbn,
+                        odr.SanteiKbn
+                    })
+                    .Select(grp => grp.FirstOrDefault())
+                    .ToList();
+                if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
+                {
+                    var objGroupOdrInf = new object();
+                    Parallel.ForEach(groupOdrInfs, groupOdrInf =>
+                    {
+                        var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
+                                                && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
+                                                && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
+                                            .ToList();
+
+                        var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
+                        lock (objGroupOdrInf)
+                        {
                             group.OdrInfs.AddRange(rpOdrInfs);
                             groupHoken.GroupOdrItems.Add(group);
-                        });
-                    }
+                        }
+                    });
+                }
+                lock (obj)
+                {
                     tree.GroupHokens.Add(groupHoken);
                 }
             });
