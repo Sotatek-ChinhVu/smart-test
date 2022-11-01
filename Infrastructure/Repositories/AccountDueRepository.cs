@@ -247,25 +247,23 @@ public class AccountDueRepository : IAccountDueRepository
         }
     }
 
-    public List<SyunoNyukinViewModel> GetListSyunoNyukinViewModel(List<long> listRaiinNo)
+    public List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo)
     {
-        var result = _tenantNoTrackingDataContext.SyunoNyukin.Where(item => item.IsDeleted == 0 && listRaiinNo.Contains(item.RaiinNo))
-                                                             .Select(item => new SyunoNyukinViewModel(
+        var result = _tenantNoTrackingDataContext.SyunoSeikyus.Where(item => listRaiinNo.Contains(item.RaiinNo))
+                                                             .Select(item => new SyunoSeikyuModel(
                                                                     item.HpId,
                                                                     item.PtId,
                                                                     item.SinDate,
                                                                     item.RaiinNo,
-                                                                    item.SeqNo,
-                                                                    item.SortNo,
+                                                                    item.NyukinKbn,
+                                                                    item.SeikyuTensu,
                                                                     item.AdjustFutan,
-                                                                    item.NyukinGaku,
-                                                                    item.PaymentMethodCd,
-                                                                    item.NyukinDate,
-                                                                    item.UketukeSbt,
-                                                                    item.NyukinCmt ?? string.Empty,
-                                                                    item.NyukinjiTensu,
-                                                                    item.NyukinjiSeikyu,
-                                                                    item.NyukinjiDetail ?? string.Empty
+                                                                    item.SeikyuGaku,
+                                                                    item.SeikyuDetail ?? string.Empty,
+                                                                    item.NewSeikyuTensu,
+                                                                    item.NewAdjustFutan,
+                                                                    item.NewSeikyuGaku,
+                                                                    item.NewSeikyuDetail ?? string.Empty
                                                              )).ToList();
         return result;
     }

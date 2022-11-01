@@ -2,7 +2,7 @@
 
 public class SyunoNyukinInputItem
 {
-    public SyunoNyukinInputItem(int nyukinKbn, long raiinNo, int sortNo, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int seikyuGaku, int seikyuTensu, string seikyuDetail, bool isUpdated, long seqNo, int raiinInfStatus)
+    public SyunoNyukinInputItem(int nyukinKbn, long raiinNo, int sortNo, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int seikyuGaku, int seikyuTensu, string seikyuDetail, bool isUpdated, long seqNo, int raiinInfStatus, int seikyuAdjustFutan)
     {
         NyukinKbn = nyukinKbn;
         RaiinNo = raiinNo;
@@ -19,6 +19,7 @@ public class SyunoNyukinInputItem
         IsUpdated = isUpdated;
         SeqNo = seqNo;
         RaiinInfStatus = raiinInfStatus;
+        SeikyuAdjustFutan = seikyuAdjustFutan;
     }
 
     public int NyukinKbn { get; private set; }
@@ -34,11 +35,11 @@ public class SyunoNyukinInputItem
     public int PaymentMethodCd { get; private set; }
 
     public int NyukinDate { get; private set; }
-    
+
     public int UketukeSbt { get; private set; }
-    
+
     public string NyukinCmt { get; private set; }
-    
+
     public int SeikyuGaku { get; private set; }
 
     public int SeikyuTensu { get; private set; }
@@ -50,4 +51,6 @@ public class SyunoNyukinInputItem
     public long SeqNo { get; private set; }
 
     public int RaiinInfStatus { get; private set; }
+
+    public int SeikyuAdjustFutan { get; private set; }
 }

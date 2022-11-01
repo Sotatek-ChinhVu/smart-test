@@ -34,7 +34,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         }
         var listAccountDueModel = ConvertToListAccountDueModel(inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated).ToList());
         var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
-        var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinViewModel(listRaiinNo);
+        var listSyunoNyukinDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
         List<AuditTraiLogModel> listTraiLogModels = new();
 
         if (!listAccountDueModel.Any())
@@ -48,12 +48,20 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             var seikyuGaku = accountDueByRaiins.Sum(item => (item.SeikyuGaku + item.AdjustFutan));
             var seikyuAdjustFutan = accountDueByRaiins.Sum(item => item.SeikyuAdjustFutan);
             var unPaid = seikyuGaku - seikyuAdjustFutan - accountDue.NyukinGaku - accountDue.AdjustFutan;
-            if (unPaid == 0 && (accountDue.PaymentMethodCd != 2 || accountDue.PaymentMethodCd != 3))
+            if (unPaid == 0 && (accountDue.NyukinKbn != 2 || accountDue.NyukinKbn != 3))
             {
-
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.InvalidPaymentMethodCd);
+            }
+            else if (unPaid != 0 && (accountDue.NyukinKbn == 2 || accountDue.NyukinKbn == 3))
+            {
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.InvalidPaymentMethodCd);
+            }
+            else if (accountDue.NyukinKbn == 0 && (accountDue.NyukinGaku != 0 || accountDue.AdjustFutan != 0))
+            {
+                return new SaveAccountDueListOutputData(SaveAccountDueListStatus.InvalidPaymentMethodCd);
             }
 
-            if (listSyunoNyukinDB.Any(item => accountDue.RaiinNo == item.RaiinNo && accountDue.PaymentMethodCd != item.PaymentMethodCd))
+            if (listSyunoNyukinDB.Any(item => accountDue.RaiinNo == item.RaiinNo && accountDue.NyukinKbn != item.NyukinKbn))
             {
                 int tempStatus = accountDue.NyukinKbn == 0 ? RaiinState.Waiting : RaiinState.Settled;
                 var eventCd = string.Empty;
@@ -183,7 +191,8 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                             item.SeikyuTensu,
                                             item.SeikyuDetail,
                                             item.SeqNo,
-                                            item.RaiinInfStatus
+                                            item.RaiinInfStatus,
+                                            item.SeikyuAdjustFutan
                                         )).ToList();
         return accountDueModels;
     }

@@ -6,7 +6,7 @@ public interface IAccountDueRepository
 
     bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues);
 
-    List<SyunoNyukinViewModel> GetListSyunoNyukinViewModel(List<long> listRaiinNo);
+    List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo);
 
     Dictionary<int, string> GetPaymentMethod(int hpId);
 
