@@ -1044,7 +1044,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate)
+        public List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate)
         {
             var dataHokenPatterList = _tenantDataContext.PtHokenPatterns.Where(x => x.IsDeleted == DeleteStatus.None && x.PtId == ptId && x.HpId == hpId).OrderByDescending(x => x.HokenPid);
             var dataKohi = _tenantDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None);
@@ -1188,147 +1188,151 @@ namespace Infrastructure.Repositories
 
             if (itemList.Count > 0)
             {
-                foreach (var item in itemList)
+                var obj = new object();
+                Parallel.ForEach(itemList, item =>
                 {
-                    string houbetu = string.Empty;
-                    int futanRate = 0;
-                    int futanKbn = 0;
-                    int hokenMstSubNumber = 0;
-                    int hokenMstStartDate = 0;
-                    int hokenMstEndDate = 0;
-                    int hokenMstHokenNo = 0;
-                    int hokenMstHokenEdraNo = 0;
-                    string hokenMstSName = string.Empty;
-                    bool isReceKisaiOrNoHoken = false;
-                    if (item.hokenMst != null)
                     {
-                        houbetu = item.hokenMst.Houbetu;
-                        futanRate = item.hokenMst.FutanRate;
-                        futanKbn = item.hokenMst.FutanKbn;
-                        hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
-                        hokenMstStartDate = item.hokenMst.StartDate;
-                        hokenMstEndDate = item.hokenMst.EndDate;
-                        hokenMstHokenNo = item.hokenMst.HokenNo;
-                        hokenMstHokenEdraNo = item.hokenMst.HokenEdaNo;
-                        hokenMstSName = item.hokenMst.HokenSname;
-                        isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
+                        string houbetu = string.Empty;
+                        int futanRate = 0;
+                        int futanKbn = 0;
+                        int hokenMstSubNumber = 0;
+                        int hokenMstStartDate = 0;
+                        int hokenMstEndDate = 0;
+                        int hokenMstHokenNo = 0;
+                        int hokenMstHokenEdraNo = 0;
+                        string hokenMstSName = string.Empty;
+                        bool isReceKisaiOrNoHoken = false;
+                        if (item.hokenMst != null)
+                        {
+                            houbetu = item.hokenMst.Houbetu;
+                            futanRate = item.hokenMst.FutanRate;
+                            futanKbn = item.hokenMst.FutanKbn;
+                            hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
+                            hokenMstStartDate = item.hokenMst.StartDate;
+                            hokenMstEndDate = item.hokenMst.EndDate;
+                            hokenMstHokenNo = item.hokenMst.HokenNo;
+                            hokenMstHokenEdraNo = item.hokenMst.HokenEdaNo;
+                            hokenMstSName = item.hokenMst.HokenSname;
+                            isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
+                        }
+
+                        //get FindHokensyaMstByNoNotrack
+                        string houbetuNo = string.Empty;
+                        string hokensyaNoSearch = string.Empty;
+                        CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
+                   
+                        HokenInfModel hokenInf = new HokenInfModel(
+                                                hpId,
+                                                ptId,
+                                                item.HokenId,
+                                                item.SeqNo,
+                                                item.HokenNo,
+                                                item.HokenEdaNo,
+                                                item.HokenKbn,
+                                                item.HokensyaNo ?? string.Empty,
+                                                item.Kigo ?? string.Empty,
+                                                item.Bango ?? string.Empty,
+                                                item.EdaNo ?? string.Empty,
+                                                item.HonkeKbn,
+                                                item.StartDate,
+                                                item.EndDate,
+                                                item.SikakuDate,
+                                                item.KofuDate,
+                                                GetConfirmDate(item.ptHokenCheckOfHokenPattern),
+                                                item.KogakuKbn,
+                                                item.TasukaiYm,
+                                                item.TokureiYm1,
+                                                item.TokureiYm2,
+                                                item.GenmenKbn,
+                                                item.GenmenRate,
+                                                item.GenmenGaku,
+                                                item.SyokumuKbn,
+                                                item.KeizokuKbn,
+                                                item.Tokki1 ?? string.Empty,
+                                                item.Tokki2 ?? string.Empty,
+                                                item.Tokki3 ?? string.Empty,
+                                                item.Tokki4 ?? string.Empty,
+                                                item.Tokki5 ?? string.Empty,
+                                                item.RousaiKofuNo ?? string.Empty,
+                                                nenkinBango: NenkinBango(item.RousaiKofuNo),
+                                                item.RousaiRoudouCd ?? string.Empty,
+                                                item.RousaiKofuNo ?? string.Empty,
+                                                item.RousaiSaigaiKbn,
+                                                item.RousaiKantokuCd ?? string.Empty,
+                                                item.RousaiSyobyoDate,
+                                                item.RyoyoStartDate,
+                                                item.RyoyoEndDate,
+                                                item.RousaiSyobyoCd ?? string.Empty,
+                                                item.RousaiJigyosyoName ?? string.Empty,
+                                                item.RousaiPrefName ?? string.Empty,
+                                                item.RousaiCityName ?? string.Empty,
+                                                item.RousaiReceCount,
+                                                string.Empty,
+                                                string.Empty,
+                                                string.Empty,
+                                                sinDate,
+                                                item.JibaiHokenName ?? string.Empty,
+                                                item.JibaiHokenTanto ?? string.Empty,
+                                                item.JibaiHokenTel ?? string.Empty,
+                                                item.JibaiJyusyouDate,
+                                                houbetu ?? string.Empty,
+                                                GetConfirmDateList(1, item.HokenId),
+                                                new List<RousaiTenkiModel>(),
+                                                isReceKisaiOrNoHoken,
+                                                item.HokenInfIsDeleted,
+                                                new HokenMstModel(futanKbn,
+                                                                  futanRate,
+                                                                  hokenMstStartDate,
+                                                                  hokenMstEndDate,
+                                                                  hokenMstHokenNo,
+                                                                  hokenMstHokenEdraNo,
+                                                                  hokenMstSName,
+                                                                  houbetu ?? string.Empty,
+                                                                  hokenMstSubNumber,
+                                                                  item.hokenMst?.CheckDigit ?? 0,
+                                                                  item.hokenMst?.AgeStart ?? 0,
+                                                                  item.hokenMst?.AgeEnd ?? 0,
+                                                                  item.hokenMst?.IsFutansyaNoCheck ?? 0,
+                                                                  item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
+                                                                  item.hokenMst?.JyukyuCheckDigit ?? 0,
+                                                                  item.hokenMst?.IsTokusyuNoCheck ?? 0
+                                                                  ),
+                                                new HokensyaMstModel(),
+                                                false,
+                                                false,
+                                                item.RousaiKofuNo ?? string.Empty
+                                                );
+
+                        InsuranceModel insuranceModel = new InsuranceModel(
+                            item.HpId,
+                            item.PtId,
+                            item.Birthday,
+                            item.SeqNo,
+                            item.HokenSbtCd,
+                            item.HokenPid,
+                            item.HokenKbn,
+                            sinDate,
+                            item.HokenMemo,
+                            hokenInf,
+                            kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
+                            kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
+                            kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
+                            kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
+                            item.PatternIsDeleted,
+                            item.StartDate,
+                            item.EndDate,
+                            false
+                        );
+                        lock (obj)
+                        {
+                            listInsurance.Add(insuranceModel);
+                        }
                     }
-                    var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId).OrderBy(x => x.EndDate)
-                        .Select(x => new RousaiTenkiModel(x.Sinkei, x.Tenki, x.EndDate, x.IsDeleted, x.SeqNo)).ToList();
-
-                    //get FindHokensyaMstByNoNotrack
-                    string houbetuNo = string.Empty;
-                    string hokensyaNoSearch = string.Empty;
-                    CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
-                    var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensyaNoSearch && x.Houbetu == houbetuNo).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
-                    HokenInfModel hokenInf = new HokenInfModel(
-                                            hpId,
-                                            ptId,
-                                            item.HokenId,
-                                            item.SeqNo,
-                                            item.HokenNo,
-                                            item.HokenEdaNo,
-                                            item.HokenKbn,
-                                            item.HokensyaNo ?? string.Empty,
-                                            item.Kigo ?? string.Empty,
-                                            item.Bango ?? string.Empty,
-                                            item.EdaNo ?? string.Empty,
-                                            item.HonkeKbn,
-                                            item.StartDate,
-                                            item.EndDate,
-                                            item.SikakuDate,
-                                            item.KofuDate,
-                                            GetConfirmDate(item.ptHokenCheckOfHokenPattern),
-                                            item.KogakuKbn,
-                                            item.TasukaiYm,
-                                            item.TokureiYm1,
-                                            item.TokureiYm2,
-                                            item.GenmenKbn,
-                                            item.GenmenRate,
-                                            item.GenmenGaku,
-                                            item.SyokumuKbn,
-                                            item.KeizokuKbn,
-                                            item.Tokki1 ?? string.Empty,
-                                            item.Tokki2 ?? string.Empty,
-                                            item.Tokki3 ?? string.Empty,
-                                            item.Tokki4 ?? string.Empty,
-                                            item.Tokki5 ?? string.Empty,
-                                            item.RousaiKofuNo ?? string.Empty,
-                                            nenkinBango: NenkinBango(item.RousaiKofuNo),
-                                            item.RousaiRoudouCd ?? string.Empty,
-                                            item.RousaiKofuNo ?? string.Empty,
-                                            item.RousaiSaigaiKbn,
-                                            item.RousaiKantokuCd ?? string.Empty,
-                                            item.RousaiSyobyoDate,
-                                            item.RyoyoStartDate,
-                                            item.RyoyoEndDate,
-                                            item.RousaiSyobyoCd ?? string.Empty,
-                                            item.RousaiJigyosyoName ?? string.Empty,
-                                            item.RousaiPrefName ?? string.Empty,
-                                            item.RousaiCityName ?? string.Empty,
-                                            item.RousaiReceCount,
-                                            string.Empty,
-                                            string.Empty,
-                                            string.Empty,
-                                            sinDate,
-                                            item.JibaiHokenName ?? string.Empty,
-                                            item.JibaiHokenTanto ?? string.Empty,
-                                            item.JibaiHokenTel ?? string.Empty,
-                                            item.JibaiJyusyouDate,
-                                            houbetu ?? string.Empty,
-                                            GetConfirmDateList(1, item.HokenId),
-                                            ptRousaiTenkis,
-                                            isReceKisaiOrNoHoken,
-                                            item.HokenInfIsDeleted,
-                                            new HokenMstModel(futanKbn,
-                                                              futanRate,
-                                                              hokenMstStartDate,
-                                                              hokenMstEndDate,
-                                                              hokenMstHokenNo,
-                                                              hokenMstHokenEdraNo,
-                                                              hokenMstSName,
-                                                              houbetu ?? string.Empty,
-                                                              hokenMstSubNumber,
-                                                              item.hokenMst?.CheckDigit ?? 0,
-                                                              item.hokenMst?.AgeStart ?? 0,
-                                                              item.hokenMst?.AgeEnd ?? 0,
-                                                              item.hokenMst?.IsFutansyaNoCheck ?? 0,
-                                                              item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
-                                                              item.hokenMst?.JyukyuCheckDigit ?? 0,
-                                                              item.hokenMst?.IsTokusyuNoCheck ?? 0
-                                                              ),
-                                            hokensyaMst ?? new HokensyaMstModel(),
-                                            false,
-                                            false,
-                                            item.RousaiKofuNo ?? string.Empty
-                                            );
-
-                    InsuranceModel insuranceModel = new InsuranceModel(
-                        item.HpId,
-                        item.PtId,
-                        item.Birthday,
-                        item.SeqNo,
-                        item.HokenSbtCd,
-                        item.HokenPid,
-                        item.HokenKbn,
-                        sinDate,
-                        item.HokenMemo,
-                        hokenInf,
-                        kohi1: GetKohiInfModel(item.ptKohi1, item.ptHokenCheckOfKohi1, item.hokenMst1, sinDate, GetConfirmDateList(2, item.ptKohi1?.HokenId ?? 0)),
-                        kohi2: GetKohiInfModel(item.ptKohi2, item.ptHokenCheckOfKohi2, item.hokenMst2, sinDate, GetConfirmDateList(2, item.ptKohi2?.HokenId ?? 0)),
-                        kohi3: GetKohiInfModel(item.ptKohi3, item.ptHokenCheckOfKohi3, item.hokenMst3, sinDate, GetConfirmDateList(2, item.ptKohi3?.HokenId ?? 0)),
-                        kohi4: GetKohiInfModel(item.ptKohi4, item.ptHokenCheckOfKohi4, item.hokenMst4, sinDate, GetConfirmDateList(2, item.ptKohi4?.HokenId ?? 0)),
-                        item.PatternIsDeleted,
-                        item.StartDate,
-                        item.EndDate,
-                        false
-                    );
-                    listInsurance.Add(insuranceModel);
                 }
+               );
             }
 
             return listInsurance;
         }
-
     }
 }

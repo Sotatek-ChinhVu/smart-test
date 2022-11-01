@@ -8,6 +8,7 @@ using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
@@ -209,6 +210,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return Task.FromResult(new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result));
+        }
+
+        [HttpGet(ApiPath.GetInsuranceComboList)]
+        public Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
+        {
+            var input = new GetInsuranceComboListInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetInsuranceComboListPresenter();
+            presenter.Complete(output);
+
+            return Task.FromResult(new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result));
         }
     }
 }

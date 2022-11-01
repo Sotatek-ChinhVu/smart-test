@@ -43,6 +43,7 @@
         public const string GetMaxRpNo = "GetMaxRpNo";
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
+        public const string GetInsuranceComboList = "GetInsuranceComboList";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";

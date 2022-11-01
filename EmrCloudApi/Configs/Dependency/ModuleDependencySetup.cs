@@ -118,6 +118,7 @@ using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
 using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
+using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidateInsurance;
@@ -354,6 +355,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetInsuranceListInputData, GetInsuranceListInteractor>();
             busBuilder.RegisterUseCase<ValidMainInsuranceInputData, ValidInsuranceMainInteractor>();
             busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
+            busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
