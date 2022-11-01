@@ -7,7 +7,6 @@ using Helper.Common;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
