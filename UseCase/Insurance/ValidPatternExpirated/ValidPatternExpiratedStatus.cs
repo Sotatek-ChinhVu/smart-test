@@ -32,5 +32,18 @@ namespace UseCase.Insurance.ValidPatternExpirated
         InvalidKohiHokenMstEndDate4 = 21,
         InvalidPatientInfBirthday = 22,
         InvalidPatternHokenKbn = 23,
+        InvalidConfirmDateAgeCheck = 24,
+        InvalidConfirmDateHoken = 25,
+        InvalidHokenMstDate = 26,
+        InvalidConfirmDateKohi1 = 27,
+        InvalidMasterDateKohi1 = 28,
+        InvalidConfirmDateKohi2 = 29,
+        InvalidMasterDateKohi2 = 30,
+        InvalidConfirmDateKohi3 = 31,
+        InvalidMasterDateKohi3 = 32,
+        InvalidConfirmDateKohi4 = 33,
+        InvalidMasterDateKohi4 = 34,
+        InvalidPatternIsExpirated = 35,
+        InvalidHasElderHoken = 36,
     }
 }
