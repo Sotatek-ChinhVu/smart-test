@@ -1199,23 +1199,10 @@ namespace Infrastructure.Repositories
                                                 new List<RousaiTenkiModel>(),
                                                 isReceKisaiOrNoHoken,
                                                 item.HokenInfIsDeleted,
-                                                new HokenMstModel(futanKbn,
-                                                                  futanRate,
-                                                                  hokenMstStartDate,
-                                                                  hokenMstEndDate,
-                                                                  hokenMstHokenNo,
-                                                                  hokenMstHokenEdraNo,
-                                                                  hokenMstSName,
-                                                                  houbetu ?? string.Empty,
-                                                                  hokenMstSubNumber,
-                                                                  item.hokenMst?.CheckDigit ?? 0,
-                                                                  item.hokenMst?.AgeStart ?? 0,
-                                                                  item.hokenMst?.AgeEnd ?? 0,
-                                                                  item.hokenMst?.IsFutansyaNoCheck ?? 0,
-                                                                  item.hokenMst?.IsJyukyusyaNoCheck ?? 0,
-                                                                  item.hokenMst?.JyukyuCheckDigit ?? 0,
-                                                                  item.hokenMst?.IsTokusyuNoCheck ?? 0
-                                                                  ),
+                                                Mapper.Map(item.hokenMst, new HokenMstModel(), (src, dest) =>
+                                                {
+                                                    return dest;
+                                                }),
                                                 new HokensyaMstModel(),
                                                 false,
                                                 false,
