@@ -8,11 +8,12 @@ namespace UseCase.Insurance.GetComboList
 {
     public class GetInsuranceComboItemOuputData
     {
-        public GetInsuranceComboItemOuputData(int hokenPid, string hokenName, bool isExpired)
+        public GetInsuranceComboItemOuputData(int hokenPid, string hokenName, bool isExpired, string displayRateOnly)
         {
             HokenPid = hokenPid;
             HokenName = hokenName;
             IsExpired = isExpired;
+            DisplayRateOnly = displayRateOnly;
         }
 
         public int HokenPid { get; private set; }
@@ -20,5 +21,7 @@ namespace UseCase.Insurance.GetComboList
         public string HokenName { get; private set; }
 
         public bool IsExpired { get; private set; }
+
+        public string DisplayRateOnly { get; private set; }
     }
 }

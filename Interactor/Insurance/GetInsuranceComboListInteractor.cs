@@ -33,7 +33,7 @@ namespace Interactor.Insurance
                 }
 
                 var data = _insuranceResponsitory.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate);
-                return new GetInsuranceComboListOutputData(data.Select(x => new GetInsuranceComboItemOuputData(x.HokenPid, x.HokenName, x.IsExpirated)).ToList(), GetInsuranceComboListStatus.Successed);
+                return new GetInsuranceComboListOutputData(data.Select(x => new GetInsuranceComboItemOuputData(x.HokenPid, x.HokenName, x.IsExpirated, x.DisplayRateOnly)).ToList(), GetInsuranceComboListStatus.Successed);
             }
             catch
             {
