@@ -61,6 +61,7 @@
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
+        public const string SavePatientInfo = "SavePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
