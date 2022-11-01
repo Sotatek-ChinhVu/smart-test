@@ -8,7 +8,7 @@ namespace Domain.Models.InsuranceMst
 {
     public class HokensyaMstModel
     {
-        public HokensyaMstModel(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1)
+        public HokensyaMstModel(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1, int isKigoNa)
         {
             HpId = hpId;
             Name = name;
@@ -26,6 +26,40 @@ namespace Domain.Models.InsuranceMst
             Address1 = address1;
             Address2 = address2;
             Tel1 = tel1;
+            IsKigoNa = isKigoNa;
+        }
+
+        public HokensyaMstModel(int isKigoNa)
+        {
+            Name = string.Empty;
+            KanaName = string.Empty;
+            HoubetuKbn = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
+            Name = string.Empty;
+            Kigo = string.Empty;
+            Bango = string.Empty;
+            PostCode = string.Empty;
+            Address1 = string.Empty;
+            Address2 = string.Empty;
+            Tel1 = string.Empty;
+            IsKigoNa = isKigoNa;
+        }
+
+        public HokensyaMstModel()
+        {
+            Name = string.Empty;
+            KanaName = string.Empty;
+            HoubetuKbn = string.Empty;
+            Houbetu = string.Empty;
+            HokensyaNo = string.Empty;
+            Name = string.Empty;
+            Kigo = string.Empty;
+            Bango = string.Empty;
+            PostCode = string.Empty;
+            Address1 = string.Empty;
+            Address2 = string.Empty;
+            Tel1 = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -59,5 +93,7 @@ namespace Domain.Models.InsuranceMst
         public string Address2 { get; private set; }
 
         public string Tel1 { get; private set; }
+
+        public int IsKigoNa { get; private set; }
     }
 }

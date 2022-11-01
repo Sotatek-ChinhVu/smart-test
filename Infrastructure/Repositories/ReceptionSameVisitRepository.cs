@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;

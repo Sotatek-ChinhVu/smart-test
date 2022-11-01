@@ -63,6 +63,7 @@
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
+        public const string SavePatientInfo = "SavePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -93,8 +94,16 @@
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+        public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
+        public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
+
+        //Swaphoken
+        public const string SwapHoken = "SwapHoken";
+
+        //RaiinKubun
+        public const string GetColumnName = "GetColumnName";
     }
 }
