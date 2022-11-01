@@ -10,15 +10,33 @@ namespace Interactor.SpecialNote
     {
         private readonly IPtCmtInfRepository _ptCmtInfRepository;
         private readonly ISummaryInfRepository _summaryInfRepository;
-        private readonly IImportantNoteRepository _importantNoteRepository;
-        private readonly IPatientInfoRepository _patientInfoRepository;
+        private readonly IImportantNoteRepository _importantNoteAlrgyElseRepository;
+        private readonly IImportantNoteRepository _importantAlrgyFoodRepository;
+        private readonly IImportantNoteRepository _importantAlrgyDrugRepository;
+        private readonly IImportantNoteRepository _importantOtherDrugRepository;
+        private readonly IImportantNoteRepository _importantOtcDrugRepository;
+        private readonly IImportantNoteRepository _importantSuppleRepository;
+        private readonly IImportantNoteRepository _importantKioRekiRepository;
+        private readonly IImportantNoteRepository _importantInfectionRepository;
+        private readonly IPatientInfoRepository _patientInfoPregnancyRepository;
+        private readonly IPatientInfoRepository _patientInfoSeikaturekiRepository;
+        private readonly IPatientInfoRepository _patientInfoPhysicalRepository;
 
-        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, IImportantNoteRepository importantNoteRepository, IPatientInfoRepository patientInfoRepository)
+        public GetSpecialNoteInteractor(IPtCmtInfRepository ptCmtInfRepository, ISummaryInfRepository summaryInfRepository, IImportantNoteRepository importantNoteAlrgyElseRepository, IImportantNoteRepository importantAlrgyFoodRepository, IImportantNoteRepository importantAlrgyDrugRepository, IImportantNoteRepository importantOtherDrugRepository, IImportantNoteRepository importantOtcDrugRepository, IImportantNoteRepository importantSuppleRepository, IImportantNoteRepository importantKioRekiRepository, IImportantNoteRepository importantInfectionRepository, IPatientInfoRepository patientInfoPregnancyRepository, IPatientInfoRepository patientInfoSeikaturekiRepository, IPatientInfoRepository patientInfoPhysicalRepository)
         {
             _ptCmtInfRepository = ptCmtInfRepository;
             _summaryInfRepository = summaryInfRepository;
-            _importantNoteRepository = importantNoteRepository;
-            _patientInfoRepository = patientInfoRepository;
+            _importantNoteAlrgyElseRepository = importantNoteAlrgyElseRepository;
+            _patientInfoPregnancyRepository = patientInfoPregnancyRepository;
+            _importantAlrgyFoodRepository = importantAlrgyFoodRepository;
+            _importantAlrgyDrugRepository = importantAlrgyDrugRepository;
+            _importantOtherDrugRepository = importantOtherDrugRepository;
+            _importantOtcDrugRepository = importantOtcDrugRepository;
+            _importantSuppleRepository = importantSuppleRepository;
+            _importantKioRekiRepository = importantKioRekiRepository;
+            _importantInfectionRepository = importantInfectionRepository;
+            _patientInfoSeikaturekiRepository = patientInfoSeikaturekiRepository;
+            _patientInfoPhysicalRepository = patientInfoPhysicalRepository;
         }
 
         public GetSpecialNoteOutputData Handle(GetSpecialNoteInputData inputData)
@@ -48,16 +66,16 @@ namespace Interactor.SpecialNote
 
         private ImportantNoteModel GetImportantNoteTab(long ptId)
         {
-            var taskAlrgyElseList = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteRepository.GetAlrgyElseList(ptId));
-            var taskAlrgyFoodList = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantNoteRepository.GetAlrgyFoodList(ptId));
-            var taskAlrgyDrugList = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantNoteRepository.GetAlrgyDrugList(ptId));
+            var taskAlrgyElseList = Task<List<PtAlrgyElseModel>>.Factory.StartNew(() => _importantNoteAlrgyElseRepository.GetAlrgyElseList(ptId));
+            var taskAlrgyFoodList = Task<List<PtAlrgyFoodModel>>.Factory.StartNew(() => _importantAlrgyFoodRepository.GetAlrgyFoodList(ptId));
+            var taskAlrgyDrugList = Task<List<PtAlrgyDrugModel>>.Factory.StartNew(() => _importantAlrgyDrugRepository.GetAlrgyDrugList(ptId));
 
-            var taskOtherDrugList = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantNoteRepository.GetOtherDrugList(ptId));
-            var taskOctDrugList = Task<List<PtOtcDrugModel>>.Factory.StartNew(() => _importantNoteRepository.GetOtcDrugList(ptId));
-            var taskSuppleList = Task<List<PtSuppleModel>>.Factory.StartNew(() => _importantNoteRepository.GetSuppleList(ptId));
+            var taskOtherDrugList = Task<List<PtOtherDrugModel>>.Factory.StartNew(() => _importantOtherDrugRepository.GetOtherDrugList(ptId));
+            var taskOctDrugList = Task<List<PtOtcDrugModel>>.Factory.StartNew(() => _importantOtcDrugRepository.GetOtcDrugList(ptId));
+            var taskSuppleList = Task<List<PtSuppleModel>>.Factory.StartNew(() => _importantSuppleRepository.GetSuppleList(ptId));
 
-            var taskKioRekiList = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantNoteRepository.GetKioRekiList(ptId));
-            var taskInfectionList = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantNoteRepository.GetInfectionList(ptId));
+            var taskKioRekiList = Task<List<PtKioRekiModel>>.Factory.StartNew(() => _importantKioRekiRepository.GetKioRekiList(ptId));
+            var taskInfectionList = Task<List<PtInfectionModel>>.Factory.StartNew(() => _importantInfectionRepository.GetInfectionList(ptId));
             Task.WaitAll(taskAlrgyElseList, taskAlrgyFoodList, taskAlrgyDrugList, taskOtherDrugList, taskOctDrugList, taskSuppleList, taskKioRekiList, taskInfectionList);
 
             return new ImportantNoteModel(taskAlrgyFoodList.Result, taskAlrgyElseList.Result, taskAlrgyDrugList.Result, taskKioRekiList.Result, taskInfectionList.Result, taskOtherDrugList.Result, taskOctDrugList.Result, taskSuppleList.Result);
@@ -65,10 +83,10 @@ namespace Interactor.SpecialNote
 
         private PatientInfoModel GetPatientInfoTab(long ptId, int hpId)
         {
-            var taskPregnancyItem = Task<PtPregnancyModel>.Factory.StartNew(() => _patientInfoRepository.GetPregnancyList(ptId, hpId).FirstOrDefault() ?? new());
+            var taskPregnancyItem = Task<PtPregnancyModel>.Factory.StartNew(() => _patientInfoPregnancyRepository.GetPregnancyList(ptId, hpId).FirstOrDefault() ?? new());
             var taskCmtInfItem = Task<PtCmtInfModel>.Factory.StartNew(() => _ptCmtInfRepository.GetList(ptId, hpId).FirstOrDefault() ?? new());
-            var taskSeikaturekiInfItem = Task<SeikaturekiInfModel>.Factory.StartNew(() => _patientInfoRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault() ?? new());
-            var taskPhysicalItems = Task<List<PhysicalInfoModel>>.Factory.StartNew(() => _patientInfoRepository.GetPhysicalList(hpId, ptId));
+            var taskSeikaturekiInfItem = Task<SeikaturekiInfModel>.Factory.StartNew(() => _patientInfoSeikaturekiRepository.GetSeikaturekiInfList(ptId, hpId).FirstOrDefault() ?? new());
+            var taskPhysicalItems = Task<List<PhysicalInfoModel>>.Factory.StartNew(() => _patientInfoPhysicalRepository.GetPhysicalList(hpId, ptId));
             Task.WaitAll(taskPregnancyItem, taskCmtInfItem, taskSeikaturekiInfItem, taskPhysicalItems);
 
             return new PatientInfoModel(taskPregnancyItem.Result, taskCmtInfItem.Result, taskSeikaturekiInfItem.Result, taskPhysicalItems.Result);
