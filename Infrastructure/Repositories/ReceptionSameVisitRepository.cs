@@ -122,7 +122,8 @@ namespace Infrastructure.Repositories
                                         new List<ConfirmDateModel>(),
                                         false,
                                         ptKohi1Item.IsDeleted,
-                                        false
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -146,7 +147,8 @@ namespace Infrastructure.Repositories
                                         new List<ConfirmDateModel>(),
                                         false,
                                         ptKohi1Item.IsDeleted,
-                                        false
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -170,7 +172,8 @@ namespace Infrastructure.Repositories
                                         new List<ConfirmDateModel>(),
                                         false,
                                         ptKohi1Item.IsDeleted,
-                                        false
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -194,7 +197,8 @@ namespace Infrastructure.Repositories
                                         new List<ConfirmDateModel>(),
                                         false,
                                         ptKohi1Item.IsDeleted,
-                                        false
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
