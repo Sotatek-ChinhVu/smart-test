@@ -28,9 +28,9 @@ namespace Interactor.PatientInfor
             {
                 (bool, long) result;
                 if (inputData.Patient.PtId == 0)
-                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
+                    result = _patientInforRepository.CreatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps);
                 else
-                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.PtGrps);
+                    result = _patientInforRepository.UpdatePatientInfo(inputData.Patient, inputData.PtKyuseis, inputData.PtSanteis, inputData.Insurances, inputData.HokenInfs, inputData.HokenKohis, inputData.PtGrps);
 
                 if (result.Item1)
                     return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Successful, result.Item2);
@@ -134,6 +134,34 @@ namespace Interactor.PatientInfor
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.OfficeMemo`"));
 
             #endregion Patient Info
+
+            #region Hoken
+
+            var listHokenIdValid = model.HokenInfs.Where(x => x.IsDeleted == 0)
+                                    .Select(x => x.HokenId).Where(x => x != 0).ToList();
+
+            var listHokenKohiIdValid = model.HokenKohis.Where(x => x.IsDeleted == 0)
+                                    .Select(x => x.HokenId).Where(x => x != 0).ToList();
+
+            for (int i = 0; i < model.Insurances.Count; i++)
+            {
+                if (model.Insurances[i].HokenId != 0 && !listHokenIdValid.Contains(model.Insurances[i].HokenId))
+                    resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`Insurances[{i}].HokenId`"));
+
+                if (model.Insurances[i].Kohi1Id != 0 && !listHokenKohiIdValid.Contains(model.Insurances[i].Kohi1Id))
+                    resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`Insurances[{i}].Kohi1Id`"));
+
+                if (model.Insurances[i].Kohi2Id != 0 && !listHokenKohiIdValid.Contains(model.Insurances[i].Kohi2Id))
+                    resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`Insurances[{i}].Kohi2Id`"));
+
+                if (model.Insurances[i].Kohi3Id != 0 && !listHokenKohiIdValid.Contains(model.Insurances[i].Kohi3Id))
+                    resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`Insurances[{i}].Kohi3Id`"));
+
+                if (model.Insurances[i].Kohi4Id != 0 && !listHokenKohiIdValid.Contains(model.Insurances[i].Kohi4Id))
+                    resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), $"`Insurances[{i}].Kohi4Id`"));
+            }
+
+            #endregion Hoken
 
             #region PtKytsei
 
