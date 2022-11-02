@@ -24,10 +24,20 @@
 
         UserMstModel? GetByLoginId(string loginId);
 
-        bool CheckExistedId(List<long> idList);
+        bool CheckExistedId(List<long> ids);
 
-        void Upsert(List<UserMstModel> updatedUserList, List<UserMstModel> inserteddUserList);
+        void Upsert(List<UserMstModel> upsertUserList);
 
         bool CheckExistedUserId(int userId);
+
+        bool CheckExistedUserIdCreate(List<int> userIds);
+
+        bool CheckExistedUserIdUpdate(List<long> ids, List<int> userIds);
+
+        bool CheckExistedLoginIdCreate(List<string> loginIds);
+
+        bool CheckExistedJobCd(List<int> jobCds);
+
+        bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
     }
 }

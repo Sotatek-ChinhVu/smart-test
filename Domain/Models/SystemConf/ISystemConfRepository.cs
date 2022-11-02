@@ -4,7 +4,7 @@ public interface ISystemConfRepository
 {
     List<SystemConfModel> GetList(int fromGrpCd, int toGrpCd);
 
-    SystemConfModel GetByGrpCd(int hpId, int grpCd);
+    SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo);
 
     double GetSettingValue(int groupCd, int grpEdaNo, int hpId);
 

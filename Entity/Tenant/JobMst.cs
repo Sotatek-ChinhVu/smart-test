@@ -8,7 +8,7 @@ namespace Entity.Tenant
     /// 職種マスタ
     /// 
     /// </summary>
-    [Table(name: "JOB_MST ")]
+    [Table(name: "JOB_MST")]
     public class JobMst : EmrCloneable<JobMst>
     {
         /// <summary>

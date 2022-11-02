@@ -30,7 +30,8 @@ namespace Interactor.InsuranceMst
                                                 , inputData.PostCode
                                                 , inputData.Address1
                                                 , inputData.Address2
-                                                , inputData.Tel1);
+                                                , inputData.Tel1
+                                                , inputData.IsKigoNa);
 
             var validations = Validation(modelSave);
             if(validations.Any())
