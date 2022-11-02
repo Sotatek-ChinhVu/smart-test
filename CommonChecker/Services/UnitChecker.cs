@@ -2,6 +2,7 @@
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services.Interface;
+using Domain.Models.Finder;
 using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
@@ -12,7 +13,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
     {
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder = null!;
-      //  public IMasterFinder MasterFinder;
+        public IMasterFinder? MasterFinder;
         public int HpID;
         public long PtID;
         public int Sinday;
