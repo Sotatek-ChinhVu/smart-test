@@ -745,5 +745,24 @@
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
         public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
         public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
+
+        // Valid Pattern Expirated 
+        public static readonly string InvalidPatternHokenPid = "Invalid Pattern HokenPid";
+        public static readonly string InvalidPatternConfirmDate = "Invalid Pattern ConfirmDate";
+        public static readonly string InvalidHokenInfStartDate = "Invalid HokenInf StartDate";
+        public static readonly string InvalidHokenInfEndDate = "Invalid HokenInf EndDate";
+        public static readonly string InvalidConfirmDateAgeCheck = "Invalid ConfirmDate Age Check";
+        public static readonly string InvalidConfirmDateHoken = "Invalid ConfirmDate Hoken";
+        public static readonly string InvalidHokenMstDate = "Invalid HokenMst Date";
+        public static readonly string InvalidConfirmDateKohi1 = "Invalid Kohi1 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi1 = "Invalid Kohi1 MasterDate";
+        public static readonly string InvalidConfirmDateKohi2 = "Invalid Kohi2 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi2 = "Invalid Kohi2 MasterDate";
+        public static readonly string InvalidConfirmDateKohi3 = "Invalid Kohi3 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi3 = "Invalid Kohi3 MasterDate";
+        public static readonly string InvalidConfirmDateKohi4 = "Invalid Kohi4 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi4 = "Invalid Kohi4 MasterDate";
+        public static readonly string InvalidPatternIsExpirated = "Invalid Pattern Expirated";
+        public static readonly string InvalidHasElderHoken = "Invalid Has ElderHoken";
     }
 }
