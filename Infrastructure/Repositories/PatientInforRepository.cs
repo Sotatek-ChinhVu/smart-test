@@ -1507,7 +1507,7 @@ namespace Infrastructure.Repositories
 
             #region HokenKohi
             //Add new
-            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew), (src, dest) =>
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew && x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateId = TempIdentity.UserId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1534,9 +1534,9 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.PtKohis.AddRange(ptKohiInfs);
 
             //Update
-            foreach (var item in hokenKohis.Where(x => !x.IsAddNew))
+            foreach (var item in hokenKohis.Where(x => !x.IsAddNew && x.SeqNo != 0))
             {
-                PtKohi? updateKohi = databasePtKohis.FirstOrDefault(c => c.HokenId == item.HokenId);
+                PtKohi? updateKohi = databasePtKohis.FirstOrDefault(c => c.HokenId == item.HokenId && c.SeqNo == item.SeqNo);
                 if (updateKohi != null)
                 {
                     //Info Kohi
@@ -1760,6 +1760,21 @@ namespace Infrastructure.Repositories
             if (raiinInfCount > 0)
                 return false;
             return true;
+        }
+
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        {
+            var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
+            {
+                return dest;
+            });
+        }
+
+        public HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya)
+        {
+            var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
+            return hokensyaMst ?? new HokensyaMstModel();
         }
     }
 }
