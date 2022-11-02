@@ -20,11 +20,17 @@ namespace EmrCloudApi.Tenant.Requests.PatientInfor
         }
 
         public PatientInforDto Patient { get; private set; }
-        public List<HokenPartternDto> Insurances { get; private set; } = new List<HokenPartternDto>();
-        public List<HokenInfDto> HokenInfs { get; private set; } = new List<HokenInfDto>();
-        public List<HokenKohiDto> HokenKohis { get; private set; } = new List<HokenKohiDto>();
-        public List<PtKyuseiModel> PtKyuseis { get; private set; } = new List<PtKyuseiModel>();
-        public List<CalculationInfModel> PtSanteis { get; private set; } = new List<CalculationInfModel>();
-        public List<GroupInfModel> PtGrps { get; private set; } = new List<GroupInfModel>();
+
+        public List<HokenPartternDto> Insurances { get; private set; }
+
+        public List<HokenInfDto> HokenInfs { get; private set; }
+
+        public List<HokenKohiDto> HokenKohis { get; private set; }
+
+        public List<PtKyuseiModel> PtKyuseis { get; private set; }
+
+        public List<CalculationInfModel> PtSanteis { get; private set; }
+
+        public List<GroupInfModel> PtGrps { get; private set; }
     }
 }
