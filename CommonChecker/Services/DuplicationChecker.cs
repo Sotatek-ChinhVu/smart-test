@@ -1,4 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
+﻿using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Helper.Constants;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services

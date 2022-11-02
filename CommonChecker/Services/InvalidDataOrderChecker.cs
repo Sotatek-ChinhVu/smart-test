@@ -1,6 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Models.SystemGenerationConf;
-using Domain.Types;
+﻿using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Helper.Constants;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services

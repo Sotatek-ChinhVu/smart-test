@@ -1,5 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Types;
+﻿using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
@@ -33,7 +33,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             foreach (var checkingOrder in unitCheckerForOrderListResult.CheckingOrderList)
             {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting||
+                if (checkingOrder.OdrKouiKbn == 21 && !_systemConf.DosageDrinkingDrugSetting ||
                 checkingOrder.OdrKouiKbn == 22 && !_systemConf.DosageDrugAsOrderSetting ||
                 checkingOrder.OdrKouiKbn == 23 ||
                 checkingOrder.OdrKouiKbn == 28 ||

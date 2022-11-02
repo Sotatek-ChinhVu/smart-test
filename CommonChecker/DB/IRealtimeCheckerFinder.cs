@@ -1,5 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Models.SpecialNote.ImportantNote;
+﻿using CommonChecker.Models;
+using CommonCheckers.OrderRealtimeChecker.Models;
 using Entity.Tenant;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB

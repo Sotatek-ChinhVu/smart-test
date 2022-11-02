@@ -1,5 +1,5 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Types;
+﻿using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {

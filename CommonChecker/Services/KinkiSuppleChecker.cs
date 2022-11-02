@@ -1,6 +1,7 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Models;
-using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Models;
+
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
