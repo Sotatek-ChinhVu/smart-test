@@ -4,7 +4,7 @@ namespace UseCase.SystemGenerationConf
 {
     public class GetSystemGenerationConfOutputData : IOutputData
     {
-        public GetSystemGenerationConfOutputData(int value, string param,  GetSystemGenerationConfStatus status)
+        public GetSystemGenerationConfOutputData(int value, string param, GetSystemGenerationConfStatus status)
         {
             Value = value;
             Param = param;
