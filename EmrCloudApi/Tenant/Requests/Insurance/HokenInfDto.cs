@@ -20,10 +20,6 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
             HonkeKbn = honkeKbn;
             HokenKbn = hokenKbn;
             Houbetu = houbetu;
-            HokensyaName = hokensyaName;
-            HokensyaPost = hokensyaPost;
-            HokensyaAddress = hokensyaAddress;
-            HokensyaTel = hokensyaTel;
             KeizokuKbn = keizokuKbn;
             SikakuDate = sikakuDate;
             KofuDate = kofuDate;
@@ -89,14 +85,6 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
         public int HokenKbn { get; private set; }
 
         public string Houbetu { get; private set; }
-
-        public string HokensyaName { get; private set; }
-
-        public string HokensyaPost { get; private set; }
-
-        public string HokensyaAddress { get; private set; }
-
-        public string HokensyaTel { get; private set; }
 
         public int KeizokuKbn { get; private set; }
 
