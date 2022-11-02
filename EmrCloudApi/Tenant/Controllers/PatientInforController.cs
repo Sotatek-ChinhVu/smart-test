@@ -1,8 +1,4 @@
-﻿using Domain.Models.Insurance;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.InsuranceMst;
-using Domain.Models.PatientInfor;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
@@ -14,7 +10,6 @@ using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
-using EmrCloudApi.Tenant.Presenters.SwapHoken;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Requests.HokenMst;
@@ -24,7 +19,6 @@ using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Requests.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Requests.PatientInfor.PtKyuseiInf;
-using EmrCloudApi.Tenant.Requests.SwapHoken;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
@@ -36,7 +30,6 @@ using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
-using EmrCloudApi.Tenant.Responses.SwapHoken;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
@@ -64,7 +57,14 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
+using EmrCloudApi.Tenant.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
+using EmrCloudApi.Tenant.Presenters.SwapHoken;
+using EmrCloudApi.Tenant.Responses.SwapHoken;
+using Domain.Models.PatientInfor;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
