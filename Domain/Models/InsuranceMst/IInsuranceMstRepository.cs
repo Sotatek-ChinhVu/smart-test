@@ -10,7 +10,7 @@ namespace Domain.Models.InsuranceMst
     {
         InsuranceMstModel GetDataInsuranceMst(int hpId, long ptId, int sinDate);
 
-        IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword);
+        IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword);
 
         HokenMstModel GetHokenMstByFutansyaNo(int hpId, int sinDate, string futansyaNo);
 
