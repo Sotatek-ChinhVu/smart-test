@@ -17,7 +17,6 @@ namespace Domain.Types
         string ItemCd { get; }
 
         string ItemName { get; }
-        string DisplayItemName { get; }
 
         double Suryo { get; }
 
@@ -71,7 +70,6 @@ namespace Domain.Types
         double Ten { get; }
 
         string MasterSbt { get; }
-        bool IsUsage { get; }
 
         bool IsSpecialItem { get; }
 
@@ -108,7 +106,6 @@ namespace Domain.Types
         bool IsShohoBiko { get; }
 
         bool IsShohoComment { get; }
-        ReleasedDrugType ReleasedType { get; }
         #endregion
     }
 }

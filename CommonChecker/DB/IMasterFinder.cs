@@ -1,4 +1,4 @@
-﻿using Domain.Models.Futan;
+﻿using CommonChecker.Models.Futan;
 using Domain.Models.MstItem;
 
 namespace CommonChecker.DB

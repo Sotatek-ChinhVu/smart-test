@@ -1,6 +1,6 @@
 ﻿using Entity.Tenant;
 
-namespace Domain.Models.MstItem
+namespace CommonChecker.Models.MstItem
 {
     public class IpnNameMstModel
     {

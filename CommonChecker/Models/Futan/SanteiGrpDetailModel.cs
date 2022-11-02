@@ -1,6 +1,6 @@
 ﻿using Entity.Tenant;
 
-namespace Domain.Models.Futan
+namespace CommonChecker.Models.Futan
 {
     public class SanteiGrpDetailModel
     {

@@ -1,4 +1,4 @@
-﻿using Domain.Models.Futan;
+﻿using CommonChecker.Models.Futan;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;

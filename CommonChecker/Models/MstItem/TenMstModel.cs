@@ -1,6 +1,6 @@
 ﻿using Entity.Tenant;
 
-namespace Domain.Models.MstItem
+namespace CommonChecker.Models.MstItem
 {
     public class TenMstModel
     {
@@ -51,6 +51,5 @@ namespace Domain.Models.MstItem
         public string ReceName { get; private set; } = string.Empty;
         public string SanteiItemCd { get; private set; } = string.Empty;
         public int JihiSbt { get; private set; }
-
     }
 }
