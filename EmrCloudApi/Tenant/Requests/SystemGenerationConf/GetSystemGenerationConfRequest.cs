@@ -11,5 +11,7 @@
         public int PresentDate { get; set; }
 
         public int DefaultValue { get; set; }
+
+        public string DefaultParam { get; set; } = string.Empty;
     }
 }

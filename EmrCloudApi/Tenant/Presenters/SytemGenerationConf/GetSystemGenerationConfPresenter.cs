@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Presenters.SytemGenerationConf
         {
             Result = new Response<GetSystemGenerationConfResponse>()
             {
-                Data = new GetSystemGenerationConfResponse(outputData.Value),
+                Data = new GetSystemGenerationConfResponse(outputData.Value, outputData.Param),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

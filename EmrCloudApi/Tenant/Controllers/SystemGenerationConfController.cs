@@ -22,7 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetSettingValue)]
         public Task<ActionResult<Response<GetSystemGenerationConfResponse>>> GetSettingValue([FromQuery] GetSystemGenerationConfRequest request)
         {
-            var input = new GetSystemGenerationConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo, request.PresentDate, request.DefaultValue);
+            var input = new GetSystemGenerationConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo, request.PresentDate, request.DefaultValue, request.DefaultParam);
             var output = _bus.Handle(input);
 
             var presenter = new GetSystemGenerationConfPresenter();

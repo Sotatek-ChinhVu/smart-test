@@ -4,13 +4,14 @@ namespace UseCase.SystemGenerationConf
 {
     public class GetSystemGenerationConfInputData : IInputData<GetSystemGenerationConfOutputData>
     {
-        public GetSystemGenerationConfInputData(int hpId, int grpCd, int grpEdaNo, int presentDate, int defaultValue)
+        public GetSystemGenerationConfInputData(int hpId, int grpCd, int grpEdaNo, int presentDate, int defaultValue, string defaultParam)
         {
             HpId = hpId;
             GrpCd = grpCd;
             GrpEdaNo = grpEdaNo;
             PresentDate = presentDate;
             DefaultValue = defaultValue;
+            DefaultParam = defaultParam;
         }
 
         public int HpId { get; private set; }
@@ -22,5 +23,7 @@ namespace UseCase.SystemGenerationConf
         public int PresentDate { get; private set; }
 
         public int DefaultValue { get; private set; }
+
+        public string DefaultParam { get; private set; }
     }
 }
