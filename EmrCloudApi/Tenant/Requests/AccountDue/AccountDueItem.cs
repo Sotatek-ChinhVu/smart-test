@@ -33,4 +33,8 @@ public class AccountDueItem
     public int RaiinInfStatus { get; set; }
 
     public int SeikyuAdjustFutan { get; set; }
+
+    public int SeikyuSinDate { get; set; }
+
+    public bool IsDelete { get; set; }
 }

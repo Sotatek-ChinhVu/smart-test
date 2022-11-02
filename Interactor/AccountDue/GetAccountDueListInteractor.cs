@@ -88,7 +88,7 @@ public class GetAccountDueListInteractor : IGetAccountDueListInputPort
             }
 
             listAccountDues = listAccountDues
-                                             .OrderBy(item => item.SinDate)
+                                             .OrderBy(item => item.SeikyuSinDate)
                                              .ThenBy(item => item.RaiinNo)
                                              .ThenBy(item => item.SortNo).ToList();
 

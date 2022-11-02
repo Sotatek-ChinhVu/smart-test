@@ -8,6 +8,8 @@ public interface IAccountDueRepository
 
     List<SyunoSeikyuModel> GetListSyunoSeikyuModel(List<long> listRaiinNo);
 
+    List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo);
+
     Dictionary<int, string> GetPaymentMethod(int hpId);
 
     Dictionary<int, string> GetUketsukeSbt(int hpId);

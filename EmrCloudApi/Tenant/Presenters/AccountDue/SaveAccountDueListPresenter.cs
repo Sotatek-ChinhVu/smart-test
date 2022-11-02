@@ -37,6 +37,7 @@ public class SaveAccountDueListPresenter
         SaveAccountDueListStatus.InvalidSeikyuTensu => ResponseMessage.InvalidSeikyuTensu,
         SaveAccountDueListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
         SaveAccountDueListStatus.NoItemChange => ResponseMessage.NoItemChange,
+        SaveAccountDueListStatus.InvalidSeikyuAdjustFutan => ResponseMessage.InvalidSeikyuAdjustFutan,
         _ => string.Empty
     };
 }

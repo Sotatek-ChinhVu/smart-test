@@ -22,4 +22,5 @@ public enum SaveAccountDueListStatus : byte
     InvalidSeikyuTensu = 18,
     InvalidSeqNo = 19,
     NoItemChange = 20,
+    InvalidSeikyuAdjustFutan = 21,
 }

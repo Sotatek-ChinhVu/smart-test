@@ -755,7 +755,8 @@
         public static readonly string InvalidNyukinDate = "Invalid NyukinDate, must more than or equal 0.";
         public static readonly string InvalidUketukeSbt = "Invalid UketukeSbt, must more than or equal 0.";
         public static readonly string NyukinCmtMaxLength100 = "Invalid UketukeSbt, max length is 100.";
-        public static readonly string InvalidSeikyuGaku = "Invalid SeikyuGaku, must more than or equal 0.";
+        public static readonly string InvalidSeikyuGaku = "Invalid SeikyuGaku.";
+        public static readonly string InvalidSeikyuAdjustFutan = "Invalid SeikyuAdjustFutan.";
         public static readonly string InvalidSeikyuTensu = "Invalid SeikyuTensu, must more than or equal 0.";
         public static readonly string NoItemChange = "No Item Change.";
     }

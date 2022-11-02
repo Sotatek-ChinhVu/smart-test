@@ -62,7 +62,9 @@ public class AccountDueController : ControllerBase
                                                 item.IsUpdated,
                                                 item.SeqNo,
                                                 item.RaiinInfStatus,
-                                                item.SeikyuAdjustFutan
+                                                item.SeikyuAdjustFutan,
+                                                item.SeikyuSinDate,
+                                                item.IsDelete
                                             )).ToList();
     }
 }

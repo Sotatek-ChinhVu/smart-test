@@ -57,7 +57,7 @@ public class AccountDueRepository : IAccountDueRepository
                               from kaMstItem in kaMstLeft.DefaultIfEmpty()
                               select ConvertToAccountDueListModel(hpId, ptId, seikyu, nyukinItem, raiinItem, kaMstItem)
                          )
-                         .OrderByDescending(item => item.SinDate)
+                         .OrderByDescending(item => item.SeikyuSinDate)
                          .ThenByDescending(item => item.RaiinNo)
                          .ThenByDescending(item => item.SortNo)
                          .Skip((pageIndex - 1) * pageSize)
@@ -125,25 +125,33 @@ public class AccountDueRepository : IAccountDueRepository
 
     public bool SaveAccountDueList(int hpId, long ptId, int userId, int sinDate, List<AccountDueModel> listAccountDues)
     {
+        var listRaiinNo = listAccountDues.Select(item => item.RaiinNo).ToList();
         var raiinLists = _tenantDataContext.RaiinInfs
                                 .Where(item => item.HpId == hpId
                                                     && item.PtId == ptId
                                                     && item.IsDeleted == DeleteTypes.None
-                                                    && item.Status > RaiinState.TempSave).ToList();
+                                                    && item.Status > RaiinState.TempSave
+                                                    && listRaiinNo.Contains(item.RaiinNo))
+                                .ToList();
 
         // Left table
         var seikyuLists = _tenantDataContext.SyunoSeikyus
-                        .Where(item => item.HpId == hpId
-                                            && item.PtId == ptId).ToList();
+                            .Where(item => item.HpId == hpId
+                                                && item.PtId == ptId
+                                                && listRaiinNo.Contains(item.RaiinNo))
+                            .ToList();
 
         // Right table
         var nyukinLists = _tenantDataContext.SyunoNyukin
                                .Where(item => item.HpId == hpId
                                                    && item.PtId == ptId
-                                                   && item.IsDeleted == 0).ToList();
+                                                   && item.IsDeleted == 0
+                                                   && listRaiinNo.Contains(item.RaiinNo))
+                               .ToList();
         try
         {
             var dateTimeNow = DateTime.UtcNow;
+
             foreach (var model in listAccountDues)
             {
                 // Update raiin status
@@ -207,13 +215,13 @@ public class AccountDueRepository : IAccountDueRepository
             nyukin.HpId = hpId;
             nyukin.PtId = ptId;
             nyukin.IsDeleted = 0;
-            nyukin.SinDate = sinDate;
+            nyukin.SinDate = model.SeikyuSinDate;
             nyukin.RaiinNo = model.RaiinNo;
             nyukin.SortNo = model.SortNo;
             nyukin.AdjustFutan = model.AdjustFutan;
             nyukin.NyukinGaku = model.NyukinGaku;
             nyukin.PaymentMethodCd = model.PaymentMethodCd;
-            nyukin.NyukinDate = model.NyukinDate;
+            nyukin.NyukinDate = sinDate;
             nyukin.UketukeSbt = model.UketukeSbt;
             nyukin.NyukinCmt = model.NyukinCmt;
             nyukin.NyukinjiSeikyu = model.SeikyuGaku;
@@ -235,7 +243,7 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin.AdjustFutan = model.AdjustFutan;
                 nyukin.NyukinGaku = model.NyukinGaku;
                 nyukin.PaymentMethodCd = model.PaymentMethodCd;
-                nyukin.NyukinDate = model.NyukinDate;
+                nyukin.NyukinDate = sinDate;
                 nyukin.UketukeSbt = model.UketukeSbt;
                 nyukin.NyukinCmt = model.NyukinCmt;
                 nyukin.NyukinjiSeikyu = model.SeikyuGaku;
@@ -243,6 +251,10 @@ public class AccountDueRepository : IAccountDueRepository
                 nyukin.NyukinjiDetail = model.SeikyuDetail;
                 nyukin.UpdateDate = dateTimeNow;
                 nyukin.UpdateId = userId;
+                if (model.IsDelete)
+                {
+                    nyukin.IsDeleted = 1;
+                }
             }
         }
     }
@@ -264,6 +276,28 @@ public class AccountDueRepository : IAccountDueRepository
                                                                     item.NewAdjustFutan,
                                                                     item.NewSeikyuGaku,
                                                                     item.NewSeikyuDetail ?? string.Empty
+                                                             )).ToList();
+        return result;
+    }
+    public List<SyunoNyukinModel> GetListSyunoNyukinModel(List<long> listRaiinNo)
+    {
+        var result = _tenantNoTrackingDataContext.SyunoNyukin.Where(item => listRaiinNo.Contains(item.RaiinNo) && item.IsDeleted == 0)
+                                                             .Select(item => new SyunoNyukinModel(
+                                                                    item.HpId,
+                                                                    item.PtId,
+                                                                    item.SinDate,
+                                                                    item.RaiinNo,
+                                                                    item.SeqNo,
+                                                                    item.SortNo,
+                                                                    item.AdjustFutan,
+                                                                    item.NyukinGaku,
+                                                                    item.PaymentMethodCd,
+                                                                    item.NyukinDate,
+                                                                    item.UketukeSbt,
+                                                                    item.NyukinCmt ?? string.Empty,
+                                                                    item.NyukinjiTensu,
+                                                                    item.NyukinjiSeikyu,
+                                                                    item.NyukinjiDetail ?? string.Empty
                                                              )).ToList();
         return result;
     }
