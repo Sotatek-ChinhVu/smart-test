@@ -4,7 +4,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
 {
     public class HokenKohiDto
     {
-        public HokenKohiDto(int hpId, long ptId, int hokenId, long seqNo, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, string jyukyusyaNo, int hokenSbtKbn, string houbetu, string tokusyuNo, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendoGaku, int isDeleted, List<ConfirmDateDto> confirmDates)
+        public HokenKohiDto(int hpId, long ptId, int hokenId, long seqNo, int prefNo, int hokenNo, int hokenEdaNo, string futansyaNo, string jyukyusyaNo, int hokenSbtKbn, string houbetu, string tokusyuNo, int sikakuDate, int kofuDate, int startDate, int endDate, int rate, int gendoGaku, int isDeleted, List<ConfirmDateDto> confirmDates, bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
@@ -26,6 +26,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
             GendoGaku = gendoGaku;
             IsDeleted = isDeleted;
             ConfirmDates = confirmDates;
+            IsAddNew = isAddNew;
         }
 
         public int HpId { get; private set; }
@@ -66,5 +67,7 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
         public int IsDeleted { get; private set; }
 
         public List<ConfirmDateDto> ConfirmDates { get; private set; } = new List<ConfirmDateDto>();
+
+        public bool IsAddNew { get; private set; }
     }
 }
