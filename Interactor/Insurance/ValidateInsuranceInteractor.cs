@@ -1884,22 +1884,22 @@ namespace Interactor.Insurance
             // Kohi1
             // get hokenMst Kohi1
             var hokenMstKohi1 = _patientInforRepository.GetHokenMstByInfor(item.Kohi1.HokenNo, item.Kohi1.HokenEdaNo);
-            var kohi1 = new KohiInfModel(item.Kohi1.ConfirmDateList, item.Kohi1.FutansyaNo, item.Kohi1.JyukyusyaNo, item.Kohi1.HokenId, item.Kohi1.StartDate, item.Kohi1.EndDate, item.Kohi1.ConfirmDate, item.Kohi1.Rate, item.Kohi1.GendoGaku, item.Kohi1.SikakuDate, item.Kohi1.KofuDate, item.Kohi1.TokusyuNo, item.Kohi1.HokenSbtKbn, item.Kohi1.Houbetu, hokenMstKohi1, item.Kohi1.HokenNo, item.Kohi1.HokenEdaNo, item.Kohi1.PrefNo, item.Kohi1.SinDate, hokenMstKohi1 != null, item.Kohi1.IsDeleted);
+            var kohi1 = new KohiInfModel(item.Kohi1.ConfirmDateList, item.Kohi1.FutansyaNo, item.Kohi1.JyukyusyaNo, item.Kohi1.HokenId, item.Kohi1.StartDate, item.Kohi1.EndDate, item.Kohi1.ConfirmDate, item.Kohi1.Rate, item.Kohi1.GendoGaku, item.Kohi1.SikakuDate, item.Kohi1.KofuDate, item.Kohi1.TokusyuNo, item.Kohi1.HokenSbtKbn, item.Kohi1.Houbetu, hokenMstKohi1, item.Kohi1.HokenNo, item.Kohi1.HokenEdaNo, item.Kohi1.PrefNo, item.Kohi1.SinDate, hokenMstKohi1 != null, item.Kohi1.IsDeleted, 0);
 
             // Kohi2
             // get hokenMst Kohi2
             var hokenMstKohi2 = _patientInforRepository.GetHokenMstByInfor(item.Kohi2.HokenNo, item.Kohi2.HokenEdaNo);
-            var kohi2 = new KohiInfModel(item.Kohi2.ConfirmDateList, item.Kohi2.FutansyaNo, item.Kohi2.JyukyusyaNo, item.Kohi2.HokenId, item.Kohi2.StartDate, item.Kohi2.EndDate, item.Kohi2.ConfirmDate, item.Kohi2.Rate, item.Kohi2.GendoGaku, item.Kohi2.SikakuDate, item.Kohi2.KofuDate, item.Kohi2.TokusyuNo, item.Kohi2.HokenSbtKbn, item.Kohi2.Houbetu, hokenMstKohi2, item.Kohi2.HokenNo, item.Kohi2.HokenEdaNo, item.Kohi2.PrefNo, item.Kohi2.SinDate, hokenMstKohi2 != null, item.Kohi2.IsDeleted);
+            var kohi2 = new KohiInfModel(item.Kohi2.ConfirmDateList, item.Kohi2.FutansyaNo, item.Kohi2.JyukyusyaNo, item.Kohi2.HokenId, item.Kohi2.StartDate, item.Kohi2.EndDate, item.Kohi2.ConfirmDate, item.Kohi2.Rate, item.Kohi2.GendoGaku, item.Kohi2.SikakuDate, item.Kohi2.KofuDate, item.Kohi2.TokusyuNo, item.Kohi2.HokenSbtKbn, item.Kohi2.Houbetu, hokenMstKohi2, item.Kohi2.HokenNo, item.Kohi2.HokenEdaNo, item.Kohi2.PrefNo, item.Kohi2.SinDate, hokenMstKohi2 != null, item.Kohi2.IsDeleted, 0);
 
             // Kohi3
             // get hokenMst Kohi3
             var hokenMstKohi3 = _patientInforRepository.GetHokenMstByInfor(item.Kohi3.HokenNo, item.Kohi3.HokenEdaNo);
-            var kohi3 = new KohiInfModel(item.Kohi3.ConfirmDateList, item.Kohi3.FutansyaNo, item.Kohi3.JyukyusyaNo, item.Kohi3.HokenId, item.Kohi3.StartDate, item.Kohi3.EndDate, item.Kohi3.ConfirmDate, item.Kohi3.Rate, item.Kohi3.GendoGaku, item.Kohi3.SikakuDate, item.Kohi3.KofuDate, item.Kohi3.TokusyuNo, item.Kohi3.HokenSbtKbn, item.Kohi3.Houbetu, hokenMstKohi3, item.Kohi3.HokenNo, item.Kohi3.HokenEdaNo, item.Kohi3.PrefNo, item.Kohi3.SinDate, hokenMstKohi3 != null, item.Kohi3.IsDeleted);
+            var kohi3 = new KohiInfModel(item.Kohi3.ConfirmDateList, item.Kohi3.FutansyaNo, item.Kohi3.JyukyusyaNo, item.Kohi3.HokenId, item.Kohi3.StartDate, item.Kohi3.EndDate, item.Kohi3.ConfirmDate, item.Kohi3.Rate, item.Kohi3.GendoGaku, item.Kohi3.SikakuDate, item.Kohi3.KofuDate, item.Kohi3.TokusyuNo, item.Kohi3.HokenSbtKbn, item.Kohi3.Houbetu, hokenMstKohi3, item.Kohi3.HokenNo, item.Kohi3.HokenEdaNo, item.Kohi3.PrefNo, item.Kohi3.SinDate, hokenMstKohi3 != null, item.Kohi3.IsDeleted, 0);
 
             // Kohi4
             // get hokenMst Kohi4
             var hokenMstKohi4 = _patientInforRepository.GetHokenMstByInfor(item.Kohi4.HokenNo, item.Kohi4.HokenEdaNo);
-            var kohi4 = new KohiInfModel(item.Kohi4.ConfirmDateList, item.Kohi4.FutansyaNo, item.Kohi4.JyukyusyaNo, item.Kohi4.HokenId, item.Kohi4.StartDate, item.Kohi4.EndDate, item.Kohi4.ConfirmDate, item.Kohi4.Rate, item.Kohi4.GendoGaku, item.Kohi4.SikakuDate, item.Kohi4.KofuDate, item.Kohi4.TokusyuNo, item.Kohi4.HokenSbtKbn, item.Kohi4.Houbetu, hokenMstKohi4, item.Kohi4.HokenNo, item.Kohi4.HokenEdaNo, item.Kohi4.PrefNo, item.Kohi4.SinDate, hokenMstKohi4 != null, item.Kohi4.IsDeleted);
+            var kohi4 = new KohiInfModel(item.Kohi4.ConfirmDateList, item.Kohi4.FutansyaNo, item.Kohi4.JyukyusyaNo, item.Kohi4.HokenId, item.Kohi4.StartDate, item.Kohi4.EndDate, item.Kohi4.ConfirmDate, item.Kohi4.Rate, item.Kohi4.GendoGaku, item.Kohi4.SikakuDate, item.Kohi4.KofuDate, item.Kohi4.TokusyuNo, item.Kohi4.HokenSbtKbn, item.Kohi4.Houbetu, hokenMstKohi4, item.Kohi4.HokenNo, item.Kohi4.HokenEdaNo, item.Kohi4.PrefNo, item.Kohi4.SinDate, hokenMstKohi4 != null, item.Kohi4.IsDeleted, 0);
 
             var itemInsurance = new InsuranceModel(item.HpId, item.PtId, item.PtBirthday, item.SeqNo, item.HokenSbtCd, item.HokenPid, item.HokenKbn, sinDate, item.HokenMemo, hokenInfModel, kohi1, kohi2, kohi3, kohi4, item.IsDeleted, item.StartDate, item.EndDate, item.IsAddNew);
 
