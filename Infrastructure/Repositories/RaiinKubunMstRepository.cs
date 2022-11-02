@@ -299,6 +299,32 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<string> GetListColumnName(int hpId)
+        {
+            var listRaiinKbnMst =  _tenantDataContextNoTracking.RaiinKbnMsts
+              .Where(item => item.HpId == hpId && item.IsDeleted == 0)
+              .OrderBy(item => item.SortNo)
+              .ToDictionary(item => item.GrpName, item => item.GrpCd);
+
+            var listColumnName = new List<string>()
+            {
+                "順番", "同一来院", "状態", "患者番号", "カナ氏名", "氏名", "性", "生年月日", "年齢", "読",
+                "予約時間", "予約名", "受付種別", "受付時間", "診察開始", "診察終了", "精算時間",
+                "来院コメント", "患者コメント", "保険", "担当医", "診療科", "前回来院", "主治医", "備考"
+            };
+
+            if (listRaiinKbnMst != null && listRaiinKbnMst.Count > 0)
+            {
+                foreach (var item in listRaiinKbnMst)
+                {
+                    if (listColumnName.Contains(item.Key) == false)
+                        listColumnName.Add(item.Key);
+                }
+            }
+
+            return listColumnName;
+        }
+
         #region RaiinKbn
         #region Add
         private (int, int, int, int) AddRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int currentKbnCd, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd)

@@ -63,6 +63,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<RsvInf>().HasKey(e => new { e.HpId, e.RsvFrameId, e.SinDate, e.StartTime, e.RaiinNo });
             modelBuilder.Entity<RsvFrameMst>().HasKey(e => new { e.HpId, e.RsvFrameId });
             modelBuilder.Entity<UserMst>().HasKey(e => new { e.Id, e.HpId });
+            modelBuilder.Entity<JobMst>().HasKey(e => new { e.JobCd, e.HpId });
             modelBuilder.Entity<KaMst>().HasKey(e => new { e.Id, e.HpId });
             modelBuilder.Entity<LockInf>().HasKey(e => new { e.HpId, e.PtId, e.FunctionCd, e.SinDate, e.RaiinNo, e.OyaRaiinNo });
             modelBuilder.Entity<UketukeSbtMst>().HasKey(e => new { e.HpId, e.KbnId });
@@ -145,6 +146,11 @@ namespace PostgreDataContext
             modelBuilder.Entity<SinKouiCount>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.SinDay, e.RaiinNo, e.RpNo, e.SeqNo });
             modelBuilder.Entity<SinKouiDetail>().HasKey(e => new { e.HpId, e.PtId, e.SinYm, e.RpNo, e.SeqNo, e.RowNo });
             modelBuilder.Entity<HolidayMst>().HasKey(e => new { e.HpId, e.SinDate, e.SeqNo});
+            modelBuilder.Entity<SyunoNyukin>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
+            modelBuilder.Entity<SyunoSeikyu>().HasKey(e => new { e.HpId, e.RaiinNo, e.PtId, e.SinDate });
+            modelBuilder.Entity<PtRousaiTenki>().HasKey(e => new { e.HpId, e.PtId, e.HokenId, e.SeqNo });
+            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate});
+            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo});
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

@@ -27,15 +27,15 @@
         public static readonly string InvalidSeqNo = "Invalid SeqNo";
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
-        public static readonly string UpsertSuccess = "更新が成功しました";
-        public static readonly string UpsertFail = "更新に失敗しました。";
-        public static readonly string UpsertInputNoData = "無効なデータを受信しました。";
+        public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
 
         //Common
         public static readonly string NotFound = "Not found";
         public static readonly string Success = "Success";
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
+        public static readonly string DuplicateId = "DuplicateId";
+        public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
 
@@ -66,6 +66,37 @@
         //Reception controller
 
         //PtDisease controller
+        public static readonly string PtDiseaseUpsertSuccess = "更新が成功しました";
+        public static readonly string PtDiseaseUpsertFail = "更新に失敗しました。";
+        public static readonly string PtDiseaseUpsertInputNoData = "無効なデータを受信しました。";
+
+        //User controller
+        public static readonly string UpsertInputNoData = "Input No Data";
+        public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
+        public static readonly string UpsertInvalidNoExistedId = "No Exist Id";
+        public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
+        public static readonly string UpsertInvalidId = "Invalid Id";
+        public static readonly string UpsertInvalidUserId = "Invalid UserId";
+        public static readonly string UpsertInvalidJobCd = "Invalid JobCd";
+        public static readonly string UpsertInvalidManagerKbn = "Invalid ManagerKbn";
+        public static readonly string UpsertInvalidKaId = "Invalid KaId";
+        public static readonly string UpsertInvalidKanaName = "Invalid KanaName";
+        public static readonly string UpsertInvalidName = "Invalid Name";
+        public static readonly string UpsertInvalidSname = "Invalid Sname";
+        public static readonly string UpsertInvalidLoginId = "Invalid LoginId";
+        public static readonly string UpsertInvalidLoginPass = "Invalid LoginPass";
+        public static readonly string UpsertInvalidStartDate = "Invalid StartDate";
+        public static readonly string UpsertInvalidEndDate = "Invalid EndDate";
+        public static readonly string UpsertInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertInvalidRenkeiCd1 = "Invalid RenkeiCd1";
+        public static readonly string UpsertInvalidDrName = "Invalid DrName";
+        public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
+        public static readonly string UpsertKaIdNoExist = "No Exist KaId";
+        public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
+        public static readonly string UpsertIdNoExist = "No Exist Id";
+        public static readonly string UserListExistedInputData = "UserListExistedInputData";
+
 
         //Insurance
         // Validate Main Insurance
@@ -84,6 +115,8 @@
         public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
         public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
         public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
+        public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
+        public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
@@ -256,6 +289,13 @@
         //OrdInf controller
 
         //RaiinKubun controller
+
+        //TimeZone
+        public static readonly string InvalidBirthDay = "Invalid BirthDay";
+        public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn >= 0";
+        public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
 
         //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
@@ -679,6 +719,8 @@
         public static readonly string MTenkiDate = "転帰日";
         public static readonly string MTenkiStartDate = "開始日";
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
+        public static readonly string MNoInputData = "数量を入力してください。";
+
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
@@ -695,6 +737,16 @@
         public static readonly string InvalidHokenNo = "Invalid HokenNo";
         public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
 
+        //DeletePatient
+        public static readonly string NotAllowDeletePatient = "This patient is not allowed to delete";
+
+
+        //SwapHoken
+        public static readonly string SwapHokenSourceInsuranceHasNotSelected = "Please select the source insurance.";
+        public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
+        public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
+        public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
+        
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
         public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";

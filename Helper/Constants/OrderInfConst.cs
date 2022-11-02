@@ -60,6 +60,7 @@
             InvalidItemCd,
             InvalidItemName,
             InvalidSuryo,
+            NoFillSuryo,
             InvalidUnitName,
             InvalidUnitSbt,
             InvalidTermVal,

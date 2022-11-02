@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Reception
+﻿using System.Runtime.InteropServices;
+
+namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
@@ -8,7 +10,7 @@
 
         ReceptionModel Get(long raiinNo);
 
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue);
 
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
 

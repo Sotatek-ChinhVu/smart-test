@@ -20,10 +20,10 @@ public class SystemConfRepository : ISystemConfRepository
             .Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd)
             .AsEnumerable().Select(s => ToModel(s)).ToList();
     }
-    public SystemConfModel GetByGrpCd(int hpId, int grpCd)
+    public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
-        var data =  _tenantDataContext.SystemConfs
-            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd);
+        var data = _tenantDataContext.SystemConfs
+            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
         return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data.Param ?? string.Empty, data.Biko ?? string.Empty);
     }

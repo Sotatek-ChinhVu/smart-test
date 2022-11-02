@@ -7,7 +7,7 @@
 
     public class UserInfoRequest
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         public int UserId { get; set; }
 
@@ -42,5 +42,6 @@
         public int IsDeleted { get; set; }
 
         public bool IsInsertModel { get; set; }
+        public int HpId { get; set; }
     }
 }
