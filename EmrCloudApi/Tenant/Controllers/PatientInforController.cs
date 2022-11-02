@@ -197,7 +197,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchHokensyaMst")]
         public ActionResult<Response<SearchHokensyaMstResponse>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
         {
-            var input = new SearchHokensyaMstInputData(request.HpId, request.PageIndex, request.PageCount, request.SinDate, request.Keyword);
+            var input = new SearchHokensyaMstInputData(request.HpId, request.SinDate, request.Keyword);
             var output = _bus.Handle(input);
 
             var presenter = new SearchHokenMstPresenter();
