@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.Reception
+﻿using System.Runtime.InteropServices;
+
+namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
@@ -8,13 +10,15 @@
 
         ReceptionModel Get(long raiinNo);
 
-        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId);
+        List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue);
 
         ReceptionModel GetReceptionComments(int hpId, long raiinNo);
         
         ReceptionModel GetReceptionVisiting(int hpId, long raiinNo);
 
         IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory);
+
+        List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate);
 
         bool UpdateStatus(int hpId, long raiinNo, int status);
 
@@ -33,5 +37,7 @@
         bool CheckListNo(List<long> raininNos);
 
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
+
+        ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
     }
 }

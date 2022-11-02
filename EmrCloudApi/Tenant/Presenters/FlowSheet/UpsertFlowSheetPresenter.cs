@@ -27,9 +27,6 @@ namespace EmrCloudApi.Tenant.Presenters.FlowSheet
             UpsertFlowSheetStatus.PtIdNoValid => ResponseMessage.UpsertFlowSheetInvalidPtId,
             UpsertFlowSheetStatus.SinDateNoValid => ResponseMessage.UpsertFlowSheetInvalidSinDate,
             UpsertFlowSheetStatus.TagNoNoValid => ResponseMessage.UpsertFlowSheetInvalidTagNo,
-            UpsertFlowSheetStatus.CmtKbnNoValid => ResponseMessage.UpsertFlowSheetInvalidCmtKbn,
-            UpsertFlowSheetStatus.RainListCmtSeqNoNoValid => ResponseMessage.UpsertFlowSheetInvalidRainCmtSeqNo,
-            UpsertFlowSheetStatus.RainListTagSeqNoNoValid => ResponseMessage.UpsertFlowSheetInvalidRainListTagSeqNo,
             UpsertFlowSheetStatus.PtIdNoExist => ResponseMessage.UpsertFlowSheetPtIdNoExist,
             UpsertFlowSheetStatus.RaiinNoExist => ResponseMessage.UpsertFlowSheetRainNoNoExist,
             _ => string.Empty

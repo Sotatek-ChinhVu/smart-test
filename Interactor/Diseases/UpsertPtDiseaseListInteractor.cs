@@ -3,7 +3,6 @@ using Domain.Models.Insurance;
 using Domain.Models.PatientInfor;
 using UseCase.Diseases.Upsert;
 using static Helper.Constants.PtDiseaseConst;
-
 namespace Interactor.Diseases
 {
     public class UpsertPtDiseaseListInteractor : IUpsertPtDiseaseListInputPort
@@ -96,8 +95,10 @@ namespace Interactor.Diseases
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord;
             if (status == ValidationStatus.InvalidTenkiDateContinue)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+            if (status == ValidationStatus.InvalidTenkiDateCommon)
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateCommon;
             if (status == ValidationStatus.InvalidTekiDateAndStartDate)
-                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue;
+                return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate;
             if (status == ValidationStatus.InvalidByomei)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei;
             if (status == ValidationStatus.InvalidId)

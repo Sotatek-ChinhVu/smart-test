@@ -18,48 +18,49 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
 
         private string GetMessage(UpsertPtDiseaseListStatus status) => status switch
         {
-            UpsertPtDiseaseListStatus.Success => ResponseMessage.UpsertPtDiseaseListSuccess,
-            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.UpsertPtDiseaseListFail,
-            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.UpsertPtDiseaseListInputNoData,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.UpsertPtDiseaseListInvalidTenkiKbn,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.UpsertPtDiseaseListInvalidSikkanKbn,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.UpsertPtDiseaseListInvalidNanByoCd,
-            UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist => ResponseMessage.UpsertPtDiseaseListPtIdNoExist,
-            UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist => ResponseMessage.UpsertPtDiseaseListHokenPIdNoExist,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord => ResponseMessage.UpsertPtDiseaseListInvalidFreeWord,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateContinue,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => ResponseMessage.UpsertPtDiseaseListInvalidTenkiDateAndStartDate,
-            UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei => ResponseMessage.UpsertPtDiseaseListInvalidByomei,
+            UpsertPtDiseaseListStatus.Success => ResponseMessage.PtDiseaseUpsertSuccess,
+            UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess => ResponseMessage.PtDiseaseUpsertFail,
+            UpsertPtDiseaseListStatus.PtDiseaseListInputNoData => ResponseMessage.PtDiseaseUpsertInputNoData,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn => ResponseMessage.MCommonError,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidSikkanKbn => ResponseMessage.MCommonError,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidNanByoCd => ResponseMessage.MCommonError,
+            UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist => ResponseMessage.MCommonError,
+            UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist => ResponseMessage.MCommonError,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidFreeWord => ResponseMessage.MEnt00040_1,
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateContinue => string.Format(ResponseMessage.MInp00010, ResponseMessage.MTenkiContinue),
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiDateCommon => string.Format(ResponseMessage.MInp00010, ResponseMessage.MTenkiDate),
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidTekiDateAndStartDate => string.Format(ResponseMessage.MInp00110, ResponseMessage.MTenkiDate, ResponseMessage.MTenkiStartDate),
+            UpsertPtDiseaseListStatus.PtDiseaseListInvalidByomei => string.Format(ResponseMessage.MInp00160_1, ResponseMessage.MDisease),
             UpsertPtDiseaseListStatus.PtInvalidId =>
-              ResponseMessage.UpsertPtDiseaseListInvalidId,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidHpId =>
-              ResponseMessage.UpsertPtDiseaseListInvalidHpId,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidPtId =>
-              ResponseMessage.UpsertPtDiseaseListInvalidPtId,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidSortNo =>
-              ResponseMessage.UpsertPtDiseaseListInvalidSortNo,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidByomeiCd =>
-              ResponseMessage.UpsertPtDiseaseListInvalidByomeiCd,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidStartDate =>
-              ResponseMessage.UpsertPtDiseaseListInvalidStartDate,
+              ResponseMessage.MTenkiStartDate_2,
             UpsertPtDiseaseListStatus.PtInvalidTenkiDate =>
-              ResponseMessage.UpsertPtDiseaseListInvalidTenkiDate,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidSyubyoKbn =>
-              ResponseMessage.UpsertPtDiseaseListInvalidSyubyoKbn,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidHosokuCmt =>
-              ResponseMessage.UpsertPtDiseaseListInvalidHosokuCmt,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidHokenPid =>
-              ResponseMessage.UpsertPtDiseaseListInvalidHokenPid,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidIsNodspRece =>
-              ResponseMessage.UpsertPtDiseaseListInvalidIsNodspRece,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidIsNodspKarte =>
-              ResponseMessage.UpsertPtDiseaseListInvalidIsNodspKarte,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidSeqNo =>
-              ResponseMessage.UpsertPtDiseaseListInvalidSeqNo,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidIsImportant =>
-              ResponseMessage.UpsertPtDiseaseListInvalidIsImportant,
+              ResponseMessage.MCommonError,
             UpsertPtDiseaseListStatus.PtInvalidIsDeleted =>
-              ResponseMessage.UpsertPtDiseaseListInvalidIsDeleted,
+              ResponseMessage.MCommonError,
             _ => string.Empty
         };
     }

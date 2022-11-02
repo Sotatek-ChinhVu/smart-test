@@ -41,5 +41,20 @@ namespace Infrastructure.Repositories
                     x.IsDeleted
                 ));
         }
+
+        public RaiinListTagModel Get(int hpId, long ptId, long raiinNo, int sinDate)
+        {
+            var result = _tenantDataContext.RaiinListTags.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.SinDate == sinDate && r.RaiinNo == raiinNo);
+
+            return new RaiinListTagModel(
+                    result?.HpId ?? 0,
+                    result?.PtId ?? 0,
+                    result?.SinDate ?? 0,
+                    result?.RaiinNo ?? 0,
+                    result?.SeqNo ?? 0,
+                    result?.TagNo ?? 0,
+                    result?.IsDeleted ?? 0
+                );
+        }
     }
 }

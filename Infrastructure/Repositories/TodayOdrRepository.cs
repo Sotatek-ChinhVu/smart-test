@@ -18,6 +18,16 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
+        private readonly int headerOdrKouiKbn = 10;
+        private readonly string jikanItemCd = "@JIKAN";
+        private readonly string shinItemCd = "@SHIN";
+        private readonly string shinItemName = "診察料基本点数算定用";
+        private readonly string jikanItemName = "時間外算定用";
+        private readonly int jikanRow = 2;
+        private readonly int shinRow = 1;
+        private readonly int rpEdaNoDefault = 1;
+        private readonly int daysCntDefalt = 1;
+
         private const string SUSPECT_FLAG = "の疑い";
 
         public TodayOdrRepository(ITenantProvider tenantProvider)
@@ -26,7 +36,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, List<KarteInfModel> karteInfModels)
+        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel)
         {
 
             var executionStrategy = _tenantTrackingDataContext.Database.CreateExecutionStrategy();
@@ -43,10 +53,11 @@ namespace Infrastructure.Repositories
                             UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
 
-                        if (karteInfModels.Count > 0)
-                            UpsertKarteInfs(karteInfModels);
+                        UpsertKarteInfs(karteInfModel);
 
                         SaveRaiinListInf(odrInfs);
+
+                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
 
                         transaction.Commit();
 
@@ -144,6 +155,144 @@ namespace Infrastructure.Repositories
             }
         }
 
+        private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
+        {
+
+            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate);
+            var oldoldSyosaiKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
+            var oldJikanKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
+            var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
+
+            if (oldHeaderInfModel != null)
+            {
+                if (oldHeaderInfModel?.HokenPid == hokenPid &&
+                oldoldSyosaiKihon?.Suryo == syosaiKbn &&
+                oldJikanKihon?.Suryo == jikanKbn &&
+                oldHeaderInfModel.SanteiKbn == santeiKbn)
+                {
+                    if (oldHeaderInfModel.IsDeleted == DeleteTypes.Deleted)
+                    {
+                        oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                        oldHeaderInfModel.UpdateId = TempIdentity.UserId;
+                        oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+                    }
+                    oldHeaderInfModel.IsDeleted = 0;
+                }
+                else
+                {
+                    // Be sure old header is deleted
+                    oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
+                    oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
+                    oldHeaderInfModel.UpdateId = TempIdentity.UserId;
+                    oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+
+                    var newHeaderInf = new OdrInf
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = oldHeaderInfModel.RpNo,
+                        RpEdaNo = oldHeaderInfModel.RpEdaNo + 1,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        HokenPid = hokenPid,
+                        OdrKouiKbn = headerOdrKouiKbn,
+                        CreateDate = DateTime.UtcNow,
+                        CreateId = TempIdentity.UserId,
+                        CreateMachine = TempIdentity.ComputerName,
+                        DaysCnt = daysCntDefalt
+                    };
+
+                    var odrSyosaiKionDetail = new OdrInfDetail
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = newHeaderInf.RpNo,
+                        RpEdaNo = newHeaderInf.RpEdaNo,
+                        RowNo = shinRow,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        SinKouiKbn = headerOdrKouiKbn,
+                        ItemCd = shinItemCd,
+                        ItemName = shinItemName,
+                        Suryo = syosaiKbn
+                    };
+
+                    var odrJikanDetail = new OdrInfDetail
+                    {
+                        HpId = hpId,
+                        RaiinNo = raiinNo,
+                        RpNo = newHeaderInf.RpNo,
+                        RpEdaNo = newHeaderInf.RpEdaNo,
+                        RowNo = jikanRow,
+                        PtId = ptId,
+                        SinDate = sinDate,
+                        SinKouiKbn = headerOdrKouiKbn,
+                        ItemCd = jikanItemCd,
+                        ItemName = jikanItemName,
+                        Suryo = jikanKbn
+                    };
+
+                    _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
+                    _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                    _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+                }
+            }
+            else
+            {
+                var newHeaderInf = new OdrInf
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = ++rpNoMax,
+                    RpEdaNo = rpEdaNoDefault,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    HokenPid = hokenPid,
+                    OdrKouiKbn = headerOdrKouiKbn,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = TempIdentity.UserId,
+                    CreateMachine = TempIdentity.ComputerName,
+                    DaysCnt = daysCntDefalt
+
+                };
+
+                var odrSyosaiKionDetail = new OdrInfDetail
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = newHeaderInf.RpNo,
+                    RpEdaNo = rpEdaNoDefault,
+                    RowNo = shinRow,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    SinKouiKbn = headerOdrKouiKbn,
+                    ItemCd = shinItemCd,
+                    ItemName = shinItemName,
+                    Suryo = syosaiKbn
+                };
+
+                var odrJikanDetail = new OdrInfDetail
+                {
+                    HpId = hpId,
+                    RaiinNo = raiinNo,
+                    RpNo = newHeaderInf.RpNo,
+                    RpEdaNo = rpEdaNoDefault,
+                    RowNo = jikanRow,
+                    PtId = ptId,
+                    SinDate = sinDate,
+                    SinKouiKbn = headerOdrKouiKbn,
+                    ItemCd = jikanItemCd,
+                    ItemName = jikanItemName,
+                    Suryo = jikanKbn
+                };
+
+                _tenantTrackingDataContext.OdrInfs.Add(newHeaderInf);
+                _tenantTrackingDataContext.OdrInfDetails.Add(odrSyosaiKionDetail);
+                _tenantTrackingDataContext.OdrInfDetails.Add(odrJikanDetail);
+            }
+
+            _tenantTrackingDataContext.SaveChanges();
+        }
 
         private void SaveRaiinListInf(List<OrdInfModel> ordInfs)
         {
@@ -246,7 +395,7 @@ namespace Infrastructure.Repositories
                         {
                             var raiinListInf = raiinListInfs?.Find(item => item.GrpId == kouiItem.GrpId
                                                                                 && item.KbnCd == kouiItem.KbnCd
-                                                                                && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN) ?? new RaiinListInf();
+                                                                                && item.RaiinListKbn == RaiinListKbnConstants.KOUI_KBN);
                             if (raiinListInf != null)
                             {
                                 _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
@@ -268,7 +417,7 @@ namespace Infrastructure.Repositories
                         {
                             var raiinListInf = raiinListInfs?.Find(item => item.GrpId == raiinListItem.GrpId
                                                                            && item.KbnCd == raiinListItem.KbnCd
-                                                                           && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN) ?? new RaiinListInf();
+                                                                           && item.RaiinListKbn == RaiinListKbnConstants.ITEM_KBN);
                             if (raiinListInf != null)
                             {
                                 _tenantTrackingDataContext.RaiinListInfs.Remove(raiinListInf);
@@ -405,13 +554,14 @@ namespace Infrastructure.Repositories
 
                     if (ordInf == null)
                     {
+                        rpNoMax++;
                         var ordInfEntity = new OdrInf
                         {
                             HpId = item.HpId,
                             PtId = item.PtId,
                             SinDate = item.SinDate,
                             RaiinNo = item.RaiinNo,
-                            RpNo = rpNoMax++,
+                            RpNo = rpNoMax,
                             RpEdaNo = 1,
                             Id = 0,
                             HokenPid = item.HokenPid,
@@ -554,47 +704,70 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(List<KarteInfModel> kartes)
+        private void UpsertKarteInfs(KarteInfModel karte)
         {
-            if (kartes.Count == 0)
+            int hpId = karte.HpId;
+            long ptId = karte.PtId;
+            long raiinNo = karte.RaiinNo;
+            int karteKbn = karte.KarteKbn;
+
+            var seqNo = GetMaxSeqNo(ptId, hpId, raiinNo, karteKbn) + 1;
+
+            if (karte.IsDeleted == DeleteTypes.Deleted)
             {
-                return;
-            }
-
-            int hpId = kartes[0].HpId;
-            long ptId = kartes[0].HpId;
-            long raiinNo = kartes[0].RaiinNo;
-            int karteKbn = kartes[0].KarteKbn;
-
-            foreach (var item in kartes)
-            {
-                var seqNo = GetMaxSeqNo(ptId, hpId, raiinNo, karteKbn) + 1;
-
-                if (item.IsDeleted == DeleteTypes.Deleted)
+                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                if (karteMst != null)
                 {
-                    var karte = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.RaiinNo == item.RaiinNo && item.KarteKbn == o.KarteKbn);
-                    if (karte != null)
+                    karteMst.IsDeleted = DeleteTypes.Deleted;
+                }
+            }
+            else
+            {
+                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+
+                if (karteMst == null)
+                {
+                    if (!string.IsNullOrEmpty(karte.Text) && !string.IsNullOrEmpty(karte.RichText))
                     {
-                        karte.IsDeleted = DeleteTypes.Deleted;
+                        var karteEntity = new KarteInf
+                        {
+                            HpId = karte.HpId,
+                            PtId = karte.PtId,
+                            SinDate = karte.SinDate,
+                            RaiinNo = karte.RaiinNo,
+                            KarteKbn = karte.KarteKbn,
+                            SeqNo = seqNo,
+                            Text = karte.Text,
+                            RichText = Encoding.UTF8.GetBytes(karte.RichText),
+                            IsDeleted = karte.IsDeleted,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName
+                        };
+
+                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
                     }
                 }
                 else
                 {
-                    var karte = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && o.RaiinNo == item.RaiinNo && item.KarteKbn == o.KarteKbn);
-
-                    if (karte == null)
+                    if (karte.Text != karteMst.Text && Encoding.UTF8.GetBytes(karte.RichText) != karteMst.RichText)
                     {
+                        karteMst.IsDeleted = DeleteTypes.Deleted;
+
                         var karteEntity = new KarteInf
                         {
-                            HpId = item.HpId,
-                            PtId = item.PtId,
-                            SinDate = item.SinDate,
-                            RaiinNo = item.RaiinNo,
-                            KarteKbn = item.KarteKbn,
+                            HpId = karte.HpId,
+                            PtId = karte.PtId,
+                            SinDate = karte.SinDate,
+                            RaiinNo = karte.RaiinNo,
+                            KarteKbn = karte.KarteKbn,
                             SeqNo = seqNo,
-                            Text = item.Text,
-                            RichText = Encoding.UTF8.GetBytes(item.RichText),
-                            IsDeleted = item.IsDeleted,
+                            Text = karte.Text,
+                            RichText = Encoding.UTF8.GetBytes(karte.RichText),
+                            IsDeleted = karte.IsDeleted,
                             CreateDate = DateTime.UtcNow,
                             CreateId = TempIdentity.UserId,
                             CreateMachine = TempIdentity.ComputerName,
@@ -605,36 +778,12 @@ namespace Infrastructure.Repositories
 
                         _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
                     }
-                    else
-                    {
-                        karte.IsDeleted = DeleteTypes.Deleted;
-                        var karteEntity = new KarteInf
-                        {
-                            HpId = item.HpId,
-                            PtId = item.PtId,
-                            SinDate = item.SinDate,
-                            RaiinNo = item.RaiinNo,
-                            KarteKbn = item.KarteKbn,
-                            SeqNo = seqNo,
-                            Text = item.Text,
-                            RichText = Encoding.UTF8.GetBytes(item.RichText),
-                            IsDeleted = item.IsDeleted,
-                            CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
-                            UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
-                        };
+                }
 
-                        _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
-                    }
-
-                    var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == item.HpId && k.PtId == item.PtId && item.RichText.Contains(k.FileName) && k.RaiinNo == 0);
-                    foreach (var img in karteImgs)
-                    {
-                        img.RaiinNo = item.RaiinNo;
-                    }
+                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName) && k.RaiinNo == 0);
+                foreach (var img in karteImgs)
+                {
+                    img.RaiinNo = karte.RaiinNo;
                 }
             }
 

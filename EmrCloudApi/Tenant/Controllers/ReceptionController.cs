@@ -24,9 +24,13 @@ using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.PatientRaiinKubun.Get;
 using UseCase.Reception.Get;
+using UseCase.Reception.GetDefaultSelectedTime;
+using UseCase.Reception.GetLastRaiinInfs;
+using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
+using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 
@@ -65,6 +69,18 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetReceptionResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetLastRaiinInfs)]
+        public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
+        {
+            var input = new GetLastRaiinInfsInputData(request.HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetLastRaiinInfsPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetLastRaiinInfsResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Insert)]
@@ -176,6 +192,42 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidPatternExpiratedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDataReceptionDefault)]
+        public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
+        {
+            var input = new GetReceptionDefaultInputData(request.HpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetReceptionDefaultPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetReceptionDefaultResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultSelectedTime)]
+        public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
+        {
+            var input = new GetDefaultSelectedTimeInputData(request.HpId, request.SinDate, request.BirthDay);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetDefaultSelectedTimePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDefaultSelectedTimeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateTimeZoneDayInf)]
+        public ActionResult<Response<UpdateTimeZoneDayInfResponse>> UpdateTimeZoneDayInf([FromBody] UpdateTimeZoneDayInfRequest request)
+        {
+            var input = new UpdateTimeZoneDayInfInputData(request.HpId, request.UserId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
+            var output = _bus.Handle(input);
+
+            var presenter = new UpdateTimeZoneDayInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<UpdateTimeZoneDayInfResponse>>(presenter.Result);
         }
     }
 }

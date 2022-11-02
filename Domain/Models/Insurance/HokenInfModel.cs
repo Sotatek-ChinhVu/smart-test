@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.InsuranceMst;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Domain.Models.Insurance
     public class HokenInfModel
     {
         [JsonConstructor]
-        public HokenInfModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenKbn, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, int sinDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string houbetu, List<ConfirmDateModel> confirmDateList, List<RousaiTenkiModel> listRousaiTenki, bool isReceKisaiOrNoHoken, int isDeleted, HokenMstModel hokenMst)
+        public HokenInfModel(int hpId, long ptId, int hokenId, long seqNo, int hokenNo, int hokenEdaNo, int hokenKbn, string hokensyaNo, string kigo, string bango, string edaNo, int honkeKbn, int startDate, int endDate, int sikakuDate, int kofuDate, int confirmDate, int kogakuKbn, int tasukaiYm, int tokureiYm1, int tokureiYm2, int genmenKbn, int genmenRate, int genmenGaku, int syokumuKbn, int keizokuKbn, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, string rousaiKofuNo, string nenkinBango, string rousaiRoudouCd, string kenkoKanriBango, int rousaiSaigaiKbn, string rousaiKantokuCd, int rousaiSyobyoDate, int ryoyoStartDate, int ryoyoEndDate, string rousaiSyobyoCd, string rousaiJigyosyoName, string rousaiPrefName, string rousaiCityName, int rousaiReceCount, string hokensyaName, string hokensyaAddress, string hokensyaTel, int sinDate, string jibaiHokenName, string jibaiHokenTanto, string jibaiHokenTel, int jibaiJyusyouDate, string houbetu, List<ConfirmDateModel> confirmDateList, List<RousaiTenkiModel> listRousaiTenki, bool isReceKisaiOrNoHoken, int isDeleted, HokenMstModel hokenMst, HokensyaMstModel hokensyaMst, bool isAddNew, bool isAddHokenCheck, string rodoBango)
         {
             HpId = hpId;
             PtId = ptId;
@@ -58,6 +59,9 @@ namespace Domain.Models.Insurance
             RousaiPrefName = rousaiPrefName;
             RousaiCityName = rousaiCityName;
             RousaiReceCount = rousaiReceCount;
+            HokensyaName = hokensyaName;
+            HokensyaAddress = hokensyaAddress;
+            HokensyaTel = hokensyaTel;
             SinDate = sinDate;
             JibaiHokenName = jibaiHokenName;
             JibaiHokenTanto = jibaiHokenTanto;
@@ -69,6 +73,10 @@ namespace Domain.Models.Insurance
             IsReceKisaiOrNoHoken = isReceKisaiOrNoHoken;
             IsDeleted = isDeleted;
             HokenMst = hokenMst;
+            IsAddNew = isAddNew;
+            IsAddHokenCheck = isAddHokenCheck;
+            RodoBango = rodoBango;
+            HokensyaMst = hokensyaMst;
         }
 
         public HokenInfModel(int hokenId, int startDate, int endDate)
@@ -77,6 +85,8 @@ namespace Domain.Models.Insurance
             StartDate = startDate;
             EndDate = endDate;
             HokenMst = new HokenMstModel();
+            RodoBango = string.Empty;
+            HokensyaMst = new HokensyaMstModel();
         }
 
         public HokenInfModel(int hokenId, long ptId, int hpId, int startDate, int endDate)
@@ -87,6 +97,8 @@ namespace Domain.Models.Insurance
             StartDate = startDate;
             EndDate = endDate;
             HokenMst = new HokenMstModel();
+            RodoBango = string.Empty;
+            HokensyaMst = new HokensyaMstModel();
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
@@ -195,6 +207,12 @@ namespace Domain.Models.Insurance
 
         public string Houbetu { get; private set; } = string.Empty;
 
+        public string HokensyaName { get; private set; } = string.Empty;
+
+        public string HokensyaAddress { get; private set; } = string.Empty;
+
+        public string HokensyaTel { get; private set; } = string.Empty;
+
         public List<RousaiTenkiModel> ListRousaiTenki { get; private set; } = new List<RousaiTenkiModel>();
 
         public bool IsReceKisaiOrNoHoken { get; private set; }
@@ -239,5 +257,37 @@ namespace Domain.Models.Insurance
             }
         }
 
+        public bool IsAddNew { get; private set; }
+
+        public bool IsShaho
+        {
+            // not nashi
+            get => HokenKbn == 1 && Houbetu != HokenConstant.HOUBETU_NASHI;
+        }
+
+        public bool IsKokuho
+        {
+            get => HokenKbn == 2;
+        }
+
+        public bool IsShahoOrKokuho => IsShaho || IsKokuho;
+
+        public bool IsNoHoken
+        {
+            get
+            {
+                if (HokenMst != null)
+                {
+                    return HokenMst.HokenSbtKbn == 0;
+                }
+                return HokenKbn == 1 && Houbetu == HokenConstant.HOUBETU_NASHI;
+            }
+        }
+
+        public bool IsAddHokenCheck { get; private set; }
+
+        public string RodoBango { get; private set; }
+
+        public HokensyaMstModel HokensyaMst { get; private set; }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using Domain.Constant;
 using Domain.Models.Insurance;
 using Helper.Common;
-using Helper.Constant;
 using Helper.Constants;
 using Helper.Extension;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Domain.Models.InsuranceInfor
 {
     public class InsuranceModel
     {
-        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, int ptBirthDay, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int sinDate, string memo, HokenInfModel hokenInf, KohiInfModel kohi1, KohiInfModel kohi2, KohiInfModel kohi3, KohiInfModel kohi4, int isDeleted, int startDate, int endDate, bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
@@ -29,6 +29,25 @@ namespace Domain.Models.InsuranceInfor
             IsDeleted = isDeleted;
             StartDate = startDate;
             EndDate = endDate;
+            IsAddNew = isAddNew;
+        }
+
+        public InsuranceModel() // new model
+        {
+            HpId = 0;
+            PtId = 0;
+            PtBirthday = 0;
+            SeqNo = 0;
+            HokenSbtCd = 0;
+            HokenPid = 0;
+            HokenKbn = 0;
+            SinDate = 0;
+            HokenMemo = string.Empty;
+            HokenInf = new HokenInfModel(0, 0, 0);
+            Kohi1 = new KohiInfModel(0);
+            Kohi2 = new KohiInfModel(0);
+            Kohi3 = new KohiInfModel(0);
+            Kohi4 = new KohiInfModel(0);
         }
 
         public InsuranceModel(int hpId, long ptId, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, int startDate, int endDate)
@@ -51,8 +70,7 @@ namespace Domain.Models.InsuranceInfor
             EndDate = endDate;
         }
 
-        [JsonConstructor]
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int isDeleted, HokenInfModel hokenInf, KohiInfModel? kohi1, KohiInfModel? kohi2, KohiInfModel? kohi3, KohiInfModel? kohi4, int startDate, int endDate)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew)
         {
             HpId = hpId;
             PtId = ptId;
@@ -63,14 +81,20 @@ namespace Domain.Models.InsuranceInfor
             HokenKbn = hokenKbn;
             HokenMemo = hokenMemo;
             SinDate = sinDate;
-            IsDeleted = isDeleted;
-            HokenInf = hokenInf;
-            Kohi1 = kohi1 ?? new KohiInfModel(0);
-            Kohi2 = kohi2 ?? new KohiInfModel(0);
-            Kohi3 = kohi3 ?? new KohiInfModel(0);
-            Kohi4 = kohi4 ?? new KohiInfModel(0);
+            IsDeleted = 0;
+            HokenInf = new HokenInfModel(hokenId, startDate, endDate);
+            Kohi1 = new KohiInfModel(kohi1Id);
+            Kohi2 = new KohiInfModel(kohi2Id);
+            Kohi3 = new KohiInfModel(kohi3Id);
+            Kohi4 = new KohiInfModel(kohi4Id);
             StartDate = startDate;
             EndDate = endDate;
+            HokenId = hokenId;
+            Kohi1Id = kohi1Id;
+            Kohi2Id = kohi2Id;
+            Kohi3Id = kohi3Id;
+            Kohi4Id = kohi4Id;
+            IsAddNew = isAddNew;
         }
 
         public int HpId { get; private set; }
@@ -102,12 +126,59 @@ namespace Domain.Models.InsuranceInfor
         public KohiInfModel Kohi3 { get; private set; }
 
         public KohiInfModel Kohi4 { get; private set; }
-        
+
+        public int HoubetuPoint(List<string> houbetuList)
+        {
+            int point = 0;
+            if (!IsEmptyHoken && !HokenInf.IsNoHoken) point++;
+            if (!IsEmptyKohi1 && houbetuList.Contains(Kohi1.Houbetu)) point++;
+            if (!IsEmptyKohi2 && houbetuList.Contains(Kohi2.Houbetu)) point++;
+            if (!IsEmptyKohi3 && houbetuList.Contains(Kohi3.Houbetu)) point++;
+            if (!IsEmptyKohi4 && houbetuList.Contains(Kohi4.Houbetu)) point++;
+            return point;
+        }
+
+        public int KohiCount
+        {
+            get
+            {
+                int count = 0;
+                if (!IsEmptyKohi1) count++;
+                if (!IsEmptyKohi2) count++;
+                if (!IsEmptyKohi3) count++;
+                if (!IsEmptyKohi4) count++;
+                return count;
+            }
+        }
+
+        public List<KohiInfModel> BuntenKohis
+        {
+            get
+            {
+                var result = new List<KohiInfModel>();
+                if (!IsEmptyKohi1 && Kohi1.HokenSbtKbn == 6) result.Add(Kohi1);
+                if (!IsEmptyKohi2 && Kohi2.HokenSbtKbn == 6) result.Add(Kohi2);
+                if (!IsEmptyKohi3 && Kohi3.HokenSbtKbn == 6) result.Add(Kohi3);
+                if (!IsEmptyKohi4 && Kohi4.HokenSbtKbn == 6) result.Add(Kohi4);
+                return result;
+            }
+        }
+
         #region Expose properties
 
         public int StartDate { get; private set; }
 
         public int EndDate { get; private set; }
+
+        public int HokenId { get; private set; }
+
+        public int Kohi1Id { get; private set; }
+
+        public int Kohi2Id { get; private set; }
+
+        public int Kohi3Id { get; private set; }
+
+        public int Kohi4Id { get; private set; }
 
         public string DisplayRateOnly => GetRateOnly(PtBirthday);
 
@@ -124,6 +195,38 @@ namespace Domain.Models.InsuranceInfor
         public bool IsEmptyKohi4 => (Kohi4 == null || Kohi4.HokenId == 0);
 
         public string PatternRate => GetHokenRate();
+
+        public bool IsShaho
+        {
+            // not nashi
+            get => HokenKbn == 1 && HokenInf.Houbetu != HokenConstant.HOUBETU_NASHI;
+        }
+
+        public bool IsKokuho
+        {
+            get => HokenKbn == 2;
+        }
+
+        public bool IsNoHoken
+        {
+            get
+            {
+                if (HokenInf != null)
+                {
+                    return HokenInf.HokenMst.HokenSbtKbn == 0;
+                }
+                return HokenKbn == 1 && HokenInf?.Houbetu == HokenConstant.HOUBETU_NASHI;
+            }
+        }
+
+        public bool IsJibaiOrRosai
+        {
+            get { return HokenKbn >= 11 && HokenKbn <= 14; }
+        }
+
+        public bool IsAddNew { get; private set; }
+
+        public bool IsExpirated => !(StartDate <= SinDate && EndDate >= SinDate);
         #endregion
 
         #region Function
@@ -563,7 +666,7 @@ namespace Domain.Models.InsuranceInfor
 
                 if (!string.IsNullOrEmpty(hokenName) && (HokenInf != null && HokenInf.HokenMst != null))
                 {
-                        hokenName += " " + HokenInf.HokenMst.FutanRate + "%";
+                    hokenName += " " + HokenInf.HokenMst.FutanRate + "%";
                 }
 
                 return hokenName;

@@ -33,7 +33,7 @@ namespace EmrCloudApi.Tenant.Presenters.UsageTreeSet
                     Result.Message = ResponseMessage.InvalidSinDate;
                     break;
 
-                case GetUsageTreeStatus.InvalidUsageKbn:
+                case GetUsageTreeStatus.InvalidKouiKbn:
                     Result.Message = ResponseMessage.InvalidUsageKbn;
                     break;
 

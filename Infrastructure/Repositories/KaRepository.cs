@@ -21,6 +21,11 @@ public class KaRepository : IKaRepository
         var check = _tenantDataContext.KaMsts.Any(k => k.KaId == kaId && k.IsDeleted == 0);
         return check;
     }
+    public bool CheckKaId(List<int> kaIds)
+    {
+        var countKaMsts = _tenantNoTrackingDataContext.KaMsts.Count(u => kaIds.Contains(u.KaId));
+        return kaIds.Count == countKaMsts;
+    }
 
     public KaMstModel GetByKaId(int kaId)
     {
@@ -108,9 +113,7 @@ public class KaRepository : IKaRepository
         }
     }
 
-
-
-    private KaMstModel ConvertToKaMstModel(KaMst k)
+    private static KaMstModel ConvertToKaMstModel(KaMst k)
     {
         return new KaMstModel(
             k.Id,

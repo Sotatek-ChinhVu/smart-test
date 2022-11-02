@@ -42,6 +42,7 @@
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
         public const string GetHeaderInf = "GetHeaderInf";
+        public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -53,9 +54,14 @@
         //PatientGroupMst
         public const string SavePatientGroupMst = "SavePatientGroupMst";
 
+        // ExportReport
+        public const string ExportKarte1 = "ExportKarte1";
+
         //PatientInfor
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
+        public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
+        public const string SavePatientInfo = "SavePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -77,10 +83,26 @@
 
 
         //Drug Infor
+        public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
+
+        // Reception
+        public const string GetLastRaiinInfs = "GetLastRaiinInfs";
+        public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+        public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
+        public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
+
+        // Validate list pattern
+        public const string ValidateListPattern = "ValidateListPattern";
+
+        //Swaphoken
+        public const string SwapHoken = "SwapHoken";
+
+        //RaiinKubun
+        public const string GetColumnName = "GetColumnName";
 
         //Check before save medical
         public const string GetCheckDiseases = "GetCheckDiseases";

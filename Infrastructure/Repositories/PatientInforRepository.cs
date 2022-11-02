@@ -1,4 +1,9 @@
-﻿using Domain.Models.InsuranceMst;
+﻿using Amazon.Auth.AccessControlPolicy;
+using Domain.Models.CalculationInf;
+using Domain.Models.GroupInf;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Entity.Tenant;
 using Helper.Common;
@@ -6,13 +11,9 @@ using Helper.Constants;
 using Helper.Extension;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
-using PostgreDataContext;
 using Microsoft.EntityFrameworkCore;
-using Domain.Models.GroupInf;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.Insurance;
-using System.Collections.Generic;
-using Amazon.Auth.AccessControlPolicy;
+using PostgreDataContext;
+using HokenInfModel = Domain.Models.Insurance.HokenInfModel;
 
 namespace Infrastructure.Repositories
 {
@@ -856,15 +857,15 @@ namespace Infrastructure.Repositories
                 .Where(x => x.HpId == hpId && x.HokenNo == hokenNo && x.IsDeleted == 0)
                 .OrderBy(x => x.SortNo)
                 .Select(x => new DefHokenNoModel(
-                    x.HpId,
                     x.Digit1,
                     x.Digit2,
-                    x.Digit3,
-                    x.Digit4,
-                    x.Digit5,
-                    x.Digit6,
-                    x.Digit7,
-                    x.Digit8,
+                    x.Digit3 ?? string.Empty,
+                    x.Digit4 ?? string.Empty,
+                    x.Digit5 ?? string.Empty,
+                    x.Digit6 ?? string.Empty,
+                    x.Digit7 ?? string.Empty,
+                    x.Digit8 ?? string.Empty,
+                    x.SeqNo,
                     x.HokenNo,
                     x.HokenEdaNo,
                     x.SortNo,
@@ -888,6 +889,7 @@ namespace Infrastructure.Repositories
                 .Select(x => new PtKyuseiInfModel(
                     x.HpId,
                     x.PtId,
+                    x.SeqNo,
                     x.KanaName ?? string.Empty,
                     x.Name ?? string.Empty,
                     x.EndDate,
@@ -896,7 +898,85 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
-        public bool CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels)
+        {
+            try
+            {
+                int sortNo = 1;
+                foreach (var item in defHokenNoModels)
+                {
+                    var checkExistDefHoken = _tenantDataContext.DefHokenNos
+                        .FirstOrDefault(x => x.SeqNo == item.SeqNo && x.IsDeleted == 0);
+
+                    //Add new if data does not exist
+                    if (checkExistDefHoken == null)
+                    {
+                        _tenantTrackingDataContext.DefHokenNos.Add(new DefHokenNo()
+                        {
+                            HpId = TempIdentity.HpId,
+                            Digit1 = item.Digit1,
+                            Digit2 = item.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = 0,
+                            CreateDate = DateTime.UtcNow,
+                            CreateId = TempIdentity.UserId,
+                            CreateMachine = TempIdentity.ComputerName,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = sortNo
+                        });
+                    }
+                    else if (checkExistDefHoken.Digit1 == item.Digit1 && checkExistDefHoken.Digit2 == item.Digit2
+                        && (checkExistDefHoken.Digit3 != item.Digit3 || checkExistDefHoken.Digit4 != item.Digit4 || checkExistDefHoken.Digit5 != item.Digit5
+                        || checkExistDefHoken.Digit6 != item.Digit6 || checkExistDefHoken.Digit7 != item.Digit7 || checkExistDefHoken.Digit8 != item.Digit8
+                        || checkExistDefHoken.SortNo != item.SortNo || item.IsDeleted == 1))
+                    {
+                        _tenantTrackingDataContext.DefHokenNos.Update(new DefHokenNo()
+                        {
+                            HpId = TempIdentity.HpId,
+                            Digit1 = checkExistDefHoken.Digit1,
+                            Digit2 = checkExistDefHoken.Digit2,
+                            Digit3 = item.Digit3,
+                            Digit4 = item.Digit4,
+                            Digit5 = item.Digit5,
+                            Digit6 = item.Digit6,
+                            Digit7 = item.Digit7,
+                            Digit8 = item.Digit8,
+                            SeqNo = checkExistDefHoken.SeqNo,
+                            HokenNo = item.HokenNo,
+                            HokenEdaNo = item.HokenEdaNo,
+                            IsDeleted = item.IsDeleted,
+                            CreateDate = DateTime.SpecifyKind(checkExistDefHoken.CreateDate, DateTimeKind.Utc),
+                            CreateId = checkExistDefHoken.CreateId,
+                            CreateMachine = checkExistDefHoken.CreateMachine,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = TempIdentity.UserId,
+                            UpdateMachine = TempIdentity.ComputerName,
+                            SortNo = sortNo
+                        });
+                    }
+
+                    sortNo++;
+                }
+
+                _tenantTrackingDataContext.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -909,7 +989,7 @@ namespace Infrastructure.Repositories
             else
             {
                 var ptExists = _tenantDataContext.PtInfs.FirstOrDefault(x => x.PtNum == patientInsert.PtNum && x.HpId == hpId);
-                if(ptExists != null)
+                if (ptExists != null)
                     patientInsert.PtNum = GetAutoPtNum(hpId);
             }
             patientInsert.CreateDate = DateTime.UtcNow;
@@ -920,11 +1000,12 @@ namespace Infrastructure.Repositories
             bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
             if (!resultCreatePatient)
-                return false;
+                return (false,0);
 
-            if (ptSantei != null)
+            if (ptSanteis != null && ptSanteis.Any())
             {
-                var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
+                var ptSanteiInserts = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
+                {
                     dest.CreateId = TempIdentity.UserId;
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
@@ -934,7 +1015,7 @@ namespace Infrastructure.Repositories
                     dest.UpdateDate = DateTime.UtcNow;
                     return dest;
                 });
-                _tenantTrackingDataContext.PtSanteiConfs.Add(ptSanteiInsert);
+                _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiInserts);
             }
 
             if (!string.IsNullOrEmpty(ptInf.Memo))
@@ -981,224 +1062,101 @@ namespace Infrastructure.Repositories
                 _tenantTrackingDataContext.PtKyuseis.AddRange(ptKyuseiList);
             }
 
-            //Hoken
-            int hoKenIndex = 1;
-            int hokenKohiIndex = 1;
-            if (insurances != null && insurances.Any())
+            #region Hoken parterrn
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.IsAddNew), (src, dest) =>
             {
-                foreach (var hokenParttern in insurances)
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                return dest;
+            });
+            _tenantTrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
+            #endregion Hoken parterrn
+
+            #region HokenInf
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=> x.IsAddNew), (src, dest) =>
+            {
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+
+                #region PtRousaiTenki
+                _tenantTrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
-                    var hokenModel = Mapper.Map(hokenParttern, new PtHokenPattern(), (source, dest) => {
-                        dest.CreateId = TempIdentity.UserId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
-                        dest.UpdateMachine = TempIdentity.ComputerName;
-                        dest.PtId = patientInsert.PtId;
-                        dest.HpId = hpId;
-                        return dest;
-                    });
+                    destR.CreateId = TempIdentity.UserId;
+                    destR.PtId = patientInsert.PtId;
+                    destR.HpId = hpId;
+                    destR.Tenki = srcR.RousaiTenkiTenki;
+                    destR.Sinkei = srcR.RousaiTenkiSinkei;
+                    destR.EndDate = srcR.RousaiTenkiEndDate;
+                    destR.HokenId = dest.HokenId;
+                    destR.CreateId = TempIdentity.UserId;
+                    destR.CreateDate = DateTime.UtcNow;
+                    return destR;
+                }));
+                #endregion
 
-                    hokenModel.HokenPid = hoKenIndex;
-                    hokenModel.HokenId = hoKenIndex;
-                    hokenModel.EndDate = hokenModel.EndDate == 0 ? defaultMaxDate : hokenModel.EndDate;
+                #region PtHokenCheck
+                _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
+                {
+                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.PtID = patientInsert.PtId;
+                    destCf.HokenGrp = 1;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            _tenantTrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
+            #endregion HokenInf
 
-                    var hokenInfModel = Mapper.Map(hokenParttern.HokenInf, new PtHokenInf(), (source, dest) => {
-                        dest.CreateId = TempIdentity.UserId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateDate = DateTime.UtcNow;
-                        dest.UpdateMachine = TempIdentity.ComputerName;
-                        dest.PtId = patientInsert.PtId;
-                        dest.HpId = hpId;
-                        return dest;
-                    });
+            #region PtKohiInf
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
+            {
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.PtId = patientInsert.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                #region PtHokenCheck
+                _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
+                {
+                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.PtID = patientInsert.PtId;
+                    destCf.HokenGrp = 1;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            _tenantTrackingDataContext.PtKohis.AddRange(ptKohiInfs);
+            #endregion PtKohiInf
 
-                    hokenInfModel.HokenId = hoKenIndex;
-                    hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
-                    _tenantTrackingDataContext.PtHokenInfs.Add(hokenInfModel);
+            int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
+            if (changeDatas == 0 && resultCreatePatient == true)
+                return (true,patientInsert.PtId);
 
-                    if (hokenParttern.HokenInf.ConfirmDateList != null && hokenParttern.HokenInf.ConfirmDateList.Any())
-                    {
-                        foreach (var item in hokenParttern.HokenInf.ConfirmDateList)
-                        {
-                            PtHokenCheck addPtHokenCheck = Mapper.Map(item, new PtHokenCheck(), (source, dest) => {
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(source.ConfirmDate), DateTimeKind.Utc);
-                                dest.CheckCmt = source.CheckComment;
-                                dest.HokenId = hokenModel.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                dest.PtID = patientInsert.PtId;
-                                dest.HokenGrp = 1;
-                                dest.HpId = hpId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.Add(addPtHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInsert.PtId;
-                            dest.HpId = hpId;
-                            dest.HokenId = hokenKohiIndex;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi1Id = hokenKohiIndex;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi1.ConfirmDateList != null && hokenParttern.Kohi1.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi1.ConfirmDateList, (src, dest) => {
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CheckCmt = src.CheckComment;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInsert.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-
-                    }
-
-                    if (hokenParttern.Kohi2 != null && !hokenParttern.Kohi2.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInsert.PtId;
-                            dest.HpId = hpId;
-                            dest.HokenId = hokenKohiIndex;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi2Id = hokenKohiIndex;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi2.ConfirmDateList != null && hokenParttern.Kohi2.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi2.ConfirmDateList, (src, dest) => {
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CheckCmt = src.CheckComment;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInsert.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi3 != null && !hokenParttern.Kohi3.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInsert.PtId;
-                            dest.HpId = hpId;
-                            dest.HokenId = hokenKohiIndex;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi3Id = hokenKohiIndex;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi3.ConfirmDateList != null && hokenParttern.Kohi3.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi3.ConfirmDateList, (src, dest) => {
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CheckCmt = src.CheckComment;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInsert.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi4 != null && !hokenParttern.Kohi4.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateDate = DateTime.UtcNow;
-                            dest.PtId = patientInsert.PtId;
-                            dest.HpId = hpId;
-                            dest.HokenId = hokenKohiIndex;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi4Id = hokenKohiIndex;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi4.ConfirmDateList != null && hokenParttern.Kohi4.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi4.ConfirmDateList, (src, dest) => {
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateDate = DateTime.UtcNow;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInsert.PtId;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CheckCmt = src.CheckComment;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    _tenantTrackingDataContext.PtHokenPatterns.Add(hokenModel);
-                    hoKenIndex++;
-                }
-            }
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            return (_tenantTrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public bool UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, PtInfSanteiConfModel ptSantei, List<InsuranceModel> insurances, List<GroupInfModel> ptGrps)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1206,7 +1164,7 @@ namespace Infrastructure.Repositories
             #region Patient-info
             PtInf? patientInfo = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptInf.PtId);
             if (patientInfo is null)
-                return false;
+                return (false, ptInf.PtId);
 
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
@@ -1227,7 +1185,6 @@ namespace Infrastructure.Repositories
                     memoCurrent.UpdateDate = DateTime.UtcNow;
                     memoCurrent.UpdateMachine = TempIdentity.ComputerName;
                     memoCurrent.UpdateId = TempIdentity.UserId;
-                    _tenantTrackingDataContext.PtMemos.Update(memoCurrent);
                 }
                 else
                 {
@@ -1237,7 +1194,6 @@ namespace Infrastructure.Repositories
                         memoCurrent.UpdateDate = DateTime.UtcNow;
                         memoCurrent.UpdateMachine = TempIdentity.ComputerName;
                         memoCurrent.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtMemos.Update(memoCurrent);
                         _tenantTrackingDataContext.PtMemos.Add(new PtMemo()
                         {
                             HpId = patientInfo.HpId,
@@ -1269,36 +1225,41 @@ namespace Infrastructure.Repositories
             #endregion
 
             #region PtSantei
-            PtSanteiConf? ptSanteiConf = _tenantTrackingDataContext.PtSanteiConfs.FirstOrDefault(x => x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId);
-            if (ptSanteiConf == null && ptSantei != null)
+            var ptSanteiConfDb = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.PtId == patientInfo.PtId && x.IsDeleted == 0 && x.HpId == patientInfo.HpId).ToList();
+            var ptSanteiConfRemoves = ptSanteiConfDb.Where(c => !ptSanteis.Any(_ => _.SeqNo == c.SeqNo));
+
+            foreach (var item in ptSanteiConfRemoves)
             {
-                var ptSanteiInsert = Mapper.Map(ptSantei, new PtSanteiConf(), (source, dest) => {
-                    dest.CreateId = TempIdentity.UserId;
-                    dest.PtId = patientInfo.PtId;
-                    dest.HpId = hpId;
-                    dest.UpdateMachine = TempIdentity.ComputerName;
-                    dest.UpdateDate = DateTime.UtcNow;
-                    return dest;
-                });
-                _tenantTrackingDataContext.PtSanteiConfs.Add(ptSanteiInsert);
+                item.UpdateId = TempIdentity.UserId;
+                item.UpdateDate = DateTime.UtcNow;
+                item.IsDeleted = DeleteTypes.Deleted;
             }
-            else if (ptSanteiConf != null && ptSantei == null)
+
+            var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) =>
             {
-                ptSanteiConf.UpdateId = TempIdentity.UserId;
-                ptSanteiConf.UpdateDate = DateTime.UtcNow;
-                ptSanteiConf.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiConf);
-            }
-            else if (ptSanteiConf != null && ptSantei != null)
+                dest.CreateDate = DateTime.UtcNow;
+                dest.CreateId = TempIdentity.UserId;
+                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.HpId = hpId;
+                dest.PtId = patientInfo.PtId;
+                dest.UpdateDate = DateTime.UtcNow;
+                return dest;
+            });
+            _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiConfListAdd);
+
+            foreach (var item in ptSanteis.Where(x => x.SeqNo != 0))
             {
-                ptSanteiConf.KbnNo = ptSantei.KbnNo;
-                ptSanteiConf.EdaNo = ptSantei.EdaNo;
-                ptSanteiConf.KbnVal = ptSantei.KbnVal;
-                ptSanteiConf.StartDate = ptSantei.StartDate;
-                ptSanteiConf.EndDate = ptSantei.EndDate;
-                ptSanteiConf.UpdateId = TempIdentity.UserId;
-                ptSanteiConf.UpdateDate = DateTime.UtcNow;
-                _tenantTrackingDataContext.PtSanteiConfs.Update(ptSanteiConf);
+                var ptSanteiUpdate = ptSanteiConfDb.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                if (ptSanteiUpdate != null)
+                {
+                    ptSanteiUpdate.KbnNo = item.KbnNo;
+                    ptSanteiUpdate.EdaNo = item.EdaNo;
+                    ptSanteiUpdate.KbnVal = item.KbnVal;
+                    ptSanteiUpdate.StartDate = item.StartDate;
+                    ptSanteiUpdate.EndDate = item.EndDate;
+                    ptSanteiUpdate.UpdateId = TempIdentity.UserId;
+                    ptSanteiUpdate.UpdateDate = DateTime.UtcNow;
+                }
             }
             #endregion
 
@@ -1312,10 +1273,10 @@ namespace Infrastructure.Repositories
                 item.UpdateId = TempIdentity.UserId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtKyuseis.Update(item);
             }
 
-            var ptKyuseiListAdd = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis.Where(x=>x.SeqNo == 0) , (src, dest) => {
+            var ptKyuseiListAdd = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis.Where(x => x.SeqNo == 0), (src, dest) =>
+            {
                 dest.CreateDate = DateTime.UtcNow;
                 dest.CreateId = TempIdentity.UserId;
                 dest.UpdateMachine = TempIdentity.ComputerName;
@@ -1326,17 +1287,16 @@ namespace Infrastructure.Repositories
             });
             _tenantTrackingDataContext.PtKyuseis.AddRange(ptKyuseiListAdd);
 
-            foreach(var item in ptKyuseis.Where(x => x.SeqNo != 0))
+            foreach (var item in ptKyuseis.Where(x => x.SeqNo != 0))
             {
                 var kyuseiUpdate = databaseKyuseis.FirstOrDefault(x => x.SeqNo == item.SeqNo);
-                if(kyuseiUpdate != null)
+                if (kyuseiUpdate != null)
                 {
                     kyuseiUpdate.UpdateDate = DateTime.UtcNow;
                     kyuseiUpdate.UpdateMachine = TempIdentity.ComputerName;
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
-                    _tenantTrackingDataContext.PtKyuseis.Update(kyuseiUpdate);
                 }
             }
             #endregion
@@ -1351,14 +1311,11 @@ namespace Infrastructure.Repositories
                 item.UpdateId = TempIdentity.UserId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
-                _tenantTrackingDataContext.PtGrpInfs.Update(item);
             }
 
             foreach (var item in ptGrps)
             {
-                var info = databaseGrpInfs
-                   .Where(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GroupId)
-                   .FirstOrDefault();
+                var info = databaseGrpInfs.FirstOrDefault(pt => pt.HpId == hpId && pt.PtId == patientInfo.PtId && pt.GroupId == item.GroupId);
 
                 if (info != null && !string.IsNullOrEmpty(item.GroupCode))
                 {
@@ -1366,10 +1323,10 @@ namespace Infrastructure.Repositories
                     info.UpdateId = TempIdentity.UserId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
-                    _tenantTrackingDataContext.PtGrpInfs.Update(info);
 
                     //clone new record
-                    PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
+                    PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
+                    {
                         dest.CreateId = TempIdentity.UserId;
                         dest.CreateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
@@ -1381,7 +1338,8 @@ namespace Infrastructure.Repositories
                 }
                 else if (info == null && !string.IsNullOrEmpty(item.GroupCode))
                 {
-                    PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) => {
+                    PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
+                    {
                         dest.CreateId = TempIdentity.UserId;
                         dest.CreateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
@@ -1397,702 +1355,205 @@ namespace Infrastructure.Repositories
                     info.UpdateId = TempIdentity.UserId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
-                    _tenantTrackingDataContext.PtGrpInfs.Update(info);
                 }
             }
             #endregion
 
-            //Hoken
+
             var databaseHokenPartterns = _tenantTrackingDataContext.PtHokenPatterns.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
             var databaseHoKentInfs = _tenantTrackingDataContext.PtHokenInfs.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
             var databasePtKohis = _tenantTrackingDataContext.PtKohis.Where(x => x.PtId == patientInfo.PtId && x.HpId == patientInfo.HpId && x.IsDeleted == DeleteTypes.None).ToList();
             var databaseHokenChecks = _tenantTrackingDataContext.PtHokenChecks.Where(c => c.PtID == patientInfo.PtId && c.HpId == patientInfo.HpId && c.IsDeleted == DeleteTypes.None).ToList();
+            var databasePtRousaiTenkis = _tenantTrackingDataContext.PtRousaiTenkis.Where(c => c.PtId == patientInfo.PtId && c.HpId == patientInfo.HpId && c.IsDeleted == DeleteTypes.None).ToList();
 
-            int hoKenIndex = databaseHokenPartterns.Any() ? databaseHokenPartterns.Max(c => c.HokenId) + 1 : 1;
-            int hokenKohiIndex = databasePtKohis.Any() ? databasePtKohis.Max(c => c.HokenId) + 1 : 1;
-
-            #region Delete data not in request
-            var deleteHokenPartterns = databaseHokenPartterns.Where(c => !insurances.Any(_ => _.SeqNo == c.SeqNo) && c.IsDeleted == 0);
-
-            foreach (var hokenPartternDelete in deleteHokenPartterns)
+            #region Hoken parterrn
+            List<PtHokenPattern> deleteHokenPartterns = databaseHokenPartterns.Where(c => !insurances.Any(_ => _.SeqNo == c.SeqNo) && c.IsDeleted == 0).ToList();
+            deleteHokenPartterns.ForEach(x =>
             {
-                if (hokenPartternDelete.Kohi1Id != 0)
-                {
-                    var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
-                                                                        && c.HokenId == hokenPartternDelete.Kohi1Id);
-                    if (hokenHokiDelete != null)
+                x.IsDeleted = DeleteTypes.Deleted;
+                x.UpdateDate = DateTime.UtcNow;
+                x.UpdateId = TempIdentity.UserId;
+            });
+
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
+            {
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.PtId = patientInfo.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                return dest;
+            });
+            _tenantTrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
+            
+            foreach(var item in insurances.Where(x => x.SeqNo != 0))
+            {
+                PtHokenPattern? modelUpdate = databaseHokenPartterns.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                if (modelUpdate != null)
+                    Mapper.Map(item, modelUpdate, (src, dest) =>
                     {
-                        hokenHokiDelete.IsDeleted = 1;
-                        hokenHokiDelete.UpdateDate = DateTime.UtcNow;
-                        hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
-
-                        var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
-                        if (hokenChecks != null && hokenChecks.Any())
-                        {
-                            foreach (var check in hokenChecks)
-                            {
-                                check.IsDeleted = 1;
-                                check.UpdateId = TempIdentity.UserId;
-                                check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
-                            }
-                        }
-                    }
-                }
-
-                if (hokenPartternDelete.Kohi2Id != 0)
-                {
-                    var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
-                                                                        && c.HokenId == hokenPartternDelete.Kohi2Id);
-                    if (hokenHokiDelete != null)
-                    {
-                        hokenHokiDelete.IsDeleted = 1;
-                        hokenHokiDelete.UpdateDate = DateTime.UtcNow;
-                        hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
-
-                        var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
-                        if (hokenChecks != null && hokenChecks.Any())
-                        {
-                            foreach (var check in hokenChecks)
-                            {
-                                check.IsDeleted = 1;
-                                check.UpdateId = TempIdentity.UserId;
-                                check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
-                            }
-                        }
-                    }
-                }
-
-                if (hokenPartternDelete.Kohi3Id != 0)
-                {
-                    var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
-                                                                        && c.HokenId == hokenPartternDelete.Kohi3Id);
-                    if (hokenHokiDelete != null)
-                    {
-                        hokenHokiDelete.IsDeleted = 1;
-                        hokenHokiDelete.UpdateDate = DateTime.UtcNow;
-                        hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
-
-                        var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
-                        if (hokenChecks != null && hokenChecks.Any())
-                        {
-                            foreach (var check in hokenChecks)
-                            {
-                                check.IsDeleted = 1;
-                                check.UpdateId = TempIdentity.UserId;
-                                check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
-                            }
-                        }
-                    }
-                }
-
-                if (hokenPartternDelete.Kohi4Id != 0)
-                {
-                    var hokenHokiDelete = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
-                                                                        && c.HokenId == hokenPartternDelete.Kohi4Id);
-                    if (hokenHokiDelete != null)
-                    {
-                        hokenHokiDelete.IsDeleted = 1;
-                        hokenHokiDelete.UpdateDate = DateTime.UtcNow;
-                        hokenHokiDelete.UpdateId = TempIdentity.UserId;
-                        _tenantTrackingDataContext.PtKohis.Update(hokenHokiDelete);
-
-                        var hokenChecks = databaseHokenChecks.Where(c => c.CheckId == hokenHokiDelete.HokenId && c.HokenGrp == 2);
-                        if (hokenChecks != null && hokenChecks.Any())
-                        {
-                            foreach (var check in hokenChecks)
-                            {
-                                check.IsDeleted = 1;
-                                check.UpdateId = TempIdentity.UserId;
-                                check.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtHokenChecks.Update(check);
-                            }
-                        }
-                    }
-                }
-
-                var hokenIfDelete = databaseHoKentInfs.FirstOrDefault(c => c.HpId == hokenPartternDelete.HpId && c.PtId == hokenPartternDelete.PtId
-                                                                        && c.HokenId == hokenPartternDelete.HokenId);
-
-                if (hokenIfDelete != null)
-                {
-                    hokenIfDelete.IsDeleted = 1;
-                    hokenIfDelete.UpdateDate = DateTime.UtcNow;
-                    hokenIfDelete.UpdateId = TempIdentity.UserId;
-                    _tenantTrackingDataContext.PtHokenInfs.Update(hokenIfDelete);
-                }
-
-                hokenPartternDelete.IsDeleted = 1;
-                hokenPartternDelete.UpdateDate = DateTime.UtcNow;
-                hokenPartternDelete.UpdateId = TempIdentity.UserId;
-                _tenantTrackingDataContext.PtHokenPatterns.Update(hokenPartternDelete);
-
-                var hokenPatternChecks = databaseHokenChecks.Where(c => c.CheckId == hokenPartternDelete.HokenId && c.HokenGrp == 1);
-                if (hokenPatternChecks != null && hokenPatternChecks.Any())
-                {
-                    foreach (var check in hokenPatternChecks)
-                    {
-                        check.IsDeleted = 1;
-                        check.UpdateId = TempIdentity.UserId;
-                        check.UpdateDate = DateTime.UtcNow;
-                        _tenantTrackingDataContext.PtHokenChecks.Update(check);
-                    }
-                }
+                        dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateId = TempIdentity.UserId;
+                        return dest;
+                    });
             }
-            #endregion
+            #endregion Hoken parterrn
 
-            #region Add new & update current
-            foreach (var hokenParttern in insurances)
+            #region HokenInf
+            //Add New
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
-                if (hokenParttern.SeqNo != 0) //update entity
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.PtId = patientInfo.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+
+                #region PtRousaiTenki
+                _tenantTrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
-                    var hokenPartternUpdate = databaseHokenPartterns.FirstOrDefault(c => c.SeqNo == hokenParttern.SeqNo);
-                    if (hokenPartternUpdate != null)
-                    {
-                        hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
+                    destR.CreateId = TempIdentity.UserId;
+                    destR.PtId = patientInfo.PtId;
+                    destR.HpId = hpId;
+                    destR.Tenki = srcR.RousaiTenkiTenki;
+                    destR.Sinkei = srcR.RousaiTenkiSinkei;
+                    destR.EndDate = srcR.RousaiTenkiEndDate;
+                    destR.HokenId = dest.HokenId;
+                    destR.CreateId = TempIdentity.UserId;
+                    destR.CreateDate = DateTime.UtcNow;
+                    return destR;
+                }));
+                #endregion
 
-                        #region KohiId1
-                        if (hokenPartternUpdate.Kohi1Id == 0 && hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel) // add new
-                        {
-                            
-
-                            var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.PtId = patientInfo.PtId;
-                                dest.HpId = hpId;
-                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtKohis.Add(kohi);
-
-                            hokenPartternUpdate.Kohi1Id = kohi.HokenId;
-                            hokenKohiIndex++;
-                        }
-                        else if (hokenPartternUpdate.Kohi1Id != 0 && hokenParttern.Kohi1 != null && hokenParttern.Kohi1.IsEmptyModel) //Case remove
-                        {
-                            var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi1Id);
-                            if (kohiRemove != null)
-                            {
-                                kohiRemove.IsDeleted = 1;
-                                kohiRemove.UpdateDate = DateTime.UtcNow;
-                                kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
-                            }
-                            hokenPartternUpdate.Kohi1Id = 0;
-                        }
-                        else if (hokenPartternUpdate.Kohi1Id != 0 && hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel)
-                        {
-                            hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
-
-                            var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi1Id);
-                            if (kohiUpdate != null)
-                            {
-                                kohiUpdate.FutansyaNo = hokenParttern.Kohi1.FutansyaNo;
-                                kohiUpdate.JyukyusyaNo = hokenParttern.Kohi1.JyukyusyaNo;
-                                kohiUpdate.TokusyuNo = hokenParttern.Kohi1.TokusyuNo;
-                                kohiUpdate.SikakuDate = hokenParttern.Kohi1.SikakuDate;
-                                kohiUpdate.KofuDate = hokenParttern.Kohi1.KofuDate;
-                                kohiUpdate.Rate = hokenParttern.Kohi1.Rate;
-                                kohiUpdate.StartDate = hokenParttern.Kohi1.StartDate;
-                                kohiUpdate.EndDate = hokenParttern.Kohi1.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi1.EndDate;
-                                kohiUpdate.GendoGaku = hokenParttern.Kohi1.GendoGaku;
-                                kohiUpdate.HokenEdaNo = hokenParttern.Kohi1.HokenEdaNo;
-                                kohiUpdate.HokenSbtKbn = hokenParttern.Kohi1.HokenSbtKbn;
-                                kohiUpdate.Houbetu = hokenParttern.Kohi1.Houbetu;
-                                kohiUpdate.UpdateId = TempIdentity.UserId;
-                                kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
-                            }
-                        }
-
-                        //HokenCheck
-                        if(hokenParttern.Kohi1 != null)
-                        {
-                            if (hokenParttern.Kohi1.ConfirmDateList == null)
-                                UpdateHokenCheck(databaseHokenChecks, new List<ConfirmDateModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi1Id, TempIdentity.UserId, true).Wait();
-                            else 
-                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi1.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi1Id, TempIdentity.UserId, true).Wait();
-                        }
-                        
-                        #endregion
-
-                        #region KohiId2
-                        if (hokenPartternUpdate.Kohi2Id == 0 && hokenParttern.Kohi2 != null && !hokenParttern.Kohi2.IsEmptyModel) // add new
-                        {
-                            var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.PtId = patientInfo.PtId;
-                                dest.HpId = hpId;
-                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtKohis.Add(kohi);
-                            hokenPartternUpdate.Kohi2Id = kohi.HokenId;
-                            hokenKohiIndex++;
-                        }
-                        else if (hokenPartternUpdate.Kohi2Id != 0 && hokenParttern.Kohi2 != null && hokenParttern.Kohi2.IsEmptyModel) //Case remove
-                        {
-                            var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                             && c.HokenId == hokenPartternUpdate.Kohi2Id);
-                            if (kohiRemove != null)
-                            {
-                                kohiRemove.IsDeleted = 1;
-                                kohiRemove.UpdateDate = DateTime.UtcNow;
-                                kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
-                            }
-                            hokenPartternUpdate.Kohi2Id = 0;
-                        }
-                        else if (hokenPartternUpdate.Kohi2Id != 0 && hokenParttern.Kohi2 != null && !hokenParttern.Kohi2.IsEmptyModel)
-                        {
-                            hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
-
-                            var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi2Id);
-                            if (kohiUpdate != null)
-                            {
-                                kohiUpdate.FutansyaNo = hokenParttern.Kohi2.FutansyaNo;
-                                kohiUpdate.JyukyusyaNo = hokenParttern.Kohi2.JyukyusyaNo;
-                                kohiUpdate.TokusyuNo = hokenParttern.Kohi2.TokusyuNo;
-                                kohiUpdate.SikakuDate = hokenParttern.Kohi2.SikakuDate;
-                                kohiUpdate.KofuDate = hokenParttern.Kohi2.KofuDate;
-                                kohiUpdate.Rate = hokenParttern.Kohi2.Rate;
-                                kohiUpdate.StartDate = hokenParttern.Kohi2.StartDate;
-                                kohiUpdate.EndDate = hokenParttern.Kohi2.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi2.EndDate;
-                                kohiUpdate.GendoGaku = hokenParttern.Kohi2.GendoGaku;
-                                kohiUpdate.HokenEdaNo = hokenParttern.Kohi2.HokenEdaNo;
-                                kohiUpdate.HokenSbtKbn = hokenParttern.Kohi2.HokenSbtKbn;
-                                kohiUpdate.Houbetu = hokenParttern.Kohi2.Houbetu;
-                                kohiUpdate.UpdateId = TempIdentity.UserId;
-                                kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
-                            }
-                        }
-
-                        //HokenCheck
-                        if(hokenParttern.Kohi2 != null)
-                        {
-                            if (hokenParttern.Kohi2.ConfirmDateList == null)
-                                UpdateHokenCheck(databaseHokenChecks, new List<ConfirmDateModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi2Id, TempIdentity.UserId, true).Wait();
-                            else
-                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi2.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi2Id, TempIdentity.UserId, true).Wait();
-                        }
-
-                        #endregion
-
-                        #region KohiId3
-                        if (hokenPartternUpdate.Kohi3Id == 0 && hokenParttern.Kohi3 != null && !hokenParttern.Kohi3.IsEmptyModel) // add new
-                        {
-                            var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.PtId = patientInfo.PtId;
-                                dest.HpId = hpId;
-                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtKohis.Add(kohi);
-                            hokenPartternUpdate.Kohi3Id = kohi.HokenId;
-                            hokenKohiIndex++;
-                        }
-                        else if (hokenPartternUpdate.Kohi3Id != 0 && hokenParttern.Kohi3 != null && hokenParttern.Kohi3.IsEmptyModel) //Case remove
-                        {
-                            var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi3Id);
-                            if (kohiRemove != null)
-                            {
-                                kohiRemove.IsDeleted = 1;
-                                kohiRemove.UpdateDate = DateTime.UtcNow;
-                                kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
-                            }
-                            hokenPartternUpdate.Kohi3Id = 0;
-                        }
-                        else if (hokenPartternUpdate.Kohi3Id != 0 && hokenParttern.Kohi3 != null && !hokenParttern.Kohi3.IsEmptyModel)
-                        {
-                            hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
-
-                            var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi3Id);
-                            if (kohiUpdate != null)
-                            {
-                                kohiUpdate.FutansyaNo = hokenParttern.Kohi3.FutansyaNo;
-                                kohiUpdate.JyukyusyaNo = hokenParttern.Kohi3.JyukyusyaNo;
-                                kohiUpdate.TokusyuNo = hokenParttern.Kohi3.TokusyuNo;
-                                kohiUpdate.SikakuDate = hokenParttern.Kohi3.SikakuDate;
-                                kohiUpdate.KofuDate = hokenParttern.Kohi3.KofuDate;
-                                kohiUpdate.Rate = hokenParttern.Kohi3.Rate;
-                                kohiUpdate.StartDate = hokenParttern.Kohi3.StartDate;
-                                kohiUpdate.EndDate = hokenParttern.Kohi3.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi3.EndDate;
-                                kohiUpdate.GendoGaku = hokenParttern.Kohi3.GendoGaku;
-                                kohiUpdate.HokenEdaNo = hokenParttern.Kohi3.HokenEdaNo;
-                                kohiUpdate.HokenSbtKbn = hokenParttern.Kohi3.HokenSbtKbn;
-                                kohiUpdate.Houbetu = hokenParttern.Kohi3.Houbetu;
-                                kohiUpdate.UpdateId = TempIdentity.UserId;
-                                kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
-                            }
-                        }
-
-                        //HokenCheck
-
-                        if(hokenParttern.Kohi3 != null)
-                        {
-                            if(hokenParttern.Kohi3.ConfirmDateList == null)
-                                UpdateHokenCheck(databaseHokenChecks, new List<ConfirmDateModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi3Id, TempIdentity.UserId, true).Wait();
-                            else
-                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi3.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi3Id, TempIdentity.UserId, true).Wait();
-                        }
-
-                        #endregion
-
-                        #region KohiId4
-                        if (hokenPartternUpdate.Kohi4Id == 0 && hokenParttern.Kohi4 != null && !hokenParttern.Kohi4.IsEmptyModel) // add new
-                        {
-                            var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.PtId = patientInfo.PtId;
-                                dest.HpId = hpId;
-                                dest.HokenId = hokenKohiIndex;
-                                dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtKohis.Add(kohi);
-                            hokenPartternUpdate.Kohi4Id = kohi.HokenId;
-                            hokenKohiIndex++;
-                        }
-                        else if (hokenPartternUpdate.Kohi4Id != 0 && hokenParttern.Kohi4 != null && hokenParttern.Kohi4.IsEmptyModel) //Case remove
-                        {
-                            var kohiRemove = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi4Id);
-                            if (kohiRemove != null)
-                            {
-                                kohiRemove.IsDeleted = 1;
-                                kohiRemove.UpdateDate = DateTime.UtcNow;
-                                kohiRemove.UpdateId = TempIdentity.UserId;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiRemove);
-                            }
-                            hokenPartternUpdate.Kohi4Id = 0;
-                        }
-                        else if (hokenPartternUpdate.Kohi4Id != 0 && hokenParttern.Kohi4 != null && !hokenParttern.Kohi4.IsEmptyModel)
-                        {
-                            hokenPartternUpdate.HokenSbtCd = hokenParttern.HokenSbtCd;
-
-                            var kohiUpdate = databasePtKohis.FirstOrDefault(c => c.HpId == hokenPartternUpdate.HpId && c.PtId == hokenPartternUpdate.PtId
-                                                                            && c.HokenId == hokenPartternUpdate.Kohi4Id);
-                            if (kohiUpdate != null)
-                            {
-                                kohiUpdate.FutansyaNo = hokenParttern.Kohi4.FutansyaNo;
-                                kohiUpdate.JyukyusyaNo = hokenParttern.Kohi4.JyukyusyaNo;
-                                kohiUpdate.TokusyuNo = hokenParttern.Kohi4.TokusyuNo;
-                                kohiUpdate.SikakuDate = hokenParttern.Kohi4.SikakuDate;
-                                kohiUpdate.KofuDate = hokenParttern.Kohi4.KofuDate;
-                                kohiUpdate.Rate = hokenParttern.Kohi4.Rate;
-                                kohiUpdate.StartDate = hokenParttern.Kohi4.StartDate;
-                                kohiUpdate.EndDate = hokenParttern.Kohi4.EndDate == 0 ? defaultMaxDate : hokenParttern.Kohi4.EndDate;
-                                kohiUpdate.GendoGaku = hokenParttern.Kohi4.GendoGaku;
-                                kohiUpdate.HokenEdaNo = hokenParttern.Kohi4.HokenEdaNo;
-                                kohiUpdate.HokenSbtKbn = hokenParttern.Kohi4.HokenSbtKbn;
-                                kohiUpdate.Houbetu = hokenParttern.Kohi4.Houbetu;
-                                kohiUpdate.UpdateId = TempIdentity.UserId;
-                                kohiUpdate.UpdateDate = DateTime.UtcNow;
-                                _tenantTrackingDataContext.PtKohis.Update(kohiUpdate);
-                            }
-                        }
-
-                        //HokenCheck
-
-                        if(hokenParttern.Kohi4 != null)
-                        {
-                            if(hokenParttern.Kohi4.ConfirmDateList == null)
-                                UpdateHokenCheck(databaseHokenChecks, new List<ConfirmDateModel>(), patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi4Id, TempIdentity.UserId, true).Wait();
-                            else
-                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.Kohi4.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.Kohi4Id, TempIdentity.UserId, true).Wait();
-                        }
-
-                        #endregion
-
-                        hokenPartternUpdate.StartDate = hokenParttern.StartDate;
-                        hokenPartternUpdate.EndDate = hokenParttern.EndDate;
-                        hokenPartternUpdate.UpdateDate = DateTime.UtcNow;
-                        hokenPartternUpdate.UpdateId = TempIdentity.UserId;
-                    };
-
-                    int hokenParternHokenId = 0;
-                    if (hokenPartternUpdate != null)
-                        hokenParternHokenId = hokenPartternUpdate.HokenId;
-
-                    var hokenIfUpdate = databaseHoKentInfs.FirstOrDefault(c => c.HpId == hpId && c.PtId == patientInfo.PtId
-                                                                        && c.HokenId == hokenParternHokenId);
-                    if (hokenIfUpdate != null)
-                    {
-                        if (hokenParttern.HokenInf != null)
-                        {
-                            hokenIfUpdate.HokenNo = hokenParttern.HokenInf.HokenNo;
-                            hokenIfUpdate.HokensyaNo = hokenParttern.HokenInf.HokensyaNo;
-                            hokenIfUpdate.Kigo = hokenParttern.HokenInf.Kigo;
-                            hokenIfUpdate.Bango = hokenParttern.HokenInf.Bango;
-                            hokenIfUpdate.HonkeKbn = hokenParttern.HokenInf.HonkeKbn;
-                            hokenIfUpdate.HokenKbn = hokenParttern.HokenInf.HokenKbn;
-                            hokenIfUpdate.Houbetu = hokenParttern.HokenInf.Houbetu;
-                            hokenIfUpdate.HokensyaNo = hokenParttern.HokenInf.HokensyaNo;
-                            hokenIfUpdate.KofuDate = hokenParttern.HokenInf.KofuDate;
-                            hokenIfUpdate.StartDate = hokenParttern.HokenInf.StartDate;
-                            hokenIfUpdate.EndDate = hokenParttern.HokenInf.EndDate == 0 ? defaultMaxDate : hokenParttern.HokenInf.EndDate;
-                            hokenIfUpdate.RyoyoStartDate = hokenParttern.HokenInf.RyoyoStartDate;
-                            hokenIfUpdate.RyoyoEndDate = hokenParttern.HokenInf.RyoyoEndDate == 0 ? defaultMaxDate : hokenParttern.HokenInf.RyoyoEndDate;
-                            hokenIfUpdate.KeizokuKbn = hokenParttern.HokenInf.KeizokuKbn;
-                            hokenIfUpdate.KogakuKbn = hokenParttern.HokenInf.KogakuKbn;
-                            hokenIfUpdate.TokureiYm1 = hokenParttern.HokenInf.TokureiYm1;
-                            hokenIfUpdate.TokureiYm2 = hokenParttern.HokenInf.TokureiYm2;
-                            hokenIfUpdate.TasukaiYm = hokenParttern.HokenInf.TasukaiYm;
-                            hokenIfUpdate.SyokumuKbn = hokenParttern.HokenInf.SyokumuKbn;
-                            hokenIfUpdate.GenmenKbn = hokenParttern.HokenInf.GenmenKbn;
-                            hokenIfUpdate.GenmenRate = hokenParttern.HokenInf.GenmenRate;
-                            hokenIfUpdate.GenmenGaku = hokenParttern.HokenInf.GenmenGaku;
-                            hokenIfUpdate.Tokki1 = hokenParttern.HokenInf.Tokki1;
-                            hokenIfUpdate.Tokki2 = hokenParttern.HokenInf.Tokki2;
-                            hokenIfUpdate.Tokki3 = hokenParttern.HokenInf.Tokki3;
-                            hokenIfUpdate.Tokki4 = hokenParttern.HokenInf.Tokki4;
-                            hokenIfUpdate.Tokki5 = hokenParttern.HokenInf.Tokki5;
-                            hokenIfUpdate.RousaiKofuNo = hokenParttern.HokenInf.RousaiKofuNo;
-                            hokenIfUpdate.RousaiSaigaiKbn = hokenParttern.HokenInf.RousaiSaigaiKbn;
-                            hokenIfUpdate.RousaiJigyosyoName = hokenParttern.HokenInf.RousaiJigyosyoName;
-                            hokenIfUpdate.RousaiPrefName = hokenParttern.HokenInf.RousaiPrefName;
-                            hokenIfUpdate.RousaiCityName = hokenParttern.HokenInf.RousaiCityName;
-                            hokenIfUpdate.RousaiSyobyoDate = hokenParttern.HokenInf.RousaiSyobyoDate;
-                            hokenIfUpdate.RousaiSyobyoCd = hokenParttern.HokenInf.RousaiSyobyoCd;
-                            hokenIfUpdate.RousaiRoudouCd = hokenParttern.HokenInf.RousaiRoudouCd;
-                            hokenIfUpdate.RousaiKantokuCd = hokenParttern.HokenInf.RousaiKantokuCd;
-                            hokenIfUpdate.RousaiReceCount = hokenParttern.HokenInf.RousaiReceCount;
-                            hokenIfUpdate.JibaiHokenName = hokenParttern.HokenInf.JibaiHokenName;
-                            hokenIfUpdate.JibaiHokenTanto = hokenParttern.HokenInf.JibaiHokenTanto;
-                            hokenIfUpdate.JibaiHokenTel = hokenParttern.HokenInf.JibaiHokenTel;
-                            hokenIfUpdate.JibaiJyusyouDate = hokenParttern.HokenInf.JibaiJyusyouDate;
-                            hokenIfUpdate.SikakuDate = hokenParttern.HokenInf.SikakuDate;
-                            hokenIfUpdate.EdaNo = hokenParttern.HokenInf.EdaNo;
-                            hokenIfUpdate.KeizokuKbn = hokenParttern.HokenInf.KeizokuKbn;
-                            _tenantTrackingDataContext.PtHokenInfs.Update(hokenIfUpdate);
-
-                            if (hokenPartternUpdate != null && hokenParttern.HokenInf.ConfirmDateList != null)
-                                UpdateHokenCheck(databaseHokenChecks, hokenParttern.HokenInf.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, hokenPartternUpdate.HokenId, TempIdentity.UserId);
-                        }
-                    }
-
-                    if (hokenPartternUpdate != null)
-                        _tenantTrackingDataContext.PtHokenPatterns.Update(hokenPartternUpdate);
-                }
-                else //Add Entity
+                #region PtHokenCheck
+                _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
-                    var hokenModel = Mapper.Map(hokenParttern, new PtHokenPattern(), (source, dest) => {
-                        dest.CreateId = TempIdentity.UserId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateMachine = TempIdentity.ComputerName;
-                        dest.PtId = patientInfo.PtId;
-                        dest.HpId = hpId;
+                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.PtID = patientInfo.PtId;
+                    destCf.HokenGrp = 1;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            _tenantTrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
+
+            //Update
+            foreach(var item in hokenInfs.Where(x => x.SeqNo != 0))
+            {
+                PtHokenInf? updateHokenInf = databaseHoKentInfs.FirstOrDefault(x => x.SeqNo == item.SeqNo);
+                if (updateHokenInf != null)
+                {
+                    //Info inf
+                    Mapper.Map(item, updateHokenInf, (src, dest) =>
+                    {
+                        dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateId = TempIdentity.UserId;
                         return dest;
                     });
 
-                    hokenModel.HokenPid = hoKenIndex;
-                    hokenModel.HokenId = hoKenIndex;
-                    hokenModel.EndDate = hokenModel.EndDate == 0 ? defaultMaxDate : hokenModel.EndDate;
+                    //ConfirmDate
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, TempIdentity.UserId).Wait();
 
-                    var hokenInfModel = Mapper.Map(hokenParttern.HokenInf, new PtHokenInf(), (source, dest) => {
+                    //RousaiTenki
+                    var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
+                    {
+                        dest.Sinkei = src.RousaiTenkiSinkei;
+                        dest.Tenki = src.RousaiTenkiTenki;
+                        dest.EndDate = src.RousaiTenkiEndDate;
                         dest.CreateId = TempIdentity.UserId;
-                        dest.CreateDate = DateTime.UtcNow;
-                        dest.UpdateMachine = TempIdentity.ComputerName;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
+                        dest.HokenId = updateHokenInf.HokenId;
+                        dest.CreateId = TempIdentity.UserId;
+                        dest.CreateDate = DateTime.UtcNow;
+                        return dest;
+                    });
+                    _tenantTrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
+
+                    foreach (var rsTkUpdate in item.ListRousaiTenki.Where(x => x.SeqNo != 0))
+                    {
+                        var updateItem = databasePtRousaiTenkis.FirstOrDefault(x => x.HokenId == updateHokenInf.HokenId && x.SeqNo == rsTkUpdate.SeqNo);
+                        if (updateItem != null)
+                        {
+                            updateItem.Sinkei = rsTkUpdate.RousaiTenkiSinkei;
+                            updateItem.Tenki = rsTkUpdate.RousaiTenkiTenki;
+                            updateItem.EndDate = rsTkUpdate.RousaiTenkiEndDate;
+                            updateItem.UpdateDate = DateTime.UtcNow;
+                        }
+                    }
+
+                    var listDatabaseByHokenInf = databasePtRousaiTenkis.Where(x => x.HokenId == updateHokenInf.HokenId);
+                    var listRemoves = listDatabaseByHokenInf.Where(x => !item.ListRousaiTenki.Any(m => m.SeqNo == x.SeqNo)).ToList();
+
+                    listRemoves.ForEach(x =>
+                    {
+                        x.IsDeleted = 1;
+                        x.UpdateId = TempIdentity.UserId;
+                        x.UpdateDate = DateTime.UtcNow;
+                    });
+                }
+            }
+            #endregion HokenInf
+
+            #region HokenKohi
+            //Add new
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew && x.SeqNo == 0), (src, dest) =>
+            {
+                dest.CreateId = TempIdentity.UserId;
+                dest.CreateDate = DateTime.UtcNow;
+                dest.PtId = patientInfo.PtId;
+                dest.HpId = hpId;
+                dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                #region PtHokenCheck
+                _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
+                {
+                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateDate = DateTime.UtcNow;
+                    destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
+                    destCf.CheckCmt = srcCf.CheckComment;
+                    destCf.HokenId = dest.HokenId;
+                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.PtID = patientInfo.PtId;
+                    destCf.HokenGrp = 1;
+                    destCf.HpId = hpId;
+                    return destCf;
+                }));
+                #endregion
+                return dest;
+            });
+            _tenantTrackingDataContext.PtKohis.AddRange(ptKohiInfs);
+
+            //Update
+            foreach (var item in hokenKohis.Where(x => !x.IsAddNew && x.SeqNo != 0))
+            {
+                PtKohi? updateKohi = databasePtKohis.FirstOrDefault(c => c.HokenId == item.HokenId && c.SeqNo == item.SeqNo);
+                if (updateKohi != null)
+                {
+                    //Info Kohi
+                    Mapper.Map(item, updateKohi, (src, dest) =>
+                    {
+                        dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
+                        dest.UpdateDate = DateTime.UtcNow;
+                        dest.UpdateId = TempIdentity.UserId;
                         return dest;
                     });
 
-                    hokenInfModel.HokenId = hoKenIndex;
-                    hokenInfModel.EndDate = hokenInfModel.EndDate == 0 ? defaultMaxDate : hokenInfModel.EndDate;
-                    _tenantTrackingDataContext.Add(hokenInfModel);
-
-                    if (hokenParttern.HokenInf != null && hokenParttern.HokenInf.ConfirmDateList != null && hokenParttern.HokenInf.ConfirmDateList.Any())
-                    {
-                        foreach (var item in hokenParttern.HokenInf.ConfirmDateList)
-                        {
-                            PtHokenCheck addPtHokenCheck = Mapper.Map(item, new PtHokenCheck(), (source, dest) => {
-                                dest.CheckCmt = source.CheckComment;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(source.ConfirmDate), DateTimeKind.Utc);
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.HokenId = hokenModel.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                dest.PtID = patientInfo.PtId;
-                                dest.HokenGrp = 1;
-                                dest.HpId = hpId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.Add(addPtHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi1 != null && !hokenParttern.Kohi1.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi1, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInfo.PtId;
-                            dest.HpId = hpId;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi1Id = kohi.HokenId;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi1.ConfirmDateList != null && hokenParttern.Kohi1.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi1.ConfirmDateList, (src, dest) => {
-                                dest.CheckCmt = src.CheckComment;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInfo.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-
-                    }
-
-                    if (hokenParttern.Kohi2 != null && !hokenParttern.Kohi2.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi2, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInfo.PtId;
-                            dest.HpId = hpId;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi2Id = kohi.HokenId;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi2.ConfirmDateList != null && hokenParttern.Kohi2.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi2.ConfirmDateList, (src, dest) => {
-                                dest.CheckCmt = src.CheckComment;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInfo.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi3 != null && !hokenParttern.Kohi3.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi3, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            dest.PtId = patientInfo.PtId;
-                            dest.HpId = hpId;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi3Id = kohi.HokenId;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi3.ConfirmDateList != null && hokenParttern.Kohi3.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi3.ConfirmDateList, (src, dest) => {
-                                dest.CheckCmt = src.CheckComment;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInfo.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    if (hokenParttern.Kohi4 != null && !hokenParttern.Kohi4.IsEmptyModel)
-                    {
-                        var kohi = Mapper.Map(hokenParttern.Kohi4, new PtKohi(), (source, dest) => {
-                            dest.CreateId = TempIdentity.UserId;
-                            dest.CreateDate = DateTime.UtcNow;
-                            dest.PtId = patientInfo.PtId;
-                            dest.HpId = hpId;
-                            dest.EndDate = source.EndDate == 0 ? defaultMaxDate : source.EndDate;
-                            dest.UpdateMachine = TempIdentity.ComputerName;
-                            return dest;
-                        });
-
-                        _tenantTrackingDataContext.PtKohis.Add(kohi);
-                        hokenModel.Kohi4Id = kohi.HokenId;
-                        hokenKohiIndex++;
-
-                        if (hokenParttern.Kohi4.ConfirmDateList != null && hokenParttern.Kohi4.ConfirmDateList.Any())
-                        {
-                            var listAddHokenCheck = Mapper.Map<ConfirmDateModel, PtHokenCheck>(hokenParttern.Kohi4.ConfirmDateList, (src, dest) => {
-                                dest.CheckCmt = src.CheckComment;
-                                dest.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(src.ConfirmDate), DateTimeKind.Utc);
-                                dest.CreateDate = DateTime.UtcNow;
-                                dest.CreateId = TempIdentity.UserId;
-                                dest.HpId = hpId;
-                                dest.PtID = patientInfo.PtId;
-                                dest.HokenGrp = 2;
-                                dest.HokenId = kohi.HokenId;
-                                dest.CheckId = TempIdentity.UserId;
-                                dest.UpdateMachine = TempIdentity.ComputerName;
-                                return dest;
-                            });
-                            _tenantTrackingDataContext.PtHokenChecks.AddRange(listAddHokenCheck);
-                        }
-                    }
-
-                    _tenantTrackingDataContext.PtHokenPatterns.Add(hokenModel);
-                    hoKenIndex++;
+                    //ConfirmDate
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, TempIdentity.UserId).Wait();
                 }
             }
-            #endregion
-            _tenantTrackingDataContext.PtInfs.Update(patientInfo);
-            return _tenantTrackingDataContext.SaveChanges() > 0;
+            #endregion HokenKohi
+            return (_tenantTrackingDataContext.SaveChanges() > 0, patientInfo.PtId);
         }
 
         private long GetAutoPtNum(int HpId)
@@ -2158,7 +1619,6 @@ namespace Infrastructure.Repositories
             foreach (var deleteItem in deleteList) //Removes
             {
                 deleteItem.IsDeleted = 1;
-                _tenantTrackingDataContext.PtHokenChecks.Update(deleteItem);
             }
 
             foreach (var createItem in savingList.Where(c => c.SeqNo == 0)) // Add new
@@ -2187,10 +1647,134 @@ namespace Infrastructure.Repositories
                     modelUpdate.CheckCmt = updateItem.CheckComment;
                     modelUpdate.CreateId = actUserId;
                     modelUpdate.UpdateDate = DateTime.UtcNow;
-                    _tenantTrackingDataContext.PtHokenChecks.Update(modelUpdate);
                 }
             }
             return Task.CompletedTask;
+        }
+
+        public bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId)
+        {
+            var patientInf = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
+            if (patientInf != null)
+            {
+                patientInf.IsDelete = DeleteTypes.Deleted;
+                patientInf.UpdateDate = DateTime.UtcNow;
+                patientInf.UpdateId = TempIdentity.UserId;
+                patientInf.UpdateMachine = TempIdentity.ComputerName;
+                #region PtMemo
+                var ptMemos = _tenantTrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                foreach (var item in ptMemos)
+                {
+                    item.IsDeleted = DeleteTypes.Deleted;
+                    item.UpdateDate = DateTime.UtcNow;
+                    item.UpdateId = TempIdentity.UserId;
+                    item.UpdateMachine = TempIdentity.ComputerName;
+                }
+                #endregion
+
+                #region ptKyuseis
+                var ptKyuseis = _tenantTrackingDataContext.PtKyuseis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptKyuseis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region ptSanteis
+                var ptSanteis = _tenantTrackingDataContext.PtSanteiConfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptSanteis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region HokenParttern
+                var ptHokenParterns = _tenantTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenParterns.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region HokenInf
+                var ptHokenInfs = _tenantTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenInfs.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region HokenKohi
+                var ptHokenKohis = _tenantTrackingDataContext.PtKohis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenKohis.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region HokenCheck
+                var ptHokenChecks = _tenantTrackingDataContext.PtHokenChecks.Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptHokenChecks.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+
+                #region RousaiTenki
+                var ptRousaiTenkies = _tenantTrackingDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
+                ptRousaiTenkies.ForEach(x =>
+                {
+                    x.IsDeleted = DeleteTypes.Deleted;
+                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateDate = DateTime.UtcNow;
+                    x.UpdateMachine = TempIdentity.ComputerName;
+                });
+                #endregion
+            }
+            return _tenantTrackingDataContext.SaveChanges() > 0;
+        }
+
+        public bool IsAllowDeletePatient(int hpId,long ptId)
+        {
+            var raiinInfCount = _tenantDataContext.RaiinInfs
+                .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);
+
+            if (raiinInfCount > 0)
+                return false;
+            return true;
+        }
+
+        public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
+        {
+            var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
+            {
+                return dest;
+            });
+        }
+
+        public HokensyaMstModel GetHokenSyaMstByInfor(int hpId, string houbetu, string hokensya)
+        {
+            var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
+            return hokensyaMst ?? new HokensyaMstModel();
         }
     }
 }

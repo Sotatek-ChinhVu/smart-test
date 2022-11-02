@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Domain.Models.ReceptionSameVisit;
 using Entity.Tenant;
 using Helper.Common;
@@ -120,7 +121,9 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi2 = ptKohi2Item != null ? new KohiInfModel(
                                         ptKohi2Item.FutansyaNo ?? string.Empty,
@@ -143,7 +146,9 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi3 = ptKohi3Item != null ? new KohiInfModel(
                                         ptKohi3Item.FutansyaNo ?? string.Empty,
@@ -166,7 +171,9 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                             Kohi4 = ptKohi4Item != null ? new KohiInfModel(
                                         ptKohi4Item.FutansyaNo ?? string.Empty,
@@ -189,7 +196,9 @@ namespace Infrastructure.Repositories
                                         sinDate,
                                         new List<ConfirmDateModel>(),
                                         false,
-                                        ptKohi1Item.IsDeleted
+                                        ptKohi1Item.IsDeleted,
+                                        false,
+                                        ptKohi1Item.SeqNo
                                     ) : null,
                         };
             var listHokenData = new List<HokenPatternModel>();
@@ -316,7 +325,8 @@ namespace Infrastructure.Repositories
                                             doctorId,
                                             item.SyosaisinKbn,
                                             item.JikanKbn,
-                                            item.SanteiKbn
+                                            item.SanteiKbn,
+                                            item.RaiinNo
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);

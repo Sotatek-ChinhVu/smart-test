@@ -27,12 +27,15 @@
         public static readonly string InvalidSeqNo = "Invalid SeqNo";
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
+        public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
 
         //Common
         public static readonly string NotFound = "Not found";
         public static readonly string Success = "Success";
         public static readonly string NoData = "No data";
         public static readonly string Failed = "Failed";
+        public static readonly string DuplicateId = "DuplicateId";
+        public static readonly string ExistedId = "ExistedId";
         public static readonly string InputDataNull = "Input data is null";
         public static readonly string Valid = "Valid";
 
@@ -63,33 +66,37 @@
         //Reception controller
 
         //PtDisease controller
-        public static readonly string UpsertPtDiseaseListSuccess = "Upsert value successfully.";
-        public static readonly string UpsertPtDiseaseListFail = "Upsert value fail.";
-        public static readonly string UpsertPtDiseaseListInputNoData = "Input no data.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiKbn = "Invalid TenKiKbn.";
-        public static readonly string UpsertPtDiseaseListInvalidSikkanKbn = "Invalid SikkanKbn.";
-        public static readonly string UpsertPtDiseaseListInvalidNanByoCd = "Invalid NanByoCd.";
-        public static readonly string UpsertPtDiseaseListPtIdNoExist = "PtId no exist.";
-        public static readonly string UpsertPtDiseaseListHokenPIdNoExist = "HokenPId no exist.";
-        public static readonly string UpsertPtDiseaseListInvalidFreeWord = "Free word must be less than or equal 40.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDateContinue = "Invalid TenkiDate Continue.";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDateAndStartDate = "TenkiDate must more than or equal start date";
-        public static readonly string UpsertPtDiseaseListInvalidByomei = "Invalid Byomei";
-        public static readonly string UpsertPtDiseaseListInvalidId = "Invalid Id";
-        public static readonly string UpsertPtDiseaseListInvalidHpId = "Invalid HpId";
-        public static readonly string UpsertPtDiseaseListInvalidPtId = "Invalid PtId";
-        public static readonly string UpsertPtDiseaseListInvalidSortNo = "Invalid SortNo";
-        public static readonly string UpsertPtDiseaseListInvalidByomeiCd = "Invalid ByomeiCd";
-        public static readonly string UpsertPtDiseaseListInvalidStartDate = "Invalid Byomei Start Date";
-        public static readonly string UpsertPtDiseaseListInvalidTenkiDate = "Invalid TenkiDate";
-        public static readonly string UpsertPtDiseaseListInvalidSyubyoKbn = "Invalid SyubyoKbn";
-        public static readonly string UpsertPtDiseaseListInvalidHosokuCmt = "Invalid HosokuCmt";
-        public static readonly string UpsertPtDiseaseListInvalidHokenPid = "Invalid HokenPid";
-        public static readonly string UpsertPtDiseaseListInvalidIsNodspRece = "Invalid IsNodspRece";
-        public static readonly string UpsertPtDiseaseListInvalidIsNodspKarte = "Invalid IsNodspKarte";
-        public static readonly string UpsertPtDiseaseListInvalidSeqNo = "Invalid SeqNo";
-        public static readonly string UpsertPtDiseaseListInvalidIsImportant = "Invalid IsImportant";
-        public static readonly string UpsertPtDiseaseListInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string PtDiseaseUpsertSuccess = "更新が成功しました";
+        public static readonly string PtDiseaseUpsertFail = "更新に失敗しました。";
+        public static readonly string PtDiseaseUpsertInputNoData = "無効なデータを受信しました。";
+
+        //User controller
+        public static readonly string UpsertInputNoData = "Input No Data";
+        public static readonly string UpsertInvalidExistedLoginId = "Existed LoginId";
+        public static readonly string UpsertInvalidNoExistedId = "No Exist Id";
+        public static readonly string UpsertInvalidExistedUserId = "Existed UserId";
+        public static readonly string UpsertInvalidId = "Invalid Id";
+        public static readonly string UpsertInvalidUserId = "Invalid UserId";
+        public static readonly string UpsertInvalidJobCd = "Invalid JobCd";
+        public static readonly string UpsertInvalidManagerKbn = "Invalid ManagerKbn";
+        public static readonly string UpsertInvalidKaId = "Invalid KaId";
+        public static readonly string UpsertInvalidKanaName = "Invalid KanaName";
+        public static readonly string UpsertInvalidName = "Invalid Name";
+        public static readonly string UpsertInvalidSname = "Invalid Sname";
+        public static readonly string UpsertInvalidLoginId = "Invalid LoginId";
+        public static readonly string UpsertInvalidLoginPass = "Invalid LoginPass";
+        public static readonly string UpsertInvalidStartDate = "Invalid StartDate";
+        public static readonly string UpsertInvalidEndDate = "Invalid EndDate";
+        public static readonly string UpsertInvalidSortNo = "Invalid SortNo";
+        public static readonly string UpsertInvalidIsDeleted = "Invalid IsDeleted";
+        public static readonly string UpsertInvalidRenkeiCd1 = "Invalid RenkeiCd1";
+        public static readonly string UpsertInvalidDrName = "Invalid DrName";
+        public static readonly string UpsertUserListSuccess = "UpsertUserListSuccess";
+        public static readonly string UpsertKaIdNoExist = "No Exist KaId";
+        public static readonly string UpsertJobCdNoExist = "No Exist JobCd";
+        public static readonly string UpsertIdNoExist = "No Exist Id";
+        public static readonly string UserListExistedInputData = "UserListExistedInputData";
+
 
         //Insurance
         // Validate Main Insurance
@@ -108,6 +115,133 @@
         public static readonly string InvalidSelectedHokenMstAgeEnd = "Invalid SelectedHokenMst AgeEnd";
         public static readonly string InvalidSelectedHokenMstStartDate = "Invalid SelectedHokenMst StartDate";
         public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
+        public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
+        public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
+
+        // Validate Pattern
+        public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
+        public static readonly string InvalidPatternEmptyHoken = "Invalid Empty Hoken";
+        public static readonly string InvalidPatternHokenNashiOnly = "Invalid Hoken Nashi Only";
+        public static readonly string InvalidPatternTokkiValue1 = "Invalid TokkiValue1";
+        public static readonly string InvalidPatternTokkiValue21 = "Invalid TokkiValue21";
+        public static readonly string InvalidPatternTokkiValue31 = "Invalid TokkiValue31";
+        public static readonly string InvalidPatternTokkiValue41 = "Invalid TokkiValue41";
+        public static readonly string InvalidPatternTokkiValue51 = "Invalid TokkiValue51";
+        public static readonly string InvalidPatternTokkiValue2 = "Invalid TokkiValue2";
+        public static readonly string InvalidPatternTokkiValue23 = "Invalid TokkiValue23";
+        public static readonly string InvalidPatternTokkiValue24 = "Invalid TokkiValue24";
+        public static readonly string InvalidPatternTokkiValue25 = "Invalid TokkiValue25";
+        public static readonly string InvalidPatternTokkiValue3 = "Invalid TokkiValue3";
+        public static readonly string InvalidPatternTokkiValue34 = "Invalid TokkiValue34";
+        public static readonly string InvalidPatternTokkiValue35 = "Invalid TokkiValue35";
+        public static readonly string InvalidPatternTokkiValue4 = "Invalid TokkiValue4";
+        public static readonly string InvalidPatternTokkiValue45 = "Invalid TokkiValue45";
+        public static readonly string InvalidPatternTokkiValue5 = "Invalid TokkiValue5";
+        public static readonly string InvalidPatternYukoKigen = "Invalid YukoKigen";
+        public static readonly string InvalidPatternHokenSyaNoNullAndHokenNoNotEquals0 = "Invalid HokenSyaNo Null And HokenNo Not Equals 0 ";
+        public static readonly string InvalidPatternHokenNoEquals0 = "Invalid HokenNo Equals 0";
+        public static readonly string InvalidPatternHokenNoHaveHokenMst = "Invalid Hoken No Have HokenMst";
+        public static readonly string InvalidPatternHoubetu = "Invalid Houbetu";
+        public static readonly string InvalidPatternCheckDigitEquals1 = "Invalid CheckDigit Equals 1";
+        public static readonly string InvalidPatternCheckAgeHokenMst = "Invalid CheckAgeHokenMst ";
+        public static readonly string InvalidPatternHokensyaNoNull = "Invalid CheckAgeHokenMst ";
+        public static readonly string InvalidPatternHokensyaNoEquals0 = "Invalid CheckAgeHokenMst ";
+        public static readonly string InvalidPatternHokensyaNoLength8StartWith39 = "Invalid HokensyaNoLength8StartWith39";
+        public static readonly string InvalidPatternKigoNull = "Invalid KigoNull";
+        public static readonly string InvalidPatternBangoNull = "Invalid BangoNull";
+        public static readonly string InvalidPatternHokenKbnEquals0 = "Invalid HokenKbnEquals0";
+        public static readonly string InvalidPatternTokkurei = "Invalid Tokkurei";
+        public static readonly string InvalidPatternConfirmDateAgeCheck = "Invalid ConfirmDateAgeCheck";
+        public static readonly string InvalidPatternHokenMstStartDate = "Invalid HokenMstStartDate";
+        public static readonly string InvalidPatternHokenMstEndDate = "Invalid HokenMstEndDate";
+        public static readonly string InvalidPatternHokenRodoBangoNull = "Invalid RodoBangoNull";
+        public static readonly string InvalidPatternRodoBangoLengthNotEquals14 = "Invalid RodoBangoLengthNotEquals14";
+        public static readonly string InvalidPatternRousaiTenkiDefaultRow = "Invalid RousaiTenkiDefaultRow";
+        public static readonly string InvalidPatternRousaiTenkiData = "Invalid RousaiTenkiData";
+        public static readonly string InvalidPatternRousaiSaigaiKbn = "Invalid RousaiSaigaiKbn";
+        public static readonly string InvalidPatternRousaiSyobyoDateEquals0 = "Invalid RousaiSyobyoDate Equals 0";
+        public static readonly string InvalidPatternRousaiSyobyoCdNull = "Invalid RousaiSyobyoCdNull";
+        public static readonly string InvalidPatternRousaiRyoyoDate = "Invalid RousaiRyoyoDate";
+        public static readonly string InvalidPatternRosaiYukoDate = "Invalid RosaiYukoDate";
+        public static readonly string InvalidPatternCheckHokenInfDate = "Invalid CheckHokenInfDate";
+        public static readonly string InvalidPatternNenkinBangoNull = "Invalid NenkinBangoNull";
+        public static readonly string InvalidPatternNenkinBangoLengthNotEquals9 = "Invalid NenkinBango Length Not Equals 9";
+        public static readonly string InvalidPatternKenkoKanriBangoNull = "Invalid KenkoKanriBangoNull";
+        public static readonly string InvalidPatternKenkoKanriBangoLengthNotEquals13 = "Invalid KenkoKanriBango Length Not Equals 13";
+        public static readonly string InvalidPatternKohiEmptyModel1 = "Invalid Kohi1 Empty Model";
+        public static readonly string InvalidPatternKohiHokenMstEmpty1 = "Invalid Kohi1 HokenMst Empty";
+        public static readonly string InvalidPatternFutansyaNoEmpty1 = "Invalid Kohi1 FutansyaNo Empty";
+        public static readonly string InvalidPatternJyukyusyaNo1 = "Invalid Kohi1 JyukyusyaNo";
+        public static readonly string InvalidPatternTokusyuNo1 = "Invalid Kohi1 TokusyuNo";
+        public static readonly string InvalidPatternFutansyaNo01 = "Invalid Kohi1 FutansyaNo Equals 0";
+        public static readonly string InvalidPatternKohiYukoDate1 = "Invalid Kohi1 YukoDate";
+        public static readonly string InvalidPatternKohiHokenMstStartDate1 = "Invalid Kohi1 HokenMst StartDate";
+        public static readonly string InvalidPatternKohiHokenMstEndDate1 = "Invalid Kohi1 HokenMst EndDate";
+        public static readonly string InvalidPatternKohiConfirmDate1 = "Invalid Kohi1 ConfirmDate";
+        public static readonly string InvalidPatternKohiMstCheckHBT1 = "Invalid Kohi1 HokenMst CheckHBT";
+        public static readonly string InvalidPatternKohiMstCheckDigitFutansyaNo1 = "Invalid Kohi1 HokenMst CheckDigitFutansyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckDigitJyukyusyaNo1 = "Invalid Kohi1 HokenMst CheckDigitJyukyusyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckAge1 = "Invalid Kohi1 HokenMst CheckAge";
+        public static readonly string InvalidPatternKohiHokenMstFutanJyoTokuNull1 = "Invalid Kohi1 HokenMst FutanJyoToku Is Null";
+        public static readonly string InvalidPatternKohiEmptyModel2 = "Invalid Kohi2 Empty Model";
+        public static readonly string InvalidPatternKohiHokenMstEmpty2 = "Invalid Kohi2 HokenMst Empty";
+        public static readonly string InvalidPatternFutansyaNoEmpty2 = "Invalid Kohi2 FutansyaNo Empty";
+        public static readonly string InvalidPatternJyukyusyaNo2 = "Invalid Kohi2 JyukyusyaNo";
+        public static readonly string InvalidPatternTokusyuNo2 = "Invalid Kohi2 TokusyuNo";
+        public static readonly string InvalidPatternFutansyaNo02 = "Invalid Kohi2 FutansyaNo Equals 0";
+        public static readonly string InvalidPatternKohiYukoDate2 = "Invalid Kohi2 YukoDate";
+        public static readonly string InvalidPatternKohiHokenMstStartDate2 = "Invalid Kohi2 HokenMst StartDate";
+        public static readonly string InvalidPatternKohiHokenMstEndDate2 = "Invalid Kohi2 HokenMst EndDate";
+        public static readonly string InvalidPatternKohiConfirmDate2 = "Invalid Kohi2 ConfirmDate";
+        public static readonly string InvalidPatternKohiMstCheckHBT2 = "Invalid Kohi2 HokenMst CheckHBT";
+        public static readonly string InvalidPatternKohiMstCheckDigitFutansyaNo2 = "Invalid Kohi2 HokenMst CheckDigitFutansyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckDigitJyukyusyaNo2 = "Invalid Kohi2 HokenMst CheckDigitJyukyusyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckAge2 = "Invalid Kohi2 HokenMst CheckAge";
+        public static readonly string InvalidPatternKohiHokenMstFutanJyoTokuNull2 = "Invalid Kohi2 HokenMst FutanJyoToku Is Null";
+        public static readonly string InvalidPatternKohiEmptyModel3 = "Invalid Kohi3 Empty Model";
+        public static readonly string InvalidPatternKohiHokenMstEmpty3 = "Invalid Kohi3 HokenMst Empty";
+        public static readonly string InvalidPatternFutansyaNoEmpty3 = "Invalid Kohi3 FutansyaNo Empty";
+        public static readonly string InvalidPatternJyukyusyaNo3 = "Invalid Kohi3 JyukyusyaNo";
+        public static readonly string InvalidPatternTokusyuNo3 = "Invalid Kohi3 TokusyuNo";
+        public static readonly string InvalidPatternFutansyaNo03 = "Invalid Kohi3 FutansyaNo Equals 0";
+        public static readonly string InvalidPatternKohiYukoDate3 = "Invalid Kohi3 YukoDate";
+        public static readonly string InvalidPatternKohiHokenMstStartDate3 = "Invalid Kohi3 HokenMst StartDate";
+        public static readonly string InvalidPatternKohiHokenMstEndDate3 = "Invalid Kohi3 HokenMst EndDate";
+        public static readonly string InvalidPatternKohiConfirmDate3 = "Invalid Kohi3 ConfirmDate";
+        public static readonly string InvalidPatternKohiMstCheckHBT3 = "Invalid Kohi3 HokenMst CheckHBT";
+        public static readonly string InvalidPatternKohiMstCheckDigitFutansyaNo3 = "Invalid Kohi3 HokenMst CheckDigitFutansyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckDigitJyukyusyaNo3 = "Invalid Kohi3 HokenMst CheckDigitJyukyusyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckAge3 = "Invalid Kohi3 HokenMst CheckAge";
+        public static readonly string InvalidPatternKohiHokenMstFutanJyoTokuNull3 = "Invalid Kohi3 HokenMst FutanJyoToku Is Null";
+        public static readonly string InvalidPatternKohiEmptyModel4 = "Invalid Kohi4 Empty Model";
+        public static readonly string InvalidPatternKohiHokenMstEmpty4 = "Invalid Kohi4 HokenMst Empty";
+        public static readonly string InvalidPatternFutansyaNoEmpty4 = "Invalid Kohi4 FutansyaNo Empty";
+        public static readonly string InvalidPatternJyukyusyaNo4 = "Invalid Kohi4 JyukyusyaNo";
+        public static readonly string InvalidPatternTokusyuNo4 = "Invalid Kohi4 TokusyuNo";
+        public static readonly string InvalidPatternFutansyaNo04 = "Invalid Kohi4 FutansyaNo Equals 0";
+        public static readonly string InvalidPatternKohiYukoDate4 = "Invalid Kohi4 YukoDate";
+        public static readonly string InvalidPatternKohiHokenMstStartDate4 = "Invalid Kohi4 HokenMst StartDate";
+        public static readonly string InvalidPatternKohiHokenMstEndDate4 = "Invalid Kohi4 HokenMst EndDate";
+        public static readonly string InvalidPatternKohiConfirmDate4 = "Invalid Kohi4 ConfirmDate";
+        public static readonly string InvalidPatternKohiMstCheckHBT4 = "Invalid Kohi4 HokenMst CheckHBT";
+        public static readonly string InvalidPatternKohiMstCheckDigitFutansyaNo4 = "Invalid Kohi4 HokenMst CheckDigitFutansyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckDigitJyukyusyaNo4 = "Invalid Kohi4 HokenMst CheckDigitJyukyusyaNo";
+        public static readonly string InvalidPatternKohiHokenMstCheckAge4 = "Invalid Kohi4 HokenMst CheckAge";
+        public static readonly string InvalidPatternKohiHokenMstFutanJyoTokuNull4 = "Invalid Kohi4 HokenMst FutanJyoToku Is Null";
+        public static readonly string InvalidPatternKohiEmpty21 = "Invalid Kohi1 Kohi2 Empty";
+        public static readonly string InvalidPatternKohiEmpty31 = "Invalid Kohi3 Kohi1 Empty";
+        public static readonly string InvalidPatternKohiEmpty32 = "Invalid Kohi3 Kohi2 Empty";
+        public static readonly string InvalidPatternKohiEmpty41 = "Invalid Kohi4 Kohi1 Empty";
+        public static readonly string InvalidPatternKohiEmpty42 = "Invalid Kohi4 Kohi2 Empty";
+        public static readonly string InvalidPatternKohiEmpty43 = "Invalid Kohi4 Kohi3 Empty";
+        public static readonly string InvalidPatternDuplicateKohi1 = "Invalid DuplicateKohi1";
+        public static readonly string InvalidPatternDuplicateKohi2 = "Invalid DuplicateKohi2";
+        public static readonly string InvalidPatternDuplicateKohi3 = "Invalid DuplicateKohi3";
+        public static readonly string InvalidPatternDuplicateKohi4 = "Invalid DuplicateKohi4";
+        public static readonly string InvalidPatternWarningDuplicatePattern = "Invalid Warning Duplicate Pattern";
+        public static readonly string InvalidPatternWarningAge75 = "Invalid Warning Age75";
+        public static readonly string InvalidPatternWarningAge65 = "Invalid Warning Age65";
+        public static readonly string InvalidPatternMaruchoOnly = "Invalid Marucho Only";
 
         //KarteInf controller
         public static readonly string GetKarteInfInvalidRaiinNo = "Invalid RaiinNo";
@@ -157,6 +291,13 @@
         //OrdInf controller
 
         //RaiinKubun controller
+
+        //TimeZone
+        public static readonly string InvalidBirthDay = "Invalid BirthDay";
+        public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn >= 0";
+        public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
+        public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
+        public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
 
         //SetMst
         public static readonly string GetSetListInvalidHpId = "Invalid HpId";
@@ -218,10 +359,7 @@
         public static readonly string UpsertFlowSheetInvalidPtId = "PtId must be greater than 0.";
         public static readonly string UpsertFlowSheetInvalidSinDate = "SinDate is no valid.";
         public static readonly string UpsertFlowSheetInvalidRaiinNo = "RaiinNo must be greater than 0.";
-        public static readonly string UpsertFlowSheetInvalidCmtKbn = "CmtKbn is no valid.";
         public static readonly string UpsertFlowSheetInvalidTagNo = "TagNo is no valid";
-        public static readonly string UpsertFlowSheetInvalidRainCmtSeqNo = "RainCmtSeqNo must be greater than or equal 0.";
-        public static readonly string UpsertFlowSheetInvalidRainListTagSeqNo = "RainListTagSeqNo must be greater than or equal 0.";
         public static readonly string UpsertFlowSheetUpdateNoSuccess = "Update is no successful.";
         public static readonly string UpsertFlowSheetInputDataNoValid = "Input data no valid.";
         public static readonly string UpsertFlowSheetRainNoNoExist = "RainNo No Exist.";
@@ -458,6 +596,12 @@
         //PostCode
         public static readonly string InvalidPostCode = "Invalid PostCode";
 
+        // Export 
+        public static readonly string PtInfNotFould = "Invalid PtId, PtInf Not Fould.";
+        public static readonly string HokenNotFould = "Invalid HokenPid, Hoken Not Fould.";
+        public static readonly string CanNotExportPdf = "Can not export file Pdf.";
+        public static readonly string CanNotReturnPdfFile = "Can not return file Pdf.";
+
         //Valid Kohi
         public static readonly string InvalidKohiEmptyModel1 = "Invalid kohi1 empty model";
         public static readonly string InvalidKohiHokenMstEmpty1 = "Invalid kohi1 hokenMst empty model";
@@ -543,6 +687,8 @@
         public static readonly string MFree00030 = "{0}";
         public static readonly string MInp00070 = "{0}は {1}以下を入力してください。";
         public static readonly string MInp00040 = "{0}ため、{1}は登録できません。";
+        public static readonly string MInp00160_1 = "{0}が入力されていません。";
+        public static readonly string MEnt00040_1 = "補足コメントが全角20文字を超えています。";
 
         //Sup Message
         public static readonly string MDrug = "薬剤";
@@ -569,5 +715,38 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
+        public static readonly string MDisease = "薬剤";
+        public static readonly string MTenkiContinue = "転帰区分";
+        public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
+        public static readonly string MTenkiDate = "転帰日";
+        public static readonly string MTenkiStartDate = "開始日";
+        public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
+        public static readonly string MNoInputData = "数量を入力してください。";
+
+
+        // Valid default settings 
+        public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
+
+        //Insurance Master Linkage
+        public static readonly string InvalidDigit1 = "Invalid Digit 1";
+        public static readonly string InvalidDigit2 = "Invalid Digit 2";
+        public static readonly string InvalidDigit3 = "Invalid Digit 3";
+        public static readonly string InvalidDigit4 = "Invalid Digit 4";
+        public static readonly string InvalidDigit5 = "Invalid Digit 5";
+        public static readonly string InvalidDigit6 = "Invalid Digit 6";
+        public static readonly string InvalidDigit7 = "Invalid Digit 7";
+        public static readonly string InvalidDigit8 = "Invalid Digit 8";
+        public static readonly string InvalidHokenNo = "Invalid HokenNo";
+        public static readonly string InvalidHokenEdaNo = "Invalid HokenEdaNo";
+
+        //DeletePatient
+        public static readonly string NotAllowDeletePatient = "This patient is not allowed to delete";
+
+
+        //SwapHoken
+        public static readonly string SwapHokenSourceInsuranceHasNotSelected = "Please select the source insurance.";
+        public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
+        public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
+        public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
     }
 }

@@ -105,7 +105,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NYUKIN_CMT")]
         [MaxLength(100)]
-        public string NyukinCmt { get; set; } = string.Empty;
+        public string? NyukinCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 入金時請求点数
@@ -128,7 +128,7 @@ namespace Entity.Tenant
         /// 入金時の診療明細
         /// </summary>
         [Column("NYUKINJI_DETAIL")]
-        public string NyukinjiDetail { get; set; } = string.Empty;
+        public string? NyukinjiDetail { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

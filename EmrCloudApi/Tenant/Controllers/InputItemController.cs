@@ -42,8 +42,8 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<GetDrugInforResponse>>(presenter.Result);
         }
 
-        [HttpGet("GetMenuDataAndDetail")]
-        public ActionResult<Response<GetDrugDetailResponse>> GetMenuDataAndDetail([FromQuery] GetDrugDetailRequest request)
+        [HttpGet(ApiPath.GetDrugMenuTree)]
+        public ActionResult<Response<GetDrugDetailResponse>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
         {
             var input = new GetDrugDetailInputData(request.HpId, request.SinDate, request.ItemCd);
             var output = _bus.Handle(input);
@@ -57,7 +57,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListUsageTreeSet")]
         public ActionResult<Response<GetUsageTreeSetListResponse>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
-            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.SetUsageKbn);
+            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.KouiKbn);
             var output = _bus.Handle(input);
             var present = new GetUsageTreeSetListPresenter();
             present.Complete(output);
@@ -67,7 +67,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.DrugDataSelectedTree)]
         public ActionResult<Response<GetDrugDetailDataResponse>> DrugDataSelectedTree([FromQuery] GetDrugDetailDataRequest request)
         {
-            var input = new GetDrugDetailDataInputData(request.SelectedIndexOfChildren, request.SelectedIndexOfLevel0, request.DrugName, request.ItemCd, request.YJCode);
+            var input = new GetDrugDetailDataInputData(request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.ItemCd, request.YJCode);
             var output = _bus.Handle(input);
 
             var presenter = new GetDrugDetailDataPresenter();
