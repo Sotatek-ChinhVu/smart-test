@@ -451,7 +451,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                                x.Kohi2Id,
                                                                                                x.Kohi3Id,
                                                                                                x.Kohi4Id,
-                                                                                               x.IsAddNew)).ToList();
+                                                                                               x.IsAddNew,
+                                                                                               x.IsDeleted)).ToList();
 
             List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(x.HpId,
                                                                                            x.PtId,

@@ -70,7 +70,7 @@ namespace Domain.Models.InsuranceInfor
             EndDate = endDate;
         }
 
-        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew)
+        public InsuranceModel(int hpId, long ptId, int ptBirthday, long seqNo, int hokenSbtCd, int hokenPid, int hokenKbn, string hokenMemo, int sinDate, int startDate, int endDate, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, bool isAddNew, int isDeleted)
         {
             HpId = hpId;
             PtId = ptId;
@@ -95,6 +95,7 @@ namespace Domain.Models.InsuranceInfor
             Kohi3Id = kohi3Id;
             Kohi4Id = kohi4Id;
             IsAddNew = isAddNew;
+            IsDeleted = isDeleted;
         }
 
         public int HpId { get; private set; }
