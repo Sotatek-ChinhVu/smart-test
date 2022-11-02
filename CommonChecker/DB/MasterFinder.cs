@@ -1,5 +1,5 @@
 ﻿using CommonChecker.Models.Futan;
-using Domain.Models.MstItem;
+using CommonChecker.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;

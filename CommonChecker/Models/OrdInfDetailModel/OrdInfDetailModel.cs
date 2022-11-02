@@ -1,6 +1,9 @@
 ﻿using CommonChecker.Types;
+using Domain.Models.OrdInfDetails;
 using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
+using static Helper.Constants.OrderInfConst;
 
 namespace CommonChecker.Models.OrdInfDetailModel
 {
@@ -53,9 +56,12 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public double OdrTermVal { get; private set; }
         public double CnvTermVal { get; private set; }
         public string YjCd { get; private set; }
+        public List<YohoSetMstModel> YohoSets { get; private set; }
         public int Kasan1 { get; private set; }
         public int Kasan2 { get; private set; }
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, int kasan1, int kasan2)
+
+
+        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -104,9 +110,32 @@ namespace CommonChecker.Models.OrdInfDetailModel
             OdrTermVal = odrTermVal;
             CnvTermVal = cnvTermVal;
             YjCd = yjCd;
+            YohoSets = yohoSets;
             Kasan1 = kasan1;
             Kasan2 = kasan2;
         }
+
+        public bool IsSpecialItem
+        {
+            get => MasterSbt == "S" && SinKouiKbn == 20 && DrugKbn == 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu;
+        }
+
+        public bool IsDrugUsage
+        {
+            get => YohoKbn > 0 || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai;
+        }
+
+        public bool IsDrug
+        {
+            get => (SinKouiKbn == 20 && DrugKbn > 0) || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai
+                || (SinKouiKbn == 20 && ItemCd.StartsWith("Z"));
+        }
+
+        public bool IsInjection
+        {
+            get => SinKouiKbn == 30;
+        }
+
         public bool Is820Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment820Pattern);
 
         public bool Is830Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment830Pattern);
@@ -126,6 +155,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public bool Is842Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment842Pattern);
 
         public bool Is880Cmt => ItemCd != null && ItemCd.StartsWith(ItemCdConst.Comment880Pattern);
+
         public bool IsShohoComment => SinKouiKbn == 100;
 
         public bool IsShohoBiko => SinKouiKbn == 101;
@@ -134,6 +164,7 @@ namespace CommonChecker.Models.OrdInfDetailModel
         {
             get => YohoKbn == 1 || ItemCd == ItemCdConst.TouyakuChozaiNaiTon || ItemCd == ItemCdConst.TouyakuChozaiGai;
         }
+
         public bool IsInjectionUsage
         {
             get => (SinKouiKbn >= 31 && SinKouiKbn <= 34) || (SinKouiKbn == 30 && ItemCd.StartsWith("Z") && MasterSbt == "S");
@@ -143,6 +174,47 @@ namespace CommonChecker.Models.OrdInfDetailModel
         {
             get => YohoKbn == 2;
         }
+
+        public string DisplayedUnit
+        {
+            get => Suryo.AsDouble() != 0 ? UnitName.AsString() : "";
+        }
+
+        public string DisplayedQuantity
+        {
+            get
+            {
+                // If item don't have UniName => No quantity displayed
+                if (string.IsNullOrEmpty(DisplayedUnit))
+                {
+                    return string.Empty;
+                }
+                return Suryo.AsDouble() != 0 && ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu ? Suryo.AsDouble().AsString() : "";
+            }
+        }
+
+        public double Price
+        {
+            get
+            {
+                if (InOutKbn == 1 && IsGetPriceInYakka && SyohoKbn == 3 && Yakka > 0)
+                {
+                    return Yakka;
+                }
+                return Ten;
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return string.IsNullOrEmpty(ItemCd) &&
+                       string.IsNullOrEmpty(ItemName.Trim()) &&
+                       SinKouiKbn == 0;
+            }
+        }
+
         public string DisplayItemName
         {
             get
@@ -203,6 +275,46 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public ReleasedDrugType ReleasedType
         {
             get => CIUtil.SyohoToSempatu(SyohoKbn, SyohoLimitKbn);
+        }
+        public OrdInfValidationStatus Validation(int flag)
+        {
+            #region Validate common
+            if (flag == 0)
+            {
+                if (RaiinNo <= 0)
+                {
+                    return OrdInfValidationStatus.InvalidRaiinNo;
+                }
+                if (PtId <= 0)
+                {
+                    return OrdInfValidationStatus.InvalidPtId;
+                }
+                if (SinDate <= 0)
+                {
+                    return OrdInfValidationStatus.InvalidSinDate;
+                }
+                if (!(JissiKbn >= 0 && JissiKbn <= 1))
+                {
+                    return OrdInfValidationStatus.InvalidJissiKbn;
+                }
+                if (JissiId < 0)
+                {
+                    return OrdInfValidationStatus.InvalidJissiId;
+                }
+                if (JissiMachine.Length > 60)
+                {
+                    return OrdInfValidationStatus.InvalidJissiMachine;
+                }
+                if (ReqCd.Length > 10)
+                {
+                    return OrdInfValidationStatus.InvalidReqCd;
+                }
+            }
+            #endregion
+
+            return OrdInfValidationStatus.Valid;
+
+
         }
     }
 }

@@ -1,8 +1,8 @@
-﻿using CommonCheckers.OrderRealtimeChecker.DB;
+﻿using CommonChecker.DB;
+using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
 using CommonCheckers.OrderRealtimeChecker.Services.Interface;
-using Domain.Models.Finder;
 using Domain.Types;
 
 namespace CommonCheckers.OrderRealtimeChecker.Services
