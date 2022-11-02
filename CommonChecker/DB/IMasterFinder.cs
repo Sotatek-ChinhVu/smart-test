@@ -1,7 +1,7 @@
 ﻿using Domain.Models.Futan;
 using Domain.Models.MstItem;
 
-namespace Domain.Models.Finder
+namespace CommonChecker.DB
 {
     public interface IMasterFinder
     {

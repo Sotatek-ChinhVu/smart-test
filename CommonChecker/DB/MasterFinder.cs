@@ -1,12 +1,11 @@
-﻿using Domain.Models.Finder;
-using Domain.Models.Futan;
+﻿using Domain.Models.Futan;
 using Domain.Models.MstItem;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using PostgreDataContext;
 
-namespace Infrastructure.Repositories.Finder
+namespace CommonChecker.DB
 {
     public class MasterFinder : IMasterFinder
     {
