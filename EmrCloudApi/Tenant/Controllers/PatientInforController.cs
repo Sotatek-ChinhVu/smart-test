@@ -1,4 +1,8 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
+using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.CalculationInf;
 using EmrCloudApi.Tenant.Presenters.GroupInf;
 using EmrCloudApi.Tenant.Presenters.HokenMst;
@@ -10,6 +14,7 @@ using EmrCloudApi.Tenant.Presenters.PatientInfor;
 using EmrCloudApi.Tenant.Presenters.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Presenters.PatientInfor.PtKyusei;
 using EmrCloudApi.Tenant.Presenters.PatientInformation;
+using EmrCloudApi.Tenant.Presenters.SwapHoken;
 using EmrCloudApi.Tenant.Requests.CalculationInf;
 using EmrCloudApi.Tenant.Requests.GroupInf;
 using EmrCloudApi.Tenant.Requests.HokenMst;
@@ -19,6 +24,7 @@ using EmrCloudApi.Tenant.Requests.KohiHokenMst;
 using EmrCloudApi.Tenant.Requests.PatientInfor;
 using EmrCloudApi.Tenant.Requests.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Requests.PatientInfor.PtKyuseiInf;
+using EmrCloudApi.Tenant.Requests.SwapHoken;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.CalculationInf;
 using EmrCloudApi.Tenant.Responses.GroupInf;
@@ -30,6 +36,7 @@ using EmrCloudApi.Tenant.Responses.PatientInfor;
 using EmrCloudApi.Tenant.Responses.PatientInfor.InsuranceMasterLinkage;
 using EmrCloudApi.Tenant.Responses.PatientInfor.PtKyuseiInf;
 using EmrCloudApi.Tenant.Responses.PatientInformaiton;
+using EmrCloudApi.Tenant.Responses.SwapHoken;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.CalculationInf;
 using UseCase.Core.Sync;
@@ -57,14 +64,7 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.SearchHokensyaMst.Get;
-using EmrCloudApi.Tenant.Requests.SwapHoken;
 using UseCase.SwapHoken.Save;
-using EmrCloudApi.Tenant.Presenters.SwapHoken;
-using EmrCloudApi.Tenant.Responses.SwapHoken;
-using Domain.Models.PatientInfor;
-using Domain.Models.InsuranceInfor;
-using Domain.Models.Insurance;
-using Domain.Models.InsuranceMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -226,8 +226,8 @@ namespace EmrCloudApi.Tenant.Controllers
                 request.IsKohiEmptyModel2, request.IsSelectedKohiMst2, request.SelectedKohiFutansyaNo2, request.SelectedKohiJyukyusyaNo2,
                 request.SelectedKohiTokusyuNo2, request.SelectedKohiStartDate2, request.SelectedKohiEndDate2, request.SelectedKohiConfirmDate2, request.SelectedKohiHokenNo2, request.SelectedKohiHokenEdraNo2, request.SelectedKohiIsAddNew2,
                 request.IsKohiEmptyModel3, request.IsSelectedKohiMst3, request.SelectedKohiFutansyaNo3, request.SelectedKohiJyukyusyaNo3, request.SelectedKohiTokusyuNo3, request.SelectedKohiStartDate3, request.SelectedKohiEndDate3,
-                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiHokenEdraNo3, request.SelectedKohiIsAddNew3, 
-                request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4, 
+                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiHokenEdraNo3, request.SelectedKohiIsAddNew3,
+                request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4,
                 request.SelectedKohiConfirmDate4, request.SelectedKohiHokenNo4, request.SelectedKohiHokenEdraNo4, request.SelectedKohiIsAddNew4);
             var output = _bus.Handle(input);
 
@@ -501,11 +501,11 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                            x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
                                                                                                                                            c.HokenId,
                                                                                                                                            c.SeqNo,
-                                                                                                                                           c.CheckId, 
+                                                                                                                                           c.CheckId,
                                                                                                                                            c.CheckName,
                                                                                                                                            c.CheckComment,
                                                                                                                                            c.ConfirmDate)).ToList(),
-                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei, 
+                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
                                                                                                                                            m.RousaiTenkiTenki,
                                                                                                                                            m.RousaiTenkiEndDate,
                                                                                                                                            m.RousaiTenkiIsDeleted,
@@ -526,7 +526,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                                                                             c.CheckComment,
                                                                                                                                             c.ConfirmDate)).ToList(),
                                                                                             x.FutansyaNo,
-                                                                                            x.JyukyusyaNo, 
+                                                                                            x.JyukyusyaNo,
                                                                                             x.HokenId,
                                                                                             x.StartDate,
                                                                                             x.EndDate,
@@ -540,7 +540,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                             x.Houbetu,
                                                                                             new HokenMstModel(),
                                                                                             x.HokenNo,
-                                                                                            x.HokenEdaNo, 
+                                                                                            x.HokenEdaNo,
                                                                                             x.PrefNo,
                                                                                             0,
                                                                                             false,
@@ -585,9 +585,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SwapHoken)]
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
-            var input = new SaveSwapHokenInputData(request.HpId, 
-                                                   request.PtId, 
-                                                   request.HokenIdBefore, 
+            var input = new SaveSwapHokenInputData(request.HpId,
+                                                   request.PtId,
+                                                   request.HokenIdBefore,
                                                    request.HokenIdAfter,
                                                    request.HokenPidBefore,
                                                    request.HokenPidAfter,
