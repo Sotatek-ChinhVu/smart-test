@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.SystemConf;
 using Domain.Models.User;
@@ -25,6 +26,16 @@ namespace Interactor.Insurance
         {
             try
             {
+                // Get HokenMst
+                var hokenMst = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedHokenInfHokenNo, inputData.SelectedHokenInfHokenEdraNo);
+
+                // Get HokenSyaMst
+                //get FindHokensyaMstByNoNotrack
+                string houbetuNo = string.Empty;
+                string hokensyaNoSearch = string.Empty;
+                CIUtil.GetHokensyaHoubetu(inputData.HokenSyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
+                var hokenSyaMst = _patientInforRepository.GetHokenSyaMstByInfor(inputData.HpId, houbetuNo, hokensyaNoSearch);
+
                 // check validate Input
                 var checkValidInput = CheckValidateInputData(inputData);
                 if(!checkValidInput.Result)
@@ -50,9 +61,9 @@ namespace Interactor.Insurance
                                                 inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4, inputData.IsSelectedHokenInf, inputData.HokenKbn,
                                                 inputData.SelectedHokenInfHoubetu, inputData.IsSelectedHokenInf, inputData.SelectedHokenInfIsAddNew, inputData.HpId, inputData.SinDate,
                                                 inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5,
-                                                inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfIsJihi, inputData.HokenSyaNo, inputData.SelectedHokenInfHokenNo, inputData.IsSelectedHokenMst, inputData.SelectedHokenMstHoubetu, inputData.SelectedHokenMstHokenNo, inputData.SelectedHokenMstCheckDegit, inputData.PtBirthday,
-                                                inputData.SelectedHokenMstAgeStart, inputData.SelectedHokenMstAgeEnd, inputData.SelectedHokenInfKigo, inputData.SelectedHokenInfBango, inputData.SelectedHokenInfHokensyaMstIsKigoNa, inputData.SelectedHokenInfHonkeKbn, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate,
-                                                inputData.SelectedHokenInfTokureiYm1, inputData.SelectedHokenInfTokureiYm2, inputData.SelectedHokenInfIsShahoOrKokuho, inputData.SelectedHokenInfIsExpirated, inputData.SelectedHokenInfConfirmDate, inputData.SelectedHokenMstStartDate, inputData.SelectedHokenMstEndDate, inputData.SelectedHokenMstDisplayText);
+                                                inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfIsJihi, inputData.HokenSyaNo ?? string.Empty, inputData.SelectedHokenInfHokenNo, inputData.IsSelectedHokenMst, hokenMst.Houbetu, hokenMst.HokenNo, hokenMst.CheckDigit, inputData.PtBirthday,
+                                                hokenMst.AgeStart, hokenMst.AgeEnd, inputData.SelectedHokenInfKigo, inputData.SelectedHokenInfBango, hokenSyaMst.IsKigoNa, inputData.SelectedHokenInfHonkeKbn, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate,
+                                                inputData.SelectedHokenInfTokureiYm1, inputData.SelectedHokenInfTokureiYm2, inputData.SelectedHokenInfIsShahoOrKokuho, inputData.SelectedHokenInfIsExpirated, inputData.SelectedHokenInfConfirmDate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.DisplayTextMaster);
                         if (!checkIsValidShaho.Result)
                         {
                             return checkIsValidShaho;
@@ -61,12 +72,12 @@ namespace Interactor.Insurance
                     // 国保
                     case 2:
                         var checkIsValidKokuho = IsValidShaho(inputData.IsSelectedHokenPattern, inputData.SelectedHokenInfIsAddNew, inputData.SelectedHokenPatternIsEmptyHoken,
-                                                 inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4, inputData.IsSelectedHokenInf, inputData.HokenKbn,
-                                                 inputData.SelectedHokenInfHoubetu, inputData.IsSelectedHokenInf, inputData.SelectedHokenInfIsAddNew, inputData.HpId, inputData.SinDate,
-                                                 inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5,
-                                                 inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfIsJihi, inputData.HokenSyaNo, inputData.SelectedHokenInfHokenNo, inputData.IsSelectedHokenMst, inputData.SelectedHokenMstHoubetu, inputData.SelectedHokenMstHokenNo, inputData.SelectedHokenMstCheckDegit, inputData.PtBirthday,
-                                                 inputData.SelectedHokenMstAgeStart, inputData.SelectedHokenMstAgeEnd, inputData.SelectedHokenInfKigo, inputData.SelectedHokenInfBango, inputData.SelectedHokenInfHokensyaMstIsKigoNa, inputData.SelectedHokenInfHonkeKbn, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate,
-                                                 inputData.SelectedHokenInfTokureiYm1, inputData.SelectedHokenInfTokureiYm2, inputData.SelectedHokenInfIsShahoOrKokuho, inputData.SelectedHokenInfIsExpirated, inputData.SelectedHokenInfConfirmDate, inputData.SelectedHokenMstStartDate, inputData.SelectedHokenMstEndDate, inputData.SelectedHokenMstDisplayText);
+                                                inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4, inputData.IsSelectedHokenInf, inputData.HokenKbn,
+                                                inputData.SelectedHokenInfHoubetu, inputData.IsSelectedHokenInf, inputData.SelectedHokenInfIsAddNew, inputData.HpId, inputData.SinDate,
+                                                inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5,
+                                                inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfIsJihi, inputData.HokenSyaNo ?? string.Empty, inputData.SelectedHokenInfHokenNo, inputData.IsSelectedHokenMst, hokenMst.Houbetu, hokenMst.HokenNo, hokenMst.CheckDigit, inputData.PtBirthday,
+                                                hokenMst.AgeStart, hokenMst.AgeEnd, inputData.SelectedHokenInfKigo, inputData.SelectedHokenInfBango, hokenSyaMst.IsKigoNa, inputData.SelectedHokenInfHonkeKbn, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate,
+                                                inputData.SelectedHokenInfTokureiYm1, inputData.SelectedHokenInfTokureiYm2, inputData.SelectedHokenInfIsShahoOrKokuho, inputData.SelectedHokenInfIsExpirated, inputData.SelectedHokenInfConfirmDate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.DisplayTextMaster);
                         if (!checkIsValidKokuho.Result)
                         {
                             return checkIsValidKokuho;
@@ -114,6 +125,11 @@ namespace Interactor.Insurance
                 return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenNo);
             }
 
+            if (inputData.SelectedHokenInfHokenEdraNo < 0)
+            {
+                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenEdraNo);
+            }
+
             if (inputData.SelectedHokenInfStartDate < 0)
             {
                 return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfStartDate);
@@ -122,11 +138,6 @@ namespace Interactor.Insurance
             if (inputData.SelectedHokenInfEndDate < 0)
             {
                 return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfEndDate);
-            }
-
-            if (inputData.SelectedHokenInfHokensyaMstIsKigoNa < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvaliSelectedHokenInfHokensyaMstIsKigoNa);
             }
 
             if (inputData.SelectedHokenInfHonkeKbn < 0)
@@ -147,36 +158,6 @@ namespace Interactor.Insurance
             if (inputData.SelectedHokenInfConfirmDate < 0)
             {
                 return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfConfirmDate);
-            }
-
-            if (inputData.SelectedHokenMstHokenNo < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstHokenNo);
-            }
-
-            if (inputData.SelectedHokenMstCheckDegit < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstCheckDegit);
-            }
-
-            if (inputData.SelectedHokenMstAgeStart < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeStart);
-            }
-
-            if (inputData.SelectedHokenMstAgeEnd < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstAgeEnd);
-            }
-
-            if (inputData.SelectedHokenMstStartDate < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstStartDate);
-            }
-
-            if (inputData.SelectedHokenMstEndDate < 0)
-            {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenMstEndDate);
             }
 
             return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);

@@ -6,10 +6,13 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
     {
         public int HpId { get; set; }
 
-        public int SinDate { get; set; }
+        public long PtId { get; set; }
 
         public int PtBirthday { get; set; }
 
-        public List<ValidateInsuranceModel> ListDataModel { get; set; } = new List<ValidateInsuranceModel>();
+        public int SinDate { get; set; }
+
+        public List<ValidateInsuranceDto> ListInsurance { get; set; } = new List<ValidateInsuranceDto>();
     }
+
 }
