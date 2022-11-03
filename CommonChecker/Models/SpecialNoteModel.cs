@@ -1,4 +1,5 @@
-﻿using Domain.Models.SpecialNote.ImportantNote;
+﻿
+using CommonChecker.Models;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {

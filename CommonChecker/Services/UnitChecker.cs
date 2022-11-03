@@ -8,8 +8,8 @@ using CommonCheckers.OrderRealtimeChecker.Services.Interface;
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
     public abstract class UnitChecker<TOdrInf, TOdrDetail> : IUnitChecker<TOdrInf, TOdrDetail>
-        where TOdrInf : class, IOdrInfModel<TOdrDetail>
-        where TOdrDetail : class, IOdrInfDetailModel
+        where TOdrInf : class, IOdrInfoModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfoDetailModel
     {
         public RealtimeCheckerType CheckType;
         public IRealtimeCheckerFinder Finder = null!;

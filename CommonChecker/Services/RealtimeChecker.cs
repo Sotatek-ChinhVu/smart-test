@@ -1,4 +1,5 @@
-﻿using CommonChecker.Types;
+﻿using CommonChecker.Models;
+using CommonChecker.Types;
 using CommonCheckers.OrderRealtimeChecker.DB;
 using CommonCheckers.OrderRealtimeChecker.Enums;
 using CommonCheckers.OrderRealtimeChecker.Models;
@@ -6,8 +7,8 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
     public class RealtimeChecker<TOdrInf, TOdrDetail>
-        where TOdrInf : class, IOdrInfModel<TOdrDetail>
-        where TOdrDetail : class, IOdrInfDetailModel
+        where TOdrInf : class, IOdrInfoModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfoDetailModel
     {
 
         public void InjectProperties(int hpID, long ptID, int sinday, bool termLimitCheckingOnly = false)

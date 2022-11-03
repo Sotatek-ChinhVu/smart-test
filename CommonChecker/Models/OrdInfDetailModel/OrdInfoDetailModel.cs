@@ -1,13 +1,12 @@
-﻿using CommonChecker.Types;
-using Domain.Models.OrdInfDetails;
+﻿
+using CommonChecker.Types;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
-using static Helper.Constants.OrderInfConst;
 
 namespace CommonChecker.Models.OrdInfDetailModel
 {
-    public class OrdInfDetailModel : IOdrInfDetailModel
+    public class OrdInfoDetailModel : IOdrInfoDetailModel
     {
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
@@ -56,12 +55,11 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public double OdrTermVal { get; private set; }
         public double CnvTermVal { get; private set; }
         public string YjCd { get; private set; }
-        public List<YohoSetMstModel> YohoSets { get; private set; }
         public int Kasan1 { get; private set; }
         public int Kasan2 { get; private set; }
 
 
-        public OrdInfDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        public OrdInfoDetailModel(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, int refillSetting, int cmtCol1, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, int kasan1, int kasan2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -110,7 +108,6 @@ namespace CommonChecker.Models.OrdInfDetailModel
             OdrTermVal = odrTermVal;
             CnvTermVal = cnvTermVal;
             YjCd = yjCd;
-            YohoSets = yohoSets;
             Kasan1 = kasan1;
             Kasan2 = kasan2;
         }
@@ -275,46 +272,6 @@ namespace CommonChecker.Models.OrdInfDetailModel
         public ReleasedDrugType ReleasedType
         {
             get => CIUtil.SyohoToSempatu(SyohoKbn, SyohoLimitKbn);
-        }
-        public OrdInfValidationStatus Validation(int flag)
-        {
-            #region Validate common
-            if (flag == 0)
-            {
-                if (RaiinNo <= 0)
-                {
-                    return OrdInfValidationStatus.InvalidRaiinNo;
-                }
-                if (PtId <= 0)
-                {
-                    return OrdInfValidationStatus.InvalidPtId;
-                }
-                if (SinDate <= 0)
-                {
-                    return OrdInfValidationStatus.InvalidSinDate;
-                }
-                if (!(JissiKbn >= 0 && JissiKbn <= 1))
-                {
-                    return OrdInfValidationStatus.InvalidJissiKbn;
-                }
-                if (JissiId < 0)
-                {
-                    return OrdInfValidationStatus.InvalidJissiId;
-                }
-                if (JissiMachine.Length > 60)
-                {
-                    return OrdInfValidationStatus.InvalidJissiMachine;
-                }
-                if (ReqCd.Length > 10)
-                {
-                    return OrdInfValidationStatus.InvalidReqCd;
-                }
-            }
-            #endregion
-
-            return OrdInfValidationStatus.Valid;
-
-
         }
     }
 }

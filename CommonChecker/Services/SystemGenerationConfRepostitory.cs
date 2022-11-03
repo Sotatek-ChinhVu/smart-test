@@ -1,19 +1,18 @@
-﻿using Domain.Models.SystemGenerationConf;
+﻿using CommonChecker.DB;
 using Entity.Tenant;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
-namespace Infrastructure.Repositories
+namespace CommonChecker.Services
 {
-    public class SystemGenerationConfRepository : ISystemGenerationConfRepository
+    public class SystemGenerationConfRepostitory : ISystemGenerationConfRepository
     {
         private readonly TenantDataContext _tenantDataContext;
 
-        public SystemGenerationConfRepository(ITenantProvider tenantProvider)
+        public SystemGenerationConfRepostitory(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
-
         public int GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int presentDate = 0, int defaultValue = 0, bool fromLastestDb = false)
         {
             SystemGenerationConf? systemConf;
@@ -34,6 +33,10 @@ namespace Infrastructure.Repositories
                 && p.EndDate >= presentDate)?.FirstOrDefault();
             }
             return systemConf != null ? systemConf.Val : defaultValue;
+        }
+        public int RefillSetting(int presentDate)
+        {
+            return GetSettingValue(2002, 0, presentDate: presentDate, defaultValue: 999);
         }
     }
 }

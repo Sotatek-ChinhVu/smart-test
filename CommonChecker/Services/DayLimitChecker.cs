@@ -4,8 +4,8 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 namespace CommonCheckers.OrderRealtimeChecker.Services
 {
     public class DayLimitChecker<TOdrInf, TOdrDetail> : UnitChecker<TOdrInf, TOdrDetail>
-        where TOdrInf : class, IOdrInfModel<TOdrDetail>
-        where TOdrDetail : class, IOdrInfDetailModel
+        where TOdrInf : class, IOdrInfoModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfoDetailModel
     {
         public override UnitCheckerResult<TOdrInf, TOdrDetail> HandleCheckOrder(UnitCheckerResult<TOdrInf, TOdrDetail> unitCheckerResult)
         {

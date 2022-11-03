@@ -1,11 +1,11 @@
-﻿using CommonCheckers.OrderRealtimeChecker.Enums;
-using Domain.Types;
+﻿using CommonChecker.Types;
+using CommonCheckers.OrderRealtimeChecker.Enums;
 
 namespace CommonCheckers.OrderRealtimeChecker.Models
 {
     public class UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>
-        where TOdrInf : class, IOdrInfModel<TOdrDetail>
-        where TOdrDetail : class, IOdrInfDetailModel
+        where TOdrInf : class, IOdrInfoModel<TOdrDetail>
+        where TOdrDetail : class, IOdrInfoDetailModel
     {
         public int Sinday { get; private set; }
 
