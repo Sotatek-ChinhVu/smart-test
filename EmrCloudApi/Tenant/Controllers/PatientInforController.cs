@@ -197,7 +197,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchHokensyaMst")]
         public ActionResult<Response<SearchHokensyaMstResponse>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
         {
-            var input = new SearchHokensyaMstInputData(request.HpId, request.PageIndex, request.PageCount, request.SinDate, request.Keyword);
+            var input = new SearchHokensyaMstInputData(request.HpId, request.SinDate, request.Keyword);
             var output = _bus.Handle(input);
 
             var presenter = new SearchHokenMstPresenter();
@@ -442,7 +442,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                                x.Kohi2Id,
                                                                                                x.Kohi3Id,
                                                                                                x.Kohi4Id,
-                                                                                               x.IsAddNew)).ToList();
+                                                                                               x.IsAddNew,
+                                                                                               x.IsDeleted)).ToList();
 
             List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(x.HpId,
                                                                                            x.PtId,
@@ -489,9 +490,9 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                            x.RousaiPrefName,
                                                                                            x.RousaiCityName,
                                                                                            x.RousaiReceCount,
-                                                                                           x.HokensyaName,
-                                                                                           x.HokensyaAddress,
-                                                                                           x.HokensyaTel,
+                                                                                           string.Empty,
+                                                                                           string.Empty,
+                                                                                           string.Empty,
                                                                                            0,
                                                                                            x.JibaiHokenName,
                                                                                            x.JibaiHokenTanto,
@@ -545,7 +546,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                             0,
                                                                                             false,
                                                                                             x.IsDeleted,
-                                                                                            x.SeqNo)).ToList();
+                                                                                            x.SeqNo,
+                                                                                            x.IsAddNew)).ToList();
 
 
             var input = new SavePatientInfoInputData(patient,
