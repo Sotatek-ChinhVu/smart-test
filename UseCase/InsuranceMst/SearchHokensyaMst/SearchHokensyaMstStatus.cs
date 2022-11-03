@@ -8,10 +8,8 @@ namespace UseCase.SearchHokensyaMst.Get
 {
     public enum SearchHokensyaMstStatus : byte
     {
-        InvalidKeyword = 6,
-        InvalidSinDate = 5,
-        InvalidPageCount = 4,
-        InvalidPageIndex = 3,
+        InvalidKeyword = 4,
+        InvalidSinDate = 3,
         InvalidHpId = 2,
         Successed = 1
     }

@@ -22,12 +22,6 @@ namespace EmrCloudApi.Tenant.Presenters.InsuranceMst
                 case SearchHokensyaMstStatus.InvalidHpId:
                     Result.Message = ResponseMessage.InvalidHpId;
                     break;
-                case SearchHokensyaMstStatus.InvalidPageIndex:
-                    Result.Message = ResponseMessage.InvalidHpId;
-                    break;
-                case SearchHokensyaMstStatus.InvalidPageCount:
-                    Result.Message = ResponseMessage.InvalidSinDate;
-                    break;
                 case SearchHokensyaMstStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.InvalidHokenId;
                     break;

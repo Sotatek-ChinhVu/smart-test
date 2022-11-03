@@ -10,7 +10,7 @@ namespace UseCase.Insurance.ValidateInsurance
 {
     public class ValidateInsuranceInputData: IInputData<ValidateInsuranceOutputData>
     {
-        public ValidateInsuranceInputData(int hpId, int sinDate, int ptBirthday, List<ValidateInsuranceModel> listDataModel)
+        public ValidateInsuranceInputData(int hpId, int sinDate, int ptBirthday, List<ValidateInsuranceDto> listDataModel)
         {
             HpId = hpId;
             SinDate = sinDate;
@@ -23,6 +23,6 @@ namespace UseCase.Insurance.ValidateInsurance
 
         public int PtBirthday { get; private set; }
 
-        public List<ValidateInsuranceModel> ListDataModel { get; private set; }
+        public List<ValidateInsuranceDto> ListDataModel { get; private set; }
     }
 }

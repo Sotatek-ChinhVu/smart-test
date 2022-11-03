@@ -183,6 +183,9 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                 case ValidMainInsuranceStatus.InvalidHokenMstEndDate:
                     Result.Message = ResponseMessage.InvalidPatternHokenMstEndDate;
                     break;
+                case ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenEdraNo:
+                    Result.Message = ResponseMessage.InvalidHokenEdraNo;
+                    break;
             }
         }
     }
