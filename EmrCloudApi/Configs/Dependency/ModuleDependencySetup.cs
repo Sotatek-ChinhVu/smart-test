@@ -221,9 +221,10 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
-using Domain.Models.AuditTrailLog;
 using UseCase.Reception.UpdateTimeZoneDayInf;
 using UseCase.AccountDue.SaveAccountDueList;
+using EventProcessor.Service;
+using EventProcessor.Interfaces;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -254,6 +255,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IEventProcessorService, EventProcessorService>();
 
             // Export
             services.AddTransient<IReporting, Reporting>();
@@ -324,7 +326,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-            services.AddTransient<IAuditTrailLogRepository, AuditTrailLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
