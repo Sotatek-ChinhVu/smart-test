@@ -4049,8 +4049,16 @@ namespace PostgreDataContext.Migrations
 
                     b.Property<string>("UpdateMachine")
                         .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
+                        .HasColumnType("character varying(60)") 
                         .HasColumnName("UPDATE_MACHINE");
+
+                    b.Property<int>("ReceKisaiKokho")
+                        .HasColumnType("integer")
+                        .HasColumnName("RECE_KISAI_KOKHO");
+
+                    b.Property<int>("KogakuHairyoKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("KOGAKU_HAIRYO_KBN");
 
                     b.HasKey("HpId", "PrefNo", "HokenNo", "HokenEdaNo", "StartDate");
 
