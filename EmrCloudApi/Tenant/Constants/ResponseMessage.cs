@@ -30,6 +30,7 @@
         public static readonly string InvalidSeqNo = "Invalid SeqNo";
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
+        public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
 
         //Common
         public static readonly string NotFound = "Not found";

@@ -2,7 +2,7 @@
 {
     public class HokenPartternDto
     {
-        public HokenPartternDto(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int startDate, int endDate)
+        public HokenPartternDto(int hpId, long ptId, int hokenPid, long seqNo, int hokenKbn, int hokenSbtCd, int hokenId, int kohi1Id, int kohi2Id, int kohi3Id, int kohi4Id, string hokenMemo, int startDate, int endDate, bool isAddNew, int isDeleted)
         {
             HpId = hpId;
             PtId = ptId;
@@ -18,6 +18,8 @@
             HokenMemo = hokenMemo;
             StartDate = startDate;
             EndDate = endDate;
+            IsAddNew = isAddNew;
+            IsDeleted = isDeleted;
         }
 
         public int HpId { get; private set; }
@@ -49,5 +51,7 @@
         public int EndDate { get; private set; }
 
         public bool IsAddNew { get; private set; }
+
+        public int IsDeleted { get; private set; }
     }
 }

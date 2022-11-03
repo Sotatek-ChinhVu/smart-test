@@ -62,6 +62,7 @@ namespace UseCase.Insurance.ValidMainInsurance
         InvalidTokkurei = 51,
         InvalidConfirmDateAgeCheck = 52,
         InvalidHokenMstStartDate = 53,
-        InvalidHokenMstEndDate = 54
+        InvalidHokenMstEndDate = 54,
+        InvalidSelectedHokenInfHokenEdraNo = 55
     }
 }

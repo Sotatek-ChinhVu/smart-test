@@ -644,9 +644,9 @@ public class SetMstRepository : ISetMstRepository
         }
     }
 
-    public bool PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
+    public int PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
     {
-        bool status = false;
+        int setCd = -1;
         try
         {
             var copyItem = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
@@ -654,11 +654,11 @@ public class SetMstRepository : ISetMstRepository
 
             if (copyItem == null)
             {
-                return status;
+                return setCd;
             }
             else if (pasteItem == null && setCdPasteItem != 0)
             {
-                return status;
+                return setCd;
             }
 
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
@@ -667,25 +667,25 @@ public class SetMstRepository : ISetMstRepository
             {
                 if (CountLevelItem(copyItem, listSetMsts) + GetLevelItem(pasteItem) > 3)
                 {
-                    return status;
+                    return setCd;
                 }
                 if (copyItem.SetKbn != pasteItem.SetKbn || copyItem.SetKbnEdaNo != pasteItem.SetKbnEdaNo)
                 {
-                    return false;
+                    return setCd;
                 }
                 if (GetLevelItem(pasteItem) == 1)
                 {
                     // get index for paste
                     var lastItemLevel2 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 > 0 && item.Level3 == 0).OrderByDescending(item => item.Level2).FirstOrDefault();
                     int indexPaste = (lastItemLevel2 != null ? lastItemLevel2.Level2 : 0) + 1;
-                    status = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
+                    setCd = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
                 }
                 else if (GetLevelItem(pasteItem) == 2)
                 {
                     // get index for paste
                     var lastItemLevel3 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 == pasteItem.Level2 && item.Level3 > 0).OrderByDescending(item => item.Level3).FirstOrDefault();
                     int indexPaste = (lastItemLevel3 != null ? lastItemLevel3.Level3 : 0) + 1;
-                    status = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
+                    setCd = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
                 }
             }
             else
@@ -693,20 +693,20 @@ public class SetMstRepository : ISetMstRepository
                 // get index for paste
                 var lastItemLevel1 = listSetMsts.Where(item => item.Level2 == 0 && item.Level3 == 0).OrderByDescending(item => item.Level1).FirstOrDefault();
                 int indexPaste = (lastItemLevel1 != null ? lastItemLevel1.Level1 : 0) + 1;
-                status = PasteAction(indexPaste, userId, copyItem, null, listSetMsts);
+                setCd = PasteAction(indexPaste, userId, copyItem, null, listSetMsts);
             }
 
-            return status;
+            return setCd;
         }
         catch (Exception)
         {
-            return status;
+            return setCd;
         }
     }
 
-    private bool PasteAction(int indexPaste, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
+    private int PasteAction(int indexPaste, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
     {
-        bool status = false;
+        int setCd = -1;
         var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -731,20 +731,35 @@ public class SetMstRepository : ISetMstRepository
                                 break;
                         }
 
-                        // Convert SetMst copy to SetMst paste
-                        foreach (var item in listCopyItems)
+                        var rootSet = listCopyItems.FirstOrDefault(item => item.SetCd == copyItem.SetCd);
+                        if (rootSet != null)
                         {
-                            SetMst setMst = item.DeepClone();
-                            setMst.SetCd = 0;
-                            setMst.CreateDate = DateTime.UtcNow;
-                            setMst.CreateId = userId;
-                            setMst.UpdateDate = DateTime.UtcNow;
-                            setMst.UpdateId = userId;
-                            listPasteItems.Add(setMst);
-                        }
+                            listCopyItems.Remove(rootSet);
 
-                        _tenantDataContext.SetMsts.AddRange(listPasteItems);
-                        _tenantDataContext.SaveChanges();
+                            rootSet.SetCd = 0;
+                            rootSet.CreateDate = DateTime.UtcNow;
+                            rootSet.CreateId = userId;
+                            rootSet.UpdateDate = DateTime.UtcNow;
+                            rootSet.UpdateId = userId;
+                            _tenantDataContext.SetMsts.Add(rootSet);
+                            _tenantDataContext.SaveChanges();
+                            setCd = rootSet.SetCd;
+                            // Convert SetMst copy to SetMst paste
+                            foreach (var item in listCopyItems)
+                            {
+                                SetMst setMst = item.DeepClone();
+                                setMst.SetCd = 0;
+                                setMst.CreateDate = DateTime.UtcNow;
+                                setMst.CreateId = userId;
+                                setMst.UpdateDate = DateTime.UtcNow;
+                                setMst.UpdateId = userId;
+                                listPasteItems.Add(setMst);
+                            }
+
+                            _tenantDataContext.SetMsts.AddRange(listPasteItems);
+                            _tenantDataContext.SaveChanges();
+                            listPasteItems.Add(rootSet);
+                        }
 
                         // get paste content item
                         Dictionary<int, SetMst> dictionarySetMstMap = new();
@@ -761,18 +776,16 @@ public class SetMstRepository : ISetMstRepository
                         ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
 
                         _tenantDataContext.SaveChanges();
-                        status = true;
                         transaction.Commit();
                     }
                     catch
                     {
-                        status = false;
                         transaction.Rollback();
                     }
                 }
             }
             );
-        return status;
+        return setCd;
     }
 
     private void ReSetLevelForItem(int indexPaste, SetMst copyItem, SetMst? pasteItem, List<SetMst> listPasteItems)
