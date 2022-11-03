@@ -37,6 +37,7 @@ namespace Domain.Types
 
         #region Exposed
         List<TOdrInfDetailModel> OrdInfDetails { get; }
+
         // 処方 - Drug
         bool IsDrug { get; }
 

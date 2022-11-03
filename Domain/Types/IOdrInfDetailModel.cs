@@ -1,6 +1,4 @@
-﻿using Helper.Constants;
-
-namespace Domain.Types
+﻿namespace Domain.Types
 {
     public interface IOdrInfDetailModel
     {
