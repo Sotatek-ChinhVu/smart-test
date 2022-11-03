@@ -23,13 +23,13 @@ public class KaController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public ActionResult<Response<GetKaMstListResponse>> GetListMst()
+    public Task<ActionResult<Response<GetKaMstListResponse>>> GetListMst()
     {
         var input = new GetKaMstListInputData();
         var output = _bus.Handle(input);
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);
-        return Ok(presenter.Result);
+        return Task.FromResult(new ActionResult<Response<GetKaMstListResponse>>(presenter.Result));
     }
 
     [HttpGet(ApiPath.GetListKaCode)]
