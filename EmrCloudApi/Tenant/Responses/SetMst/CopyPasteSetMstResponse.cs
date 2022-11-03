@@ -2,10 +2,11 @@
 {
     public class CopyPasteSetMstResponse
     {
-        public CopyPasteSetMstResponse(bool status)
+        public CopyPasteSetMstResponse(int newSetCd)
         {
-            Status = status;
+            NewSetCd = newSetCd;
         }
-        public bool Status { get; private set; } = false;
+
+        public int NewSetCd { get; private set; }
     }
 }
