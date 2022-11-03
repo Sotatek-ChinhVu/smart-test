@@ -114,6 +114,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
+                    // Be sure old header is deleted
                     oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
                     oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
                     oldHeaderInfModel.UpdateId = TempIdentity.UserId;
