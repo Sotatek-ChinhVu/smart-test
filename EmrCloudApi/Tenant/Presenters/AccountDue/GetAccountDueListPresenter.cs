@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.AccountDue;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.AccountDue;
 using UseCase.AccountDue.GetAccountDueList;
@@ -11,7 +12,11 @@ public class GetAccountDueListPresenter : IGetAccountDueListOutputPort
 
     public void Complete(GetAccountDueListOutputData output)
     {
-        Result.Data = new GetAccountDueListResponse(output.AccountDueModel);
+        Result.Data = new GetAccountDueListResponse(
+                                                        ConvertToListAccountDueDto(output.AccountDueModel.AccountDueList), 
+                                                        output.AccountDueModel.ListPaymentMethod,
+                                                        output.AccountDueModel.ListUketsukeSbt
+                                                    );
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }
@@ -27,4 +32,37 @@ public class GetAccountDueListPresenter : IGetAccountDueListOutputPort
         GetAccountDueListStatus.InvalidpageIndex => ResponseMessage.InvalidPageIndex,
         _ => string.Empty
     };
+
+    private List<AccountDueDto> ConvertToListAccountDueDto(List<AccountDueModel> accountDueModels)
+    {
+        return accountDueModels.Select(item => new AccountDueDto(
+                                                 item.HpId,
+                                                 item.PtId,
+                                                 item.SeikyuSinDate,
+                                                 item.Month,
+                                                 item.RaiinNo,
+                                                 item.HokenPid,
+                                                 item.OyaRaiinNo,
+                                                 item.NyukinKbn,
+                                                 item.SeikyuTensu,
+                                                 item.SeikyuGaku,
+                                                 item.AdjustFutan,
+                                                 item.NyukinGaku,
+                                                 item.PaymentMethodCd,
+                                                 item.NyukinDate,
+                                                 item.UketukeSbt,
+                                                 item.NyukinCmt,
+                                                 item.UnPaid,
+                                                 item.NewSeikyuGaku,
+                                                 item.NewAdjustFutan,
+                                                 item.KaDisplay,
+                                                 item.HokenPatternName,
+                                                 item.IsSeikyuRow,
+                                                 item.SortNo,
+                                                 item.SeqNo,
+                                                 item.SeikyuDetail,
+                                                 item.RaiinInfStatus,
+                                                 item.SeikyuAdjustFutan
+                                            )).ToList();
+    }
 }
