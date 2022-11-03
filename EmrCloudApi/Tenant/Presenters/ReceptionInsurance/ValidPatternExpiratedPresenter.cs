@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.ReceptionInsurance
         {
             Result = new Response<ValidPatternExpiratedResponse>
             {
-                Data = new ValidPatternExpiratedResponse(outputData.Result, outputData.Message),
+                Data = new ValidPatternExpiratedResponse(outputData.Result, outputData.Message, outputData.TypeMessage),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)
