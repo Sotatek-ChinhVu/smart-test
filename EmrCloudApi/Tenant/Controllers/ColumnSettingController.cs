@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.ColumnSetting;
 using EmrCloudApi.Tenant.Requests.ColumnSetting;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ColumnSetting;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -15,16 +16,24 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class ColumnSettingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public ColumnSettingController(UseCaseBus bus)
+    public ColumnSettingController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetColumnSettingListResponse>>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
-        var input = new GetColumnSettingListInputData(req.UserId, req.TableName);
+        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+
+        if (!validateToken)
+        {
+            return Ok(new Response<GetColumnSettingListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetColumnSettingListInputData(userId, req.TableName);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetColumnSettingListPresenter();
         presenter.Complete(output);

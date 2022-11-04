@@ -25,7 +25,7 @@ public class PtTagRepository : IPtTagRepository
             .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
             .ToList();
     }
-    public bool UpdateIsDeleted(int hpId, int ptId, int seqNo, int isDeleted)
+    public bool UpdateIsDeleted(int hpId, int ptId, int seqNo, int isDeleted, int userId)
     {
         try
         {
@@ -38,8 +38,7 @@ public class PtTagRepository : IPtTagRepository
             ptTag.IsDeleted = isDeleted;
 
             ptTag.UpdateDate = DateTime.UtcNow;
-            ptTag.UpdateId = TempIdentity.UserId;
-            ptTag.UpdateMachine = TempIdentity.ComputerName;
+            ptTag.UpdateId = userId;
             ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
             _tenantDataContextTracking.PtTag.Update(ptTag);
@@ -51,7 +50,7 @@ public class PtTagRepository : IPtTagRepository
             return false;
         }
     }
-    public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels)
+    public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels, int userId)
     {
         var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
 
@@ -92,8 +91,7 @@ public class PtTagRepository : IPtTagRepository
                             updateList.ForEach(ptTag =>
                             {
                                 ptTag.UpdateDate = DateTime.UtcNow;
-                                ptTag.UpdateId = TempIdentity.UserId;
-                                ptTag.UpdateMachine = TempIdentity.ComputerName;
+                                ptTag.UpdateId = userId;
                                 ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
                             });
@@ -101,8 +99,7 @@ public class PtTagRepository : IPtTagRepository
                             addList.ForEach(ptTag =>
                             {
                                 ptTag.CreateDate = DateTime.UtcNow;
-                                ptTag.CreateId = TempIdentity.UserId;
-                                ptTag.CreateMachine = TempIdentity.ComputerName;
+                                ptTag.CreateId = userId;
                             });
 
                             _tenantDataContextTracking.PtTag.UpdateRange(updateList);

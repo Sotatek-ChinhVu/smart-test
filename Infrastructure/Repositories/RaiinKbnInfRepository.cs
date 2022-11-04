@@ -15,7 +15,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd)
+    public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd, int userId)
     {
         // Use Index (HpId, PtId, SinDate, RaiinNo, GrpId, IsDelete) to find the record faster
         var raiinKbnInf = _tenantDataContext.RaiinKbnInfs.FirstOrDefault(r =>
@@ -37,8 +37,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
                 GrpId = grpId,
                 KbnCd = kbnCd,
                 CreateDate = DateTime.UtcNow,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName
+                CreateId = userId
             });
         }
         else
@@ -46,8 +45,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
             // Update
             raiinKbnInf.KbnCd = kbnCd;
             raiinKbnInf.UpdateDate = DateTime.UtcNow;
-            raiinKbnInf.UpdateId = TempIdentity.UserId;
-            raiinKbnInf.UpdateMachine = TempIdentity.ComputerName;
+            raiinKbnInf.UpdateId = userId;
         }
 
         _tenantDataContext.SaveChanges();

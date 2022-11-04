@@ -73,7 +73,7 @@ namespace Interactor.Diseases
                 }
                 if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
 
-                _diseaseRepository.Upsert(datas);
+                _diseaseRepository.Upsert(datas, inputData.HpId, inputData.UserId);
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success);
             }
             catch

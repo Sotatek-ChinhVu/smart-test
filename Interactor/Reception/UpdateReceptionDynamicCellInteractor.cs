@@ -48,6 +48,6 @@ public class UpdateReceptionDynamicCellInteractor : IUpdateReceptionDynamicCellI
             return;
         }
 
-        _raiinKbnInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, input.GrpId, input.KbnCd);
+        _raiinKbnInfRepository.Upsert(input.HpId, input.PtId, input.SinDate, input.RaiinNo, input.GrpId, input.KbnCd, input.UserId);
     }
 }

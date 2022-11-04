@@ -75,7 +75,7 @@ namespace Interactor.FlowSheet
                         new List<RaiinListInfModel>(),
                         i.PtId
                     )).ToList() ?? new List<FlowSheetModel>();
-                _flowsheetRepository.UpsertTag(dataTags);
+                _flowsheetRepository.UpsertTag(dataTags, inputData?.HpId ?? 1, inputData?.UserId ?? 0);
 
                 var dataCmts = inputData?.ToList()?.Where(i => !i.Flag).Select(i => new FlowSheetModel(
                        i.SinDate,
@@ -90,7 +90,7 @@ namespace Interactor.FlowSheet
                        new List<RaiinListInfModel>(),
                        i.PtId
                    )).ToList() ?? new List<FlowSheetModel>();
-                _flowsheetRepository.UpsertCmt(dataCmts);
+                _flowsheetRepository.UpsertCmt(dataCmts, inputData?.HpId ?? 1, inputData?.UserId ?? 0);
 
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.Success);
             }

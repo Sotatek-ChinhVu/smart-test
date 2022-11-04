@@ -15,7 +15,7 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text)
+    public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text, int userId)
     {
         var raiinCmt = _tenantDataContext.RaiinCmtInfs.FirstOrDefault(r =>
             r.HpId == hpId
@@ -34,8 +34,7 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
                 CmtKbn = cmtKbn,
                 Text = text,
                 CreateDate = DateTime.UtcNow,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName
+                CreateId = userId
             });
         }
         else
@@ -43,8 +42,7 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
             // Update
             raiinCmt.Text = text;
             raiinCmt.UpdateDate = DateTime.UtcNow;
-            raiinCmt.UpdateId = TempIdentity.UserId;
-            raiinCmt.UpdateMachine = TempIdentity.ComputerName;
+            raiinCmt.UpdateId = userId;
         }
 
         _tenantDataContext.SaveChanges();

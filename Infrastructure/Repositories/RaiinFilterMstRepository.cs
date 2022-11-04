@@ -48,7 +48,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         )).ToList();
     }
 
-    public void SaveList(List<RaiinFilterMstModel> mstModels)
+    public void SaveList(List<RaiinFilterMstModel> mstModels, int hpId, int userId)
     {
         var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(() =>
@@ -76,18 +76,18 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 if (entityToUpdate is not null)
                 {
                     var mstToUpdate = entityToUpdate.mst;
-                    UpdateMstIfChanged(mstToUpdate, mstModel);
+                    UpdateMstIfChanged(mstToUpdate, mstModel, userId);
 
                     foreach (var sortModel in mstModel.ColumnSortInfos)
                     {
                         var sortToUpdate = entityToUpdate.sorts.FirstOrDefault(s => s.Id == sortModel.Id);
                         if (sortToUpdate is not null)
                         {
-                            UpdateSortIfChanged(sortToUpdate, sortModel);
+                            UpdateSortIfChanged(sortToUpdate, sortModel, userId);
                         }
                         else
                         {
-                            sortsToInsert.Add(CreateSortEntity(mstToUpdate.FilterId, sortModel));
+                            sortsToInsert.Add(CreateSortEntity(mstToUpdate.FilterId, sortModel, hpId, userId));
                         }
                     }
                 }
@@ -96,18 +96,17 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                     var tempFilterId = 0;
                     var mst = new RaiinFilterMst
                     {
-                        HpId = TempIdentity.HpId,
+                        HpId = hpId,
                         FilterId = tempFilterId,
                         SortNo = mstModel.SortNo,
                         FilterName = mstModel.FilterName,
                         SelectKbn = mstModel.SelectKbn,
                         Shortcut = mstModel.Shortcut,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
+                        CreateId = userId
                     };
                     // Create RaiinFilterSort entities with temporary FilterId = 0
-                    var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(tempFilterId, sortModel)).ToList();
+                    var sorts = mstModel.ColumnSortInfos.Select(sortModel => CreateSortEntity(tempFilterId, sortModel, hpId, userId)).ToList();
 
                     mstWithSortsToInsert.Add(new(mst, sorts));
                 }
@@ -156,7 +155,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
 
         #region Helper methods
 
-        void UpdateMstIfChanged(RaiinFilterMst entity, RaiinFilterMstModel model)
+        void UpdateMstIfChanged(RaiinFilterMst entity, RaiinFilterMstModel model, int userId)
         {
             // Detect changes
             if (entity.SortNo != model.SortNo
@@ -169,12 +168,11 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 entity.SelectKbn = model.SelectKbn;
                 entity.Shortcut = model.Shortcut;
                 entity.UpdateDate = DateTime.UtcNow;
-                entity.UpdateId = TempIdentity.UserId;
-                entity.UpdateMachine = TempIdentity.ComputerName;
+                entity.UpdateId = userId;
             }
         }
 
-        void UpdateSortIfChanged(RaiinFilterSort entity, RaiinFilterSortModel model)
+        void UpdateSortIfChanged(RaiinFilterSort entity, RaiinFilterSortModel model, int userId)
         {
             // Detect changes
             if (entity.SeqNo != model.SeqNo
@@ -189,16 +187,15 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 entity.KbnCd = model.KbnCd;
                 entity.SortKbn = model.SortKbn;
                 entity.UpdateDate = DateTime.UtcNow;
-                entity.UpdateId = TempIdentity.UserId;
-                entity.UpdateMachine = TempIdentity.ComputerName;
+                entity.UpdateId = userId;
             }
         }
 
-        RaiinFilterSort CreateSortEntity(int filterId, RaiinFilterSortModel sortModel)
+        RaiinFilterSort CreateSortEntity(int filterId, RaiinFilterSortModel sortModel, int hpId, int userId)
         {
             return new RaiinFilterSort
             {
-                HpId = TempIdentity.HpId,
+                HpId = hpId,
                 FilterId = filterId,
                 SeqNo = sortModel.SeqNo,
                 Priority = sortModel.Priority,
@@ -206,8 +203,7 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 KbnCd = sortModel.KbnCd,
                 SortKbn = sortModel.SortKbn,
                 CreateDate = DateTime.UtcNow,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName
+                CreateId = userId
             };
         }
 

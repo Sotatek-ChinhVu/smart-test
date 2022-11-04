@@ -17,13 +17,13 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
-    public void Save(List<SystemConfModel> systemConfModels)
+    public void Save(List<SystemConfModel> systemConfModels, int hpId, int userId)
     {
-        ModifySystemConfs(systemConfModels);
+        ModifySystemConfs(systemConfModels, hpId, userId);
         _tenantDataContext.SaveChanges();
     }
 
-    private void ModifySystemConfs(List<SystemConfModel> confModels)
+    private void ModifySystemConfs(List<SystemConfModel> confModels, int hpId, int userId)
     {
         var existingConfigs = _tenantDataContext.SystemConfs
             .Where(s => s.GrpCd == SystemConfGroupCodes.ReceptionTimeColor
@@ -39,23 +39,21 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
                 {
                     configToUpdate.Param = model.Param;
                     configToUpdate.UpdateDate = DateTime.UtcNow;
-                    configToUpdate.UpdateId = TempIdentity.UserId;
-                    configToUpdate.UpdateMachine = TempIdentity.ComputerName;
+                    configToUpdate.UpdateId = userId;
                 }
             }
             else
             {
                 configsToInsert.Add(new SystemConf
                 {
-                    HpId = TempIdentity.HpId,
+                    HpId = hpId,
                     GrpCd = model.GrpCd,
                     GrpEdaNo = model.GrpEdaNo,
                     Val = model.Val,
                     Param = model.Param,
                     Biko = model.Biko,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    CreateId = userId
                 });
             }
         }

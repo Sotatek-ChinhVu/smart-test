@@ -8,10 +8,13 @@ namespace UseCase.PatientInfor.SearchSimple
 
         public bool ContainMode { get; private set; }
 
-        public SearchPatientInfoSimpleInputData(string keyword, bool containMode)
+        public int HpId { get; private set; }
+
+        public SearchPatientInfoSimpleInputData(string keyword, bool containMode, int hpId)
         {
             Keyword = keyword;
             ContainMode = containMode;
+            HpId = hpId;
         }
     }
 }
