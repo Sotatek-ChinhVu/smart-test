@@ -14,10 +14,19 @@ namespace Interactor.SystemConf
 
         public GetSystemConfOutputData Handle(GetSystemConfInputData inputData)
         {
-            if (inputData.HpId <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidHpId);
-            if (inputData.GrpCd <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidGrpCd);
-            var result = _systemConfRepository.GetByGrpCd(inputData.HpId, inputData.GrpCd, inputData.GrpEdaNo);
-            return new GetSystemConfOutputData(result, GetSystemConfStatus.Successed);
+            try
+            {
+                if (inputData.HpId <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidHpId);
+                if (inputData.GrpCd <= 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidGrpCd);
+                if (inputData.GrpEdaNo < 0) return new GetSystemConfOutputData(GetSystemConfStatus.InvalidGrpEdaNo);
+
+                var result = _systemConfRepository.GetByGrpCd(inputData.HpId, inputData.GrpCd, inputData.GrpEdaNo);
+                return new GetSystemConfOutputData(result, GetSystemConfStatus.Successed);
+            }
+            catch
+            {
+                return new GetSystemConfOutputData(GetSystemConfStatus.Failed);
+            }
         }
     }
 }

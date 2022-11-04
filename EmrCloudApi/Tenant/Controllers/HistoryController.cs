@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.GetHistory;
@@ -20,15 +21,20 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
+        public async Task<ActionResult<Response<GetMedicalExaminationHistoryResponse>>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            watch.Start();
             var input = new GetMedicalExaminationHistoryInputData(request.PtId, request.HpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, request.UserId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);
-            var output = _bus.Handle(input);
+            var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetMedicalExaminationHistoryResponse>>(presenter.Result);
+            var result =  Ok(presenter.Result);
+            watch.Stop();
+            Console.WriteLine("TimeLog_History-" + request.PtId + "-" + watch.ElapsedMilliseconds);
+            return result;
         }
     }
 }

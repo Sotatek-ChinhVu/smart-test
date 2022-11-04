@@ -20,6 +20,9 @@
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
+        public static readonly string InvalidGrpEdaNo = "Invalid GrpEdaNo";
+        public static readonly string InvalidDefaultValue = "Invalid DefaultValue";
+        public static readonly string InvalidPresentDate = "Invalid PresentDate";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
         public static readonly string InvalidStartDate = "Invalid startDate";
         public static readonly string InvalidYJCode = "Invalid YJCode";
