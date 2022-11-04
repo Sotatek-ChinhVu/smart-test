@@ -20,10 +20,10 @@ public class AccountDueController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetAccountDueListResponse>> GetList([FromQuery] GetAccountDueListRequest request)
+    public async Task<ActionResult<Response<GetAccountDueListResponse>>> GetList([FromQuery] GetAccountDueListRequest request)
     {
         var input = new GetAccountDueListInputData(request.HpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetAccountDueListPresenter();
         presenter.Complete(output);

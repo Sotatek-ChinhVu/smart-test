@@ -21,10 +21,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetKarteFilterMstResponse>> GetList()
+        public async Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
         {
             var input = new GetKarteFilterInputData();
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetKarteFilterMstPresenter();
             presenter.Complete(output);
@@ -33,10 +33,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SaveList)]
-        public ActionResult<Response<SaveKarteFilterMstResponse>> SaveList([FromBody] SaveKarteFilterMstRequest request)
+        public async Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
             var input = new SaveKarteFilterInputData(request.KarteFilters);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveKarteFilterMstPresenter();
             presenter.Complete(output);
