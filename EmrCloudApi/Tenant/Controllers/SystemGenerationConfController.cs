@@ -20,15 +20,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetSettingValue)]
-        public Task<ActionResult<Response<GetSystemGenerationConfResponse>>> GetSettingValue([FromQuery] GetSystemGenerationConfRequest request)
+        public async Task<ActionResult<Response<GetSystemGenerationConfResponse>>> GetSettingValue([FromQuery] GetSystemGenerationConfRequest request)
         {
             var input = new GetSystemGenerationConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo, request.PresentDate, request.DefaultValue, request.DefaultParam);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSystemGenerationConfPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetSystemGenerationConfResponse>>(presenter.Result));
+            return new ActionResult<Response<GetSystemGenerationConfResponse>>(presenter.Result);
         }
     }
 }

@@ -21,27 +21,27 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
+        public async Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
         {
             var input = new GetKarteFilterInputData();
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetKarteFilterMstPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result));
+            return new ActionResult<Response<GetKarteFilterMstResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveList)]
-        public Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
+        public async Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
             var input = new SaveKarteFilterInputData(request.KarteFilters);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveKarteFilterMstPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result));
+            return new ActionResult<Response<SaveKarteFilterMstResponse>>(presenter.Result);
         }
     }
 }

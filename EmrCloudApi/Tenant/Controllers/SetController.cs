@@ -31,79 +31,79 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
+    public async Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
     {
         var input = new GetSetMstListInputData(request.HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSetMstListPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<GetSetMstListResponse>>(presenter.Result));
+        return new ActionResult<Response<GetSetMstListResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetToolTip)]
-    public Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
+    public async Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
     {
         var input = new GetSetMstToolTipInputData(request.HpId, request.SetCd);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSetMstToolTipPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<GetSetMstToolTipResponse>>(presenter.Result));
+        return new ActionResult<Response<GetSetMstToolTipResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Save)]
-    public Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
+    public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
         var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, request.IsGroup);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<SaveSetMstResponse>>(presenter.Result));
+        return new ActionResult<Response<SaveSetMstResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Reorder)]
-    public Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
+    public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
         var input = new ReorderSetMstInputData(request.HpId, request.DragSetCd, request.DropSetCd);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new ReorderSetMstPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result));
+        return new ActionResult<Response<ReorderSetMstResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.Paste)]
-    public Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+    public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
         var input = new CopyPasteSetMstInputData(request.HpId, request.UserId, request.CopySetCd, request.PasteSetCd);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new CopyPasteSetMstPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result));
+        return new ActionResult<Response<CopyPasteSetMstResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetSuperSetDetail)]
-    public Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
+    public async Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
         var input = new GetSuperSetDetailInputData(request.HpId, request.SetCd, request.Sindate);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result));
+        return new ActionResult<Response<GetSuperSetDetailResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveSuperSetDetail)]
-    public Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
+    public async Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
         var input = new SaveSuperSetDetailInputData(
                 request.SetCd,
@@ -113,25 +113,25 @@ public class SetController : ControllerBase
                 new SaveSetKarteInputItem(request.HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
                 ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
                 );
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result));
+        return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
     }
 
 
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
-    public Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
+    public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
         var input = new SaveImageSuperSetDetailInputData(request.HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveImageSuperSetDetailPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<SaveImageResponse>>(presenter.Result));
+        return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)

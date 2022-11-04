@@ -23,30 +23,30 @@ public class KaController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public Task<ActionResult<Response<GetKaMstListResponse>>> GetListMst()
+    public async Task<ActionResult<Response<GetKaMstListResponse>>> GetListMst()
     {
         var input = new GetKaMstListInputData();
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);
-        return Task.FromResult(new ActionResult<Response<GetKaMstListResponse>>(presenter.Result));
+        return new ActionResult<Response<GetKaMstListResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetListKaCode)]
-    public ActionResult<Response<GetKaCodeMstListResponse>> GetListKaCodeMst()
+    public async Task<ActionResult<Response<GetKaCodeMstListResponse>>> GetListKaCodeMst()
     {
         var input = new GetKaCodeMstInputData();
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetKaCodeMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveListKaMst)]
-    public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
+    public async Task<ActionResult<Response<SaveListKaMstResponse>>> Save([FromBody] SaveListKaMstRequest request)
     {
         var input = new SaveKaMstInputData(request.HpId, request.UserId, request.kaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);

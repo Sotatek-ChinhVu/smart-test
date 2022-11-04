@@ -26,7 +26,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
+        public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
@@ -97,16 +97,16 @@ namespace EmrCloudApi.Tenant.Controllers
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText)
             );
-            var output = _bus.Handle(input);
+            var output = await Task.Run(()=> _bus.Handle(input));
 
             var presenter = new UpsertTodayOdrPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<UpsertTodayOdrResponse>>(presenter.Result));
+            return new ActionResult<Response<UpsertTodayOdrResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.Validate)]
-        public Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
+        public async Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
@@ -186,16 +186,16 @@ namespace EmrCloudApi.Tenant.Controllers
                     request.Karte.RichText
                 )
                );
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new ValidationTodayOrdPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result));
+            return new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
-        public Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        public async Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
         {
             var input = new GetDefaultSelectPatternInputData(
                             request.HpId,
@@ -204,23 +204,23 @@ namespace EmrCloudApi.Tenant.Controllers
                             request.HistoryPid,
                             request.SelectedHokenPid);
 
-            var output = _bus.Handle(input);
+            var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetDefaultSelectPatternPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result));
+            return new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetInsuranceComboList)]
-        public Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
+        public async Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
         {
             var input = new GetInsuranceComboListInputData(request.HpId, request.PtId, request.SinDate);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(()=>_bus.Handle(input));
             var presenter = new GetInsuranceComboListPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result));
+            return new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result);
         }
     }
 }

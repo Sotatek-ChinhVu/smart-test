@@ -37,50 +37,50 @@ public class VisitingController : ControllerBase
     }
 
     [HttpGet(ApiPath.Get + "ReceptionLock")]
-    public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
+    public async Task<ActionResult<Response<GetReceptionLockRespone>>> GetList([FromQuery] GetReceptionLockRequest request)
     {
         var input = new GetReceptionLockInputData(request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionLockPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
+    public async Task<ActionResult<Response<GetReceptionListResponse>>> GetList([FromQuery] GetReceptionListRequest request)
     {
         var input = new GetReceptionListInputData(request.HpId, request.SinDate, request.RaiinNo, request.PtId);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "ReceptionInfo")]
-    public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
+    public async Task<ActionResult<Response<GetReceptionVisitingResponse>>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
         var input = new GetReceptionVisitingInputData(request.HpId, request.RaiinNo);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "Settings")]
-    public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
+    public async Task<ActionResult<Response<GetReceptionSettingsResponse>>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
         var input = new GetReceptionSettingsInputData(req.UserId);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost("SaveSettings")]
-    public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
+    public async Task<ActionResult<Response<SaveVisitingListSettingsResponse>>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
     {
         var input = new SaveVisitingListSettingsInputData(req.Settings);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveVisitingListSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

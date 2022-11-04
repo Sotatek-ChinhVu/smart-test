@@ -31,49 +31,49 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetDrugInf")]
-        public Task<ActionResult<Response<GetDrugInforResponse>>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
+        public async Task<ActionResult<Response<GetDrugInforResponse>>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
         {
             var input = new GetDrugInforInputData(request.HpId, request.SinDate, request.ItemCd);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(()=>_bus.Handle(input));
 
             var presenter = new GetDrugInforPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetDrugInforResponse>>(presenter.Result));
+            return new ActionResult<Response<GetDrugInforResponse>>(presenter.Result);
         }
 
         [HttpGet(ApiPath.GetDrugMenuTree)]
-        public Task<ActionResult<Response<GetDrugDetailResponse>>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
+        public async Task<ActionResult<Response<GetDrugDetailResponse>>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
         {
             var input = new GetDrugDetailInputData(request.HpId, request.SinDate, request.ItemCd);
-            var output = _bus.Handle(input);
+            var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetDrugDetailPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetDrugDetailResponse>>(presenter.Result));
+            return new ActionResult<Response<GetDrugDetailResponse>>(presenter.Result);
         }
 
         [HttpGet("GetListUsageTreeSet")]
-        public Task<ActionResult<Response<GetUsageTreeSetListResponse>>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
+        public async Task<ActionResult<Response<GetUsageTreeSetListResponse>>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
             var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.KouiKbn);
-            var output = _bus.Handle(input);
+            var output =  await Task.Run( () => _bus.Handle(input));
             var present = new GetUsageTreeSetListPresenter();
             present.Complete(output);
-            return Task.FromResult(new ActionResult<Response<GetUsageTreeSetListResponse>>(present.Result));
+            return new ActionResult<Response<GetUsageTreeSetListResponse>>(present.Result);
         }
 
         [HttpGet(ApiPath.DrugDataSelectedTree)]
-        public Task<ActionResult<Response<GetDrugDetailDataResponse>>> DrugDataSelectedTree([FromQuery] GetDrugDetailDataRequest request)
+        public async Task<ActionResult<Response<GetDrugDetailDataResponse>>> DrugDataSelectedTree([FromQuery] GetDrugDetailDataRequest request)
         {
             var input = new GetDrugDetailDataInputData(request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.ItemCd, request.YJCode);
-            var output = _bus.Handle(input);
+            var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetDrugDetailDataPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetDrugDetailDataResponse>>(presenter.Result));
+            return new ActionResult<Response<GetDrugDetailDataResponse>>(presenter.Result);
         }
     }
 }
