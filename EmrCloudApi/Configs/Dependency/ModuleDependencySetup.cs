@@ -222,6 +222,7 @@ using UseCase.SwapHoken.Save;
 using Interactor.SwapHoken;
 using Domain.Models.SwapHoken;
 using UseCase.Reception.UpdateTimeZoneDayInf;
+using EmrCloudApi.Tenant.Services;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -252,6 +253,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IUserService, UserService>();
 
             // Export
             services.AddTransient<IReporting, Reporting>();
