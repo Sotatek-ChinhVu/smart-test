@@ -79,8 +79,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.WeightKbn,
                                 inputData.Color,
                                 inputData.IsDeleted,
-                                inputData.IsGroup ? 1 : 0,
-                                new SetMstTooltipModel()
+                                inputData.IsGroup ? 1 : 0
                              );
             var resultData = _setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel);
             if (resultData != null)

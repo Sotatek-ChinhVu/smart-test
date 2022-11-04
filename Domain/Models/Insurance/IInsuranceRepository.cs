@@ -17,5 +17,7 @@ namespace Domain.Models.Insurance
         List<HokenInfModel> GetCheckListHokenInf(int hpId, long ptId, List<int> hokenPids);
 
         int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid);
+
+        List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate);
     }
 }

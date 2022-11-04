@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public int GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int presentDate = 0, int defaultValue = 0, bool fromLastestDb = false)
+        public (int, string) GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int presentDate = 0, int defaultValue = 0, string defaultParam = "", bool fromLastestDb = false)
         {
             SystemGenerationConf? systemConf;
             if (!fromLastestDb)
@@ -33,7 +33,7 @@ namespace Infrastructure.Repositories
                 && p.StartDate <= presentDate
                 && p.EndDate >= presentDate)?.FirstOrDefault();
             }
-            return systemConf != null ? systemConf.Val : defaultValue;
+            return systemConf != null ? (systemConf.Val, systemConf.Param ?? string.Empty) : (defaultValue, defaultParam);
         }
     }
 }

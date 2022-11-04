@@ -31,13 +31,11 @@ public class SetMstRepository : ISetMstRepository
             return new List<SetMstModel>();
         }
 
-        var listSetCd = setEntities.Select(item => item.SetCd).ToList();
-        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != String.Empty).ToList();
-        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != String.Empty).ToList();
-        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listSetCd.Contains(item.SetCd)).ToList();
-
-        return setEntities.Select(s =>
-                new SetMstModel(
+        var result = new List<SetMstModel>();
+        var obj = new object();
+        Parallel.ForEach(setEntities, s =>
+        {
+            var item = new SetMstModel(
                     s.HpId,
                     s.SetCd,
                     s.SetKbn,
@@ -50,15 +48,30 @@ public class SetMstRepository : ISetMstRepository
                     s.WeightKbn,
                     s.Color,
                     s.IsDeleted,
-                    s.IsGroup,
-                    new SetMstTooltipModel(
-                            listByomeis.Where(item => item.SetCd == s.SetCd).Select(item => item.Byomei ?? String.Empty).ToList(),
-                            listOrders.Where(item => item.SetCd == s.SetCd).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList(),
-                            listKarteNames.Where(item => item.SetCd == s.SetCd).Select(item => item.Text ?? String.Empty).ToList()
-                        )
-                    )
-                ).ToList();
+                    s.IsGroup
+                    );
+            lock (obj)
+            {
+                result.Add(item);
+            }
+        });
+
+        return result.OrderBy(s => s.Level1)
+          .ThenBy(s => s.Level2)
+          .ThenBy(s => s.Level3).ToList();
     }
+
+    public SetMstTooltipModel GetToolTip(int hpId, int setCd)
+    {
+        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
+        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Text != String.Empty).Select(item => item.Text ?? String.Empty).ToList();
+        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
+
+        var result = new List<SetMstModel>();
+
+        return new SetMstTooltipModel(listKarteNames, listOrders, listByomeis);
+    }
+
 
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
@@ -187,12 +200,7 @@ public class SetMstRepository : ISetMstRepository
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
-                    setMst.IsGroup,
-                    new SetMstTooltipModel(
-                            new(),
-                            new List<OrderTooltipModel>(),
-                            new()
-                        )
+                    setMst.IsGroup
                 );
         }
         catch

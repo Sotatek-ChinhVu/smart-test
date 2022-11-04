@@ -20,10 +20,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetListKarteInfResponse>> GetList([FromQuery] GetListKarteInfRequest request)
+        public async Task<ActionResult<Response<GetListKarteInfResponse>>> GetList([FromQuery] GetListKarteInfRequest request)
         {
             var input = new GetListKarteInfInputData(request.PtId, request.RaiinNo, request.SinDate, request.IsDeleted);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetListKarteInfPresenter();
             presenter.Complete(output);
