@@ -749,6 +749,20 @@
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
         public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
         public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
+  
+        //Account Due
+        public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
+        public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";
+        public static readonly string InvalidAdjustFutan = "Invalid AdjustFutan, must more than or equal 0.";
+        public static readonly string InvalidNyukinGaku = "Invalid NyukinGaku, must more than or equal 0.";
+        public static readonly string InvalidPaymentMethodCd = "Invalid PaymentMethodCd, must more than or equal 0.";
+        public static readonly string InvalidNyukinDate = "Invalid NyukinDate, must more than or equal 0.";
+        public static readonly string InvalidUketukeSbt = "Invalid UketukeSbt, must more than or equal 0.";
+        public static readonly string NyukinCmtMaxLength100 = "Invalid UketukeSbt, max length is 100.";
+        public static readonly string InvalidSeikyuGaku = "Invalid SeikyuGaku.";
+        public static readonly string InvalidSeikyuAdjustFutan = "Invalid SeikyuAdjustFutan.";
+        public static readonly string InvalidSeikyuTensu = "Invalid SeikyuTensu, must more than or equal 0.";
+        public static readonly string NoItemChange = "No Item Change.";
 
         // Valid Pattern Expirated 
         public static readonly string InvalidPatternHokenPid = "Invalid Pattern HokenPid";

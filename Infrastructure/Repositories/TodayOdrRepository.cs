@@ -173,11 +173,12 @@ namespace Infrastructure.Repositories
             }
             else
             {
+                rpNoMax++;
                 var newHeaderInf = new OdrInf
                 {
                     HpId = hpId,
                     RaiinNo = raiinNo,
-                    RpNo = ++rpNoMax,
+                    RpNo = rpNoMax,
                     RpEdaNo = rpEdaNoDefault,
                     PtId = ptId,
                     SinDate = sinDate,
