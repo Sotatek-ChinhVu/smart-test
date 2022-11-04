@@ -1,7 +1,7 @@
-﻿using EmrCloudApi.Tenant.Responses;
-using UseCase.SystemConf;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SystemConf;
-using EmrCloudApi.Tenant.Constants;
+using UseCase.SystemConf;
 
 namespace EmrCloudApi.Tenant.Presenters.SytemConf
 {
@@ -24,8 +24,14 @@ namespace EmrCloudApi.Tenant.Presenters.SytemConf
                 case GetSystemConfStatus.InvalidGrpCd:
                     Result.Message = ResponseMessage.InvalidGrpCd;
                     break;
+                case GetSystemConfStatus.InvalidGrpEdaNo:
+                    Result.Message = ResponseMessage.InvalidGrpEdaNo;
+                    break;
                 case GetSystemConfStatus.Successed:
                     Result.Message = ResponseMessage.Success;
+                    break;
+                case GetSystemConfStatus.Failed:
+                    Result.Message = ResponseMessage.Failed;
                     break;
             }
         }

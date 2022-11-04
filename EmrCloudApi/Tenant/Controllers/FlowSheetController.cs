@@ -21,21 +21,26 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList + "FlowSheet")]
-        public ActionResult<Response<GetListFlowSheetResponse>> GetListFlowSheet([FromQuery] GetListFlowSheetRequest inputData)
+        public async Task<ActionResult<Response<GetListFlowSheetResponse>>> GetListFlowSheet([FromQuery] GetListFlowSheetRequest inputData)
         {
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            watch.Start();
             var input = new GetListFlowSheetInputData(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsHolidayOnly, 0, 0, false, inputData.StartIndex, inputData.Count, inputData.Sort);
-            var output = _bus.Handle(input);
+            var output = await Task.Run( () =>_bus.Handle(input));
             var presenter = new GetListFlowSheetPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<GetListFlowSheetResponse>>(presenter.Result);
+            var result = new ActionResult<Response<GetListFlowSheetResponse>>(presenter.Result);
+            watch.Stop();
+            Console.WriteLine("TimeLog_Flowsheet" + watch.ElapsedMilliseconds);
+            return result;
         }
 
         [HttpGet(ApiPath.GetList + "Holiday")]
-        public ActionResult<Response<GetListHolidayResponse>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
+        public async Task<ActionResult<Response<GetListHolidayResponse>>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
         {
             var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false, 0, 0, string.Empty);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetListHolidayPresenter();
             presenter.Complete(output);
 
@@ -43,10 +48,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList + "RaiinMst")]
-        public ActionResult<Response<GetListRaiinMstResponse>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
+        public async Task<ActionResult<Response<GetListRaiinMstResponse>>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
             var input = new GetListFlowSheetInputData(inputData.HpId, 0, 0, 0, false, 0, 0, true, 0, 0, string.Empty);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetListRaiinMstPresenter();
             presenter.Complete(output);
 
@@ -54,7 +59,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertFlowSheetResponse>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
+        public async Task<ActionResult<Response<UpsertFlowSheetResponse>>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
         {
             var input = new UpsertFlowSheetInputData(inputData.Items.Select(i => new UpsertFlowSheetItemInputData(
                     i.RainNo,
@@ -63,7 +68,7 @@ namespace EmrCloudApi.Tenant.Controllers
                     i.Value,
                     i.Flag
                 )).ToList());
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new UpsertFlowSheetPresenter();
             presenter.Complete(output);
 

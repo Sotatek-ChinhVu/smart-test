@@ -22,20 +22,20 @@ public class ColumnSettingController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public ActionResult<Response<GetColumnSettingListResponse>> GetList([FromQuery] GetColumnSettingListRequest req)
+    public async Task<ActionResult<Response<GetColumnSettingListResponse>>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
         var input = new GetColumnSettingListInputData(req.UserId, req.TableName);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public ActionResult<Response<SaveColumnSettingListResponse>> SaveList([FromBody] SaveColumnSettingListRequest req)
+    public async Task<ActionResult<Response<SaveColumnSettingListResponse>>> SaveList([FromBody] SaveColumnSettingListRequest req)
     {
         var input = new SaveColumnSettingListInputData(req.Settings);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
