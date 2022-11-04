@@ -19,29 +19,29 @@ public class SyunoSeikyuModel
         NewSeikyuDetail = newSeikyuDetail;
     }
 
-    public int HpId { get; set; }
-    
-    public long PtId { get; set; }
-    
-    public int SinDate { get; set; }
-    
-    public long RaiinNo { get; set; }
-    
-    public int NyukinKbn { get; set; }
-    
-    public int SeikyuTensu { get; set; }
-    
-    public int AdjustFutan { get; set; }
-    
-    public int SeikyuGaku { get; set; }
-    
-    public string SeikyuDetail { get; set; }
-    
-    public int NewSeikyuTensu { get; set; }
-    
-    public int NewAdjustFutan { get; set; }
-    
-    public int NewSeikyuGaku { get; set; }
-    
-    public string NewSeikyuDetail { get; set; }
+    public int HpId { get; private set; }
+
+    public long PtId { get; private set; }
+
+    public int SinDate { get; private set; }
+
+    public long RaiinNo { get; private set; }
+
+    public int NyukinKbn { get; private set; }
+
+    public int SeikyuTensu { get; private set; }
+
+    public int AdjustFutan { get; private set; }
+
+    public int SeikyuGaku { get; private set; }
+
+    public string SeikyuDetail { get; private set; }
+
+    public int NewSeikyuTensu { get; private set; }
+
+    public int NewAdjustFutan { get; private set; }
+
+    public int NewSeikyuGaku { get; private set; }
+
+    public string NewSeikyuDetail { get; private set; }
 }
