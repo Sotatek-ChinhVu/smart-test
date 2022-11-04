@@ -28,6 +28,7 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
             IsHaveKohiMst = kohiInfModel.IsHaveKohiMst;
             IsDeleted = kohiInfModel.IsDeleted;
             IsAddNew = kohiInfModel.IsAddNew;
+            SeqNo = kohiInfModel.SeqNo;
         }
 
         public List<ConfirmDateDto> ConfirmDateList { get; private set; }
@@ -73,6 +74,8 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
         public int IsDeleted { get; private set; }
 
         public bool IsAddNew { get; private set; }
+
+        public long SeqNo { get; private set; }
 
         public bool IsEmptyModel => HokenId == 0;
 
