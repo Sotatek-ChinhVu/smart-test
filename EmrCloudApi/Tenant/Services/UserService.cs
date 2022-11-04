@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using EmrCloudApi.Tenant.Constants;
+using System.Security.Claims;
 
 namespace EmrCloudApi.Tenant.Services;
 
@@ -9,12 +10,14 @@ public class UserService : IUserService
     {
         _httpContextAccessor = httpContextAccessor;
     }
-    public string GetUserId()
+    public LoginTokenResponse GetLoginUser()
     {
-        var result  = string.Empty;
+        var result  = new LoginTokenResponse();
         if (_httpContextAccessor.HttpContext !=null)
         {
-            result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _httpContextAccessor.HttpContext.User;
+            result.UserId = user.FindFirstValue(LoginUserConstant.UserId);
+            result.HpId = user.FindFirstValue(LoginUserConstant.HpId);
         }
 
         return result;

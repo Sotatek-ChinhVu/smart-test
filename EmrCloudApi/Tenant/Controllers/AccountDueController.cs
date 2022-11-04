@@ -27,8 +27,12 @@ public class AccountDueController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetAccountDueListResponse>>> GetList([FromQuery] GetAccountDueListRequest request)
     {
-        var userId = _userService.GetUserId();
-        var input = new GetAccountDueListInputData(request.HpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<GetAccountDueListResponse>>(new Response<GetAccountDueListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetAccountDueListInputData(hpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetAccountDueListPresenter();
