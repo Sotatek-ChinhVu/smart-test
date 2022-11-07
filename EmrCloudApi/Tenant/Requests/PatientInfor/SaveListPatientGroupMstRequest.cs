@@ -2,5 +2,9 @@
 
 public class SaveListPatientGroupMstRequest
 {
-   public List<SaveListPatientGroupMstRequestItem> SaveListPatientGroupMsts { get; set; } = new();
+    public int HpId { get; set; }
+
+    public int UserId { get; set; }
+
+    public List<SaveListPatientGroupMstRequestItem> SaveListPatientGroupMsts { get; set; } = new();
 }

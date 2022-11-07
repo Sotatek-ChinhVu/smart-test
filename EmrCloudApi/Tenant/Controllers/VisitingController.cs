@@ -83,7 +83,7 @@ public class VisitingController : ControllerBase
     }
 
     [HttpGet(ApiPath.Get + "Settings")]
-    public async Task<ActionResult<Response<GetReceptionSettingsResponse>>> GetSettings()
+    public async Task<ActionResult<Response<GetReceptionSettingsResponse>>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
         var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         if (!validateToken)

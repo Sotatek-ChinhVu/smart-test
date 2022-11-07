@@ -79,7 +79,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetColumnName)]
-        public async Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName()
+        public async Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
         {
             var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             if (!validateToken)

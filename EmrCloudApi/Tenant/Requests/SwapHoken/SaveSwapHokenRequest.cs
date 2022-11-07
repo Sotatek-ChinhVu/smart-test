@@ -2,8 +2,9 @@
 {
     public class SaveSwapHokenRequest
     {
-        public SaveSwapHokenRequest(long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate)
+        public SaveSwapHokenRequest(int hpId, long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate)
         {
+            HpId = hpId;
             PtId = ptId;
             HokenIdBefore = hokenIdBefore;
             HokenIdAfter = hokenIdAfter;
@@ -12,6 +13,8 @@
             StartDate = startDate;
             EndDate = endDate;
         }
+
+        public int HpId { get; private set; }
 
         public long PtId { get; private set; }
 

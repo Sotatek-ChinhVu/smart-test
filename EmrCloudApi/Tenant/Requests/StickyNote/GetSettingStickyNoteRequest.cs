@@ -2,5 +2,6 @@
 {
     public class GetSettingStickyNoteRequest
     {
+        public int UserId { get; set; }
     }
 }

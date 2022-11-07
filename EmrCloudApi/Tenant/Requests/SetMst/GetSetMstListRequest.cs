@@ -2,6 +2,7 @@
 {
     public class GetSetMstListRequest
     {
+        public int HpId { get; set; }
         public int SetKbn { get; set; }
         public int SetKbnEdaNo { get; set; }
         public int SinDate { get; set; }

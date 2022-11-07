@@ -100,7 +100,7 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
         [HttpGet(ApiPath.Get + "Setting")]
-        public async Task<ActionResult<Response<GetSettingStickyNoteResponse>>> GetSetting()
+        public async Task<ActionResult<Response<GetSettingStickyNoteResponse>>> GetSetting([FromQuery] GetSettingStickyNoteRequest request)
         {
             var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             if (!validateToken)

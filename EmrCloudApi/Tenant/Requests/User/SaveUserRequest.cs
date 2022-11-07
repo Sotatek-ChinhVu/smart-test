@@ -3,6 +3,7 @@
     public class CreateUserRequest
     {
         public string Name { get; set; } = string.Empty;
+        public int HpId { get; set; }
         public int JobCd { get; set; }
         public int ManagerKbn { get; set; }
         public int KaId { get; set; }

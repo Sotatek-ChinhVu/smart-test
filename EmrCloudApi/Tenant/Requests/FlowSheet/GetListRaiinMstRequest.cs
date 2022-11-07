@@ -2,5 +2,6 @@
 {
     public class GetListRaiinMstRequest
     {
+        public int HpId { get; set; }
     }
 }

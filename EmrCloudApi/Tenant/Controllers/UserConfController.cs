@@ -26,7 +26,7 @@ public class UserConfController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList()
+    public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
     {
         var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         if (!validateToken)

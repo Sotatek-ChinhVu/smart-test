@@ -1,13 +1,9 @@
-﻿using Domain.Constant;
-using Domain.Models.Insurance;
-using Domain.Models.InsuranceInfor;
-using Helper.Common;
-using Helper.Constants;
-
-namespace EmrCloudApi.Tenant.Requests.ReceptionInsurance
+﻿namespace EmrCloudApi.Tenant.Requests.ReceptionInsurance
 {
     public class ValidPatternExpiratedRequest
     {
+        public int HpId { get; set; }
+
         public long PtId { get; set; }
 
         public int SinDate { get; set; }
