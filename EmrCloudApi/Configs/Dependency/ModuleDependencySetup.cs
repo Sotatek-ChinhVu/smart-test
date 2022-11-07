@@ -227,6 +227,8 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using EmrCloudApi.Tenant.Services;
+using Domain.Models.AuditTrailLog;
+using UseCase.AccountDue.SaveAccountDueList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -328,6 +330,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
+            services.AddTransient<IAuditTrailLogRepository, AuditTrailLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -538,6 +541,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //AccoutDue
             busBuilder.RegisterUseCase<GetAccountDueListInputData, GetAccountDueListInteractor>();
+            busBuilder.RegisterUseCase<SaveAccountDueListInputData, SaveAccountDueListInteractor>();
 
             //TimeZone
             busBuilder.RegisterUseCase<GetDefaultSelectedTimeInputData, GetDefaultSelectedTimeInteractor>();

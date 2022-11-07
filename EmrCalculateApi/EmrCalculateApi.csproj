@@ -17,4 +17,18 @@
     <ProjectReference Include="..\PostgreDataContext\PostgreDataContext.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Ika\Constants\" />
+    <Folder Include="Ika\DB\" />
+    <Folder Include="Ika\Models\" />
+    <Folder Include="Ika\ViewModels\" />
+    <Folder Include="ReceFutan\DB\" />
+    <Folder Include="ReceFutan\Models\" />
+    <Folder Include="ReceFutan\ViewModels\" />
+    <Folder Include="Receipt\DB\" />
+    <Folder Include="Receipt\Constants\" />
+    <Folder Include="Receipt\Models\" />
+    <Folder Include="Receipt\ViewModels\" />
+  </ItemGroup>
+
 </Project>

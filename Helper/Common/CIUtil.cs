@@ -1428,6 +1428,12 @@ namespace Helper.Common
             }
         }
 
+        public static string DateTimeToTime(DateTime dateTime)
+        {
+            return dateTime.ToString("HHmmss");
+
+        }
+
         public static int DayOfWeek(DateTime dateTime)
         {
             int result = 0;
@@ -1469,15 +1475,14 @@ namespace Helper.Common
             result = Copy(wrkStr, 1, 2) + ":" + Copy(wrkStr, 3, 2);
             return result;
         }
-    }
 
-    public enum WarekiFormat
-    {
-        Short,
-        Full,
-        Mix
+        public enum WarekiFormat
+        {
+            Short,
+            Full,
+            Mix
+        }
     }
-
     public struct WarekiYmd
     {
 #pragma warning disable S1104 // Fields should not have public accessibility

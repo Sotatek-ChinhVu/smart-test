@@ -4,10 +4,10 @@ namespace EmrCloudApi.Tenant.Responses.AccountDue;
 
 public class GetAccountDueListResponse
 {
-    public GetAccountDueListResponse(AccountDueModel accountDueModel)
+    public GetAccountDueListResponse(AccountDueListModel accountDueModel)
     {
         AccountDueModel = accountDueModel;
     }
 
-    public AccountDueModel AccountDueModel { get; private set; }
+    public AccountDueListModel AccountDueModel { get; private set; }
 }
