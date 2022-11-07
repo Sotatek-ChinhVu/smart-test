@@ -23,7 +23,7 @@ namespace EmrCalculateApi.Futan.ViewModels
 #pragma warning disable S1125
 #pragma warning disable S1066
 #pragma warning disable S1871
-    public class FutanCalculate : IFutancalcViewModel
+    public class FutancalcViewModel : IFutancalcViewModel
     {
         private readonly FutancalcFinder _futancalcFinder;
         private readonly OdrInfFinder _odrInfFinder;
@@ -73,7 +73,7 @@ namespace EmrCalculateApi.Futan.ViewModels
         private readonly TenantDataContext _tenantDataContext;
         private readonly ISystemConfigProvider _systemConfigProvider;
         private readonly IEmrLogger _emrLogger;
-        public FutanCalculate(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
+        public FutancalcViewModel(ITenantProvider tenantProvider, ISystemConfigProvider systemConfigProvider, IEmrLogger emrLogger)
         {
             _systemConfigProvider = systemConfigProvider;
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
