@@ -8,8 +8,8 @@ namespace EmrCalculateApi.Controllers
     [ApiController]
     public class FutanController : ControllerBase
     {
-        private readonly IFutanCalculate _futanCalculate;
-        public FutanController(IFutanCalculate futanCalculate)
+        private readonly IFutancalcViewModel _futanCalculate;
+        public FutanController(IFutancalcViewModel futanCalculate)
         {
             _futanCalculate = futanCalculate;
         }

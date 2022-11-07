@@ -2,7 +2,7 @@
 
 namespace EmrCalculateApi.Interface
 {
-    public interface IFutanCalculate
+    public interface IFutancalcViewModel
     {
         void FutanCalculation(
             long ptId,

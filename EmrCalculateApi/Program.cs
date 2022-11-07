@@ -1,4 +1,4 @@
-using EmrCalculateApi.Futan;
+using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Implementation;
 using EmrCalculateApi.Implementation.IkaCalculate;
 using EmrCalculateApi.Interface;
@@ -21,7 +21,7 @@ services.AddScoped<ITenantProvider, TenantProvider>();
 services.AddScoped<ISystemConfigProvider, SystemConfigProvider>();
 services.AddScoped<IEmrLogger, EmrLogger>();
 
-services.AddScoped<IFutanCalculate, FutanCalculate>();
+services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
 services.AddScoped<IIkaCalculate, IkaCalculate>();
 
 var app = builder.Build();
