@@ -63,7 +63,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList + "RaiinMst")]
-        public async Task<ActionResult<Response<GetListRaiinMstResponse>>> GetListRaiinMst()
+        public async Task<ActionResult<Response<GetListRaiinMstResponse>>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
             var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             if (!validateToken)
