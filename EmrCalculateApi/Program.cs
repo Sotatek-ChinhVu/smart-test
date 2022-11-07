@@ -26,6 +26,20 @@ services.AddScoped<IIkaCalculateViewModel, IkaCalculateViewModel>();
 
 var app = builder.Build();
 
+//Add config from json file
+string enviroment = "Development";
+if (app.Environment.IsProduction() ||
+    app.Environment.IsStaging())
+{
+    enviroment = "Staging";
+}
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("env.json", optional: true, reloadOnChange: true)
+          .AddJsonFile($"env.{enviroment}.json", true, true);
+});
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
