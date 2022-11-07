@@ -53,6 +53,51 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
                 case ValidateRousaiJibaiStatus.InvalidFaild:
                     Result.Message = ResponseMessage.Failed;
                     break;
+                case ValidateRousaiJibaiStatus.InvalidRodoBangoNull:
+                    Result.Message = ResponseMessage.InvalidRodoBangoNull;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidRodoBangoLengthNotEquals14:
+                    Result.Message = ResponseMessage.InvalidRodoBangoLengthNotEquals14;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckItemFirstListRousaiTenki:
+                    Result.Message = ResponseMessage.InvalidCheckItemFirstListRousaiTenki;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiSinkei:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiTenkiSinkei;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiTenki:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiTenkiTenki;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiEndDate:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiTenkiEndDate;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiSaigaiKbnNotEquals1And2:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiSaigaiKbnNotEquals1And2;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiSyobyoDateEquals0:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiSyobyoDateEquals0;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull:
+                    Result.Message = ResponseMessage.InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckRousaiRyoyoDate:
+                    Result.Message = ResponseMessage.InvalidCheckRousaiRyoyoDate;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidCheckDateExpirated:
+                    Result.Message = ResponseMessage.InvalidCheckDateExpirated;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidNenkinBangoIsNull:
+                    Result.Message = ResponseMessage.InvalidNenkinBangoIsNull;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidNenkinBangoLengthNotEquals9:
+                    Result.Message = ResponseMessage.InvalidNenkinBangoLengthNotEquals9;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoIsNull:
+                    Result.Message = ResponseMessage.InvalidKenkoKanriBangoIsNull;
+                    break;
+                case ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoLengthNotEquals13:
+                    Result.Message = ResponseMessage.InvalidKenkoKanriBangoLengthNotEquals13;
+                    break;
             }
         }
     }
