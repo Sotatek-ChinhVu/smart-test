@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Requests.User;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.User;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.Create;
@@ -15,6 +16,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly UseCaseBus _bus;
@@ -63,7 +65,12 @@ public class UserController : ControllerBase
         {
             return new ActionResult<Response<UpsertUserResponse>>(new Response<UpsertUserResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
         }
-        var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u)).ToList();
+        validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<UpsertUserResponse>>(new Response<UpsertUserResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u, hpId)).ToList();
         var input = new UpsertUserListInputData(upsertUserList, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new UpsertUserListPresenter();
@@ -72,12 +79,12 @@ public class UserController : ControllerBase
         return new ActionResult<Response<UpsertUserResponse>>(presenter.Result);
     }
 
-    private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest)
+    private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int hpId)
     {
         return
             new UserMstModel
             (
-                userInfoRequest.HpId,
+                hpId,
                 userInfoRequest.Id,
                 userInfoRequest.UserId,
                 userInfoRequest.JobCd,

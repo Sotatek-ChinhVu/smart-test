@@ -11,6 +11,7 @@ using EmrCloudApi.Tenant.Responses.Reception;
 using EmrCloudApi.Tenant.Responses.ReceptionVisiting;
 using EmrCloudApi.Tenant.Responses.VisitingList;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Reception.GetList;
@@ -25,6 +26,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class VisitingController : ControllerBase
 {
     private readonly UseCaseBus _bus;

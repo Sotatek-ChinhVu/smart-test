@@ -17,11 +17,13 @@ using EmrCloudApi.Tenant.Constants;
 using UseCase.DrugDetailData;
 using EmrCloudApi.Tenant.Presenters.DrugDetailData;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InputItemController : ControllerBase
     {
         private readonly UseCaseBus _bus;

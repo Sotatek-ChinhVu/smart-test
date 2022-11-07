@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.SaveImageSuperSetDetail;
@@ -23,6 +24,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class SetController : ControllerBase
 {
     private readonly UseCaseBus _bus;

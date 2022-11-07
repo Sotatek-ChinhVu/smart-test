@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.UserConf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UserConf;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
@@ -12,6 +13,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UserConfController : ControllerBase
 {
     private readonly UseCaseBus _bus;

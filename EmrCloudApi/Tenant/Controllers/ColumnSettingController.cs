@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.ColumnSetting;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ColumnSetting;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -13,6 +14,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ColumnSettingController : ControllerBase
 {
     private readonly UseCaseBus _bus;

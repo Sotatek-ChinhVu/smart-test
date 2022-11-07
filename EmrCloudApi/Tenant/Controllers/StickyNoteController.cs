@@ -9,11 +9,13 @@ using EmrCloudApi.Tenant.Responses.StickyNote;
 using EmrCloudApi.Tenant.Requests.StickyNote;
 using UseCase.StickyNote;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StickyNoteController : ControllerBase
     {
         private readonly UseCaseBus _bus;

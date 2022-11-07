@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.SetKbnMst;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetKbnMst;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetKbnMst.GetList;
@@ -12,6 +13,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SetKbnController : ControllerBase
     {
         private readonly UseCaseBus _bus;

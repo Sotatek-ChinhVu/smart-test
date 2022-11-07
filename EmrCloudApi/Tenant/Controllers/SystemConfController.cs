@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.SystemConf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SystemConf;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SystemConf;
@@ -12,6 +13,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SystemConfController : ControllerBase
     {
         private readonly UseCaseBus _bus;

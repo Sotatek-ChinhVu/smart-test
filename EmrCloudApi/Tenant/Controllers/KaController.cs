@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.Ka;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
@@ -14,6 +15,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class KaController : ControllerBase
 {
     private readonly UseCaseBus _bus;

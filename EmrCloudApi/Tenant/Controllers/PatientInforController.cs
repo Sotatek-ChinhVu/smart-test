@@ -66,11 +66,13 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PatientInforController : ControllerBase
     {
         private readonly UseCaseBus _bus;

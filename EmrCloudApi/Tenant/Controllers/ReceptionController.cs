@@ -18,6 +18,7 @@ using EmrCloudApi.Tenant.Responses.Reception;
 using EmrCloudApi.Tenant.Responses.ReceptionInsurance;
 using EmrCloudApi.Tenant.Responses.ReceptionSameVisit;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.ValidPatternExpirated;
@@ -39,6 +40,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ReceptionController : ControllerBase
     {
         private readonly UseCaseBus _bus;

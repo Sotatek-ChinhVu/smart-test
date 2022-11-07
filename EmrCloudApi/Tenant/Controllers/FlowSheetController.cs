@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.FlowSheet;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.FlowSheet;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.FlowSheet.GetList;
@@ -13,6 +14,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class FlowSheetController
     {
         private readonly UseCaseBus _bus;

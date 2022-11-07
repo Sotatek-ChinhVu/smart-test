@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.KarteFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteFilter;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -13,6 +14,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class KarteFilterController : ControllerBase
     {
         private readonly UseCaseBus _bus;

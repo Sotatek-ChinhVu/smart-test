@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.UketukeSbt;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UketukeSbt;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -14,6 +15,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UketukeSbtController : ControllerBase
 {
     private readonly UseCaseBus _bus;

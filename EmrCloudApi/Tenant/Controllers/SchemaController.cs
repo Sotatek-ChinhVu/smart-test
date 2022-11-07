@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.Schema;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
@@ -13,6 +14,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SchemaController : ControllerBase
     {
         private readonly UseCaseBus _bus;

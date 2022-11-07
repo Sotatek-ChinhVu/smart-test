@@ -13,6 +13,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class HistoryController : ControllerBase
     {
         private readonly UseCaseBus _bus;

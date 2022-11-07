@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.OrdInfs;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.OrdInfs;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.OrdInfs.GetHeaderInf;
@@ -15,6 +16,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class OrdInfController : ControllerBase
     {
         private readonly UseCaseBus _bus;

@@ -5,6 +5,7 @@ using EmrCloudApi.Tenant.Requests.Diseases;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Diseases;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Diseases.GetDiseaseList;
@@ -14,6 +15,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DiseasesController : ControllerBase
     {
         private readonly UseCaseBus _bus;

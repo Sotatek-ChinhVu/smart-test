@@ -45,7 +45,12 @@ public class AccountDueController : ControllerBase
     [HttpPost(ApiPath.SaveList)]
     public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
-        var input = new SaveAccountDueListInputData(request.HpId,  request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveAccountDueListResponse>>(new Response<SaveAccountDueListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new SaveAccountDueListInputData(hpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveAccountDueListPresenter();

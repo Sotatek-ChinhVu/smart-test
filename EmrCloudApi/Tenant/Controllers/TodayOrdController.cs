@@ -7,6 +7,7 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
@@ -18,6 +19,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TodayOrdController : ControllerBase
     {
         private readonly UseCaseBus _bus;

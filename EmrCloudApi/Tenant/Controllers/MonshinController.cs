@@ -8,11 +8,13 @@ using UseCase.MonshinInfor.GetList;
 using EmrCloudApi.Tenant.Presenters.MonshinInf;
 using UseCase.MonshinInfor.Save;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MonshinController : ControllerBase
     {
         private readonly UseCaseBus _bus;

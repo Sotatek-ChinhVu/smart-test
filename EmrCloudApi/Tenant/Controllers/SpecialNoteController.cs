@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
@@ -14,6 +15,7 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SpecialNoteController
     {
         private readonly UseCaseBus _bus;
