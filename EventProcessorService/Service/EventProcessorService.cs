@@ -9,12 +9,10 @@ namespace EventProcessor.Service;
 
 public class EventProcessorService : IEventProcessorService
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
     private readonly TenantDataContext _tenantDataContext;
 
     public EventProcessorService(ITenantProvider tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
     public bool DoEvent(List<ArgumentModel> listAuditTraiLogModels)
@@ -58,90 +56,5 @@ public class EventProcessorService : IEventProcessorService
                 return false;
             }
         });
-    }
-
-    public bool BundleExecute(BundleArgumentModel bundleArg)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool CheckOdrItem(long ptId, int sinDate, long raiinNo, string biko)
-    {
-        throw new NotImplementedException();
-    }
-
-    public CommonDataModel GetCommonData(ArgumentModel auditTraiLogModel)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei040DataModel GetRenkei040Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei050DataModel GetRenkei050Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei060DataModel GetRenkei060Data(long ptId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei070DataModel GetRenkei070Data(long ptId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei080DataModel GetRenkei080Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei100DataModel GetRenkei100Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Renkei130DataModel> GetRenkei130Data(ArgumentModel arg)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Renkei260OdrInfModel> GetRenkei260Data(long ptId, int sinDate)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Renkei270KarteInfModel> GetRenkei270Data(long ptId, int sinDate)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei280DataModel GetRenkei280Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei330DataModel GetRenkei330Data(long ptId, int sinDate, long raiinNo, string eventCd, string hosoku)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei350DataModel GetRenkei350Data(long ptId, int sinDate)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Renkei360DataModel GetRenkei360Data(long ptId, int sinDate, long raiinNo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool RunCommonProgram(RenkeiModel renkeiModel, CommonDataModel common)
-    {
-        throw new NotImplementedException();
     }
 }
