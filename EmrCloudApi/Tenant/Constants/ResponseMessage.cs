@@ -782,5 +782,22 @@
         public static readonly string InvalidMasterDateKohi4 = "Invalid Kohi4 MasterDate";
         public static readonly string InvalidPatternIsExpirated = "Invalid Pattern Expirated";
         public static readonly string InvalidHasElderHoken = "Invalid Has ElderHoken";
+
+        // Validate Rousai Jibai
+        public static readonly string InvalidRodoBangoNull = "Invalid RodoBango Null";
+        public static readonly string InvalidRodoBangoLengthNotEquals14 = "Invalid RodoBango Length Not Equals 14";
+        public static readonly string InvalidCheckItemFirstListRousaiTenki = "Invalid Check Item First Of ListRousaiTenki";
+        public static readonly string InvalidCheckRousaiTenkiSinkei = "Invalid Check RousaiTenki Sinkei";
+        public static readonly string InvalidCheckRousaiTenkiTenki = "Invalid Check RousaiTenki Tenki";
+        public static readonly string InvalidCheckRousaiTenkiEndDate = "Invalid Check RousaiTenki EndDate";
+        public static readonly string InvalidCheckRousaiSaigaiKbnNotEquals1And2 = "Invalid Check RousaiSaigaiKbn Not Equals 1 And 2";
+        public static readonly string InvalidCheckRousaiSyobyoDateEquals0 = "Invalid Check Rousai SyobyoDate Equals 0";
+        public static readonly string InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull = "Invalid Check HokenKbn Equals 13 And RousaiSyobyoCd Is Null";
+        public static readonly string InvalidCheckRousaiRyoyoDate = "Invalid Check RousaiRyoyoDate";
+        public static readonly string InvalidCheckDateExpirated = "Invalid Check Date Expirated";
+        public static readonly string InvalidNenkinBangoIsNull = "Invalid NenkinBango Is Null";
+        public static readonly string InvalidNenkinBangoLengthNotEquals9 = "Invalid NenkinBango Length Not Equals 9";
+        public static readonly string InvalidKenkoKanriBangoIsNull = "Invalid KenkoKanri Bango Is Null";
+        public static readonly string InvalidKenkoKanriBangoLengthNotEquals13 = "Invalid KenkoKanri Bango Length Not Equals 13";
     }
 }

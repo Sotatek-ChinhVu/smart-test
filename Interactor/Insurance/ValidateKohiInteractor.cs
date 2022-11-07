@@ -1,7 +1,6 @@
 ﻿using Domain.Constant;
-using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
-using Domain.Models.ReceptionInsurance;
 using Helper.Common;
 using Infrastructure.Repositories;
 using System;
@@ -35,7 +34,10 @@ namespace Interactor.Insurance
                 }
                 // Get HokenMst Kohi1
                 var hokenMstKohi1 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo1, inputData.SelectedKohiHokenEdraNo1);
-
+                if (hokenMstKohi1 == null)
+                {
+                    hokenMstKohi1 = new HokenMstModel();
+                }
                 //IsValidKohi1
                 var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, hokenMstKohi1.IsFutansyaNoCheck, hokenMstKohi1.IsJyukyusyaNoCheck, hokenMstKohi1.IsTokusyuNoCheck, hokenMstKohi1.StartDate, hokenMstKohi1.EndDate, hokenMstKohi1.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
                 if (!checkMessageKohi1.Result)
@@ -51,6 +53,10 @@ namespace Interactor.Insurance
 
                 // Get HokenMst Kohi2
                 var hokenMstKohi2 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo2, inputData.SelectedKohiHokenEdraNo2);
+                if (hokenMstKohi2 == null)
+                {
+                    hokenMstKohi2 = new HokenMstModel();
+                }
                 //IsValidKohi2
                 var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, hokenMstKohi2.IsFutansyaNoCheck, hokenMstKohi2.IsJyukyusyaNoCheck, hokenMstKohi2.IsTokusyuNoCheck, hokenMstKohi2.StartDate, hokenMstKohi2.EndDate, hokenMstKohi2.DisplayTextMaster, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
                 if (!checkMessageKohi2.Result)
@@ -65,6 +71,10 @@ namespace Interactor.Insurance
                 }
                 // Get HokenMst Kohi3
                 var hokenMstKohi3 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo3, inputData.SelectedKohiHokenEdraNo3);
+                if (hokenMstKohi3 == null)
+                {
+                    hokenMstKohi3 = new HokenMstModel();
+                }
                 //IsValidKohi3
                 var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, hokenMstKohi3.IsFutansyaNoCheck, hokenMstKohi3.IsJyukyusyaNoCheck, hokenMstKohi3.IsTokusyuNoCheck, hokenMstKohi3.StartDate, hokenMstKohi3.EndDate, hokenMstKohi3.DisplayTextMaster, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
                 if (!checkMessageKohi3.Result)
@@ -79,6 +89,10 @@ namespace Interactor.Insurance
                 }
                 // Get HokenMst Kohi4
                 var hokenMstKohi4 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo4, inputData.SelectedKohiHokenEdraNo4);
+                if (hokenMstKohi4 == null)
+                {
+                    hokenMstKohi4 = new HokenMstModel();
+                }
                 //IsValidKohi4
                 var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, hokenMstKohi4.IsFutansyaNoCheck, hokenMstKohi4.IsJyukyusyaNoCheck, hokenMstKohi4.IsTokusyuNoCheck, hokenMstKohi4.StartDate, hokenMstKohi4.EndDate, hokenMstKohi4.DisplayTextMaster, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
                 if (!checkMessageKohi4.Result)
@@ -151,7 +165,7 @@ namespace Interactor.Insurance
                 }
             }
 
-            if (isHokenMstModel)
+            if (!isHokenMstModel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
@@ -535,7 +549,7 @@ namespace Interactor.Insurance
                 numberMessage = "４";
             }
 
-            if (!isKohiModel)
+            if (isKohiModel)
             {
                 if (numberKohi == 1)
                 {
