@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.RaiinFilter;
 using EmrCloudApi.Tenant.Requests.RaiinFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinFilter;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinFilterMst.GetList;
@@ -15,10 +16,12 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class RaiinFilterController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public RaiinFilterController(UseCaseBus bus)
+    public RaiinFilterController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
@@ -34,7 +37,17 @@ public class RaiinFilterController : ControllerBase
     [HttpPost(ApiPath.SaveList + "Mst")]
     public async Task<ActionResult<Response<SaveRaiinFilterMstListResponse>>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
     {
-        var input = new SaveRaiinFilterMstListInputData(req.FilterMsts);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveRaiinFilterMstListResponse>>(new Response<SaveRaiinFilterMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveRaiinFilterMstListResponse>>(new Response<SaveRaiinFilterMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new SaveRaiinFilterMstListInputData(req.FilterMsts, hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveRaiinFilterMstListPresenter();
         presenter.Complete(output);

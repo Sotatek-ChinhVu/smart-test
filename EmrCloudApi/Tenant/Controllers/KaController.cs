@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.Ka;
 using EmrCloudApi.Tenant.Requests.Ka;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
@@ -16,10 +17,12 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class KaController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public KaController(UseCaseBus bus)
+    public KaController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
@@ -45,7 +48,17 @@ public class KaController : ControllerBase
     [HttpPost(ApiPath.SaveListKaMst)]
     public async Task<ActionResult<Response<SaveListKaMstResponse>>> Save([FromBody] SaveListKaMstRequest request)
     {
-        var input = new SaveKaMstInputData(request.HpId, request.UserId, request.kaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveListKaMstResponse>>(new Response<SaveListKaMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveListKaMstResponse>>(new Response<SaveListKaMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new SaveKaMstInputData(hpId, userId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveListKaMstPresenter();

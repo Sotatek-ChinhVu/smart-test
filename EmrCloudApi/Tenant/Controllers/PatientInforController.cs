@@ -65,6 +65,7 @@ using Domain.Models.PatientInfor;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
+using EmrCloudApi.Tenant.Services;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -73,15 +74,22 @@ namespace EmrCloudApi.Tenant.Controllers
     public class PatientInforController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public PatientInforController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public PatientInforController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
         public async Task<ActionResult<Response<GetPatientCommentResponse>>> GetList([FromQuery] GetPatientCommentRequest request)
         {
-            var input = new GetPatientCommentInputData(request.HpId, request.PtId);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetPatientCommentResponse>>(new Response<GetPatientCommentResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetPatientCommentInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetPatientCommentPresenter();
             presenter.Complete(output);
@@ -91,7 +99,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientById")]
         public async Task<ActionResult<Response<GetPatientInforByIdResponse>>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            var input = new GetPatientInforByIdInputData(request.HpId, request.PtId, request.SinDate, request.RaiinNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetPatientInforByIdResponse>>(new Response<GetPatientInforByIdResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetPatientInforByIdInputData(hpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var present = new GetPatientInforByIdPresenter();
@@ -103,7 +116,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListPatientGroup")]
         public async Task<ActionResult<Response<GetListGroupInfResponse>>> GetListPatientGroup([FromQuery] GetListGroupInfRequest request)
         {
-            var input = new GetListGroupInfInputData(request.HpId, request.PtId);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetListGroupInfResponse>>(new Response<GetListGroupInfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetListGroupInfInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var present = new GetListGroupInfPresenter();
@@ -115,7 +133,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("InsuranceListByPtId")]
         public async Task<ActionResult<Response<GetInsuranceListResponse>>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
-            var input = new GetInsuranceListInputData(request.HpId, request.PtId, request.SinDate);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetInsuranceListResponse>>(new Response<GetInsuranceListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetInsuranceListInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetInsuranceListPresenter();
@@ -127,7 +150,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchSimple")]
         public async Task<ActionResult<Response<SearchPatientInforSimpleResponse>>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
-            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SearchPatientInforSimpleResponse>>(new Response<SearchPatientInforSimpleResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, hpId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var present = new SearchPatientInfoSimplePresenter();
@@ -139,7 +167,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SearchAdvanced")]
         public async Task<ActionResult<Response<SearchPatientInfoAdvancedResponse>>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SearchPatientInfoAdvancedResponse>>(new Response<SearchPatientInfoAdvancedResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, hpId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchPatientInfoAdvancedPresenter();
             presenter.Complete(output);
@@ -149,7 +182,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListCalculationPatient")]
         public async Task<ActionResult<Response<CalculationInfResponse>>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
         {
-            var input = new CalculationInfInputData(request.HpId, request.PtId);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<CalculationInfResponse>>(new Response<CalculationInfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new CalculationInfInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var present = new CalculationInfPresenter();
@@ -173,7 +211,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientGroupMst)]
         public async Task<ActionResult<Response<SaveListPatientGroupMstResponse>>> SavePatientGroupMst([FromBody] SaveListPatientGroupMstRequest request)
         {
-            var input = new SaveListPatientGroupMstInputData(request.HpId, request.UserId, ConvertToListInput(request.SaveListPatientGroupMsts));
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveListPatientGroupMstResponse>>(new Response<SaveListPatientGroupMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveListPatientGroupMstResponse>>(new Response<SaveListPatientGroupMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveListPatientGroupMstInputData(hpId, userId, ConvertToListInput(request.SaveListPatientGroupMsts));
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveListPatientGroupMstPresenter();
@@ -185,7 +233,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetInsuranceMst")]
         public async Task<ActionResult<Response<GetInsuranceMstResponse>>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
-            var input = new GetInsuranceMstInputData(request.HpId, request.PtId, request.SinDate);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetInsuranceMstResponse>>(new Response<GetInsuranceMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetInsuranceMstInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetInsuranceMstPresenter();
@@ -195,9 +248,14 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("SearchHokensyaMst")]
-        public  async Task<ActionResult<Response<SearchHokensyaMstResponse>>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
+        public async Task<ActionResult<Response<SearchHokensyaMstResponse>>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
         {
-            var input = new SearchHokensyaMstInputData(request.HpId, request.SinDate, request.Keyword);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SearchHokensyaMstResponse>>(new Response<SearchHokensyaMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SearchHokensyaMstInputData(hpId, request.SinDate, request.Keyword);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SearchHokenMstPresenter();
@@ -209,7 +267,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetHokenMstByFutansyaNo")]
         public async Task<ActionResult<Response<GetKohiHokenMstResponse>>> GetHokenMstByFutansyaNo([FromQuery] GetKohiHokenMstRequest request)
         {
-            var input = new GetKohiHokenMstInputData(request.HpId, request.SinDate, request.FutansyaNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetKohiHokenMstResponse>>(new Response<GetKohiHokenMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetKohiHokenMstInputData(hpId, request.SinDate, request.FutansyaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetKohiHokenMstPresenter();
@@ -226,8 +289,8 @@ namespace EmrCloudApi.Tenant.Controllers
                 request.IsKohiEmptyModel2, request.IsSelectedKohiMst2, request.SelectedKohiFutansyaNo2, request.SelectedKohiJyukyusyaNo2,
                 request.SelectedKohiTokusyuNo2, request.SelectedKohiStartDate2, request.SelectedKohiEndDate2, request.SelectedKohiConfirmDate2, request.SelectedKohiHokenNo2, request.SelectedKohiHokenEdraNo2, request.SelectedKohiIsAddNew2,
                 request.IsKohiEmptyModel3, request.IsSelectedKohiMst3, request.SelectedKohiFutansyaNo3, request.SelectedKohiJyukyusyaNo3, request.SelectedKohiTokusyuNo3, request.SelectedKohiStartDate3, request.SelectedKohiEndDate3,
-                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiHokenEdraNo3, request.SelectedKohiIsAddNew3, 
-                request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4, 
+                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiHokenEdraNo3, request.SelectedKohiIsAddNew3,
+                request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4,
                 request.SelectedKohiConfirmDate4, request.SelectedKohiHokenNo4, request.SelectedKohiHokenEdraNo4, request.SelectedKohiIsAddNew4);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -240,7 +303,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateRousaiJibai)]
         public async Task<ActionResult<Response<ValidateRousaiJibaiResponse>>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
         {
-            var input = new ValidateRousaiJibaiInputData(request.HpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ValidateRousaiJibaiResponse>>(new Response<ValidateRousaiJibaiResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new ValidateRousaiJibaiInputData(hpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
                 request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
                 request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
                 request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate);
@@ -274,7 +342,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SaveHokenSyaMst")]
         public async Task<ActionResult<Response<SaveHokenSyaMstResponse>>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
         {
-            var input = new SaveHokenSyaMstInputData(request.HpId
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveHokenSyaMstResponse>>(new Response<SaveHokenSyaMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveHokenSyaMstResponse>>(new Response<SaveHokenSyaMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveHokenSyaMstInputData(hpId
                                                    , request.Name
                                                    , request.KanaName
                                                    , request.HoubetuKbn
@@ -290,7 +368,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                    , request.Address1
                                                    , request.Address2
                                                    , request.Tel1
-                                                   , request.IsKigoNa);
+                                                   , request.IsKigoNa
+                                                   , userId);
 
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveHokenSyaMstPresenter();
@@ -301,7 +380,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchEmptyId)]
         public async Task<ActionResult<Response<SearchEmptyIdResponse>>> SearchEmptyId([FromQuery] SearchEmptyIdResquest request)
         {
-            var input = new SearchEmptyIdInputData(request.HpId, request.PtNum, request.PageIndex, request.PageSize);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SearchEmptyIdResponse>>(new Response<SearchEmptyIdResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SearchEmptyIdInputData(hpId, request.PtNum, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SearchEmptyIdPresenter();
@@ -313,7 +397,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDetailHokenMst)]
         public async Task<ActionResult<Response<GetDetailHokenMstResponse>>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
         {
-            var input = new GetDetailHokenMstInputData(request.HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetDetailHokenMstResponse>>(new Response<GetDetailHokenMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetDetailHokenMstInputData(hpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetDetailHokenMstPresenter();
@@ -336,7 +425,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("ValidateMainInsurance")]
         public async Task<ActionResult<Response<ValidateMainInsuranceReponse>>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
         {
-            var input = new ValidMainInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ValidateMainInsuranceReponse>>(new Response<ValidateMainInsuranceReponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new ValidMainInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
                 request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfHokenEdra, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
                 request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate, request.SelectedHokenInfKigo, request.SelectedHokenInfBango,
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
@@ -354,7 +448,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceMasterLinkage)]
         public async Task<ActionResult<Response<GetInsuranceMasterLinkageResponse>>> GetInsuranceMasterLinkage([FromQuery] GetInsuranceMasterLinkageRequest request)
         {
-            var input = new GetInsuranceMasterLinkageInputData(request.HpId, request.FutansyaNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetInsuranceMasterLinkageResponse>>(new Response<GetInsuranceMasterLinkageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetInsuranceMasterLinkageInputData(hpId, request.FutansyaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetInsuranceMasterLinkagePresenter();
@@ -366,7 +465,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public async Task<ActionResult<Response<GetPtKyuseiInfResponse>>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {
-            var input = new GetPtKyuseiInfInputData(request.HpId, request.PtId, request.IsDeleted);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetPtKyuseiInfResponse>>(new Response<GetPtKyuseiInfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetPtKyuseiInfInputData(hpId, request.PtId, request.IsDeleted);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetPtKyuseiInfPresenter();
@@ -378,7 +482,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveInsuranceMasterLinkage)]
         public async Task<ActionResult<Response<SaveInsuranceMasterLinkageResponse>>> SaveInsuranceMasterLinkage([FromBody] SaveInsuranceMasterLinkageRequest request)
         {
-            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(new Response<SaveInsuranceMasterLinkageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveInsuranceMasterLinkageResponse>>(new Response<SaveInsuranceMasterLinkageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveInsuranceMasterLinkagePresenter();
             presenter.Complete(output);
@@ -388,7 +502,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientInfo)]
         public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            PatientInforSaveModel patient = new PatientInforSaveModel(request.Patient.HpId,
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SavePatientInfoResponse>>(new Response<SavePatientInfoResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SavePatientInfoResponse>>(new Response<SavePatientInfoResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            PatientInforSaveModel patient = new PatientInforSaveModel(hpId,
                                                                       request.Patient.PtId,
                                                                       request.Patient.PtNum,
                                                                       request.Patient.KanaName,
@@ -426,7 +550,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                       request.Patient.LimitConsFlg,
                                                                       request.Patient.Memo);
 
-            List<InsuranceModel> insurances = request.Insurances.Select(x => new InsuranceModel(x.HpId,
+            List<InsuranceModel> insurances = request.Insurances.Select(x => new InsuranceModel(hpId,
                                                                                                x.PtId,
                                                                                                0,
                                                                                                x.SeqNo,
@@ -445,7 +569,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                                x.IsAddNew,
                                                                                                x.IsDeleted)).ToList();
 
-            List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(x.HpId,
+            List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(hpId,
                                                                                            x.PtId,
                                                                                            x.HokenId,
                                                                                            x.SeqNo,
@@ -502,11 +626,11 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                            x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
                                                                                                                                            c.HokenId,
                                                                                                                                            c.SeqNo,
-                                                                                                                                           c.CheckId, 
+                                                                                                                                           c.CheckId,
                                                                                                                                            c.CheckName,
                                                                                                                                            c.CheckComment,
                                                                                                                                            c.ConfirmDate)).ToList(),
-                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei, 
+                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
                                                                                                                                            m.RousaiTenkiTenki,
                                                                                                                                            m.RousaiTenkiEndDate,
                                                                                                                                            m.RousaiTenkiIsDeleted,
@@ -527,7 +651,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                                                                             c.CheckComment,
                                                                                                                                             c.ConfirmDate)).ToList(),
                                                                                             x.FutansyaNo,
-                                                                                            x.JyukyusyaNo, 
+                                                                                            x.JyukyusyaNo,
                                                                                             x.HokenId,
                                                                                             x.StartDate,
                                                                                             x.EndDate,
@@ -541,7 +665,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                             x.Houbetu,
                                                                                             new HokenMstModel(),
                                                                                             x.HokenNo,
-                                                                                            x.HokenEdaNo, 
+                                                                                            x.HokenEdaNo,
                                                                                             x.PrefNo,
                                                                                             0,
                                                                                             false,
@@ -556,7 +680,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                      insurances,
                                                      hokenInfs,
                                                      hokenKohis,
-                                                     request.PtGrps);
+                                                     request.PtGrps,
+                                                     userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
@@ -566,7 +691,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("DeletePatientInfo")]
         public async Task<ActionResult<Response<DeletePatientInfoResponse>>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
         {
-            var input = new DeletePatientInfoInputData(request.HpId, request.PtId);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<DeletePatientInfoResponse>>(new Response<DeletePatientInfoResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<DeletePatientInfoResponse>>(new Response<DeletePatientInfoResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new DeletePatientInfoInputData(hpId, request.PtId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new DeletePatientInfoPresenter();
             presenter.Complete(output);
@@ -576,23 +711,40 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateListPattern)]
         public async Task<ActionResult<Response<ValidateListInsuranceResponse>>> ValidateListPattern([FromBody] ValidateInsuranceRequest request)
         {
-            var input = new ValidateInsuranceInputData(request.HpId, request.SinDate, request.PtBirthday, request.ListInsurance);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ValidateListInsuranceResponse>>(new Response<ValidateListInsuranceResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new ValidateInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.ListInsurance);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new ValidateInsurancePresenter();
             presenter.Complete(output);
             return new ActionResult<Response<ValidateListInsuranceResponse>>(presenter.Result);
         }
+
         [HttpPost(ApiPath.SwapHoken)]
         public async Task<ActionResult<Response<SaveSwapHokenResponse>>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
-            var input = new SaveSwapHokenInputData(request.HpId, 
-                                                   request.PtId, 
-                                                   request.HokenIdBefore, 
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveSwapHokenResponse>>(new Response<SaveSwapHokenResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveSwapHokenResponse>>(new Response<SaveSwapHokenResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveSwapHokenInputData(hpId,
+                                                   request.PtId,
+                                                   request.HokenIdBefore,
                                                    request.HokenIdAfter,
                                                    request.HokenPidBefore,
                                                    request.HokenPidAfter,
                                                    request.StartDate,
-                                                   request.EndDate);
+                                                   request.EndDate,
+                                                   userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);

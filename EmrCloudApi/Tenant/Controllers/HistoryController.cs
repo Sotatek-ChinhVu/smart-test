@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -15,17 +16,29 @@ namespace EmrCloudApi.Tenant.Controllers
     public class HistoryController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public HistoryController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public HistoryController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetMedicalExaminationHistoryResponse>>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetMedicalExaminationHistoryResponse>>(new Response<GetMedicalExaminationHistoryResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetMedicalExaminationHistoryResponse>>(new Response<GetMedicalExaminationHistoryResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
             var watch = System.Diagnostics.Stopwatch.StartNew();
             watch.Start();
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, request.HpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, request.UserId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, hpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, userId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);
             var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetMedicalExaminationHistoryPresenter();

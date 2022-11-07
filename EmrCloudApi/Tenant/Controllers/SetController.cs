@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Requests.SetMst;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Responses.SetMst;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.SaveImageSuperSetDetail;
@@ -25,15 +26,22 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class SetController : ControllerBase
 {
     private readonly UseCaseBus _bus;
-    public SetController(UseCaseBus bus)
+    private readonly IUserService _userService;
+    public SetController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
     {
-        var input = new GetSetMstListInputData(request.HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<GetSetMstListResponse>>(new Response<GetSetMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetSetMstListInputData(hpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSetMstListPresenter();
@@ -45,7 +53,12 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetToolTip)]
     public async Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
     {
-        var input = new GetSetMstToolTipInputData(request.HpId, request.SetCd);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<GetSetMstToolTipResponse>>(new Response<GetSetMstToolTipResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetSetMstToolTipInputData(hpId, request.SetCd);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSetMstToolTipPresenter();
@@ -57,7 +70,17 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Save)]
     public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
-        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, request.IsGroup);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveSetMstResponse>>(new Response<SaveSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveSetMstResponse>>(new Response<SaveSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, hpId, userId, request.IsGroup);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveSetMstPresenter();
@@ -69,7 +92,17 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Reorder)]
     public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        var input = new ReorderSetMstInputData(request.HpId, request.DragSetCd, request.DropSetCd);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<ReorderSetMstResponse>>(new Response<ReorderSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<ReorderSetMstResponse>>(new Response<ReorderSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new ReorderSetMstInputData(hpId, request.DragSetCd, request.DropSetCd, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new ReorderSetMstPresenter();
@@ -81,7 +114,17 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Paste)]
     public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var input = new CopyPasteSetMstInputData(request.HpId, request.UserId, request.CopySetCd, request.PasteSetCd);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<CopyPasteSetMstResponse>>(new Response<CopyPasteSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<CopyPasteSetMstResponse>>(new Response<CopyPasteSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new CopyPasteSetMstInputData(hpId, userId, request.CopySetCd, request.PasteSetCd);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new CopyPasteSetMstPresenter();
@@ -93,7 +136,12 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public async Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        var input = new GetSuperSetDetailInputData(request.HpId, request.SetCd, request.Sindate);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<GetSuperSetDetailResponse>>(new Response<GetSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetSuperSetDetailInputData(hpId, request.SetCd, request.Sindate);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSuperSetDetailPresenter();
@@ -105,14 +153,24 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveSuperSetDetail)]
     public async Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveSuperSetDetailResponse>>(new Response<SaveSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveSuperSetDetailResponse>>(new Response<SaveSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
         var input = new SaveSuperSetDetailInputData(
-                request.SetCd,
-                request.UserId,
-                request.HpId,
-                ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                new SaveSetKarteInputItem(request.HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
-                ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
-                );
+                        request.SetCd,
+                        userId,
+                        hpId,
+                        ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
+                        new SaveSetKarteInputItem(hpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
+                        ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
+                    );
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveSuperSetDetailPresenter();
@@ -125,7 +183,12 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
     public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
-        var input = new SaveImageSuperSetDetailInputData(request.HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
+        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<SaveImageResponse>>(new Response<SaveImageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new SaveImageSuperSetDetailInputData(hpId, request.SetCd, request.Position, request.OldImage, Request.Body);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new SaveImageSuperSetDetailPresenter();

@@ -2,5 +2,4 @@
 
 public class GetReceptionSettingsRequest
 {
-    public int UserId { get; set; }
 }

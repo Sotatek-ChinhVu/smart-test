@@ -4,8 +4,6 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
 {
     public class ValidateRousaiJibaiRequest
     {
-        public int HpId { get; set; }
-
         public int HokenKbn { get; set; }
 
         public int SinDate { get; set; }

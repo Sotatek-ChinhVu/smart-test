@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.SytemConf;
 using EmrCloudApi.Tenant.Requests.SystemConf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SystemConf;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SystemConf;
@@ -14,15 +15,22 @@ namespace EmrCloudApi.Tenant.Controllers
     public class SystemConfController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SystemConfController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public SystemConfController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get)]
         public async Task<ActionResult<Response<GetSystemConfResponse>>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {
-            var input = new GetSystemConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetSystemConfResponse>>(new Response<GetSystemConfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetSystemConfInputData(hpId, request.GrpCd, request.GrpEdaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSystemConfPresenter();

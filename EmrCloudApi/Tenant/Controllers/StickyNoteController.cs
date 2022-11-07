@@ -42,7 +42,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Revert)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Revert([FromBody] DeleteRevertStickyNoteRequest request)
         {
-            var input = new RevertStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ActionStickyNoteResponse>>(new Response<ActionStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ActionStickyNoteResponse>>(new Response<ActionStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new RevertStickyNoteInputData(hpId, request.PtId, request.SeqNo, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new RevertStickyNotePresenter();
@@ -53,7 +63,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Delete)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Delete([FromBody] DeleteRevertStickyNoteRequest request)
         {
-            var input = new DeleteStickyNoteInputData(request.HpId, request.PtId, request.SeqNo);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ActionStickyNoteResponse>>(new Response<ActionStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ActionStickyNoteResponse>>(new Response<ActionStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new DeleteStickyNoteInputData(hpId, request.PtId, request.SeqNo, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new DeleteStickyNotePresenter();
@@ -64,7 +84,12 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Save([FromBody] SaveStickyNoteRequest request)
         {
-            var input = new SaveStickyNoteInputData(request.stickyNoteModels.Select(x=> x.Map()).ToList());
+            var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<ActionStickyNoteResponse>>(new Response<ActionStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveStickyNoteInputData(request.stickyNoteModels.Select(x => x.Map()).ToList(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveStickyNotePresenter();
@@ -73,9 +98,14 @@ namespace EmrCloudApi.Tenant.Controllers
             return new ActionResult<Response<ActionStickyNoteResponse>>(presenter.Result);
         }
         [HttpGet(ApiPath.Get + "Setting")]
-        public async Task<ActionResult<Response<GetSettingStickyNoteResponse>>> GetSetting([FromQuery] GetSettingStickyNoteRequest request)
+        public async Task<ActionResult<Response<GetSettingStickyNoteResponse>>> GetSetting()
         {
-            var input = new GetSettingStickyNoteInputData(request.UserId);
+            var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetSettingStickyNoteResponse>>(new Response<GetSettingStickyNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetSettingStickyNoteInputData(userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSettingStickyNotePresenter();

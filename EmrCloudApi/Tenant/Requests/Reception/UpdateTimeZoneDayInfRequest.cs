@@ -2,10 +2,6 @@
 
 public class UpdateTimeZoneDayInfRequest
 {
-    public int HpId { get; set; }
-
-    public int UserId { get; set; }
-
     public int SinDate { get; set; }
 
     public int CurrentTimeKbn { get; set; }

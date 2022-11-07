@@ -4,8 +4,6 @@ namespace EmrCloudApi.Tenant.Requests.Insurance
 {
     public class ValidateInsuranceRequest
     {
-        public int HpId { get; set; }
-
         public long PtId { get; set; }
 
         public int PtBirthday { get; set; }

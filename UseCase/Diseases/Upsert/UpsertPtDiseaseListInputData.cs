@@ -6,12 +6,12 @@ namespace UseCase.Diseases.Upsert
     {
         public UpsertPtDiseaseListInputData(List<UpsertPtDiseaseListInputItem> ptDiseaseModel, int hpId, int userId)
         {
-            this.ptDiseaseModel = ptDiseaseModel;
+            PtDiseaseModel = ptDiseaseModel;
             HpId = hpId;
             UserId = userId;
         }
 
-        public List<UpsertPtDiseaseListInputItem> ptDiseaseModel { get; private set; }
+        public List<UpsertPtDiseaseListInputItem> PtDiseaseModel { get; private set; }
 
         public int HpId { get; private set; }
 
@@ -19,7 +19,7 @@ namespace UseCase.Diseases.Upsert
 
         public List<UpsertPtDiseaseListInputItem> ToList()
         {
-            return this.ptDiseaseModel;
+            return PtDiseaseModel;
         }
 
     }

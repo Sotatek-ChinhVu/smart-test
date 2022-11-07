@@ -25,7 +25,7 @@ namespace Interactor.Diseases
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
                 }
 
-                var datas = inputData.ptDiseaseModel.Select(i => new PtDiseaseModel(
+                var datas = inputData.PtDiseaseModel.Select(i => new PtDiseaseModel(
                         i.HpId,
                         i.PtId,
                         i.SeqNo,

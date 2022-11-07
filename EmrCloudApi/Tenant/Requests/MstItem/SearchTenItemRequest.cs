@@ -16,8 +16,6 @@
 
         public string YJCd { get; set; } = string.Empty;
 
-        public int HpId { get; set; }
-
         public double PointFrom { get; set; } = 0;
 
         public double PointTo { get; set; } = 0;

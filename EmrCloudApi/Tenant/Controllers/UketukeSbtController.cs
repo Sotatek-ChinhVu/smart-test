@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.UketukeSbt;
 using EmrCloudApi.Tenant.Requests.UketukeSbt;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UketukeSbt;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -16,10 +17,12 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class UketukeSbtController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public UketukeSbtController(UseCaseBus bus)
+    public UketukeSbtController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
@@ -45,7 +48,12 @@ public class UketukeSbtController : ControllerBase
     [HttpGet(ApiPath.Get + "Next")]
     public async Task<ActionResult<Response<GetNextUketukeSbtMstResponse>>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId);
+        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<GetNextUketukeSbtMstResponse>>(new Response<GetNextUketukeSbtMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);

@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.KarteFilter;
 using EmrCloudApi.Tenant.Requests.KarteFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteFilter;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -15,15 +16,27 @@ namespace EmrCloudApi.Tenant.Controllers
     public class KarteFilterController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public KarteFilterController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public KarteFilterController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
         {
-            var input = new GetKarteFilterInputData();
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetKarteFilterMstResponse>>(new Response<GetKarteFilterMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<GetKarteFilterMstResponse>>(new Response<GetKarteFilterMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new GetKarteFilterInputData(hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetKarteFilterMstPresenter();
@@ -35,7 +48,17 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public async Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
-            var input = new SaveKarteFilterInputData(request.KarteFilters);
+            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveKarteFilterMstResponse>>(new Response<SaveKarteFilterMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            if (!validateToken)
+            {
+                return new ActionResult<Response<SaveKarteFilterMstResponse>>(new Response<SaveKarteFilterMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+            }
+            var input = new SaveKarteFilterInputData(request.KarteFilters, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveKarteFilterMstPresenter();

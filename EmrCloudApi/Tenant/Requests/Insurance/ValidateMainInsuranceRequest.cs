@@ -2,8 +2,6 @@
 {
     public class ValidateMainInsuranceRequest
     {
-        public int HpId { get; set; }
-
         public int SinDate { get; set; }
 
         public int PtBirthday { get; set; }
