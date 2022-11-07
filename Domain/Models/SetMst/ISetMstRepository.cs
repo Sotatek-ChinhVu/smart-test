@@ -11,4 +11,6 @@ public interface ISetMstRepository
     SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel);
 
     bool CheckExistSetMstBySetCd(int setCd);
+
+    SetMstTooltipModel GetToolTip(int hpId, int setCd);
 }

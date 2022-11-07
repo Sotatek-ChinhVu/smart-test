@@ -1,4 +1,5 @@
 ﻿using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
@@ -104,8 +105,8 @@ namespace Interactor.MedicalExamination
                                                      .ThenBy(odr => odr.SortNo)
                                                      .ToList();
 
-                var insuranceData = _insuranceRepository.GetInsuranceListById(inputData.HpId, inputData.PtId, inputData.SinDate);
-                var hokenFirst = insuranceData?.ListInsurance.FirstOrDefault();
+                var insuranceData = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate);
+                var hokenFirst = insuranceData?.FirstOrDefault();
                 var doctors = tantoIds == null ? new List<UserMstModel>() : _userRepository.GetDoctorsList(tantoIds)?.ToList();
                 var kaMsts = kaIds == null ? new List<KaMstModel>() : _kaRepository.GetByKaIds(kaIds)?.ToList();
                 var raiinListTags = (sinDates == null || raiinNos == null) ? new List<RaiinListTagModel>() : _rainListTagRepository.GetList(inputData.HpId, inputData.PtId, false, sinDates, raiinNos)?.ToList();
@@ -362,7 +363,7 @@ namespace Interactor.MedicalExamination
         /// <param name="allOdrInfs"></param>
         /// <param name="historyKarteOdrRaiin"></param>
         /// <param name="historyKarteOdrRaiins"></param>
-        private static void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
+        private static void ExcuteOrder(List<InsuranceModel>? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
         {
             var odrInfListByRaiinNo = allOdrInfs
          .Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo).Select(
@@ -380,131 +381,132 @@ namespace Interactor.MedicalExamination
             var obj = new object();
             Parallel.ForEach(hokenPidList, hokenPid =>
             {
+
+                var hoken = insuranceData?.FirstOrDefault(c => c.HokenInf.HokenId == hokenPid);
+                var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
+
+                var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
+                    .GroupBy(odr => new
+                    {
+                        odr.HokenPid,
+                        odr.GroupKoui,
+                        odr.InoutKbn,
+                        odr.SyohoSbt,
+                        odr.SikyuKbn,
+                        odr.TosekiKbn,
+                        odr.SanteiKbn
+                    })
+                    .Select(grp => grp.FirstOrDefault())
+                    .ToList();
+
+                var objgroup = new object();
+                Parallel.ForEach(groupOdrInfList, groupOdrInf =>
+                {
+
+                    var group = new GroupOdrGHistoryItem(hokenPid, string.Empty, new List<OdrInfHistoryItem>());
+
+                    var rpOdrInfs = odrInfListByRaiinNo.Where(odrInf => odrInf.HokenPid == hokenPid
+                                                    && odrInf.GroupKoui.Value == groupOdrInf?.GroupKoui.Value
+                                                    && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                    && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                    && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                    && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                    && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
+                                                .ToList();
+
+                    var objOdrInf = new object();
+                    Parallel.ForEach(rpOdrInfs.OrderBy(c => c.IsDeleted), rpOdrInf =>
+                        {
+
+                            var odrModel = new OdrInfHistoryItem(
+                                                                rpOdrInf.HpId,
+                                                                rpOdrInf.RaiinNo,
+                                                                rpOdrInf.RpNo,
+                                                                rpOdrInf.RpEdaNo,
+                                                                rpOdrInf.PtId,
+                                                                rpOdrInf.SinDate,
+                                                                rpOdrInf.HokenPid,
+                                                                rpOdrInf.OdrKouiKbn,
+                                                                rpOdrInf.RpName,
+                                                                rpOdrInf.InoutKbn,
+                                                                rpOdrInf.SikyuKbn,
+                                                                rpOdrInf.SyohoSbt,
+                                                                rpOdrInf.SanteiKbn,
+                                                                rpOdrInf.TosekiKbn,
+                                                                rpOdrInf.DaysCnt,
+                                                                rpOdrInf.SortNo,
+                                                                rpOdrInf.Id,
+                                                                rpOdrInf.GroupKoui.Value,
+                                                                rpOdrInf.OrdInfDetails.OrderBy(o => o.RowNo).Select(od =>
+                                                                    new OdrInfDetailItem(
+                                                                        od.HpId,
+                                                                        od.RaiinNo,
+                                                                        od.RpNo,
+                                                                        od.RpEdaNo,
+                                                                        od.RowNo,
+                                                                        od.PtId,
+                                                                        od.SinDate,
+                                                                        od.SinKouiKbn,
+                                                                        od.ItemCd,
+                                                                        od.ItemName,
+                                                                        od.Suryo,
+                                                                        od.UnitName,
+                                                                        od.UnitSbt,
+                                                                        od.TermVal,
+                                                                        od.KohatuKbn,
+                                                                        od.SyohoKbn,
+                                                                        od.SyohoLimitKbn,
+                                                                        od.DrugKbn,
+                                                                        od.YohoKbn,
+                                                                        od.Kokuji1,
+                                                                        od.Kokuji2,
+                                                                        od.IsNodspRece,
+                                                                        od.IpnCd,
+                                                                        od.IpnName,
+                                                                        od.JissiKbn,
+                                                                        od.JissiDate,
+                                                                        od.JissiId,
+                                                                        od.JissiMachine,
+                                                                        od.ReqCd,
+                                                                        od.Bunkatu,
+                                                                        od.CmtName,
+                                                                        od.CmtName,
+                                                                        od.FontColor,
+                                                                        od.CommentNewline,
+                                                                        od.Yakka,
+                                                                        od.IsGetPriceInYakka,
+                                                                        od.Ten,
+                                                                        od.BunkatuKoui,
+                                                                        od.AlternationIndex,
+                                                                        od.KensaGaichu,
+                                                                        od.OdrTermVal,
+                                                                        od.CnvTermVal,
+                                                                        od.YjCd,
+                                                                        od.MasterSbt,
+                                                                        od.YohoSets,
+                                                                        od.Kasan1,
+                                                                        od.Kasan2
+                                                                )
+                                                                ).ToList(),
+                                                                rpOdrInf.CreateDate,
+                                                                rpOdrInf.CreateId,
+                                                                rpOdrInf.CreateName,
+                                                                rpOdrInf.UpdateDate,
+                                                                rpOdrInf.IsDeleted
+                                                             );
+
+                            lock (objOdrInf)
+                            {
+                                group.OdrInfs.Add(odrModel);
+                            }
+                        });
+                    lock (objgroup)
+                    {
+                        hokenGrp.GroupOdrItems.Add(group);
+                    }
+                });
                 lock (obj)
                 {
-                    var hoken = insuranceData?.ListInsurance.FirstOrDefault(c => c.HokenInf.HokenId == hokenPid);
-                    var hokenGrp = new HokenGroupHistoryItem(hokenPid, hoken == null ? string.Empty : hoken.HokenName, new List<GroupOdrGHistoryItem>());
-
-                    var groupOdrInfList = odrInfListByRaiinNo.Where(odr => odr.HokenPid == hokenPid)
-                        .GroupBy(odr => new
-                        {
-                            odr.HokenPid,
-                            odr.GroupKoui,
-                            odr.InoutKbn,
-                            odr.SyohoSbt,
-                            odr.SikyuKbn,
-                            odr.TosekiKbn,
-                            odr.SanteiKbn
-                        })
-                        .Select(grp => grp.FirstOrDefault())
-                        .ToList();
-
-                    var objgroup = new object();
-                    Parallel.ForEach(groupOdrInfList, groupOdrInf =>
-                    {
-                        lock (objgroup)
-                        {
-                            var group = new GroupOdrGHistoryItem(hokenPid, string.Empty, new List<OdrInfHistoryItem>());
-
-                            var rpOdrInfs = odrInfListByRaiinNo.Where(odrInf => odrInf.HokenPid == hokenPid
-                                                        && odrInf.GroupKoui.Value == groupOdrInf?.GroupKoui.Value
-                                                        && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                        && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                        && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                        && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                        && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                                    .ToList();
-
-                            var objOdrInf = new object();
-                            Parallel.ForEach(rpOdrInfs.OrderBy(c => c.IsDeleted), rpOdrInf =>
-                            {
-                                lock (objOdrInf)
-                                {
-                                    var odrModel = new OdrInfHistoryItem(
-                                                                    rpOdrInf.HpId,
-                                                                    rpOdrInf.RaiinNo,
-                                                                    rpOdrInf.RpNo,
-                                                                    rpOdrInf.RpEdaNo,
-                                                                    rpOdrInf.PtId,
-                                                                    rpOdrInf.SinDate,
-                                                                    rpOdrInf.HokenPid,
-                                                                    rpOdrInf.OdrKouiKbn,
-                                                                    rpOdrInf.RpName,
-                                                                    rpOdrInf.InoutKbn,
-                                                                    rpOdrInf.SikyuKbn,
-                                                                    rpOdrInf.SyohoSbt,
-                                                                    rpOdrInf.SanteiKbn,
-                                                                    rpOdrInf.TosekiKbn,
-                                                                    rpOdrInf.DaysCnt,
-                                                                    rpOdrInf.SortNo,
-                                                                    rpOdrInf.Id,
-                                                                    rpOdrInf.GroupKoui.Value,
-                                                                    rpOdrInf.OrdInfDetails.OrderBy(o => o.RowNo).Select(od =>
-                                                                        new OdrInfDetailItem(
-                                                                            od.HpId,
-                                                                            od.RaiinNo,
-                                                                            od.RpNo,
-                                                                            od.RpEdaNo,
-                                                                            od.RowNo,
-                                                                            od.PtId,
-                                                                            od.SinDate,
-                                                                            od.SinKouiKbn,
-                                                                            od.ItemCd,
-                                                                            od.ItemName,
-                                                                            od.Suryo,
-                                                                            od.UnitName,
-                                                                            od.UnitSbt,
-                                                                            od.TermVal,
-                                                                            od.KohatuKbn,
-                                                                            od.SyohoKbn,
-                                                                            od.SyohoLimitKbn,
-                                                                            od.DrugKbn,
-                                                                            od.YohoKbn,
-                                                                            od.Kokuji1,
-                                                                            od.Kokuji2,
-                                                                            od.IsNodspRece,
-                                                                            od.IpnCd,
-                                                                            od.IpnName,
-                                                                            od.JissiKbn,
-                                                                            od.JissiDate,
-                                                                            od.JissiId,
-                                                                            od.JissiMachine,
-                                                                            od.ReqCd,
-                                                                            od.Bunkatu,
-                                                                            od.CmtName,
-                                                                            od.CmtName,
-                                                                            od.FontColor,
-                                                                            od.CommentNewline,
-                                                                            od.Yakka,
-                                                                            od.IsGetPriceInYakka,
-                                                                            od.Ten,
-                                                                            od.BunkatuKoui,
-                                                                            od.AlternationIndex,
-                                                                            od.KensaGaichu,
-                                                                            od.OdrTermVal,
-                                                                            od.CnvTermVal,
-                                                                            od.YjCd,
-                                                                            od.MasterSbt,
-                                                                            od.YohoSets,
-                                                                            od.Kasan1,
-                                                                            od.Kasan2
-                                                                    )
-                                                                    ).ToList(),
-                                                                    rpOdrInf.CreateDate,
-                                                                    rpOdrInf.CreateId,
-                                                                    rpOdrInf.CreateName,
-                                                                    rpOdrInf.UpdateDate,
-                                                                    rpOdrInf.IsDeleted
-                                                                 );
-
-                                    group.OdrInfs.Add(odrModel);
-                                }
-                            });
-
-                            hokenGrp.GroupOdrItems.Add(group);
-                        }
-                    });
-
                     historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
                 }
             });

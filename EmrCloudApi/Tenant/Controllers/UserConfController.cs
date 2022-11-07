@@ -21,14 +21,14 @@ public class UserConfController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
+    public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
     {
         var input = new GetUserConfListInputData(request.HpId, request.UserId);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetUserConfListPresenter();
         presenter.Complete(output);
 
-        return Task.FromResult(new ActionResult<Response<GetUserConfListResponse>>(presenter.Result));
+        return new ActionResult<Response<GetUserConfListResponse>>(presenter.Result);
     }
 }

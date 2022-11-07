@@ -19,9 +19,9 @@ public class ExportReportController : ControllerBase
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
-    public ActionResult<Response<string>> GetList([FromQuery] Karte1ExportRequest request)
+    public async Task<ActionResult<Response<string>>> GetList([FromQuery] Karte1ExportRequest request)
     {
-        var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
+        var output = await Task.Run(() => _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei));
         
         Response<string> response = new();
         response.Data = Convert.ToBase64String(output.DataStream.ToArray());

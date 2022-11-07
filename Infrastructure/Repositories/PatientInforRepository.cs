@@ -80,6 +80,7 @@ namespace Infrastructure.Repositories
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
         {
+
             var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
 
 
