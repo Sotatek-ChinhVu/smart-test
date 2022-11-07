@@ -8,7 +8,7 @@ using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
-namespace EmrCalculateApi.Futan
+namespace EmrCalculateApi.Futan.ViewModels
 {
 #pragma warning disable S3358 // Ternary operators should not be nested
 #pragma warning disable S125 // Sections of code should not be commented out
@@ -23,7 +23,7 @@ namespace EmrCalculateApi.Futan
 #pragma warning disable S1125
 #pragma warning disable S1066
 #pragma warning disable S1871
-    public class FutanCalculate : IFutanCalculate
+    public class FutanCalculate : IFutancalcViewModel
     {
         private readonly FutancalcFinder _futancalcFinder;
         private readonly OdrInfFinder _odrInfFinder;
@@ -344,7 +344,7 @@ namespace EmrCalculateApi.Futan
             );
 
 
-             //if (raiinTensus == null || raiinTensus.Count == 0) return;
+            //if (raiinTensus == null || raiinTensus.Count == 0) return;
 
             //会計詳細情報取得（月単位）
             //  ※削除前に当日分も含めて取得する
@@ -354,7 +354,7 @@ namespace EmrCalculateApi.Futan
 
             if (!trialCalc)
             {
-                List<long> raiinNos = (raiinTensus == null || raiinTensus.Count == 0) ? new List<long>() : raiinTensus.Select(s => s.RaiinNo).ToList();
+                List<long> raiinNos = raiinTensus == null || raiinTensus.Count == 0 ? new List<long>() : raiinTensus.Select(s => s.RaiinNo).ToList();
 
                 //計算結果初期化
                 _clearCommandHandler.ClearCalculate(
@@ -518,10 +518,10 @@ namespace EmrCalculateApi.Futan
             KaikeiDetail.KogakuKbn = PtHoken.KogakuKbn;
             //限度額特例フラグ
             KaikeiDetail.IsTokurei =
-                (PtHoken.TokureiYm1 == KaikeiDetail.SinDate / 100) || (PtHoken.TokureiYm2 == KaikeiDetail.SinDate / 100);
+                PtHoken.TokureiYm1 == KaikeiDetail.SinDate / 100 || PtHoken.TokureiYm2 == KaikeiDetail.SinDate / 100;
             //多数回該当フラグ
             KaikeiDetail.IsTasukai =
-                (PtHoken.TasukaiYm > 0) && (PtHoken.TasukaiYm <= KaikeiDetail.SinDate / 100);
+                PtHoken.TasukaiYm > 0 && PtHoken.TasukaiYm <= KaikeiDetail.SinDate / 100;
             //国保減免区分
             KaikeiDetail.GenmenKbn = PtHoken.GenmenKbn;
 
@@ -751,7 +751,7 @@ namespace EmrCalculateApi.Futan
                 if (SystemConf.ChokiDateRange == 1 ||
                     SystemConf.ChokiDateRange == 2 && KaikeiDetail.HokenKbn == HokenKbn.Syaho ||
                     SystemConf.ChokiDateRange == 3 && KaikeiDetail.HokenKbn == HokenKbn.Kokho ||
-                    
+
                         //東京マル都
                         kohiNo + 1 <= PtKohis.Count &&
                         PtKohis[kohiNo]?.PrefNo == PrefCode.Tokyo &&
@@ -1737,10 +1737,10 @@ namespace EmrCalculateApi.Futan
 
                 var wrkDetails = totalDetails.Where(d =>
                     d.HokenId == KaikeiDetail.HokenId ||
-                    
+
                         //後期は月中で保険が変わっても通算で上限をかける
                         KaikeiDetail.IsKouki && d.IsKouki
-                    
+
                 ).GroupBy(d => d.KogakuTekiyoKbn).ToList();
 
                 if (wrkDetails.Count() == 1)
@@ -1764,17 +1764,17 @@ namespace EmrCalculateApi.Futan
                     var tekiyoKbns = KaikeiTotalDetails.Where(d =>
                         (
                             d.HokenId == KaikeiDetail.HokenId ||
-                            
+
                                 //後期は月中で保険が変わっても通算で上限をかける
                                 KaikeiDetail.IsKouki && d.IsKouki
-                            
+
                         ) &&
                         (
                             KaikeiDetail.AgeKbn == AgeKbn.Elder ? d.KogakuTekiyoKbn != 0 : !new int[] { 0, 18, 28 }.Contains(d.KogakuTekiyoKbn)
                         ) &&
-                        
+
                             !(d.RaiinNo == KaikeiDetail.RaiinNo && d.HokenPid == KaikeiDetail.HokenPid)
-                        
+
                     )
                     .GroupBy(d => d.KogakuTekiyoKbn)
                     .Select(d => d.Key)
@@ -2210,9 +2210,9 @@ namespace EmrCalculateApi.Futan
                                 d.HokenId == KaikeiDetail.HokenId ||
                                 d.IsKouki && KaikeiDetail.IsKouki   //後期は月中で保険が変わっても通算で上限をかける
                             ) &&
-                            
+
                                 d.Kohi1Id == KaikeiDetail.Kohi1Id     //マル長を持つ保険パターンのみ集計する
-                            
+
                         )
                     .GroupBy(d => d.HokenPid).ToList().Count() >= 2 : false;
 
@@ -2482,7 +2482,7 @@ namespace EmrCalculateApi.Futan
                                             d.HokenId == KaikeiDetail.HokenId ||
                                             d.IsKouki && KaikeiDetail.IsKouki   //後期は月中で保険が変わっても通算で上限をかける
                                         ) &&
-                                        
+
                                             d.Kohi1Id == KaikeiDetail.Kohi1Id     //マル長を持つ保険パターンのみ集計する
                                          &&
                                         d.Kohi1Houbetu == "102"
