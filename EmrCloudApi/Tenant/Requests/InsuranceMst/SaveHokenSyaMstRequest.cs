@@ -2,6 +2,8 @@
 {
     public class SaveHokenSyaMstRequest
     {
+        public int HpId { get; set; }
+
         public string Name { get; set; } = string.Empty;
 
         public string KanaName { get; set; } = string.Empty;

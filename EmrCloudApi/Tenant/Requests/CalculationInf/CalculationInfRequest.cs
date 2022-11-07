@@ -2,6 +2,7 @@
 {
     public class CalculationInfRequest
     {
+        public int HpId { get; set; }
         public long PtId { get; set; }
     }
 }
