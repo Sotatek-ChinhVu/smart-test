@@ -1,6 +1,6 @@
 ﻿namespace EmrCalculateApi.Interface
 {
-    public interface IIkaCalculate
+    public interface IIkaCalculateViewModel
     {
         void RunCalculateOne(int hpId, long ptId, int sinDate, int seikyuUp, string preFix);
 
