@@ -107,7 +107,6 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.Tokki5,
                                 ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiRoudouCd,
-                                KenkoKanriBango = ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiSaigaiKbn,
                                 ptHokenInf.RousaiKantokuCd,
                                 ptHokenInf.RousaiSyobyoDate,
@@ -232,9 +231,7 @@ namespace Infrastructure.Repositories
                                             item.Tokki4 ?? string.Empty,
                                             item.Tokki5 ?? string.Empty,
                                             item.RousaiKofuNo ?? string.Empty,
-                                            nenkinBango: NenkinBango(item.RousaiKofuNo),
                                             item.RousaiRoudouCd ?? string.Empty,
-                                            item.RousaiKofuNo ?? string.Empty,
                                             item.RousaiSaigaiKbn,
                                             item.RousaiKantokuCd ?? string.Empty,
                                             item.RousaiSyobyoDate,
@@ -261,8 +258,7 @@ namespace Infrastructure.Repositories
                                             ConvertHokenMstModel(item.hokenMst, prefName ?? string.Empty),
                                             hokensyaMst ?? new HokensyaMstModel(),
                                             false,
-                                            false,
-                                            item.RousaiKofuNo ?? string.Empty
+                                            false
                                             ) ;
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -363,9 +359,7 @@ namespace Infrastructure.Repositories
                                             item.Tokki4 ?? string.Empty,
                                             item.Tokki5 ?? string.Empty,
                                             item.RousaiKofuNo ?? string.Empty,
-                                            nenkinBango: NenkinBango(item.RousaiKofuNo),
                                             item.RousaiRoudouCd ?? string.Empty,
-                                            item.RousaiKofuNo ?? string.Empty,
                                             item.RousaiSaigaiKbn,
                                             item.RousaiKantokuCd ?? string.Empty,
                                             item.RousaiSyobyoDate,
@@ -392,8 +386,7 @@ namespace Infrastructure.Repositories
                                             ConvertHokenMstModel(hokenMst, prefName ?? string.Empty),
                                             hokensyaMst ?? new HokensyaMstModel(),
                                             false,
-                                            false,
-                                            item.RousaiKofuNo ?? string.Empty
+                                            false
                                             );
 
                     listHokenInf.Add(itemHokenInf);
@@ -673,7 +666,6 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.Tokki5,
                                 ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiRoudouCd,
-                                KenkoKanriBango = ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiSaigaiKbn,
                                 ptHokenInf.RousaiKantokuCd,
                                 ptHokenInf.RousaiSyobyoDate,
@@ -775,9 +767,7 @@ namespace Infrastructure.Repositories
                                             item.Tokki4 ?? string.Empty,
                                             item.Tokki5 ?? string.Empty,
                                             item.RousaiKofuNo ?? string.Empty,
-                                            nenkinBango: NenkinBango(item.RousaiKofuNo),
                                             item.RousaiRoudouCd ?? string.Empty,
-                                            item.RousaiKofuNo ?? string.Empty,
                                             item.RousaiSaigaiKbn,
                                             item.RousaiKantokuCd ?? string.Empty,
                                             item.RousaiSyobyoDate,
@@ -807,8 +797,7 @@ namespace Infrastructure.Repositories
                                             }),
                                             hokensyaMst ?? new HokensyaMstModel(),
                                             false,
-                                            false,
-                                            item.RousaiKofuNo ?? string.Empty
+                                            false
                                             );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
@@ -1091,7 +1080,6 @@ namespace Infrastructure.Repositories
                                 ptHokenInf.Tokki5,
                                 ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiRoudouCd,
-                                KenkoKanriBango = ptHokenInf.RousaiKofuNo,
                                 ptHokenInf.RousaiSaigaiKbn,
                                 ptHokenInf.RousaiKantokuCd,
                                 ptHokenInf.RousaiSyobyoDate,
@@ -1149,26 +1137,10 @@ namespace Infrastructure.Repositories
                 {
                     {
                         string houbetu = string.Empty;
-                        int futanRate = 0;
-                        int futanKbn = 0;
-                        int hokenMstSubNumber = 0;
-                        int hokenMstStartDate = 0;
-                        int hokenMstEndDate = 0;
-                        int hokenMstHokenNo = 0;
-                        int hokenMstHokenEdraNo = 0;
-                        string hokenMstSName = string.Empty;
                         bool isReceKisaiOrNoHoken = false;
                         if (item.hokenMst != null)
                         {
                             houbetu = item.hokenMst.Houbetu;
-                            futanRate = item.hokenMst.FutanRate;
-                            futanKbn = item.hokenMst.FutanKbn;
-                            hokenMstSubNumber = item.hokenMst.HokenSbtKbn;
-                            hokenMstStartDate = item.hokenMst.StartDate;
-                            hokenMstEndDate = item.hokenMst.EndDate;
-                            hokenMstHokenNo = item.hokenMst.HokenNo;
-                            hokenMstHokenEdraNo = item.hokenMst.HokenEdaNo;
-                            hokenMstSName = item.hokenMst.HokenSname;
                             isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
                         }
 
@@ -1210,9 +1182,7 @@ namespace Infrastructure.Repositories
                                                 item.Tokki4 ?? string.Empty,
                                                 item.Tokki5 ?? string.Empty,
                                                 item.RousaiKofuNo ?? string.Empty,
-                                                nenkinBango: NenkinBango(item.RousaiKofuNo),
                                                 item.RousaiRoudouCd ?? string.Empty,
-                                                item.RousaiKofuNo ?? string.Empty,
                                                 item.RousaiSaigaiKbn,
                                                 item.RousaiKantokuCd ?? string.Empty,
                                                 item.RousaiSyobyoDate,
@@ -1242,8 +1212,7 @@ namespace Infrastructure.Repositories
                                                 }),
                                                 new HokensyaMstModel(),
                                                 false,
-                                                false,
-                                                item.RousaiKofuNo ?? string.Empty
+                                                false
                                                 );
 
                         InsuranceModel insuranceModel = new InsuranceModel(
