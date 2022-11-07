@@ -21,7 +21,6 @@
     <Folder Include="Ika\Constants\" />
     <Folder Include="Ika\DB\" />
     <Folder Include="Ika\Models\" />
-    <Folder Include="Ika\ViewModels\" />
     <Folder Include="ReceFutan\DB\" />
     <Folder Include="ReceFutan\Models\" />
     <Folder Include="ReceFutan\ViewModels\" />
