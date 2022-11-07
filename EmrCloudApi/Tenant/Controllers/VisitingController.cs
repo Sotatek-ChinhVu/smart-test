@@ -118,8 +118,18 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "StaticCell")]
     public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
+        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<UpdateReceptionStaticCellResponse>>(new Response<UpdateReceptionStaticCellResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<UpdateReceptionStaticCellResponse>>(new Response<UpdateReceptionStaticCellResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
         var input = new UpdateReceptionStaticCellInputData(
-            req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue);
+            hpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue, userId);
         var output = _bus.Handle(input);
         switch (output.Status)
         {
@@ -145,8 +155,18 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "DynamicCell")]
     public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
+        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<UpdateReceptionDynamicCellResponse>>(new Response<UpdateReceptionDynamicCellResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
+        validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        if (!validateToken)
+        {
+            return new ActionResult<Response<UpdateReceptionDynamicCellResponse>>(new Response<UpdateReceptionDynamicCellResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
+        }
         var input = new UpdateReceptionDynamicCellInputData(
-            req.HpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd);
+            hpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd, userId);
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
