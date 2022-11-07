@@ -1845,9 +1845,7 @@ namespace Interactor.Insurance
                                             item.HokenInf.Tokki4 ?? string.Empty,
                                             item.HokenInf.Tokki5 ?? string.Empty,
                                             item.HokenInf.RousaiKofuNo ?? string.Empty,
-                                            item.HokenInf.NenkinBango,
                                             item.HokenInf.RousaiRoudouCd ?? string.Empty,
-                                            item.HokenInf.RousaiKofuNo ?? string.Empty,
                                             item.HokenInf.RousaiSaigaiKbn,
                                             item.HokenInf.RousaiKantokuCd ?? string.Empty,
                                             item.HokenInf.RousaiSyobyoDate,
@@ -1877,8 +1875,7 @@ namespace Interactor.Insurance
                                             }),
                                             hokenSyaMst ?? new HokensyaMstModel(),
                                             item.HokenInf.IsAddNew,
-                                            false,
-                                            item.HokenInf.RousaiKofuNo ?? string.Empty
+                                            false
             );
 
             // Kohi1
