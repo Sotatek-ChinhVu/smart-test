@@ -200,6 +200,9 @@ namespace Infrastructure.Repositories
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
+            if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword)) 
+                keyword = WanaKana.RomajiToKana(keyword);
+
             var convertHalfsizeKeyword = CIUtil.ToHalfsize(keyword);
             var listTenMstModels = new List<TenItemModel>();
             string sBigKeyword = convertHalfsizeKeyword.ToUpper()
