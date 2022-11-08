@@ -477,9 +477,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                            x.Tokki4,
                                                                                            x.Tokki5,
                                                                                            x.RousaiKofuNo,
-                                                                                           string.Empty,
                                                                                            x.RousaiRoudouCd,
-                                                                                           string.Empty,
                                                                                            x.RousaiSaigaiKbn,
                                                                                            x.RousaiKantokuCd,
                                                                                            x.RousaiSyobyoDate,
@@ -516,8 +514,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                                            new HokenMstModel(),
                                                                                            new HokensyaMstModel(),
                                                                                            x.IsAddNew,
-                                                                                           false,
-                                                                                           string.Empty)).ToList();
+                                                                                           false)).ToList();
 
             List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
                                                                                                                                             c.HokenId,
