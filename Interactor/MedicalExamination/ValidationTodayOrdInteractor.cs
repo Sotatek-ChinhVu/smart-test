@@ -257,7 +257,6 @@ namespace Interactor.MedicalExamination
             object obj = new();
             Parallel.For(0, inputDataList.Count, index =>
             {
-
                 var item = inputDataList[index];
 
                 if (item.Id > 0)
@@ -286,15 +285,11 @@ namespace Interactor.MedicalExamination
                     return;
                 }
 
-                for (int indexOd = 0; indexOd < item.OdrDetails.Count; indexOd++)
+                var odrDetail = item.OdrDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo);
+                if (odrDetail != null)
                 {
-                    var itemOd = item.OdrDetails[indexOd];
-
-                    if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
-                    {
-                        dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                        break;
-                    }
+                    var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
+                    dicValidation.Add(index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                 }
             });
         }
