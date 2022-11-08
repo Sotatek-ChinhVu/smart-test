@@ -17,9 +17,9 @@ RUN cd ./EmrCloudApi && \
     dotnet publish --configuration Release EmrCloudApi.csproj -o publish
 
 #RUN cd ./DevExpress && \
-    dotnet clean --configuration Release DevExpress.csproj && \
-    dotnet build --configuration Release DevExpress.csproj && \
-    dotnet publish --configuration Release DevExpress.csproj -o publish
+#    dotnet clean --configuration Release DevExpress.csproj && \
+#    dotnet build --configuration Release DevExpress.csproj && \
+#    dotnet publish --configuration Release DevExpress.csproj -o publish
 
 #Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
