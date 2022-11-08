@@ -8,7 +8,7 @@ RUN dotnet nuget add source https://nuget.devexpress.com/im2jmHdukzZaHka6bDvjOW6
 #RUN dotnet restore
 
 # Copy source and build
-COPY . ./
+COPY . .
 
 ###
 RUN cd ./EmrCloudApi && \
