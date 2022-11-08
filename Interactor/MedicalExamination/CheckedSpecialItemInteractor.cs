@@ -52,35 +52,35 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidHpId);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidHpId);
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidPtId);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidPtId);
                 }
                 if (inputData.SinDate <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidSinDate);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidSinDate);
                 }
                 if (inputData.IBirthDay <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidIBirthDay);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidIBirthDay);
                 }
                 if (inputData.CheckAge < 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidCheckAge);
                 }
                 if (inputData.CheckAge < 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidCheckAge);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidCheckAge);
                 }
                 if (inputData.RaiinNo <= 0)
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidRaiinNo);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidRaiinNo);
                 }
                 if (inputData.OdrInfs.Count == 0 && (inputData.KarteInf.HpId == 0 && inputData.KarteInf.PtId == 0 && inputData.KarteInf.RaiinNo == 0 && inputData.KarteInf.SinDate == 0))
                 {
-                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.InvalidOdrInfDetail);
+                    return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.InvalidOdrInfDetail);
                 }
 
                 #region Param data
@@ -150,7 +150,7 @@ namespace Interactor.MedicalExamination
                     hokenPids.Add((odrInf.RpNo, odrInf.RpEdaNo, odrInf.HokenPid));
                 }
                 #endregion
-                var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+                var checkSpecialItemList = new List<CheckedSpecialItem>();
                 var itemCdCs = allOdrInfDetailModel.Select(x => x.ItemCd).Distinct().ToList();
                 var minSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Min(o => o.SinDate);
                 var maxSinDate = !(allOdrInfDetailModel.Count > 0) ? 0 : allOdrInfDetailModel.Max(o => o.SinDate);
@@ -218,7 +218,7 @@ namespace Interactor.MedicalExamination
             }
             catch
             {
-                return new CheckedSpecialItemOutputData(new List<CheckedSpecialItemModel>(), CheckedSpecialItemStatus.Failed);
+                return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.Failed);
             }
         }
 
@@ -227,9 +227,9 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckedSpecialItemModel> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItem> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItem>();
             int iYear = 0;
             int iMonth = 0;
             int iDay = 0;
@@ -287,7 +287,7 @@ namespace Interactor.MedicalExamination
 
                 if (!string.IsNullOrEmpty(msg))
                 {
-                    CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.AgeLimit, string.Empty, msg, detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.AgeLimit, string.Empty, msg, detail.ItemCd);
 
 
                     checkSpecialItemList.Add(checkSpecialItem);
@@ -418,9 +418,9 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private List<CheckedSpecialItemModel> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItem> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItem>();
 
             var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
@@ -441,7 +441,7 @@ namespace Interactor.MedicalExamination
 
                 if (minStartDate > sinDate)
                 {
-                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, minStartDate, true), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -450,7 +450,7 @@ namespace Interactor.MedicalExamination
 
                 if (maxEndDate < sinDate)
                 {
-                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.Expiration, string.Empty, FormatDisplayMessage(detail.DisplayItemName, maxEndDate, false), detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -461,9 +461,9 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private List<CheckedSpecialItemModel> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
+        private List<CheckedSpecialItem> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
-            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItem>();
             var checkedItem = new List<string>();
             foreach (var detail in allOdrInfDetail)
             {
@@ -497,7 +497,7 @@ namespace Interactor.MedicalExamination
 
                 if (itemCount > 1)
                 {
-                    var checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
+                    var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.Duplicate, string.Empty, $"\"{detail.DisplayItemName}\"", detail.ItemCd);
 
                     checkSpecialItemList.Add(checkSpecialItem);
                 }
@@ -508,16 +508,16 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private List<CheckedSpecialItemModel> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
+        private List<CheckedSpecialItem> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
-            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItem>();
             foreach (var item in items)
             {
                 if (checkSpecialItemList.Any(p => p.ItemCd == item.Key)) continue;
 
                 if (IsShowCommentCheckMst(item.Key, allCmtCheckMst, karteInf))
                 {
-                    checkSpecialItemList.Add(new CheckedSpecialItemModel(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
+                    checkSpecialItemList.Add(new CheckedSpecialItem(CheckSpecialType.ItemComment, string.Empty, $"\"{item.Value}\"に対するコメントがありません。", item.Key));
                 }
             }
             return checkSpecialItemList;
@@ -538,9 +538,9 @@ namespace Interactor.MedicalExamination
             return true;
         }
 
-        private List<CheckedSpecialItemModel> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
+        private List<CheckedSpecialItem> CalculationCountCheck(int hpId, int sinDate, long raiinNo, long ptId, List<TenItemModel> santeiTenMsts, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, List<TenItemModel> tenMsts, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts, List<(long rpno, long edano, int hokenId)> hokenIds)
         {
-            var checkSpecialItemList = new List<CheckedSpecialItemModel>();
+            var checkSpecialItemList = new List<CheckedSpecialItem>();
             int endDate = sinDate;
             // MAX_COUNT>1の場合は注意扱いする単位のコード
             var hokensyuHandling = (int)_systemConfRepository.GetSettingValue(3013, 0, hpId);
@@ -723,9 +723,9 @@ namespace Interactor.MedicalExamination
             return results;
         }
 
-        private List<CheckedSpecialItemModel> ExecuteDensiSantei(long ptId, int hpId, int endDate, long raiinNo, int hokensyuHandling, int sinDate, int syosinDate, double suryo, string itemName, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, OrdInfDetailModel odrDetail, List<(long rpno, long edano, int hokenId)> hokenIds, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts)
+        private List<CheckedSpecialItem> ExecuteDensiSantei(long ptId, int hpId, int endDate, long raiinNo, int hokensyuHandling, int sinDate, int syosinDate, double suryo, string itemName, List<DensiSanteiKaisuModel> densiSanteiKaisuModels, OrdInfDetailModel odrDetail, List<(long rpno, long edano, int hokenId)> hokenIds, List<OrdInfDetailModel> allOdrInfDetail, List<ItemGrpMstModel> itemGrpMsts)
         {
-            List<CheckedSpecialItemModel> checkSpecialItemList = new();
+            List<CheckedSpecialItem> checkSpecialItemList = new();
 
             foreach (var densiSanteiKaisu in densiSanteiKaisuModels)
             {
@@ -767,7 +767,7 @@ namespace Interactor.MedicalExamination
                         }
 
                         string errMsg = string.Format("'{0}' は、初診から1カ月以内のため、" + conditionMsg, odrDetail.ItemName);
-                        CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+                        var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
 
                         checkSpecialItemList.Add(checkSpecialItem);
                     }
@@ -801,7 +801,7 @@ namespace Interactor.MedicalExamination
                     || densiSanteiKaisu.MaxCount < count + suryo) // 今回分を足すと超えてしまう場合は注意（MaxCount = count + konkaiSuryoはセーフ）
                     {
                         string errMsg = $"\"{itemName}\" {sTerm}{count + suryo}回算定({densiSanteiKaisu.MaxCount}回まで)";
-                        CheckedSpecialItemModel checkSpecialItem = new CheckedSpecialItemModel(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
+                        var checkSpecialItem = new CheckedSpecialItem(CheckSpecialType.CalculationCount, string.Empty, errMsg, odrDetail.ItemCd);
 
                         checkSpecialItemList.Add(checkSpecialItem);
                     }

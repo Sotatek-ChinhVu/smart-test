@@ -8,13 +8,13 @@ namespace UseCase.OrdInfs.CheckedSpecialItem
 {
     public class CheckedSpecialItemOutputData : IOutputData
     {
-        public CheckedSpecialItemOutputData(List<CheckedSpecialItemModel> checkSpecialItemModels, CheckedSpecialItemStatus status)
+        public CheckedSpecialItemOutputData(List<CheckedSpecialItem> checkSpecialItemModels, CheckedSpecialItemStatus status)
         {
             Status = status;
             CheckSpecialItemModels = checkSpecialItemModels;
         }
 
         public CheckedSpecialItemStatus Status { get; private set; }
-        public List<CheckedSpecialItemModel> CheckSpecialItemModels { get; private set; }
+        public List<CheckedSpecialItem> CheckSpecialItemModels { get; private set; }
     }
 }

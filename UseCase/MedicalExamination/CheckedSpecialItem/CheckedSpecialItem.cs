@@ -1,8 +1,8 @@
 ﻿using Helper.Enum;
 
-namespace Domain.Models.TodayOdr
+namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public class CheckedSpecialItemModel
+    public class CheckedSpecialItem
     {
         /// <summary>
         /// 種別
@@ -46,7 +46,7 @@ namespace Domain.Models.TodayOdr
         /// </summary>
         public string ItemCd { get; private set; }
 
-        public CheckedSpecialItemModel(CheckSpecialType checkingType, string label, string checkingContent, string itemCd)
+        public CheckedSpecialItem(CheckSpecialType checkingType, string label, string checkingContent, string itemCd)
         {
             CheckingType = checkingType;
             Label = label;
