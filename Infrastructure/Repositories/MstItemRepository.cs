@@ -2,7 +2,6 @@
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
-using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -903,26 +902,17 @@ namespace Infrastructure.Repositories
         public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
         {
             var result = new List<ItemCmtModel>();
-            var cmtCheckMsts = _tenantDataContext.CmtCheckMsts.Where(p => p.HpId == hpId &&
+            var cmtCheckMsts = _tenantDataContext.CmtCheckMsts.Where(p => p.KarteKbn == KarteConst.KarteKbn && p.HpId == hpId &&
                                                                                     p.IsDeleted == DeleteTypes.None &&
                                                                                     itemCds.Contains(p.ItemCd));
-            var kartKbnMsts = _tenantDataContext.KarteKbnMst.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None);
 
-            var query = from cmtCheckMst in cmtCheckMsts
-                        join karteKbnMst in kartKbnMsts
-                        on cmtCheckMst.KarteKbn equals karteKbnMst.KarteKbn
-                        select new
-                        {
-                            CmtCheckMst = cmtCheckMst,
-                            KarteKbnMst = karteKbnMst
-                        };
             foreach (var itemCd in itemCds)
             {
-                var entities = query.Where(p => p.CmtCheckMst.ItemCd == itemCd).OrderBy(p => p.CmtCheckMst.SortNo);
+                var entities = cmtCheckMsts.Where(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo);
                 if (entities == null) continue;
                 foreach (var entity in entities)
                 {
-                    result.Add(new ItemCmtModel(itemCd, entity.CmtCheckMst.KarteKbn, entity.KarteKbnMst.KbnShortName ?? string.Empty, KarteVisbleSOAPF(hpId, userId).Contains(entity.KarteKbnMst.KarteKbn.AsString()), entity.CmtCheckMst.Cmt ?? string.Empty, entity.CmtCheckMst.SortNo));
+                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
                 }
             }
             return result;
@@ -955,28 +945,6 @@ namespace Infrastructure.Repositories
                 result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
             }
             return result;
-        }
-
-        private string KarteVisbleSOAPF(int hpId, int userId)
-        {
-            string visibleKarteConfig = string.Empty;
-            var karteKbnMsts = _tenantDataContext.KarteKbnMst.Where(p => p.HpId == hpId && p.IsDeleted == DeleteTypes.None).OrderBy(p => p.SortNo);
-            var karteVisibleConfs = _tenantDataContext.UserConfs.Where(u => u.HpId == hpId && u.UserId == userId && u.GrpCd == 102);
-
-            foreach (var karteKbnMst in karteKbnMsts)
-            {
-                var karteVisibleConf = karteVisibleConfs.FirstOrDefault(p => p.GrpItemCd == karteKbnMst.KarteKbn);
-                if (karteVisibleConf == null && karteKbnMst.KarteKbn != 5)
-                {
-                    visibleKarteConfig += karteKbnMst.KarteKbn;
-                }
-                else if (karteVisibleConf != null && karteVisibleConf.Val == 1)
-                {
-                    visibleKarteConfig += karteKbnMst.KarteKbn;
-                }
-            }
-
-            return visibleKarteConfig;
         }
 
         #region Private Function

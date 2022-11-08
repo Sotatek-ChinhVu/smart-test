@@ -270,19 +270,19 @@ namespace Interactor.MedicalExamination
                 string msg = string.Empty;
                 if (needCheckMinAge && needCheckMaxAge && CheckAge(tenMstItem.MaxAge, iDays, sinDate, iBirthDay, iYear))
                 {
-                    msg = $"\"{tenMstItem.Name}（{FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge)}、{FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge)}）\"は上限年齢以上のため、算定できません。";
+                    msg = AgeLimitMessage(tenMstItem.Name, FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge), FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge));
                 }
                 else if (needCheckMinAge && needCheckMaxAge && !CheckAge(tenMstItem.MinAge, iDays, sinDate, iBirthDay, iYear))
                 {
-                    msg = $"\"{tenMstItem.Name}（{FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge)}、{FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge)}）\"は下限年齢未満のため、算定できません。";
+                    msg = AgeLimitMessage(tenMstItem.Name, FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge), FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge));
                 }
                 if (needCheckMaxAge && CheckAge(tenMstItem.MaxAge, iDays, sinDate, iBirthDay, iYear))
                 {
-                    msg = $"\"{tenMstItem.Name}（{FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge)}）\"は上限年齢以上のため、算定できません。";
+                    msg = AgeLimitMessage(tenMstItem.Name, FormatDisplayMessage(tenMstItem.MaxAge, CheckAgeType.MaxAge));
                 }
                 else if (needCheckMinAge && !CheckAge(tenMstItem.MinAge, iDays, sinDate, iBirthDay, iYear))
                 {
-                    msg = $"\"{tenMstItem.Name}（{FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge)}）\"は下限年齢未満のため、算定できません。";
+                    msg = AgeLimitMessage(tenMstItem.Name, FormatDisplayMessage(tenMstItem.MinAge, CheckAgeType.MinAge));
                 }
 
                 if (!string.IsNullOrEmpty(msg))
@@ -297,6 +297,11 @@ namespace Interactor.MedicalExamination
             }
 
             return checkSpecialItemList;
+        }
+
+        private string AgeLimitMessage(string name, string firstMessage, string secondMessage = "")
+        {
+            return !string.IsNullOrEmpty(secondMessage) ? $"\"{name} ({firstMessage}、{secondMessage}) \"は下限年齢未満のため、算定できません。" : $"\"{name} ({firstMessage}) \"は下限年齢未満のため、算定できません。";
         }
 
         private bool CheckAge(string tenMstAgeCheck, int iDays, int sinDate, int iBirthDay, int iYear)
@@ -530,7 +535,7 @@ namespace Interactor.MedicalExamination
 
             foreach (var itemCmtModel in itemCmtModels)
             {
-                if (karteInf.KarteKbn == itemCmtModel.KarteKbn && karteInf.Text.AsString().Contains(itemCmtModel.Comment))
+                if (karteInf.KarteKbn == KarteConst.KarteKbn && karteInf.Text.AsString().Contains(itemCmtModel.Comment))
                 {
                     return false;
                 }
