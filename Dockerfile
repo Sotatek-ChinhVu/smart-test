@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:latest AS build-env
 
 ENV ASPNETCORE_URLS=http://+:5286
 WORKDIR /app
@@ -22,7 +22,7 @@ RUN cd ./DevExpress && \
     dotnet publish --configuration Release DevExpress.csproj -o publish
 
 #Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:latest
 
 WORKDIR /app
 #installs libgdiplus to support System.Drawing for handling of graphics
