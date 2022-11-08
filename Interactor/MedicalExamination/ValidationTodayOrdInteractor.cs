@@ -289,14 +289,14 @@ namespace Interactor.MedicalExamination
                     var objDetail = new object();
                     Parallel.For(0, item.OdrDetails.Count, indexOd =>
                     {
-
-                        var itemOd = item.OdrDetails[indexOd];
-
-                        if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                        lock (objDetail)
                         {
-                            lock (objDetail)
+                            var itemOd = item.OdrDetails[indexOd];
+
+                            if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
                             {
                                 dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                return;
                             }
                         }
                     });
