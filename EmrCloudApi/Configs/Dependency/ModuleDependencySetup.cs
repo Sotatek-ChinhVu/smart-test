@@ -20,6 +20,7 @@ using Domain.Models.KarteKbnMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.MonshinInf;
 using Domain.Models.MstItem;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
@@ -55,6 +56,8 @@ using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using EmrCloudApi.Realtime;
+using EventProcessor.Interfaces;
+using EventProcessor.Service;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -83,6 +86,7 @@ using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
 using Interactor.MonshinInf;
 using Interactor.MstItem;
+using Interactor.NextOrder;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
@@ -110,6 +114,7 @@ using Interactor.UserConf;
 using Interactor.VisitingList;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.AccountDue.GetAccountDueList;
+using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -159,6 +164,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.NextOrder.GetList;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -226,9 +232,6 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using UseCase.AccountDue.SaveAccountDueList;
-using EventProcessor.Service;
-using EventProcessor.Interfaces;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -330,6 +333,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
+            services.AddTransient<INextOrderRepository, NextOrderRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -554,6 +558,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
+
+            //Next Order
+            busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
