@@ -297,7 +297,7 @@ namespace Infrastructure.Repositories
             return list;
         }
 
-        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
+        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword)
         {
             int prefNo = 0;
             var hpInf = _tenantDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
@@ -332,7 +332,7 @@ namespace Infrastructure.Repositories
                                                                 item.Tel1 ?? string.Empty,
                                                                 item.IsKigoNa
                                                             ))
-                                .OrderBy(item => item.HokensyaNo).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+                                .OrderBy(item => item.HokensyaNo).ToList();
             return listDataPaging;
         }
 

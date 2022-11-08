@@ -3,6 +3,7 @@ using Domain.Models.RaiinListMst;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Linq.Dynamic.Core;
 
@@ -59,7 +60,6 @@ namespace Infrastructure.Repositories
                                             )
                                             //.AsEnumerable<RaiinListInfModel>()
                         };
-
 
             var todayOdr = query.Select(r =>
                 new FlowSheetModel(
@@ -122,8 +122,9 @@ namespace Infrastructure.Repositories
                                                     on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                                     select new RaiinListInfModel(nextOdr.RsvkrtNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            //.AsEnumerable<RaiinListInfModel>()
+                                   //.AsEnumerable<RaiinListInfModel>()
                                };
+
             var nextOdrs = queryNextOdr.Select(
                     data => new FlowSheetModel(
                         data.NextOdr?.RsvDate ?? 0,
@@ -139,11 +140,11 @@ namespace Infrastructure.Repositories
                         data.NextOdr?.PtId ?? 0
                     ));
 
-            var todayNextOdrs = todayOdr.Union(nextOdrs);
+            var todayNextOdrs = todayOdr.Union(nextOdrs).ToList();
             totalCount = todayNextOdrs.Count();
 
             FlowSheetModel? sinDateCurrent = null;
-            if (!todayOdr.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
+            if (!todayNextOdrs.Any(r => r.SinDate == sinDate && r.RaiinNo == raiinNo))
             {
                 sinDateCurrent = new FlowSheetModel(
                         0,
@@ -158,6 +159,7 @@ namespace Infrastructure.Repositories
                         new List<RaiinListInfModel>(),
                         0
                     );
+                totalCount = totalCount + 1;
             }
 
             if (string.IsNullOrEmpty(sort))

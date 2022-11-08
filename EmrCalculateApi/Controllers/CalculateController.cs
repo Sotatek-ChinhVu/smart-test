@@ -8,8 +8,8 @@ namespace EmrCalculateApi.Controllers
     [ApiController]
     public class CalculateController : ControllerBase
     {
-        private readonly IIkaCalculate _ikaCalculate;
-        public CalculateController(IIkaCalculate ikaCalculate)
+        private readonly IIkaCalculateViewModel _ikaCalculate;
+        public CalculateController(IIkaCalculateViewModel ikaCalculate)
         {
             _ikaCalculate = ikaCalculate;
         }

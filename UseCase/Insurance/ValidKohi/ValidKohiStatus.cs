@@ -81,6 +81,10 @@ namespace UseCase.Insurance.ValidKohi
         InvalidDuplicateKohi1 = 70,
         InvalidDuplicateKohi2 = 71,
         InvalidDuplicateKohi3 = 72,
-        InvalidDuplicateKohi4 = 73
+        InvalidDuplicateKohi4 = 73,
+        InvalidKohi1HokenMstNull = 74,
+        InvalidKohi2HokenMstNull = 75,
+        InvalidKohi3HokenMstNull = 76,
+        InvalidKohi4HokenMstNull = 77
     }
 }

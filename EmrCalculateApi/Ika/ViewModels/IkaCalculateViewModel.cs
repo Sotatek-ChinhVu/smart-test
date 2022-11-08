@@ -1,10 +1,15 @@
-﻿using EmrCalculateApi.Futan.Models;
-using EmrCalculateApi.Interface;
+﻿using EmrCalculateApi.Interface;
 
-namespace EmrCalculateApi.Implementation.IkaCalculate
+namespace EmrCalculateApi.Ika.ViewModels
 {
-    public class IkaCalculate : IIkaCalculate
+    public class IkaCalculateViewModel : IIkaCalculateViewModel
     {
+        private readonly IFutancalcViewModel _iFutancalcViewModel;
+        public IkaCalculateViewModel(IFutancalcViewModel iFutancalcViewModel)
+        {
+            _iFutancalcViewModel = iFutancalcViewModel;
+        }
+
         public void RunCalculate(int hpId, long ptId, int sinDate, int seikyuUp, string preFix)
         {
             throw new NotImplementedException();

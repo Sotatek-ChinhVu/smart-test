@@ -326,7 +326,8 @@ namespace Infrastructure.Repositories
                                             item.SyosaisinKbn,
                                             item.JikanKbn,
                                             item.SanteiKbn,
-                                            item.RaiinNo
+                                            item.RaiinNo,
+                                            item.IsYoyaku
                                          );
 
                     listSameVisitModel.Add(itemModelDorai);
