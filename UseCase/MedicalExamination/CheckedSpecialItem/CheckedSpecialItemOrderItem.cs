@@ -1,10 +1,10 @@
 ﻿using static Helper.Constants.OrderInfConst;
 
-namespace Domain.Models
+namespace UseCase.OrdInfs.CheckedSpecialItem
 {
-    public class CheckedOrderModel
+    public class CheckedSpecialItemOrderItem
     {
-        public CheckedOrderModel(CheckingType checkingType, bool santei, string checkingContent, string itemCd, int sinKouiKbn, string itemName, int inOutKbn)
+        public CheckedSpecialItemOrderItem(CheckingType checkingType, bool santei, string checkingContent, string itemCd, int sinKouiKbn, string itemName, int inOutKbn)
         {
             CheckingType = checkingType;
             Santei = santei;

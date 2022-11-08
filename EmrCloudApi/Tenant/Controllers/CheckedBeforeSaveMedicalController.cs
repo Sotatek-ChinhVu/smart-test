@@ -85,7 +85,7 @@ namespace EmrCloudApi.Tenant.Controllers
                         )
                 ).ToList(),
                 request.CheckedOrderItems.Select(
-                    c => new CheckedOrderModel(
+                    c => new CheckedSpecialItemOrderItem(
                             c.CheckingType,
                             c.Santei,
                             c.CheckingContent,
