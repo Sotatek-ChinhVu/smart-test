@@ -50,6 +50,22 @@ public class Reporting : IReporting
         }
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
 
+        //fill empty model to display
+        var totalItems = ptByomeis.Count;
+        int totalModelEmpty = 0;
+        if (totalItems > 0 && totalItems < 7)
+        {
+            totalModelEmpty = 7 - totalItems;
+        }
+        else if (totalItems > 7)
+        {
+            totalModelEmpty = 22 - ((totalItems - 7) % 22);
+        }
+        for (int i = 0; i < totalModelEmpty; i++)
+        {
+            ptByomeis.Add(new PtDiseaseModel());
+        }
+
         var listByomeiModelsPage1 = ConvertToListKarte1ByomeiModel(ptByomeis).Item1;
         var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
 
@@ -73,8 +89,9 @@ public class Reporting : IReporting
     {
         List<Karte1ByomeiModel> listByomeiModelsPage1 = new();
         List<Karte1ByomeiModel> listByomeiModelsPage2 = new();
+
         int index = 1;
-        if (ptByomeis != null && ptByomeis.Count > 0)
+        if (ptByomeis != null && ptByomeis.Any())
         {
             foreach (var byomei in ptByomeis)
             {
@@ -83,9 +100,9 @@ public class Reporting : IReporting
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
-                if (byomeiDisplay.Length >= 64 && index <= 10)
+                if (byomeiDisplay.Length >= 51)
                 {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 64);
+                    byomeiDisplay = byomeiDisplay.Substring(0, 51);
                 }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
@@ -102,7 +119,7 @@ public class Reporting : IReporting
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         );
-                if (index <= 12)
+                if (index <= 7)
                 {
                     listByomeiModelsPage1.Add(byomeiModel);
                 }
@@ -216,6 +233,7 @@ public class Reporting : IReporting
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
+
         return new Karte1ExportModel(
                 sysDateTimeS,
                 ptNum,

@@ -105,5 +105,52 @@ public class Karte1ExportModel
     public List<Karte1ByomeiModel> ListByomeiModelsPage1 { get; private set; }
     public List<Karte1ByomeiModel> ListByomeiModelsPage2 { get; private set; }
 
-    public string FileName => PtNum == null ? string.Empty : PtNum + "_" + DateTime.UtcNow.ToString("yyyyMMdd_HHmm");
+    public char[] CharHokensyaNo { get { return HokensyaNo.PadLeft(8, ' ').ToCharArray(); } }
+    public string HokensyaNo_1 { get { return CharHokensyaNo[0].ToString(); } }
+    public string HokensyaNo_2 { get { return CharHokensyaNo[1].ToString(); } }
+    public string HokensyaNo_3 { get { return CharHokensyaNo[2].ToString(); } }
+    public string HokensyaNo_4 { get { return CharHokensyaNo[3].ToString(); } }
+    public string HokensyaNo_5 { get { return CharHokensyaNo[4].ToString(); } }
+    public string HokensyaNo_6 { get { return CharHokensyaNo[5].ToString(); } }
+    public string HokensyaNo_7 { get { return CharHokensyaNo[6].ToString(); } }
+    public string HokensyaNo_8 { get { return CharHokensyaNo[7].ToString(); } }
+
+    public char[] CharFutansyaNo_K1 { get { return FutansyaNo_K1.PadLeft(8, ' ').ToCharArray(); } }
+    public string FutansyaNo_K1_1 { get { return CharFutansyaNo_K1[0].ToString(); } }
+    public string FutansyaNo_K1_2 { get { return CharFutansyaNo_K1[1].ToString(); } }
+    public string FutansyaNo_K1_3 { get { return CharFutansyaNo_K1[2].ToString(); } }
+    public string FutansyaNo_K1_4 { get { return CharFutansyaNo_K1[3].ToString(); } }
+    public string FutansyaNo_K1_5 { get { return CharFutansyaNo_K1[4].ToString(); } }
+    public string FutansyaNo_K1_6 { get { return CharFutansyaNo_K1[5].ToString(); } }
+    public string FutansyaNo_K1_7 { get { return CharFutansyaNo_K1[6].ToString(); } }
+    public string FutansyaNo_K1_8 { get { return CharFutansyaNo_K1[7].ToString(); } }
+
+    public char[] CharFutansyaNo_K2 { get { return FutansyaNo_K2.PadLeft(8, ' ').ToCharArray(); } }
+    public string FutansyaNo_K2_1 { get { return CharFutansyaNo_K2[0].ToString(); } }
+    public string FutansyaNo_K2_2 { get { return CharFutansyaNo_K2[1].ToString(); } }
+    public string FutansyaNo_K2_3 { get { return CharFutansyaNo_K2[2].ToString(); } }
+    public string FutansyaNo_K2_4 { get { return CharFutansyaNo_K2[3].ToString(); } }
+    public string FutansyaNo_K2_5 { get { return CharFutansyaNo_K2[4].ToString(); } }
+    public string FutansyaNo_K2_6 { get { return CharFutansyaNo_K2[5].ToString(); } }
+    public string FutansyaNo_K2_7 { get { return CharFutansyaNo_K2[6].ToString(); } }
+    public string FutansyaNo_K2_8 { get { return CharFutansyaNo_K2[7].ToString(); } }
+
+    public char[] CharJyukyusyaNo_K1 { get { return JyukyusyaNo_K1.PadLeft(7, ' ').ToCharArray(); } }
+    public string JyukyusyaNo_K1_1 { get { return CharJyukyusyaNo_K1[0].ToString(); } }
+    public string JyukyusyaNo_K1_2 { get { return CharJyukyusyaNo_K1[1].ToString(); } }
+    public string JyukyusyaNo_K1_3 { get { return CharJyukyusyaNo_K1[2].ToString(); } }
+    public string JyukyusyaNo_K1_4 { get { return CharJyukyusyaNo_K1[3].ToString(); } }
+    public string JyukyusyaNo_K1_5 { get { return CharJyukyusyaNo_K1[4].ToString(); } }
+    public string JyukyusyaNo_K1_6 { get { return CharJyukyusyaNo_K1[5].ToString(); } }
+    public string JyukyusyaNo_K1_7 { get { return CharJyukyusyaNo_K1[6].ToString(); } }
+
+    public char[] CharJyukyusyaNo_K2 { get { return JyukyusyaNo_K2.PadLeft(7, ' ').ToCharArray(); } }
+    public string JyukyusyaNo_K2_1 { get { return CharJyukyusyaNo_K2[0].ToString(); } }
+    public string JyukyusyaNo_K2_2 { get { return CharJyukyusyaNo_K2[1].ToString(); } }
+    public string JyukyusyaNo_K2_3 { get { return CharJyukyusyaNo_K2[2].ToString(); } }
+    public string JyukyusyaNo_K2_4 { get { return CharJyukyusyaNo_K2[3].ToString(); } }
+    public string JyukyusyaNo_K2_5 { get { return CharJyukyusyaNo_K2[4].ToString(); } }
+    public string JyukyusyaNo_K2_6 { get { return CharJyukyusyaNo_K2[5].ToString(); } }
+    public string JyukyusyaNo_K2_7 { get { return CharJyukyusyaNo_K2[6].ToString(); } }
+
 }

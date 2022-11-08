@@ -36,9 +36,19 @@ public class Karte1Export
                 PdfACompatibility = PdfACompatibility.PdfA1b
             };
 
+            // Specify the path for the exported PDF file.  
+            string pdfExportFile =
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+                @"\Downloads\" +
+                "demo_file" +
+                ".pdf";
+
+            // Export the report.
+            report.ExportToPdf(pdfExportFile, pdfExportOptions);
+
             // Export the report.
             MemoryStream stream = new();
-            report.ExportToPdf(stream, pdfExportOptions);
+            //report.ExportToPdf(stream, pdfExportOptions);
             return stream;
         }
         catch (Exception)
