@@ -83,9 +83,9 @@ public class Reporting : IReporting
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
-                if (byomeiDisplay.Length >= 26 && index <= 12)
+                if (byomeiDisplay.Length >= 64 && index <= 10)
                 {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 26);
+                    byomeiDisplay = byomeiDisplay.Substring(0, 64);
                 }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
