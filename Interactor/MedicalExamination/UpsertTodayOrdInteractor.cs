@@ -381,10 +381,7 @@ namespace Interactor.MedicalExamination
                                     var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                                     if (!check)
                                     {
-                                        lock (obj)
-                                        {
-                                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                                        }
+                                        AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                         return;
                                     }
                                 }
@@ -393,10 +390,8 @@ namespace Interactor.MedicalExamination
                                 var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                                 if (checkObjs.Count >= 2 && positionOrd == index)
                                 {
-                                    lock (obj)
-                                    {
-                                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                                    }
+
+                                    AddErrorStatus(dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                                     return;
                                 }
 
@@ -405,7 +400,7 @@ namespace Interactor.MedicalExamination
                                 {
                                     lock (obj)
                                     {
-                                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                                        AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                                     }
                                     return;
                                 }
@@ -414,16 +409,16 @@ namespace Interactor.MedicalExamination
                                 Parallel.For(0, item.OdrDetails.Count, indexOd =>
                                 {
 
-                                        var itemOd = item.OdrDetails[indexOd];
-                                        lock (objDetail)
+                                    var itemOd = item.OdrDetails[indexOd];
+                                    lock (objDetail)
+                                    {
+                                        if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
                                         {
-                                            if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
-                                            {
 
-                                                dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                                                return;
-                                            }
+                                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                            return;
                                         }
+                                    }
                                 });
                             });
 
@@ -446,6 +441,15 @@ namespace Interactor.MedicalExamination
             }
 
             return dicValidation;
+        }
+
+        private void AddErrorStatus(Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        {
+            var obj = new object();
+            lock (obj)
+            {
+                dicValidation.Add(key, status);
+            }
         }
     }
 }

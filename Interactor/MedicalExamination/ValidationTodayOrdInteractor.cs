@@ -265,10 +265,7 @@ namespace Interactor.MedicalExamination
                     var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                     if (!check)
                     {
-                        lock (obj)
-                        {
-                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                        }
+                        AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                         return;
                     }
                 }
@@ -277,20 +274,14 @@ namespace Interactor.MedicalExamination
                 var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
                 if (checkObjs.Count >= 2 && positionOrd == index)
                 {
-                    lock (obj)
-                    {
-                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                    }
+                    AddErrorStatus(dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                     return;
                 }
 
                 var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
                 if (!checkHokenPid)
                 {
-                    lock (obj)
-                    {
-                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-                    }
+                    AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                     return;
                 }
 
@@ -425,6 +416,15 @@ namespace Interactor.MedicalExamination
             }
 
             return raiinInfStatus;
+        }
+
+        private void AddErrorStatus(Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        {
+            var obj = new object();
+            lock (obj)
+            {
+                dicValidation.Add(key, status);
+            }
         }
     }
 }
