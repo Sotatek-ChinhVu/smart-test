@@ -1,38 +1,39 @@
-﻿using Helper.Common;
+﻿using Domain.Models.AccountDue;
+using Helper.Common;
 
 namespace EmrCloudApi.Tenant.Responses.AccountDue;
 
 public class AccountDueDto
 {
-    public AccountDueDto(int hpId, long ptId, int seikyuSinDate, int month, long raiinNo, int hokenPid, long oyaRaiinNo, int nyukinKbn, int seikyuTensu, int seikyuGaku, int adjustFutan, int nyukinGaku, int paymentMethodCd, int nyukinDate, int uketukeSbt, string nyukinCmt, int unPaid, int newSeikyuGaku, int newAdjustFutan, string kaDisplay, string hokenPatternName, bool isSeikyuRow, int sortNo, long seqNo, string seikyuDetail, int raiinInfStatus, int seikyuAdjustFutan)
+    public AccountDueDto(AccountDueModel item)
     {
-        HpId = hpId;
-        PtId = ptId;
-        SeikyuSinDate = seikyuSinDate;
-        Month = month;
-        RaiinNo = raiinNo;
-        HokenPid = hokenPid;
-        OyaRaiinNo = oyaRaiinNo;
-        NyukinKbn = nyukinKbn;
-        SeikyuTensu = seikyuTensu;
-        SeikyuGaku = seikyuGaku;
-        AdjustFutan = adjustFutan;
-        NyukinGaku = nyukinGaku;
-        PaymentMethodCd = paymentMethodCd;
-        NyukinDate = nyukinDate;
-        UketukeSbt = uketukeSbt;
-        NyukinCmt = nyukinCmt;
-        UnPaid = unPaid;
-        NewSeikyuGaku = newSeikyuGaku;
-        NewAdjustFutan = newAdjustFutan;
-        KaDisplay = kaDisplay;
-        HokenPatternName = hokenPatternName;
-        IsSeikyuRow = isSeikyuRow;
-        SortNo = sortNo;
-        SeqNo = seqNo;
-        SeikyuDetail = seikyuDetail;
-        RaiinInfStatus = raiinInfStatus;
-        SeikyuAdjustFutan = seikyuAdjustFutan;
+        HpId = item.HpId;
+        PtId = item.PtId;
+        SeikyuSinDate = item.SeikyuSinDate;
+        Month = item.Month;
+        RaiinNo = item.RaiinNo;
+        HokenPid = item.HokenPid;
+        OyaRaiinNo = item.OyaRaiinNo;
+        NyukinKbn = item.NyukinKbn;
+        SeikyuTensu = item.SeikyuTensu;
+        SeikyuGaku = item.SeikyuGaku;
+        AdjustFutan = item.AdjustFutan;
+        NyukinGaku = item.NyukinGaku;
+        PaymentMethodCd = item.PaymentMethodCd;
+        NyukinDate = item.NyukinDate;
+        UketukeSbt = item.UketukeSbt;
+        NyukinCmt = item.NyukinCmt;
+        UnPaid = item.UnPaid;
+        NewSeikyuGaku = item.NewSeikyuGaku;
+        NewAdjustFutan = item.NewAdjustFutan;
+        KaDisplay = item.KaDisplay;
+        HokenPatternName = item.HokenPatternName;
+        IsSeikyuRow = item.IsSeikyuRow;
+        SortNo = item.SortNo;
+        SeqNo = item.SeqNo;
+        SeikyuDetail = item.SeikyuDetail;
+        RaiinInfStatus = item.RaiinInfStatus;
+        SeikyuAdjustFutan = item.SeikyuAdjustFutan;
     }
 
     public int HpId { get; private set; }
