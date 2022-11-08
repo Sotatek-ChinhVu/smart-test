@@ -381,7 +381,7 @@ namespace Interactor.MedicalExamination
                                     var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                                     if (!check)
                                     {
-                                        AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                        AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                         return;
                                     }
                                 }
@@ -391,7 +391,7 @@ namespace Interactor.MedicalExamination
                                 if (checkObjs.Count >= 2 && positionOrd == index)
                                 {
 
-                                    AddErrorStatus(dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                                    AddErrorStatus(obj, dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                                     return;
                                 }
 
@@ -400,26 +400,21 @@ namespace Interactor.MedicalExamination
                                 {
                                     lock (obj)
                                     {
-                                        AddErrorStatus(dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                                        AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                                     }
                                     return;
                                 }
 
-                                var objDetail = new object();
-                                Parallel.For(0, item.OdrDetails.Count, indexOd =>
+                                for (int indexOd = 0; indexOd < item.OdrDetails.Count; indexOd++)
                                 {
-
                                     var itemOd = item.OdrDetails[indexOd];
-                                    lock (objDetail)
-                                    {
-                                        if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
-                                        {
 
-                                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                                            return;
-                                        }
+                                    if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
+                                    {
+                                        dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                                        break;
                                     }
-                                });
+                                }
                             });
 
                 allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
@@ -443,9 +438,8 @@ namespace Interactor.MedicalExamination
             return dicValidation;
         }
 
-        private void AddErrorStatus(Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
         {
-            var obj = new object();
             lock (obj)
             {
                 dicValidation.Add(key, status);
