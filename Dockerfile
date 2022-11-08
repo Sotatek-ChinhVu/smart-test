@@ -1,4 +1,4 @@
-FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:latest AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 
 ENV ASPNETCORE_URLS=http://+:5286
 WORKDIR /app
@@ -13,7 +13,7 @@ RUN cd ./EmrCloudApi && \
 
 
 #Build runtime image
-FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:latest
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
 WORKDIR /app
 #installs libgdiplus to support System.Drawing for handling of graphics
