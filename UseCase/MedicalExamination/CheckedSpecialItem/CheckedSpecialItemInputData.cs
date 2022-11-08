@@ -1,4 +1,4 @@
-﻿using Domain.Models.TodayOdr;
+﻿using Domain.Models;
 using UseCase.Core.Sync.Core;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 

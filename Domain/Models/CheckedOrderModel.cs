@@ -1,6 +1,6 @@
 ﻿using static Helper.Constants.OrderInfConst;
 
-namespace Domain.Models.TodayOdr
+namespace Domain.Models
 {
     public class CheckedOrderModel
     {
