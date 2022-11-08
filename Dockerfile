@@ -13,7 +13,7 @@ RUN cd ./EmrCloudApi && \
 
 
 #Build runtime image
-FROM FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:lates
+FROM 519870134487.dkr.ecr.ap-northeast-1.amazonaws.com/smartkarte-be-base:lates
 
 WORKDIR /app
 #installs libgdiplus to support System.Drawing for handling of graphics
