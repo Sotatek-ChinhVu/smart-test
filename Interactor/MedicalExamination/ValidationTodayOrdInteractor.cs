@@ -257,50 +257,57 @@ namespace Interactor.MedicalExamination
             object obj = new();
             Parallel.For(0, inputDataList.Count, index =>
             {
-                lock (obj)
-                {
-                    var item = inputDataList[index];
 
-                    if (item.Id > 0)
+                var item = inputDataList[index];
+
+                if (item.Id > 0)
+                {
+                    var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                    if (!check)
                     {
-                        var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
-                        if (!check)
+                        lock (obj)
                         {
                             dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                        }
+                        return;
+                    }
+                }
+
+                var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
+                var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                if (checkObjs.Count >= 2 && positionOrd == index)
+                {
+                    lock (obj)
+                    {
+                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                    }
+                    return;
+                }
+
+                var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
+                if (!checkHokenPid)
+                {
+                    lock (obj)
+                    {
+                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                    }
+                    return;
+                }
+
+                var objDetail = new object();
+                Parallel.For(0, item.OdrDetails.Count, indexOd =>
+                {
+                    var itemOd = item.OdrDetails[indexOd];
+                    lock (objDetail)
+                    {
+
+                        if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
+                        {
+                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                             return;
                         }
                     }
-
-                    var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
-                    var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
-                    if (checkObjs.Count >= 2 && positionOrd == index)
-                    {
-                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                        return;
-                    }
-
-                    var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
-                    if (!checkHokenPid)
-                    {
-                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-                        return;
-                    }
-
-                    var objDetail = new object();
-                    Parallel.For(0, item.OdrDetails.Count, indexOd =>
-                    {
-                        lock (objDetail)
-                        {
-                            var itemOd = item.OdrDetails[indexOd];
-
-                            if ((item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo) && !dicValidation.ContainsKey(index.ToString()))
-                            {
-                                dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                                return;
-                            }
-                        }
-                    });
-                }
+                });
             });
         }
 
