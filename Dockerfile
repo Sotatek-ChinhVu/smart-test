@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Specify your DevExpress NuGet Feed URL as the package source
 RUN dotnet nuget add source https://nuget.devexpress.com/im2jmHdukzZaHka6bDvjOW6a99HM9z5flAoBYYrG1ZWuU12Rm5/api
-#RUN dotnet restore
+RUN dotnet restore
 
 # Copy source and build
 COPY . .
