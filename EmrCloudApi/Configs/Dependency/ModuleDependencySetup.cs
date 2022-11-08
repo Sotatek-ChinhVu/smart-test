@@ -225,6 +225,8 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using Domain.Models.AuditTrailLog;
 using UseCase.AccountDue.SaveAccountDueList;
+using DevExpress.Implementation;
+using Interactor.ExportPDF;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -257,7 +259,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
 
             // Export
-            //services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupRepositories(IServiceCollection services)
