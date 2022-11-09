@@ -203,18 +203,18 @@ namespace Infrastructure.Repositories
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword)) 
                 keyword = WanaKana.RomajiToKana(keyword);
 
-            var convertHalfsizeKeyword = CIUtil.ToHalfsize(keyword);
             var listTenMstModels = new List<TenItemModel>();
-            string sBigKeyword = convertHalfsizeKeyword.ToUpper()
-           .Replace("ｧ", "ｱ")
-           .Replace("ｨ", "ｲ")
-           .Replace("ｩ", "ｳ")
-           .Replace("ｪ", "ｴ")
-           .Replace("ｫ", "ｵ")
-           .Replace("ｬ", "ﾔ")
-           .Replace("ｭ", "ﾕ")
-           .Replace("ｮ", "ﾖ")
-           .Replace("ｯ", "ﾂ");
+            string sBigKeyword = keyword.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ");
+
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
                                 || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
