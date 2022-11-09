@@ -8,6 +8,6 @@
 
         List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels);
 
-        List<string> GetListColumnName(int hpId);
+        List<(string, string)> GetListColumnName(int hpId);
     }
 }
