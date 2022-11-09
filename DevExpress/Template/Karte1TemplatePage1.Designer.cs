@@ -454,7 +454,7 @@
             // 
             // xrLabel13
             // 
-            this.xrLabel13.Borders = DevExpress.XtraPrinting.BorderSide.None;
+            this.xrLabel13.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)));
             this.xrLabel13.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(332.9678F, 196.6508F);
             this.xrLabel13.Multiline = true;

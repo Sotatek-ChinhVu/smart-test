@@ -95,7 +95,7 @@ public class Reporting : IReporting
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei;
+                string byomeiDisplay = byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
