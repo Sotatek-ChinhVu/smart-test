@@ -50,6 +50,6 @@ public class SystemConfRepository : ISystemConfRepository
 
     private SystemConfModel ToModel(SystemConf s)
     {
-        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s.Param, s.Biko ?? string.Empty);
+        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s?.Param ?? String.Empty, s.Biko ?? string.Empty);
     }
 }
