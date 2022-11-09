@@ -53,13 +53,13 @@ public class Reporting : IReporting
         //fill empty model to display
         var totalItems = ptByomeis.Count;
         int totalModelEmpty = 0;
-        if (totalItems >= 0 && totalItems < 7)
+        if (totalItems >= 0 && totalItems < 10)
         {
-            totalModelEmpty = 7 - totalItems;
+            totalModelEmpty = 10 - totalItems;
         }
-        else if (totalItems > 7)
+        else if (totalItems > 10)
         {
-            totalModelEmpty = 22 - ((totalItems - 7) % 22);
+            totalModelEmpty = 22 - ((totalItems - 10) % 22);
         }
         for (int i = 0; i < totalModelEmpty; i++)
         {
@@ -95,7 +95,7 @@ public class Reporting : IReporting
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei;
+                string byomeiDisplay = byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei + byomei.Byomei;
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
@@ -119,7 +119,7 @@ public class Reporting : IReporting
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         );
-                if (index <= 7)
+                if (index <= 10)
                 {
                     listByomeiModelsPage1.Add(byomeiModel);
                 }
