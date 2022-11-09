@@ -105,6 +105,7 @@ public class Karte1ExportModel
     public List<Karte1ByomeiModel> ListByomeiModelsPage1 { get; private set; }
     public List<Karte1ByomeiModel> ListByomeiModelsPage2 { get; private set; }
 
+    #region gen data to display
     public char[] CharHokensyaNo { get { return HokensyaNo.PadLeft(8, ' ').ToCharArray(); } }
     public string HokensyaNo_1 { get { return CharHokensyaNo[0].ToString(); } }
     public string HokensyaNo_2 { get { return CharHokensyaNo[1].ToString(); } }
@@ -152,5 +153,7 @@ public class Karte1ExportModel
     public string JyukyusyaNo_K2_5 { get { return CharJyukyusyaNo_K2[4].ToString(); } }
     public string JyukyusyaNo_K2_6 { get { return CharJyukyusyaNo_K2[5].ToString(); } }
     public string JyukyusyaNo_K2_7 { get { return CharJyukyusyaNo_K2[6].ToString(); } }
+
+    #endregion
 
 }

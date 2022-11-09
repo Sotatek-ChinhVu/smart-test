@@ -53,7 +53,7 @@ public class Reporting : IReporting
         //fill empty model to display
         var totalItems = ptByomeis.Count;
         int totalModelEmpty = 0;
-        if (totalItems > 0 && totalItems < 7)
+        if (totalItems >= 0 && totalItems < 7)
         {
             totalModelEmpty = 7 - totalItems;
         }
@@ -217,7 +217,7 @@ public class Reporting : IReporting
                 kigoBango = hoken.HokenInf.Kigo + "・" + hoken.HokenInf.Bango;
                 if (!string.IsNullOrEmpty(hoken.HokenInf.EdaNo))
                 {
-                    kigoBango = kigoBango + "(" + hoken.HokenInf.EdaNo ?? string.Empty + ")";
+                    kigoBango = kigoBango + "(" + hoken.HokenInf.EdaNo + ")";
                 }
             }
             var warekiEndate = CIUtil.SDateToShowWDate3(hoken.EndDate);
@@ -226,7 +226,7 @@ public class Reporting : IReporting
             hokenSyutokuW = warekiSyutokuDate.Ymd != null ? warekiSyutokuDate.Ymd : string.Empty;
             hokensyaName = hoken.HokenInf.HokensyaName;
             hokensyaAddress = hoken.HokenInf.HokensyaAddress;
-            zokugara = hoken.HokenInf.KeizokuKbn.ToString();
+            zokugara = hoken.HokenInf.KeizokuKbn > 0 ? hoken.HokenInf.KeizokuKbn.ToString() : string.Empty;
             hokensyaTel = hoken.HokenInf.HokensyaTel;
             futansyaNo_K1 = hoken.Kohi1.FutansyaNo;
             jyukyusyaNo_K1 = hoken.Kohi1.JyukyusyaNo;

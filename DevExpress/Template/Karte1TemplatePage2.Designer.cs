@@ -219,7 +219,7 @@
             this.xrLabel1.SizeF = new System.Drawing.SizeF(140.2899F, 44.31309F);
             this.xrLabel1.StylePriority.UseBorders = false;
             this.xrLabel1.StylePriority.UseFont = false;
-            this.xrLabel1.Text = " 治ゆ・死亡・中⽌・他";
+            this.xrLabel1.Text = " 治ゆ・死亡・中止・他";
             // 
             // xrTableCell15
             // 
@@ -231,7 +231,7 @@
             this.xrTableCell15.StylePriority.UseBorders = false;
             this.xrTableCell15.StylePriority.UseFont = false;
             this.xrTableCell15.StylePriority.UseTextAlignment = false;
-            this.xrTableCell15.Text = "年 ⽉ ⽇";
+            this.xrTableCell15.Text = "年 月 日";
             this.xrTableCell15.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell15.Weight = 1.4180972803268534D;
             // 
@@ -435,7 +435,7 @@
             this.xrTableCell17.Name = "xrTableCell17";
             this.xrTableCell17.StylePriority.UseBorders = false;
             this.xrTableCell17.StylePriority.UseFont = false;
-            this.xrTableCell17.Text = "期 間 満 了\r\n予 定 ⽇";
+            this.xrTableCell17.Text = "期 間 満 了\r\n予 定 日";
             this.xrTableCell17.Weight = 1.0241819514438979D;
             // 
             // BottomMargin
