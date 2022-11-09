@@ -63,7 +63,7 @@ namespace Interactor.Diseases
                     }
                 }
 
-                if (!_patientInforRepository.CheckListId(datas.Select(i => i.PtId).ToList()))
+                if (!_patientInforRepository.CheckListId(datas.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
@@ -71,7 +71,6 @@ namespace Interactor.Diseases
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist);
                 }
-                if (inputData.ToList().Count == 0) return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
 
                 _diseaseRepository.Upsert(datas);
                 return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success);
