@@ -66,7 +66,7 @@ namespace Infrastructure.Repositories
                     r.CommentContent,
                     r.Status,
                     false,
-                    r.RaiinNo == raiinNo,
+                    (r.SinDate == sinDate && r.RaiinNo == raiinNo && r.Status < 3),
                     r.RaiinListInfs.ToList(),
                     ptId
                    )
@@ -150,7 +150,7 @@ namespace Infrastructure.Repositories
                         string.Empty,
                         0,
                         false,
-                        true,
+                        false,
                         new List<RaiinListInfModel>(),
                         0
                     );
