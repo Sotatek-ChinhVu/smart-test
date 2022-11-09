@@ -94,8 +94,8 @@ namespace Interactor.SetMst
                                         c.Color,
                                         c.IsGroup,
                                         new List<GetSetMstListOutputItem>() ?? new List<GetSetMstListOutputItem>()
-                                    )).ToList().OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
-                            )).ToList().OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
+                                    )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
+                            )).OrderBy(s => s.Level1).ThenBy(s => s.Level2).ThenBy(s => s.Level3).ToList() ?? new List<GetSetMstListOutputItem>()
                     );
 
                 lock (obj)
