@@ -53,13 +53,13 @@ public class Reporting : IReporting
         //fill empty model to display
         var totalItems = ptByomeis.Count;
         int totalModelEmpty = 0;
-        if (totalItems >= 0 && totalItems < 10)
+        if (totalItems >= 0 && totalItems < 9)
         {
-            totalModelEmpty = 10 - totalItems;
+            totalModelEmpty = 9 - totalItems;
         }
-        else if (totalItems > 10)
+        else if (totalItems > 9)
         {
-            totalModelEmpty = 22 - ((totalItems - 10) % 22);
+            totalModelEmpty = 21 - ((totalItems - 9) % 21);
         }
         for (int i = 0; i < totalModelEmpty; i++)
         {
@@ -100,9 +100,9 @@ public class Reporting : IReporting
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
-                if (byomeiDisplay.Length >= 51)
+                if (byomeiDisplay.Length >= 64)
                 {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 51);
+                    byomeiDisplay = byomeiDisplay.Substring(0, 64);
                 }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
@@ -119,7 +119,7 @@ public class Reporting : IReporting
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         );
-                if (index <= 10)
+                if (index <= 9)
                 {
                     listByomeiModelsPage1.Add(byomeiModel);
                 }
