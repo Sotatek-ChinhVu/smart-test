@@ -66,9 +66,10 @@ namespace Infrastructure.Repositories
                     r.CommentContent,
                     r.Status,
                     false,
-                    (r.SinDate == sinDate && r.RaiinNo == raiinNo && r.Status < 3),
+                    r.RaiinNo == raiinNo,
                     r.RaiinListInfs.ToList(),
-                    ptId
+                    ptId,
+                    (r.RaiinNo == raiinNo && r.SinDate == sinDate && r.Status < 3)
                    )
             ).AsEnumerable<FlowSheetModel>();
 
@@ -132,7 +133,8 @@ namespace Infrastructure.Repositories
                         true,
                         false,
                         data.RaiinListInfs.ToList(),
-                        data.NextOdr?.PtId ?? 0
+                        data.NextOdr?.PtId ?? 0,
+                        false
                     ));
 
             var todayNextOdrs = todayOdr.Union(nextOdrs).ToList();
@@ -152,7 +154,8 @@ namespace Infrastructure.Repositories
                         false,
                         false,
                         new List<RaiinListInfModel>(),
-                        0
+                        0,
+                        false
                     );
                 totalCount = totalCount + 1;
             }

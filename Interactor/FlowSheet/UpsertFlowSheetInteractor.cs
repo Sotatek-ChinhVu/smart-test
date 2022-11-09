@@ -73,7 +73,8 @@ namespace Interactor.FlowSheet
                         true,
                         true,
                         new List<RaiinListInfModel>(),
-                        i.PtId
+                        i.PtId,
+                        false
                     )).ToList() ?? new List<FlowSheetModel>();
                 _flowsheetRepository.UpsertTag(dataTags);
 
@@ -88,7 +89,8 @@ namespace Interactor.FlowSheet
                        true,
                        true,
                        new List<RaiinListInfModel>(),
-                       i.PtId
+                       i.PtId,
+                       false
                    )).ToList() ?? new List<FlowSheetModel>();
                 _flowsheetRepository.UpsertCmt(dataCmts);
 

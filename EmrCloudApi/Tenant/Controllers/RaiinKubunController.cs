@@ -38,7 +38,7 @@ namespace EmrCloudApi.Tenant.Controllers
         public async Task<ActionResult<Response<LoadDataKubunSettingResponse>>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
         {
             var input = new LoadDataKubunSettingInputData(request.HpId);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new LoadDataKubunSettingPresenter();
             presenter.Complete(output);
