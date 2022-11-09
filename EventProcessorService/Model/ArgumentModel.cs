@@ -1,8 +1,8 @@
-﻿namespace Domain.Models.AuditTrailLog;
+﻿namespace EventProcessor.Model;
 
-public class AuditTraiLogModel
+public class ArgumentModel
 {
-    public AuditTraiLogModel(int hpId, int userId, string eventCd, long ptId, int sinDay, long raiinNo, string hosoku)
+    public ArgumentModel(int hpId, int userId, string eventCd, long ptId, int sinDay, long raiinNo, string hosoku)
     {
         HpId = hpId;
         UserId = userId;
@@ -14,16 +14,16 @@ public class AuditTraiLogModel
     }
 
     public int HpId { get; private set; }
-    
+
     public int UserId { get; private set; }
-    
+
     public string EventCd { get; private set; }
-    
+
     public long PtId { get; private set; }
-    
+
     public int SinDay { get; private set; }
-    
+
     public long RaiinNo { get; private set; }
-    
+
     public string Hosoku { get; private set; }
 }
