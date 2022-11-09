@@ -289,7 +289,7 @@ namespace Interactor.MedicalExamination
                 if (odrDetail != null)
                 {
                     var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
-                    dicValidation.Add(index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                    AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                 }
             });
         }

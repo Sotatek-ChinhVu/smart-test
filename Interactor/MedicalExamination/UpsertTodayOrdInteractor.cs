@@ -397,10 +397,7 @@ namespace Interactor.MedicalExamination
                     var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                     if (!checkHokenPid)
                     {
-                        lock (obj)
-                        {
-                            AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-                        }
+                        AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
                         return;
                     }
 
@@ -408,7 +405,7 @@ namespace Interactor.MedicalExamination
                     if (odrDetail != null)
                     {
                         var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
-                        dicValidation.Add(index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                        AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                     }
                 });
 
