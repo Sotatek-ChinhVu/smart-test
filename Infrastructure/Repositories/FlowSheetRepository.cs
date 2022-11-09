@@ -264,7 +264,7 @@ namespace Infrastructure.Repositories
             try
             {
                 var childrenOfSort = sort.Trim().Split(",");
-
+                var order = todayNextOdrs.OrderBy(o => o.PtId);
                 foreach (var item in childrenOfSort)
                 {
                     var elementDynamics = item.Trim().Split(" ");
@@ -272,7 +272,7 @@ namespace Infrastructure.Repositories
 
                     if (!checkGroupId)
                     {
-                        todayNextOdrs = todayNextOdrs.AsQueryable().OrderBy(item).ToList();
+                        SortStaticColumn(elementDynamics.FirstOrDefault() ?? string.Empty, elementDynamics?.Count() > 1 ? elementDynamics.LastOrDefault() ?? string.Empty : string.Empty, order);
                     }
                     else
                     {
@@ -280,23 +280,88 @@ namespace Infrastructure.Repositories
                         {
                             if (childrenOfSort[1].ToLower() == "desc")
                             {
-                                todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                                order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                             }
                             else
                             {
-                                todayNextOdrs = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                                order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                             }
                         }
                         else
                         {
-                            todayNextOdrs = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                            order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                         }
                     }
                 }
+                todayNextOdrs = order.ToList();
             }
             catch
             {
                 todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.SinDate).ToList();
+            }
+        }
+
+        private void SortStaticColumn(string fieldName, string sortType, IOrderedEnumerable<FlowSheetModel> order)
+        {
+            if (fieldName.ToLower().Equals("sindate"))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.SinDate);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.SinDate);
+                }
+            }
+            if (fieldName.ToLower().Equals("tagno"))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.TagNo);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.TagNo);
+                }
+            }
+            if (fieldName.ToLower().Equals("fulllineofkarte"))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.FullLineOfKarte);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.FullLineOfKarte);
+                }
+            }
+            if (fieldName.ToLower().Equals("syosaisinkbn"))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.SyosaisinKbn);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.SyosaisinKbn);
+                }
+            }
+            if (fieldName.ToLower().Equals("comment"))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.Comment);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.Comment);
+                }
             }
         }
     }
