@@ -1,4 +1,4 @@
-﻿using DevExpress.Export;
+﻿using DevExpress.Inteface;
 using DevExpress.Models;
 using DevExpress.Response.Karte1;
 using Domain.Constant;
@@ -17,9 +17,9 @@ public class Reporting : IReporting
     private readonly IPtDiseaseRepository _diseaseRepository;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
-    private readonly Karte1Export _karte1Export;
+    private readonly IKarte1Export _karte1Export;
 
-    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, Karte1Export karte1Export)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
