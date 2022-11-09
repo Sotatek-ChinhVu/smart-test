@@ -2,11 +2,11 @@
 {
     public class GetColumnNameListResponse
     {
-        public GetColumnNameListResponse(List<string> columnNames)
+        public GetColumnNameListResponse(List<GetColumnNameItem> columnNames)
         {
             ColumnNames = columnNames;
         }
 
-        public List<string> ColumnNames { get; private set; } = new();
+        public List<GetColumnNameItem> ColumnNames { get; private set; } = new();
     }
 }
