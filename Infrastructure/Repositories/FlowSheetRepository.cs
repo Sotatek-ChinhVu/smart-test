@@ -53,7 +53,7 @@ namespace Infrastructure.Repositories
                                              on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                              select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            //.AsEnumerable<RaiinListInfModel>()
+                            //.AsEnumerable<RaiinListInfModel>()
                         };
 
             var todayOdr = query.Select(r =>
@@ -160,37 +160,10 @@ namespace Infrastructure.Repositories
             if (string.IsNullOrEmpty(sort))
                 result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
             else
-                try
-                {
-                    var childrenOfSort = sort.Split(" ");
-                    var checkGroupId = int.TryParse(childrenOfSort[0], out int groupId);
-
-                    if (!checkGroupId)
-                        result = todayNextOdrs.AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
-                    else
-                    {
-                        if (childrenOfSort.Length > 1)
-                        {
-                            if (childrenOfSort[1].ToLower() == "desc")
-                            {
-                                result = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-                            }
-                            else
-                            {
-                                result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-
-                            }
-                        }
-                        else
-                        {
-                            result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-                        }
-                    }
-                }
-                catch
-                {
-                    result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-                }
+            {
+                SortAll(sort, todayNextOdrs);
+                result = todayNextOdrs.Skip(startIndex).Take(count).ToList();
+            }
 
             if (sinDateCurrent != null && startIndex == 0)
             {
@@ -284,6 +257,47 @@ namespace Infrastructure.Repositories
                 }
             }
             _tenantTrackingDataContext.SaveChanges();
+        }
+
+        private void SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
+        {
+            try
+            {
+                var childrenOfSort = sort.Trim().Split(",");
+
+                foreach (var item in childrenOfSort)
+                {
+                    var elementDynamics = item.Trim().Split(" ");
+                    var checkGroupId = int.TryParse(elementDynamics[0], out int groupId);
+
+                    if (!checkGroupId)
+                    {
+                        todayNextOdrs = todayNextOdrs.AsQueryable().OrderBy(item).ToList();
+                    }
+                    else
+                    {
+                        if (elementDynamics.Length > 1)
+                        {
+                            if (childrenOfSort[1].ToLower() == "desc")
+                            {
+                                todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                            }
+                            else
+                            {
+                                todayNextOdrs = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                            }
+                        }
+                        else
+                        {
+                            todayNextOdrs = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).ToList();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.SinDate).ToList();
+            }
         }
     }
 }
