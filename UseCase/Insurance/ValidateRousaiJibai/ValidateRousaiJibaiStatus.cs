@@ -19,6 +19,21 @@ namespace UseCase.Insurance.ValidateRousaiJibai
         InvalidSelectedHokenInfEndDate = 8,
         InvalidSelectedHokenInfConfirmDate = 9,
         InvalidHpId = 10,
-        InvalidFaild = 11
+        InvalidFaild = 11,
+        InvalidRodoBangoNull = 12,
+        InvalidRodoBangoLengthNotEquals14 = 13,
+        InvalidCheckItemFirstListRousaiTenki = 14,
+        InvalidCheckRousaiTenkiSinkei = 15,
+        InvalidCheckRousaiTenkiTenki = 16,
+        InvalidCheckRousaiTenkiEndDate = 17,
+        InvalidCheckRousaiSaigaiKbnNotEquals1And2 = 18,
+        InvalidCheckRousaiSyobyoDateEquals0 = 19,
+        InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull = 20,
+        InvalidCheckRousaiRyoyoDate = 21,
+        InvalidCheckDateExpirated = 22,
+        InvalidNenkinBangoIsNull = 23,
+        InvalidNenkinBangoLengthNotEquals9 = 24,
+        InvalidKenkoKanriBangoIsNull = 25,
+        InvalidKenkoKanriBangoLengthNotEquals13 = 26
     }
 }

@@ -159,50 +159,15 @@ namespace Infrastructure.Repositories
                 tenMst?.IpnNameCd ?? string.Empty,
                 tenMst?.SinKouiKbn ?? 0,
                 tenMst?.YjCd ?? string.Empty,
-                tenMst?.CnvUnitName ?? string.Empty,
-                tenMst?.StartDate ?? 0,
-                tenMst?.YohoKbn ?? 0
+                tenMst?.CnvUnitName ?? string.Empty
             );
         }
 
-        public List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds)
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired)
         {
-            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
-
-            return tenMsts.Select(tenMst => new TenItemModel(
-                tenMst.HpId,
-                tenMst.ItemCd,
-                tenMst.RousaiKbn,
-                tenMst.KanaName1 ?? string.Empty,
-                tenMst.Name ?? string.Empty,
-                tenMst.KohatuKbn,
-                tenMst.MadokuKbn,
-                tenMst.KouseisinKbn,
-                tenMst.OdrUnitName ?? string.Empty,
-                tenMst.EndDate,
-                tenMst.DrugKbn,
-                tenMst.MasterSbt ?? string.Empty,
-                tenMst.BuiKbn,
-                tenMst.IsAdopted,
-                tenMst.Ten,
-                tenMst.TenId,
-                "",
-                "",
-                tenMst.CmtCol1,
-                tenMst.IpnNameCd ?? string.Empty,
-                tenMst.SinKouiKbn,
-                tenMst.YjCd ?? string.Empty,
-                tenMst.CnvUnitName ?? string.Empty,
-                tenMst.StartDate,
-                tenMst.YohoKbn
-            )).ToList();
-        }
-
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
-        {
-            var convertHalfsizeKeyword = CIUtil.ToHalfsize(keyword);
             var listTenMstModels = new List<TenItemModel>();
-            string sBigKeyword = convertHalfsizeKeyword.ToUpper()
+
+            string sBigKeyword = keyword.ToUpper()
            .Replace("ｧ", "ｱ")
            .Replace("ｨ", "ｲ")
            .Replace("ｩ", "ｳ")
@@ -213,7 +178,7 @@ namespace Infrastructure.Repositories
            .Replace("ｮ", "ﾖ")
            .Replace("ｯ", "ﾂ");
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
-                                t.ItemCd.StartsWith(convertHalfsizeKeyword)
+                                t.ItemCd.StartsWith(keyword)
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
@@ -293,6 +258,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
                                 (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
+
 
             if (kouiKbn > 0)
             {
@@ -467,10 +433,6 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            if (!string.IsNullOrEmpty(itemCodeStartWith))
-            {
-                queryResult = queryResult.Where(t => t.ItemCd.StartsWith(itemCodeStartWith));
-            }
 
             if (!string.IsNullOrEmpty(YJCode))
             {
@@ -523,8 +485,8 @@ namespace Infrastructure.Repositories
                                      join k in kensaMstQuery.AsEnumerable()
                                      on q.TenMst.KensaItemCd equals k.KensaItemCd into kensaMsts
                                      from kensaMst in kensaMsts.DefaultIfEmpty()
-                                     select new { q.TenMst, q.tenKN, KensaMst = kensaMst };
-            var totalCount = queryJoinWithKensa.Count(item => item.TenMst != null);
+                                     select new { TenMst = q.TenMst, q.tenKN, KensaMst = kensaMst };
+            var totalCount = queryJoinWithKensa.Where(item => item.TenMst != null).Count();
 
             var listTenMst = queryJoinWithKensa.Where(item => item.TenMst != null).OrderBy(item => item.TenMst.KanaName1).ThenBy(item => item.TenMst.Name).Skip((pageIndex - 1) * pageCount);
             if (pageCount > 0)
@@ -558,9 +520,7 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
                                                            item.TenMst?.SinKouiKbn ?? 0,
                                                            item.TenMst?.YjCd ?? string.Empty,
-                                                           item.TenMst?.CnvUnitName ?? string.Empty,
-                                                           item.TenMst?.StartDate ?? 0,
-                                                           item.TenMst?.YohoKbn ?? 0
+                                                           item.TenMst?.CnvUnitName ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -735,17 +695,7 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
-        public List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes)
-        {
-            var listDatas = _tenantDataContext.ByomeiMsts.Where(item => keyCodes.Contains(item.ByomeiCd)).ToList();
-            List<ByomeiMstModel> listByomeies = new();
 
-            if (listDatas != null)
-            {
-                listByomeies = listDatas.Select(mst => ConvertToByomeiMstModel(mst)).ToList();
-            }
-            return listByomeies;
-        }
         public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
@@ -766,45 +716,8 @@ namespace Infrastructure.Repositories
             return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
         }
 
-        public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
-        {
-            var entity = _tenantDataContext.TenMsts.FirstOrDefault(p =>
-                   p.HpId == hpId &&
-                   p.StartDate <= sinDate &&
-                   p.EndDate >= sinDate &&
-                   p.ItemCd == itemCd);
-
-            return new TenItemModel(
-                    entity?.HpId ?? 0,
-                    entity?.ItemCd ?? string.Empty,
-                    entity?.RousaiKbn ?? 0,
-                    entity?.KanaName1 ?? string.Empty,
-                    entity?.Name ?? string.Empty,
-                    entity?.KohatuKbn ?? 0,
-                    entity?.MadokuKbn ?? 0,
-                    entity?.KouseisinKbn ?? 0,
-                    entity?.OdrUnitName ?? string.Empty,
-                    entity?.EndDate ?? 0,
-                    entity?.DrugKbn ?? 0,
-                    entity?.MasterSbt ?? string.Empty,
-                    entity?.BuiKbn ?? 0,
-                    entity?.IsAdopted ?? 0,
-                    entity?.Ten != null ? entity.Ten : 0,
-                    entity?.TenId ?? 0,
-                    string.Empty,
-                    string.Empty,
-                    entity?.CmtCol1 ?? 0,
-                    entity?.IpnNameCd ?? string.Empty,
-                    entity?.SinKouiKbn ?? 0,
-                    entity?.YjCd ?? string.Empty,
-                    entity?.CnvUnitName ?? string.Empty,
-                    entity?.StartDate ?? 0,
-                    entity?.YohoKbn ?? 0
-               );
-        }
-
         #region Private Function
-        private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
+        private ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {
             return new ByomeiMstModel(
                     mst.ByomeiCd,
@@ -820,7 +733,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the ByomeiCdDisplay depend on ByomeiCd
-        private static string ConvertByomeiCdDisplay(string byomeiCd)
+        private string ConvertByomeiCdDisplay(string byomeiCd)
         {
             string result = "";
 
@@ -849,7 +762,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the SikkanCd for display
-        private static string ConvertSikkanDisplay(int SikkanCd)
+        private string ConvertSikkanDisplay(int SikkanCd)
         {
             string sikkanDisplay = "";
             switch (SikkanCd)
@@ -877,7 +790,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the Icd10Display depend on Icd101 and Icd102
-        private static string ConvertIcd10Display(string icd101, string icd102)
+        private string ConvertIcd10Display(string icd101, string icd102)
         {
             string result = icd101;
             if (!string.IsNullOrWhiteSpace(result))
@@ -895,7 +808,7 @@ namespace Infrastructure.Repositories
         }
 
         /// Get the Icd10Display depend on Icd1012013 and Icd1022013
-        private static string ConvertIcd102013Display(string icd1012013, string icd1022013)
+        private string ConvertIcd102013Display(string icd1012013, string icd1022013)
         {
             string rs = icd1012013;
             if (!string.IsNullOrWhiteSpace(rs))
@@ -913,7 +826,7 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
@@ -933,8 +846,6 @@ namespace Infrastructure.Repositories
                                                 || e.PrefName.Contains(address));
             }
 
-            var totalCount = entities.Count();
-
             var result = entities.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
@@ -950,10 +861,9 @@ namespace Infrastructure.Repositories
                                       x.CityName ?? string.Empty,
                                       x.Banti ?? string.Empty,
                                       x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
+                                  .Skip(pageIndex).Take(pageSize)
                                   .ToList();
-
-            return (totalCount, result);
+            return result;
         }
     }
 }

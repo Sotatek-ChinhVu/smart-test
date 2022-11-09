@@ -28,10 +28,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("ExchangeToken"), Produces("application/json")]
-    public ActionResult<Response<ExchangeTokenResponse>> ExchangeToken([FromBody] ExchangeTokenRequest req)
+    public async Task<ActionResult<Response<ExchangeTokenResponse>>> ExchangeToken([FromBody] ExchangeTokenRequest req)
     {
         var getUserInput = new GetUserByLoginIdInputData(req.LoginId);
-        var getUserOutput = _bus.Handle(getUserInput);
+        var getUserOutput = await Task.Run(() => _bus.Handle(getUserInput));
         var user = getUserOutput.User;
         if (user is null)
         {

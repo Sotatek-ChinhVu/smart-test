@@ -23,20 +23,20 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public ActionResult<Response<GetMonshinInforListResponse>> GetList([FromQuery] GetMonshinInforListRequest request)
+        public async Task<ActionResult<Response<GetMonshinInforListResponse>>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
             var input = new GetMonshinInforListInputData(request.HpId, request.PtId, request.SinDate, request.IsDeleted);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetMonshinInforListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveList)]
-        public ActionResult<Response<SaveMonshinInforListResponse>> SaveList([FromBody] SaveMonshinInforListRequest request)
+        public async Task<ActionResult<Response<SaveMonshinInforListResponse>>> SaveList([FromBody] SaveMonshinInforListRequest request)
         {
             var input = new SaveMonshinInputData(request.Monshins);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveMonshinInforListPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);

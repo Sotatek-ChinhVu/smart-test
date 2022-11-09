@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.SetMst
 
         public void Complete(CopyPasteSetMstOutputData output)
         {
-            Result.Data = new CopyPasteSetMstResponse(output.Status == CopyPasteSetMstStatus.Successed);
+            Result.Data = new CopyPasteSetMstResponse(output.NewSetCd);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }

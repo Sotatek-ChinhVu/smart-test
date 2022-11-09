@@ -78,7 +78,7 @@ namespace Interactor.OrdInfs
 
             var tenMsts = _mstItemRepository.GetCheckTenItemModels(hpId, sinDate, itemCds);
             var ipnMinYakaMsts = _ordInfRepository.GetCheckIpnMinYakkaMsts(hpId, sinDate, tenMsts?.Select(t => t.IpnNameCd).ToList() ?? new List<string>());
-            var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
+            var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999).Item1;
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
             foreach (var item in inputDataList)

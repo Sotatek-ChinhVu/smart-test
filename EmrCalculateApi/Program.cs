@@ -1,6 +1,6 @@
-using EmrCalculateApi.Futan;
+using EmrCalculateApi.Futan.ViewModels;
+using EmrCalculateApi.Ika.ViewModels;
 using EmrCalculateApi.Implementation;
-using EmrCalculateApi.Implementation.IkaCalculate;
 using EmrCalculateApi.Interface;
 using Infrastructure.CommonDB;
 using Infrastructure.Interfaces;
@@ -21,10 +21,24 @@ services.AddScoped<ITenantProvider, TenantProvider>();
 services.AddScoped<ISystemConfigProvider, SystemConfigProvider>();
 services.AddScoped<IEmrLogger, EmrLogger>();
 
-services.AddScoped<IFutanCalculate, FutanCalculate>();
-services.AddScoped<IIkaCalculate, IkaCalculate>();
+services.AddScoped<IFutancalcViewModel, FutancalcViewModel>();
+services.AddScoped<IIkaCalculateViewModel, IkaCalculateViewModel>();
 
 var app = builder.Build();
+
+//Add config from json file
+string enviroment = "Development";
+if (app.Environment.IsProduction() ||
+    app.Environment.IsStaging())
+{
+    enviroment = "Staging";
+}
+builder.Host.ConfigureAppConfiguration((hostingContext, config) =>
+{
+    config.AddJsonFile("env.json", optional: true, reloadOnChange: true)
+          .AddJsonFile($"env.{enviroment}.json", true, true);
+});
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -22,10 +22,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.Get)]
-        public ActionResult<Response<GetSpecialNoteResponse>> Get([FromQuery] SpecialNoteRequest request)
+        public async Task<ActionResult<Response<GetSpecialNoteResponse>>> Get([FromQuery] SpecialNoteRequest request)
         {
             var input = new GetSpecialNoteInputData(request.HpId, request.PtId);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSpecialNotePresenter();
             presenter.Complete(output);
@@ -34,7 +34,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.AddAlrgyDrugList)]
-        public ActionResult<Response<AddAlrgyDrugListResponse>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
+        public async Task<ActionResult<Response<AddAlrgyDrugListResponse>>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
                     a => new AddAlrgyDrugListItemInputData(
@@ -46,7 +46,7 @@ namespace EmrCloudApi.Tenant.Controllers
                             a.Cmt
                         )
                 ).ToList());
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new AddAlrgyDrugListPresenter();
             presenter.Complete(output);
@@ -55,10 +55,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Save)]
-        public ActionResult<Response<SaveSpecialNoteResponse>> Save([FromBody] SpecialNoteSaveRequest request)
+        public async Task<ActionResult<Response<SaveSpecialNoteResponse>>> Save([FromBody] SpecialNoteSaveRequest request)
         {
             var input = new SaveSpecialNoteInputData(request.HpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map());
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveSpecialNotePresenter();
             presenter.Complete(output);

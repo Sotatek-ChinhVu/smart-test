@@ -49,9 +49,10 @@ namespace Infrastructure.Repositories
                     {
                         if (odrInfs.Count > 0)
                         {
-                            SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
                             UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
+
+                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
 
                         UpsertKarteInfs(karteInfModel);
 
@@ -239,11 +240,12 @@ namespace Infrastructure.Repositories
             }
             else
             {
+                rpNoMax++;
                 var newHeaderInf = new OdrInf
                 {
                     HpId = hpId,
                     RaiinNo = raiinNo,
-                    RpNo = ++rpNoMax,
+                    RpNo = rpNoMax,
                     RpEdaNo = rpEdaNoDefault,
                     PtId = ptId,
                     SinDate = sinDate,
@@ -723,7 +725,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                var karteMst = _tenantTrackingDataContext.KarteInfs.FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn);
+                var karteMst = _tenantTrackingDataContext.KarteInfs.OrderByDescending(k => k.SeqNo).FirstOrDefault(o => o.HpId == karte.HpId && o.PtId == karte.PtId && o.RaiinNo == karte.RaiinNo && karte.KarteKbn == o.KarteKbn && karte.IsDeleted == DeleteTypes.None);
 
                 if (karteMst == null)
                 {

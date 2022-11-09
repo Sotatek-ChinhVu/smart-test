@@ -48,7 +48,9 @@ namespace Interactor.SetMst
             List<GetSetMstListOutputItem> result = new List<GetSetMstListOutputItem>();
             var topNodes = datas?.Where(c => c.Level2 == 0 && c.Level3 == 0);
             if (topNodes?.Any() != true) { return result; }
-            foreach (var item in topNodes)
+            var obj = new object();
+
+            Parallel.ForEach(topNodes, item =>
             {
                 var node = new GetSetMstListOutputItem(
                     item.HpId,
@@ -91,17 +93,17 @@ namespace Interactor.SetMst
                                         c.WeightKbn,
                                         c.Color,
                                         c.IsGroup,
-                                        new List<GetSetMstListOutputItem>(),
-                                        c.SetMstTooltip
-                                    )).ToList(),
-                                    c.SetMstTooltip
-                            )).ToList(),
-                            item.SetMstTooltip
+                                        new List<GetSetMstListOutputItem>() ?? new List<GetSetMstListOutputItem>()
+                                    )).ToList() ?? new List<GetSetMstListOutputItem>()
+                            )).ToList() ?? new List<GetSetMstListOutputItem>()
                     );
+
+                lock (obj)
+                {
                     result.Add(node);
                 }
-                return result;
+            });
+            return result;
         }
-
     }
 }
