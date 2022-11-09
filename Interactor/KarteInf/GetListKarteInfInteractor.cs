@@ -26,7 +26,7 @@ namespace Interactor.KarteInfs
                 return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.InvalidSinDate);
             }
 
-            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted);
+            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
             if (karteInfModel == null || karteInfModel.Count == 0)
             {
                 return new GetListKarteInfOutputData(new List<GetListKarteInfOuputItem>(), GetListKarteInfStatus.NoData);

@@ -48,7 +48,7 @@ namespace Interactor.MstItem
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InvalidPointTo);
             }
 
-            if (string.IsNullOrEmpty(inputData.Keyword))
+            if (inputData.Keyword is null)
             {
                 return new SearchTenItemOutputData(new List<TenItemModel>(), 0, SearchTenItemStatus.InValidKeyword);
             }
