@@ -228,6 +228,8 @@ using DevExpress.Implementation;
 using Interactor.ExportPDF;
 using EventProcessor.Service;
 using EventProcessor.Interfaces;
+using DevExpress.Inteface;
+using DevExpress.Export;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -324,7 +326,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            //services.AddTransient<Karte1Export, Karte1Export>();
+            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
