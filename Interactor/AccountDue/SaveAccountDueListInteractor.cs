@@ -1,8 +1,9 @@
 ﻿using Domain.Models.AccountDue;
-using Domain.Models.AuditTrailLog;
 using Domain.Models.HpMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using EventProcessor.Interfaces;
+using EventProcessor.Model;
 using Helper.Constants;
 using UseCase.AccountDue.SaveAccountDueList;
 
@@ -14,15 +15,15 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
     private readonly IUserRepository _userRepository;
     private readonly IHpInfRepository _hpInfRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly IAuditTrailLogRepository _auditTrailLogRepositoty;
+    private readonly IEventProcessorService _eventProcessorService;
 
-    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IAuditTrailLogRepository auditTrailLogRepository)
+    public SaveAccountDueListInteractor(IAccountDueRepository accountDueRepository, IUserRepository userRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IEventProcessorService eventProcessorService)
     {
         _accountDueRepository = accountDueRepository;
         _userRepository = userRepository;
         _hpInfRepository = hpInfRepository;
         _patientInforRepository = patientInforRepository;
-        _auditTrailLogRepositoty = auditTrailLogRepository;
+        _eventProcessorService = eventProcessorService;
     }
 
     public SaveAccountDueListOutputData Handle(SaveAccountDueListInputData inputData)
@@ -36,7 +37,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         var listRaiinNo = listAccountDueModel.Select(item => item.RaiinNo).ToList();
         var listSyunoSeikyuDB = _accountDueRepository.GetListSyunoSeikyuModel(listRaiinNo);
         var listSyunoNyukinDB = _accountDueRepository.GetListSyunoNyukinModel(listRaiinNo);
-        List<AuditTraiLogModel> listTraiLogModels = new();
+        List<ArgumentModel> listTraiLogModels = new();
 
         if (!listAccountDueModel.Any())
         {
@@ -62,7 +63,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                                             );
         if (result)
         {
-            _auditTrailLogRepositoty.AddListAuditTrailLog(listTraiLogModels);
+            _eventProcessorService.DoEvent(listTraiLogModels);
             return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Successed);
         }
         return new SaveAccountDueListOutputData(SaveAccountDueListStatus.Failed);
@@ -70,7 +71,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
 
     private SaveAccountDueListStatus ValidateInvalidNyukinKbn(AccountDueModel accountDue, List<long> listSeqNos, List<SyunoSeikyuModel> listSyunoSeikyuDB, List<SyunoNyukinModel> listSyunoNyukinDB, List<AccountDueModel> listAccountDueModel)
     {
-        var accountDueByRaiino = listAccountDueModel.Where(item => item.RaiinNo == accountDue.RaiinNo);
+        var accountDueByRaiino = listAccountDueModel.Where(item => item.RaiinNo == accountDue.RaiinNo && !item.IsDelete);
         var sumNyukinGakuInput = accountDueByRaiino.Sum(item => item.NyukinGaku);
         var sumAdjustFutanInput = accountDueByRaiino.Sum(item => item.AdjustFutan);
         var syunoSeikyuRaiins = listSyunoSeikyuDB.Where(item => item.RaiinNo == accountDue.RaiinNo).ToList();
@@ -96,7 +97,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         return SaveAccountDueListStatus.ValidateSuccess;
     }
 
-    private List<AuditTraiLogModel> CreateListAuditTrailLogModel(SaveAccountDueListInputData inputData, AccountDueModel accountDue, List<SyunoSeikyuModel> listSyunoNyukinDB, List<AuditTraiLogModel> listTraiLogModels)
+    private List<ArgumentModel> CreateListAuditTrailLogModel(SaveAccountDueListInputData inputData, AccountDueModel accountDue, List<SyunoSeikyuModel> listSyunoNyukinDB, List<ArgumentModel> listTraiLogModels)
     {
         if (listSyunoNyukinDB.Any(item => accountDue.RaiinNo == item.RaiinNo && accountDue.NyukinKbn != item.NyukinKbn))
         {
@@ -114,17 +115,17 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
                 {
                     eventCd = EventCode.UpdateToSettled;
                 }
-            }
 
-            listTraiLogModels.Add(new AuditTraiLogModel(
-                    inputData.HpId,
-                    inputData.UserId,
-                    eventCd,
-                    accountDue.PtId,
-                    inputData.SinDate,
-                    accountDue.RaiinNo,
-                    hosoku
-                ));
+                listTraiLogModels.Add(new ArgumentModel(
+                        inputData.HpId,
+                        inputData.UserId,
+                        eventCd,
+                        accountDue.PtId,
+                        inputData.SinDate,
+                        accountDue.RaiinNo,
+                        hosoku
+                    ));
+            }
         }
 
         return listTraiLogModels;
@@ -197,7 +198,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
             return SaveAccountDueListStatus.InvalidSeqNo;
         }
         // validate same value
-        var updatedItem = inputData.SyunoNyukinInputItems.Where(item => item.IsUpdated);
+        var updatedItem = inputData.SyunoNyukinInputItems;
         var countNyukinKbn = updatedItem.Select(item => new
         {
             item.RaiinNo,

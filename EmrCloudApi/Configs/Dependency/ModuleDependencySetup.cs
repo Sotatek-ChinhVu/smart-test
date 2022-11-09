@@ -226,8 +226,10 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-using Domain.Models.AuditTrailLog;
 using UseCase.AccountDue.SaveAccountDueList;
+using EventProcessor.Service;
+using EventProcessor.Interfaces;
+using DevExpress.Inteface;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -258,6 +260,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IEventProcessorService, EventProcessorService>();
 
             // Export
             services.AddTransient<IReporting, Reporting>();
@@ -323,12 +326,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            services.AddTransient<Karte1Export, Karte1Export>();
+            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-            services.AddTransient<IAuditTrailLogRepository, AuditTrailLogRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

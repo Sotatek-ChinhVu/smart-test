@@ -43,9 +43,10 @@ namespace Infrastructure.Repositories
                     {
                         if (odrInfs.Count > 0)
                         {
-                            SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
                             UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
+
+                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
 
                         UpsertKarteInfs(karteInfModel);
 
