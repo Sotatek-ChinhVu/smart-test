@@ -202,11 +202,11 @@
             this.txt_HokensyaTel.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokensyaTel]")});
             this.txt_HokensyaTel.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_HokensyaTel.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 379.0966F);
+            this.txt_HokensyaTel.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 376.0966F);
             this.txt_HokensyaTel.Multiline = true;
             this.txt_HokensyaTel.Name = "txt_HokensyaTel";
             this.txt_HokensyaTel.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_HokensyaTel.SizeF = new System.Drawing.SizeF(241.33F, 30F);
+            this.txt_HokensyaTel.SizeF = new System.Drawing.SizeF(241.33F, 27F);
             this.txt_HokensyaTel.StylePriority.UseBorders = false;
             this.txt_HokensyaTel.StylePriority.UseFont = false;
             this.txt_HokensyaTel.StylePriority.UseTextAlignment = false;
@@ -376,7 +376,7 @@
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel9.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(7.947285E-05F, 139.6508F);
+            this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(7.947285E-05F, 136.6508F);
             this.xrLabel9.Multiline = true;
             this.xrLabel9.Name = "xrLabel9";
             this.xrLabel9.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -392,7 +392,7 @@
             this.xrLabel10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel10.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel10.LocationFloat = new DevExpress.Utils.PointFloat(38.92352F, 139.6508F);
+            this.xrLabel10.LocationFloat = new DevExpress.Utils.PointFloat(38.92352F, 136.6508F);
             this.xrLabel10.Multiline = true;
             this.xrLabel10.Name = "xrLabel10";
             this.xrLabel10.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -409,7 +409,7 @@
             this.txt_PtKanaName.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtKanaName]")});
             this.txt_PtKanaName.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtKanaName.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 139.6508F);
+            this.txt_PtKanaName.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 136.6508F);
             this.txt_PtKanaName.Multiline = true;
             this.txt_PtKanaName.Name = "txt_PtKanaName";
             this.txt_PtKanaName.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -426,7 +426,7 @@
             this.txt_PtName.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtName]")});
             this.txt_PtName.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtName.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 169.6508F);
+            this.txt_PtName.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 166.6508F);
             this.txt_PtName.Multiline = true;
             this.txt_PtName.Name = "txt_PtName";
             this.txt_PtName.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -441,7 +441,7 @@
             // 
             this.xrLabel11.Borders = DevExpress.XtraPrinting.BorderSide.Right;
             this.xrLabel11.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(38.92353F, 199.6508F);
+            this.xrLabel11.LocationFloat = new DevExpress.Utils.PointFloat(38.92353F, 196.6508F);
             this.xrLabel11.Multiline = true;
             this.xrLabel11.Name = "xrLabel11";
             this.xrLabel11.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -456,7 +456,7 @@
             // 
             this.xrLabel13.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel13.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(332.9678F, 199.6508F);
+            this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(332.9678F, 196.6508F);
             this.xrLabel13.Multiline = true;
             this.xrLabel13.Name = "xrLabel13";
             this.xrLabel13.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -473,7 +473,7 @@
             this.txt_BirthDateW.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[BirthDateW]")});
             this.txt_BirthDateW.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_BirthDateW.LocationFloat = new DevExpress.Utils.PointFloat(124.745F, 199.6508F);
+            this.txt_BirthDateW.LocationFloat = new DevExpress.Utils.PointFloat(124.745F, 196.6508F);
             this.txt_BirthDateW.Multiline = true;
             this.txt_BirthDateW.Name = "txt_BirthDateW";
             this.txt_BirthDateW.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -490,7 +490,7 @@
             this.txt_Sex.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Sex]")});
             this.txt_Sex.Font = new System.Drawing.Font("MS Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_Sex.LocationFloat = new DevExpress.Utils.PointFloat(370.9452F, 199.6508F);
+            this.txt_Sex.LocationFloat = new DevExpress.Utils.PointFloat(370.9452F, 196.6508F);
             this.txt_Sex.Multiline = true;
             this.txt_Sex.Name = "txt_Sex";
             this.txt_Sex.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -507,7 +507,7 @@
             this.txt_Age.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Age]")});
             this.txt_Age.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_Age.LocationFloat = new DevExpress.Utils.PointFloat(281.4308F, 199.6508F);
+            this.txt_Age.LocationFloat = new DevExpress.Utils.PointFloat(281.4308F, 196.6508F);
             this.txt_Age.Multiline = true;
             this.txt_Age.Name = "txt_Age";
             this.txt_Age.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -522,7 +522,7 @@
             // 
             this.xrLabel12.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel12.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel12.LocationFloat = new DevExpress.Utils.PointFloat(314.0691F, 199.6508F);
+            this.xrLabel12.LocationFloat = new DevExpress.Utils.PointFloat(314.0691F, 196.6508F);
             this.xrLabel12.Multiline = true;
             this.xrLabel12.Name = "xrLabel12";
             this.xrLabel12.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 2, 3, 100F);
@@ -540,7 +540,7 @@
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel14.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel14.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 139.6508F);
+            this.xrLabel14.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 136.6508F);
             this.xrLabel14.Multiline = true;
             this.xrLabel14.Name = "xrLabel14";
             this.xrLabel14.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -558,7 +558,7 @@
             this.txt_HokenKigenW.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokenKigenW]")});
             this.txt_HokenKigenW.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_HokenKigenW.LocationFloat = new DevExpress.Utils.PointFloat(506.6703F, 139.6508F);
+            this.txt_HokenKigenW.LocationFloat = new DevExpress.Utils.PointFloat(506.6703F, 136.6508F);
             this.txt_HokenKigenW.Multiline = true;
             this.txt_HokenKigenW.Name = "txt_HokenKigenW";
             this.txt_HokenKigenW.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -575,7 +575,7 @@
             this.txt_Setainusi.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Setainusi]")});
             this.txt_Setainusi.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_Setainusi.LocationFloat = new DevExpress.Utils.PointFloat(506.6703F, 169.6508F);
+            this.txt_Setainusi.LocationFloat = new DevExpress.Utils.PointFloat(506.6703F, 166.6508F);
             this.txt_Setainusi.Multiline = true;
             this.txt_Setainusi.Name = "txt_Setainusi";
             this.txt_Setainusi.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -591,7 +591,7 @@
             this.xrLabel15.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel15.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel15.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 169.6508F);
+            this.xrLabel15.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 166.6508F);
             this.xrLabel15.Multiline = true;
             this.xrLabel15.Name = "xrLabel15";
             this.xrLabel15.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -608,7 +608,7 @@
             this.txt_HokenSyutokuW.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokenSyutokuW]")});
             this.txt_HokenSyutokuW.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_HokenSyutokuW.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 199.6508F);
+            this.txt_HokenSyutokuW.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 196.6508F);
             this.txt_HokenSyutokuW.Multiline = true;
             this.txt_HokenSyutokuW.Name = "txt_HokenSyutokuW";
             this.txt_HokenSyutokuW.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -623,7 +623,7 @@
             // 
             this.xrLabel16.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)));
             this.xrLabel16.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel16.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 199.6508F);
+            this.xrLabel16.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 196.6508F);
             this.xrLabel16.Multiline = true;
             this.xrLabel16.Name = "xrLabel16";
             this.xrLabel16.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -638,7 +638,7 @@
             // 
             this.xrLabel17.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)));
             this.xrLabel17.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel17.LocationFloat = new DevExpress.Utils.PointFloat(38.9235F, 228.6508F);
+            this.xrLabel17.LocationFloat = new DevExpress.Utils.PointFloat(38.9235F, 225.6508F);
             this.xrLabel17.Multiline = true;
             this.xrLabel17.Name = "xrLabel17";
             this.xrLabel17.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -654,8 +654,8 @@
             this.txt_PtAddress1.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.txt_PtAddress1.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtAddress1]")});
-            this.txt_PtAddress1.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtAddress1.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 258.6508F);
+            this.txt_PtAddress1.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txt_PtAddress1.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 255.6508F);
             this.txt_PtAddress1.Multiline = true;
             this.txt_PtAddress1.Name = "txt_PtAddress1";
             this.txt_PtAddress1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -672,7 +672,7 @@
             this.txt_PtAddress2.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtAddress2]")});
             this.txt_PtAddress2.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtAddress2.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 288.6508F);
+            this.txt_PtAddress2.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 285.6508F);
             this.txt_PtAddress2.Multiline = true;
             this.txt_PtAddress2.Name = "txt_PtAddress2";
             this.txt_PtAddress2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -687,7 +687,7 @@
             // 
             this.xrLabel21.Borders = DevExpress.XtraPrinting.BorderSide.Top;
             this.xrLabel21.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel21.LocationFloat = new DevExpress.Utils.PointFloat(124.7452F, 228.6508F);
+            this.xrLabel21.LocationFloat = new DevExpress.Utils.PointFloat(124.7452F, 225.6508F);
             this.xrLabel21.Multiline = true;
             this.xrLabel21.Name = "xrLabel21";
             this.xrLabel21.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -704,7 +704,7 @@
             this.txt_PtPostCode.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtPostCode]")});
             this.txt_PtPostCode.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtPostCode.LocationFloat = new DevExpress.Utils.PointFloat(150.876F, 228.6508F);
+            this.txt_PtPostCode.LocationFloat = new DevExpress.Utils.PointFloat(150.876F, 225.6508F);
             this.txt_PtPostCode.Multiline = true;
             this.txt_PtPostCode.Name = "txt_PtPostCode";
             this.txt_PtPostCode.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -721,7 +721,7 @@
             this.txt_PtTel.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtTel]")});
             this.txt_PtTel.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtTel.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 318.6508F);
+            this.txt_PtTel.LocationFloat = new DevExpress.Utils.PointFloat(124.7451F, 315.6508F);
             this.txt_PtTel.Multiline = true;
             this.txt_PtTel.Name = "txt_PtTel";
             this.txt_PtTel.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -737,7 +737,7 @@
             this.xrLabel18.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel18.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel18.LocationFloat = new DevExpress.Utils.PointFloat(38.9235F, 318.6508F);
+            this.xrLabel18.LocationFloat = new DevExpress.Utils.PointFloat(38.9235F, 315.6508F);
             this.xrLabel18.Multiline = true;
             this.xrLabel18.Name = "xrLabel18";
             this.xrLabel18.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -753,7 +753,7 @@
             this.xrLabel19.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel19.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel19.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 228.7056F);
+            this.xrLabel19.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 225.7056F);
             this.xrLabel19.Multiline = true;
             this.xrLabel19.Name = "xrLabel19";
             this.xrLabel19.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -769,7 +769,7 @@
             this.xrLabel20.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel20.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel20.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 228.7056F);
+            this.xrLabel20.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 225.7056F);
             this.xrLabel20.Multiline = true;
             this.xrLabel20.Name = "xrLabel20";
             this.xrLabel20.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -787,7 +787,7 @@
             this.txt_OfficeAddress.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[OfficeAddress]")});
             this.txt_OfficeAddress.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_OfficeAddress.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 228.7054F);
+            this.txt_OfficeAddress.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 225.7054F);
             this.txt_OfficeAddress.Multiline = true;
             this.txt_OfficeAddress.Name = "txt_OfficeAddress";
             this.txt_OfficeAddress.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -804,7 +804,7 @@
             this.txt_OfficeTel.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[OfficeTel]")});
             this.txt_OfficeTel.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_OfficeTel.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 288.6508F);
+            this.txt_OfficeTel.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 285.6508F);
             this.txt_OfficeTel.Multiline = true;
             this.txt_OfficeTel.Name = "txt_OfficeTel";
             this.txt_OfficeTel.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -819,7 +819,7 @@
             // 
             this.xrLabel24.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel24.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 288.6508F);
+            this.xrLabel24.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 285.6508F);
             this.xrLabel24.Multiline = true;
             this.xrLabel24.Name = "xrLabel24";
             this.xrLabel24.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -836,7 +836,7 @@
             this.txt_Office.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Office]")});
             this.txt_Office.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_Office.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 318.6507F);
+            this.txt_Office.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 315.6507F);
             this.txt_Office.Multiline = true;
             this.txt_Office.Name = "txt_Office";
             this.txt_Office.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -851,7 +851,7 @@
             // 
             this.xrLabel25.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel25.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel25.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 318.6508F);
+            this.xrLabel25.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 315.6508F);
             this.xrLabel25.Multiline = true;
             this.xrLabel25.Name = "xrLabel25";
             this.xrLabel25.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -867,7 +867,7 @@
             this.xrLabel22.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel22.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel22.LocationFloat = new DevExpress.Utils.PointFloat(426.8005F, 228.7056F);
+            this.xrLabel22.LocationFloat = new DevExpress.Utils.PointFloat(426.8005F, 225.7056F);
             this.xrLabel22.Multiline = true;
             this.xrLabel22.Name = "xrLabel22";
             this.xrLabel22.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -884,7 +884,7 @@
             this.txt_PtRenrakuTel.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtRenrakuTel]")});
             this.txt_PtRenrakuTel.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_PtRenrakuTel.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 349.0966F);
+            this.txt_PtRenrakuTel.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 346.0966F);
             this.txt_PtRenrakuTel.Multiline = true;
             this.txt_PtRenrakuTel.Name = "txt_PtRenrakuTel";
             this.txt_PtRenrakuTel.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -899,7 +899,7 @@
             // 
             this.xrLabel23.Borders = DevExpress.XtraPrinting.BorderSide.Right;
             this.xrLabel23.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel23.LocationFloat = new DevExpress.Utils.PointFloat(38.92339F, 349.0966F);
+            this.xrLabel23.LocationFloat = new DevExpress.Utils.PointFloat(38.92339F, 346.0966F);
             this.xrLabel23.Multiline = true;
             this.xrLabel23.Name = "xrLabel23";
             this.xrLabel23.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -917,7 +917,7 @@
             this.txt_Job.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Job]")});
             this.txt_Job.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_Job.LocationFloat = new DevExpress.Utils.PointFloat(124.7448F, 379.0966F);
+            this.txt_Job.LocationFloat = new DevExpress.Utils.PointFloat(124.7448F, 376.0966F);
             this.txt_Job.Multiline = true;
             this.txt_Job.Name = "txt_Job";
             this.txt_Job.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -933,7 +933,7 @@
             this.xrLabel27.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel27.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(38.92334F, 379.0966F);
+            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(38.92334F, 376.0966F);
             this.xrLabel27.Multiline = true;
             this.xrLabel27.Name = "xrLabel27";
             this.xrLabel27.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -948,11 +948,11 @@
             // 
             this.xrLabel36.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel36.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel36.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 409.0966F);
+            this.xrLabel36.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 403.0966F);
             this.xrLabel36.Multiline = true;
             this.xrLabel36.Name = "xrLabel36";
             this.xrLabel36.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel36.SizeF = new System.Drawing.SizeF(56.91348F, 32.99994F);
+            this.xrLabel36.SizeF = new System.Drawing.SizeF(56.91348F, 35.99994F);
             this.xrLabel36.StylePriority.UseBorders = false;
             this.xrLabel36.StylePriority.UseFont = false;
             this.xrLabel36.StylePriority.UseTextAlignment = false;
@@ -965,11 +965,11 @@
             this.txt_HokensyaName.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokensyaName]")});
             this.txt_HokensyaName.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_HokensyaName.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 409.0966F);
+            this.txt_HokensyaName.LocationFloat = new DevExpress.Utils.PointFloat(506.6705F, 403.0966F);
             this.txt_HokensyaName.Multiline = true;
             this.txt_HokensyaName.Name = "txt_HokensyaName";
             this.txt_HokensyaName.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_HokensyaName.SizeF = new System.Drawing.SizeF(241.33F, 33F);
+            this.txt_HokensyaName.SizeF = new System.Drawing.SizeF(241.33F, 36F);
             this.txt_HokensyaName.StylePriority.UseBorders = false;
             this.txt_HokensyaName.StylePriority.UseFont = false;
             this.txt_HokensyaName.StylePriority.UseTextAlignment = false;
@@ -980,11 +980,11 @@
             // 
             this.xrLabel34.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel34.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel34.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 379.0966F);
+            this.xrLabel34.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 376.0966F);
             this.xrLabel34.Multiline = true;
             this.xrLabel34.Name = "xrLabel34";
             this.xrLabel34.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel34.SizeF = new System.Drawing.SizeF(56.91351F, 29.99997F);
+            this.xrLabel34.SizeF = new System.Drawing.SizeF(56.91F, 27F);
             this.xrLabel34.StylePriority.UseBorders = false;
             this.xrLabel34.StylePriority.UseFont = false;
             this.xrLabel34.StylePriority.UseTextAlignment = false;
@@ -1010,7 +1010,7 @@
             // 
             this.xrLabel32.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel32.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel32.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 349.0966F);
+            this.xrLabel32.LocationFloat = new DevExpress.Utils.PointFloat(449.7567F, 346.0966F);
             this.xrLabel32.Multiline = true;
             this.xrLabel32.Name = "xrLabel32";
             this.xrLabel32.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -1027,7 +1027,7 @@
             this.txt_HokensyaAddress.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokensyaAddress]")});
             this.txt_HokensyaAddress.Font = new System.Drawing.Font("MS Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.txt_HokensyaAddress.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 349.0966F);
+            this.txt_HokensyaAddress.LocationFloat = new DevExpress.Utils.PointFloat(506.6704F, 346.0966F);
             this.txt_HokensyaAddress.Multiline = true;
             this.txt_HokensyaAddress.Name = "txt_HokensyaAddress";
             this.txt_HokensyaAddress.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -1043,7 +1043,7 @@
             this.xrLabel37.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel37.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel37.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 349.0966F);
+            this.xrLabel37.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 346.0966F);
             this.xrLabel37.Multiline = true;
             this.xrLabel37.Name = "xrLabel37";
             this.xrLabel37.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -1059,7 +1059,7 @@
             this.xrLabel29.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel29.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel29.LocationFloat = new DevExpress.Utils.PointFloat(217.5151F, 379.0966F);
+            this.xrLabel29.LocationFloat = new DevExpress.Utils.PointFloat(217.5151F, 376.0966F);
             this.xrLabel29.Multiline = true;
             this.xrLabel29.Name = "xrLabel29";
             this.xrLabel29.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -1076,7 +1076,7 @@
             this.xrLabel30.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Zokugara]")});
             this.xrLabel30.Font = new System.Drawing.Font("MS Gothic", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel30.LocationFloat = new DevExpress.Utils.PointFloat(312.8656F, 379.0966F);
+            this.xrLabel30.LocationFloat = new DevExpress.Utils.PointFloat(312.8656F, 376.0966F);
             this.xrLabel30.Multiline = true;
             this.xrLabel30.Name = "xrLabel30";
             this.xrLabel30.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -1877,7 +1877,7 @@
             // 
             this.Detail.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrTable2});
-            this.Detail.HeightF = 40F;
+            this.Detail.HeightF = 40.5F;
             this.Detail.Name = "Detail";
             // 
             // xrTable2
@@ -1888,7 +1888,7 @@
             this.xrTable2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 96F);
             this.xrTable2.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
             this.xrTableRow2});
-            this.xrTable2.SizeF = new System.Drawing.SizeF(748F, 40F);
+            this.xrTable2.SizeF = new System.Drawing.SizeF(748F, 40.5F);
             this.xrTable2.StylePriority.UseFont = false;
             this.xrTable2.StylePriority.UseTextAlignment = false;
             this.xrTable2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
