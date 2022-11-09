@@ -1,6 +1,7 @@
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -111,7 +112,7 @@ namespace Infrastructure.Repositories
                     YoyakuTime = model.YoyakuTime,
                     YoyakuId = model.YoyakuId,
                     UketukeSbt = model.UketukeSbt,
-                    UketukeTime = model.UketukeTime,
+                    UketukeTime = CIUtil.DateTimeToTime(DateTime.UtcNow),
                     UketukeId = model.UketukeId,
                     UketukeNo = model.UketukeNo,
                     SinStartTime = model.SinStartTime,
