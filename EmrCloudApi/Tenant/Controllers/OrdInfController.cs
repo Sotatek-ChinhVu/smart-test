@@ -30,16 +30,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetOrdInfListTreeResponse>>> GetList([FromQuery] GetOrdInfListTreeRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetOrdInfListTreeResponse>>(new Response<GetOrdInfListTreeResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetOrdInfListTreeResponse>>(new Response<GetOrdInfListTreeResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new GetOrdInfListTreeInputData(request.PtId, hpId, request.RaiinNo, request.SinDate, request.IsDeleted, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -52,11 +44,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateInputItem)]
         public async Task<ActionResult<Response<ValidationInputItemOrdInfListResponse>>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<ValidationInputItemOrdInfListResponse>>(new Response<ValidationInputItemOrdInfListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new ValidationInputItemInputData(
                         hpId,
                         request.SinDate,
@@ -93,11 +81,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.GetMaxRpNo)]
         public async Task<ActionResult<Response<GetMaxRpNoResponse>>> GetMaxRpNo([FromBody] GetMaxRpNoRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetMaxRpNoResponse>>(new Response<GetMaxRpNoResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetMaxRpNoInputData(request.PtId, hpId, request.RaiinNo, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -110,11 +94,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetHeaderInf)]
         public async Task<ActionResult<Response<GetHeaderInfResponse>>> GetHeaderInf([FromQuery] GetMaxRpNoRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetHeaderInfResponse>>(new Response<GetHeaderInfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetHeaderInfInputData(request.PtId, hpId, request.RaiinNo, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 

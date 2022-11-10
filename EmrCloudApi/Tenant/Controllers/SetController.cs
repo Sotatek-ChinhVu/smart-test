@@ -38,11 +38,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetSetMstListResponse>>(new Response<GetSetMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new GetSetMstListInputData(hpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -55,11 +51,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetToolTip)]
     public async Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetSetMstToolTipResponse>>(new Response<GetSetMstToolTipResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new GetSetMstToolTipInputData(hpId, request.SetCd);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -72,16 +64,8 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Save)]
     public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveSetMstResponse>>(new Response<SaveSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveSetMstResponse>>(new Response<SaveSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, hpId, userId, request.IsGroup);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -94,16 +78,8 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Reorder)]
     public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<ReorderSetMstResponse>>(new Response<ReorderSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<ReorderSetMstResponse>>(new Response<ReorderSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new ReorderSetMstInputData(hpId, request.DragSetCd, request.DropSetCd, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -116,16 +92,8 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Paste)]
     public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<CopyPasteSetMstResponse>>(new Response<CopyPasteSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<CopyPasteSetMstResponse>>(new Response<CopyPasteSetMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new CopyPasteSetMstInputData(hpId, userId, request.CopySetCd, request.PasteSetCd);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -138,11 +106,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public async Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetSuperSetDetailResponse>>(new Response<GetSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new GetSuperSetDetailInputData(hpId, request.SetCd, request.Sindate);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -155,16 +119,8 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveSuperSetDetail)]
     public async Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveSuperSetDetailResponse>>(new Response<SaveSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveSuperSetDetailResponse>>(new Response<SaveSuperSetDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new SaveSuperSetDetailInputData(
                         request.SetCd,
                         userId,
@@ -185,11 +141,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
     public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveImageResponse>>(new Response<SaveImageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new SaveImageSuperSetDetailInputData(hpId, request.SetCd, request.Position, request.OldImage, Request.Body);
         var output = await Task.Run(() => _bus.Handle(input));
 

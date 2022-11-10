@@ -85,11 +85,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SearchTenItem)]
         public async Task<ActionResult<Response<SearchTenItemResponse>>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SearchTenItemResponse>>(new Response<SearchTenItemResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, hpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchTenItemPresenter();
@@ -100,16 +96,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
         public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpdateAdoptedTenItemResponse>>(new Response<UpdateAdoptedTenItemResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpdateAdoptedTenItemResponse>>(new Response<UpdateAdoptedTenItemResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new UpdateAdoptedTenItemPresenter();
@@ -132,16 +120,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedByomei)]
         public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpdateAdoptedTenItemResponse>>(new Response<UpdateAdoptedTenItemResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpdateAdoptedTenItemResponse>>(new Response<UpdateAdoptedTenItemResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpdateAdoptedByomeiInputData(hpId, request.ByomeiCd, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new UpdateAdoptedByomeiPresenter();
@@ -152,11 +132,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchPostCode)]
         public async Task<ActionResult<Response<SearchPostCodeRespone>>> GetList([FromQuery] SearchPostCodeRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SearchPostCodeRespone>>(new Response<SearchPostCodeRespone> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new SearchPostCodeInputData(hpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchPostCodePresenter();
@@ -167,11 +143,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.FindTenMst)]
         public async Task<ActionResult<Response<FindtenMstResponse>>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<FindtenMstResponse>>(new Response<FindtenMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new FindTenMstInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new FindTenMstPresenter();

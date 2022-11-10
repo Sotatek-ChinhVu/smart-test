@@ -28,16 +28,8 @@ public class UserConfController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetUserConfListResponse>>(new Response<GetUserConfListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetUserConfListResponse>>(new Response<GetUserConfListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new GetUserConfListInputData(hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 

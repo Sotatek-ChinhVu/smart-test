@@ -28,11 +28,7 @@ public class AccountDueController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetAccountDueListResponse>>> GetList([FromQuery] GetAccountDueListRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetAccountDueListResponse>>(new Response<GetAccountDueListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new GetAccountDueListInputData(hpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -45,11 +41,7 @@ public class AccountDueController : ControllerBase
     [HttpPost(ApiPath.SaveList)]
     public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveAccountDueListResponse>>(new Response<SaveAccountDueListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new SaveAccountDueListInputData(hpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
         var output = await Task.Run(() => _bus.Handle(input));
 

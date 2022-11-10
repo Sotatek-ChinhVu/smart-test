@@ -41,16 +41,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.AddAlrgyDrugList)]
         public async Task<ActionResult<Response<AddAlrgyDrugListResponse>>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<AddAlrgyDrugListResponse>>(new Response<AddAlrgyDrugListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<AddAlrgyDrugListResponse>>(new Response<AddAlrgyDrugListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
                                                         a => new AddAlrgyDrugListItemInputData(
                                                                 a.PtId,
@@ -75,16 +67,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public async Task<ActionResult<Response<SaveSpecialNoteResponse>>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SaveSpecialNoteResponse>>(new Response<SaveSpecialNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SaveSpecialNoteResponse>>(new Response<SaveSpecialNoteResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new SaveSpecialNoteInputData(hpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 

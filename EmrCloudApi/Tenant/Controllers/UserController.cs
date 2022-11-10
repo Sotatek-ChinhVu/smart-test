@@ -31,11 +31,7 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.Update)]
     public async Task<ActionResult<Response<CreateUserResponse>>> Save([FromBody] CreateUserRequest saveUserRequest)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<CreateUserResponse>>(new Response<CreateUserResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var input = new CreateUserInputData(hpId, saveUserRequest.JobCd, saveUserRequest.JobCd, saveUserRequest.KaId, saveUserRequest.KanaName, saveUserRequest.Name, saveUserRequest.Sname, saveUserRequest.LoginId, saveUserRequest.LoginPass, saveUserRequest.MayakuLicenseNo, saveUserRequest.StartDate, saveUserRequest.Endate, saveUserRequest.SortNo, 0, saveUserRequest.RenkeiCd1, saveUserRequest.DrName);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -60,16 +56,8 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.UpsertList)]
     public async Task<ActionResult<Response<UpsertUserResponse>>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<UpsertUserResponse>>(new Response<UpsertUserResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<UpsertUserResponse>>(new Response<UpsertUserResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u, hpId)).ToList();
         var input = new UpsertUserListInputData(upsertUserList, userId);
         var output = await Task.Run(() => _bus.Handle(input));

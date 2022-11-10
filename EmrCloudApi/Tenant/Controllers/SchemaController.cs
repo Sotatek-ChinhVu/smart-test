@@ -40,11 +40,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveImageTodayOrder)]
         public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SaveImageResponse>>(new Response<SaveImageResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new SaveImageTodayOrderInputData(hpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
             var output = await Task.Run(() => _bus.Handle(input));
 

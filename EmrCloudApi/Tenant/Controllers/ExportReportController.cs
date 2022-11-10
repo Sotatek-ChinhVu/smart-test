@@ -26,11 +26,7 @@ public class ExportReportController : ControllerBase
     [HttpGet(ApiPath.ExportKarte1)]
     public async Task<ActionResult<Response<string>>> GetList([FromQuery] Karte1ExportRequest request)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<string>>(new Response<string> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var output = await Task.Run(() => _reporting.PrintKarte1(hpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei));
         
         Response<string> response = new();

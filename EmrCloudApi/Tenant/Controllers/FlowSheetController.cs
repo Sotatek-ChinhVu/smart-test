@@ -28,11 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "FlowSheet")]
         public async Task<ActionResult<Response<GetListFlowSheetResponse>>> GetListFlowSheet([FromQuery] GetListFlowSheetRequest inputData)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetListFlowSheetResponse>>(new Response<GetListFlowSheetResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var watch = System.Diagnostics.Stopwatch.StartNew();
             watch.Start();
             var input = new GetListFlowSheetInputData(hpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.IsHolidayOnly, 0, 0, false, inputData.StartIndex, inputData.Count, inputData.Sort);
@@ -49,11 +45,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "Holiday")]
         public async Task<ActionResult<Response<GetListHolidayResponse>>> GetListHoliday([FromQuery] GetListHolidayRequest inputData)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetListHolidayResponse>>(new Response<GetListHolidayResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetListFlowSheetInputData(hpId, 0, 0, 0, true, inputData.HolidayFrom, inputData.HolidayTo, false, 0, 0, string.Empty);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetListHolidayPresenter();
@@ -65,11 +57,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "RaiinMst")]
         public async Task<ActionResult<Response<GetListRaiinMstResponse>>> GetListRaiinMst([FromQuery] GetListRaiinMstRequest inputData)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetListRaiinMstResponse>>(new Response<GetListRaiinMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetListFlowSheetInputData(hpId, 0, 0, 0, false, 0, 0, true, 0, 0, string.Empty);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetListRaiinMstPresenter();
@@ -81,16 +69,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertFlowSheetResponse>>> Upsert([FromBody] UpsertFlowSheetRequest inputData)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertFlowSheetResponse>>(new Response<UpsertFlowSheetResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertFlowSheetResponse>>(new Response<UpsertFlowSheetResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpsertFlowSheetInputData(inputData.Items.Select(i => new UpsertFlowSheetItemInputData(
                                                         i.RainNo,
                                                         i.PtId,

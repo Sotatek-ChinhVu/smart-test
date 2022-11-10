@@ -28,11 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetMonshinInforListResponse>>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetMonshinInforListResponse>>(new Response<GetMonshinInforListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetMonshinInforListInputData(hpId, request.PtId, request.SinDate, request.IsDeleted);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetMonshinInforListPresenter();
@@ -43,11 +39,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public async Task<ActionResult<Response<SaveMonshinInforListResponse>>> SaveList([FromBody] SaveMonshinInforListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SaveMonshinInforListResponse>>(new Response<SaveMonshinInforListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new SaveMonshinInputData(request.Monshins, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveMonshinInforListPresenter();

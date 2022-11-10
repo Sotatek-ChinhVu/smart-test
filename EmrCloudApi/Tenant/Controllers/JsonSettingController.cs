@@ -29,11 +29,7 @@ public class JsonSettingController : ControllerBase
     [HttpGet(ApiPath.Get)]
     public async Task<ActionResult<Response<GetJsonSettingResponse>>> Get([FromQuery] GetJsonSettingRequest req)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetJsonSettingResponse>>(new Response<GetJsonSettingResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new GetJsonSettingInputData(userId, req.Key);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetJsonSettingPresenter();

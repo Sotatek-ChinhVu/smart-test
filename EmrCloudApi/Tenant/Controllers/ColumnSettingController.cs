@@ -29,12 +29,7 @@ public class ColumnSettingController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetColumnSettingListResponse>>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-
-        if (!validateToken)
-        {
-            return Ok(new Response<GetColumnSettingListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new GetColumnSettingListInputData(userId, req.TableName);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetColumnSettingListPresenter();

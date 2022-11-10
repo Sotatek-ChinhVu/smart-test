@@ -42,16 +42,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "KubunSetting")]
         public async Task<ActionResult<Response<LoadDataKubunSettingResponse>>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<LoadDataKubunSettingResponse>>(new Response<LoadDataKubunSettingResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<LoadDataKubunSettingResponse>>(new Response<LoadDataKubunSettingResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new LoadDataKubunSettingInputData(hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -64,11 +56,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
         public async Task<ActionResult<Response<SaveDataKubunSettingResponse>>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<SaveDataKubunSettingResponse>>(new Response<SaveDataKubunSettingResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -81,11 +69,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetColumnName)]
         public async Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetColumnNameListResponse>>(new Response<GetColumnNameListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetColumnNameListInputData(hpId);
             var output = await Task.Run(() => _bus.Handle(input));
 

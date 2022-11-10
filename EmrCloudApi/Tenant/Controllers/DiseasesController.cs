@@ -29,11 +29,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetPtDiseaseListResponse>>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetPtDiseaseListResponse>>(new Response<GetPtDiseaseListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetPtDiseaseListInputData(hpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -46,16 +42,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertPtDiseaseListResponse>>> Upsert([FromBody] UpsertPtDiseaseListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertPtDiseaseListResponse>>(new Response<UpsertPtDiseaseListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertPtDiseaseListResponse>>(new Response<UpsertPtDiseaseListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpsertPtDiseaseListInputData(request.PtDiseases.Select(r => new UpsertPtDiseaseListInputItem(
                                                             r.Id,
                                                             r.PtId,

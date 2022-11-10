@@ -27,11 +27,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get)]
         public async Task<ActionResult<Response<GetSystemConfResponse>>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetSystemConfResponse>>(new Response<GetSystemConfResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetSystemConfInputData(hpId, request.GrpCd, request.GrpEdaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 

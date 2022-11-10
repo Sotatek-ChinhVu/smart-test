@@ -50,11 +50,7 @@ public class UketukeSbtController : ControllerBase
     [HttpGet(ApiPath.Get + "Next")]
     public async Task<ActionResult<Response<GetNextUketukeSbtMstResponse>>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<GetNextUketukeSbtMstResponse>>(new Response<GetNextUketukeSbtMstResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetNextUketukeSbtMstPresenter();

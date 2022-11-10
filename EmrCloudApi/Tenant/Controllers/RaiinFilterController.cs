@@ -39,16 +39,8 @@ public class RaiinFilterController : ControllerBase
     [HttpPost(ApiPath.SaveList + "Mst")]
     public async Task<ActionResult<Response<SaveRaiinFilterMstListResponse>>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
     {
-        var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveRaiinFilterMstListResponse>>(new Response<SaveRaiinFilterMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
-        validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        if (!validateToken)
-        {
-            return new ActionResult<Response<SaveRaiinFilterMstListResponse>>(new Response<SaveRaiinFilterMstListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-        }
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new SaveRaiinFilterMstListInputData(req.FilterMsts, hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveRaiinFilterMstListPresenter();

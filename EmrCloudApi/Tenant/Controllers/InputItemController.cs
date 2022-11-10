@@ -38,11 +38,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetDrugInf")]
         public async Task<ActionResult<Response<GetDrugInforResponse>>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetDrugInforResponse>>(new Response<GetDrugInforResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetDrugInforInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run(()=>_bus.Handle(input));
 
@@ -55,11 +51,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDrugMenuTree)]
         public async Task<ActionResult<Response<GetDrugDetailResponse>>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetDrugDetailResponse>>(new Response<GetDrugDetailResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetDrugDetailInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run( () => _bus.Handle(input));
 
@@ -72,11 +64,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListUsageTreeSet")]
         public async Task<ActionResult<Response<GetUsageTreeSetListResponse>>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetUsageTreeSetListResponse>>(new Response<GetUsageTreeSetListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetUsageTreeSetInputData(hpId, request.SinDate, request.KouiKbn);
             var output =  await Task.Run( () => _bus.Handle(input));
             var present = new GetUsageTreeSetListPresenter();

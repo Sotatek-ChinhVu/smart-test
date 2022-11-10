@@ -33,16 +33,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertTodayOdrResponse>>(new Response<UpsertTodayOdrResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
-            validateToken = int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<UpsertTodayOdrResponse>>(new Response<UpsertTodayOdrResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             hpId,
@@ -124,11 +116,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Validate)]
         public async Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<ValidationTodayOrdResponse>>(new Response<ValidationTodayOrdResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
                 request.JikanKbn,
@@ -218,11 +206,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
         public async Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetDefaultSelectPatternResponse>>(new Response<GetDefaultSelectPatternResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetDefaultSelectPatternInputData(
                             hpId,
                             request.PtId,
@@ -241,11 +225,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceComboList)]
         public async Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
         {
-            var validateToken = int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            if (!validateToken)
-            {
-                return new ActionResult<Response<GetInsuranceComboListResponse>>(new Response<GetInsuranceComboListResponse> { Status = LoginUserConstant.InvalidStatus, Message = ResponseMessage.InvalidToken });
-            }
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetInsuranceComboListInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(()=>_bus.Handle(input));
             var presenter = new GetInsuranceComboListPresenter();
