@@ -240,7 +240,7 @@ namespace Infrastructure.Repositories
             long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword) || (p.Tel1 != null && p.Tel1.Contains(keyword)) || (p.Tel2 != null && p.Tel2.Contains(keyword))))
+                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword)))
                 select new
                 {
                     ptInf = p,
