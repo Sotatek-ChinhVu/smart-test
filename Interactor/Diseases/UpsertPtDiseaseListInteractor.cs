@@ -67,7 +67,7 @@ namespace Interactor.Diseases
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
                 }
-                if (!_insuranceInforRepository.CheckHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).Distinct().ToList(), datas.Select(i => i.HpId).Distinct().ToList(), datas.Select(i => i.PtId).Distinct().ToList()))
+                if (!_insuranceInforRepository.CheckExistHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).Distinct().ToList(), datas.Select(i => i.HpId).Distinct().ToList(), datas.Select(i => i.PtId).Distinct().ToList()))
                 {
                     return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist);
                 }

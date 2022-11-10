@@ -438,14 +438,14 @@ namespace Infrastructure.Repositories
             return new InsuranceDataModel(listInsurance, listHokenInf, listKohi);
         }
 
-        public bool CheckHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
+        public bool CheckExistHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
         {
             if (hokenPIds.Count == 0) return true;
             var countPtHokens = _tenantDataContext.PtHokenInfs.Count(p => hokenPIds.Contains(p.HokenId) && p.IsDeleted != 1 && hpIds.Contains(p.HpId) && ptIds.Contains(p.PtId));
             return countPtHokens == hokenPIds.Count;
         }
 
-        public bool CheckHokenPid(int hokenPId)
+        public bool CheckExistHokenPid(int hokenPId)
         {
             var check = _tenantDataContext.PtHokenInfs.Any(h => h.HokenId == hokenPId && h.IsDeleted == 0);
             return check;
