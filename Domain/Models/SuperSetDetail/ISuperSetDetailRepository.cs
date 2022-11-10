@@ -9,4 +9,6 @@ public interface ISuperSetDetailRepository
     bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel);
 
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
+
+    (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sindate);
 }

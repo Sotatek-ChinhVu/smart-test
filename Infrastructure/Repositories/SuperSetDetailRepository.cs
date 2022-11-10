@@ -35,6 +35,70 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
+    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sindate)
+    {
+        var rootSuperSet = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
+        List<int> setCds;
+        if (rootSuperSet == null) return (new(), new(), new());
+
+        if (rootSuperSet.Level2 == 0)
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+        else if (rootSuperSet.Level3 == 0)
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+        else
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+
+        var allSetByomeis = _tenantNoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
+        List<string> codeLists = new();
+        foreach (var item in allSetByomeis)
+        {
+            codeLists.AddRange(GetCodeLists(item));
+        }
+        var allByomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
+        var allKarteInfs = _tenantNoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.IsDeleted == DeleteTypes.None).ToList();
+        var allSetOrderInfs = _tenantNoTrackingDataContext.SetOdrInf.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd) && o.IsDeleted == DeleteTypes.Deleted).ToList() ?? new();
+        var allSetOrderInfDetails = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd)).ToList() ?? new();
+        var itemCds = allSetOrderInfDetails?.Select(detail => detail.ItemCd);
+        var ipnCds = allSetOrderInfDetails?.Select(detail => detail.IpnCd);
+        var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
+        var kensaMsts = _tenantDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
+        var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
+        var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
+        var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
+        var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var kensaIrai = checkKensaIrai?.Val ?? 0;
+        var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
+        List<SetByomeiModel> byomeis = new();
+        List<SetKarteInfModel> setKarteInfs = new();
+        List<SetOrderInfModel> ordInfs = new();
+        foreach (var currentSetCd in setCds)
+        {
+            var currentSetByomeis = allSetByomeis.Where(b => b.SetCd == currentSetCd).ToList();
+            List<string> currentCodeLists = new();
+            foreach (var item in currentSetByomeis)
+            {
+                currentCodeLists.AddRange(GetCodeLists(item));
+            }
+            var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
+
+            byomeis.AddRange(currentSetByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)));
+
+            var setKarteInf = allKarteInfs.FirstOrDefault(k => k.SetCd == currentSetCd);
+            if (setKarteInf != null)
+                setKarteInfs.Add(new SetKarteInfModel(
+                    setKarteInf.HpId,
+                    setKarteInf.SetCd,
+                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)));
+
+            ordInfs.AddRange(GetSetOrdInfModel(hpId, currentSetCd, sindate, allSetOrderInfs ?? new(), allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, kensaIrai, kensaIraiCondition));
+        }
+
+        return new(byomeis, setKarteInfs, ordInfs);
+    }
+
+
+
     #region GetSetByomeiList
     private List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
     {
@@ -224,6 +288,69 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
 
         return result;
+    }
+
+    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, double kensaIrai, double kensaIraiCondition)
+    {
+        List<SetOrderInfModel> listSetOrderInfModel = new();
+
+        // Get list SetOrderInf and SetOrderInfDetail
+        var allSetOdrInfs = setOdrInfs.Where(order => order.HpId == hpId && order.SetCd == setCd && order.IsDeleted != 1)
+                .OrderBy(order => order.OdrKouiKbn)
+                .ThenBy(order => order.RpNo)
+                .ThenBy(order => order.RpEdaNo)
+                .ThenBy(order => order.SortNo)
+                .ToList();
+        var allSetOdrInfDetails = setOdrInfDetails.Where(detail => detail.HpId == hpId && detail.SetCd == setCd)?.ToList();
+        var listUserId = allSetOdrInfs.Select(user => user.CreateId).ToList();
+
+        if (!(allSetOdrInfs?.Count > 0))
+        {
+            return listSetOrderInfModel;
+        }
+
+        var listOrderInfModels = from odrInf in allSetOdrInfs
+                                 join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
+                                 on odrInf.CreateId equals user.UserId into odrUsers
+                                 from odrUser in odrUsers.DefaultIfEmpty()
+                                 select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
+
+        // Convert to list SetOrderInfModel
+        foreach (var itemOrderModel in listOrderInfModels)
+        {
+            List<SetOrderInfDetailModel> odrDetailModels = new();
+
+            var currentSetOdrInfDetails = allSetOdrInfDetails?.Where(detail => detail.RpNo == itemOrderModel.RpNo && detail.RpEdaNo == itemOrderModel.RpEdaNo)
+                .ToList();
+
+            if (currentSetOdrInfDetails?.Count > 0)
+            {
+                int count = 0;
+                var usage = setOdrInfDetails.FirstOrDefault(d => d.YohoKbn == 1 || d.ItemCd == ItemCdConst.TouyakuChozaiNaiTon || d.ItemCd == ItemCdConst.TouyakuChozaiGai);
+                foreach (var odrInfDetail in currentSetOdrInfDetails)
+                {
+                    var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd);
+                    var ten = tenMst?.Ten ?? 0;
+                    var kensaMst = tenMst == null ? null : kensaMsts.FirstOrDefault(k => k.KensaItemCd == tenMst.KensaItemCd && k.KensaItemSeqNo == tenMst.KensaItemSeqNo);
+                    var alternationIndex = count % 2;
+                    var bunkatuKoui = 0;
+                    if (odrInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                    {
+                        bunkatuKoui = usage?.SinKouiKbn ?? 0;
+                    }
+                    var yakka = yakkas.FirstOrDefault(p => p.IpnNameCd == odrInfDetail.IpnCd)?.Yakka ?? 0;
+                    var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
+                    int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, itemOrderModel.InoutKbn, itemOrderModel.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
+                    var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, itemOrderModel.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty);
+                    odrDetailModels.Add(odrInfDetailModel);
+                    count++;
+                }
+            }
+            itemOrderModel.OrdInfDetails.AddRange(odrDetailModels);
+            listSetOrderInfModel.Add(itemOrderModel);
+        }
+
+        return listSetOrderInfModel;
     }
 
     private SetGroupOrderInfModel ConvertGroupModel(SetOrderInfModel order, List<SetOrderInfModel> setOrdInfModels)
