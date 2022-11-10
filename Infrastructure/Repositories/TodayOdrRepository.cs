@@ -41,9 +41,11 @@ namespace Infrastructure.Repositories
                     using var transaction = _tenantTrackingDataContext.Database.BeginTransaction();
                     try
                     {
+                        var rpNoMax = SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
+
                         if (odrInfs.Count > 0)
                         {
-                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
+                            UpsertOdrInfs(rpNoMax, hpId, ptId, raiinNo, sinDate, odrInfs);
                         }
 
                         SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
@@ -51,8 +53,6 @@ namespace Infrastructure.Repositories
                         UpsertKarteInfs(karteInfModel);
 
                         SaveRaiinListInf(odrInfs);
-
-                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
 
                         transaction.Commit();
 
@@ -90,10 +90,10 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
+        private long SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
         {
 
-            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate);
+            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
             var oldoldSyosaiKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
             var oldJikanKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
@@ -228,6 +228,8 @@ namespace Infrastructure.Repositories
             }
 
             _tenantTrackingDataContext.SaveChanges();
+
+            return rpNoMax;
         }
 
         private void SaveRaiinListInf(List<OrdInfModel> ordInfs)
@@ -471,9 +473,10 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
+        private void UpsertOdrInfs(long rpNoMaxHeader, int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
+            rpNoMax = Math.Max(rpNoMaxHeader, rpNoMax);
             foreach (var item in ordInfs)
             {
                 if (item.IsDeleted == DeleteTypes.Deleted)
