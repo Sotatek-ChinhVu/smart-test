@@ -473,7 +473,7 @@ namespace Infrastructure.Repositories
         private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
-            rpNoMax = rpNoMax < 2 ? 2 : rpNoMax;
+            rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
             foreach (var item in ordInfs)
             {
                 if (item.IsDeleted == DeleteTypes.Deleted)
