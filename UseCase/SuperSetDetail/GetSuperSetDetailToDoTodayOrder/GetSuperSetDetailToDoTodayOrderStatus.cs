@@ -6,6 +6,5 @@ public enum GetSuperSetDetailToDoTodayOrderStatus : byte
     Failed = 2,
     InvalidHpId = 3,
     InvalidSetCd = 4,
-    InvalidSindate = 5,
-    NoData = 6
+    NoData = 5
 }

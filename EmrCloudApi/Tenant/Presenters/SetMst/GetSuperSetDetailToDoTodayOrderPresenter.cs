@@ -22,7 +22,6 @@ public class GetSuperSetDetailToDoTodayOrderPresenter : IGetSuperSetDetailToDoTo
         GetSuperSetDetailToDoTodayOrderStatus.Failed => ResponseMessage.Failed,
         GetSuperSetDetailToDoTodayOrderStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
-        GetSuperSetDetailToDoTodayOrderStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
         GetSuperSetDetailToDoTodayOrderStatus.NoData => ResponseMessage.NoData,
         _ => string.Empty
     };

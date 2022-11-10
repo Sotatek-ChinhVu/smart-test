@@ -24,12 +24,8 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
             }
-            else if (inputData.Sindate <= 0)
-            {
-                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSindate);
-            }
 
-            var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.SetCd, inputData.Sindate);
+            var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.SetCd);
             if (result.Item1.Count == 0 && result.Item2.Count == 0 && result.Item3.Count == 0)
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);

@@ -35,7 +35,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
-    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sindate)
+    public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd)
     {
         var rootSuperSet = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
         List<int> setCds;
@@ -83,7 +83,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                     setKarteInf.SetCd,
                     setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)));
 
-            ordInfs.AddRange(GetSetOrdInfModel(hpId, currentSetCd, sindate, allSetOrderInfs ?? new(), allSetOrderInfDetails ?? new()));
+            ordInfs.AddRange(GetSetOrdInfModel(hpId, currentSetCd, allSetOrderInfs ?? new(), allSetOrderInfDetails ?? new()));
         }
 
         return new(byomeis, setKarteInfs, ordInfs);
@@ -282,7 +282,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return result;
     }
 
-    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, int sindate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails)
+    private List<SetOrderInfModel> GetSetOrdInfModel(int hpId, int setCd, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails)
     {
         List<SetOrderInfModel> listSetOrderInfModel = new();
 
