@@ -37,12 +37,6 @@ namespace Interactor.MaxMoney
 
             var infoHoken = _maxmoneyReposiory.GetInfoHokenMoney(inputData.HpId, inputData.PtId, inputData.HokenKohiId, inputData.SinYM);
 
-            if(infoHoken == null)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.HokenKohiNotFound);
-
-            if (infoHoken.MoneyLimitListFlag == 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.HokenKohiNotValidToGet);
-
             int kohiId = infoHoken.HokenKohiId;
             int rate = infoHoken.Rate;
             int sinDateYM = infoHoken.SinYM;
