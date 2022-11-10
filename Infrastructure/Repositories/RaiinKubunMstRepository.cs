@@ -5,9 +5,6 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Collections.Immutable;
-using System.Drawing;
-using System.Linq;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -118,7 +115,7 @@ namespace Infrastructure.Repositories
                 x.kbnKoui.KbnCd,
                 x.kbnKoui.SeqNo,
                 x.kbnKoui.KouiKbnId,
-                x.kbnKoui.IsDeleted)).GroupBy(x => new {x.HpId,x.GrpId,x.KbnCd,x.SeqNo }).Select(x=>x.First());
+                x.kbnKoui.IsDeleted)).GroupBy(x => new { x.HpId, x.GrpId, x.KbnCd, x.SeqNo }).Select(x => x.First());
 
             var raiinKbnItemList = query.Where(x => x.kbnItem != null).Select(x => new RaiinKbnItemModel(
                 x.kbnItem.HpId,
@@ -283,13 +280,13 @@ namespace Infrastructure.Repositories
                             }
                             _tenantDataContextTracking.SaveChanges();
                             transaction.Commit();
-                            result.Add( KubunSettingConstant.Successed);
+                            result.Add(KubunSettingConstant.Successed);
                             return true;
                         }
                         catch (Exception)
                         {
                             transaction.Rollback();
-                            result.Add( KubunSettingConstant.Failed);
+                            result.Add(KubunSettingConstant.Failed);
                             return false;
                         }
                     }
@@ -297,26 +294,32 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<string> GetListColumnName(int hpId)
+        public List<(string, string)> GetListColumnName(int hpId)
         {
-            var listRaiinKbnMst =  _tenantDataContextNoTracking.RaiinKbnMsts
+            var listRaiinKbnMst = _tenantDataContextNoTracking.RaiinKbnMsts
               .Where(item => item.HpId == hpId && item.IsDeleted == 0)
               .OrderBy(item => item.SortNo)
               .ToDictionary(item => item.GrpName, item => item.GrpCd);
 
-            var listColumnName = new List<string>()
+            var listColumnName = new List<(string, string)>()
             {
-                "順番", "同一来院", "状態", "患者番号", "カナ氏名", "氏名", "性", "生年月日", "年齢", "読",
-                "予約時間", "予約名", "受付種別", "受付時間", "診察開始", "診察終了", "精算時間",
-                "来院コメント", "患者コメント", "保険", "担当医", "診療科", "前回来院", "主治医", "備考"
+                new("uketukeNo","順番"), new("sameVisit","同一来院"), new("status","状態"), new("ptNum","患者番号"),
+                new("kanaName","カナ氏名"), new("name", "氏名"), new("sex", "性"), new("birthday","生年月日"), new("age", "年齢"),
+                new("nameDuplicateState", "読"),new("yoyakuTime", "予約時間"), new ("reservationName", "予約名"), new("uketukeSbtId", "受付種別"),
+                new("uketukeTime", "受付時間"), new("sinStartTime", "診察開始"), new("sinEndTime", "診察終了"), new("kaikeiTime", "精算時間"),
+                new("raiinCmt", "来院コメント"), new ("ptComment", "患者コメント"), new ("hokenPatternName", "保険"), new ("tantoId", "担当医"),
+                new ("kaId", "診療科"), new("lastVisitDate", "前回来院"), new ("sname", "主治医"), new ("raiinRemark",
+                "備考"), new("confirmationState", "資格確認状況"), new ("confirmationResult", "資格確認結果")
             };
+
+
 
             if (listRaiinKbnMst != null && listRaiinKbnMst.Count > 0)
             {
                 foreach (var item in listRaiinKbnMst)
                 {
-                    if (listColumnName.Contains(item.Key) == false)
-                        listColumnName.Add(item.Key);
+                    if (listColumnName.Select(i => i.Item2).Contains(item.Key) == false)
+                        listColumnName.Add(new(item.Value.ToString(), item.Key));
                 }
             }
 
@@ -621,13 +624,13 @@ namespace Infrastructure.Repositories
                     var raiinKubunDetailModels = raiinKubunMst.RaiinKubunDetailModels;
                     if (raiinKubunDetailModels.Any(x => string.IsNullOrEmpty(x.KubunName)))
                     {
-                        result.Add( KubunSettingConstant.InvalidKubunName);
+                        result.Add(KubunSettingConstant.InvalidKubunName);
                         return result;
                     }
 
                     if (raiinKubunDetailModels.Any(x => x.GroupId != raiinKubunMst.GroupId))
                     {
-                        result.Add( KubunSettingConstant.InvalidRaiinKbnDetailGroupId);
+                        result.Add(KubunSettingConstant.InvalidRaiinKbnDetailGroupId);
                         return result;
                     }
 
@@ -637,7 +640,7 @@ namespace Infrastructure.Repositories
 
                     if (!ValidateSortNo(currentRaiinKubunDetailSortNos, newSortRaiinKubunDetailNos))
                     {
-                        result.Add( KubunSettingConstant.InvalidRaiinKbnDetailSortNo);
+                        result.Add(KubunSettingConstant.InvalidRaiinKbnDetailSortNo);
                         return result;
                     }
 
@@ -652,7 +655,7 @@ namespace Infrastructure.Repositories
 
                     if (raiinKbnDetailUpdate.Any(x => x.detail == null))
                     {
-                        result.Add( KubunSettingConstant.RaiinKbnDetailNotExisted);
+                        result.Add(KubunSettingConstant.RaiinKbnDetailNotExisted);
                         return result;
                     }
 
@@ -664,7 +667,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnKouiModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add( KubunSettingConstant.InvalidRaiinKbnKouiKbnCd);
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnKouiKbnCd);
                                 return result;
                             }
 
@@ -673,7 +676,7 @@ namespace Infrastructure.Repositories
                             var newRaiinKbnKouiSortNos = raiinKbnKouiModels.Select(x => new Tuple<int, int>(x.KouiKbnId, x.SeqNo)).ToList();
                             if (!ValidateSortNo(currentRaiinKbnKouiSortNos, newRaiinKbnKouiSortNos))
                             {
-                                result.Add( KubunSettingConstant.InvalidRaiinKbnKouiSortNo);
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnKouiSortNo);
                                 return result;
                             }
 
@@ -696,7 +699,7 @@ namespace Infrastructure.Repositories
                         {
                             if (raiinKubunDetail.RaiinKbnItemModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add( KubunSettingConstant.InvalidRaiinKbnItemKbnCd);
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnItemKbnCd);
                                 return result;
                             }
                             var raiinKbItemModels = raiinKubunDetail.RaiinKbnItemModels;
@@ -727,7 +730,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnItemUpdate.Any(x => x.item == null))
                             {
-                                result.Add( KubunSettingConstant.RaiinKbnItemNotExisted);
+                                result.Add(KubunSettingConstant.RaiinKbnItemNotExisted);
                                 return result;
                             }
                         }
@@ -736,7 +739,7 @@ namespace Infrastructure.Repositories
                             var raiinKbnYayokuModels = raiinKubunDetail.RaiinKbnYayokuModels;
                             if (raiinKbnYayokuModels.Any(x => x.KbnCd != raiinKubunDetail.KubunCd))
                             {
-                                result.Add( KubunSettingConstant.InvalidRaiinKbnYoyakuKbnCd);
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnYoyakuKbnCd);
                                 return result;
                             }
                             var currentRaiinKbnYayokus = raiinKbnYayokus.Where(x => x.IsDeleted == 0 && x.GrpId == raiinKubunDetail.GroupId && x.KbnCd == raiinKubunDetail.KubunCd).ToList();
@@ -745,7 +748,7 @@ namespace Infrastructure.Repositories
 
                             if (!ValidateSortNo(currentRaiinKbnYayokuSortNos, newRaiinKbnYayokuSortNos))
                             {
-                                result.Add( KubunSettingConstant.InvalidRaiinKbnYayokuSortNo);
+                                result.Add(KubunSettingConstant.InvalidRaiinKbnYayokuSortNo);
                                 return result;
                             }
 
@@ -760,7 +763,7 @@ namespace Infrastructure.Repositories
 
                             if (raiinKbnYayokuUpdate.Any(x => x.yoyaku == null))
                             {
-                                result.Add( KubunSettingConstant.RaiinKbnYayokuNotExisted);
+                                result.Add(KubunSettingConstant.RaiinKbnYayokuNotExisted);
                                 return result;
                             }
                         }

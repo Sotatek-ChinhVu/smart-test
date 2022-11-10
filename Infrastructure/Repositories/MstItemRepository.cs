@@ -214,7 +214,7 @@ namespace Infrastructure.Repositories
            .Replace("ｯ", "ﾂ");
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
                                 t.ItemCd.StartsWith(keyword)
-                                || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword)
+                                || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
@@ -293,7 +293,7 @@ namespace Infrastructure.Repositories
                                   .Replace("ｮ", "ﾖ")
                                   .Replace("ｯ", "ﾂ").StartsWith(sBigKeyword))
                                 ||
-                                (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword))));
+                                (!String.IsNullOrEmpty(t.Name) && t.Name.Contains(keyword)));
 
             if (kouiKbn > 0)
             {

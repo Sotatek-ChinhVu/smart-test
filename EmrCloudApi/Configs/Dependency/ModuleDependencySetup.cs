@@ -227,8 +227,10 @@ using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using EmrCloudApi.Tenant.Services;
-using Domain.Models.AuditTrailLog;
 using UseCase.AccountDue.SaveAccountDueList;
+using EventProcessor.Service;
+using EventProcessor.Interfaces;
+using DevExpress.Inteface;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -263,6 +265,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Export
             services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 
         private void SetupRepositories(IServiceCollection services)
@@ -325,12 +328,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            services.AddTransient<Karte1Export, Karte1Export>();
+            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-            services.AddTransient<IAuditTrailLogRepository, AuditTrailLogRepository>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupUseCase(IServiceCollection services)
