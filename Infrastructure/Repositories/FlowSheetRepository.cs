@@ -164,7 +164,7 @@ namespace Infrastructure.Repositories
                 result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
             else
             {
-                SortAll(sort, todayNextOdrs);
+                todayNextOdrs = SortAll(sort, todayNextOdrs);
                 result = todayNextOdrs.Skip(startIndex).Take(count).ToList();
             }
 
@@ -262,7 +262,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private void SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
+        private List<FlowSheetModel> SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
         {
             try
             {
@@ -275,24 +275,24 @@ namespace Infrastructure.Repositories
 
                     if (!checkGroupId)
                     {
-                        SortStaticColumn(elementDynamics.FirstOrDefault() ?? string.Empty, elementDynamics?.Count() > 1 ? elementDynamics.LastOrDefault() ?? string.Empty : string.Empty, order);
+                        order = SortStaticColumn(elementDynamics.FirstOrDefault() ?? string.Empty, elementDynamics?.Count() > 1 ? elementDynamics.LastOrDefault() ?? string.Empty : string.Empty, order);
                     }
                     else
                     {
                         if (elementDynamics.Length > 1)
                         {
-                            if (childrenOfSort[1].ToLower() == "desc")
+                            if (elementDynamics[1].ToLower() == "desc")
                             {
                                 order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                             }
                             else
                             {
-                                order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
+                                order = order.ThenBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                             }
                         }
                         else
                         {
-                            order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
+                            order = order.ThenBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
                         }
                     }
                 }
@@ -302,9 +302,11 @@ namespace Infrastructure.Repositories
             {
                 todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.SinDate).ToList();
             }
+
+            return todayNextOdrs;
         }
 
-        private void SortStaticColumn(string fieldName, string sortType, IOrderedEnumerable<FlowSheetModel> order)
+        private IOrderedEnumerable<FlowSheetModel> SortStaticColumn(string fieldName, string sortType, IOrderedEnumerable<FlowSheetModel> order)
         {
             if (fieldName.ToLower().Equals("sindate"))
             {
@@ -366,6 +368,8 @@ namespace Infrastructure.Repositories
                     order = order.ThenByDescending(o => o.Comment);
                 }
             }
+
+            return order;
         }
     }
 }
