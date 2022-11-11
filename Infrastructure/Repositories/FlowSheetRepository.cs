@@ -14,6 +14,12 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
         private readonly int cmtKbn = 9;
+        private readonly string sinDate = "sindate";
+        private readonly string tagNo = "tagno";
+        private readonly string fullLineOfKarte = "fulllineofkarte";
+        private readonly string syosaisinKbn = "syosaisinkbn";
+        private readonly string comment = "comment";
+
 
         public FlowSheetRepository(ITenantProvider tenantProvider)
         {
@@ -308,7 +314,7 @@ namespace Infrastructure.Repositories
 
         private IOrderedEnumerable<FlowSheetModel> SortStaticColumn(string fieldName, string sortType, IOrderedEnumerable<FlowSheetModel> order)
         {
-            if (fieldName.ToLower().Equals("sindate"))
+            if (fieldName.ToLower().Equals(sinDate))
             {
                 if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
                 {
@@ -320,7 +326,7 @@ namespace Infrastructure.Repositories
                     order = order.ThenByDescending(o => o.SinDate);
                 }
             }
-            if (fieldName.ToLower().Equals("tagno"))
+            if (fieldName.ToLower().Equals(tagNo))
             {
                 if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
                 {
@@ -332,7 +338,7 @@ namespace Infrastructure.Repositories
                     order = order.ThenByDescending(o => o.TagNo);
                 }
             }
-            if (fieldName.ToLower().Equals("fulllineofkarte"))
+            if (fieldName.ToLower().Equals(fullLineOfKarte))
             {
                 if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
                 {
@@ -344,7 +350,7 @@ namespace Infrastructure.Repositories
                     order = order.ThenByDescending(o => o.FullLineOfKarte);
                 }
             }
-            if (fieldName.ToLower().Equals("syosaisinkbn"))
+            if (fieldName.ToLower().Equals(syosaisinKbn))
             {
                 if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
                 {
@@ -356,7 +362,7 @@ namespace Infrastructure.Repositories
                     order = order.ThenByDescending(o => o.SyosaisinKbn);
                 }
             }
-            if (fieldName.ToLower().Equals("comment"))
+            if (fieldName.ToLower().Equals(comment))
             {
                 if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
                 {
