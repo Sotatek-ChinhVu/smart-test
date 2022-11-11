@@ -1,3 +1,5 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+
 ENV ASPNETCORE_URLS=http://+:5286
 WORKDIR /app
 
@@ -22,3 +24,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
+ENV ASPNETCORE_URLS=http://+:5286
+EXPOSE 5286
+ENTRYPOINT ["dotnet", "EmrCloudApi.dll"]
