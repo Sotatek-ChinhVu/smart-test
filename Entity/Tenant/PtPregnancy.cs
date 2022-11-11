@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         //[Key]
-        [Column("HP_ID", Order = 3)]
+        [Column("HP_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int HpId { get; set; }
 

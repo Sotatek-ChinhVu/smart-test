@@ -1,6 +1,8 @@
 ﻿using DevExpress.Export;
 using DevExpress.Models.Karte1;
 using DevExpress.Models.Karte2;
+﻿using DevExpress.Inteface;
+using DevExpress.Models;
 using DevExpress.Response.Karte1;
 using Domain.Constant;
 using Domain.Models.Diseases;
@@ -36,8 +38,8 @@ public class Reporting : IReporting
     private readonly IUserRepository _userRepository;
     private readonly IKaRepository _kaRepository;
     private readonly IRaiinListTagRepository _rainListTagRepository;
-    private readonly Karte1Export _karte1Export;
     private readonly Karte2Export _karte2Export;
+    private readonly IKarte1Export _karte1Export;
 
     public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IUserRepository userRepository, IKaRepository kaRepository, IRaiinListTagRepository rainListTagRepository, Karte1Export karte1Export, Karte2Export karte2Export)
     {
@@ -213,33 +215,33 @@ public class Reporting : IReporting
 
         if (hoken != null)
         {
-            hokensyaNo = hoken.HokensyaNo != string.Empty ? hoken.HokensyaNo.PadLeft(8, ' ') : string.Empty;
+            hokensyaNo = hoken.HokenInf.HokensyaNo != string.Empty ? hoken.HokenInf.HokensyaNo.PadLeft(8, ' ') : string.Empty;
             if (new int[] { 11, 12, 13 }.Contains(hoken.HokenKbn))
             {
                 // 労災
-                kigoBango = hoken.RousaiKofuNo ?? string.Empty;
+                kigoBango = hoken.HokenInf.RousaiKofuNo ?? string.Empty;
             }
             else if (hoken.HokenKbn == 14)
             {
                 // 自賠
-                kigoBango = hoken.JibaiHokenName ?? string.Empty;
+                kigoBango = hoken.HokenInf.JibaiHokenName ?? string.Empty;
             }
             else
             {
-                kigoBango = hoken.Kigo + "・" + hoken.Bango;
-                if (!string.IsNullOrEmpty(hoken.EdaNo))
+                kigoBango = hoken.HokenInf.Kigo + "・" + hoken.HokenInf.Bango;
+                if (!string.IsNullOrEmpty(hoken.HokenInf.EdaNo))
                 {
-                    kigoBango = kigoBango + "(" + hoken.EdaNo ?? string.Empty + ")";
+                    kigoBango = kigoBango + "(" + hoken.HokenInf.EdaNo ?? string.Empty + ")";
                 }
             }
             var warekiEndate = CIUtil.SDateToShowWDate3(hoken.EndDate);
             hokenKigenW = warekiEndate.Ymd != null ? warekiEndate.Ymd : string.Empty;
-            var warekiSyutokuDate = CIUtil.SDateToShowWDate3(hoken.SikakuDate);
+            var warekiSyutokuDate = CIUtil.SDateToShowWDate3(hoken.HokenInf.SikakuDate);
             hokenSyutokuW = warekiSyutokuDate.Ymd != null ? warekiSyutokuDate.Ymd : string.Empty;
-            hokensyaName = hoken.HokensyaName;
-            hokensyaAddress = hoken.HokensyaAddress;
-            zokugara = hoken.KeizokuKbn.ToString();
-            hokensyaTel = hoken.HokensyaTel;
+            hokensyaName = hoken.HokenInf.HokensyaName;
+            hokensyaAddress = hoken.HokenInf.HokensyaAddress;
+            zokugara = hoken.HokenInf.KeizokuKbn.ToString();
+            hokensyaTel = hoken.HokenInf.HokensyaTel;
             futansyaNo_K1 = hoken.Kohi1.FutansyaNo;
             jyukyusyaNo_K1 = hoken.Kohi1.JyukyusyaNo;
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;

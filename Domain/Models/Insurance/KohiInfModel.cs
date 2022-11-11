@@ -1,10 +1,11 @@
-﻿using System.Text.Json.Serialization;
+﻿using Domain.Models.InsuranceMst;
+using System.Text.Json.Serialization;
 
 namespace Domain.Models.Insurance
 {
     public class KohiInfModel
     {
-        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst, int isDeleted)
+        public KohiInfModel(string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, int hokenNo, int hokenEdaNo, int prefNo, HokenMstModel hokenMstModel, int sinDate, List<ConfirmDateModel> confirmDateList, bool isHaveKohiMst, int isDeleted, bool isAddNew, long seqNo)
         {
             FutansyaNo = futansyaNo;
             JyukyusyaNo = jyukyusyaNo;
@@ -27,6 +28,8 @@ namespace Domain.Models.Insurance
             ConfirmDateList = confirmDateList;
             IsHaveKohiMst = isHaveKohiMst;
             IsDeleted = isDeleted;
+            IsAddNew = isAddNew;
+            SeqNo = seqNo;
         }
 
         public KohiInfModel(int hokenId)
@@ -42,7 +45,7 @@ namespace Domain.Models.Insurance
         }
 
         [JsonConstructor]
-        public KohiInfModel(List<ConfirmDateModel> confirmDateList, string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, HokenMstModel hokenMstModel, int hokenNo, int hokenEdaNo, int prefNo, int sinDate, bool isHaveKohiMst, int isDeleted)
+        public KohiInfModel(List<ConfirmDateModel> confirmDateList, string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, HokenMstModel hokenMstModel, int hokenNo, int hokenEdaNo, int prefNo, int sinDate, bool isHaveKohiMst, int isDeleted, long seqNo, bool isAddNew)
         {
             ConfirmDateList = confirmDateList;
             FutansyaNo = futansyaNo;
@@ -65,6 +68,8 @@ namespace Domain.Models.Insurance
             SinDate = sinDate;
             IsHaveKohiMst = isHaveKohiMst;
             IsDeleted = isDeleted;
+            SeqNo = seqNo;
+            IsAddNew = isAddNew;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }
@@ -108,6 +113,7 @@ namespace Domain.Models.Insurance
         public bool IsHaveKohiMst { get; private set; }
 
         public int IsDeleted { get; private set; }
+        public long SeqNo { get; private set; }
 
         public bool IsEmptyModel => HokenId == 0;
 
@@ -118,5 +124,7 @@ namespace Domain.Models.Insurance
                 return !(StartDate <= SinDate && EndDate >= SinDate);
             }
         }
+
+        public bool IsAddNew { get; private set; }
     }
 }

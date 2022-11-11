@@ -12,6 +12,7 @@
         public const string Save = "Save";
         public const string Revert = "Revert";
         public const string Delete = "Delete";
+        public const string GetSettingValue = "GetSettingValue";
 
 
         // SuperSet
@@ -21,6 +22,7 @@
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
+        public const string GetToolTip = "GetToolTip";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -42,6 +44,8 @@
         //Today Oder
         public const string GetMaxRpNo = "GetMaxRpNo";
         public const string GetHeaderInf = "GetHeaderInf";
+        public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
+        public const string GetInsuranceComboList = "GetInsuranceComboList";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -61,6 +65,7 @@
         public const string SearchEmptyId = "SearchEmptyId";
         public const string GetInsuranceMasterLinkage = "GetInsuranceMasterLinkage";
         public const string SaveInsuranceMasterLinkage = "SaveInsuranceMasterLinkage";
+        public const string SavePatientInfo = "SavePatientInfo";
 
         //HokenMst
         public const string GetDetailHokenMst = "GetDetailHokenMst";
@@ -80,7 +85,6 @@
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
 
-
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
@@ -91,5 +95,16 @@
         // Reception
         public const string GetLastRaiinInfs = "GetLastRaiinInfs";
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
+        public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
+        public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
+
+        // Validate list pattern
+        public const string ValidateListPattern = "ValidateListPattern";
+
+        //Swaphoken
+        public const string SwapHoken = "SwapHoken";
+
+        //RaiinKubun
+        public const string GetColumnName = "GetColumnName";
     }
 }

@@ -22,6 +22,7 @@ namespace EmrCloudApi.Tenant.Presenters.PatientInfor
             DeletePatientInfoStatus.Failed => ResponseMessage.Failed,
             DeletePatientInfoStatus.InvalidHpId => ResponseMessage.InvalidHpId,
             DeletePatientInfoStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+            DeletePatientInfoStatus.NotAllowDeletePatient => ResponseMessage.NotAllowDeletePatient,
             _ => string.Empty
         };
     }

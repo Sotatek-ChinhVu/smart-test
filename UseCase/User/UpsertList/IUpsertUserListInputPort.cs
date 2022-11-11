@@ -4,5 +4,6 @@ namespace UseCase.User.UpsertList
 {
     public interface IUpsertUserListInputPort : IInputPort<UpsertUserListInputData, UpsertUserListOutputData>
     {
+
     }
 }

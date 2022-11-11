@@ -479,5 +479,28 @@ namespace Entity.Tenant
 		[Column(name: "UPDATE_MACHINE")]
 		[MaxLength(60)]
 		public string? UpdateMachine { get; set; }  = string.Empty;
+
+		/// <summary>
+		/// レセプト記載（国保用）   
+		///  0:記載あり
+		///  1:上限未満記載なし
+		///  2:上限以下記載なし
+		///  3:記載なし
+		/// </summary>
+		[Column(name: "RECE_KISAI_KOKHO")]
+		[CustomAttribute.DefaultValue(0)]
+		public int ReceKisaiKokho { get; set; }
+
+		/// <summary>
+		/// 高額療養費 配慮措置適用区分
+		///     0: 県内(配慮措置なし)・県外(配慮措置なし)
+		///     1: 県内(配慮措置なし)・県外(配慮措置あり)
+		///     2: 県内(配慮措置あり)・県外(配慮措置なし)
+		///     3: 県内(配慮措置あり)・県外(配慮措置あり)
+		/// </summary>
+		//[NotMapped]
+		[Column(name: "KOGAKU_HAIRYO_KBN")]
+		[CustomAttribute.DefaultValue(0)]
+		public int KogakuHairyoKbn { get; set; }
 	}
 }

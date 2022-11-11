@@ -1,11 +1,12 @@
 ﻿using DevExpress.DataAccess.ObjectBinding;
 using DevExpress.Models.Karte1;
+using DevExpress.Inteface;
 using DevExpress.Template;
 using DevExpress.XtraPrinting;
 
 namespace DevExpress.Export;
 
-public class Karte1Export
+public class Karte1Export: IKarte1Export
 {
     public MemoryStream ExportToPdf(Karte1ExportModel data)
     {

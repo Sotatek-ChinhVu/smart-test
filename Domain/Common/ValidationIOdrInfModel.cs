@@ -127,9 +127,13 @@ namespace Domain.Common
 
             #region Validate business
 
-            if ((!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0) || (string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
+            if ((string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && ((odrInfDetail.Suryo > 0 && odrInfDetail.ItemCd != ItemCdConst.Con_TouyakuOrSiBunkatu) || (odrInfDetail.Suryo != 0 && odrInfDetail.ItemCd.StartsWith("J")))))
             {
                 return OrdInfValidationStatus.InvalidSuryo;
+            }
+            if (!string.IsNullOrEmpty(odrInfDetail.UnitName.Trim()) && odrInfDetail.Suryo == 0)
+            {
+                return flag != 1 ? OrdInfValidationStatus.InvalidSuryo : OrdInfValidationStatus.NoFillSuryo;
             }
             if (!KohatuKbns.ContainsValue(odrInfDetail.KohatuKbn))
             {
@@ -526,11 +530,11 @@ namespace Domain.Common
             {
                 return OrdInfValidationStatus.InvalidHpId;
             }
-            if (odrInfDetail.RpNo <= 0)
+            if (odrInfDetail.RpNo < 0)
             {
                 return OrdInfValidationStatus.InvalidRpNo;
             }
-            if (odrInfDetail.RpEdaNo <= 0)
+            if (odrInfDetail.RpEdaNo < 0)
             {
                 return OrdInfValidationStatus.InvalidRpEdaNo;
             }

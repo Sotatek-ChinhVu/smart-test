@@ -18,11 +18,12 @@ namespace EmrCloudApi.Tenant.Controllers
         {
             _bus = bus;
         }
+
         [HttpGet(ApiPath.Get)]
-        public ActionResult<Response<GetSystemConfResponse>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
+        public async Task<ActionResult<Response<GetSystemConfResponse>>> GetByGrpCd([FromQuery] GetSystemConfRequest request)
         {
-            var input = new GetSystemConfInputData(request.HpId, request.GrpCd);
-            var output = _bus.Handle(input);
+            var input = new GetSystemConfInputData(request.HpId, request.GrpCd, request.GrpEdaNo);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSystemConfPresenter();
             presenter.Complete(output);

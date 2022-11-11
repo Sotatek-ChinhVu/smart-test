@@ -22,6 +22,8 @@
 
         public int SelectedHokenInfHokenNo { get; set; }
 
+        public int SelectedHokenInfHokenEdra { get; set; }
+
         public bool SelectedHokenInfIsAddNew { get; set; }
 
         public bool SelectedHokenInfIsJihi { get; set; }
@@ -61,22 +63,6 @@
         public string SelectedHokenInfTokki4 { get; set; } = string.Empty;
 
         public string SelectedHokenInfTokki5 { get; set; } = string.Empty;
-
-        public string SelectedHokenMstHoubetu { get; set; } = string.Empty;
-
-        public int SelectedHokenMstHokenNo { get; set; }
-
-        public int SelectedHokenMstCheckDegit { get; set; }
-
-        public int SelectedHokenMstAgeStart { get; set; }
-
-        public int SelectedHokenMstAgeEnd { get; set; }
-
-        public int SelectedHokenMstStartDate { get; set; }
-
-        public int SelectedHokenMstEndDate { get; set; }
-
-        public string SelectedHokenMstDisplayText { get; set; } = string.Empty;
 
         public bool SelectedHokenPatternIsEmptyKohi1 { get; set; }
 

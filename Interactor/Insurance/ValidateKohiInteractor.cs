@@ -1,7 +1,8 @@
 ﻿using Domain.Constant;
-using Domain.Models.Insurance;
-using Domain.Models.ReceptionInsurance;
+using Domain.Models.InsuranceMst;
+using Domain.Models.PatientInfor;
 using Helper.Common;
+using Infrastructure.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,10 @@ namespace Interactor.Insurance
 {
     public class ValidateKohiInteractor : IValidKohiInputPort
     {
-        private readonly IReceptionInsuranceRepository _insuranceResponsitory;
-        public ValidateKohiInteractor(IReceptionInsuranceRepository insuranceResponsitory)
+        private readonly IPatientInforRepository _patientInforRepository;
+        public ValidateKohiInteractor(IPatientInforRepository patientInforRepository)
         {
-            _insuranceResponsitory = insuranceResponsitory;
+            _patientInforRepository = patientInforRepository;
         }
 
         public ValidKohiOutputData Handle(ValidKohiInputData inputData)
@@ -31,59 +32,84 @@ namespace Interactor.Insurance
                 {
                     return new ValidKohiOutputData(false, string.Empty, ValidKohiStatus.InvalidPtBirthday);
                 }
+                // Get HokenMst Kohi1
+                var hokenMstKohi1 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo1, inputData.SelectedKohiHokenEdraNo1);
+                if (hokenMstKohi1 == null)
+                {
+                    hokenMstKohi1 = new HokenMstModel();
+                }
                 //IsValidKohi1
-                var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMst1TokusyuCheckFlag1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiMstEndDate1, inputData.SelectedKohiMstDisplayText1, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
+                var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, hokenMstKohi1.IsFutansyaNoCheck, hokenMstKohi1.IsJyukyusyaNoCheck, hokenMstKohi1.IsTokusyuNoCheck, hokenMstKohi1.StartDate, hokenMstKohi1.EndDate, hokenMstKohi1.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
                 if (!checkMessageKohi1.Result)
                 {
                     return checkMessageKohi1;
                 }
                 // check Kohi No Function1
-                var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiHokenNo1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiMstJyukyusyaCheckFlag1, inputData.SelectedKohiMstFutansyaCheckFlag1, inputData.SelectedKohiMstJyuKyuCheckDigit1, inputData.SelectedKohiMstCheckDigit1, inputData.SelectedKohiMstHoubetu1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstAgeStart1, inputData.SelectedKohiMstAgeEnd1, 1, inputData.PtBirthday);
+                var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiHokenNo1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiTokusyuNo1, hokenMstKohi1.IsJyukyusyaNoCheck, hokenMstKohi1.IsFutansyaNoCheck, hokenMstKohi1.JyuKyuCheckDigit, hokenMstKohi1.CheckDigit, hokenMstKohi1.Houbetu, inputData.SelectedKohiJyukyusyaNo1, hokenMstKohi1.AgeStart, hokenMstKohi1.AgeEnd, 1, inputData.PtBirthday);
                 if (!checkMessageKohiNoFnc1.Result)
                 {
                     return checkMessageKohiNoFnc1;
                 }
+
+                // Get HokenMst Kohi2
+                var hokenMstKohi2 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo2, inputData.SelectedKohiHokenEdraNo2);
+                if (hokenMstKohi2 == null)
+                {
+                    hokenMstKohi2 = new HokenMstModel();
+                }
                 //IsValidKohi2
-                var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMst2TokusyuCheckFlag2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiMstEndDate2, inputData.SelectedKohiMstDisplayText2, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
+                var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, hokenMstKohi2.IsFutansyaNoCheck, hokenMstKohi2.IsJyukyusyaNoCheck, hokenMstKohi2.IsTokusyuNoCheck, hokenMstKohi2.StartDate, hokenMstKohi2.EndDate, hokenMstKohi2.DisplayTextMaster, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
                 if (!checkMessageKohi2.Result)
                 {
                     return checkMessageKohi2;
                 }
                 // check Kohi No Function 2
-                var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiHokenNo2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiMstJyukyusyaCheckFlag2, inputData.SelectedKohiMstFutansyaCheckFlag2, inputData.SelectedKohiMstJyuKyuCheckDigit2, inputData.SelectedKohiMstCheckDigit2, inputData.SelectedKohiMstHoubetu2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstAgeStart2, inputData.SelectedKohiMstAgeEnd2, 2, inputData.PtBirthday);
+                var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiHokenNo2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiTokusyuNo2, hokenMstKohi2.IsJyukyusyaNoCheck, hokenMstKohi2.IsFutansyaNoCheck, hokenMstKohi2.JyuKyuCheckDigit, hokenMstKohi2.CheckDigit, hokenMstKohi2.Houbetu, inputData.SelectedKohiJyukyusyaNo2, hokenMstKohi2.AgeStart, hokenMstKohi2.AgeEnd, 2, inputData.PtBirthday);
                 if (!checkMessageKohiNoFnc2.Result)
                 {
                     return checkMessageKohiNoFnc2;
                 }
+                // Get HokenMst Kohi3
+                var hokenMstKohi3 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo3, inputData.SelectedKohiHokenEdraNo3);
+                if (hokenMstKohi3 == null)
+                {
+                    hokenMstKohi3 = new HokenMstModel();
+                }
                 //IsValidKohi3
-                var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMst3TokusyuCheckFlag3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiMstEndDate3, inputData.SelectedKohiMstDisplayText3, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
+                var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, hokenMstKohi3.IsFutansyaNoCheck, hokenMstKohi3.IsJyukyusyaNoCheck, hokenMstKohi3.IsTokusyuNoCheck, hokenMstKohi3.StartDate, hokenMstKohi3.EndDate, hokenMstKohi3.DisplayTextMaster, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
                 if (!checkMessageKohi3.Result)
                 {
                     return checkMessageKohi3;
                 }
                 // check Kohi No Function 3
-                var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiHokenNo3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiMstJyukyusyaCheckFlag3, inputData.SelectedKohiMstFutansyaCheckFlag3, inputData.SelectedKohiMstJyuKyuCheckDigit3, inputData.SelectedKohiMstCheckDigit3, inputData.SelectedKohiMstHoubetu3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstAgeStart3, inputData.SelectedKohiMstAgeEnd3, 3, inputData.PtBirthday);
+                var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiHokenNo3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiTokusyuNo3, hokenMstKohi3.IsJyukyusyaNoCheck, hokenMstKohi3.IsFutansyaNoCheck, hokenMstKohi3.JyuKyuCheckDigit, hokenMstKohi3.CheckDigit, hokenMstKohi3.Houbetu, inputData.SelectedKohiJyukyusyaNo3, hokenMstKohi3.AgeStart, hokenMstKohi3.AgeEnd, 3, inputData.PtBirthday);
                 if (!checkMessageKohiNoFnc3.Result)
                 {
                     return checkMessageKohiNoFnc3;
                 }
+                // Get HokenMst Kohi4
+                var hokenMstKohi4 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo4, inputData.SelectedKohiHokenEdraNo4);
+                if (hokenMstKohi4 == null)
+                {
+                    hokenMstKohi4 = new HokenMstModel();
+                }
                 //IsValidKohi4
-                var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMst4TokusyuCheckFlag4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiMstEndDate4, inputData.SelectedKohiMstDisplayText4, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
+                var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, hokenMstKohi4.IsFutansyaNoCheck, hokenMstKohi4.IsJyukyusyaNoCheck, hokenMstKohi4.IsTokusyuNoCheck, hokenMstKohi4.StartDate, hokenMstKohi4.EndDate, hokenMstKohi4.DisplayTextMaster, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
                 if (!checkMessageKohi4.Result)
                 {
                     return checkMessageKohi4;
                 }
                 // check Kohi No Function 4
-                var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiHokenNo4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiMstJyukyusyaCheckFlag4, inputData.SelectedKohiMstFutansyaCheckFlag4, inputData.SelectedKohiMstJyuKyuCheckDigit4, inputData.SelectedKohiMstCheckDigit4, inputData.SelectedKohiMstHoubetu4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstAgeStart4, inputData.SelectedKohiMstAgeEnd4, 4, inputData.PtBirthday);
+                var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiHokenNo4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiTokusyuNo4, hokenMstKohi4.IsJyukyusyaNoCheck, hokenMstKohi4.IsFutansyaNoCheck, hokenMstKohi4.JyuKyuCheckDigit, hokenMstKohi4.CheckDigit, hokenMstKohi4.Houbetu, inputData.SelectedKohiJyukyusyaNo4, hokenMstKohi4.AgeStart, hokenMstKohi4.AgeEnd, 4, inputData.PtBirthday);
                 if (!checkMessageKohiNoFnc4.Result)
                 {
                     return checkMessageKohiNoFnc4;
                 }
                 var checkMessageKohiAll = IsvalidKohiAll(inputData.IsKohiEmptyModel1, inputData.IsKohiEmptyModel2, inputData.IsKohiEmptyModel3, inputData.IsKohiEmptyModel4,
-                                                         inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiMstDisplayText1, inputData.SelectedKohiMstStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1,
-                                                         inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiMstDisplayText2, inputData.SelectedKohiMstStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2,
-                                                         inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiMstDisplayText3, inputData.SelectedKohiMstStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3,
-                                                         inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiMstDisplayText4, inputData.SelectedKohiMstStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4);
+                                                         inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, hokenMstKohi1.DisplayTextMaster, hokenMstKohi1.StartDate, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1,
+                                                         inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, hokenMstKohi2.DisplayTextMaster, hokenMstKohi2.StartDate, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2,
+                                                         inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, hokenMstKohi3.DisplayTextMaster, hokenMstKohi3.StartDate, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3,
+                                                         inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, hokenMstKohi4.DisplayTextMaster, hokenMstKohi4.StartDate, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4);
                 if (!checkMessageKohiAll.Result)
                 {
                     return checkMessageKohiAll;
@@ -139,7 +165,7 @@ namespace Interactor.Insurance
                 }
             }
 
-            if (isHokenMstModel)
+            if (!isHokenMstModel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
@@ -523,7 +549,7 @@ namespace Interactor.Insurance
                 numberMessage = "４";
             }
 
-            if (!isKohiModel)
+            if (isKohiModel)
             {
                 if (numberKohi == 1)
                 {

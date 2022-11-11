@@ -22,20 +22,20 @@ public class RaiinFilterController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public ActionResult<Response<GetRaiinFilterMstListResponse>> GetList()
+    public async Task<ActionResult<Response<GetRaiinFilterMstListResponse>>> GetList()
     {
         var input = new GetRaiinFilterMstListInputData();
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetRaiinFilterMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList + "Mst")]
-    public ActionResult<Response<SaveRaiinFilterMstListResponse>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
+    public async Task<ActionResult<Response<SaveRaiinFilterMstListResponse>>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
     {
         var input = new SaveRaiinFilterMstListInputData(req.FilterMsts);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveRaiinFilterMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

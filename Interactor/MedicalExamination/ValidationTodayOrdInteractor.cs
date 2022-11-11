@@ -79,14 +79,18 @@ namespace Interactor.MedicalExamination
                 var allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
 
                 //Check in model
-                Parallel.ForEach(allOdrInfs, item =>
+                var obj = new object();
+                Parallel.For(0, allOdrInfs.Count, index =>
                 {
-                    var index = allOdrInfs.IndexOf(item);
+                    var item = allOdrInfs[index];
 
                     var modelValidation = item.Validation(0);
                     if (modelValidation.Value != OrdInfValidationStatus.Valid && !dicValidation.ContainsKey(index.ToString()))
                     {
-                        dicValidation.Add(index.ToString(), modelValidation);
+                        lock (obj)
+                        {
+                            dicValidation.Add(index.ToString(), modelValidation);
+                        }
                     }
                 });
 
@@ -131,9 +135,10 @@ namespace Interactor.MedicalExamination
 
             var tenMsts = _mstItemRepository.GetCheckTenItemModels(hpId, sinDate, itemCds);
             var ipnMinYakaMsts = _ordInfRepository.GetCheckIpnMinYakkaMsts(hpId, sinDate, ipnNameCds);
-            var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999);
+            var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999).Item1;
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
 
+            var obj = new object();
             Parallel.ForEach(inputDataList, item =>
             {
                 var ordInf = new OrdInfModel(
@@ -162,6 +167,7 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue
                     );
 
+                var objDetail = new object();
                 Parallel.ForEach(item.OdrDetails, itemDetail =>
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
@@ -226,10 +232,16 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0
                             );
-                    ordInf.OrdInfDetails.Add(ordInfDetail);
+                    lock (objDetail)
+                    {
+                        ordInf.OrdInfDetails.Add(ordInfDetail);
+                    }
                 });
+                lock (obj)
+                {
 
-                allOdrInfs.Add(ordInf);
+                    allOdrInfs.Add(ordInf);
+                }
             });
 
             return allOdrInfs;
@@ -245,44 +257,39 @@ namespace Interactor.MedicalExamination
             object obj = new();
             Parallel.For(0, inputDataList.Count, index =>
             {
-                lock (obj)
+                var item = inputDataList[index];
+
+                if (item.Id > 0)
                 {
-                    var item = inputDataList[index];
-
-                    if (item.Id > 0)
+                    var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                    if (!check)
                     {
-                        var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
-                        if (!check)
-                        {
-                            dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                            return;
-                        }
-                    }
-
-                    var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
-                    var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
-                    if (checkObjs.Count >= 2 && positionOrd == index)
-                    {
-                        dicValidation.Add(positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                        AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                         return;
                     }
+                }
 
-                    var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
-                    if (!checkHokenPid)
-                    {
-                        dicValidation.Add(index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-                        return;
-                    }
+                var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
+                var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                if (checkObjs.Count >= 2 && positionOrd == index)
+                {
+                    AddErrorStatus(obj, dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                    return;
+                }
 
-                    Parallel.ForEach(item.OdrDetails, itemOd =>
-                    {
-                        var indexOd = item.OdrDetails.IndexOf(itemOd);
+                var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
+                if (!checkHokenPid)
+                {
+                    AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
 
-                        if (item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo)
-                        {
-                            dicValidation.Add(index.ToString(), new(indexOd.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                        }
-                    });
+                    return;
+                }
+
+                var odrDetail = item.OdrDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo);
+                if (odrDetail != null)
+                {
+                    var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
+                    AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                 }
             });
         }
@@ -332,7 +339,7 @@ namespace Interactor.MedicalExamination
 
             if (inputDatas.HokenPid > 0)
             {
-                var checkHokenId = _insuranceInforRepository.CheckHokenPid(inputDatas.HokenPid);
+                var checkHokenId = _insuranceInforRepository.CheckExistHokenPid(inputDatas.HokenPid);
                 if (!checkHokenId)
                 {
                     raiinInfStatus = RaiinInfConst.RaiinInfTodayOdrValidationStatus.HokenPidNoExist;
@@ -383,7 +390,7 @@ namespace Interactor.MedicalExamination
             else
             {
                 var checkHpId = _hpInfRepository.CheckHpId(hpId);
-                var checkPtId = _patientInforRepository.CheckListId(new List<long> { ptId });
+                var checkPtId = _patientInforRepository.CheckExistListId(new List<long> { ptId });
                 var checkRaiinNo = _receptionRepository.CheckListNo(new List<long> { raiinNo });
 
                 if (!checkHpId)
@@ -401,6 +408,14 @@ namespace Interactor.MedicalExamination
             }
 
             return raiinInfStatus;
+        }
+
+        private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        {
+            lock (obj)
+            {
+                dicValidation.Add(key, status);
+            }
         }
     }
 }

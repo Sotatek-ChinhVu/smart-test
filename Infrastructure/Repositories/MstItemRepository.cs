@@ -213,7 +213,8 @@ namespace Infrastructure.Repositories
            .Replace("ｮ", "ﾖ")
            .Replace("ｯ", "ﾂ");
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
-                                t.ItemCd.StartsWith(convertHalfsizeKeyword)
+                                t.ItemCd.StartsWith(keyword)
+                                || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
@@ -912,7 +913,7 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-        public List<PostCodeMstModel> PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
         {
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
@@ -932,6 +933,8 @@ namespace Infrastructure.Repositories
                                                 || e.PrefName.Contains(address));
             }
 
+            var totalCount = entities.Count();
+
             var result = entities.OrderBy(x => x.PostCd)
                                   .ThenBy(x => x.PrefName)
                                   .ThenBy(x => x.CityName)
@@ -949,7 +952,8 @@ namespace Infrastructure.Repositories
                                       x.IsDeleted))
                                   .Skip(pageIndex - 1).Take(pageSize)
                                   .ToList();
-            return result;
+
+            return (totalCount, result);
         }
     }
 }

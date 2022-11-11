@@ -1,10 +1,15 @@
 ﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Presenters.InsuranceList;
 using EmrCloudApi.Tenant.Presenters.MedicalExamination;
+using EmrCloudApi.Tenant.Requests.Insurance;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Insurance.GetComboList;
+using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -21,7 +26,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Upsert)]
-        public ActionResult<Response<UpsertTodayOdrResponse>> Upsert([FromBody] UpsertTodayOdrRequest request)
+        public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
@@ -92,7 +97,7 @@ namespace EmrCloudApi.Tenant.Controllers
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText)
             );
-            var output = _bus.Handle(input);
+            var output = await Task.Run(()=> _bus.Handle(input));
 
             var presenter = new UpsertTodayOdrPresenter();
             presenter.Complete(output);
@@ -101,7 +106,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Validate)]
-        public ActionResult<Response<ValidationTodayOrdResponse>> Validate([FromBody] ValidationTodayOrdRequest request)
+        public async Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
@@ -181,12 +186,41 @@ namespace EmrCloudApi.Tenant.Controllers
                     request.Karte.RichText
                 )
                );
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new ValidationTodayOrdPresenter();
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidationTodayOrdResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetDefaultSelectPattern)]
+        public async Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
+        {
+            var input = new GetDefaultSelectPatternInputData(
+                            request.HpId,
+                            request.PtId,
+                            request.SinDate,
+                            request.HistoryPid,
+                            request.SelectedHokenPid);
+
+            var output = await Task.Run( () => _bus.Handle(input));
+
+            var presenter = new GetDefaultSelectPatternPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetDefaultSelectPatternResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetInsuranceComboList)]
+        public async Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
+        {
+            var input = new GetInsuranceComboListInputData(request.HpId, request.PtId, request.SinDate);
+            var output = await Task.Run(()=>_bus.Handle(input));
+            var presenter = new GetInsuranceComboListPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result);
         }
     }
 }

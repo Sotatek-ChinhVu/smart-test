@@ -53,6 +53,7 @@ public class ReceptionRowModel
         GrpIdToDynamicCell = grpIds.ToDictionary(
             grpId => grpId,
             grpId => dynamicCells.FirstOrDefault(c => c.GrpId == grpId, new DynamicCell(grpId)));
+        HokenPid = hokenPid;
     }
 
     public long PtId { get; private set; }
@@ -340,4 +341,6 @@ public class ReceptionRowModel
             return !(hokenStartDate <= SinDate && hokenEndDate >= SinDate);
         }
     }
+    public int HokenPid { get; private set; }
+
 }

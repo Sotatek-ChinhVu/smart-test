@@ -4,6 +4,6 @@
     {
         public int HpId { get; set; }
         public int SinDate { get; set; }
-        public int SetUsageKbn { get; set; }
+        public int KouiKbn { get; set; }
     }
 }

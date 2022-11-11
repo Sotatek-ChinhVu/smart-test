@@ -20,12 +20,12 @@ public class SystemConfRepository : ISystemConfRepository
             .Where(s => s.GrpCd >= fromGrpCd && s.GrpCd <= toGrpCd)
             .AsEnumerable().Select(s => ToModel(s)).ToList();
     }
-    public SystemConfModel GetByGrpCd(int hpId, int grpCd)
+    public SystemConfModel GetByGrpCd(int hpId, int grpCd, int grpEdaNo)
     {
-        var data =  _tenantDataContext.SystemConfs
-            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd);
+        var data = _tenantDataContext.SystemConfs
+            .FirstOrDefault(s => s.HpId == hpId && s.GrpCd == grpCd && s.GrpEdaNo == grpEdaNo);
         if (data == null) return new SystemConfModel();
-        return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data.Param, data.Biko ?? String.Empty);
+        return new SystemConfModel(data.GrpCd, data.GrpEdaNo, data.Val, data?.Param ?? string.Empty, data?.Biko ?? String.Empty);
     }
     public double GetSettingValue(int groupCd, int grpEdaNo, int hpId)
     {
@@ -50,6 +50,6 @@ public class SystemConfRepository : ISystemConfRepository
 
     private SystemConfModel ToModel(SystemConf s)
     {
-        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s.Param, s.Biko ?? string.Empty);
+        return new SystemConfModel(s.GrpCd, s.GrpEdaNo, s.Val, s?.Param ?? string.Empty, s?.Biko ?? string.Empty);
     }
 }

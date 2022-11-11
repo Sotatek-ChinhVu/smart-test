@@ -1407,6 +1407,32 @@ namespace Helper.Common
 
             return (PtID * 10 + digit);
         }
+        public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
+        {
+            //法別番号を求める
+            houbetuNo = "0";
+            hokensyaNoSearch = hokensyaNo;
+            switch (hokensyaNo?.Length)
+            {
+                case 8:
+                    houbetuNo = Copy(hokensyaNo, 1, 2);
+                    break;
+                case 6:
+                    houbetuNo = "100";
+                    break;
+                case 4:
+                    houbetuNo = "01";
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public static string DateTimeToTime(DateTime dateTime)
+        {
+            return dateTime.ToString("HHmmss");
+
+        }
 
         public static string TimeToShowTime(int TimeValue)
         {
@@ -1420,15 +1446,44 @@ namespace Helper.Common
             Result = Copy(WrkStr, 1, 2) + ":" + Copy(WrkStr, 3, 2);
             return Result;
         }
-    }
 
-    public enum WarekiFormat
-    {
-        Short,
-        Full,
-        Mix
-    }
+        public static int DayOfWeek(DateTime dateTime)
+        {
+            int result = 0;
+            switch (dateTime.DayOfWeek)
+            {
+                case System.DayOfWeek.Sunday:
+                    result = 1;
+                    break;
+                case System.DayOfWeek.Monday:
+                    result = 2;
+                    break;
+                case System.DayOfWeek.Tuesday:
+                    result = 3;
+                    break;
+                case System.DayOfWeek.Wednesday:
+                    result = 4;
+                    break;
+                case System.DayOfWeek.Thursday:
+                    result = 5;
+                    break;
+                case System.DayOfWeek.Friday:
+                    result = 6;
+                    break;
+                case System.DayOfWeek.Saturday:
+                    result = 7;
+                    break;
+            }
+            return result;
+        }
 
+        public enum WarekiFormat
+        {
+            Short,
+            Full,
+            Mix
+        }
+    }
     public struct WarekiYmd
     {
 #pragma warning disable S1104 // Fields should not have public accessibility

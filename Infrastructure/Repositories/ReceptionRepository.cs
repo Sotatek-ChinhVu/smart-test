@@ -1,11 +1,13 @@
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
@@ -114,7 +116,7 @@ namespace Infrastructure.Repositories
                     YoyakuTime = model.YoyakuTime,
                     YoyakuId = model.YoyakuId,
                     UketukeSbt = model.UketukeSbt,
-                    UketukeTime = model.UketukeTime,
+                    UketukeTime = CIUtil.DateTimeToTime(DateTime.UtcNow),
                     UketukeId = model.UketukeId,
                     UketukeNo = model.UketukeNo,
                     SinStartTime = model.SinStartTime,
@@ -378,9 +380,9 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId)
+        public List<ReceptionRowModel> GetList(int hpId, int sinDate, long raiinNo, long ptId, [Optional] bool isGetAccountDue)
         {
-            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId);
+            return GetReceptionRowModels(hpId, sinDate, raiinNo, ptId, isGetAccountDue);
         }
 
         public IEnumerable<ReceptionModel> GetList(int hpId, long ptId, int karteDeleteHistory)
@@ -424,10 +426,10 @@ namespace Infrastructure.Repositories
 
         public List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate)
         {
-            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p => 
-                                                                        p.HpId == hpId 
-                                                                        && p.PtId == ptId 
-                                                                        && p.IsDeleted == DeleteTypes.None 
+            var result = _tenantNoTrackingDataContext.RaiinInfs.Where(p =>
+                                                                        p.HpId == hpId
+                                                                        && p.PtId == ptId
+                                                                        && p.IsDeleted == DeleteTypes.None
                                                                         && p.SinDate < sinDate && p.Status >= RaiinState.TempSave);
                 return result.Select(r => new ReceptionModel(
                         r.HpId,
@@ -505,7 +507,7 @@ namespace Infrastructure.Repositories
             return check;
         }
 
-        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId)
+        private List<ReceptionRowModel> GetReceptionRowModels(int hpId, int sinDate, long raiinNo, long ptId, bool isGetAccountDue)
         {
             // 1. Prepare all the necessary collections for the join operation
             // Raiin (Reception)
@@ -532,7 +534,11 @@ namespace Infrastructure.Repositories
             var uketukeSbtMsts = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(x => x.IsDeleted == DeleteTypes.None);
 
             // 2. Filter collections by parameters
-            var filteredRaiinInfs = raiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            var filteredRaiinInfs = raiinInfs;
+            if (!isGetAccountDue)
+            {
+                filteredRaiinInfs = filteredRaiinInfs.Where(x => x.HpId == hpId && x.SinDate == sinDate);
+            }
             if (raiinNo != CommonConstants.InvalidId)
             {
                 filteredRaiinInfs = filteredRaiinInfs.Where(x => x.RaiinNo == raiinNo);

@@ -13,12 +13,15 @@ namespace UseCase.Insurance.ValidPatternExpirated
 
         public string Message { get; private set; }
 
+        public int TypeMessage { get; private set; }
+
         public ValidPatternExpiratedStatus Status { get; private set; }
 
-        public ValidPatternExpiratedOutputData(bool result, string message, ValidPatternExpiratedStatus status)
+        public ValidPatternExpiratedOutputData(bool result, string message, int typeMessage, ValidPatternExpiratedStatus status)
         {
             Result = result;
             Message = message;
+            TypeMessage = typeMessage;
             Status = status;
         }
     }
