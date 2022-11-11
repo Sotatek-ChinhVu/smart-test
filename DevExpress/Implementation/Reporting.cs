@@ -244,7 +244,7 @@ public class Reporting : IReporting
             hokenKigenW = warekiEndate.Ymd != null ? warekiEndate.Ymd : string.Empty;
             var warekiSyutokuDate = CIUtil.SDateToShowWDate3(hoken.HokenInf.SikakuDate);
             hokenSyutokuW = warekiSyutokuDate.Ymd != null ? warekiSyutokuDate.Ymd : string.Empty;
-            hokensyaName = hoken.HokenInf.HokensyaName+ hoken.HokenInf.HokensyaName+ hoken.HokenInf.HokensyaName;
+            hokensyaName = hoken.HokenInf.HokensyaName;
             hokensyaAddress = hoken.HokenInf.HokensyaAddress;
             zokugara = hoken.HokenInf.KeizokuKbn > 0 ? hoken.HokenInf.KeizokuKbn.ToString() : string.Empty;
             hokensyaTel = hoken.HokenInf.HokensyaTel;

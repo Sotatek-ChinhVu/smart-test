@@ -378,11 +378,11 @@
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel9.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(0.0001059638F, 130.6508F);
+            this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(7.064253E-05F, 130.6508F);
             this.xrLabel9.Multiline = true;
             this.xrLabel9.Name = "xrLabel9";
             this.xrLabel9.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel9.SizeF = new System.Drawing.SizeF(38.92341F, 278F);
+            this.xrLabel9.SizeF = new System.Drawing.SizeF(38.92341F, 283.5192F);
             this.xrLabel9.StylePriority.UseBorders = false;
             this.xrLabel9.StylePriority.UseFont = false;
             this.xrLabel9.StylePriority.UseTextAlignment = false;
@@ -923,7 +923,7 @@
             this.txt_Job.Multiline = true;
             this.txt_Job.Name = "txt_Job";
             this.txt_Job.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_Job.SizeF = new System.Drawing.SizeF(92.77024F, 54.00009F);
+            this.txt_Job.SizeF = new System.Drawing.SizeF(92.77024F, 59.51923F);
             this.txt_Job.StylePriority.UseBorders = false;
             this.txt_Job.StylePriority.UseFont = false;
             this.txt_Job.StylePriority.UseTextAlignment = false;
@@ -935,11 +935,11 @@
             this.xrLabel27.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel27.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(38.92336F, 354.6508F);
+            this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(38.92333F, 354.6508F);
             this.xrLabel27.Multiline = true;
             this.xrLabel27.Name = "xrLabel27";
             this.xrLabel27.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel27.SizeF = new System.Drawing.SizeF(85.82154F, 54.00009F);
+            this.xrLabel27.SizeF = new System.Drawing.SizeF(85.82155F, 59.51923F);
             this.xrLabel27.StylePriority.UseBorders = false;
             this.xrLabel27.StylePriority.UseFont = false;
             this.xrLabel27.StylePriority.UseTextAlignment = false;
@@ -954,7 +954,7 @@
             this.xrLabel36.Multiline = true;
             this.xrLabel36.Name = "xrLabel36";
             this.xrLabel36.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel36.SizeF = new System.Drawing.SizeF(56.91351F, 26.99997F);
+            this.xrLabel36.SizeF = new System.Drawing.SizeF(56.91351F, 32.51923F);
             this.xrLabel36.StylePriority.UseBorders = false;
             this.xrLabel36.StylePriority.UseFont = false;
             this.xrLabel36.StylePriority.UseTextAlignment = false;
@@ -971,7 +971,7 @@
             this.txt_HokensyaName.Multiline = true;
             this.txt_HokensyaName.Name = "txt_HokensyaName";
             this.txt_HokensyaName.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_HokensyaName.SizeF = new System.Drawing.SizeF(241.33F, 27F);
+            this.txt_HokensyaName.SizeF = new System.Drawing.SizeF(241.33F, 32.51923F);
             this.txt_HokensyaName.StylePriority.UseBorders = false;
             this.txt_HokensyaName.StylePriority.UseFont = false;
             this.txt_HokensyaName.StylePriority.UseTextAlignment = false;
@@ -1049,7 +1049,7 @@
             this.xrLabel37.Multiline = true;
             this.xrLabel37.Name = "xrLabel37";
             this.xrLabel37.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel37.SizeF = new System.Drawing.SizeF(47.0455F, 81.00003F);
+            this.xrLabel37.SizeF = new System.Drawing.SizeF(47.0455F, 86.51923F);
             this.xrLabel37.StylePriority.UseBorders = false;
             this.xrLabel37.StylePriority.UseFont = false;
             this.xrLabel37.StylePriority.UseTextAlignment = false;
@@ -1065,7 +1065,7 @@
             this.xrLabel29.Multiline = true;
             this.xrLabel29.Name = "xrLabel29";
             this.xrLabel29.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel29.SizeF = new System.Drawing.SizeF(95.35074F, 54.00003F);
+            this.xrLabel29.SizeF = new System.Drawing.SizeF(95.35074F, 59.51923F);
             this.xrLabel29.StylePriority.UseBorders = false;
             this.xrLabel29.StylePriority.UseFont = false;
             this.xrLabel29.StylePriority.UseTextAlignment = false;
@@ -1078,11 +1078,11 @@
             this.xrLabel30.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Zokugara]")});
             this.xrLabel30.Font = new System.Drawing.Font("Yu Gothic UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel30.LocationFloat = new DevExpress.Utils.PointFloat(312.8656F, 354.6508F);
+            this.xrLabel30.LocationFloat = new DevExpress.Utils.PointFloat(312.8655F, 354.6508F);
             this.xrLabel30.Multiline = true;
             this.xrLabel30.Name = "xrLabel30";
             this.xrLabel30.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel30.SizeF = new System.Drawing.SizeF(89.84558F, 54.00003F);
+            this.xrLabel30.SizeF = new System.Drawing.SizeF(89.84558F, 59.51923F);
             this.xrLabel30.StylePriority.UseBorders = false;
             this.xrLabel30.StylePriority.UseFont = false;
             this.xrLabel30.StylePriority.UseTextAlignment = false;
@@ -2117,7 +2117,7 @@
             this.xrLabel37,
             this.xrLabel29,
             this.xrLabel3});
-            this.ReportHeader.HeightF = 414.17F;
+            this.ReportHeader.HeightF = 420.5867F;
             this.ReportHeader.Name = "ReportHeader";
             this.ReportHeader.StylePriority.UseBorders = false;
             // 
