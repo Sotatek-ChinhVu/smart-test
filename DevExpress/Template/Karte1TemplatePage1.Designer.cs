@@ -185,10 +185,12 @@
             this.xrControlStyle1 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.xrControlStyle2 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.objectDataSource2 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
+            this.objectDataSource3 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // TopMargin
@@ -1144,7 +1146,7 @@
             this.xrLabel47.StylePriority.UseBorders = false;
             this.xrLabel47.StylePriority.UseFont = false;
             this.xrLabel47.StylePriority.UseTextAlignment = false;
-            this.xrLabel47.Text = "自   年   月   日";
+            this.xrLabel47.Text = "自     年     月     日";
             this.xrLabel47.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel47.TextFormatString = "{0:###}";
             this.xrLabel47.WordWrap = false;
@@ -1162,7 +1164,7 @@
             this.xrLabel48.StylePriority.UseBorders = false;
             this.xrLabel48.StylePriority.UseFont = false;
             this.xrLabel48.StylePriority.UseTextAlignment = false;
-            this.xrLabel48.Text = "至   年   月   日";
+            this.xrLabel48.Text = "自     年     月     日";
             this.xrLabel48.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel48.TextFormatString = "{0:###}";
             this.xrLabel48.WordWrap = false;
@@ -1180,7 +1182,7 @@
             this.xrLabel49.StylePriority.UseBorders = false;
             this.xrLabel49.StylePriority.UseFont = false;
             this.xrLabel49.StylePriority.UseTextAlignment = false;
-            this.xrLabel49.Text = "自   年   月   日";
+            this.xrLabel49.Text = "自     年     月     日";
             this.xrLabel49.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel49.TextFormatString = "{0:###}";
             this.xrLabel49.WordWrap = false;
@@ -1198,7 +1200,7 @@
             this.xrLabel53.StylePriority.UseBorders = false;
             this.xrLabel53.StylePriority.UseFont = false;
             this.xrLabel53.StylePriority.UseTextAlignment = false;
-            this.xrLabel53.Text = "至   年   月   日";
+            this.xrLabel53.Text = "自     年     月     日";
             this.xrLabel53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel53.TextFormatString = "{0:###}";
             this.xrLabel53.WordWrap = false;
@@ -1216,7 +1218,7 @@
             this.xrLabel42.StylePriority.UseBorders = false;
             this.xrLabel42.StylePriority.UseFont = false;
             this.xrLabel42.StylePriority.UseTextAlignment = false;
-            this.xrLabel42.Text = "自   年   月   日";
+            this.xrLabel42.Text = "自     年     月     日";
             this.xrLabel42.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel42.TextFormatString = "{0:###}";
             this.xrLabel42.WordWrap = false;
@@ -1234,7 +1236,7 @@
             this.xrLabel43.StylePriority.UseBorders = false;
             this.xrLabel43.StylePriority.UseFont = false;
             this.xrLabel43.StylePriority.UseTextAlignment = false;
-            this.xrLabel43.Text = "至   年   月   日";
+            this.xrLabel43.Text = "自     年     月     日";
             this.xrLabel43.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel43.TextFormatString = "{0:###}";
             this.xrLabel43.WordWrap = false;
@@ -1252,7 +1254,7 @@
             this.xrLabel41.StylePriority.UseBorders = false;
             this.xrLabel41.StylePriority.UseFont = false;
             this.xrLabel41.StylePriority.UseTextAlignment = false;
-            this.xrLabel41.Text = "至   年   月   日";
+            this.xrLabel41.Text = "自     年     月     日";
             this.xrLabel41.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel41.TextFormatString = "{0:###}";
             this.xrLabel41.WordWrap = false;
@@ -1283,7 +1285,7 @@
             this.xrLabel99.Multiline = true;
             this.xrLabel99.Name = "xrLabel99";
             this.xrLabel99.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel99.SizeF = new System.Drawing.SizeF(23.77893F, 28.89201F);
+            this.xrLabel99.SizeF = new System.Drawing.SizeF(23.77893F, 33.99988F);
             this.xrLabel99.StylePriority.UseBorders = false;
             this.xrLabel99.StylePriority.UseFont = false;
             this.xrLabel99.StylePriority.UseTextAlignment = false;
@@ -1296,11 +1298,11 @@
             this.xrLabel100.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_3]")});
             this.xrLabel100.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel100.LocationFloat = new DevExpress.Utils.PointFloat(52.26294F, 0F);
+            this.xrLabel100.LocationFloat = new DevExpress.Utils.PointFloat(52.26294F, 1.525879E-05F);
             this.xrLabel100.Multiline = true;
             this.xrLabel100.Name = "xrLabel100";
             this.xrLabel100.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel100.SizeF = new System.Drawing.SizeF(26.13123F, 28.892F);
+            this.xrLabel100.SizeF = new System.Drawing.SizeF(26.13123F, 33.99986F);
             this.xrLabel100.StylePriority.UseBorderDashStyle = false;
             this.xrLabel100.StylePriority.UseBorders = false;
             this.xrLabel100.StylePriority.UseFont = false;
@@ -1314,11 +1316,11 @@
             this.xrLabel101.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_5]")});
             this.xrLabel101.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel101.LocationFloat = new DevExpress.Utils.PointFloat(104.5255F, 0F);
+            this.xrLabel101.LocationFloat = new DevExpress.Utils.PointFloat(104.5255F, 1.525879E-05F);
             this.xrLabel101.Multiline = true;
             this.xrLabel101.Name = "xrLabel101";
             this.xrLabel101.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel101.SizeF = new System.Drawing.SizeF(26.13123F, 28.89195F);
+            this.xrLabel101.SizeF = new System.Drawing.SizeF(26.13123F, 33.99983F);
             this.xrLabel101.StylePriority.UseBorderDashStyle = false;
             this.xrLabel101.StylePriority.UseBorders = false;
             this.xrLabel101.StylePriority.UseFont = false;
@@ -1332,11 +1334,11 @@
             this.xrLabel102.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_6]")});
             this.xrLabel102.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel102.LocationFloat = new DevExpress.Utils.PointFloat(130.6568F, 0F);
+            this.xrLabel102.LocationFloat = new DevExpress.Utils.PointFloat(130.6568F, 1.525879E-05F);
             this.xrLabel102.Multiline = true;
             this.xrLabel102.Name = "xrLabel102";
             this.xrLabel102.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel102.SizeF = new System.Drawing.SizeF(26.13129F, 28.892F);
+            this.xrLabel102.SizeF = new System.Drawing.SizeF(26.13129F, 33.99986F);
             this.xrLabel102.StylePriority.UseBorderDashStyle = false;
             this.xrLabel102.StylePriority.UseBorders = false;
             this.xrLabel102.StylePriority.UseFont = false;
@@ -1350,11 +1352,11 @@
             this.xrLabel103.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_4]")});
             this.xrLabel103.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel103.LocationFloat = new DevExpress.Utils.PointFloat(78.39423F, 0F);
+            this.xrLabel103.LocationFloat = new DevExpress.Utils.PointFloat(78.39423F, 1.525879E-05F);
             this.xrLabel103.Multiline = true;
             this.xrLabel103.Name = "xrLabel103";
             this.xrLabel103.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel103.SizeF = new System.Drawing.SizeF(26.13123F, 28.89195F);
+            this.xrLabel103.SizeF = new System.Drawing.SizeF(26.13129F, 33.99983F);
             this.xrLabel103.StylePriority.UseBorderDashStyle = false;
             this.xrLabel103.StylePriority.UseBorders = false;
             this.xrLabel103.StylePriority.UseFont = false;
@@ -1368,11 +1370,11 @@
             this.xrLabel104.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_2]")});
             this.xrLabel104.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel104.LocationFloat = new DevExpress.Utils.PointFloat(26.13171F, 0F);
+            this.xrLabel104.LocationFloat = new DevExpress.Utils.PointFloat(26.13165F, 1.525879E-05F);
             this.xrLabel104.Multiline = true;
             this.xrLabel104.Name = "xrLabel104";
             this.xrLabel104.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel104.SizeF = new System.Drawing.SizeF(26.13123F, 28.89195F);
+            this.xrLabel104.SizeF = new System.Drawing.SizeF(26.13123F, 33.99983F);
             this.xrLabel104.StylePriority.UseBorderDashStyle = false;
             this.xrLabel104.StylePriority.UseBorders = false;
             this.xrLabel104.StylePriority.UseFont = false;
@@ -1386,11 +1388,11 @@
             this.xrLabel105.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[JyukyusyaNo_K2_1]")});
             this.xrLabel105.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel105.LocationFloat = new DevExpress.Utils.PointFloat(0.0004272461F, 0F);
+            this.xrLabel105.LocationFloat = new DevExpress.Utils.PointFloat(0.0004272461F, 1.525879E-05F);
             this.xrLabel105.Multiline = true;
             this.xrLabel105.Name = "xrLabel105";
             this.xrLabel105.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel105.SizeF = new System.Drawing.SizeF(26.13123F, 28.892F);
+            this.xrLabel105.SizeF = new System.Drawing.SizeF(26.13116F, 33.99986F);
             this.xrLabel105.StylePriority.UseBorderDashStyle = false;
             this.xrLabel105.StylePriority.UseBorders = false;
             this.xrLabel105.StylePriority.UseFont = false;
@@ -1421,11 +1423,11 @@
             this.xrLabel65.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_8]")});
             this.xrLabel65.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel65.LocationFloat = new DevExpress.Utils.PointFloat(182.919F, 1.000008F);
+            this.xrLabel65.LocationFloat = new DevExpress.Utils.PointFloat(182.919F, 2.288818E-05F);
             this.xrLabel65.Multiline = true;
             this.xrLabel65.Name = "xrLabel65";
             this.xrLabel65.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel65.SizeF = new System.Drawing.SizeF(23.0191F, 28.99967F);
+            this.xrLabel65.SizeF = new System.Drawing.SizeF(26.13031F, 31.99966F);
             this.xrLabel65.StylePriority.UseBorders = false;
             this.xrLabel65.StylePriority.UseFont = false;
             this.xrLabel65.StylePriority.UseTextAlignment = false;
@@ -1437,11 +1439,11 @@
             this.xrLabel68.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_7]")});
             this.xrLabel68.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel68.LocationFloat = new DevExpress.Utils.PointFloat(156.788F, 1.000008F);
+            this.xrLabel68.LocationFloat = new DevExpress.Utils.PointFloat(156.7879F, 2.288818E-05F);
             this.xrLabel68.Multiline = true;
             this.xrLabel68.Name = "xrLabel68";
             this.xrLabel68.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel68.SizeF = new System.Drawing.SizeF(26.13116F, 29.00001F);
+            this.xrLabel68.SizeF = new System.Drawing.SizeF(26.13116F, 32.00002F);
             this.xrLabel68.StylePriority.UseBorders = false;
             this.xrLabel68.StylePriority.UseFont = false;
             this.xrLabel68.StylePriority.UseTextAlignment = false;
@@ -1454,11 +1456,11 @@
             this.xrLabel93.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_3]")});
             this.xrLabel93.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel93.LocationFloat = new DevExpress.Utils.PointFloat(52.263F, 1.000008F);
+            this.xrLabel93.LocationFloat = new DevExpress.Utils.PointFloat(52.263F, 2.288818E-05F);
             this.xrLabel93.Multiline = true;
             this.xrLabel93.Name = "xrLabel93";
             this.xrLabel93.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel93.SizeF = new System.Drawing.SizeF(26.13116F, 29.00001F);
+            this.xrLabel93.SizeF = new System.Drawing.SizeF(26.1311F, 32.00002F);
             this.xrLabel93.StylePriority.UseBorderDashStyle = false;
             this.xrLabel93.StylePriority.UseBorders = false;
             this.xrLabel93.StylePriority.UseFont = false;
@@ -1472,11 +1474,11 @@
             this.xrLabel94.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_5]")});
             this.xrLabel94.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel94.LocationFloat = new DevExpress.Utils.PointFloat(104.5256F, 1.000008F);
+            this.xrLabel94.LocationFloat = new DevExpress.Utils.PointFloat(104.5256F, 2.288818E-05F);
             this.xrLabel94.Multiline = true;
             this.xrLabel94.Name = "xrLabel94";
             this.xrLabel94.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel94.SizeF = new System.Drawing.SizeF(26.13116F, 29.00001F);
+            this.xrLabel94.SizeF = new System.Drawing.SizeF(26.1311F, 32.00002F);
             this.xrLabel94.StylePriority.UseBorderDashStyle = false;
             this.xrLabel94.StylePriority.UseBorders = false;
             this.xrLabel94.StylePriority.UseFont = false;
@@ -1490,11 +1492,11 @@
             this.xrLabel95.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_6]")});
             this.xrLabel95.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel95.LocationFloat = new DevExpress.Utils.PointFloat(130.6569F, 1.000008F);
+            this.xrLabel95.LocationFloat = new DevExpress.Utils.PointFloat(130.6569F, 2.288818E-05F);
             this.xrLabel95.Multiline = true;
             this.xrLabel95.Name = "xrLabel95";
             this.xrLabel95.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel95.SizeF = new System.Drawing.SizeF(26.13116F, 29.00001F);
+            this.xrLabel95.SizeF = new System.Drawing.SizeF(26.1311F, 32.00002F);
             this.xrLabel95.StylePriority.UseBorderDashStyle = false;
             this.xrLabel95.StylePriority.UseBorders = false;
             this.xrLabel95.StylePriority.UseFont = false;
@@ -1507,11 +1509,11 @@
             this.xrLabel96.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_4]")});
             this.xrLabel96.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel96.LocationFloat = new DevExpress.Utils.PointFloat(78.39423F, 1.000008F);
+            this.xrLabel96.LocationFloat = new DevExpress.Utils.PointFloat(78.39423F, 2.288818E-05F);
             this.xrLabel96.Multiline = true;
             this.xrLabel96.Name = "xrLabel96";
             this.xrLabel96.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel96.SizeF = new System.Drawing.SizeF(26.13129F, 29.00001F);
+            this.xrLabel96.SizeF = new System.Drawing.SizeF(26.13123F, 32.00002F);
             this.xrLabel96.StylePriority.UseBorders = false;
             this.xrLabel96.StylePriority.UseFont = false;
             this.xrLabel96.StylePriority.UseTextAlignment = false;
@@ -1523,11 +1525,11 @@
             this.xrLabel97.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_2]")});
             this.xrLabel97.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel97.LocationFloat = new DevExpress.Utils.PointFloat(26.13184F, 1.000008F);
+            this.xrLabel97.LocationFloat = new DevExpress.Utils.PointFloat(26.13177F, 2.288818E-05F);
             this.xrLabel97.Multiline = true;
             this.xrLabel97.Name = "xrLabel97";
             this.xrLabel97.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel97.SizeF = new System.Drawing.SizeF(26.13116F, 29.00001F);
+            this.xrLabel97.SizeF = new System.Drawing.SizeF(26.13123F, 32.00002F);
             this.xrLabel97.StylePriority.UseBorders = false;
             this.xrLabel97.StylePriority.UseFont = false;
             this.xrLabel97.StylePriority.UseTextAlignment = false;
@@ -1540,11 +1542,11 @@
             this.xrLabel98.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2_1]")});
             this.xrLabel98.Font = new System.Drawing.Font("Yu Gothic UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel98.LocationFloat = new DevExpress.Utils.PointFloat(0.0004882813F, 1.000008F);
+            this.xrLabel98.LocationFloat = new DevExpress.Utils.PointFloat(0.0004272461F, 2.288818E-05F);
             this.xrLabel98.Multiline = true;
             this.xrLabel98.Name = "xrLabel98";
             this.xrLabel98.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel98.SizeF = new System.Drawing.SizeF(26.13129F, 29.00001F);
+            this.xrLabel98.SizeF = new System.Drawing.SizeF(26.13135F, 32.00002F);
             this.xrLabel98.StylePriority.UseBorderDashStyle = false;
             this.xrLabel98.StylePriority.UseBorders = false;
             this.xrLabel98.StylePriority.UseFont = false;
@@ -1658,7 +1660,7 @@
             this.xrLabel40.StylePriority.UseBorders = false;
             this.xrLabel40.StylePriority.UseFont = false;
             this.xrLabel40.StylePriority.UseTextAlignment = false;
-            this.xrLabel40.Text = "自   年   月   日";
+            this.xrLabel40.Text = "自     年     月     日";
             this.xrLabel40.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel40.TextFormatString = "{0:###}";
             this.xrLabel40.WordWrap = false;
@@ -2041,7 +2043,7 @@
             this.xrTableCell7.StylePriority.UseBorders = false;
             this.xrTableCell7.StylePriority.UseFont = false;
             this.xrTableCell7.StylePriority.UseTextAlignment = false;
-            this.xrTableCell7.Text = "年 月 日";
+            this.xrTableCell7.Text = "    年    月    日";
             this.xrTableCell7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrTableCell7.TextFormatString = "{0:###}";
             this.xrTableCell7.Weight = 1.2701832202940075D;
@@ -2049,7 +2051,7 @@
             // 
             // objectDataSource1
             // 
-            this.objectDataSource1.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource1.DataSourceType = null;
             this.objectDataSource1.Name = "objectDataSource1";
             // 
             // ReportHeader
@@ -2663,8 +2665,13 @@
             // 
             // objectDataSource2
             // 
-            this.objectDataSource2.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource2.DataSourceType = null;
             this.objectDataSource2.Name = "objectDataSource2";
+            // 
+            // objectDataSource3
+            // 
+            this.objectDataSource3.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
+            this.objectDataSource3.Name = "objectDataSource3";
             // 
             // Karte1TemplatePage1
             // 
@@ -2676,9 +2683,10 @@
             this.PageHeader});
             this.ComponentStorage.AddRange(new System.ComponentModel.IComponent[] {
             this.objectDataSource1,
-            this.objectDataSource2});
+            this.objectDataSource2,
+            this.objectDataSource3});
             this.DataMember = "ListByomeiModelsPage1";
-            this.DataSource = this.objectDataSource1;
+            this.DataSource = this.objectDataSource3;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
             this.Margins = new System.Drawing.Printing.Margins(51, 51, 2, 195);
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
@@ -2689,6 +2697,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -2851,5 +2860,6 @@
         private XtraReports.UI.XRLabel xrLabel53;
         private XtraReports.UI.XRLabel xrLabel33;
         private XtraReports.UI.XRLabel xrLabel28;
+        private DataAccess.ObjectBinding.ObjectDataSource objectDataSource3;
     }
 }

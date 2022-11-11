@@ -9,6 +9,7 @@ using Domain.Models.PatientInfor;
 using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
+using System.Text;
 
 namespace DevExpress.Implementation;
 
@@ -95,7 +96,26 @@ public class Reporting : IReporting
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei;
+                string byomeiDisplay = string.Empty;
+                StringBuilder prefixList = new();
+                StringBuilder suffixList = new();
+
+                if (byomei.PrefixSuffixList.Any())
+                {
+                    foreach (var item in byomei.PrefixSuffixList)
+                    {
+                        if (item.Code.StartsWith("8"))
+                        {
+                            suffixList.Append(item.Name);
+                        }
+                        else
+                        {
+                            prefixList.Append(item.Name);
+                        }
+                    }
+                }
+                byomeiDisplay = prefixList + byomei.Byomei + suffixList;
+
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
@@ -224,7 +244,7 @@ public class Reporting : IReporting
             hokenKigenW = warekiEndate.Ymd != null ? warekiEndate.Ymd : string.Empty;
             var warekiSyutokuDate = CIUtil.SDateToShowWDate3(hoken.HokenInf.SikakuDate);
             hokenSyutokuW = warekiSyutokuDate.Ymd != null ? warekiSyutokuDate.Ymd : string.Empty;
-            hokensyaName = hoken.HokenInf.HokensyaName;
+            hokensyaName = hoken.HokenInf.HokensyaName+ hoken.HokenInf.HokensyaName+ hoken.HokenInf.HokensyaName;
             hokensyaAddress = hoken.HokenInf.HokensyaAddress;
             zokugara = hoken.HokenInf.KeizokuKbn > 0 ? hoken.HokenInf.KeizokuKbn.ToString() : string.Empty;
             hokensyaTel = hoken.HokenInf.HokensyaTel;
