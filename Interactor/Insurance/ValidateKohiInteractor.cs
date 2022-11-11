@@ -145,7 +145,7 @@ namespace Interactor.Insurance
                 numberMessage = "４";
             }
 
-            if (isKohiModdel)
+            if (!isKohiModdel)
             {
                 if (numberKohi == 1)
                 {
@@ -165,7 +165,7 @@ namespace Interactor.Insurance
                 }
             }
 
-            if (!isHokenMstModel)
+            if (!isHokenMstModel && !isKohiModdel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
@@ -549,7 +549,7 @@ namespace Interactor.Insurance
                 numberMessage = "４";
             }
 
-            if (isKohiModel)
+            if (!isKohiModel)
             {
                 if (numberKohi == 1)
                 {
@@ -571,7 +571,7 @@ namespace Interactor.Insurance
 
             //公費１保険番号
             //公費１負担者番号入力なし
-            if (!isKohiMstModel)
+            if (!isKohiMstModel && !isKohiModel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
