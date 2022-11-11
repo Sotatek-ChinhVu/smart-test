@@ -75,6 +75,7 @@ public class KarteExport : IKarteExport
             // Export the report.
             report.ExportToPdf(pdfExportFile, pdfExportOptions);
             MemoryStream stream = new MemoryStream();
+            //report.ExportToPdf(stream, pdfExportOptions);
             return stream;
         }
         catch (Exception)
