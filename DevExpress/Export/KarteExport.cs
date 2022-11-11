@@ -1,10 +1,10 @@
 ﻿using DevExpress.DataAccess.ObjectBinding;
-using DevExpress.Models.Karte1;
 using DevExpress.Inteface;
-using DevExpress.Template;
-using DevExpress.XtraPrinting;
+using DevExpress.Models.Karte1;
 using DevExpress.Models.Karte2;
+using DevExpress.Template;
 using DevExpress.Template.Karte2;
+using DevExpress.XtraPrinting;
 
 namespace DevExpress.Export;
 
@@ -65,10 +65,16 @@ public class KarteExport : IKarteExport
             {
                 PdfACompatibility = PdfACompatibility.PdfA1b
             };
+            // Specify the path for the exported PDF file.  
+            string pdfExportFile =
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) +
+                @"\Downloads\" +
+                "demo_file" +
+                ".pdf";
 
             // Export the report.
-            MemoryStream stream = new();
-            report.ExportToPdf(stream, pdfExportOptions);
+            report.ExportToPdf(pdfExportFile, pdfExportOptions);
+            MemoryStream stream = new MemoryStream();
             return stream;
         }
         catch (Exception)
