@@ -1135,7 +1135,7 @@
             // 
             // xrLabel47
             // 
-            this.xrLabel47.Borders = DevExpress.XtraPrinting.BorderSide.Right;
+            this.xrLabel47.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel47.CanGrow = false;
             this.xrLabel47.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel47.LocationFloat = new DevExpress.Utils.PointFloat(546.8204F, 52.40223F);
@@ -1146,14 +1146,14 @@
             this.xrLabel47.StylePriority.UseBorders = false;
             this.xrLabel47.StylePriority.UseFont = false;
             this.xrLabel47.StylePriority.UseTextAlignment = false;
-            this.xrLabel47.Text = "自     年     月     日";
+            this.xrLabel47.Text = "      自      年      月      日";
             this.xrLabel47.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel47.TextFormatString = "{0:###}";
             this.xrLabel47.WordWrap = false;
             // 
             // xrLabel48
             // 
-            this.xrLabel48.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel48.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrLabel48.CanGrow = false;
             this.xrLabel48.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel48.LocationFloat = new DevExpress.Utils.PointFloat(546.8204F, 67.42344F);
@@ -1164,14 +1164,14 @@
             this.xrLabel48.StylePriority.UseBorders = false;
             this.xrLabel48.StylePriority.UseFont = false;
             this.xrLabel48.StylePriority.UseTextAlignment = false;
-            this.xrLabel48.Text = "自     年     月     日";
+            this.xrLabel48.Text = "      至      年      月      日";
             this.xrLabel48.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel48.TextFormatString = "{0:###}";
             this.xrLabel48.WordWrap = false;
             // 
             // xrLabel49
             // 
-            this.xrLabel49.Borders = DevExpress.XtraPrinting.BorderSide.Right;
+            this.xrLabel49.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel49.CanGrow = false;
             this.xrLabel49.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel49.LocationFloat = new DevExpress.Utils.PointFloat(546.8205F, 82.77209F);
@@ -1182,14 +1182,14 @@
             this.xrLabel49.StylePriority.UseBorders = false;
             this.xrLabel49.StylePriority.UseFont = false;
             this.xrLabel49.StylePriority.UseTextAlignment = false;
-            this.xrLabel49.Text = "自     年     月     日";
+            this.xrLabel49.Text = "      自      年      月      日";
             this.xrLabel49.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel49.TextFormatString = "{0:###}";
             this.xrLabel49.WordWrap = false;
             // 
             // xrLabel53
             // 
-            this.xrLabel53.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel53.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrLabel53.CanGrow = false;
             this.xrLabel53.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel53.LocationFloat = new DevExpress.Utils.PointFloat(546.8205F, 97.79324F);
@@ -1200,14 +1200,14 @@
             this.xrLabel53.StylePriority.UseBorders = false;
             this.xrLabel53.StylePriority.UseFont = false;
             this.xrLabel53.StylePriority.UseTextAlignment = false;
-            this.xrLabel53.Text = "自     年     月     日";
+            this.xrLabel53.Text = "      至      年      月      日";
             this.xrLabel53.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel53.TextFormatString = "{0:###}";
             this.xrLabel53.WordWrap = false;
             // 
             // xrLabel42
             // 
-            this.xrLabel42.Borders = DevExpress.XtraPrinting.BorderSide.Right;
+            this.xrLabel42.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel42.CanGrow = false;
             this.xrLabel42.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel42.LocationFloat = new DevExpress.Utils.PointFloat(217.5152F, 82.77173F);
@@ -1218,14 +1218,14 @@
             this.xrLabel42.StylePriority.UseBorders = false;
             this.xrLabel42.StylePriority.UseFont = false;
             this.xrLabel42.StylePriority.UseTextAlignment = false;
-            this.xrLabel42.Text = "自     年     月     日";
+            this.xrLabel42.Text = "    自     年     月     日";
             this.xrLabel42.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel42.TextFormatString = "{0:###}";
             this.xrLabel42.WordWrap = false;
             // 
             // xrLabel43
             // 
-            this.xrLabel43.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel43.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrLabel43.CanGrow = false;
             this.xrLabel43.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel43.LocationFloat = new DevExpress.Utils.PointFloat(217.5152F, 97.79289F);
@@ -1236,14 +1236,14 @@
             this.xrLabel43.StylePriority.UseBorders = false;
             this.xrLabel43.StylePriority.UseFont = false;
             this.xrLabel43.StylePriority.UseTextAlignment = false;
-            this.xrLabel43.Text = "自     年     月     日";
+            this.xrLabel43.Text = "    至     年     月     日";
             this.xrLabel43.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel43.TextFormatString = "{0:###}";
             this.xrLabel43.WordWrap = false;
             // 
             // xrLabel41
             // 
-            this.xrLabel41.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrLabel41.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.xrLabel41.CanGrow = false;
             this.xrLabel41.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel41.LocationFloat = new DevExpress.Utils.PointFloat(217.515F, 67.4231F);
@@ -1254,7 +1254,7 @@
             this.xrLabel41.StylePriority.UseBorders = false;
             this.xrLabel41.StylePriority.UseFont = false;
             this.xrLabel41.StylePriority.UseTextAlignment = false;
-            this.xrLabel41.Text = "自     年     月     日";
+            this.xrLabel41.Text = "    至     年     月     日";
             this.xrLabel41.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel41.TextFormatString = "{0:###}";
             this.xrLabel41.WordWrap = false;
@@ -1649,7 +1649,7 @@
             // 
             // xrLabel40
             // 
-            this.xrLabel40.Borders = DevExpress.XtraPrinting.BorderSide.Right;
+            this.xrLabel40.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.xrLabel40.CanGrow = false;
             this.xrLabel40.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel40.LocationFloat = new DevExpress.Utils.PointFloat(217.515F, 52.40192F);
@@ -1660,7 +1660,7 @@
             this.xrLabel40.StylePriority.UseBorders = false;
             this.xrLabel40.StylePriority.UseFont = false;
             this.xrLabel40.StylePriority.UseTextAlignment = false;
-            this.xrLabel40.Text = "自     年     月     日";
+            this.xrLabel40.Text = "    自     年     月     日";
             this.xrLabel40.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel40.TextFormatString = "{0:###}";
             this.xrLabel40.WordWrap = false;
@@ -1694,7 +1694,7 @@
             this.xrLabel45.StylePriority.UseBorders = false;
             this.xrLabel45.StylePriority.UseFont = false;
             this.xrLabel45.StylePriority.UseTextAlignment = false;
-            this.xrLabel45.Text = "年 月 日";
+            this.xrLabel45.Text = "       年       月       日";
             this.xrLabel45.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel45.TextFormatString = "{0:###}";
             this.xrLabel45.WordWrap = false;
@@ -1711,7 +1711,7 @@
             this.xrLabel51.StylePriority.UseBorders = false;
             this.xrLabel51.StylePriority.UseFont = false;
             this.xrLabel51.StylePriority.UseTextAlignment = false;
-            this.xrLabel51.Text = "年 月 日";
+            this.xrLabel51.Text = "       年       月       日";
             this.xrLabel51.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             this.xrLabel51.TextFormatString = "{0:###}";
             this.xrLabel51.WordWrap = false;
