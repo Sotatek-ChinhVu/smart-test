@@ -2,7 +2,7 @@
 {
     public class SetOrderInfDetailItem
     {
-        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int inoutKbn, int commentNewline)
+        public SetOrderInfDetailItem(int hpId, int setCd, long rpNo, long rpEdaNo, int rowNo, int sinKouiKbn, string itemCd, string itemName, string displayItemName, double suryo, string unitName, int unitSBT, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd)
         {
             HpId = hpId;
             SetCd = setCd;
@@ -31,8 +31,17 @@
             CmtName = cmtName;
             CmtOpt = cmtOpt;
             FontColor = fontColor;
-            InoutKbn = inoutKbn;
             CommentNewline = commentNewline;
+            MasterSbt = masterSbt;
+            InOutKbn = inOutKbn;
+            Yakka = yakka;
+            IsGetPriceInYakka = isGetPriceInYakka;
+            Ten = ten;
+            BunkatuKoui = bunkatuKoui;
+            KensaGaichu = kensaGaichu;
+            OdrTermVal = odrTermVal;
+            CnvTermVal = cnvTermVal;
+            YjCd = yjCd;
         }
 
         public int HpId { get; private set; }
@@ -89,8 +98,26 @@
 
         public string FontColor { get; private set; }
 
-        public int InoutKbn { get; private set; }
+        public int CommentNewline { get; private set;}
 
-        public int CommentNewline { get; private set; }
+        public string MasterSbt { get; private set; }
+
+        public int InOutKbn { get; private set; }
+
+        public double Yakka { get; private set; }
+
+        public bool IsGetPriceInYakka { get; private set; }
+
+        public double Ten { get; private set; }
+
+        public int BunkatuKoui { get; private set; }
+
+        public int KensaGaichu { get; private set; }
+
+        public double OdrTermVal { get; private set; }
+
+        public double CnvTermVal { get; private set; }
+
+        public string YjCd { get; private set; } = string.Empty;
     }
 }

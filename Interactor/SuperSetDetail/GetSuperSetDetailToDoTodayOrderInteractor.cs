@@ -24,8 +24,12 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSetCd);
             }
+            else if (inputData.SetCd <= 0)
+            {
+                return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.InvalidSinDate);
+            }
 
-            var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.SetCd);
+            var result = _superSetDetailRepository.GetSuperSetDetailForTodayOrder(inputData.HpId, inputData.SetCd, inputData.SinDate);
             if (result.Item1.Count == 0 && result.Item2.Count == 0 && result.Item3.Count == 0)
             {
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
@@ -109,8 +113,17 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                          od.CmtName,
                          od.CmtOpt,
                          od.FontColor,
+                         od.CommentNewline,
+                         od.MasterSbt,
                          od.InOutKbn,
-                         od.CommentNewline
+                         od.Yakka,
+                         od.IsGetPriceInYakka,
+                         od.Ten,
+                         od.BunkatuKoui,
+                         od.KensaGaichu,
+                         od.OdrTermVal,
+                         od.CnvTermVal,
+                         od.YjCd
                     )
                 ).ToList()
             )).ToList();

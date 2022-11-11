@@ -138,7 +138,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
     public async Task<ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
     {
-        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, request.SetCd);
+        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, request.SetCd, request.SinDate);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();
