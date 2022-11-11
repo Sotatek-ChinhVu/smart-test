@@ -449,9 +449,6 @@
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
 
-        //MaxMoney
-        public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
-
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
         public static readonly string InvalidSikkanKbn = "Invalid SikkanKbn, SikkanKbn >.0";

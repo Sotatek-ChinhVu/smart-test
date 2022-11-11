@@ -6,8 +6,6 @@
         InvalidKohiId = 2,
         InvalidHpId = 3,
         InvalidPtId = 4,
-        InvalidSinDate = 5,
-        HokenKohiNotFound = 6,
-        HokenKohiNotValidToGet = 7
+        InvalidSinDate = 5
     }
 }
