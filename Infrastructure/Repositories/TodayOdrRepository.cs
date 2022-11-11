@@ -22,6 +22,7 @@ namespace Infrastructure.Repositories
         private readonly int jikanRow = 2;
         private readonly int shinRow = 1;
         private readonly int rpEdaNoDefault = 1;
+        private readonly int rpNoDefault = 1;
         private readonly int daysCntDefalt = 1;
 
         public TodayOdrRepository(ITenantProvider tenantProvider)
@@ -41,6 +42,8 @@ namespace Infrastructure.Repositories
                     using var transaction = _tenantTrackingDataContext.Database.BeginTransaction();
                     try
                     {
+                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
+
                         if (odrInfs.Count > 0)
                         {
                             UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
@@ -51,8 +54,6 @@ namespace Infrastructure.Repositories
                         UpsertKarteInfs(karteInfModel);
 
                         SaveRaiinListInf(odrInfs);
-
-                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
 
                         transaction.Commit();
 
@@ -93,10 +94,9 @@ namespace Infrastructure.Repositories
         private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
         {
 
-            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate);
+            var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
             var oldoldSyosaiKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.SyosaiKihon);
             var oldJikanKihon = _tenantTrackingDataContext.OdrInfDetails.FirstOrDefault(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RaiinNo == raiinNo && odr.SinDate == sinDate && odr.ItemCd == ItemCdConst.JikanKihon);
-            var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
 
             if (oldHeaderInfModel != null)
             {
@@ -174,12 +174,11 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                rpNoMax++;
                 var newHeaderInf = new OdrInf
                 {
                     HpId = hpId,
                     RaiinNo = raiinNo,
-                    RpNo = rpNoMax,
+                    RpNo = rpNoDefault,
                     RpEdaNo = rpEdaNoDefault,
                     PtId = ptId,
                     SinDate = sinDate,
@@ -474,6 +473,7 @@ namespace Infrastructure.Repositories
         private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
+            rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
             foreach (var item in ordInfs)
             {
                 if (item.IsDeleted == DeleteTypes.Deleted)

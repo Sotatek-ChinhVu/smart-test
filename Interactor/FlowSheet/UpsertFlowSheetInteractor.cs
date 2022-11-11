@@ -51,7 +51,7 @@ namespace Interactor.FlowSheet
                     return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.TagNoNoValid);
                 }
             }
-            if (!_patientRepository.CheckListId(inputData.Items.Select(i => i.PtId).ToList()))
+            if (!_patientRepository.CheckExistListId(inputData.Items.Select(i => i.PtId).Distinct().ToList()))
             {
                 return new UpsertFlowSheetOutputData(UpsertFlowSheetStatus.PtIdNoExist);
             }
@@ -73,7 +73,8 @@ namespace Interactor.FlowSheet
                         true,
                         true,
                         new List<RaiinListInfModel>(),
-                        i.PtId
+                        i.PtId,
+                        false
                     )).ToList() ?? new List<FlowSheetModel>();
                 _flowsheetRepository.UpsertTag(dataTags);
 
@@ -88,7 +89,8 @@ namespace Interactor.FlowSheet
                        true,
                        true,
                        new List<RaiinListInfModel>(),
-                       i.PtId
+                       i.PtId,
+                       false
                    )).ToList() ?? new List<FlowSheetModel>();
                 _flowsheetRepository.UpsertCmt(dataCmts);
 
