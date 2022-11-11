@@ -32,9 +32,9 @@ public class ExportReportController : ControllerBase
     }
 
     [HttpPost(ApiPath.ExportKarte2)]
-    public ActionResult<Response<string>> GetListKarte2([FromBody] Karte2ExportRequest request)
+    public async Task<ActionResult<Response<string>>> GetListKarte2([FromBody] Karte2ExportRequest request)
     {
-        var output = _reporting.PrintKarte2(ConvertToKarte2ExportInput(request));
+        var output = await Task.Run(() => _reporting.PrintKarte2(ConvertToKarte2ExportInput(request)));
 
         Response<string> response = new();
         response.Data = Convert.ToBase64String(output.DataStream.ToArray());

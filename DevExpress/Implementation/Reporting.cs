@@ -2,7 +2,6 @@
 using DevExpress.Models.Karte1;
 using DevExpress.Models.Karte2;
 ﻿using DevExpress.Inteface;
-using DevExpress.Models;
 using DevExpress.Response.Karte1;
 using Domain.Constant;
 using Domain.Models.Diseases;
@@ -38,10 +37,9 @@ public class Reporting : IReporting
     private readonly IUserRepository _userRepository;
     private readonly IKaRepository _kaRepository;
     private readonly IRaiinListTagRepository _rainListTagRepository;
-    private readonly Karte2Export _karte2Export;
-    private readonly IKarte1Export _karte1Export;
+    private readonly IKarteExport _karteExport;
 
-    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IUserRepository userRepository, IKaRepository kaRepository, IRaiinListTagRepository rainListTagRepository, Karte1Export karte1Export, Karte2Export karte2Export)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IUserRepository userRepository, IKaRepository kaRepository, IRaiinListTagRepository rainListTagRepository, KarteExport karteExport)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
@@ -53,8 +51,7 @@ public class Reporting : IReporting
         _userRepository = userRepository;
         _kaRepository = kaRepository;
         _rainListTagRepository = rainListTagRepository;
-        _karte1Export = karte1Export;
-        _karte2Export = karte2Export;
+        _karteExport = karteExport;
     }
 
     #region Print Karte 1
@@ -87,7 +84,7 @@ public class Reporting : IReporting
         var dataModel = ConvertToKarte1ExportModel(ptInf, hoken, listByomeiModelsPage1, listByomeiModelsPage2);
         try
         {
-            var res = _karte1Export.ExportToPdf(dataModel);
+            var res = _karteExport.ExportToPdf(dataModel);
             if (res.Length > 0)
             {
                 return new Karte1Output(Karte1Status.Success, res);
@@ -314,7 +311,7 @@ public class Reporting : IReporting
 
         try
         {
-            var res = _karte2Export.ExportToPdf(karte2ExportModel);
+            var res = _karteExport.ExportToPdf(karte2ExportModel);
             if (res.Length > 0)
             {
                 return new Karte2Output(Karte2Status.Success, res);

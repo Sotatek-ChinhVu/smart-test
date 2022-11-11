@@ -3,10 +3,12 @@ using DevExpress.Models.Karte1;
 using DevExpress.Inteface;
 using DevExpress.Template;
 using DevExpress.XtraPrinting;
+using DevExpress.Models.Karte2;
+using DevExpress.Template.Karte2;
 
 namespace DevExpress.Export;
 
-public class Karte1Export: IKarte1Export
+public class KarteExport : IKarteExport
 {
     public MemoryStream ExportToPdf(Karte1ExportModel data)
     {
@@ -31,6 +33,33 @@ public class Karte1Export: IKarte1Export
                     report.AddPages(page2.Pages);
                 });
             }
+
+            PdfExportOptions pdfExportOptions = new PdfExportOptions()
+            {
+                PdfACompatibility = PdfACompatibility.PdfA1b
+            };
+
+            // Export the report.
+            MemoryStream stream = new();
+            report.ExportToPdf(stream, pdfExportOptions);
+            return stream;
+        }
+        catch (Exception)
+        {
+            return new MemoryStream();
+        }
+    }
+
+    public MemoryStream ExportToPdf(Karte2ExportModel data)
+    {
+        try
+        {
+            var report = new Karte2Template();
+            var dataSource = new ObjectDataSource();
+            dataSource.DataSource = data;
+
+            report.DataSource = dataSource;
+            report.DataMember = "RichTextKarte2Models";
 
             PdfExportOptions pdfExportOptions = new PdfExportOptions()
             {
