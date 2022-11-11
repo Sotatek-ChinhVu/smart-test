@@ -390,13 +390,14 @@ public class SetMstRepository : ISetMstRepository
             }
             else
             {
+                var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
                 LevelDown(2, userId, listDropUpdateLevel2);
 
-                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
+                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
 
-                var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDrag)
                 {
                     item.Level1 = dropItem.Level1;
