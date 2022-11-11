@@ -25,8 +25,6 @@ namespace EmrCloudApi.Tenant.Presenters.MaxMoney
             GetMaxMoneyStatus.InvalidPtId => ResponseMessage.InvalidPtId,
             GetMaxMoneyStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
             GetMaxMoneyStatus.InvalidKohiId => ResponseMessage.InvalidKohiId,
-            GetMaxMoneyStatus.HokenKohiNotFound => ResponseMessage.NotFound,
-            GetMaxMoneyStatus.HokenKohiNotValidToGet => ResponseMessage.HokenKohiNotValidToGet,
             _ => string.Empty
         };
     }
