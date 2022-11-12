@@ -35,7 +35,7 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                 return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.NoData);
             }
 
-            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.Item1), ConvertSetByomeiToItem(result.Item2), ConvertSetOrderInfToItem(result.Item3), GetSuperSetDetailToDoTodayOrderStatus.Successed);
+            return new GetSuperSetDetailToDoTodayOrderOutputData(ConvertSetByomeiToItem(result.Item1), result.Item2, ConvertSetOrderInfToItem(result.Item3), GetSuperSetDetailToDoTodayOrderStatus.Successed);
         }
         catch
         {
@@ -56,15 +56,6 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                 s.ByomeiCmt,
                 s.ByomeiCd,
                 s.PrefixSuffixList
-            )).ToList();
-    }
-
-    private List<SetKarteInfItem> ConvertSetByomeiToItem(List<SetKarteInfModel> setKarteInfModels)
-    {
-        return setKarteInfModels.Select(k => new SetKarteInfItem(
-                k.HpId,
-                k.SetCd,
-                k.RichText
             )).ToList();
     }
 

@@ -77,32 +77,74 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         var settingValues = GetSettingValues();
 
         List<SetByomeiModel> byomeis = new();
-        List<SetKarteInfModel> setKarteInfs = new();
+        List<SetKarteInfModel> karteInfs = new();
         List<SetOrderInfModel> ordInfs = new();
-        foreach (var currentSetCd in setCds)
+        var byomeiObj = new object();
+        var karteObj = new object();
+        var orderObj = new object();
+        Parallel.ForEach(setCds, currentSetCd =>
         {
-            var currentSetByomeis = allSetByomeis.Where(b => b.SetCd == currentSetCd).ToList();
-            List<string> currentCodeLists = new();
-            foreach (var item in currentSetByomeis)
-            {
-                currentCodeLists.AddRange(GetCodeLists(item));
-            }
-            var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
+            var taskByomei = Task<List<SetByomeiModel>>.Factory.StartNew(() => ExcuGetByomeisForEachDetailItem(currentSetCd, byomeiObj, allSetByomeis, allByomeiMstList));
+            var taskKarte = Task<SetKarteInfModel>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
+            var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
 
-            byomeis.AddRange(currentSetByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)));
+            Task.WaitAll(taskByomei, taskKarte, taskOrder);
 
-            var setKarteInf = allKarteInfs.FirstOrDefault(k => k.SetCd == currentSetCd);
-            if (setKarteInf != null)
-                setKarteInfs.Add(new SetKarteInfModel(
-                    setKarteInf.HpId,
-                    setKarteInf.SetCd,
-                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)));
-            ordInfs.AddRange(GetSetOrdInfModel(hpId, currentSetCd, sinDate, allSetOrderInfs ?? new(), allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
-        }
+            byomeis.AddRange(taskByomei.Result);
+            karteInfs.Add(taskKarte.Result);
+            ordInfs.AddRange(taskOrder.Result);
+        });
 
-        return new(byomeis, setKarteInfs, ordInfs);
+        return new(byomeis, karteInfs, ordInfs);
     }
 
+    private List<SetByomeiModel> ExcuGetByomeisForEachDetailItem(int setCd, object byomeiObj, List<SetByomei> allSetByomeis, List<ByomeiMst> allByomeiMstList)
+    {
+        var currentSetByomeis = allSetByomeis.Where(b => b.SetCd == setCd).ToList();
+        var byomeis = new List<SetByomeiModel>();
+        List<string> currentCodeLists = new();
+
+        foreach (var item in currentSetByomeis)
+        {
+            currentCodeLists.AddRange(GetCodeLists(item));
+        }
+
+        var byomeiMstList = allByomeiMstList.Where(b => currentCodeLists.Contains(b.ByomeiCd)).ToList();
+        lock (byomeiObj)
+        {
+            byomeis.AddRange(currentSetByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)));
+        }
+
+        return byomeis;
+    }
+
+    private SetKarteInfModel ExcuGetKarteForEachDetailItem(int setCd, object karteObj, List<SetKarteInf> allKarteInfs)
+    {
+        var setKarteInf = allKarteInfs.FirstOrDefault(k => k.SetCd == setCd);
+
+        if (setKarteInf != null)
+            lock (karteObj)
+            {
+                return new SetKarteInfModel(
+                    setKarteInf.HpId,
+                    setKarteInf.SetCd,
+                    setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText));
+            }
+
+        return new SetKarteInfModel();
+    }
+
+    private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, int sinDate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)
+    {
+        var ordInfs = new List<SetOrderInfModel>();
+
+        lock (orderObj)
+        {
+            ordInfs.AddRange(GetSetOrdInfModel(hpId, setCd, sinDate, setOdrInfs ?? new(), setOdrInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
+        }
+
+        return ordInfs;
+    }
 
 
     #region GetSetByomeiList

@@ -1,10 +1,11 @@
-﻿using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
+﻿using Domain.Models.SuperSetDetail;
+using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 
 namespace EmrCloudApi.Tenant.Responses.SetMst;
 
 public class GetSuperSetDetailToDoTodayOrderResponse
 {
-    public GetSuperSetDetailToDoTodayOrderResponse(List<SetByomeiItem> setByomeiItems, List<SetKarteInfItem> setKarteInfItems, List<SetOrderInfItem> setOrderInfItems)
+    public GetSuperSetDetailToDoTodayOrderResponse(List<SetByomeiItem> setByomeiItems, List<SetKarteInfModel> setKarteInfItems, List<SetOrderInfItem> setOrderInfItems)
     {
         SetByomeiItems = setByomeiItems;
         SetKarteInfItems = setKarteInfItems;
@@ -13,7 +14,7 @@ public class GetSuperSetDetailToDoTodayOrderResponse
 
     public List<SetByomeiItem> SetByomeiItems { get; private set; }
 
-    public List<SetKarteInfItem> SetKarteInfItems { get; private set; }
+    public List<SetKarteInfModel> SetKarteInfItems { get; private set; }
 
     public List<SetOrderInfItem> SetOrderInfItems { get; private set; }
 }

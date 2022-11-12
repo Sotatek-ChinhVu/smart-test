@@ -98,7 +98,7 @@
 
         public string FontColor { get; private set; }
 
-        public int CommentNewline { get; private set;}
+        public int CommentNewline { get; private set; }
 
         public string MasterSbt { get; private set; }
 
@@ -118,6 +118,6 @@
 
         public double CnvTermVal { get; private set; }
 
-        public string YjCd { get; private set; } = string.Empty;
+        public string YjCd { get; private set; }
     }
 }
