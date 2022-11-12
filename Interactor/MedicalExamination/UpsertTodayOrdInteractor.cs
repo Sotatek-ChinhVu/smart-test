@@ -163,6 +163,7 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue
                     );
 
+                var objDetail = new object();
                 Parallel.ForEach(item.OdrDetails, itemDetail =>
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
@@ -175,7 +176,6 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
-                    var objDetail = new object();
                     var ordInfDetail = new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
