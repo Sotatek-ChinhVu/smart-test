@@ -77,10 +77,9 @@ namespace Interactor.MedicalExamination
 
                 raiinInfStatus = CheckRaiinInf(inputDatas);
 
-                List<OrdInfModel> allOdrInfs = new();
-
                 //Odr
-                var dicValidation = CheckOrder(hpId, ptId, sinDate, allOdrInfs, inputDatas, inputDataList);
+                var resultOrder = CheckOrder(hpId, ptId, sinDate, inputDatas, inputDataList);
+                var allOdrInfs = resultOrder.Item2;
 
                 // Karte
                 var karteModel = new KarteInfModel(
@@ -101,9 +100,9 @@ namespace Interactor.MedicalExamination
                 var validateKarte = karteModel.Validation();
 
 
-                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || dicValidation.Any())
+                if (raiinInfStatus != RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid || validateKarte != KarteValidationStatus.Valid || resultOrder.Item1.Any())
                 {
-                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, dicValidation, validateKarte);
+                    return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, resultOrder.Item1, validateKarte);
                 }
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel);
@@ -164,6 +163,7 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue
                     );
 
+                var objDetail = new object();
                 Parallel.ForEach(item.OdrDetails, itemDetail =>
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
@@ -176,7 +176,6 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
-                    var objDetail = new object();
                     var ordInfDetail = new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
@@ -359,10 +358,11 @@ namespace Interactor.MedicalExamination
             return raiinInfStatus;
         }
 
-        private Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> CheckOrder(int hpId, long ptId, int sinDate, List<OrdInfModel> allOdrInfs, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
+        private (Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>, List<OrdInfModel>) CheckOrder(int hpId, long ptId, int sinDate, UpsertTodayOrdInputData inputDatas, List<OdrInfItemInputData> inputDataList)
         {
             var dicValidation = new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>();
             object obj = new();
+            var allOdrInfs = new List<OrdInfModel>();
 
             if (inputDatas.OdrItems.Count > 0)
             {
@@ -409,7 +409,7 @@ namespace Interactor.MedicalExamination
                     }
                 });
 
-                allOdrInfs.AddRange(ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList));
+                allOdrInfs = ConvertInputDataToOrderInfs(hpId, sinDate, inputDataList);
 
                 Parallel.For(0, allOdrInfs.Count, index =>
                 {
@@ -427,7 +427,7 @@ namespace Interactor.MedicalExamination
                 });
             }
 
-            return dicValidation;
+            return (dicValidation, allOdrInfs);
         }
 
         private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
