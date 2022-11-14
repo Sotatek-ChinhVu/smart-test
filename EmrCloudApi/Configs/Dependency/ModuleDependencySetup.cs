@@ -1,5 +1,3 @@
-﻿//using DevExpress.Export;
-//using DevExpress.Implementation;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
@@ -68,7 +66,6 @@ using Interactor.Diseases;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
-using Interactor.ExportPDF;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
@@ -230,7 +227,10 @@ using EmrCloudApi.Tenant.Services;
 using UseCase.AccountDue.SaveAccountDueList;
 using EventProcessor.Service;
 using EventProcessor.Interfaces;
-//using DevExpress.Inteface;
+using DevExpress.Inteface;
+using DevExpress.Export;
+using Interactor.ExportPDF;
+using DevExpress.Implementation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -328,12 +328,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-          //  services.AddTransient<IKarte1Export, Karte1Export>();
+            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-          //  services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupUseCase(IServiceCollection services)
