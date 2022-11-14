@@ -36,6 +36,8 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
                 UketukeSbt = uketukeSbt,
                 SeqNo = seqNo,
                 CreateId = userId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
                 CreateDate = DateTime.UtcNow
             });
         }

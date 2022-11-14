@@ -37,6 +37,8 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
                 GrpId = grpId,
                 KbnCd = kbnCd,
                 CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
                 CreateId = userId
             });
         }

@@ -53,6 +53,8 @@ public class VisitingListSettingRepository : IVisitingListSettingRepository
                     Param = model.Param,
                     Biko = model.Biko,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 });
             }

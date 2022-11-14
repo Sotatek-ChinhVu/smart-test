@@ -490,6 +490,8 @@ namespace Infrastructure.Repositories
                     Address2 = model.Address2,
                     Tel1 = model.Tel1,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 };
                 _tenantDataContextTracking.HokensyaMsts.Add(create);

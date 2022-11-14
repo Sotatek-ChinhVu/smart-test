@@ -44,6 +44,8 @@ public class PtCmtInfRepository : IPtCmtInfRepository
                 PtId = ptId,
                 Text = text,
                 CreateDate = DateTime.UtcNow,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
                 CreateId = userId
             });
         }

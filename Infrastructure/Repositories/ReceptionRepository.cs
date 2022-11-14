@@ -124,6 +124,8 @@ namespace Infrastructure.Repositories
                     SyosaisinKbn = model.SyosaisinKbn,
                     JikanKbn = model.JikanKbn,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 };
             }
@@ -137,6 +139,8 @@ namespace Infrastructure.Repositories
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
                     CmtKbn = CmtKbns.Comment,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     Text = text,
                     CreateDate = DateTime.UtcNow,
                     CreateId = userId
@@ -151,6 +155,8 @@ namespace Infrastructure.Repositories
                     PtId = raiinInf.PtId,
                     SinDate = raiinInf.SinDate,
                     RaiinNo = raiinInf.RaiinNo,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     GrpId = dto.GrpId,
                     KbnCd = dto.KbnCd,
                     CreateDate = DateTime.UtcNow,
@@ -233,7 +239,7 @@ namespace Infrastructure.Repositories
                         CreateDate = DateTime.UtcNow,
                         CreateId = userId,
                         UpdateDate = DateTime.UtcNow,
-                        UpdateId = userId,
+                        UpdateId = userId
                     });
                 }
                 else if (raiinCmtInf.Text != text)
@@ -279,7 +285,9 @@ namespace Infrastructure.Repositories
                                 GrpId = kbnInfDto.GrpId,
                                 KbnCd = kbnInfDto.KbnCd,
                                 CreateDate = DateTime.UtcNow,
-                                CreateId = userId,
+                                UpdateDate = DateTime.UtcNow,
+                                UpdateId = userId,
+                                CreateId = userId
                             });
                         }
                         else if (existingEntity.KbnCd != kbnInfDto.KbnCd)

@@ -98,6 +98,8 @@ namespace Infrastructure.Repositories.SpecialNote
                     Text = summaryInfModel.Text,
                     Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext),
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 });
             }
@@ -444,6 +446,8 @@ namespace Infrastructure.Repositories.SpecialNote
                     OvulationDueDate = patientInfoModel.PregnancyItems.OvulationDueDate,
                     IsDeleted = patientInfoModel.PregnancyItems.IsDeleted,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 };
                 _tenantDataContextTracking.PtPregnancies.Add(pregnancyObj);
@@ -480,6 +484,8 @@ namespace Infrastructure.Repositories.SpecialNote
                     Text = patientInfoModel.PtCmtInfItems.Text,
                     IsDeleted = patientInfoModel.PtCmtInfItems.IsDeleted,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 };
                 _tenantDataContextTracking.PtCmtInfs.Add(PtCmtInfObj);
@@ -514,6 +520,8 @@ namespace Infrastructure.Repositories.SpecialNote
                     SeqNo = patientInfoModel.SeikatureInfItems.SeqNo,
                     Text = patientInfoModel.SeikatureInfItems.Text,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 };
                 _tenantDataContextTracking.SeikaturekiInfs.Add(SeikatureInfObj);

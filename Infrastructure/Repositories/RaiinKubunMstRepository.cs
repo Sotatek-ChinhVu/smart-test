@@ -239,6 +239,8 @@ namespace Infrastructure.Repositories
                                         GrpName = x.GroupName,
                                         IsDeleted = x.IsDeleted ? 1 : 0,
                                         CreateDate = DateTime.UtcNow,
+                                        UpdateDate = DateTime.UtcNow,
+                                        UpdateId = userId,
                                         CreateId = userId
                                     }).ToList());
                                     _tenantDataContextTracking.SaveChanges();
@@ -360,6 +362,8 @@ namespace Infrastructure.Repositories
                     IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
                     IsDeleted = x.IsDeleted ? 1 : 0,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 }));
             }
@@ -384,6 +388,8 @@ namespace Infrastructure.Repositories
                     KbnCd = kbnCd,
                     SeqNo = x.SeqNo,
                     KouiKbnId = x.KouiKbnId,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     IsDeleted = x.IsDeleted,
                     CreateDate = DateTime.UtcNow,
                     CreateId = userId
@@ -412,6 +418,8 @@ namespace Infrastructure.Repositories
                     ItemCd = x.ItemCd,
                     IsExclude = x.IsExclude,
                     IsDeleted = x.IsDeleted,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     SortNo = x.SortNo,
                     CreateDate = DateTime.UtcNow,
                     CreateId = userId,
@@ -439,6 +447,8 @@ namespace Infrastructure.Repositories
                     YoyakuCd = x.YoyakuCd,
                     IsDeleted = x.IsDeleted,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId
                 }));
             }

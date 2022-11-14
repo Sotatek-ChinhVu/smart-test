@@ -33,6 +33,8 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
                 RaiinNo = raiinNo,
                 CmtKbn = cmtKbn,
                 Text = text,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
                 CreateDate = DateTime.UtcNow,
                 CreateId = userId
             });

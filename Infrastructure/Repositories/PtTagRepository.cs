@@ -100,6 +100,8 @@ public class PtTagRepository : IPtTagRepository
                             {
                                 ptTag.CreateDate = DateTime.UtcNow;
                                 ptTag.CreateId = userId;
+                                ptTag.UpdateDate = DateTime.UtcNow;
+                                ptTag.UpdateId = userId;
                             });
 
                             _tenantDataContextTracking.PtTag.UpdateRange(updateList);

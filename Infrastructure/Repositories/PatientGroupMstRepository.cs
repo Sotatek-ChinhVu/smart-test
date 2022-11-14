@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                 entity.CreateId = userId;
             }
             entity.UpdateDate = DateTime.UtcNow;
-            entity.CreateId = userId;
+            entity.UpdateId = userId;
             return entity;
         }
 
@@ -164,7 +164,7 @@ namespace Infrastructure.Repositories
                 entity.CreateId = userId;
             }
             entity.UpdateDate = DateTime.UtcNow;
-            entity.CreateId = userId;
+            entity.UpdateId = userId;
             return entity;
         }
     }

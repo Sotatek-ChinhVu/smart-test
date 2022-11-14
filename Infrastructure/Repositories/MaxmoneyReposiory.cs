@@ -103,6 +103,8 @@ namespace Infrastructure.Repositories
                         Biko = item.Biko,
                         IsDeleted = 0,
                         CreateDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateId = userId
                     };
                     _tenantDataContext.LimitListInfs.Add(create);

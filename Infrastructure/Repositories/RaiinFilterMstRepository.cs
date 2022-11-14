@@ -102,6 +102,8 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                         FilterName = mstModel.FilterName,
                         SelectKbn = mstModel.SelectKbn,
                         Shortcut = mstModel.Shortcut,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateDate = DateTime.UtcNow,
                         CreateId = userId
                     };
@@ -201,6 +203,8 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 Priority = sortModel.Priority,
                 ColumnName = sortModel.ColumnName,
                 KbnCd = sortModel.KbnCd,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
                 SortKbn = sortModel.SortKbn,
                 CreateDate = DateTime.UtcNow,
                 CreateId = userId

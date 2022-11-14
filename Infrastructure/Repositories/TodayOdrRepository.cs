@@ -129,6 +129,8 @@ namespace Infrastructure.Repositories
                         HokenPid = hokenPid,
                         OdrKouiKbn = headerOdrKouiKbn,
                         CreateDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateId = userId,
                         DaysCnt = daysCntDefalt
                     };
@@ -181,6 +183,8 @@ namespace Infrastructure.Repositories
                     HokenPid = hokenPid,
                     OdrKouiKbn = headerOdrKouiKbn,
                     CreateDate = DateTime.UtcNow,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     CreateId = userId,
                     DaysCnt = daysCntDefalt
 

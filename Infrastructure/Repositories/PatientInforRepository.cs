@@ -991,6 +991,7 @@ namespace Infrastructure.Repositories
             }
             patientInsert.CreateDate = DateTime.UtcNow;
             patientInsert.CreateId = userId;
+            patientInsert.UpdateId = userId;
             patientInsert.UpdateDate = DateTime.UtcNow;
             patientInsert.HpId = hpId;
             _tenantTrackingDataContext.PtInfs.Add(patientInsert);
@@ -1006,8 +1007,8 @@ namespace Infrastructure.Repositories
                     dest.CreateId = userId;
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
-                    dest.CreateId = userId;
                     dest.CreateDate = DateTime.UtcNow;
+                    dest.UpdateId = userId;
                     dest.UpdateDate = DateTime.UtcNow;
                     return dest;
                 });
@@ -1023,7 +1024,8 @@ namespace Infrastructure.Repositories
                     Memo = ptInf.Memo,
                     CreateId = userId,
                     CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId
                 });
             }
 
@@ -1036,6 +1038,7 @@ namespace Infrastructure.Repositories
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
                     dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateId = userId;
                     return dest;
                 });
                 _tenantTrackingDataContext.PtGrpInfs.AddRange(listPtGrpInf);
@@ -1047,6 +1050,7 @@ namespace Infrastructure.Repositories
                 {
                     dest.CreateDate = DateTime.UtcNow;
                     dest.CreateId = userId;
+                    dest.UpdateId = userId;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
                     dest.UpdateDate = DateTime.UtcNow;
@@ -1059,7 +1063,9 @@ namespace Infrastructure.Repositories
             List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
+                dest.UpdateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1073,6 +1079,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1081,14 +1089,15 @@ namespace Infrastructure.Repositories
                 _tenantTrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
                     destR.CreateId = userId;
+                    destR.UpdateId = userId;
                     destR.PtId = patientInsert.PtId;
                     destR.HpId = hpId;
                     destR.Tenki = srcR.RousaiTenkiTenki;
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateId = userId;
                     destR.CreateDate = DateTime.UtcNow;
+                    destR.UpdateDate = DateTime.UtcNow;
                     return destR;
                 }));
                 #endregion
@@ -1116,6 +1125,8 @@ namespace Infrastructure.Repositories
             #region PtKohiInf
             List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
             {
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
@@ -1142,7 +1153,7 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
-            if (changeDatas == 0 && resultCreatePatient == true)
+            if (changeDatas == 0 && resultCreatePatient)
                 return (true, patientInsert.PtId);
 
             return (_tenantTrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
@@ -1189,6 +1200,8 @@ namespace Infrastructure.Repositories
                             PtId = patientInfo.PtId,
                             Memo = ptInf.Memo,
                             CreateId = userId,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = userId,
                             CreateDate = DateTime.UtcNow
                         });
                     }
@@ -1205,6 +1218,8 @@ namespace Infrastructure.Repositories
                         PtId = patientInfo.PtId,
                         Memo = ptInf.Memo,
                         CreateId = userId,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateDate = DateTime.UtcNow,
                     });
                 }
@@ -1265,6 +1280,7 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateDate = DateTime.UtcNow;
                 dest.CreateId = userId;
+                dest.UpdateId = userId;
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
                 dest.UpdateDate = DateTime.UtcNow;
@@ -1313,6 +1329,8 @@ namespace Infrastructure.Repositories
                     {
                         dest.CreateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateId = userId;
+                        dest.UpdateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         return dest;
@@ -1324,7 +1342,9 @@ namespace Infrastructure.Repositories
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
                     {
                         dest.CreateId = userId;
+                        dest.UpdateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         return dest;
@@ -1361,6 +1381,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1388,6 +1410,8 @@ namespace Infrastructure.Repositories
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1451,12 +1475,13 @@ namespace Infrastructure.Repositories
                         dest.Sinkei = src.RousaiTenkiSinkei;
                         dest.Tenki = src.RousaiTenkiTenki;
                         dest.EndDate = src.RousaiTenkiEndDate;
-                        dest.CreateId = userId;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         dest.HokenId = updateHokenInf.HokenId;
                         dest.CreateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateId = userId;
+                        dest.UpdateDate = DateTime.UtcNow;
                         return dest;
                     });
                     _tenantTrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
@@ -1614,6 +1639,8 @@ namespace Infrastructure.Repositories
                 addedHokenCheck.CheckCmt = createItem.CheckComment;
                 addedHokenCheck.CreateId = actUserId;
                 addedHokenCheck.CreateDate = DateTime.UtcNow;
+                addedHokenCheck.UpdateDate = DateTime.UtcNow;
+                addedHokenCheck.UpdateId = actUserId;
                 _tenantTrackingDataContext.PtHokenChecks.Add(addedHokenCheck);
             }
 

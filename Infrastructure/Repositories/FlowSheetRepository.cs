@@ -220,6 +220,8 @@ namespace Infrastructure.Repositories
                         RaiinNo = inputData.RaiinNo,
                         TagNo = inputData.TagNo,
                         CreateDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateId = userId
                     });
                 }
@@ -251,6 +253,8 @@ namespace Infrastructure.Repositories
                         CmtKbn = cmtKbn,
                         Text = inputData.Comment,
                         CreateDate = DateTime.UtcNow,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateId = userId
                     });
                 }
