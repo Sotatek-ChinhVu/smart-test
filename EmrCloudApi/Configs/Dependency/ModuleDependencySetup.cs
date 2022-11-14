@@ -264,7 +264,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserService, UserService>();
 
             // Export
-            services.AddTransient<IReporting, Reporting>();
+            //services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 
