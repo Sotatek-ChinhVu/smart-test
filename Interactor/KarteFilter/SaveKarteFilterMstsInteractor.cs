@@ -6,8 +6,6 @@ namespace Interactor.KarteFilter;
 
 public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
 {
-    private readonly int _userId = TempIdentity.UserId;
-    private readonly int _hpId = TempIdentity.HpId;
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
     public SaveKarteFilterMstsInteractor(IKarteFilterMstRepository karteFilterMstRepository)
     {
@@ -43,7 +41,7 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
                         );
                     listKarteFilterMstModels.Add(karteFilterMstModel);
                 }
-                if (_karteFilterMstRepository.SaveList(listKarteFilterMstModels, _userId, _hpId))
+                if (_karteFilterMstRepository.SaveList(listKarteFilterMstModels, inputData.UserId, inputData.HpId))
                 {
                     return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Successed);
                 }

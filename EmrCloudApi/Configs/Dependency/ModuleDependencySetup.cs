@@ -226,6 +226,7 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using EmrCloudApi.Tenant.Services;
 using UseCase.AccountDue.SaveAccountDueList;
 using EventProcessor.Service;
 using EventProcessor.Interfaces;
@@ -260,6 +261,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IUserService, UserService>();
+
+            // Export
+            //services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 

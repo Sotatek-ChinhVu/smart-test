@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.SpecialNote;
 using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
@@ -13,12 +15,15 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SpecialNoteController
     {
         private readonly UseCaseBus _bus;
-        public SpecialNoteController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public SpecialNoteController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get)]
@@ -36,16 +41,21 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.AddAlrgyDrugList)]
         public async Task<ActionResult<Response<AddAlrgyDrugListResponse>>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
-                    a => new AddAlrgyDrugListItemInputData(
-                            a.PtId,
-                            a.ItemCd,
-                            a.DrugName,
-                            a.StartDate,
-                            a.EndDate,
-                            a.Cmt
-                        )
-                ).ToList());
+                                                        a => new AddAlrgyDrugListItemInputData(
+                                                                a.PtId,
+                                                                a.ItemCd,
+                                                                a.DrugName,
+                                                                a.StartDate,
+                                                                a.EndDate,
+                                                                a.Cmt
+                                                            )
+                                                        ).ToList(),
+                                                        hpId,
+                                                        userId
+                                                        );
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new AddAlrgyDrugListPresenter();
@@ -57,7 +67,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public async Task<ActionResult<Response<SaveSpecialNoteResponse>>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            var input = new SaveSpecialNoteInputData(request.HpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map());
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            var input = new SaveSpecialNoteInputData(hpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveSpecialNotePresenter();

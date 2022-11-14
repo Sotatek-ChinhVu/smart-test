@@ -62,7 +62,7 @@ namespace Infrastructure.Repositories
                                                 limitFutan);
         }
 
-        public bool SaveMaxMoney(List<LimitListModel> dataInputs,int hpId,long ptId,int kohiId,int sinYm)
+        public bool SaveMaxMoney(List<LimitListModel> dataInputs,int hpId,long ptId,int kohiId,int sinYm, int userId)
         {
             List<LimitListInf> maxMoneyDatabases = _tenantDataContext.LimitListInfs.Where(x => x.HpId == hpId
                                                                    && x.PtId == ptId
@@ -80,8 +80,7 @@ namespace Infrastructure.Repositories
                     {
                         item.IsDeleted = 1;
                         item.UpdateDate = DateTime.UtcNow;
-                        item.UpdateId = TempIdentity.UserId;
-                        item.UpdateMachine = TempIdentity.ComputerName;
+                        item.UpdateId = userId;
                     }
                 }
             }
@@ -104,8 +103,9 @@ namespace Infrastructure.Repositories
                         Biko = item.Biko,
                         IsDeleted = 0,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
+                        CreateId = userId
                     };
                     _tenantDataContext.LimitListInfs.Add(create);
                 }
@@ -120,8 +120,7 @@ namespace Infrastructure.Repositories
                         update.Biko = item.Biko;
                         update.SinDate = item.SinDateY * 10000 + item.SinDateM * 100 + item.SinDateD;
                         update.UpdateDate = DateTime.UtcNow;
-                        update.UpdateId = TempIdentity.UserId;
-                        update.UpdateMachine = TempIdentity.ComputerName;
+                        update.UpdateId = userId;
                     }
                 }
             };

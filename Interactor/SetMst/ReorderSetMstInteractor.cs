@@ -6,7 +6,6 @@ namespace Interactor.SetMst;
 
 public class ReorderSetMstInteractor : IReorderSetMstInputPort
 {
-    private readonly int _userId = TempIdentity.UserId;
     private readonly ISetMstRepository _setMstRepository;
     public ReorderSetMstInteractor(ISetMstRepository setMstRepository)
     {
@@ -28,7 +27,7 @@ public class ReorderSetMstInteractor : IReorderSetMstInputPort
         }
         try
         {
-            if (_setMstRepository.ReorderSetMst(_userId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
+            if (_setMstRepository.ReorderSetMst(reorderSetMstInputData.UserId, reorderSetMstInputData.HpId, reorderSetMstInputData.DragSetCd, reorderSetMstInputData.DropSetCd))
             {
                 return new ReorderSetMstOutputData(ReorderSetMstStatus.Successed);
             }

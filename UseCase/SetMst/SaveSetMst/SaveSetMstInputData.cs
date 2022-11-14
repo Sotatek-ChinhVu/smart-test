@@ -4,7 +4,7 @@ namespace UseCase.SetMst.SaveSetMst;
 
 public class SaveSetMstInputData : IInputData<SaveSetMstOutputData>
 {
-    public SaveSetMstInputData(int sinDate, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, bool isGroup = false)
+    public SaveSetMstInputData(int sinDate, int setCd, int setKbn, int setKbnEdaNo, int generationId, int level1, int level2, int level3, string setName, int weightKbn, int color, int isDeleted, int hpId, int userId, bool isGroup = false)
     {
         SinDate = sinDate;
         SetCd = setCd;
@@ -19,6 +19,8 @@ public class SaveSetMstInputData : IInputData<SaveSetMstOutputData>
         Color = color;
         IsDeleted = isDeleted;
         IsGroup = isGroup;
+        HpId = hpId;
+        UserId = userId;
     }
     public int SinDate { get; private set; }
 
@@ -45,4 +47,8 @@ public class SaveSetMstInputData : IInputData<SaveSetMstOutputData>
     public int IsDeleted { get; private set; }
     
     public bool IsGroup { get; private set; }
+
+    public int HpId { get; private set; }
+
+    public int UserId { get; private set; }
 }

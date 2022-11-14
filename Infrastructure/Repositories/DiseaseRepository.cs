@@ -203,7 +203,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void Upsert(List<PtDiseaseModel> inputDatas)
+        public void Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
         {
             foreach (var inputData in inputDatas)
             {
@@ -221,16 +221,15 @@ namespace Infrastructure.Repositories
 
                     if (ptByomei != null)
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData, hpId, userId));
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
-                        ptByomei.UpdateId = TempIdentity.UserId;
+                        ptByomei.UpdateId = userId;
                         ptByomei.UpdateDate = DateTime.UtcNow;
-                        ptByomei.UpdateMachine = TempIdentity.ComputerName;
                     }
                     else
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData, hpId, userId));
                     }
                 }
             }
@@ -238,12 +237,12 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model)
+        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model, int hpId, int userId)
         {
             var preSuffixList = model.PrefixSuffixList;
             return new PtByomei
             {
-                HpId = TempIdentity.HpId,
+                HpId = hpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,
                 SortNo = model.SortNo,
@@ -280,14 +279,12 @@ namespace Infrastructure.Repositories
                 TogetuByomei = model.TenkiKbn == TenkiKbnConst.InMonth ? 1 : 0,
                 IsNodspRece = model.IsNodspRece,
                 IsNodspKarte = model.IsNodspKarte,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName,
+                CreateId = userId,
                 CreateDate = DateTime.UtcNow,
                 SeqNo = model.SeqNo,
                 IsImportant = model.IsImportant,
-                UpdateId = TempIdentity.UserId,
-                UpdateDate = DateTime.UtcNow,
-                UpdateMachine = TempIdentity.ComputerName
+                UpdateId = userId,
+                UpdateDate = DateTime.UtcNow
             };
         }
 
