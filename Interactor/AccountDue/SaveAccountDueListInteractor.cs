@@ -141,7 +141,7 @@ public class SaveAccountDueListInteractor : ISaveAccountDueListInputPort
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }
-        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckListId(new List<long> { inputData.PtId }))
+        else if (inputData.PtId <= 0 || !_patientInforRepository.CheckExistListId(new List<long> { inputData.PtId }))
         {
             return SaveAccountDueListStatus.InvalidUserId;
         }

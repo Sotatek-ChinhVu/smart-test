@@ -10,7 +10,7 @@ namespace Domain.Models.InsuranceMst
             FutanKbn = futanKbn;
             FutanRate = futanRate;
             StartDate = startDate;
-            EndDate = endDate;
+            EndDate = endDate == 0 ? 99999999 : endDate;
             HokenNo = hokenNo;
             HokenEdaNo = hokenEdaNo;
             HokenSName = hokenSName;
@@ -60,6 +60,7 @@ namespace Domain.Models.InsuranceMst
             HokenName = string.Empty;
             HokenNameCd = string.Empty;
             PrefactureName = string.Empty;
+            EndDate = 99999999;
         }
 
         public int FutanKbn { get; private set; }

@@ -1,5 +1,4 @@
-﻿using Amazon.Auth.AccessControlPolicy;
-using Domain.Models.CalculationInf;
+﻿using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -230,10 +229,10 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckListId(List<long> ptIds)
+        public bool CheckExistListId(List<long> ptIds)
         {
             var countPtInfs = _tenantDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
-            return ptIds.Count <= countPtInfs;
+            return ptIds.Count == countPtInfs;
         }
 
         public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId)
@@ -998,7 +997,7 @@ namespace Infrastructure.Repositories
             bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
             if (!resultCreatePatient)
-                return (false,0);
+                return (false, 0);
 
             if (ptSanteis != null && ptSanteis.Any())
             {
@@ -1057,7 +1056,7 @@ namespace Infrastructure.Repositories
             }
 
             #region Hoken parterrn
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.IsAddNew), (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1070,7 +1069,7 @@ namespace Infrastructure.Repositories
             #endregion Hoken parterrn
 
             #region HokenInf
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=> x.IsAddNew), (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1144,7 +1143,7 @@ namespace Infrastructure.Repositories
 
             int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
             if (changeDatas == 0 && resultCreatePatient == true)
-                return (true,patientInsert.PtId);
+                return (true, patientInsert.PtId);
 
             return (_tenantTrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
@@ -1358,7 +1357,7 @@ namespace Infrastructure.Repositories
                 x.UpdateId = userId;
             });
 
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1368,8 +1367,8 @@ namespace Infrastructure.Repositories
                 return dest;
             });
             _tenantTrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
-            
-            foreach(var item in insurances.Where(x => x.SeqNo != 0))
+
+            foreach (var item in insurances.Where(x => x.SeqNo != 0))
             {
                 PtHokenPattern? modelUpdate = databaseHokenPartterns.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if (modelUpdate != null)
@@ -1385,7 +1384,7 @@ namespace Infrastructure.Repositories
 
             #region HokenInf
             //Add New
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1429,7 +1428,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
 
             //Update
-            foreach(var item in hokenInfs.Where(x => x.SeqNo != 0))
+            foreach (var item in hokenInfs.Where(x => x.SeqNo != 0))
             {
                 PtHokenInf? updateHokenInf = databaseHoKentInfs.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if (updateHokenInf != null)
@@ -1489,7 +1488,7 @@ namespace Infrastructure.Repositories
 
             #region HokenKohi
             //Add new
-            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew && x.SeqNo == 0), (src, dest) =>
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew && x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
@@ -1725,7 +1724,7 @@ namespace Infrastructure.Repositories
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool IsAllowDeletePatient(int hpId,long ptId)
+        public bool IsAllowDeletePatient(int hpId, long ptId)
         {
             var raiinInfCount = _tenantDataContext.RaiinInfs
                 .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);

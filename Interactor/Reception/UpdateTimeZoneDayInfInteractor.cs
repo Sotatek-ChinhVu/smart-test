@@ -32,11 +32,11 @@ public class UpdateTimeZoneDayInfInteractor : IUpdateTimeZoneDayInfInputPort
         {
             return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidCurrentTimeKbn);
         }
-        else if (inputData.BeforeTimeKbn <= 0)
+        else if (inputData.BeforeTimeKbn < 0)
         {
             return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidBeforeTimeKbn);
         }
-        else if (inputData.UketukeTime <= 0)
+        else if (inputData.UketukeTime < 0)
         {
             return new UpdateTimeZoneDayInfOutputData(UpdateTimeZoneDayInfStatus.InvalidUketukeTime);
         }

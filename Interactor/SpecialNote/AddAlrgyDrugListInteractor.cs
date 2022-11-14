@@ -63,7 +63,7 @@ namespace Interactor.SpecialNote
                         keyValuePairs.Add(new(count, AddAlrgyDrugListStatus.InvalidDuplicate));
                     }
 
-                    var checkPtId = _patientInfoRepository.CheckListId(new List<long> { item.PtId });
+                    var checkPtId = _patientInfoRepository.CheckExistListId(new List<long> { item.PtId });
                     var chekTenMst = _mstItemRepository.CheckItemCd(item.ItemCd);
 
                     if (!checkPtId && !keyValuePairs.Any(k => k.Key == count))

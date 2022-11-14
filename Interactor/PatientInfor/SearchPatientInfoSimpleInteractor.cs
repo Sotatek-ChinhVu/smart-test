@@ -11,7 +11,7 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IGroupInfRepository _groupInfRepository;
-        private const string _regPhone = @"[^0-9^\-]";
+        private const string _regPhone = @"^(?:\d{10}|\d{3}-\d{3}-\d{4}|\d{2}-\d{4}-\d{4}|\d{3}-\d{4}-\d{4})$";
 
         public SearchPatientInfoSimpleInteractor(IPatientInforRepository patientInforRepository, IGroupInfRepository groupInfRepository)
         {
@@ -67,7 +67,7 @@ namespace Interactor.PatientInfor
 
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 2:
-                    patientInfoList = _patientInforRepository.SearchPhone(keyword, isContainMode, inputData.HpId);
+                    patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
