@@ -128,8 +128,7 @@ namespace Infrastructure.Repositories
                                      .ThenBy(p => p.SortNo)
                                      .ThenByDescending(p => p.StartDate)
                                      .ThenByDescending(p => p.TenkiDate)
-                                     .ThenBy(p => p.Id)
-                                     .ToList(); ;
+                                     .ThenBy(p => p.Id);
 
             var ptByomeiList = ptByomeiListQueryable.ToList();
 
