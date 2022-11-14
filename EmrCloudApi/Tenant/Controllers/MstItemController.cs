@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.MstItem;
 using EmrCloudApi.Tenant.Requests.MstItem;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
@@ -20,13 +22,16 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MstItemController : ControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly IUserService _userService;
 
-        public MstItemController(UseCaseBus bus)
+        public MstItemController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpPost(ApiPath.GetDosageDrugList)]
@@ -80,7 +85,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SearchTenItem)]
         public async Task<ActionResult<Response<SearchTenItemResponse>>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, request.HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, hpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchTenItemPresenter();
             presenter.Complete(output);
@@ -90,7 +96,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
         public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
-            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new UpdateAdoptedTenItemPresenter();
             presenter.Complete(output);
@@ -112,7 +120,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedByomei)]
         public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
         {
-            var input = new UpdateAdoptedByomeiInputData(request.HpId, request.ByomeiCd);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            var input = new UpdateAdoptedByomeiInputData(hpId, request.ByomeiCd, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new UpdateAdoptedByomeiPresenter();
             presenter.Complete(output);
@@ -122,7 +132,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchPostCode)]
         public async Task<ActionResult<Response<SearchPostCodeRespone>>> GetList([FromQuery] SearchPostCodeRequest request)
         {
-            var input = new SearchPostCodeInputData(request.HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new SearchPostCodeInputData(hpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);
@@ -132,7 +143,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.FindTenMst)]
         public async Task<ActionResult<Response<FindtenMstResponse>>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
-            var input = new FindTenMstInputData(request.HpId, request.SinDate, request.ItemCd);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new FindTenMstInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);

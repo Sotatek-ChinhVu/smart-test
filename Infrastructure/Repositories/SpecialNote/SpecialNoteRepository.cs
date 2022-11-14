@@ -22,7 +22,7 @@ namespace Infrastructure.Repositories.SpecialNote
             _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
             _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
-        public bool SaveSpecialNote(int hpId, long ptId, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel)
+        public bool SaveSpecialNote(int hpId, long ptId, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
         {
             if (!IsInvalidInputId(hpId, ptId)) return false;
 
@@ -38,7 +38,7 @@ namespace Infrastructure.Repositories.SpecialNote
                         {
                             if (summaryInfModel != null && summaryInfModel.Id == hpId && summaryInfModel.PtId == ptId)
                             {
-                                SaveSummaryInf(hpId, ptId, summaryInfModel);
+                                SaveSummaryInf(hpId, ptId, summaryInfModel, userId);
                             }
                             if (importantNoteModel != null)
                             {
@@ -46,7 +46,7 @@ namespace Infrastructure.Repositories.SpecialNote
                             }
                             if (patientInfoModel != null)
                             {
-                                SavePatientInfo(hpId, ptId, patientInfoModel);
+                                SavePatientInfo(hpId, ptId, patientInfoModel, userId);
                             }
                             _tenantDataContextTracking.SaveChanges();
                             transaction.Commit();
@@ -68,7 +68,7 @@ namespace Infrastructure.Repositories.SpecialNote
             return true;
         }
         #region SaveSummaryInf
-        private void SaveSummaryInf(int hpId, long ptId, SummaryInfModel summaryInfModel)
+        private void SaveSummaryInf(int hpId, long ptId, SummaryInfModel summaryInfModel, int userId)
         {
             var summaryInf = _tenantDataContextNoTracking.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).FirstOrDefault();
             if (summaryInf != null)
@@ -85,8 +85,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     CreateId = summaryInf.CreateId,
                     CreateMachine = summaryInf.CreateMachine,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName
+                    UpdateId = userId
                 });
             }
             else
@@ -99,8 +98,9 @@ namespace Infrastructure.Repositories.SpecialNote
                     Text = summaryInfModel.Text,
                     Rtext = Encoding.ASCII.GetBytes(summaryInfModel.Rtext),
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 });
             }
         }
@@ -386,26 +386,26 @@ namespace Infrastructure.Repositories.SpecialNote
         #endregion
 
         #region SavePatientInfo
-        private void SavePatientInfo(int hpId, long ptId, PatientInfoModel patientInfoModel)
+        private void SavePatientInfo(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
             if (patientInfoModel?.PregnancyItems != null && patientInfoModel.PregnancyItems.HpId == hpId && patientInfoModel.PregnancyItems.PtId == ptId)
             {
-                SavePregnancyItems(hpId, ptId, patientInfoModel);
+                SavePregnancyItems(hpId, ptId, patientInfoModel, userId);
             }
             if (patientInfoModel?.PtCmtInfItems != null && patientInfoModel.PtCmtInfItems.HpId == hpId && patientInfoModel.PtCmtInfItems.PtId == ptId)
             {
-                SavePtCmtInfItems(hpId, ptId, patientInfoModel);
+                SavePtCmtInfItems(hpId, ptId, patientInfoModel, userId);
             }
             if (patientInfoModel?.SeikatureInfItems != null && patientInfoModel.SeikatureInfItems.HpId == hpId && patientInfoModel.SeikatureInfItems.PtId == ptId)
             {
-                SaveSeikatureInfItems(hpId, ptId, patientInfoModel);
+                SaveSeikatureInfItems(hpId, ptId, patientInfoModel, userId);
             }
             if (patientInfoModel?.PhysicalInfItems != null && patientInfoModel.PhysicalInfItems.Any())
             {
                 SavePhysicalInfItems(hpId, ptId, patientInfoModel);
             }
         }
-        private void SavePregnancyItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
+        private void SavePregnancyItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
             var pregnancyItems = _tenantDataContextNoTracking.PtPregnancies.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
             if (pregnancyItems != null)
@@ -427,8 +427,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     CreateId = pregnancyItems.CreateId,
                     CreateMachine = pregnancyItems.CreateMachine,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName
+                    UpdateId = userId
                 };
                 _tenantDataContextTracking.PtPregnancies.Update(pregnancyObj);
             }
@@ -447,13 +446,14 @@ namespace Infrastructure.Repositories.SpecialNote
                     OvulationDueDate = patientInfoModel.PregnancyItems.OvulationDueDate,
                     IsDeleted = patientInfoModel.PregnancyItems.IsDeleted,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 };
                 _tenantDataContextTracking.PtPregnancies.Add(pregnancyObj);
             }
         }
-        private void SavePtCmtInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
+        private void SavePtCmtInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
             var ptCmtInfItems = _tenantDataContextNoTracking.PtCmtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
             if (ptCmtInfItems != null)
@@ -470,8 +470,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     CreateId = ptCmtInfItems.CreateId,
                     CreateMachine = ptCmtInfItems.CreateMachine,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName
+                    UpdateId = userId
                 };
                 _tenantDataContextTracking.PtCmtInfs.Update(PtCmtInfObj);
             }
@@ -485,13 +484,14 @@ namespace Infrastructure.Repositories.SpecialNote
                     Text = patientInfoModel.PtCmtInfItems.Text,
                     IsDeleted = patientInfoModel.PtCmtInfItems.IsDeleted,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 };
                 _tenantDataContextTracking.PtCmtInfs.Add(PtCmtInfObj);
             }
         }
-        private void SaveSeikatureInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
+        private void SaveSeikatureInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
             var SeikatureInfItems = _tenantDataContextNoTracking.SeikaturekiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
             if (SeikatureInfItems != null)
@@ -507,8 +507,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     CreateId = SeikatureInfItems.CreateId,
                     CreateMachine = SeikatureInfItems.CreateMachine,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName
+                    UpdateId = userId
                 };
                 _tenantDataContextTracking.SeikaturekiInfs.Update(SeikatureInfObj);
             }
@@ -521,8 +520,9 @@ namespace Infrastructure.Repositories.SpecialNote
                     SeqNo = patientInfoModel.SeikatureInfItems.SeqNo,
                     Text = patientInfoModel.SeikatureInfItems.Text,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 };
                 _tenantDataContextTracking.SeikaturekiInfs.Add(SeikatureInfObj);
             }

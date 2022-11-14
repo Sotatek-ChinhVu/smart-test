@@ -17,17 +17,17 @@ namespace Infrastructure.Repositories.SpecialNote
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas)
+        public void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas, int hpId, int userId)
         {
             var ptId = inputDatas.FirstOrDefault()?.PtId ?? 0;
-            var alrgyDrugs = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(a => a.HpId == TempIdentity.HpId && a.PtId == ptId).ToList();
+            var alrgyDrugs = _tenantNoTrackingDataContext.PtAlrgyDrugs.Where(a => a.HpId == hpId && a.PtId == ptId).ToList();
             var maxSortNo = !(alrgyDrugs?.Count > 0) ? 0 : alrgyDrugs.Max(a => a.SortNo);
             foreach (var item in inputDatas)
             {
                 _tenantTrackingDataContext.Add(
                     new PtAlrgyDrug
                     {
-                        HpId = TempIdentity.HpId,
+                        HpId = hpId,
                         PtId = item.PtId,
                         SortNo = maxSortNo++,
                         ItemCd = item.ItemCd,
@@ -36,11 +36,9 @@ namespace Infrastructure.Repositories.SpecialNote
                         EndDate = item.EndDate,
                         Cmt = item.Cmt,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName,
+                        CreateId = userId,
                         UpdateDate = DateTime.UtcNow,
-                        UpdateId = TempIdentity.UserId,
-                        UpdateMachine = TempIdentity.ComputerName,
+                        UpdateId = userId
                     }
                );
             }

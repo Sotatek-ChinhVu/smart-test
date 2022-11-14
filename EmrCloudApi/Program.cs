@@ -1,3 +1,4 @@
+using EmrCloudApi.Tenant.Services;
 using EmrCloudApi.Configs.Dependency;
 using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
@@ -19,6 +20,7 @@ builder.Services.AddEmrOptions(builder.Configuration);
 builder.Services.AddSignalR();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddSwaggerGen(options =>
 {
     options.CustomSchemaIds(type => type.ToString());
@@ -66,8 +68,8 @@ builder.Services.AddCors(options =>
 // This config is needed for EF Core Migrations to find the DbContext
 builder.Services.AddDbContext<TenantDataContext>(options =>
 {
-    var connectionStr = builder.Configuration["TenantDbSample"];
-    //var connectionStr = "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
+    //var connectionStr = builder.Configuration["TenantDbSample"];
+    var connectionStr = "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
     options.UseNpgsql(connectionStr);
 });
 

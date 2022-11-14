@@ -44,7 +44,7 @@ namespace Interactor.InsuranceMst
             }
             try
             {
-                bool result = _insuranceMstReponsitory.SaveHokenSyaMst(modelSave);
+                bool result = _insuranceMstReponsitory.SaveHokenSyaMst(modelSave, inputData.UserId);
 
                 if (result)
                     return new SaveHokenSyaMstOutputData(SaveHokenSyaMstStatus.Successful,string.Empty);

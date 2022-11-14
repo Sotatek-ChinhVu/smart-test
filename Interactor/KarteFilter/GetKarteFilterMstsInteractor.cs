@@ -7,8 +7,6 @@ namespace Interactor.KarteFilter;
 public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 {
     private readonly IKarteFilterMstRepository _karteFilterMstRepository;
-    private readonly int _hpId = TempIdentity.HpId;
-    private readonly int _userId = TempIdentity.UserId;
 
     public GetKarteFilterMstsInteractor(IKarteFilterMstRepository karteFilterMstRepository)
     {
@@ -20,7 +18,7 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
         try
         {
             // check list KarteFilterMsts
-            var allKarteFilterMsts = _karteFilterMstRepository.GetList(_hpId, _userId);
+            var allKarteFilterMsts = _karteFilterMstRepository.GetList(inputData.HpId, inputData.UserId);
 
             if (allKarteFilterMsts == null || allKarteFilterMsts.Count <= 0)
             {

@@ -7,13 +7,14 @@ namespace UseCase.SpecialNote.Save
 {
     public class SaveSpecialNoteInputData : IInputData<SaveSpecialNoteOutputData>
     {
-        public SaveSpecialNoteInputData(int hpId, int ptId, SummaryInfModel summaryTab, ImportantNoteModel importantNoteTab, PatientInfoModel patientInfoTab)
+        public SaveSpecialNoteInputData(int hpId, int ptId, SummaryInfModel summaryTab, ImportantNoteModel importantNoteTab, PatientInfoModel patientInfoTab, int userId)
         {
             HpId = hpId;
             PtId = ptId;
             SummaryTab = summaryTab;
             ImportantNoteTab = importantNoteTab;
             PatientInfoTab = patientInfoTab;
+            UserId = userId;
         }
 
         public int HpId { get; private set; }
@@ -23,5 +24,7 @@ namespace UseCase.SpecialNote.Save
         public ImportantNoteModel ImportantNoteTab { get; private set; }
 
         public PatientInfoModel PatientInfoTab { get; private set; }
+
+        public int UserId { get; private set; }
     }
 }

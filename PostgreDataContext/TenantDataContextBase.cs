@@ -86,6 +86,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtOtcDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtOtherDrug>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<PtPregnancy>().HasKey(r => new { r.Id, r.HpId, r.PtId, r.SeqNo });
+            modelBuilder.Entity<PtPregnancy>().Property(r => r.HpId).HasColumnOrder(2);
             modelBuilder.Entity<PtSupple>().HasKey(r => new { r.HpId, r.PtId, r.SeqNo });
             modelBuilder.Entity<RsvFrameMst>().HasKey(r => new { r.HpId, r.RsvFrameId });
             modelBuilder.Entity<RsvGrpMst>().HasKey(r => new { r.HpId, r.RsvGrpId });

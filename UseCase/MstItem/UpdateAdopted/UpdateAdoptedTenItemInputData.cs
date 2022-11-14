@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.MstItem.UpdateAdopted
+namespace UseCase.MstItem.UpdateAdopted;
+
+public class UpdateAdoptedTenItemInputData : IInputData<UpdateAdoptedTenItemOutputData>
 {
-    public class UpdateAdoptedTenItemInputData : IInputData<UpdateAdoptedTenItemOutputData>
+    public UpdateAdoptedTenItemInputData(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
     {
-        public UpdateAdoptedTenItemInputData(int valueAdopted, string itemCdInputItem, int startDateInputItem)
-        {
-            ValueAdopted = valueAdopted;
-            ItemCdInputItem = itemCdInputItem;
-            StartDateInputItem = startDateInputItem;
-        }
-
-        public int ValueAdopted { get; private set; }
-
-        public string ItemCdInputItem { get; private set; }
-
-        public int StartDateInputItem { get; private set; }
+        ValueAdopted = valueAdopted;
+        ItemCdInputItem = itemCdInputItem;
+        StartDateInputItem = startDateInputItem;
+        HpId = hpId;
+        UserId = userId;
     }
+
+    public int ValueAdopted { get; private set; }
+
+    public string ItemCdInputItem { get; private set; }
+
+    public int StartDateInputItem { get; private set; }
+
+    public int HpId { get; private set; }
+
+    public int UserId { get; private set; }
 }
