@@ -124,7 +124,12 @@ namespace Infrastructure.Repositories
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
-                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
+                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).OrderBy(p => p.TenkiKbn)
+                                     .ThenBy(p => p.SortNo)
+                                     .ThenByDescending(p => p.StartDate)
+                                     .ThenByDescending(p => p.TenkiDate)
+                                     .ThenBy(p => p.Id)
+                                     .ToList(); ;
 
             var ptByomeiList = ptByomeiListQueryable.ToList();
 
@@ -200,6 +205,7 @@ namespace Infrastructure.Repositories
                         );
                 result.Add(ptDiseaseModel);
             }
+
             return result;
         }
 
