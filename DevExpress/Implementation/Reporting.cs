@@ -342,8 +342,8 @@ public class Reporting : IReporting
             sex: patientInfo.Sex == 1 ? "（男）" : "（女）",
             birthday: CIUtil.SDateToShowWDate2(patientInfo.Birthday),
             currentTime: DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm"),
-            startDate: CIUtil.SDateToShowSDate(inputData.StartDate),
-            endDate: CIUtil.SDateToShowSDate(inputData.EndDate),
+            startDate: CIUtil.SDateToShowSDate2(inputData.StartDate),
+            endDate: CIUtil.SDateToShowSDate2(inputData.EndDate),
             richTextKarte2Models: ConvertToRichTextKarteOrder(historyKarteOdrRaiinItem, inputData)
         );
 
@@ -494,7 +494,7 @@ public class Reporting : IReporting
 
                                 if (rp.RpName != string.Empty && inputData.IsCheckedSetName)
                                 {
-                                    text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;【");
+                                    text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;【");
                                     text_order.Append(rp.RpName);
                                     text_order.Append("】</s></span><br>");
                                 }
@@ -502,7 +502,7 @@ public class Reporting : IReporting
                                 {
                                     foreach (var detail in rp.OdrDetails.Where(detail => detail.ItemName != string.Empty))
                                     {
-                                        text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;&nbsp;");
+                                        text_order.Append("<span><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                                         text_order.Append(detail.ItemName);
                                         text_order.Append("</s></span><br>");
                                     }
@@ -561,7 +561,7 @@ public class Reporting : IReporting
                 }
             }
             result.Add(new RichTextKarteOrder(
-                    CIUtil.SDateToShowSDate(karte_order.SinDate) + ".....................",
+                    CIUtil.SDateToShowSDate(karte_order.SinDate),
                     text_karte.ToString(),
                     text_order.ToString()
                 ));
