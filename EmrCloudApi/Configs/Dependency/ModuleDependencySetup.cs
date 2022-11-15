@@ -1,3 +1,5 @@
+﻿using DevExpress.Export;
+using DevExpress.Implementation;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
@@ -228,9 +230,7 @@ using UseCase.AccountDue.SaveAccountDueList;
 using EventProcessor.Service;
 using EventProcessor.Interfaces;
 using DevExpress.Inteface;
-using DevExpress.Export;
 using Interactor.ExportPDF;
-using DevExpress.Implementation;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -272,7 +272,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IUserService, UserService>();
 
             // Export
-            //services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 
