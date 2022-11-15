@@ -10,6 +10,7 @@ using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace DevExpress.Implementation;
 
@@ -19,13 +20,15 @@ public class Reporting : IReporting
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IKarte1Export _karte1Export;
+    private readonly ILogger _iLogger;
 
-    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export, ILogger iLogger)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _karte1Export = karte1Export;
+        _iLogger = iLogger;
     }
 
     public Karte1Output PrintKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
@@ -80,8 +83,9 @@ public class Reporting : IReporting
             }
             return new Karte1Output(Karte1Status.CanNotExportPdf);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _iLogger.LogInformation(ex, "");
             return new Karte1Output(Karte1Status.Failed);
         }
     }

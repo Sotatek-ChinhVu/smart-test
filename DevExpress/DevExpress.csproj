@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+      <PackageReference Include="System.Security.Permissions" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
