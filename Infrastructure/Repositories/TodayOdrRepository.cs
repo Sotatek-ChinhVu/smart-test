@@ -31,7 +31,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel)
+        public bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId)
         {
 
             var executionStrategy = _tenantTrackingDataContext.Database.CreateExecutionStrategy();
@@ -42,18 +42,18 @@ namespace Infrastructure.Repositories
                     using var transaction = _tenantTrackingDataContext.Database.BeginTransaction();
                     try
                     {
-                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn);
-
                         if (odrInfs.Count > 0)
                         {
-                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs);
+                            UpsertOdrInfs(hpId, ptId, raiinNo, sinDate, odrInfs, userId);
                         }
 
-                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime);
+                        SaveRaiinInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, tantoId, kaId, uketukeTime, sinStartTime, sinEndTime, userId);
 
-                        UpsertKarteInfs(karteInfModel);
+                        UpsertKarteInfs(karteInfModel, userId);
 
-                        SaveRaiinListInf(odrInfs);
+                        SaveRaiinListInf(odrInfs, userId);
+
+                        SaveHeaderInf(hpId, ptId, raiinNo, sinDate, syosaiKbn, jikanKbn, hokenPid, santeiKbn, userId);
 
                         transaction.Commit();
 
@@ -69,7 +69,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime)
+        private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
         {
             var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
 
@@ -84,14 +84,13 @@ namespace Infrastructure.Repositories
                 raiinInf.UketukeTime = uketukeTime;
                 raiinInf.SinEndTime = sinEndTime;
                 raiinInf.SinStartTime = sinStartTime;
-                raiinInf.UpdateId = TempIdentity.UserId;
+                raiinInf.UpdateId = userId;
                 raiinInf.UpdateDate = DateTime.UtcNow;
-                raiinInf.UpdateMachine = TempIdentity.ComputerName;
                 _tenantTrackingDataContext.SaveChanges();
             }
         }
 
-        private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn)
+        private void SaveHeaderInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int userId)
         {
 
             var oldHeaderInfModel = _tenantTrackingDataContext.OdrInfs.FirstOrDefault(o => o.HpId == hpId && o.PtId == ptId && o.RaiinNo == raiinNo && o.SinDate == sinDate && o.OdrKouiKbn == 10);
@@ -108,8 +107,7 @@ namespace Infrastructure.Repositories
                     if (oldHeaderInfModel.IsDeleted == DeleteTypes.Deleted)
                     {
                         oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
-                        oldHeaderInfModel.UpdateId = TempIdentity.UserId;
-                        oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+                        oldHeaderInfModel.UpdateId = userId;
                     }
                     oldHeaderInfModel.IsDeleted = 0;
                 }
@@ -118,8 +116,7 @@ namespace Infrastructure.Repositories
                     // Be sure old header is deleted
                     oldHeaderInfModel.IsDeleted = DeleteTypes.Deleted;
                     oldHeaderInfModel.UpdateDate = DateTime.UtcNow;
-                    oldHeaderInfModel.UpdateId = TempIdentity.UserId;
-                    oldHeaderInfModel.UpdateMachine = TempIdentity.ComputerName;
+                    oldHeaderInfModel.UpdateId = userId;
 
                     var newHeaderInf = new OdrInf
                     {
@@ -132,8 +129,9 @@ namespace Infrastructure.Repositories
                         HokenPid = hokenPid,
                         OdrKouiKbn = headerOdrKouiKbn,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
+                        CreateId = userId,
                         DaysCnt = daysCntDefalt
                     };
 
@@ -185,8 +183,9 @@ namespace Infrastructure.Repositories
                     HokenPid = hokenPid,
                     OdrKouiKbn = headerOdrKouiKbn,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId,
                     DaysCnt = daysCntDefalt
 
                 };
@@ -229,7 +228,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private void SaveRaiinListInf(List<OrdInfModel> ordInfs)
+        private void SaveRaiinListInf(List<OrdInfModel> ordInfs, int userId)
         {
             // Check input list todayOdrInfModels
             if (ordInfs.Count == 0)
@@ -388,8 +387,7 @@ namespace Infrastructure.Repositories
                                         GrpId = raiinListItem.GrpId,
                                         KbnCd = raiinListItem.KbnCd,
                                         UpdateDate = DateTime.Now,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName,
+                                        UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.ITEM_KBN
                                     };
                                     raiinListInfList.Add(raiinListInf);
@@ -404,8 +402,7 @@ namespace Infrastructure.Repositories
                                 {
                                     raiinListInf.KbnCd = raiinListItem.KbnCd;
                                     raiinListInf.UpdateDate = DateTime.Now;
-                                    raiinListInf.UpdateId = TempIdentity.UserId;
-                                    raiinListInf.UpdateMachine = TempIdentity.ComputerName;
+                                    raiinListInf.UpdateId = userId;
                                 }
                             }
                         }
@@ -439,8 +436,7 @@ namespace Infrastructure.Repositories
                                         GrpId = kouiItem.GrpId,
                                         KbnCd = kouiItem.KbnCd,
                                         UpdateDate = DateTime.Now,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName,
+                                        UpdateId = userId,
                                         RaiinListKbn = RaiinListKbnConstants.KOUI_KBN
                                     };
                                     raiinListInfList.Add(raiinListInf);
@@ -455,8 +451,7 @@ namespace Infrastructure.Repositories
                                 {
                                     raiinListInf.KbnCd = kouiItem.KbnCd;
                                     raiinListInf.UpdateDate = DateTime.Now;
-                                    raiinListInf.UpdateId = TempIdentity.UserId;
-                                    raiinListInf.UpdateMachine = TempIdentity.ComputerName;
+                                    raiinListInf.UpdateId = userId;
                                 }
                             }
                         }
@@ -470,7 +465,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs)
+        private void UpsertOdrInfs(int hpId, long ptId, long raiinNo, int sinDate, List<OrdInfModel> ordInfs, int userId)
         {
             var rpNoMax = GetMaxRpNo(hpId, ptId, raiinNo, sinDate);
             rpNoMax = rpNoMax < 2 ? 1 : rpNoMax;
@@ -512,11 +507,9 @@ namespace Infrastructure.Repositories
                             SortNo = item.SortNo,
                             IsDeleted = item.IsDeleted,
                             CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
+                            CreateId = userId,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         };
 
                         var ordInfDetailEntity = item?.OrdInfDetails.Select(
@@ -585,11 +578,9 @@ namespace Infrastructure.Repositories
                             SortNo = item.SortNo,
                             IsDeleted = item.IsDeleted,
                             CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
+                            CreateId = userId,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         };
 
                         var ordInfDetailEntity = item?.OrdInfDetails.Select(
@@ -640,7 +631,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.SaveChanges();
         }
 
-        private void UpsertKarteInfs(KarteInfModel karte)
+        private void UpsertKarteInfs(KarteInfModel karte, int userId)
         {
             int hpId = karte.HpId;
             long ptId = karte.PtId;
@@ -677,11 +668,9 @@ namespace Infrastructure.Repositories
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
                             IsDeleted = karte.IsDeleted,
                             CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
+                            CreateId = userId,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         };
 
                         _tenantTrackingDataContext.KarteInfs.Add(karteEntity);
@@ -705,11 +694,9 @@ namespace Infrastructure.Repositories
                             RichText = Encoding.UTF8.GetBytes(karte.RichText),
                             IsDeleted = karte.IsDeleted,
                             CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
+                            CreateId = userId,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         };
 
                         _tenantTrackingDataContext.KarteInfs.Add(karteEntity);

@@ -161,7 +161,11 @@ namespace Infrastructure.Repositories
                 tenMst?.YjCd ?? string.Empty,
                 tenMst?.CnvUnitName ?? string.Empty,
                 tenMst?.StartDate ?? 0,
-                tenMst?.YohoKbn ?? 0
+                tenMst?.YohoKbn ?? 0,
+                tenMst?.CmtColKeta1 ?? 0,
+                tenMst?.CmtColKeta2 ?? 0,
+                tenMst?.CmtColKeta3 ?? 0,
+                tenMst?.CmtColKeta4 ?? 0
             );
         }
 
@@ -194,7 +198,11 @@ namespace Infrastructure.Repositories
                 tenMst.YjCd ?? string.Empty,
                 tenMst.CnvUnitName ?? string.Empty,
                 tenMst.StartDate,
-                tenMst.YohoKbn
+                tenMst.YohoKbn,
+                tenMst.CmtColKeta1,
+                tenMst.CmtColKeta2,
+                tenMst.CmtColKeta3,
+                tenMst.CmtColKeta4
             )).ToList();
         }
 
@@ -564,15 +572,19 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.YjCd ?? string.Empty,
                                                            item.TenMst?.CnvUnitName ?? string.Empty,
                                                            item.TenMst?.StartDate ?? 0,
-                                                           item.TenMst?.YohoKbn ?? 0
+                                                           item.TenMst?.YohoKbn ?? 0,
+                                                           item.TenMst?.CmtColKeta1 ?? 0,
+                                                           item.TenMst?.CmtColKeta2 ?? 0,
+                                                           item.TenMst?.CmtColKeta3 ?? 0,
+                                                           item.TenMst?.CmtColKeta4 ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
         }
-        public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
+        public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
-            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == TempIdentity.HpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
+            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
 
             if (tenMst == null) return false;
 
@@ -581,8 +593,7 @@ namespace Infrastructure.Repositories
             tenMst.IsAdopted = valueAdopted;
 
             tenMst.UpdateDate = DateTime.UtcNow;
-            tenMst.UpdateId = TempIdentity.UserId;
-            tenMst.UpdateMachine = TempIdentity.ComputerName;
+            tenMst.UpdateId = userId;
 
             _tenantDataContextTracking.SaveChanges();
 
@@ -750,16 +761,15 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
-        public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
+        public bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
             var byomeiMst = _tenantDataContext.ByomeiMsts.Where(p => p.HpId == hpId && p.ByomeiCd == byomeiCd).FirstOrDefault();
             if (byomeiMst != null)
             {
                 byomeiMst.IsAdopted = 1;
-                byomeiMst.UpdateId = TempIdentity.UserId;
+                byomeiMst.UpdateId = userId;
                 byomeiMst.UpdateDate = DateTime.UtcNow;
-                byomeiMst.UpdateMachine = TempIdentity.ComputerName;
                 _tenantDataContextTracking.SaveChanges();
             }
             return true;
@@ -803,7 +813,11 @@ namespace Infrastructure.Repositories
                     entity?.YjCd ?? string.Empty,
                     entity?.CnvUnitName ?? string.Empty,
                     entity?.StartDate ?? 0,
-                    entity?.YohoKbn ?? 0
+                    entity?.YohoKbn ?? 0,
+                    entity?.CmtColKeta1 ?? 0,
+                    entity?.CmtColKeta2 ?? 0,
+                    entity?.CmtColKeta3 ?? 0,
+                    entity?.CmtColKeta4 ?? 0
                );
         }
 

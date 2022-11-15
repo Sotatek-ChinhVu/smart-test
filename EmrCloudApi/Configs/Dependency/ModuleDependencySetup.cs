@@ -68,7 +68,6 @@ using Interactor.Diseases;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
-using Interactor.ExportPDF;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
@@ -226,10 +225,12 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using EmrCloudApi.Tenant.Services;
 using UseCase.AccountDue.SaveAccountDueList;
 using EventProcessor.Service;
 using EventProcessor.Interfaces;
 using DevExpress.Inteface;
+using Interactor.ExportPDF;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -252,6 +253,14 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
+            SetupLogger(services);
+        }
+
+        private void SetupLogger(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Reporting>>();
+            services.AddSingleton(typeof(ILogger), logger!);
         }
 
         private void SetupInterfaces(IServiceCollection services)
@@ -260,6 +269,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IUserService, UserService>();
+
+            // Export
+            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 

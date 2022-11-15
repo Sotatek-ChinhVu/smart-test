@@ -71,37 +71,37 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<RaiinKubunMstModel> LoadDataKubunSetting(int HpId)
+        public List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId)
         {
             List<RsvGrpMstModel> rsvGrpMstList = _tenantDataContextNoTracking.RsvGrpMsts
-                .Where(r => r.HpId == HpId && r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && r.IsDeleted == 0)
                 .Select(x => new RsvGrpMstModel(x.RsvGrpId, x.SortKey, x.RsvGrpName, x.IsDeleted))
                 .ToList();
 
             List<RsvFrameMstModel> rsvFrameMstList = _tenantDataContextNoTracking.RsvFrameMsts
-                .Where(r => r.HpId == HpId && r.IsDeleted == 0)
+                .Where(r => r.HpId == hpId && r.IsDeleted == 0)
                 .Select(x => new RsvFrameMstModel(x.RsvGrpId, x.RsvFrameId, x.SortKey, x.RsvFrameName ?? String.Empty, x.TantoId, x.KaId, x.MakeRaiin, x.IsDeleted))
                 .ToList();
 
             var raiinKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts
-               .Where(r => r.HpId == HpId && r.IsDeleted == 0).ToList();
+               .Where(r => r.HpId == hpId && r.IsDeleted == 0).ToList();
 
             var groupIdlist = raiinKubunMstList.Select(r => r.GrpCd).ToList();
 
             var raiinKubunDetailList = _tenantDataContextNoTracking.RaiinKbnDetails
-                                        .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == HpId && r.IsDeleted == 0))
+                                        .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == hpId && r.IsDeleted == 0))
                                         .ToList();
             var kbnCdList = raiinKubunDetailList.Select(r => r.KbnCd).ToList();
 
-            var query = (from kbnDetail in _tenantDataContextNoTracking.RaiinKbnDetails.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         join kou in _tenantDataContextNoTracking.RaiinKbnKouis.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
+            var query = (from kbnDetail in _tenantDataContextNoTracking.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         join kou in _tenantDataContextNoTracking.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { kou.KbnCd, GrpCd = kou.GrpId } into kouis
                          from kbnKoui in kouis.DefaultIfEmpty()
-                         join item in _tenantDataContextNoTracking.RaiinKbItems.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { item.KbnCd, item.GrpCd } into items
+                         join item in _tenantDataContextNoTracking.RaiinKbItems.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         on new { kbnDetail.KbnCd ,kbnDetail.GrpCd }  equals new { item.KbnCd,item.GrpCd } into items
                          from kbnItem in items.DefaultIfEmpty()
-                         join yoyaku in _tenantDataContextNoTracking.RaiinKbnYayokus.Where(r => r.HpId == HpId && r.IsDeleted == 0).AsQueryable()
-                         on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
+                         join yoyaku in _tenantDataContextNoTracking.RaiinKbnYayokus.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         on new { kbnDetail.KbnCd,kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
                          from kbnYoyaku in yoyakus.DefaultIfEmpty()
                          select new
                          {
@@ -164,7 +164,7 @@ namespace Infrastructure.Repositories
             return raiinKubunMstModels;
         }
 
-        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels)
+        public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId)
         {
             List<string> result = new List<string>();
             var currentKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
@@ -224,7 +224,7 @@ namespace Infrastructure.Repositories
 
                                         x = new RaiinKubunMstModel(x.HpId, currentGrpCd, x.SortNo, x.GroupName, x.IsDeleted, x.RaiinKubunDetailModels);
 
-                                        var resultIds = AddRaiinKubunDetail(currentGrpCd, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
+                                        var resultIds = AddRaiinKubunDetail(currentGrpCd, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                         detailKbnCd = resultIds.Item1;
                                         kouiKbnCd = resultIds.Item2;
                                         itemSeqNo = resultIds.Item3;
@@ -239,8 +239,9 @@ namespace Infrastructure.Repositories
                                         GrpName = x.GroupName,
                                         IsDeleted = x.IsDeleted ? 1 : 0,
                                         CreateDate = DateTime.UtcNow,
-                                        CreateId = TempIdentity.UserId,
-                                        CreateMachine = TempIdentity.ComputerName
+                                        UpdateDate = DateTime.UtcNow,
+                                        UpdateId = userId,
+                                        CreateId = userId
                                     }).ToList());
                                     _tenantDataContextTracking.SaveChanges();
                                 }
@@ -253,7 +254,7 @@ namespace Infrastructure.Repositories
                                     {
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd == 0))
                                         {
-                                            var resultIds = AddRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
+                                            var resultIds = AddRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, detailKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                             detailKbnCd = resultIds.Item1;
                                             kouiKbnCd = resultIds.Item2;
                                             itemSeqNo = resultIds.Item3;
@@ -261,7 +262,7 @@ namespace Infrastructure.Repositories
                                         }
                                         if (x.RaiinKubunDetailModels.Any(x => x.KubunCd != 0))
                                         {
-                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd);
+                                            UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                         }
                                     });
                                     _tenantDataContextTracking.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
@@ -275,8 +276,7 @@ namespace Infrastructure.Repositories
                                         CreateId = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateId ?? 0,
                                         CreateMachine = currentKubunMstList.FirstOrDefault(y => y.GrpCd == x.GroupId)?.CreateMachine ?? string.Empty,
                                         UpdateDate = DateTime.UtcNow,
-                                        UpdateId = TempIdentity.UserId,
-                                        UpdateMachine = TempIdentity.ComputerName,
+                                        UpdateId = userId
                                     }));
                                 }
                             }
@@ -330,7 +330,7 @@ namespace Infrastructure.Repositories
 
         #region RaiinKbn
         #region Add
-        private (int, int, int, int) AddRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int currentKbnCd, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd)
+        private (int, int, int, int) AddRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, int currentKbnCd, int kouiKbnCd, int itemSeqNo, int yoyakuKbnCd, int userId)
         {
             if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
             {
@@ -344,9 +344,9 @@ namespace Infrastructure.Repositories
                         new List<RsvGrpMstModel>(),
                         x.RaiinKbnYayokuModels);
 
-                    kouiKbnCd = AddRaiinKbnKoui(currentKbnCd, grpCd, x.RaiinKbnKouiModels, kouiKbnCd);
-                    itemSeqNo = AddRaiinKbItem(currentKbnCd, grpCd, x.RaiinKbnItemModels, itemSeqNo);
-                    yoyakuKbnCd = AddRaiinKbnYayoku(currentKbnCd, grpCd, x.RaiinKbnYayokuModels, yoyakuKbnCd);
+                    kouiKbnCd = AddRaiinKbnKoui(currentKbnCd, grpCd, x.RaiinKbnKouiModels, kouiKbnCd, userId);
+                    itemSeqNo = AddRaiinKbItem(currentKbnCd, grpCd, x.RaiinKbnItemModels, itemSeqNo, userId);
+                    yoyakuKbnCd = AddRaiinKbnYayoku(currentKbnCd, grpCd, x.RaiinKbnYayokuModels, yoyakuKbnCd, userId);
                 });
 
                 _tenantDataContextTracking.RaiinKbnDetails.AddRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
@@ -362,15 +362,16 @@ namespace Infrastructure.Repositories
                     IsAutoDelete = x.IsAutoDeleted ? 1 : 0,
                     IsDeleted = x.IsDeleted ? 1 : 0,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
             return (currentKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
         }
 
-        private int AddRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, int kouiKbnCd)
+        private int AddRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, int kouiKbnCd, int userId)
         {
             if (raiinKbnKouiModels != null && raiinKbnKouiModels.Any())
             {
@@ -387,17 +388,18 @@ namespace Infrastructure.Repositories
                     KbnCd = kbnCd,
                     SeqNo = x.SeqNo,
                     KouiKbnId = x.KouiKbnId,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     IsDeleted = x.IsDeleted,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    CreateId = userId
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
             return kouiKbnCd;
         }
 
-        private int AddRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, int itemKbnCd)
+        private int AddRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, int itemKbnCd, int userId)
         {
             if (raiinKbItemModels != null && raiinKbItemModels.Any())
             {
@@ -416,17 +418,18 @@ namespace Infrastructure.Repositories
                     ItemCd = x.ItemCd,
                     IsExclude = x.IsExclude,
                     IsDeleted = x.IsDeleted,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
                     SortNo = x.SortNo,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    CreateId = userId,
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
             return itemKbnCd;
         }
 
-        private int AddRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, int yoyakuCd)
+        private int AddRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, int yoyakuCd, int userId)
         {
             if (raiinKbnYayokuModels != null && raiinKbnYayokuModels.Any())
             {
@@ -444,8 +447,9 @@ namespace Infrastructure.Repositories
                     YoyakuCd = x.YoyakuCd,
                     IsDeleted = x.IsDeleted,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName,
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
@@ -454,7 +458,7 @@ namespace Infrastructure.Repositories
         #endregion
 
         #region Update
-        private void UpdateRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus, int kouiId, int itemSeqNo, int yoyakuId)
+        private void UpdateRaiinKubunDetail(int grpCd, List<RaiinKubunDetailModel> raiinKubunDetailModels, List<RaiinKbnDetail> currentRaiinKubunDetails, List<RaiinKbnKoui> raiinKbnKouis, List<RaiinKbItem> raiinKbItems, List<RaiinKbnYayoku> raiinKbnYayokus, int kouiId, int itemSeqNo, int yoyakuId, int userId)
         {
             if (raiinKubunDetailModels != null && raiinKubunDetailModels.Any())
             {
@@ -463,37 +467,37 @@ namespace Infrastructure.Repositories
                     var kouiModelAdd = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId == 0).ToList();
                     if (kouiModelAdd != null && kouiModelAdd.Any())
                     {
-                        kouiId = AddRaiinKbnKoui(x.KubunCd, x.GroupId, kouiModelAdd, kouiId);
+                        kouiId = AddRaiinKbnKoui(x.KubunCd, x.GroupId, kouiModelAdd, kouiId, userId);
                     }
 
                     var kouiModelUpdate = x.RaiinKbnKouiModels.Where(x => x.KouiKbnId != 0).ToList();
                     if (kouiModelUpdate != null && kouiModelUpdate.Any())
                     {
-                        UpdateRaiinKbnKoui(x.KubunCd, grpCd, kouiModelUpdate, raiinKbnKouis);
+                        UpdateRaiinKbnKoui(x.KubunCd, grpCd, kouiModelUpdate, raiinKbnKouis, userId);
                     }
 
                     var itemModelAdd = x.RaiinKbnItemModels.Where(x => x.SeqNo == 0).ToList();
                     if (itemModelAdd != null && itemModelAdd.Any())
                     {
-                        itemSeqNo = AddRaiinKbItem(x.KubunCd, x.GroupId, itemModelAdd, itemSeqNo);
+                        itemSeqNo = AddRaiinKbItem(x.KubunCd, x.GroupId, itemModelAdd, itemSeqNo, userId);
                     }
 
                     var itemModelUpdate = x.RaiinKbnItemModels.Where(x => x.SeqNo != 0).ToList();
                     if (itemModelUpdate != null && itemModelUpdate.Any())
                     {
-                        UpdateRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, raiinKbItems);
+                        UpdateRaiinKbItem(x.KubunCd, x.GroupId, x.RaiinKbnItemModels, raiinKbItems, userId);
                     }
 
                     var yoyakuModelAdd = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd == 0).ToList();
                     if (yoyakuModelAdd != null && yoyakuModelAdd.Any())
                     {
-                        yoyakuId = AddRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, yoyakuId);
+                        yoyakuId = AddRaiinKbnYayoku(x.KubunCd, x.GroupId, x.RaiinKbnYayokuModels, yoyakuId, userId);
                     }
 
                     var yoyakuModelUpdate = x.RaiinKbnYayokuModels.Where(x => x.YoyakuCd != 0).ToList();
                     if (yoyakuModelUpdate != null && yoyakuModelUpdate.Any())
                     {
-                        UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, yoyakuModelUpdate, raiinKbnYayokus);
+                        UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, yoyakuModelUpdate, raiinKbnYayokus, userId);
                     }
                 });
                 _tenantDataContextTracking.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
@@ -512,14 +516,13 @@ namespace Infrastructure.Repositories
                     CreateId = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateId ?? 0,
                     CreateMachine = currentRaiinKubunDetails.FirstOrDefault(y => y.GrpCd == x.GroupId && y.KbnCd == x.KubunCd)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName,
+                    UpdateId = userId,
                 }));
                 _tenantDataContextTracking.SaveChanges();
             }
         }
 
-        private void UpdateRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, List<RaiinKbnKoui> raiinKbnKouis)
+        private void UpdateRaiinKbnKoui(int kbnCd, int grpCd, List<RaiinKbnKouiModel> raiinKbnKouiModels, List<RaiinKbnKoui> raiinKbnKouis, int userId)
         {
             if (raiinKbnKouiModels != null && raiinKbnKouiModels.Any())
             {
@@ -535,14 +538,13 @@ namespace Infrastructure.Repositories
                     CreateId = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateId ?? 0,
                     CreateMachine = raiinKbnKouis.FirstOrDefault(y => y.KouiKbnId == x.KouiKbnId)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName,
+                    UpdateId = userId
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
         }
 
-        private void UpdateRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, List<RaiinKbItem> raiinKbItems)
+        private void UpdateRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, List<RaiinKbItem> raiinKbItems, int userId)
         {
             if (raiinKbItemModels != null && raiinKbItemModels.Any())
             {
@@ -560,14 +562,13 @@ namespace Infrastructure.Repositories
                     CreateId = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateId ?? 0,
                     CreateMachine = raiinKbItems.FirstOrDefault(y => y.SeqNo == x.SeqNo)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName,
+                    UpdateId = userId
                 }));
             }
             _tenantDataContextTracking.SaveChanges();
         }
 
-        private void UpdateRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, List<RaiinKbnYayoku> raiinKbnYayokus)
+        private void UpdateRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, List<RaiinKbnYayoku> raiinKbnYayokus, int userId)
         {
             if (raiinKbnYayokuModels != null && raiinKbnYayokuModels.Any())
             {
@@ -583,8 +584,7 @@ namespace Infrastructure.Repositories
                     CreateId = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateId ?? 0,
                     CreateMachine = raiinKbnYayokus.FirstOrDefault(y => y.YoyakuCd == x.YoyakuCd)?.CreateMachine ?? string.Empty,
                     UpdateDate = DateTime.UtcNow,
-                    UpdateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName,
+                    UpdateId = userId
                 }).ToList();
                 _tenantDataContextTracking.RaiinKbnYayokus.UpdateRange(updateModel);
                 _tenantDataContextTracking.SaveChanges();

@@ -82,7 +82,7 @@ namespace Interactor.SpecialNote
                     alrgyDrugs?.RemoveAt(item.Key);
                 }
                 if (alrgyDrugs?.Count > 0)
-                    _importantNoteRepository.AddAlrgyDrugList(alrgyDrugs);
+                    _importantNoteRepository.AddAlrgyDrugList(alrgyDrugs, inputDatas.HpId, inputDatas.UserId);
 
                 return new AddAlrgyDrugListOutputData(keyValuePairs);
             }

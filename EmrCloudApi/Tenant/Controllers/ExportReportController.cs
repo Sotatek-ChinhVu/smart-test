@@ -1,7 +1,6 @@
-﻿using DevExpress.Response.Karte1;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Requests.ExportPDF;
-using EmrCloudApi.Tenant.Responses;
+using EmrCloudApi.Tenant.Services;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte2;
 using Microsoft.AspNetCore.Mvc;
@@ -10,59 +9,32 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+
 public class ExportReportController : ControllerBase
 {
     private readonly IReporting _reporting;
+    private readonly IUserService _userService;
 
-    public ExportReportController(IReporting reporting)
+    public ExportReportController(IReporting reporting, IUserService userService)
     {
         _reporting = reporting;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
-    public async Task<ActionResult<Response<string>>> GetList([FromQuery] Karte1ExportRequest request)
+    public IActionResult GetListKarte1([FromQuery] Karte1ExportRequest request)
     {
-        var output = await Task.Run(() => _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei));
-        Response<string> response = new();
-        response.Data = Convert.ToBase64String(output.DataStream.ToArray());
-        response.Status = (byte)output.Status;
-        response.Message = GetMessageKarte1(output.Status);
-
-        return response;
+        var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
+        return File(output.DataStream.ToArray(), "application/pdf");
     }
 
-    [HttpPost(ApiPath.ExportKarte2)]
-    public async Task<ActionResult<Response<string>>> GetListKarte2([FromBody] Karte2ExportRequest request)
+
+    [HttpGet(ApiPath.ExportKarte2)]
+    public IActionResult GetListKarte2([FromQuery] Karte2ExportRequest request)
     {
-        var output = await Task.Run(() => _reporting.PrintKarte2(ConvertToKarte2ExportInput(request)));
-
-        Response<string> response = new();
-        response.Data = Convert.ToBase64String(output.DataStream.ToArray());
-        response.Status = (byte)output.Status;
-        response.Message = GetMessageKarte2(output.Status);
-
-        return response;
+        var output = _reporting.PrintKarte2(ConvertToKarte2ExportInput(request));
+        return File(output.DataStream.ToArray(), "application/pdf");
     }
-
-    private string GetMessageKarte1(Karte1Status status) => status switch
-    {
-        Karte1Status.Success => ResponseMessage.Success,
-        Karte1Status.PtInfNotFould => ResponseMessage.PtInfNotFould,
-        Karte1Status.InvalidSindate => ResponseMessage.InvalidSinDate,
-        Karte1Status.InvalidHpId => ResponseMessage.InvalidHpId,
-        Karte1Status.HokenNotFould => ResponseMessage.HokenNotFould,
-        Karte1Status.Failed => ResponseMessage.Failed,
-        Karte1Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
-        _ => string.Empty
-    };
-
-    private string GetMessageKarte2(Karte2Status status) => status switch
-    {
-        Karte2Status.Success => ResponseMessage.Success,
-        Karte2Status.Failed => ResponseMessage.Failed,
-        Karte2Status.CanNotExportPdf => ResponseMessage.CanNotExportPdf,
-        _ => string.Empty
-    };
 
     private Karte2ExportInput ConvertToKarte2ExportInput(Karte2ExportRequest request)
     {

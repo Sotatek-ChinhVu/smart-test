@@ -2,7 +2,7 @@
 {
     public interface IMonshinInforRepository
     {
-        bool SaveList(List<MonshinInforModel> monshinInforModels);
+        bool SaveList(List<MonshinInforModel> monshinInforModels, int userId);
 
         public List<MonshinInforModel> MonshinInforModels(int hpId, long ptId, int sinDate, bool isDeleted);
     }

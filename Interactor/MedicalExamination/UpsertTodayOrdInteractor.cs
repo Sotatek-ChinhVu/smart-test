@@ -105,7 +105,7 @@ namespace Interactor.MedicalExamination
                     return new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, raiinInfStatus, resultOrder.Item1, validateKarte);
                 }
 
-                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel);
+                var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId);
 
                 return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
@@ -163,6 +163,7 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue
                     );
 
+                var objDetail = new object();
                 Parallel.ForEach(item.OdrDetails, itemDetail =>
                 {
                     var inputItem = itemDetail == null ? null : tenMsts?.FirstOrDefault(t => t.ItemCd == itemDetail.ItemCd);
@@ -175,7 +176,6 @@ namespace Interactor.MedicalExamination
                         return;
                     }
 
-                    var objDetail = new object();
                     var ordInfDetail = new OrdInfDetailModel(
                                 itemDetail.HpId,
                                 itemDetail.RaiinNo,
