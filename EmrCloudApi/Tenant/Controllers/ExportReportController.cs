@@ -1,17 +1,14 @@
-﻿using DevExpress.Response.Karte1;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Requests.ExportPDF;
-using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Services;
 using Interactor.ExportPDF;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+
 public class ExportReportController : ControllerBase
 {
     private readonly IReporting _reporting;
