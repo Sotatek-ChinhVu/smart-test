@@ -44,7 +44,7 @@ public class Karte1Export: IKarte1Export
         }
         catch (Exception ex)
         {
-            return (new MemoryStream(), ex.Message);
+            return (new MemoryStream(), ex.Message + Environment.NewLine + ex.StackTrace);
         }
     }
 }
