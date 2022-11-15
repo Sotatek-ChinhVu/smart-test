@@ -186,15 +186,9 @@
             this.xrControlStyle2 = new DevExpress.XtraReports.UI.XRControlStyle();
             this.objectDataSource2 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
             this.objectDataSource3 = new DevExpress.DataAccess.ObjectBinding.ObjectDataSource(this.components);
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
-=======
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).BeginInit();
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
@@ -204,81 +198,6 @@
             this.TopMargin.HeightF = 2F;
             this.TopMargin.Name = "TopMargin";
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            // xrTable1
-            // 
-            this.xrTable1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)));
-            this.xrTable1.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrTable1.LocationFloat = new DevExpress.Utils.PointFloat(0F, 11.59262F);
-            this.xrTable1.Name = "xrTable1";
-            this.xrTable1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 96F);
-            this.xrTable1.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
-            this.xrTableRow1});
-            this.xrTable1.SizeF = new System.Drawing.SizeF(652.8579F, 32.36605F);
-            this.xrTable1.StylePriority.UseBorders = false;
-            this.xrTable1.StylePriority.UseFont = false;
-            this.xrTable1.StylePriority.UseTextAlignment = false;
-            this.xrTable1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            // 
-            // xrTableRow1
-            // 
-            this.xrTableRow1.Cells.AddRange(new DevExpress.XtraReports.UI.XRTableCell[] {
-            this.xrTableCell1,
-            this.xrTableCell2,
-            this.xrTableCell4,
-            this.xrTableCell3,
-            this.xrTableCell5,
-            this.xrTableCell6});
-            this.xrTableRow1.Name = "xrTableRow1";
-            this.xrTableRow1.StylePriority.UseTextAlignment = false;
-            this.xrTableRow1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableRow1.Weight = 1D;
-            // 
-            // xrTableCell1
-            // 
-            this.xrTableCell1.Multiline = true;
-            this.xrTableCell1.Name = "xrTableCell1";
-            this.xrTableCell1.Text = "傷 病 名";
-            this.xrTableCell1.Weight = 1.6242519638930493D;
-            // 
-            // xrTableCell2
-            // 
-            this.xrTableCell2.Multiline = true;
-            this.xrTableCell2.Name = "xrTableCell2";
-            this.xrTableCell2.Text = "職\r\n務";
-            this.xrTableCell2.Weight = 0.44438463721375704D;
-            // 
-            // xrTableCell4
-            // 
-            this.xrTableCell4.Multiline = true;
-            this.xrTableCell4.Name = "xrTableCell4";
-            this.xrTableCell4.Text = "開 始";
-            this.xrTableCell4.Weight = 1.0600205583534736D;
-            // 
-            // xrTableCell3
-            // 
-            this.xrTableCell3.Multiline = true;
-            this.xrTableCell3.Name = "xrTableCell3";
-            this.xrTableCell3.Text = "終 了";
-            this.xrTableCell3.Weight = 1.0540130600527802D;
-            // 
-            // xrTableCell5
-            // 
-            this.xrTableCell5.Multiline = true;
-            this.xrTableCell5.Name = "xrTableCell5";
-            this.xrTableCell5.Text = "転 帰";
-            this.xrTableCell5.Weight = 1.3194489482436782D;
-            // 
-            // xrTableCell6
-            // 
-            this.xrTableCell6.Multiline = true;
-            this.xrTableCell6.Name = "xrTableCell6";
-            this.xrTableCell6.Text = "期 間 満 了\r\n予 定 ⽇";
-            this.xrTableCell6.Weight = 1.0264603939873114D;
-            // 
-=======
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             // txt_HokensyaTel
             // 
             this.txt_HokensyaTel.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
@@ -370,8 +289,8 @@
             // 
             // xrLabel5
             // 
-            this.xrLabel5.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel5.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel5.Font = new System.Drawing.Font("Yu Gothic UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel5.LocationFloat = new DevExpress.Utils.PointFloat(7.064253E-05F, 65.54169F);
@@ -387,13 +306,8 @@
             // 
             // txt_FutansyaNo_K1
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.txt_FutansyaNo_K1.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-=======
             this.txt_FutansyaNo_K1.BorderDashStyle = DevExpress.XtraPrinting.BorderDashStyle.Dot;
             this.txt_FutansyaNo_K1.Borders = DevExpress.XtraPrinting.BorderSide.Right;
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.txt_FutansyaNo_K1.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K1_1]")});
             this.txt_FutansyaNo_K1.Font = new System.Drawing.Font("Yu Gothic UI", 13.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -410,7 +324,7 @@
             // 
             // xrLabel6
             // 
-            this.xrLabel6.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel6.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel6.Font = new System.Drawing.Font("Yu Gothic UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel6.LocationFloat = new DevExpress.Utils.PointFloat(0.0001192093F, 94.54129F);
@@ -427,8 +341,8 @@
             // 
             // xrLabel7
             // 
-            this.xrLabel7.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel7.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel7.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(402.7111F, 65.54168F);
@@ -444,7 +358,7 @@
             // 
             // xrLabel8
             // 
-            this.xrLabel8.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel8.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel8.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel8.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 95.54202F);
@@ -458,48 +372,10 @@
             this.xrLabel8.Text = "記号・番号";
             this.xrLabel8.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            // txt_HokensyaNo
-            // 
-            this.txt_HokensyaNo.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.txt_HokensyaNo.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokensyaNo]")});
-            this.txt_HokensyaNo.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_HokensyaNo.LocationFloat = new DevExpress.Utils.PointFloat(472.5425F, 72.73108F);
-            this.txt_HokensyaNo.Multiline = true;
-            this.txt_HokensyaNo.Name = "txt_HokensyaNo";
-            this.txt_HokensyaNo.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_HokensyaNo.SizeF = new System.Drawing.SizeF(180.3153F, 36.05461F);
-            this.txt_HokensyaNo.StylePriority.UseBorders = false;
-            this.txt_HokensyaNo.StylePriority.UseFont = false;
-            this.txt_HokensyaNo.StylePriority.UseTextAlignment = false;
-            this.txt_HokensyaNo.Text = "公費負担者番号";
-            this.txt_HokensyaNo.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-            // 
-            // txt_KigoBango
-            // 
-            this.txt_KigoBango.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.txt_KigoBango.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[KigoBango]")});
-            this.txt_KigoBango.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txt_KigoBango.LocationFloat = new DevExpress.Utils.PointFloat(445.7572F, 108.7858F);
-            this.txt_KigoBango.Multiline = true;
-            this.txt_KigoBango.Name = "txt_KigoBango";
-            this.txt_KigoBango.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.txt_KigoBango.SizeF = new System.Drawing.SizeF(207.1006F, 36.0546F);
-            this.txt_KigoBango.StylePriority.UseBorders = false;
-            this.txt_KigoBango.StylePriority.UseFont = false;
-            this.txt_KigoBango.StylePriority.UseTextAlignment = false;
-            this.txt_KigoBango.Text = "公費負担者番号";
-            this.txt_KigoBango.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
-            // 
-=======
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             // xrLabel9
             // 
-            this.xrLabel9.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel9.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel9.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel9.LocationFloat = new DevExpress.Utils.PointFloat(7.064253E-05F, 130.6508F);
@@ -515,7 +391,7 @@
             // 
             // xrLabel10
             // 
-            this.xrLabel10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel10.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel10.LocationFloat = new DevExpress.Utils.PointFloat(38.92353F, 130.6508F);
@@ -580,16 +456,9 @@
             // 
             // xrLabel13
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrLabel13.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel13.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(285.4051F, 226.8177F);
-=======
             this.xrLabel13.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)));
             this.xrLabel13.Font = new System.Drawing.Font("Yu Gothic UI", 10.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel13.LocationFloat = new DevExpress.Utils.PointFloat(332.9678F, 182.6508F);
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrLabel13.Multiline = true;
             this.xrLabel13.Name = "xrLabel13";
             this.xrLabel13.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -669,8 +538,8 @@
             // 
             // xrLabel14
             // 
-            this.xrLabel14.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel14.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel14.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel14.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 130.6508F);
@@ -686,7 +555,7 @@
             // 
             // txt_HokenKigenW
             // 
-            this.txt_HokenKigenW.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.txt_HokenKigenW.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.txt_HokenKigenW.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[HokenKigenW]")});
@@ -721,7 +590,7 @@
             // 
             // xrLabel15
             // 
-            this.xrLabel15.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel15.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel15.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel15.LocationFloat = new DevExpress.Utils.PointFloat(402.7113F, 156.6508F);
@@ -754,16 +623,9 @@
             // 
             // xrLabel16
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrLabel16.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel16.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrLabel16.LocationFloat = new DevExpress.Utils.PointFloat(351.6561F, 226.8177F);
-=======
             this.xrLabel16.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)));
             this.xrLabel16.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel16.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 182.6508F);
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrLabel16.Multiline = true;
             this.xrLabel16.Name = "xrLabel16";
             this.xrLabel16.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -874,7 +736,7 @@
             // 
             // xrLabel18
             // 
-            this.xrLabel18.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel18.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel18.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel18.LocationFloat = new DevExpress.Utils.PointFloat(38.9235F, 299.6508F);
@@ -890,11 +752,7 @@
             // 
             // xrLabel19
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrLabel19.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
-=======
             this.xrLabel19.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel19.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel19.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 208.6508F);
@@ -1056,7 +914,7 @@
             // 
             // txt_Job
             // 
-            this.txt_Job.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.txt_Job.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.txt_Job.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Job]")});
@@ -1074,7 +932,7 @@
             // 
             // xrLabel27
             // 
-            this.xrLabel27.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel27.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel27.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel27.LocationFloat = new DevExpress.Utils.PointFloat(38.92333F, 354.6508F);
@@ -1184,7 +1042,7 @@
             // 
             // xrLabel37
             // 
-            this.xrLabel37.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel37.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel37.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel37.LocationFloat = new DevExpress.Utils.PointFloat(402.7112F, 327.6508F);
@@ -1200,14 +1058,14 @@
             // 
             // xrLabel29
             // 
-            this.xrLabel29.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel29.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel29.Font = new System.Drawing.Font("Yu Gothic UI", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.xrLabel29.LocationFloat = new DevExpress.Utils.PointFloat(217.5151F, 354.6508F);
+            this.xrLabel29.LocationFloat = new DevExpress.Utils.PointFloat(217.515F, 354.6508F);
             this.xrLabel29.Multiline = true;
             this.xrLabel29.Name = "xrLabel29";
             this.xrLabel29.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel29.SizeF = new System.Drawing.SizeF(95.35074F, 59.51923F);
+            this.xrLabel29.SizeF = new System.Drawing.SizeF(95.35051F, 59.51926F);
             this.xrLabel29.StylePriority.UseBorders = false;
             this.xrLabel29.StylePriority.UseFont = false;
             this.xrLabel29.StylePriority.UseTextAlignment = false;
@@ -1697,7 +1555,7 @@
             // 
             // xrLabel28
             // 
-            this.xrLabel28.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel28.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel28.Font = new System.Drawing.Font("Yu Gothic UI", 7F);
             this.xrLabel28.LocationFloat = new DevExpress.Utils.PointFloat(217.5152F, 2F);
@@ -1713,7 +1571,7 @@
             // 
             // xrLabel31
             // 
-            this.xrLabel31.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel31.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel31.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel31.LocationFloat = new DevExpress.Utils.PointFloat(546.8204F, 2.000026F);
@@ -1761,7 +1619,7 @@
             // 
             // xrLabel38
             // 
-            this.xrLabel38.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel38.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel38.Font = new System.Drawing.Font("Yu Gothic UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel38.LocationFloat = new DevExpress.Utils.PointFloat(0.0001589457F, 52.40196F);
@@ -1776,7 +1634,7 @@
             // 
             // xrLabel39
             // 
-            this.xrLabel39.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel39.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel39.Font = new System.Drawing.Font("Yu Gothic UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel39.LocationFloat = new DevExpress.Utils.PointFloat(0.0007064255F, 82.77125F);
@@ -1911,8 +1769,8 @@
             // 
             // xrLabel63
             // 
-            this.xrLabel63.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel63.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel63.Font = new System.Drawing.Font("Yu Gothic UI", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel63.LocationFloat = new DevExpress.Utils.PointFloat(7.064253E-05F, 115.1406F);
@@ -1928,8 +1786,8 @@
             // 
             // xrLabel26
             // 
-            this.xrLabel26.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel26.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
+            | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel26.Font = new System.Drawing.Font("Yu Gothic UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel26.LocationFloat = new DevExpress.Utils.PointFloat(0.0001956255F, 2.000026F);
@@ -1945,7 +1803,7 @@
             // 
             // xrLabel64
             // 
-            this.xrLabel64.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel64.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel64.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel64.LocationFloat = new DevExpress.Utils.PointFloat(365.3749F, 115.1406F);
@@ -1959,26 +1817,6 @@
             this.xrLabel64.Text = "公費負担者番号";
             this.xrLabel64.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            // xrLabel65
-            // 
-            this.xrLabel65.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel65.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[FutansyaNo_K2]")});
-            this.xrLabel65.Font = new System.Drawing.Font("MS Gothic", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrLabel65.LocationFloat = new DevExpress.Utils.PointFloat(475.3999F, 111.1406F);
-            this.xrLabel65.Multiline = true;
-            this.xrLabel65.Name = "xrLabel65";
-            this.xrLabel65.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel65.SizeF = new System.Drawing.SizeF(177.4579F, 32.3763F);
-            this.xrLabel65.StylePriority.UseBorders = false;
-            this.xrLabel65.StylePriority.UseFont = false;
-            this.xrLabel65.StylePriority.UseTextAlignment = false;
-            this.xrLabel65.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            // 
-=======
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             // xrLabel67
             // 
             this.xrLabel67.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
@@ -1995,7 +1833,7 @@
             // 
             // xrLabel66
             // 
-            this.xrLabel66.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel66.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel66.Font = new System.Drawing.Font("Yu Gothic UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.xrLabel66.LocationFloat = new DevExpress.Utils.PointFloat(0F, 148.1406F);
@@ -2026,7 +1864,7 @@
             // 
             // xrLabel62
             // 
-            this.xrLabel62.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
+            this.xrLabel62.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrLabel62.Font = new System.Drawing.Font("Yu Gothic UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.xrLabel62.LocationFloat = new DevExpress.Utils.PointFloat(177.0117F, 115.1406F);
@@ -2073,11 +1911,7 @@
             // 
             // byomei_name
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.byomei_name.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-=======
             this.byomei_name.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Right) 
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.byomei_name.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[Byomei]")});
@@ -2094,14 +1928,8 @@
             // 
             // xrTableCell8
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrTableCell8.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-=======
             this.xrTableCell8.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell8.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrTableCell8.Multiline = true;
             this.xrTableCell8.Name = "xrTableCell8";
             this.xrTableCell8.StylePriority.UseBorders = false;
@@ -2111,12 +1939,7 @@
             // 
             // xrTableCell9
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrTableCell9.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-=======
             this.xrTableCell9.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrTableCell9.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[ByomeiStartDateWFormat]")});
             this.xrTableCell9.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -2129,12 +1952,7 @@
             // 
             // xrTableCell11
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrTableCell11.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-=======
             this.xrTableCell11.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrTableCell11.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[ByomeiTenkiDateWFormat]")});
             this.xrTableCell11.Font = new System.Drawing.Font("Yu Gothic UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
@@ -2147,12 +1965,7 @@
             // 
             // xrTableCell10
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)(((DevExpress.XtraPrinting.BorderSide.Top | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-=======
             this.xrTableCell10.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             this.xrTableCell10.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrShape4,
             this.xrShape3,
@@ -2219,22 +2032,6 @@
             this.xrLabel46.SizeF = new System.Drawing.SizeF(124.3723F, 46.50002F);
             this.xrLabel46.StylePriority.UseBorders = false;
             this.xrLabel46.StylePriority.UseFont = false;
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.xrLabel46.Text = " 治ゆ・死亡・中⽌・他";
-            // 
-            // xrTableCell15
-            // 
-            this.xrTableCell15.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top)
-            | DevExpress.XtraPrinting.BorderSide.Right)
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrTableCell15.Multiline = true;
-            this.xrTableCell15.Name = "xrTableCell15";
-            this.xrTableCell15.StylePriority.UseBorders = false;
-            this.xrTableCell15.StylePriority.UseTextAlignment = false;
-            this.xrTableCell15.Text = "年 ⽉ ⽇";
-            this.xrTableCell15.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell15.Weight = 1.4212514373095484D;
-=======
             this.xrLabel46.Text = " 治ゆ・死亡・中止・他";
             // 
             // xrTableCell7
@@ -2251,7 +2048,6 @@
             this.xrTableCell7.TextFormatString = "{0:###}";
             this.xrTableCell7.Weight = 1.2701832202940075D;
             this.xrTableCell7.WordWrap = false;
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             // 
             // objectDataSource1
             // 
@@ -2874,11 +2670,7 @@
             // 
             // objectDataSource3
             // 
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-            this.objectDataSource3.DataSource = typeof(global::DevExpress.Models.Karte1.Karte1ExportModel);
-=======
-            this.objectDataSource3.DataSource = typeof(global::DevExpress.Models.Karte1ExportModel);
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
+            this.objectDataSource3.DataSourceType = null;
             this.objectDataSource3.Name = "objectDataSource3";
             // 
             // Karte1TemplatePage1
@@ -2893,8 +2685,7 @@
             this.objectDataSource1,
             this.objectDataSource2,
             this.objectDataSource3});
-            this.DataMember = "ListByomeiModelsPage1";
-            this.DataSource = this.objectDataSource3;
+            this.DataSource = this.objectDataSource1;
             this.Font = new System.Drawing.Font("Arial", 9.75F);
             this.Margins = new System.Drawing.Printing.Margins(51, 51, 2, 195);
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
@@ -2903,10 +2694,7 @@
             this.Version = "22.1";
             ((System.ComponentModel.ISupportInitialize)(this.xrTable2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource1)).EndInit();
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-=======
             ((System.ComponentModel.ISupportInitialize)(this.xrTable1)).EndInit();
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.objectDataSource3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
@@ -3009,9 +2797,6 @@
         private XtraReports.UI.XRShape xrShape4;
         private XtraReports.UI.XRShape xrShape6;
         private XtraReports.UI.XRShape xrShape5;
-<<<<<<< HEAD:DevExpress/Template/Karte1/Karte1TemplatePage1.Designer.cs
-        private DataAccess.ObjectBinding.ObjectDataSource objectDataSource2;
-=======
         private XtraReports.UI.XRTable xrTable1;
         private XtraReports.UI.XRTableRow xrTableRow1;
         private XtraReports.UI.XRTableCell xrTableCell1;
@@ -3074,7 +2859,6 @@
         private XtraReports.UI.XRLabel xrLabel53;
         private XtraReports.UI.XRLabel xrLabel33;
         private XtraReports.UI.XRLabel xrLabel28;
->>>>>>> develop:DevExpress/Template/Karte1TemplatePage1.Designer.cs
         private DataAccess.ObjectBinding.ObjectDataSource objectDataSource3;
     }
 }
