@@ -81,7 +81,7 @@
             this.richText1,
             this.label1,
             this.richText2});
-            this.Detail.HeightF = 53.41303F;
+            this.Detail.HeightF = 53.5519F;
             this.Detail.Name = "Detail";
             // 
             // richText1
@@ -90,7 +90,7 @@
             this.richText1.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.richText1.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Html", "[RichTextKarte]")});
-            this.richText1.Font = new System.Drawing.Font("Times New Roman", 9.75F);
+            this.richText1.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richText1.LocationFloat = new DevExpress.Utils.PointFloat(10.00004F, 25.45834F);
             this.richText1.Name = "richText1";
             this.richText1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -98,6 +98,7 @@
             this.richText1.SizeF = new System.Drawing.SizeF(311.2992F, 11.53116F);
             this.richText1.StylePriority.UseBackColor = false;
             this.richText1.StylePriority.UseBorders = false;
+            this.richText1.StylePriority.UseFont = false;
             // 
             // label1
             // 
@@ -121,7 +122,7 @@
             this.richText2.Borders = DevExpress.XtraPrinting.BorderSide.None;
             this.richText2.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Html", "[RichTextOrder]")});
-            this.richText2.Font = new System.Drawing.Font("Times New Roman", 9.75F);
+            this.richText2.Font = new System.Drawing.Font("Yu Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richText2.LocationFloat = new DevExpress.Utils.PointFloat(325.2993F, 0F);
             this.richText2.Name = "richText2";
             this.richText2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
@@ -129,6 +130,7 @@
             this.richText2.SizeF = new System.Drawing.SizeF(318.7008F, 36.98951F);
             this.richText2.StylePriority.UseBackColor = false;
             this.richText2.StylePriority.UseBorders = false;
+            this.richText2.StylePriority.UseFont = false;
             // 
             // PageHeader
             // 
@@ -148,7 +150,7 @@
             this.xrLabel2,
             this.xrLabel1,
             this.xrTable1});
-            this.PageHeader.HeightF = 120F;
+            this.PageHeader.HeightF = 126.5001F;
             this.PageHeader.Name = "PageHeader";
             // 
             // xrLabel14
@@ -352,12 +354,12 @@
             // xrTable1
             // 
             this.xrTable1.Font = new System.Drawing.Font("MS Gothic", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.xrTable1.LocationFloat = new DevExpress.Utils.PointFloat(0F, 101.5001F);
+            this.xrTable1.LocationFloat = new DevExpress.Utils.PointFloat(1.041695F, 101.5001F);
             this.xrTable1.Name = "xrTable1";
             this.xrTable1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrTable1.Rows.AddRange(new DevExpress.XtraReports.UI.XRTableRow[] {
             this.xrTableRow1});
-            this.xrTable1.SizeF = new System.Drawing.SizeF(650F, 18.20748F);
+            this.xrTable1.SizeF = new System.Drawing.SizeF(647.92F, 25F);
             this.xrTable1.StylePriority.UseFont = false;
             // 
             // xrTableRow1
@@ -370,43 +372,39 @@
             // 
             // xrTableCell1
             // 
-            this.xrTableCell1.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right) 
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrTableCell1.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Right | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell1.Multiline = true;
             this.xrTableCell1.Name = "xrTableCell1";
             this.xrTableCell1.StylePriority.UseBorders = false;
             this.xrTableCell1.StylePriority.UseTextAlignment = false;
             this.xrTableCell1.Text = "既往歴・原因・主要症状・経過等";
             this.xrTableCell1.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell1.Weight = 3.6791696191298384D;
+            this.xrTableCell1.Weight = 3.6672787091152603D;
             // 
             // xrTableCell2
             // 
-            this.xrTableCell2.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
-            | DevExpress.XtraPrinting.BorderSide.Right) 
-            | DevExpress.XtraPrinting.BorderSide.Bottom)));
+            this.xrTableCell2.Borders = ((DevExpress.XtraPrinting.BorderSide)((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Bottom)));
             this.xrTableCell2.Multiline = true;
             this.xrTableCell2.Name = "xrTableCell2";
             this.xrTableCell2.StylePriority.UseBorders = false;
             this.xrTableCell2.StylePriority.UseTextAlignment = false;
             this.xrTableCell2.Text = "処方 ・ 手術 ・ 処置等\r";
             this.xrTableCell2.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
-            this.xrTableCell2.Weight = 3.7408306909074054D;
+            this.xrTableCell2.Weight = 3.7289404781917832D;
             // 
             // PageFooter
             // 
             this.PageFooter.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
             this.xrRichText2,
             this.xrPageInfo1});
-            this.PageFooter.HeightF = 181.5765F;
+            this.PageFooter.HeightF = 69.15638F;
             this.PageFooter.Name = "PageFooter";
             // 
             // xrRichText2
             // 
             this.xrRichText2.CanGrow = false;
             this.xrRichText2.Font = new System.Drawing.Font("Arial", 9.75F);
-            this.xrRichText2.LocationFloat = new DevExpress.Utils.PointFloat(287.4661F, 41.74086F);
+            this.xrRichText2.LocationFloat = new DevExpress.Utils.PointFloat(287.4661F, 26.00001F);
             this.xrRichText2.Name = "xrRichText2";
             this.xrRichText2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrRichText2.SerializableRtfString = resources.GetString("xrRichText2.SerializableRtfString");
@@ -414,7 +412,7 @@
             // 
             // xrPageInfo1
             // 
-            this.xrPageInfo1.LocationFloat = new DevExpress.Utils.PointFloat(325.2993F, 41.74084F);
+            this.xrPageInfo1.LocationFloat = new DevExpress.Utils.PointFloat(325.2993F, 26F);
             this.xrPageInfo1.Name = "xrPageInfo1";
             this.xrPageInfo1.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrPageInfo1.PageInfo = DevExpress.XtraPrinting.PageInfo.Number;
@@ -423,8 +421,9 @@
             // xrCrossBandBox1
             // 
             this.xrCrossBandBox1.AnchorVertical = ((DevExpress.XtraReports.UI.VerticalAnchorStyles)((DevExpress.XtraReports.UI.VerticalAnchorStyles.Top | DevExpress.XtraReports.UI.VerticalAnchorStyles.Bottom)));
+            this.xrCrossBandBox1.BorderWidth = 1F;
             this.xrCrossBandBox1.EndBand = this.PageFooter;
-            this.xrCrossBandBox1.EndPointFloat = new DevExpress.Utils.PointFloat(0F, 1.903709F);
+            this.xrCrossBandBox1.EndPointFloat = new DevExpress.Utils.PointFloat(0F, 1.999985F);
             this.xrCrossBandBox1.Name = "xrCrossBandBox1";
             this.xrCrossBandBox1.StartBand = this.PageHeader;
             this.xrCrossBandBox1.StartPointFloat = new DevExpress.Utils.PointFloat(0F, 101.5001F);
@@ -434,7 +433,7 @@
             // 
             this.xrCrossBandLine1.AnchorVertical = ((DevExpress.XtraReports.UI.VerticalAnchorStyles)((DevExpress.XtraReports.UI.VerticalAnchorStyles.Top | DevExpress.XtraReports.UI.VerticalAnchorStyles.Bottom)));
             this.xrCrossBandLine1.EndBand = this.PageFooter;
-            this.xrCrossBandLine1.EndPointFloat = new DevExpress.Utils.PointFloat(321.2992F, 2.182182F);
+            this.xrCrossBandLine1.EndPointFloat = new DevExpress.Utils.PointFloat(321.2992F, 2F);
             this.xrCrossBandLine1.Name = "xrCrossBandLine1";
             this.xrCrossBandLine1.StartBand = this.PageHeader;
             this.xrCrossBandLine1.StartPointFloat = new DevExpress.Utils.PointFloat(321.2992F, 101.5001F);
