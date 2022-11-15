@@ -26,8 +26,7 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageIndex);
             }
 
-            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
-            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.IsMisaiyou, keyword, inputData.Sindate, inputData.PageIndex, inputData.PageSize);
+            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.IsMisaiyou, inputData.Keyword, inputData.Sindate, inputData.PageIndex, inputData.PageSize);
             return new DiseaseSearchOutputData(listData, DiseaseSearchStatus.Successed);
         }
         catch (Exception)

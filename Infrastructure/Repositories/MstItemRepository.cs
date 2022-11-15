@@ -720,10 +720,11 @@ namespace Infrastructure.Repositories
                                  );
 
             query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) &&
-                                        (!isMisaiyou && item.IsAdopted == 1) &&
+                                        (isMisaiyou || item.IsAdopted == 1) &&
                                                (isByomei && item.ByomeiCd.Length != 4)
                                             || (isPrefix && item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9"))
                                             || (isSuffix && item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8"))
+                                            //|| (isMisaiyou && item.IsAdopted == 1)
                                         );
 
             var listDatas = query.OrderBy(item => item.KanaName1)
