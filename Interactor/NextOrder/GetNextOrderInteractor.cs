@@ -1,6 +1,5 @@
 ﻿using Domain.Models.Insurance;
 using Domain.Models.NextOrder;
-using Microsoft.EntityFrameworkCore;
 using UseCase.NextOrder.Get;
 
 namespace Interactor.NextOrder
@@ -37,20 +36,24 @@ namespace Interactor.NextOrder
                 {
                     return new GetNextOrderOutputData(new(), new(), new(), GetNextOrderStatus.InvalidSinDate);
                 }
+                if (inputData.UserId <= 0)
+                {
+                    return new GetNextOrderOutputData(new(), new(), new(), GetNextOrderStatus.InvalidUserId);
+                }
 
                 var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
-                var nextOrder = _nextOrderRepository.Get(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.Type);
+                var nextOrder = _nextOrderRepository.Get(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.UserId, inputData.SinDate, inputData.Type);
                 var orderInfItems = nextOrder.orderInfs.Select(
                         o => new RsvKrtOrderInfItem(
                                 o.HpId,
                                 o.PtId,
+                                o.RsvDate,
                                 o.RsvkrtNo,
                                 o.RpNo,
                                 o.RpEdaNo,
                                 o.Id,
                                 o.HokenPid,
                                 o.OdrKouiKbn,
-                                o.RpName,
                                 o.RpName,
                                 o.InoutKbn,
                                 o.SikyuKbn,
@@ -60,26 +63,96 @@ namespace Interactor.NextOrder
                                 o.DaysCnt,
                                 o.IsDeleted,
                                 o.SortNo,
+                                o.GroupKoui.Value,
+                                o.OrderInfDetailModels.Select(od =>
+                                    new RsvKrtOrderInfDetailItem(
+                                      od.HpId,
+                                      od.PtId,
+                                      od.RsvkrtNo,
+                                      od.RpNo,
+                                      od.RpEdaNo,
+                                      od.RowNo,
+                                      od.RsvDate,
+                                      od.SinKouiKbn,
+                                      od.ItemCd,
+                                      od.ItemName,
+                                      od.Suryo,
+                                      od.UnitName,
+                                      od.UnitSbt,
+                                      od.TermVal,
+                                      od.KohatuKbn,
+                                      od.SyohoKbn,
+                                      od.SyohoLimitKbn,
+                                      od.DrugKbn,
+                                      od.YohoKbn,
+                                      od.Kokuji1,
+                                      od.Kokuji2,
+                                      od.IsNodspRece,
+                                      od.IpnCd,
+                                      od.IpnName,
+                                      od.Bunkatu,
+                                      od.CmtName,
+                                      od.CmtOpt,
+                                      od.FontColor,
+                                      od.CommentNewline,
+                                      od.MasterSbt,
+                                      od.InOutKbn,
+                                      od.Yakka,
+                                      od.IsGetPriceInYakka,
+                                      od.Ten,
+                                      od.BunkatuKoui,
+                                      od.AlternationIndex,
+                                      od.KensaGaichu,
+                                      od.RefillSetting,
+                                      od.CmtCol1,
+                                      od.OdrTermVal,
+                                      od.CnvTermVal,
+                                      od.YjCd,
+                                      od.YohoSets,
+                                      od.Kasan1,
+                                      od.Kasan2
+                                    )).ToList()
                             )
                     );
+
                 var hokenOdrInfs = nextOrder.orderInfs?
                .GroupBy(odr => odr.HokenPid)
                .Select(grp => grp.FirstOrDefault())
                .ToList();
-
                 if (nextOrder.byomeis.Count == 0 && nextOrder.karteInf.HpId == 0 && nextOrder.karteInf.PtId == 0 && nextOrder.karteInf.SeqNo == 0 && (hokenOdrInfs == null || hokenOdrInfs.Count == 0))
                 {
                     return new GetNextOrderOutputData(new(), new(), new(), GetNextOrderStatus.NoData);
                 }
+                var byomeiItems = nextOrder.byomeis.Select(b => new RsvKrtByomeiItem(
+                        b.Id,
+                        b.HpId,
+                        b.PtId,
+                        b.RsvkrtNo,
+                        b.SeqNo,
+                        b.ByomeiCd,
+                        b.Byomei,
+                        b.SyobyoKbn,
+                        b.SikkanKbn,
+                        b.NanbyoCd,
+                        b.HosokuCmt,
+                        b.IsNodspRece,
+                        b.IsNodspKarte,
+                        b.IsDeleted,
+                        b.Icd10,
+                        b.Icd102013,
+                        b.Icd1012013,
+                        b.Icd1022013,
+                        b.PrefixSuffixList
+                    )).ToList();
 
                 var obj = new object();
+                var tree = new GetNextOrderOutputData(new(), nextOrder.karteInf, byomeiItems, GetNextOrderStatus.Successed);
                 Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
                 {
-
                     var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
                     var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
                     // Find By Group
-                    var groupOdrInfs = nextOrder.orderInfs?.Where(odr => odr.HokenPid == hokenId)
+                    var groupOdrInfs = orderInfItems?.Where(odr => odr.HokenPid == hokenId)
                         .GroupBy(odr => new
                         {
                             odr.HokenPid,
@@ -97,7 +170,7 @@ namespace Interactor.NextOrder
                         var objGroupOdrInf = new object();
                         Parallel.ForEach(groupOdrInfs, groupOdrInf =>
                         {
-                            var rpOdrInfs = allOdrInfs.Where(odrInf => odrInf.HokenPid == hokenId
+                            var odrInfs = orderInfItems?.Where(odrInf => odrInf.HokenPid == hokenId
                                                     && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
                                                     && odrInf.InoutKbn == groupOdrInf?.InoutKbn
                                                     && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
@@ -106,21 +179,22 @@ namespace Interactor.NextOrder
                                                     && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
                                                 .ToList();
 
-                            var group = new GroupOdrItem("Hoken title", new List<OdrInfItem>(), hokenId);
+                            var group = new GroupOdrItem("Hoken title", new List<RsvKrtOrderInfItem>(), hokenId);
                             lock (objGroupOdrInf)
                             {
-                                group.OdrInfs.AddRange(rpOdrInfs);
+                                if (odrInfs?.Count > 0)
+                                    group.OdrInfs.AddRange(odrInfs);
                                 groupHoken.GroupOdrItems.Add(group);
                             }
                         });
                     }
                     lock (obj)
                     {
-                        tree.GroupHokens.Add(groupHoken);
+                        tree.GroupHokenItems.Add(groupHoken);
                     }
                 });
 
-                return new GetHeaderInfOutputData(reception.SyosaisinKbn, reception.JikanKbn, reception.HokenPid, reception.SanteiKbn, reception.TantoId, reception.KaId, reception.UketukeTime, reception.SinStartTime, reception.SinEndTime, raiinTag.TagNo, odrInf, GetHeaderInfStatus.Successed);
+                return tree;
             }
             catch
             {

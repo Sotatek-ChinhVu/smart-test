@@ -1,9 +1,7 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.NextOrder;
-using EmrCloudApi.Tenant.Responses.OrdInfs;
 using UseCase.NextOrder.Get;
-using UseCase.OrdInfs.GetHeaderInf;
 
 namespace EmrCloudApi.Tenant.Presenters.NextOrder
 {
@@ -31,6 +29,9 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                     break;
                 case GetNextOrderStatus.InvalidSinDate:
                     Result.Message = ResponseMessage.InvalidSinDate;
+                    break;
+                case GetNextOrderStatus.InvalidUserId:
+                    Result.Message = ResponseMessage.InvalidUserId;
                     break;
                 case GetNextOrderStatus.NoData:
                     Result.Message = ResponseMessage.NoData;

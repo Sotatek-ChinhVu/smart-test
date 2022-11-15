@@ -7,7 +7,8 @@
         InvalidHpId = 2,
         InvalidPtId = 3,
         InvalidSinDate = 4,
-        NoData = 5,
-        Failed = 6
+        InvalidUserId = 5,
+        NoData = 6,
+        Failed = 7
     }
 }

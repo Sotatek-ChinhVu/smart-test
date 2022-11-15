@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UseCase.NextOrder.Get
+﻿namespace UseCase.NextOrder.Get
 {
     public class RsvKrtByomeiItem
     {
-        public RsvKrtByomeiItem(long id, int hpId, long ptId, long rsvkrtNo, long seqNo, string byomeiCd, string byomei, int syobyoKbn, int sikkanKbn, int nanbyoCd, string hosokuCmt, int isNodspRece, int isNodspKarte, int isDeleted, List<string> prefixSuffixList)
+        public RsvKrtByomeiItem(long id, int hpId, long ptId, long rsvkrtNo, long seqNo, string byomeiCd, string byomei, int syobyoKbn, int sikkanKbn, int nanbyoCd, string hosokuCmt, int isNodspRece, int isNodspKarte, int isDeleted, string icd10, string icd102013, string icd1012013, string icd1022013, List<string> prefixSuffixList)
         {
             Id = id;
             HpId = hpId;
@@ -24,6 +18,10 @@ namespace UseCase.NextOrder.Get
             IsNodspRece = isNodspRece;
             IsNodspKarte = isNodspKarte;
             IsDeleted = isDeleted;
+            Icd10 = icd10;
+            Icd102013 = icd102013;
+            Icd1012013 = icd1012013;
+            Icd1022013 = icd1022013;
             PrefixSuffixList = prefixSuffixList;
         }
 
@@ -49,11 +47,19 @@ namespace UseCase.NextOrder.Get
 
         public string HosokuCmt { get; private set; }
 
-        public int IsNodspRece { get; set; }
+        public int IsNodspRece { get; private set; }
 
         public int IsNodspKarte { get; private set; }
 
         public int IsDeleted { get; private set; }
+
+        public string Icd10 { get; private set; }
+
+        public string Icd102013 { get; private set; }
+
+        public string Icd1012013 { get; private set; }
+
+        public string Icd1022013 { get; private set; }
 
         public List<string> PrefixSuffixList { get; private set; }
     }

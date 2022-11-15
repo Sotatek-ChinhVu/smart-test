@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Types;
 
 namespace Domain.Models.NextOrder
 {
@@ -31,6 +24,7 @@ namespace Domain.Models.NextOrder
             DaysCnt = daysCnt;
             IsDeleted = isDeleted;
             SortNo = sortNo;
+            GroupKoui = GroupKoui.From(odrKouiKbn);
             OrderInfDetailModels = orderInfDetailModels;
         }
 
@@ -69,6 +63,8 @@ namespace Domain.Models.NextOrder
         public int IsDeleted { get; private set; }
 
         public int SortNo { get; private set; }
+
+        public GroupKoui GroupKoui { get; private set; }
 
         public List<RsvKrtOrderInfDetailModel> OrderInfDetailModels { get; private set; }
     }

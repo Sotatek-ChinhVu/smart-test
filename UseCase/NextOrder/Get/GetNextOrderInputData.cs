@@ -14,13 +14,16 @@ namespace UseCase.NextOrder.Get
 
         public int Type { get; private set; }
 
-        public GetNextOrderInputData(long ptId, int hpId, long rsvkrtNo, int sinDate, int type)
+        public int UserId { get; private set; }
+
+        public GetNextOrderInputData(long ptId, int hpId, long rsvkrtNo, int sinDate, int type, int userId)
         {
             PtId = ptId;
             HpId = hpId;
             RsvkrtNo = rsvkrtNo;
             SinDate = sinDate;
             Type = type;
+            UserId = userId;
         }
     }
 }

@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Models.NextOrder
+﻿namespace Domain.Models.NextOrder
 {
     public class RsvkrtKarteInfModel
     {
@@ -22,6 +13,19 @@ namespace Domain.Models.NextOrder
             Text = text;
             RichText = richText;
             IsDeleted = isDeleted;
+        }
+
+        public RsvkrtKarteInfModel()
+        {
+            HpId = 0;
+            PtId = 0;
+            SinDate = 0;
+            RaiinNo = 0;
+            KarteKbn = 0;
+            SeqNo = 0;
+            Text = string.Empty;
+            RichText = string.Empty;
+            IsDeleted = 0;
         }
 
         public int HpId { get; private set; }

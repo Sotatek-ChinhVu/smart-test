@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using UseCase.NextOrder.Get;
 
@@ -6,7 +7,7 @@ namespace EmrCloudApi.Tenant.Responses.NextOrder
 {
     public class GetNextOrderResponse
     {
-        public GetNextOrderResponse(List<GroupHokenItem> groupHokenItems, KarteInfModel karteInfModel, List<RsvKrtByomeiItem> byomeiItems)
+        public GetNextOrderResponse(List<GroupHokenItem> groupHokenItems, RsvkrtKarteInfModel karteInfModel, List<RsvKrtByomeiItem> byomeiItems)
         {
             GroupHokenItems = groupHokenItems;
             KarteInfModel = karteInfModel;
@@ -15,7 +16,7 @@ namespace EmrCloudApi.Tenant.Responses.NextOrder
 
         public List<GroupHokenItem> GroupHokenItems { get; private set; }
 
-        public KarteInfModel KarteInfModel { get; private set; }
+        public RsvkrtKarteInfModel KarteInfModel { get; private set; }
 
         public List<RsvKrtByomeiItem> ByomeiItems { get; private set; }
     }
