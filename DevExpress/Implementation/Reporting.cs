@@ -339,7 +339,7 @@ public class Reporting : IReporting
             raiinNo: historyKarteOdrRaiinItemWithStatus.Item1.First().RaiinNo,
             kanaName: patientInfo.KanaName,
             name: patientInfo.Name,
-            sex: patientInfo.Sex == 1 ? "男" : "女",
+            sex: patientInfo.Sex == 1 ? "（男）" : "（女）",
             birthday: CIUtil.SDateToShowWDate2(patientInfo.Birthday),
             currentTime: DateTime.UtcNow.ToString("yyyy/MM/dd HH:mm"),
             startDate: CIUtil.SDateToShowSDate(inputData.StartDate),
