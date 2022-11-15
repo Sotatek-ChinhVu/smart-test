@@ -182,6 +182,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         {
             isSuspected = codeLists.Any(c => c == "8002");
         }
+        var byomeiMst = byomeiMstList.FirstOrDefault(b => codeLists?.Contains(b.ByomeiCd) == true) ?? new();
         return new SetByomeiModel(
                 mst.Id,
                 isSyobyoKbn,
@@ -193,6 +194,10 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 isDspKarte,
                 byomeiCmt,
                 byomeiCd,
+                byomeiMst?.Icd101 ?? string.Empty,
+                byomeiMst?.Icd1012013 ?? string.Empty,
+                byomeiMst?.Icd1012013 ?? string.Empty,
+                byomeiMst?.Icd1022013 ?? string.Empty,
                 prefixSuffixList ?? new List<PrefixSuffixModel>()
             );
     }

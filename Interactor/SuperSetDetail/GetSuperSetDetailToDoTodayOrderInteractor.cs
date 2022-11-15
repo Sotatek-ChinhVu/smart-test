@@ -55,6 +55,10 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
                 s.IsDspKarte,
                 s.ByomeiCmt,
                 s.ByomeiCd,
+                s.Icd10,
+                s.Icd102013,
+                s.Icd1012013,
+                s.Icd1022013,
                 s.PrefixSuffixList
             )).ToList();
     }
