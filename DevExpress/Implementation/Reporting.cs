@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal.Util;
-using DevExpress.Inteface;
+﻿using DevExpress.Inteface;
 using DevExpress.Models;
 using DevExpress.Response.Karte1;
 using Domain.Constant;
@@ -10,6 +9,7 @@ using Domain.Models.PatientInfor;
 using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
+using Microsoft.Extensions.Logging;
 
 namespace DevExpress.Implementation;
 
@@ -68,7 +68,7 @@ public class Reporting : IReporting
         }
         catch (Exception ex)
         {
-            _iLogger.Error(ex, "");
+            _iLogger.LogInformation(ex, "");
             return new Karte1Output(Karte1Status.Failed);
         }
     }

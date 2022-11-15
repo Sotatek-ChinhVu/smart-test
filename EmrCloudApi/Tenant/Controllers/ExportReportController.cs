@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-//[Authorize]
+[Authorize]
 public class ExportReportController : ControllerBase
 {
     private readonly IReporting _reporting;

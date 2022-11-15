@@ -253,6 +253,14 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
+            SetupLogger(services);
+        }
+
+        private void SetupLogger(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Reporting>>();
+            services.AddSingleton(typeof(ILogger), logger!);
         }
 
         private void SetupInterfaces(IServiceCollection services)
