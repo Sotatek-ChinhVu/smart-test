@@ -20,15 +20,13 @@ public class Reporting : IReporting
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly IInsuranceRepository _insuranceRepository;
     private readonly IKarte1Export _karte1Export;
-    private readonly ILogger _iLogger;
 
-    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export, ILogger iLogger)
+    public Reporting(IPtDiseaseRepository diseaseRepository, IPatientInforRepository patientInforRepository, IInsuranceRepository insuranceRepository, IKarte1Export karte1Export)
     {
         _diseaseRepository = diseaseRepository;
         _patientInforRepository = patientInforRepository;
         _insuranceRepository = insuranceRepository;
         _karte1Export = karte1Export;
-        _iLogger = iLogger;
     }
 
     public Karte1Output PrintKarte1(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
@@ -74,20 +72,12 @@ public class Reporting : IReporting
         var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
 
         var dataModel = ConvertToKarte1ExportModel(ptInf, hoken, listByomeiModelsPage1, listByomeiModelsPage2);
-        try
+        var res = _karte1Export.ExportToPdf(dataModel);
+        if (res.Length > 0)
         {
-            var res = _karte1Export.ExportToPdf(dataModel);
-            if (res.Length > 0)
-            {
-                return new Karte1Output(Karte1Status.Success, res);
-            }
-            return new Karte1Output(Karte1Status.CanNotExportPdf);
+            return new Karte1Output(Karte1Status.Success, res);
         }
-        catch (Exception ex)
-        {
-            _iLogger.LogInformation(ex, "");
-            return new Karte1Output(Karte1Status.Failed);
-        }
+        return new Karte1Output(Karte1Status.CanNotExportPdf);
     }
 
     private Tuple<List<Karte1ByomeiModel>, List<Karte1ByomeiModel>> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis)
