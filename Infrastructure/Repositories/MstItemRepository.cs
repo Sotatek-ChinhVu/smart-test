@@ -587,7 +587,7 @@ namespace Infrastructure.Repositories
 
             return true;
         }
-        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount)
+        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
             var keywordAfterConvert = keyword != String.Empty ? keyword.ToUpper()
                                             .Replace("ｧ", "ｱ")
@@ -719,7 +719,9 @@ namespace Infrastructure.Repositories
                                     item.Icd1022013.StartsWith(keyword))
                                  );
 
-            query = query.Where(item => (isByomei && item.ByomeiCd.Length != 4)
+            query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) &&
+                                        (!isMisaiyou && item.IsAdopted == 1) &&
+                                               (isByomei && item.ByomeiCd.Length != 4)
                                             || (isPrefix && item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9"))
                                             || (isSuffix && item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8"))
                                         );
@@ -728,7 +730,7 @@ namespace Infrastructure.Repositories
                                  .ThenByDescending(item => item.IsAdopted)
                                  .OrderByDescending(item => item.ByomeiCd.Length != 4)
                                  .ThenByDescending(item => item.ByomeiCd.Length == 4)
-                                 .Skip((pageIndex - 1) * pageCount).Take(pageCount).ToList();
+                                 .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
             List<ByomeiMstModel> listByomeies = new();
 
@@ -816,7 +818,8 @@ namespace Infrastructure.Repositories
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
+                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    mst.IsAdopted == 1
                 );
         }
 
