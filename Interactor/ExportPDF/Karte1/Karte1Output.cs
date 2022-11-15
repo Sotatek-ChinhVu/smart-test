@@ -15,6 +15,14 @@ public class Karte1Output
         DataStream = new MemoryStream();
     }
 
+    public Karte1Output(string message)
+    {
+        Message = message;
+    }
+
+    public string Message { get; private set; } = string.Empty;
+
     public Karte1Status Status { get; private set; }
+    
     public MemoryStream DataStream { get; private set; }
 }

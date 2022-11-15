@@ -8,7 +8,7 @@ namespace DevExpress.Export;
 
 public class Karte1Export: IKarte1Export
 {
-    public MemoryStream ExportToPdf(Karte1ExportModel data)
+    public (MemoryStream, string) ExportToPdf(Karte1ExportModel data)
     {
         var report = new Karte1TemplatePage1();
         var dataSource = new ObjectDataSource();
@@ -35,9 +35,16 @@ public class Karte1Export: IKarte1Export
             PdfACompatibility = PdfACompatibility.PdfA1b
         };
 
-        // Export the report.
-        MemoryStream stream = new();
-        report.ExportToPdf(stream, pdfExportOptions);
-        return stream;
+        try
+        {
+            // Export the report.
+            MemoryStream stream = new();
+            report.ExportToPdf(stream, pdfExportOptions);
+            return (stream, "");
+        }
+        catch (Exception ex)
+        {
+            return (new MemoryStream(), ex.Message);
+        }
     }
 }

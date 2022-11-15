@@ -28,11 +28,18 @@ public class ExportReportController : ControllerBase
     {
         int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
         var output = await Task.Run(() => _reporting.PrintKarte1(hpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei));
-        
+
         Response<string> response = new();
-        response.Data = Convert.ToBase64String(output.DataStream.ToArray());
-        response.Status = (byte)output.Status;
-        response.Message = GetMessageKarte1(output.Status);
+        if (!string.IsNullOrEmpty(output.Message))
+        {
+            response.Message = output.Message;
+        }
+        else
+        {
+            response.Data = Convert.ToBase64String(output.DataStream.ToArray());
+            response.Status = (byte)output.Status;
+            response.Message = GetMessageKarte1(output.Status);
+        }
         
         return response;
     }
