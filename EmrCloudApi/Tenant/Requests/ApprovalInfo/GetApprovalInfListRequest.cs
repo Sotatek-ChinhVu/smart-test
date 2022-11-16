@@ -1,10 +1,11 @@
-﻿namespace EmrCloudApi.Tenant.Requests.ApprovalInf
+﻿namespace EmrCloudApi.Tenant.Requests.ApprovalInfo
 {
     public class GetApprovalInfListRequest
     {
-        public int StarDate { get; set; }
+        public int StartDate { get; set; }
         public int EndDate { get; set; }
-        public string DrName { get; set; }
         public string KaName { get; set; }
+        public string DrName { get; set; }
+
     }
 }

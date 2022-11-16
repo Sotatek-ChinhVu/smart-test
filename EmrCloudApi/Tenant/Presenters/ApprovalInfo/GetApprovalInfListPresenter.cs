@@ -1,8 +1,8 @@
 ﻿using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
-using UseCase.ApprovalInf.GetApprovalInfList;
+using UseCase.ApprovalInfo.GetApprovalInfList;
 
-namespace EmrCloudApi.Tenant.Presenters.ApprovalInf
+namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
 {
     public class GetApprovalInfListPresenter : IGetApprovalInfListOutputPort
     {

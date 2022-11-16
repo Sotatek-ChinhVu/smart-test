@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UseCase.ApprovalInf.GetApprovalInfList
+namespace UseCase.ApprovalInfo.GetApprovalInfList
 {
     public enum GetApprovalInfListStatus
     {

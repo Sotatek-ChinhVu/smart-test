@@ -1,5 +1,5 @@
 ﻿
-using Domain.Models.ApprovalInf;
+using Domain.Models.ApprovalInfo;
 
 namespace EmrCloudApi.Tenant.Responses.ApprovalInf
 {

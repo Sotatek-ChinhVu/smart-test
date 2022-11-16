@@ -1,11 +1,11 @@
 ﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.ApprovalInf;
-using EmrCloudApi.Tenant.Requests.ApprovalInf;
+using EmrCloudApi.Tenant.Presenters.ApprovalInfo;
+using EmrCloudApi.Tenant.Requests.ApprovalInfo;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
 using Microsoft.AspNetCore.Mvc;
-using UseCase.ApprovalInf.GetApprovalInfList;
-using UseCase.Core.Async;
+using UseCase.ApprovalInfo.GetApprovalInfList;
+using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -21,7 +21,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetApprovalInfListResponse>>> GetList([FromQuery] GetApprovalInfListRequest req)
         {
-            var input = new GetApprovalInfListInputData(req.StarDate, req.EndDate, req.DrName, req.KaName);
+            var input = new GetApprovalInfListInputData(req.StartDate, req.EndDate, req.DrName, req.KaName);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetApprovalInfListPresenter();
