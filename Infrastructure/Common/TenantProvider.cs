@@ -1,10 +1,13 @@
-﻿using Helper.Constants;
+﻿using Devart.Data.PostgreSql;
+using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
 using PostgreDataContext;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,6 +24,11 @@ namespace Infrastructure.CommonDB
             _configuration = configuration;
         }
 
+        public string GetStagingConnection()
+        {
+            return "User Id=postgres;password=Emr!23456789;Host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;Database=smartkarte;SSH Host=ec2-18-177-121-22.ap-northeast-1.compute.amazonaws.com;SSH User=ec2-user;SSH Private Key=C:\\Users\\vantr\\OneDrive\\Desktop\\develop-smartkarte-basion.pem;SSH Authentication Type=PublicKey;";
+        }
+
         public string GetConnectionString()
         {
             return _configuration["TenantDbSample"];
@@ -33,7 +41,7 @@ namespace Infrastructure.CommonDB
 
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
-            return new TenantNoTrackingDataContext(GetConnectionString());
+            return new TenantNoTrackingDataContext(GetStagingConnection(), true);
         }
 
         private TenantDataContext? _trackingTenantDataContext;

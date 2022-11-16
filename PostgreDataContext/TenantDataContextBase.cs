@@ -1,12 +1,15 @@
 ﻿using Entity.Tenant;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Data;
+using Devart.Data.PostgreSql;
 
 namespace PostgreDataContext
 {
     public class TenantDataContext : DbContext
     {
         private readonly string _connectionString;
+        private readonly bool _useStagingSsh;
 
         public TenantDataContext(DbContextOptions<TenantDataContext> options)
         : base(options)
@@ -14,16 +17,27 @@ namespace PostgreDataContext
             _connectionString = string.Empty;
         }
 
-        public TenantDataContext(string connectionString) => _connectionString = connectionString;
+        public TenantDataContext(string connectionString, bool useStagingSsh = false)
+        {
+            _connectionString = connectionString;
+            _useStagingSsh = useStagingSsh;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!string.IsNullOrEmpty(_connectionString))
             {
-                optionsBuilder.UseNpgsql(_connectionString, buider =>
+                if(!_useStagingSsh)
                 {
-                    buider.EnableRetryOnFailure(maxRetryCount: 3);
-                }).LogTo(Console.WriteLine, LogLevel.Information);
+                    optionsBuilder.UseNpgsql(_connectionString, buider =>
+                    {
+                        buider.EnableRetryOnFailure(maxRetryCount: 3);
+                    }).LogTo(Console.WriteLine, LogLevel.Information);
+                }
+                else
+                {
+                    optionsBuilder.UsePostgreSql(_connectionString);
+                }
             }
         }
 

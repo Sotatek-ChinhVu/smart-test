@@ -22,7 +22,6 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class MstItemController : ControllerBase
     {
         private readonly UseCaseBus _bus;
@@ -86,7 +85,7 @@ namespace EmrCloudApi.Tenant.Controllers
         public async Task<ActionResult<Response<SearchTenItemResponse>>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
             int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, hpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, 1, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchTenItemPresenter();
             presenter.Complete(output);
