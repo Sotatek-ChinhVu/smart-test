@@ -14,6 +14,7 @@ using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
 using UseCase.SetMst.ReorderSetMst;
 using UseCase.SetMst.SaveSetMst;
+using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
@@ -149,6 +150,18 @@ public class SetController : ControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
+    public async Task<ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
+    {
+        var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, request.SetCd, request.SinDate);
+        var output = await Task.Run(() => _bus.Handle(input));
+
+        var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>(presenter.Result);
     }
 
     private List<SaveSetByomeiInputItem> ConvertToSetByomeiModelInputs(List<SaveSetByomeiRequestItem> requestItems)
