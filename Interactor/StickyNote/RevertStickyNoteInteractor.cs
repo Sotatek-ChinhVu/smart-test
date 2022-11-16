@@ -23,7 +23,7 @@ namespace Interactor.StickyNote
             if (inputData.SeqNo <= 0)
                 return new RevertStickyNoteOutputData(false, UpdateStickyNoteStatus.InvalidSeqNo);
 
-            var result = _ptTagRepository.UpdateIsDeleted(inputData.HpId, inputData.PtId, inputData.SeqNo,0);
+            var result = _ptTagRepository.UpdateIsDeleted(inputData.HpId, inputData.PtId, inputData.SeqNo, 0, inputData.UserId);
 
             return new RevertStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
         }

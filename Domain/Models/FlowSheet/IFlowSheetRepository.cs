@@ -10,8 +10,8 @@ namespace Domain.Models.FlowSheet
 
         List<HolidayModel> GetHolidayMst(int hpId, int holidayFrom, int holidayTo);
 
-        void UpsertTag(List<FlowSheetModel> inputDatas);
+        void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId);
 
-        void UpsertCmt(List<FlowSheetModel> inputDatas);
+        void UpsertCmt(List<FlowSheetModel> inputDatas, int hpId, int userId);
     }
 }

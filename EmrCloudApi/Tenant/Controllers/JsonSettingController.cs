@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.ColumnSetting;
 using EmrCloudApi.Tenant.Requests.JsonSetting;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.JsonSetting;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.JsonSetting.Get;
@@ -12,19 +14,23 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class JsonSettingController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public JsonSettingController(UseCaseBus bus)
+    public JsonSettingController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.Get)]
     public async Task<ActionResult<Response<GetJsonSettingResponse>>> Get([FromQuery] GetJsonSettingRequest req)
     {
-        var input = new GetJsonSettingInputData(req.UserId, req.Key);
+        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        var input = new GetJsonSettingInputData(userId, req.Key);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetJsonSettingPresenter();
         presenter.Complete(output);

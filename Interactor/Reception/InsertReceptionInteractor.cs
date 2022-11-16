@@ -21,7 +21,7 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
             return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
         }
 
-        var raiinNo = _receptionRepository.Insert(dto);
+        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
         return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
     }
 }

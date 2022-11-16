@@ -14,6 +14,12 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantTrackingDataContext;
         private readonly int cmtKbn = 9;
+        private readonly string sinDate = "sindate";
+        private readonly string tagNo = "tagno";
+        private readonly string fullLineOfKarte = "fulllineofkarte";
+        private readonly string syosaisinKbn = "syosaisinkbn";
+        private readonly string comment = "comment";
+
 
         public FlowSheetRepository(ITenantProvider tenantProvider)
         {
@@ -58,7 +64,7 @@ namespace Infrastructure.Repositories
                                              on raiinListInf.KbnCd equals raiinListMst.KbnCd
                                              select new RaiinListInfModel(raiinInf.RaiinNo, raiinListInf.GrpId, raiinListInf.KbnCd, raiinListInf.RaiinListKbn, raiinListMst.KbnName ?? string.Empty, raiinListMst.ColorCd ?? string.Empty)
                                             )
-                                            //.AsEnumerable<RaiinListInfModel>()
+                            //.AsEnumerable<RaiinListInfModel>()
                         };
 
             var todayOdr = query.Select(r =>
@@ -73,7 +79,8 @@ namespace Infrastructure.Repositories
                     false,
                     r.RaiinNo == raiinNo,
                     r.RaiinListInfs.ToList(),
-                    ptId
+                    ptId,
+                    (r.RaiinNo == raiinNo && r.SinDate == sinDate && r.Status < 3)
                    )
             ).AsEnumerable<FlowSheetModel>();
 
@@ -137,7 +144,8 @@ namespace Infrastructure.Repositories
                         true,
                         false,
                         data.RaiinListInfs.ToList(),
-                        data.NextOdr?.PtId ?? 0
+                        data.NextOdr?.PtId ?? 0,
+                        false
                     ));
 
             var todayNextOdrs = todayOdr.Union(nextOdrs).ToList();
@@ -155,9 +163,10 @@ namespace Infrastructure.Repositories
                         string.Empty,
                         0,
                         false,
-                        true,
+                        false,
                         new List<RaiinListInfModel>(),
-                        0
+                        0,
+                        false
                     );
                 totalCount = totalCount + 1;
             }
@@ -165,37 +174,10 @@ namespace Infrastructure.Repositories
             if (string.IsNullOrEmpty(sort))
                 result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
             else
-                try
-                {
-                    var childrenOfSort = sort.Split(" ");
-                    var checkGroupId = int.TryParse(childrenOfSort[0], out int groupId);
-
-                    if (!checkGroupId)
-                        result = todayNextOdrs.AsQueryable().OrderBy(sort).Skip(startIndex).Take(count).ToList();
-                    else
-                    {
-                        if (childrenOfSort.Length > 1)
-                        {
-                            if (childrenOfSort[1].ToLower() == "desc")
-                            {
-                                result = todayNextOdrs.OrderByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-                            }
-                            else
-                            {
-                                result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-
-                            }
-                        }
-                        else
-                        {
-                            result = todayNextOdrs.OrderBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName).Skip(startIndex).Take(count).ToList();
-                        }
-                    }
-                }
-                catch
-                {
-                    result = todayNextOdrs.OrderByDescending(o => o.SinDate).Skip(startIndex).Take(count).ToList();
-                }
+            {
+                todayNextOdrs = SortAll(sort, todayNextOdrs);
+                result = todayNextOdrs.Skip(startIndex).Take(count).ToList();
+            }
 
             if (sinDateCurrent != null && startIndex == 0)
             {
@@ -226,7 +208,7 @@ namespace Infrastructure.Repositories
             return holidayCollection.Select(h => new HolidayModel(h.SinDate, h.HolidayKbn, h.KyusinKbn, h.HolidayName ?? string.Empty)).ToList();
         }
 
-        public void UpsertTag(List<FlowSheetModel> inputDatas)
+        public void UpsertTag(List<FlowSheetModel> inputDatas, int hpId, int userId)
         {
             foreach (var inputData in inputDatas)
             {
@@ -237,27 +219,27 @@ namespace Infrastructure.Repositories
                 {
                     _tenantTrackingDataContext.RaiinListTags.Add(new RaiinListTag
                     {
-                        HpId = TempIdentity.HpId,
+                        HpId = hpId,
                         PtId = inputData.PtId,
                         SinDate = inputData.SinDate,
                         RaiinNo = inputData.RaiinNo,
                         TagNo = inputData.TagNo,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
+                        CreateId = userId
                     });
                 }
                 else
                 {
                     raiinListTag.TagNo = inputData.TagNo;
                     raiinListTag.UpdateDate = DateTime.UtcNow;
-                    raiinListTag.UpdateId = TempIdentity.UserId;
-                    raiinListTag.UpdateMachine = TempIdentity.ComputerName;
+                    raiinListTag.UpdateId = userId;
                 }
             }
             _tenantTrackingDataContext.SaveChanges();
         }
-        public void UpsertCmt(List<FlowSheetModel> inputDatas)
+        public void UpsertCmt(List<FlowSheetModel> inputDatas, int hpId, int userId)
         {
             foreach (var inputData in inputDatas)
             {
@@ -269,26 +251,136 @@ namespace Infrastructure.Repositories
                 {
                     _tenantTrackingDataContext.RaiinListCmts.Add(new RaiinListCmt
                     {
-                        HpId = TempIdentity.HpId,
+                        HpId = hpId,
                         PtId = inputData.PtId,
                         SinDate = inputData.SinDate,
                         RaiinNo = inputData.RaiinNo,
                         CmtKbn = cmtKbn,
                         Text = inputData.Comment,
                         CreateDate = DateTime.UtcNow,
-                        CreateId = TempIdentity.UserId,
-                        CreateMachine = TempIdentity.ComputerName
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
+                        CreateId = userId
                     });
                 }
                 else
                 {
                     raiinListCmt.Text = inputData.Comment;
                     raiinListCmt.UpdateDate = DateTime.UtcNow;
-                    raiinListCmt.UpdateId = TempIdentity.UserId;
-                    raiinListCmt.UpdateMachine = TempIdentity.ComputerName;
+                    raiinListCmt.UpdateId = userId;
                 }
             }
             _tenantTrackingDataContext.SaveChanges();
+        }
+
+        private List<FlowSheetModel> SortAll(string sort, List<FlowSheetModel> todayNextOdrs)
+        {
+            try
+            {
+                var childrenOfSort = sort.Trim().Split(",");
+                var order = todayNextOdrs.OrderBy(o => o.PtId);
+                foreach (var item in childrenOfSort)
+                {
+                    var elementDynamics = item.Trim().Split(" ");
+                    var checkGroupId = int.TryParse(elementDynamics[0], out int groupId);
+
+                    if (!checkGroupId)
+                    {
+                        order = SortStaticColumn(elementDynamics.FirstOrDefault() ?? string.Empty, elementDynamics?.Count() > 1 ? elementDynamics.LastOrDefault() ?? string.Empty : string.Empty, order);
+                    }
+                    else
+                    {
+                        if (elementDynamics.Length > 1)
+                        {
+                            if (elementDynamics[1].ToLower() == "desc")
+                            {
+                                order = order.ThenByDescending(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
+                            }
+                            else
+                            {
+                                order = order.ThenBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
+                            }
+                        }
+                        else
+                        {
+                            order = order.ThenBy(o => o.RaiinListInfs.FirstOrDefault(r => r.GrpId == groupId)?.KbnName);
+                        }
+                    }
+                }
+                todayNextOdrs = order.ToList();
+            }
+            catch
+            {
+                todayNextOdrs = todayNextOdrs.OrderByDescending(o => o.SinDate).ToList();
+            }
+
+            return todayNextOdrs;
+        }
+
+        private IOrderedEnumerable<FlowSheetModel> SortStaticColumn(string fieldName, string sortType, IOrderedEnumerable<FlowSheetModel> order)
+        {
+            if (fieldName.ToLower().Equals(sinDate))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.SinDate);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.SinDate);
+                }
+            }
+            if (fieldName.ToLower().Equals(tagNo))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.TagNo);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.TagNo);
+                }
+            }
+            if (fieldName.ToLower().Equals(fullLineOfKarte))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.FullLineOfKarte);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.FullLineOfKarte);
+                }
+            }
+            if (fieldName.ToLower().Equals(syosaisinKbn))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.SyosaisinKbn);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.SyosaisinKbn);
+                }
+            }
+            if (fieldName.ToLower().Equals(comment))
+            {
+                if (string.IsNullOrEmpty(fieldName) || sortType.ToLower() == "asc")
+                {
+                    order = order.ThenBy(o => o.Comment);
+
+                }
+                else
+                {
+                    order = order.ThenByDescending(o => o.Comment);
+                }
+            }
+
+            return order;
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using Domain.Models.SpecialNote;
-using Domain.Models.SpecialNote.ImportantNote;
-using Domain.Models.SpecialNote.PatientInfo;
-using Domain.Models.SpecialNote.SummaryInf;
-
-namespace EmrCloudApi.Tenant.Requests.SpecialNote
+﻿namespace EmrCloudApi.Tenant.Requests.SpecialNote
 {
     public partial class SpecialNoteSaveRequest
     {

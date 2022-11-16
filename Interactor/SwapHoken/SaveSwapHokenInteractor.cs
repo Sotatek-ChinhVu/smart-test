@@ -30,7 +30,7 @@ namespace Interactor.SwapHoken
             var seikyuYms = _swapHokenRepository.GetListSeikyuYms(inputData.HpId,inputData.PtId,inputData.HokenPidBefore, inputData.StartDate, inputData.EndDate);
             var seiKyuPendingYms = _swapHokenRepository.GetSeikyuYmsInPendingSeikyu(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenIdBefore);
 
-            bool swapHokenResult = _swapHokenRepository.SwapHokenParttern(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.HokenPidAfter, inputData.StartDate, inputData.EndDate);
+            bool swapHokenResult = _swapHokenRepository.SwapHokenParttern(inputData.HpId, inputData.PtId, inputData.HokenPidBefore, inputData.HokenPidAfter, inputData.StartDate, inputData.EndDate, inputData.UserId);
 
             if(!swapHokenResult)
                 return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Failed);
@@ -38,7 +38,7 @@ namespace Interactor.SwapHoken
             if (seiKyuPendingYms.Count > 0)
             {
                 if (!_swapHokenRepository.ExistRaiinInfUsedOldHokenId(inputData.HpId, inputData.PtId, seikyuYms, inputData.HokenPidBefore))
-                    _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seiKyuPendingYms, inputData.HokenIdBefore, inputData.HokenIdAfter);
+                    _swapHokenRepository.UpdateReceSeikyu(inputData.HpId, inputData.PtId, seiKyuPendingYms, inputData.HokenIdBefore, inputData.HokenIdAfter, inputData.UserId);
             }
 
             return new SaveSwapHokenOutputData(SaveSwapHokenStatus.Successful);

@@ -18,7 +18,7 @@ namespace Interactor.StickyNote
             if (validate != UpdateStickyNoteStatus.Successed)
                 return new SaveStickyNoteOutputData(false, validate);
 
-            var result = _ptTagRepository.SaveStickyNote(inputData.stickyNoteModels);
+            var result = _ptTagRepository.SaveStickyNote(inputData.stickyNoteModels, inputData.UserId);
             return new SaveStickyNoteOutputData(result, result ? UpdateStickyNoteStatus.Successed : UpdateStickyNoteStatus.Failed);
         }
 

@@ -31,7 +31,7 @@ public class PtCmtInfRepository : IPtCmtInfRepository
         return ptCmts.ToList();
     }
 
-    public void Upsert(long ptId, string text)
+    public void Upsert(long ptId, string text, int userId)
     {
         var ptCmt = _tenantDataContext.PtCmtInfs.AsTracking()
             .OrderByDescending(p => p.UpdateDate)
@@ -44,16 +44,16 @@ public class PtCmtInfRepository : IPtCmtInfRepository
                 PtId = ptId,
                 Text = text,
                 CreateDate = DateTime.UtcNow,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
+                CreateId = userId
             });
         }
         else
         {
             ptCmt.Text = text;
             ptCmt.UpdateDate = DateTime.UtcNow;
-            ptCmt.UpdateId = TempIdentity.UserId;
-            ptCmt.UpdateMachine = TempIdentity.ComputerName;
+            ptCmt.UpdateId = userId;
         }
 
         _tenantDataContext.SaveChanges();

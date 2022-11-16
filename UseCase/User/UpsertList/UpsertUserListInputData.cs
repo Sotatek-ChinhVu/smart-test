@@ -6,15 +6,18 @@ namespace UseCase.User.UpsertList;
 
 public class UpsertUserListInputData : IInputData<UpsertUserListOutputData>
 {
-    public UpsertUserListInputData(List<UserMstModel> upsertUserList)
+    public UpsertUserListInputData(List<UserMstModel> upsertUserList, int userId)
     {
-        this.UpsertUserList = upsertUserList;
+        UpsertUserList = upsertUserList;
+        UserId = userId;
     }
 
     public List<UserMstModel> UpsertUserList { get; private set; }
 
+    public int UserId { get; private set; }
+
     public List<UserMstModel> ToList()
     {
-        return this.UpsertUserList;
+        return UpsertUserList;
     }
 }

@@ -23,7 +23,7 @@ namespace Interactor.MstItem
             }
             try
             {
-                var data = _mstItemRepository.UpdateAdoptedByomei(inputData.HpId, inputData.ByomeiCd);
+                var data = _mstItemRepository.UpdateAdoptedByomei(inputData.HpId, inputData.ByomeiCd, inputData.UserId);
 
                 return new UpdateAdoptedByomeiOutputData(data, UpdateAdoptedByomeiStatus.Successed);
             }

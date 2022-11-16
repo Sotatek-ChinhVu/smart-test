@@ -23,7 +23,7 @@ public class GetNextUketukeSbtMstInteractor : IGetNextUketukeSbtMstInputPort
         if (nextReceptionType is not null)
         {
             status = GetNextUketukeSbtMstStatus.Success;
-            _uketukeSbtDayInfRepository.Upsert(input.SinDate, nextReceptionType.KbnId, 0);
+            _uketukeSbtDayInfRepository.Upsert(input.SinDate, nextReceptionType.KbnId, 0, input.UserId);
         }
 
         return new GetNextUketukeSbtMstOutputData(status, nextReceptionType);

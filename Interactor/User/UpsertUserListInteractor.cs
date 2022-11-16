@@ -116,7 +116,7 @@ namespace Interactor.User
                     return new UpsertUserListOutputData(UpsertUserListStatus.UserListJobCdNoExist);
                 }
 
-                _userRepository.Upsert(datas);
+                _userRepository.Upsert(datas, inputData.UserId);
 
                 return new UpsertUserListOutputData(UpsertUserListStatus.Success);
             }

@@ -6,6 +6,8 @@ using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.InsuranceList;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
@@ -17,20 +19,25 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TodayOrdController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public TodayOrdController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public TodayOrdController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
-                            o.HpId,
+                            hpId,
                             o.RaiinNo,
                             o.RpNo,
                             o.RpEdaNo,
@@ -49,7 +56,7 @@ namespace EmrCloudApi.Tenant.Controllers
                             o.Id,
                             o.OdrDetails.Select(
                                     od => new OdrInfDetailItemInputData(
-                                            od.HpId,
+                                            hpId,
                                             od.RaiinNo,
                                             od.RpNo,
                                             od.RpEdaNo,
@@ -89,13 +96,14 @@ namespace EmrCloudApi.Tenant.Controllers
                         )
                 ).ToList(),
                 new KarteItemInputData(
-                    request.KarteItem.HpId,
+                    hpId,
                     request.KarteItem.RaiinNo,
                     request.KarteItem.PtId,
                     request.KarteItem.SinDate,
                     request.KarteItem.Text,
                     request.KarteItem.IsDeleted,
-                    request.KarteItem.RichText)
+                    request.KarteItem.RichText),
+                userId
             );
             var output = await Task.Run(()=> _bus.Handle(input));
 
@@ -108,6 +116,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Validate)]
         public async Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
                 request.JikanKbn,
@@ -120,7 +129,7 @@ namespace EmrCloudApi.Tenant.Controllers
                 request.SinEndTime,
                 request.OdrInfs.Select(o =>
                     new ValidationOdrInfItem(
-                        o.HpId,
+                        hpId,
                         o.RaiinNo,
                         o.RpNo,
                         o.RpEdaNo,
@@ -139,7 +148,7 @@ namespace EmrCloudApi.Tenant.Controllers
                         o.IsDeleted,
                         o.Id,
                         o.OdrDetails.Select(od => new ValidationOdrInfDetailItem(
-                            od.HpId,
+                            hpId,
                             od.RaiinNo,
                             od.RpNo,
                             od.RpEdaNo,
@@ -177,7 +186,7 @@ namespace EmrCloudApi.Tenant.Controllers
                     )
                ).ToList(),
                 new ValidationKarteItem(
-                    request.Karte.HpId,
+                    hpId,
                     request.Karte.RaiinNo,
                     request.Karte.PtId,
                     request.Karte.SinDate,
@@ -197,8 +206,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
         public async Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
         {
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
             var input = new GetDefaultSelectPatternInputData(
-                            request.HpId,
+                            hpId,
                             request.PtId,
                             request.SinDate,
                             request.HistoryPid,
@@ -215,7 +225,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceComboList)]
         public async Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
         {
-            var input = new GetInsuranceComboListInputData(request.HpId, request.PtId, request.SinDate);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new GetInsuranceComboListInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(()=>_bus.Handle(input));
             var presenter = new GetInsuranceComboListPresenter();
             presenter.Complete(output);
