@@ -55,6 +55,10 @@ namespace PostgreDataContext.Migrations
                     UPDATE_DATE = table.Column<DateTime>(type: "timestamp", nullable: false),
                     UPDATE_ID = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     UPDATE_MACHINE = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RSVKRT_BYOMEI", x => new { x.HP_ID, x.ID, x.RSVKRT_NO, x.SEQ_NO, x.PT_ID });
                 });
         }
 

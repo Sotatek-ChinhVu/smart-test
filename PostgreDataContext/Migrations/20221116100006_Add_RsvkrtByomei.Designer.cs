@@ -32963,17 +32963,17 @@ namespace PostgreDataContext.Migrations
                     .ValueGeneratedOnAdd()
                     .HasColumnType("bigint")
                     .HasColumnName("PT_ID");
-                
+
                 b.Property<long>("RsvkrtNo")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("bigint")
                     .HasColumnName("RSVKRT_NO");
-                
+
                 b.Property<long>("SeqNo")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("bigint")
                     .HasColumnName("SEQ_NO");
-                
+
                 b.Property<string>("ByomeiCd")
                     .HasMaxLength(7)
                     .HasColumnType("character varying(7)")
@@ -33098,7 +33098,7 @@ namespace PostgreDataContext.Migrations
                     .ValueGeneratedOnAdd()
                     .HasColumnType("integer")
                     .HasColumnName("SIKKAN_KBN");
-                
+
                 b.Property<int>("NanbyoCd")
                     .ValueGeneratedOnAdd()
                     .HasColumnType("integer")
@@ -33113,12 +33113,12 @@ namespace PostgreDataContext.Migrations
                    .ValueGeneratedOnAdd()
                    .HasColumnType("integer")
                    .HasColumnName("IS_NODSP_RECE");
-                
+
                 b.Property<int>("IsNodspKarte")
                    .ValueGeneratedOnAdd()
                    .HasColumnType("integer")
                    .HasColumnName("IS_NODSP_KARTE");
-                
+
                 b.Property<int>("IsDeleted")
                    .ValueGeneratedOnAdd()
                    .HasColumnType("integer")
@@ -33149,6 +33149,10 @@ namespace PostgreDataContext.Migrations
                     .HasMaxLength(60)
                     .HasColumnType("character varying(60)")
                     .HasColumnName("UPDATE_MACHINE");
+
+                b.HasKey("HpId", "PtId", "RsvkrtNo", "SeqNo", "Id");
+
+                b.ToTable("RSVKRT_BYOMEI");
             });
 #pragma warning restore 612, 618
         }

@@ -4049,7 +4049,7 @@ namespace PostgreDataContext.Migrations
 
                     b.Property<string>("UpdateMachine")
                         .HasMaxLength(60)
-                        .HasColumnType("character varying(60)") 
+                        .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.Property<int>("ReceKisaiKokho")
@@ -33149,6 +33149,10 @@ namespace PostgreDataContext.Migrations
                     .HasMaxLength(60)
                     .HasColumnType("character varying(60)")
                     .HasColumnName("UPDATE_MACHINE");
+
+                b.HasKey("HpId", "PtId", "RsvkrtNo", "SeqNo", "Id");
+
+                b.ToTable("RSVKRT_BYOMEI");
             });
 #pragma warning restore 612, 618
         }
