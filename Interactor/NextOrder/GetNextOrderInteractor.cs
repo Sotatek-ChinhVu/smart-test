@@ -64,6 +64,9 @@ namespace Interactor.NextOrder
                                 o.IsDeleted,
                                 o.SortNo,
                                 o.GroupKoui.Value,
+                                o.CreateDate,
+                                o.CreateId,
+                                o.CreateName,
                                 o.OrderInfDetailModels.Select(od =>
                                     new RsvKrtOrderInfDetailItem(
                                       od.HpId,
@@ -147,52 +150,55 @@ namespace Interactor.NextOrder
 
                 var obj = new object();
                 var tree = new GetNextOrderOutputData(new(), nextOrder.karteInf, byomeiItems, GetNextOrderStatus.Successed);
-                Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
+                if (hokenOdrInfs?.Count > 0)
                 {
-                    var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
-                    var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
-                    // Find By Group
-                    var groupOdrInfs = orderInfItems?.Where(odr => odr.HokenPid == hokenId)
-                        .GroupBy(odr => new
-                        {
-                            odr.HokenPid,
-                            odr.GroupOdrKouiKbn,
-                            odr.InoutKbn,
-                            odr.SyohoSbt,
-                            odr.SikyuKbn,
-                            odr.TosekiKbn,
-                            odr.SanteiKbn
-                        })
-                        .Select(grp => grp.FirstOrDefault())
-                        .ToList();
-                    if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
+                    Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
                     {
-                        var objGroupOdrInf = new object();
-                        Parallel.ForEach(groupOdrInfs, groupOdrInf =>
-                        {
-                            var odrInfs = orderInfItems?.Where(odrInf => odrInf.HokenPid == hokenId
-                                                    && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
-                                                    && odrInf.InoutKbn == groupOdrInf?.InoutKbn
-                                                    && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
-                                                    && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
-                                                    && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
-                                                    && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
-                                                .ToList();
-
-                            var group = new GroupOdrItem("Hoken title", new List<RsvKrtOrderInfItem>(), hokenId);
-                            lock (objGroupOdrInf)
+                        var insuance = insurances.FirstOrDefault(i => i.HokenPid == hokenId);
+                        var groupHoken = new GroupHokenItem(new List<GroupOdrItem>(), hokenId, insuance?.HokenName ?? string.Empty);
+                        // Find By Group
+                        var groupOdrInfs = orderInfItems?.Where(odr => odr.HokenPid == hokenId)
+                            .GroupBy(odr => new
                             {
-                                if (odrInfs?.Count > 0)
-                                    group.OdrInfs.AddRange(odrInfs);
-                                groupHoken.GroupOdrItems.Add(group);
-                            }
-                        });
-                    }
-                    lock (obj)
-                    {
-                        tree.GroupHokenItems.Add(groupHoken);
-                    }
-                });
+                                odr.HokenPid,
+                                odr.GroupOdrKouiKbn,
+                                odr.InoutKbn,
+                                odr.SyohoSbt,
+                                odr.SikyuKbn,
+                                odr.TosekiKbn,
+                                odr.SanteiKbn
+                            })
+                            .Select(grp => grp.FirstOrDefault())
+                            .ToList();
+                        if (!(groupOdrInfs == null || groupOdrInfs.Count == 0))
+                        {
+                            var objGroupOdrInf = new object();
+                            Parallel.ForEach(groupOdrInfs, groupOdrInf =>
+                            {
+                                var odrInfs = orderInfItems?.Where(odrInf => odrInf.HokenPid == hokenId
+                                                        && odrInf.GroupOdrKouiKbn == groupOdrInf?.GroupOdrKouiKbn
+                                                        && odrInf.InoutKbn == groupOdrInf?.InoutKbn
+                                                        && odrInf.SyohoSbt == groupOdrInf?.SyohoSbt
+                                                        && odrInf.SikyuKbn == groupOdrInf?.SikyuKbn
+                                                        && odrInf.TosekiKbn == groupOdrInf?.TosekiKbn
+                                                        && odrInf.SanteiKbn == groupOdrInf?.SanteiKbn)
+                                                    .ToList();
+
+                                var group = new GroupOdrItem(insuance?.HokenName ?? string.Empty, new List<RsvKrtOrderInfItem>(), hokenId); ;
+                                lock (objGroupOdrInf)
+                                {
+                                    if (odrInfs?.Count > 0)
+                                        group.OdrInfs.AddRange(odrInfs);
+                                    groupHoken.GroupOdrItems.Add(group);
+                                }
+                            });
+                        }
+                        lock (obj)
+                        {
+                            tree.GroupHokenItems.Add(groupHoken);
+                        }
+                    });
+                }
 
                 return tree;
             }

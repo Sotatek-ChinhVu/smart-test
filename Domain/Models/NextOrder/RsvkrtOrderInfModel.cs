@@ -4,7 +4,7 @@ namespace Domain.Models.NextOrder
 {
     public class RsvkrtOrderInfModel
     {
-        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
+        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
         {
             HpId = hpId;
             PtId = ptId;
@@ -25,6 +25,9 @@ namespace Domain.Models.NextOrder
             IsDeleted = isDeleted;
             SortNo = sortNo;
             GroupKoui = GroupKoui.From(odrKouiKbn);
+            CreateDate = createDate;
+            CreateId = createId;
+            CreateName = createName;
             OrderInfDetailModels = orderInfDetailModels;
         }
 
@@ -65,6 +68,12 @@ namespace Domain.Models.NextOrder
         public int SortNo { get; private set; }
 
         public GroupKoui GroupKoui { get; private set; }
+
+        public DateTime CreateDate { get; private set; }
+
+        public int CreateId { get; private set; }
+
+        public string CreateName { get; private set; }
 
         public List<RsvKrtOrderInfDetailModel> OrderInfDetailModels { get; private set; }
     }

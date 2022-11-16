@@ -1,15 +1,8 @@
-﻿using Domain.Models.NextOrder;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace UseCase.NextOrder.Get
+﻿namespace UseCase.NextOrder.Get
 {
     public class RsvKrtOrderInfItem
     {
-        public RsvKrtOrderInfItem(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, int groupOdrKouiKbn, List<RsvKrtOrderInfDetailItem> orderInfDetailItems)
+        public RsvKrtOrderInfItem(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, int groupOdrKouiKbn, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailItem> orderInfDetailItems)
         {
             HpId = hpId;
             PtId = ptId;
@@ -29,6 +22,10 @@ namespace UseCase.NextOrder.Get
             DaysCnt = daysCnt;
             IsDeleted = isDeleted;
             GroupOdrKouiKbn = groupOdrKouiKbn;
+            SortNo = sortNo;
+            CreateDate = createDate;
+            CreateId = createId;
+            CreateName = createName;
             RsvKrtOrderInfDetailItems = orderInfDetailItems;
         }
 
@@ -69,6 +66,12 @@ namespace UseCase.NextOrder.Get
         public int SortNo { get; private set; }
 
         public int GroupOdrKouiKbn { get; private set; }
+
+        public DateTime CreateDate { get; private set; }
+
+        public int CreateId { get; private set; }
+
+        public string CreateName { get; private set; }
 
         public List<RsvKrtOrderInfDetailItem> RsvKrtOrderInfDetailItems { get; private set; }
     }

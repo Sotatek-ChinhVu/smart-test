@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         public (List<RsvkrtByomeiModel> byomeis, RsvkrtKarteInfModel karteInf, List<RsvkrtOrderInfModel> orderInfs) Get(int hpId, long ptId, long rsvkrtNo, int sinDate, int userId, int type)
         {
             var byomeis = new List<RsvkrtByomei>();
-            if (type == 2)
+            if (type == 0)
             {
                 byomeis = _tenantDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
             }
@@ -116,7 +116,7 @@ namespace Infrastructure.Repositories
             int index = 0;
             var odrInfDetailModels = new List<RsvKrtOrderInfDetailModel>();
             var obj = new object();
-            foreach (var odrInfDetail in odrInfDetails)
+            Parallel.ForEach(odrInfDetails, odrInfDetail =>
             {
                 var tenMst = tenMsts.FirstOrDefault(t => t.ItemCd == odrInfDetail.ItemCd) ?? new();
                 var yakka = yakkas.FirstOrDefault(y => y.IpnNameCd == odrInfDetail.IpnCd) ?? new();
@@ -185,7 +185,9 @@ namespace Infrastructure.Repositories
                     odrInfDetailModels.Add(odrInfDetailModel);
                     index++;
                 }
-            }
+            });
+            var createName = _tenantDataContext.UserMsts.FirstOrDefault(u => u.UserId == odrInf.CreateId && u.HpId == odrInf.HpId)?.Sname ?? string.Empty;
+
             return new RsvkrtOrderInfModel(
                     odrInf.HpId,
                     odrInf.PtId,
@@ -205,6 +207,9 @@ namespace Infrastructure.Repositories
                     odrInf.DaysCnt,
                     odrInf.IsDeleted,
                     odrInf.SortNo,
+                    odrInf.CreateDate,
+                    odrInf.CreateId,
+                    createName,
                     odrInfDetailModels
                 );
         }
