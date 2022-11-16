@@ -35,7 +35,7 @@ namespace Domain.Models.TodayOdr
 
         public bool IsAdopted
         {
-            get => ByomeiMst == null || ByomeiMst.IsAdopted == 1;
+            get => ByomeiMst?.IsAdopted == true;
         }
     }
 }

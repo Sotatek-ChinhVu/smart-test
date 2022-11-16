@@ -22,7 +22,7 @@ public class SaveVisitingListSettingsInteractor : ISaveVisitingListSettingsInput
             .Select(c => new SystemConfModel(SystemConfGroupCodes.ReceptionStatusColor, c.Status, 0, c.Color, string.Empty));
         var systemConfs = timeColorSystemConfs.Concat(statusColorSystemConfs).ToList();
 
-        _visitingListSettingRepository.Save(systemConfs);
+        _visitingListSettingRepository.Save(systemConfs, input.HpId, input.UserId);
         return new SaveVisitingListSettingsOutputData(SaveVisitingListSettingsStatus.Success);
     }
 }

@@ -11,7 +11,7 @@ namespace Interactor.PatientInfor
     {
         private readonly IPatientInforRepository _patientInforRepository;
         private readonly IGroupInfRepository _groupInfRepository;
-        private const string _regPhone = @"[^0-9^\-]";
+        private const string _regPhone = @"^(?:\d{10}|\d{3}-\d{3}-\d{4}|\d{2}-\d{4}-\d{4}|\d{3}-\d{4}-\d{4})$";
 
         public SearchPatientInfoSimpleInteractor(IPatientInforRepository patientInforRepository, IGroupInfRepository groupInfRepository)
         {
@@ -37,7 +37,7 @@ namespace Interactor.PatientInfor
                     return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                 }
 
-                (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum);
+                (PatientInforModel ptInfModel, bool isFound) = _patientInforRepository.SearchExactlyPtNum(ptNum, inputData.HpId);
                 if (!isFound)
                 {
                     return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -50,7 +50,7 @@ namespace Interactor.PatientInfor
             switch (searchType)
             {
                 case 0:
-                    patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword);
+                    patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -59,7 +59,7 @@ namespace Interactor.PatientInfor
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 1:
                     int sindate = keyword.AsInteger();
-                    patientInfoList = _patientInforRepository.SearchBySindate(sindate);
+                    patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -67,14 +67,14 @@ namespace Interactor.PatientInfor
 
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 2:
-                    patientInfoList = _patientInforRepository.SearchPhone(keyword, isContainMode);
+                    patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                     }
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 3:
-                    patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode);
+                    patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);

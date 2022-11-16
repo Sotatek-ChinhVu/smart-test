@@ -4,9 +4,9 @@ namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
-        long Insert(ReceptionSaveDto dto);
+        long Insert(ReceptionSaveDto dto, int hpId, int userId);
 
-        bool Update(ReceptionSaveDto dto);
+        bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
         ReceptionModel Get(long raiinNo);
 
@@ -20,19 +20,19 @@ namespace Domain.Models.Reception
 
         List<ReceptionModel> GetLastRaiinInfs(int hpId, long ptId, int sinDate);
 
-        bool UpdateStatus(int hpId, long raiinNo, int status);
+        bool UpdateStatus(int hpId, long raiinNo, int status, int userId);
 
-        bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo);
+        bool UpdateUketukeNo(int hpId, long raiinNo, int uketukeNo, int userId);
 
-        bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime);
+        bool UpdateUketukeTime(int hpId, long raiinNo, string uketukeTime, int userId);
 
-        bool UpdateSinStartTime(int hpId, long raiinNo, string sinStartTime);
+        bool UpdateSinStartTime(int hpId, long raiinNo, string sinStartTime, int userId);
 
-        bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt);
+        bool UpdateUketukeSbt(int hpId, long raiinNo, int uketukeSbt, int userId);
 
-        bool UpdateTantoId(int hpId, long raiinNo, int tantoId);
+        bool UpdateTantoId(int hpId, long raiinNo, int tantoId, int userId);
 
-        bool UpdateKaId(int hpId, long raiinNo, int kaId);
+        bool UpdateKaId(int hpId, long raiinNo, int kaId, int userId);
 
         bool CheckListNo(List<long> raininNos);
 

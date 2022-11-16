@@ -8,6 +8,6 @@ namespace Domain.Models.Diseases
        
         List<PtDiseaseModel> GetListPatientDiseaseForReport(int hpId, long ptId, int hokenPid, int sinDate, bool tenkiByomei);
         
-        void Upsert(List<PtDiseaseModel> inputDatas);
+        void Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId);
     }
 }

@@ -12,25 +12,25 @@ namespace Domain.Models.PatientInfor
     {
         PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo);
 
-        (PatientInforModel, bool) SearchExactlyPtNum(int ptNum);
+        (PatientInforModel, bool) SearchExactlyPtNum(int ptNum, int hpId);
 
-        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword);
+        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId);
 
-        List<PatientInforModel> SearchBySindate(int sindate);
+        List<PatientInforModel> SearchBySindate(int sindate, int hpId);
 
-        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode);
+        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> SearchName(string keyword, bool isContainMode);
+        List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> SearchSimple(string keyword, bool isContainMode);
+        List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input);
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
-        bool CheckListId(List<long> ptIds);
+        bool CheckExistListId(List<long> ptIds);
 
         List<TokkiMstModel> GetListTokki(int hpId, int sinDate);
 
@@ -38,12 +38,12 @@ namespace Domain.Models.PatientInfor
 
         List<PtKyuseiInfModel> PtKyuseiInfModels(int hpId, long ptId, bool isDeleted);
 
-        bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels);
-        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps);
+        bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId);
+        (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId);
 
-        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps);
+        (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId);
 
-        bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId);
+        bool DeletePatientInfo(long ptId, int hpId, int userId);
         bool IsAllowDeletePatient(int hpId, long ptId);
 
         HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo);

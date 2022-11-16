@@ -24,7 +24,7 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
             .Select(u => ToModel(u)).ToList();
     }
 
-    public void Upsert(int sinDate, int uketukeSbt, int seqNo)
+    public void Upsert(int sinDate, int uketukeSbt, int seqNo, int userId)
     {
         var dayInf = _tenantDataContext.UketukeSbtDayInfs.AsTracking().Where(d => d.SinDate == sinDate).FirstOrDefault();
         if (dayInf is null)
@@ -35,9 +35,8 @@ public class UketukeSbtDayInfRepository : IUketukeSbtDayInfRepository
                 SinDate = sinDate,
                 UketukeSbt = uketukeSbt,
                 SeqNo = seqNo,
-                CreateId = TempIdentity.UserId,
-                CreateDate = DateTime.UtcNow,
-                CreateMachine = TempIdentity.ComputerName
+                CreateId = userId,
+                CreateDate = DateTime.UtcNow
             });
         }
         else
