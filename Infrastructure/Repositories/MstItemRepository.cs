@@ -738,7 +738,7 @@ namespace Infrastructure.Repositories
                     entity?.CmtColKeta1 ?? 0,
                     entity?.CmtColKeta2 ?? 0,
                     entity?.CmtColKeta3 ?? 0,
-                    entity?.CmtColKeta4 ?? 0
+                    entity?.CmtColKeta4 ?? 0,
                     entity?.MinAge ?? string.Empty,
                     entity?.MaxAge ?? string.Empty,
                     entity?.SanteiItemCd ?? string.Empty
@@ -779,6 +779,10 @@ namespace Infrastructure.Repositories
                     entity.CnvUnitName ?? string.Empty,
                     entity.StartDate,
                     entity.YohoKbn,
+                    entity.CmtCol1,
+                    entity.CmtCol2,
+                    entity.CmtCol3,
+                    entity.CmtCol4,
                     entity.MinAge ?? string.Empty,
                     entity.MaxAge ?? string.Empty,
                     entity.SanteiItemCd ?? string.Empty
