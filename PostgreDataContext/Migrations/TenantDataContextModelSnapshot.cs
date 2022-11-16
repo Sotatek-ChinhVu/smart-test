@@ -32944,6 +32944,212 @@ namespace PostgreDataContext.Migrations
 
                     b.ToTable("Z_UKETUKE_SBT_DAY_INF");
                 });
+
+            modelBuilder.Entity("Entity.Tenant.RsvkrtByomei", b =>
+            {
+                b.Property<long>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bigint")
+                    .HasColumnName("ID");
+
+                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                b.Property<int>("HpId")
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("integer")
+                   .HasColumnName("HP_ID");
+
+                b.Property<long>("PtId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bigint")
+                    .HasColumnName("PT_ID");
+
+                b.Property<long>("RsvkrtNo")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bigint")
+                    .HasColumnName("RSVKRT_NO");
+
+                b.Property<long>("SeqNo")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("bigint")
+                    .HasColumnName("SEQ_NO");
+
+                b.Property<string>("ByomeiCd")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("BYOMEI_CD");
+
+                b.Property<string>("SyusyokuCd1")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD1");
+
+                b.Property<string>("SyusyokuCd2")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD2");
+
+                b.Property<string>("SyusyokuCd3")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD3");
+
+                b.Property<string>("SyusyokuCd4")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD4");
+
+                b.Property<string>("SyusyokuCd5")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD5");
+
+                b.Property<string>("SyusyokuCd6")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD6");
+
+                b.Property<string>("SyusyokuCd7")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD7");
+
+                b.Property<string>("SyusyokuCd8")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD8");
+
+                b.Property<string>("SyusyokuCd9")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD9");
+
+                b.Property<string>("SyusyokuCd10")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD10");
+
+                b.Property<string>("SyusyokuCd11")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD11");
+
+                b.Property<string>("SyusyokuCd12")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD12");
+
+                b.Property<string>("SyusyokuCd13")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD13");
+
+                b.Property<string>("SyusyokuCd14")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD14");
+
+                b.Property<string>("SyusyokuCd15")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD15");
+
+                b.Property<string>("SyusyokuCd16")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD16");
+
+                b.Property<string>("SyusyokuCd17")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD17");
+
+                b.Property<string>("SyusyokuCd18")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD18");
+
+                b.Property<string>("SyusyokuCd19")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD19");
+
+                b.Property<string>("SyusyokuCd20")
+                    .HasMaxLength(7)
+                    .HasColumnType("character varying(7)")
+                    .HasColumnName("SYUSYOKU_CD20");
+
+                b.Property<string>("SyusyokuCd21")
+                  .HasMaxLength(7)
+                  .HasColumnType("character varying(7)")
+                  .HasColumnName("SYUSYOKU_CD21");
+
+                b.Property<string>("Byomei")
+                    .HasMaxLength(160)
+                    .HasColumnType("character varying(160)")
+                    .HasColumnName("BYOMEI");
+
+                b.Property<int>("SyobyoKbn")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("SYUBYO_KBN");
+
+                b.Property<int>("SikkanKbn")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("SIKKAN_KBN");
+
+                b.Property<int>("NanbyoCd")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("integer")
+                    .HasColumnName("NANBYO_CD");
+
+                b.Property<string>("HosokuCmt")
+                    .HasMaxLength(80)
+                    .HasColumnType("character varying(80)")
+                    .HasColumnName("HOSOKU_CMT");
+
+                b.Property<int>("IsNodspRece")
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("integer")
+                   .HasColumnName("IS_NODSP_RECE");
+
+                b.Property<int>("IsNodspKarte")
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("integer")
+                   .HasColumnName("IS_NODSP_KARTE");
+
+                b.Property<int>("IsDeleted")
+                   .ValueGeneratedOnAdd()
+                   .HasColumnType("integer")
+                   .HasColumnName("IS_DELETED");
+
+                b.Property<DateTime>("CreateDate")
+                    .HasColumnType("timestamp")
+                    .HasColumnName("CREATE_DATE");
+
+                b.Property<int>("CreateId")
+                    .HasColumnType("integer")
+                    .HasColumnName("CREATE_ID");
+
+                b.Property<string>("CreateMachine")
+                    .HasMaxLength(60)
+                    .HasColumnType("character varying(60)")
+                    .HasColumnName("CREATE_MACHINE");
+
+                b.Property<DateTime>("UpdateDate")
+                    .HasColumnType("timestamp")
+                    .HasColumnName("UPDATE_DATE");
+
+                b.Property<int>("UpdateId")
+                    .HasColumnType("integer")
+                    .HasColumnName("UPDATE_ID");
+
+                b.Property<string>("UpdateMachine")
+                    .HasMaxLength(60)
+                    .HasColumnType("character varying(60)")
+                    .HasColumnName("UPDATE_MACHINE");
+            });
 #pragma warning restore 612, 618
         }
     }
