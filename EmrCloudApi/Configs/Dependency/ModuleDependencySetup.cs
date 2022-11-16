@@ -1,5 +1,5 @@
-﻿//using DevExpress.Export;
-//using DevExpress.Implementation;
+﻿using DevExpress.Export;
+using DevExpress.Implementation;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
@@ -216,6 +216,7 @@ using UseCase.SpecialNote.AddAlrgyDrugList;
 using UseCase.SpecialNote.Get;
 using UseCase.SpecialNote.Save;
 using UseCase.StickyNote;
+using UseCase.SuperSetDetail.GetSuperSetDetailToDoTodayOrder;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 using UseCase.SwapHoken.Save;
@@ -231,7 +232,12 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.UpsertList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
-//using DevExpress.Inteface;
+using EmrCloudApi.Tenant.Services;
+using UseCase.AccountDue.SaveAccountDueList;
+using EventProcessor.Service;
+using EventProcessor.Interfaces;
+using DevExpress.Inteface;
+using Interactor.ExportPDF;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -254,6 +260,14 @@ namespace EmrCloudApi.Configs.Dependency
             SetupRepositories(services);
             SetupInterfaces(services);
             SetupUseCase(services);
+            SetupLogger(services);
+        }
+
+        private void SetupLogger(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Reporting>>();
+            services.AddSingleton(typeof(ILogger), logger!);
         }
 
         private void SetupInterfaces(IServiceCollection services)
@@ -262,6 +276,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ITenantProvider, TenantProvider>();
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
+            services.AddTransient<IUserService, UserService>();
+
+            // Export
+            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 
@@ -325,13 +343,12 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            //  services.AddTransient<IKarte1Export, Karte1Export>();
+            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-            services.AddTransient<INextOrder, NextOrderRepository>();
-            //  services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -510,6 +527,7 @@ namespace EmrCloudApi.Configs.Dependency
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
             busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
+            busBuilder.RegisterUseCase<GetSuperSetDetailToDoTodayOrderInputData, GetSuperSetDetailToDoTodayOrderInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationTodayOrdInputData, ValidationTodayOrdInteractor>();

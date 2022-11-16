@@ -16,24 +16,30 @@ using UseCase.UsageTreeSet.GetTree;
 using EmrCloudApi.Tenant.Constants;
 using UseCase.DrugDetailData;
 using EmrCloudApi.Tenant.Presenters.DrugDetailData;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InputItemController : ControllerBase
     {
         private readonly UseCaseBus _bus;
+        private readonly IUserService _userService;
 
-        public InputItemController(UseCaseBus bus)
+        public InputItemController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet("GetDrugInf")]
         public async Task<ActionResult<Response<GetDrugInforResponse>>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
         {
-            var input = new GetDrugInforInputData(request.HpId, request.SinDate, request.ItemCd);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new GetDrugInforInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run(()=>_bus.Handle(input));
 
             var presenter = new GetDrugInforPresenter();
@@ -45,7 +51,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDrugMenuTree)]
         public async Task<ActionResult<Response<GetDrugDetailResponse>>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
         {
-            var input = new GetDrugDetailInputData(request.HpId, request.SinDate, request.ItemCd);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new GetDrugDetailInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run( () => _bus.Handle(input));
 
             var presenter = new GetDrugDetailPresenter();
@@ -57,7 +64,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListUsageTreeSet")]
         public async Task<ActionResult<Response<GetUsageTreeSetListResponse>>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
-            var input = new GetUsageTreeSetInputData(request.HpId, request.SinDate, request.KouiKbn);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new GetUsageTreeSetInputData(hpId, request.SinDate, request.KouiKbn);
             var output =  await Task.Run( () => _bus.Handle(input));
             var present = new GetUsageTreeSetListPresenter();
             present.Complete(output);

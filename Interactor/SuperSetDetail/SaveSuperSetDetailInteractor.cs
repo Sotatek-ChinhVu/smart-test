@@ -75,6 +75,10 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                             item.IsDspKarte,
                             item.ByomeiCmt,
                             item.ByomeiCd,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
+                            string.Empty,
                             item.PrefixSuffixList.Select(pre =>
                                     new PrefixSuffixModel(
                                             pre.Code,

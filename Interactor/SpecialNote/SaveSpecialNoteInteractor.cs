@@ -23,7 +23,7 @@ namespace Interactor.SpecialNote
             {
                 return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.InvalidPtId);
             }
-            var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, inputData.PatientInfoTab);
+            var result = _specialNoteRepository.SaveSpecialNote(inputData.HpId, inputData.PtId, inputData.SummaryTab, inputData.ImportantNoteTab, inputData.PatientInfoTab, inputData.UserId);
            
             if(!result) return new SaveSpecialNoteOutputData(SaveSpecialNoteStatus.Failed);
            

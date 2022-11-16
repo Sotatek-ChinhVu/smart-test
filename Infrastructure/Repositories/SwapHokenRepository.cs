@@ -52,11 +52,10 @@ namespace Infrastructure.Repositories
                                                  .Select(p => p.SeikyuYm).ToList();
         }
 
-        public bool SwapHokenParttern(int hpId, long PtId, int OldHokenPid, int NewHokenPid, int StartDate, int EndDate)
+        public bool SwapHokenParttern(int hpId, long PtId, int OldHokenPid, int NewHokenPid, int StartDate, int EndDate, int userId)
         {
             var updateDate = DateTime.UtcNow;
-            var updateMachine = TempIdentity.ComputerName;
-            var updateId = TempIdentity.UserId;
+            var updateId = userId;
 
             #region UpdateHokenPatternInRaiin
             var raiinInfList = _tenantTrackingDataContext.RaiinInfs.Where((x) =>
@@ -72,7 +71,6 @@ namespace Infrastructure.Repositories
             {
                 x.HokenPid = NewHokenPid;
                 x.UpdateDate = updateDate;
-                x.UpdateMachine = updateMachine;
                 x.UpdateId = updateId;
             });
             #endregion UpdateHokenPatternInRaiin
@@ -89,7 +87,6 @@ namespace Infrastructure.Repositories
             {
                 x.HokenPid = NewHokenPid;
                 x.UpdateDate = updateDate;
-                x.UpdateMachine = updateMachine;
                 x.UpdateId = updateId;
             });
             #endregion 
@@ -107,7 +104,7 @@ namespace Infrastructure.Repositories
                                                          p.IsDeleted == DeleteTypes.None);
         }
 
-        public bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId)
+        public bool UpdateReceSeikyu(int hpId, long ptId, List<int> seiKyuYms, int oldHokenId, int newHokenId, int userId)
         {
             var receSeiKyus = _tenantTrackingDataContext.ReceSeikyus.Where(p => p.HpId == hpId && p.PtId == ptId && seiKyuYms.Contains(p.SeikyuYm)).ToList();
             if (!receSeiKyus.Any())
@@ -118,8 +115,7 @@ namespace Infrastructure.Repositories
                     receSeiKyu.IsDeleted = DeleteTypes.Deleted;
                 receSeiKyu.HokenId = newHokenId;
                 receSeiKyu.UpdateDate = DateTime.Now;
-                receSeiKyu.UpdateId = TempIdentity.UserId;
-                receSeiKyu.UpdateMachine = TempIdentity.ComputerName;
+                receSeiKyu.UpdateId = userId;
             }
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }

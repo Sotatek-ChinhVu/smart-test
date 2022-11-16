@@ -35,7 +35,7 @@ namespace Interactor.MonshinInf
                 else
                     return new SaveMonshinOutputData(SaveMonshinStatus.InputDataNull);
 
-                bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors);
+                bool success = _monshinInforRepository.SaveList(inputData.MonshinInfors, inputData.UserId);
                 var status = success ? SaveMonshinStatus.Success : SaveMonshinStatus.Failed;
                 return new SaveMonshinOutputData(status);
             }

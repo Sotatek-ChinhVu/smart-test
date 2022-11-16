@@ -6,7 +6,7 @@ namespace UseCase.SwapHoken.Save
 {
     public class SaveSwapHokenInputData : IInputData<SaveSwapHokenOutputData>
     {
-        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate)
+        public SaveSwapHokenInputData(int hpId, long ptId, int hokenIdBefore, int hokenIdAfter, int hokenPidBefore, int hokenPidAfter, int startDate, int endDate, int userId)
         {
             HpId = hpId;
             PtId = ptId;
@@ -16,6 +16,7 @@ namespace UseCase.SwapHoken.Save
             HokenPidAfter = hokenPidAfter;
             StartDate = startDate;
             EndDate = endDate == 0 ? 99999999 : endDate;
+            UserId = userId;
         }
 
         public int HpId { get; private set; }
@@ -26,5 +27,6 @@ namespace UseCase.SwapHoken.Save
         public int HokenPidAfter { get; private set; }
         public int StartDate { get; private set; }
         public int EndDate { get; private set; }
+        public int UserId { get; private set; }
     }
 }

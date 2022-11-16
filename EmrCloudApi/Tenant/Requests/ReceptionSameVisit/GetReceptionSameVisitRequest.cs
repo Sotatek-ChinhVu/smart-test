@@ -1,6 +1,4 @@
-﻿using Domain.Models.ReceptionSameVisit;
-
-namespace EmrCloudApi.Tenant.Requests.ReceptionSameVisit
+﻿namespace EmrCloudApi.Tenant.Requests.ReceptionSameVisit
 {
     public class GetReceptionSameVisitRequest
     {
