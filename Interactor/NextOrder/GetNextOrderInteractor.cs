@@ -6,10 +6,10 @@ namespace Interactor.NextOrder
 {
     public class GetNextOrderInteractor : IGetNextOrderInputPort
     {
-        private readonly INextOrder _nextOrderRepository;
+        private readonly INextOrderRepository _nextOrderRepository;
         private readonly IInsuranceRepository _insuranceRepository;
 
-        public GetNextOrderInteractor(INextOrder nextOrderRepository, IInsuranceRepository insuranceRepository)
+        public GetNextOrderInteractor(INextOrderRepository nextOrderRepository, IInsuranceRepository insuranceRepository)
         {
             _nextOrderRepository = nextOrderRepository;
             _insuranceRepository = insuranceRepository;

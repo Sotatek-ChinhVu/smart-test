@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Infrastructure.Repositories
 {
-    public class NextOrderRepository : INextOrder
+    public class NextOrderRepository : INextOrderRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         private readonly TenantDataContext _tenantDataContextTracking;
