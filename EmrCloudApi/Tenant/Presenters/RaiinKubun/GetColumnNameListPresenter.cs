@@ -12,7 +12,7 @@ namespace EmrCloudApi.Tenant.Presenters.RaiinKubun
         {
             Result = new Response<GetColumnNameListResponse>()
             {
-                Data = new GetColumnNameListResponse(outputData.ColumnNames),
+                Data = new GetColumnNameListResponse(outputData.ColumnNames.Select(c => new GetColumnNameItem(c.Item1, c.Item2)).ToList()),
                 Message = ResponseMessage.Success,
                 Status = (byte)outputData.Status
             };

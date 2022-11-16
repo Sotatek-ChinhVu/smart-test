@@ -18,7 +18,7 @@ public class SearchPatientInfoAdvancedInteractor : ISearchPatientInfoAdvancedInp
 
     public SearchPatientInfoAdvancedOutputData Handle(SearchPatientInfoAdvancedInputData input)
     {
-        var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput);
+        var patientInfos = _patientInforRepository.GetAdvancedSearchResults(input.SearchInput, input.HpId);
         var ptIds = patientInfos.Select(p => p.PtId).ToList();
         var patientGroups = _groupInfRepository.GetAllByPtIdList(ptIds);
         var ptWithGroups =

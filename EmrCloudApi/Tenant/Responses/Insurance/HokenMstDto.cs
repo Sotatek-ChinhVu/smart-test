@@ -22,6 +22,9 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
             IsFutansyaNoCheck = hokenMstModel.IsFutansyaNoCheck;
             IsJyukyusyaNoCheck = hokenMstModel.IsJyukyusyaNoCheck;
             IsTokusyuNoCheck = hokenMstModel.IsTokusyuNoCheck;
+            KaiLimitFutan = hokenMstModel.KaiLimitFutan;
+            DayLimitFutan = hokenMstModel.DayLimitFutan;
+            MonthLimitFutan = hokenMstModel.MonthLimitFutan;
         }
 
         public int FutanKbn { get; private set; }
@@ -55,6 +58,12 @@ namespace EmrCloudApi.Tenant.Responses.Insurance
         public int JyuKyuCheckDigit { get; private set; }
 
         public int IsTokusyuNoCheck { get; private set; }
+
+        public int KaiLimitFutan { get; private set; }
+
+        public int DayLimitFutan { get; private set; }
+
+        public int MonthLimitFutan { get; private set; }
 
         public string SelectedValueMaster
         {

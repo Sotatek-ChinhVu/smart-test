@@ -6,9 +6,12 @@ namespace UseCase.RaiinKubunMst.LoadData
     {
         public int HpId { get; private set; }
 
-        public LoadDataKubunSettingInputData(int hpId)
+        public int UserId { get; private set; }
+
+        public LoadDataKubunSettingInputData(int hpId, int userId)
         {
             HpId = hpId;
+            UserId = userId;
         }
     }
 }

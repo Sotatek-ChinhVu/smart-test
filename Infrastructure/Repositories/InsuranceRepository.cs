@@ -259,7 +259,7 @@ namespace Infrastructure.Repositories
                                             hokensyaMst ?? new HokensyaMstModel(),
                                             false,
                                             false
-                                            ) ;
+                                            );
 
                     InsuranceModel insuranceModel = new InsuranceModel(
                         item.HpId,
@@ -317,7 +317,7 @@ namespace Infrastructure.Repositories
                                                                                             x.Address1,
                                                                                             x.Address2,
                                                                                             x.Tel1,
-                                                                                            x.IsKigoNa)).FirstOrDefault(); 
+                                                                                            x.IsKigoNa)).FirstOrDefault();
                     var isReceKisaiOrNoHoken = false;
                     var prefName = string.Empty;
                     if (hokenMst != null)
@@ -438,14 +438,14 @@ namespace Infrastructure.Repositories
             return new InsuranceDataModel(listInsurance, listHokenInf, listKohi);
         }
 
-        public bool CheckHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
+        public bool CheckExistHokenPIdList(List<int> hokenPIds, List<int> hpIds, List<long> ptIds)
         {
             if (hokenPIds.Count == 0) return true;
             var countPtHokens = _tenantDataContext.PtHokenInfs.Count(p => hokenPIds.Contains(p.HokenId) && p.IsDeleted != 1 && hpIds.Contains(p.HpId) && ptIds.Contains(p.PtId));
-            return countPtHokens >= hokenPIds.Count;
+            return countPtHokens == hokenPIds.Count;
         }
 
-        public bool CheckHokenPid(int hokenPId)
+        public bool CheckExistHokenPid(int hokenPId)
         {
             var check = _tenantDataContext.PtHokenInfs.Any(h => h.HokenId == hokenPId && h.IsDeleted == 0);
             return check;
@@ -1148,7 +1148,7 @@ namespace Infrastructure.Repositories
                         string houbetuNo = string.Empty;
                         string hokensyaNoSearch = string.Empty;
                         CIUtil.GetHokensyaHoubetu(item.HokensyaNo ?? string.Empty, ref hokensyaNoSearch, ref houbetuNo);
-                   
+
                         HokenInfModel hokenInf = new HokenInfModel(
                                                 hpId,
                                                 ptId,

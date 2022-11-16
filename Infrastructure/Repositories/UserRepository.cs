@@ -128,7 +128,7 @@ namespace Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
-        public void Upsert(List<UserMstModel> upsertUserList)
+        public void Upsert(List<UserMstModel> upsertUserList, int userId)
         {
             foreach (var inputData in upsertUserList)
             {
@@ -161,9 +161,8 @@ namespace Infrastructure.Repositories
                         userMst.SortNo = inputData.SortNo;
                         userMst.RenkeiCd1 = inputData.RenkeiCd1 ?? string.Empty;
                         userMst.IsDeleted = inputData.IsDeleted;
-                        userMst.UpdateId = TempIdentity.UserId;
+                        userMst.UpdateId = userId;
                         userMst.UpdateDate = DateTime.UtcNow;
-                        userMst.UpdateMachine = TempIdentity.ComputerName;
                     }
                     else
                     {

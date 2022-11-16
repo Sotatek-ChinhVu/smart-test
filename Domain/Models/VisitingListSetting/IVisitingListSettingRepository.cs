@@ -4,5 +4,5 @@ namespace Domain.Models.VisitingListSetting;
 
 public interface IVisitingListSettingRepository
 {
-    void Save(List<SystemConfModel> systemConfModels);
+    void Save(List<SystemConfModel> systemConfModels, int hpId, int userId);
 }

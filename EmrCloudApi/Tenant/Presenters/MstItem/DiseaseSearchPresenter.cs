@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.MstItem;
+using EmrCloudApi.Tenant.Responses.MstItem.DiseaseSearch;
 using UseCase.MstItem.DiseaseSearch;
 
 namespace EmrCloudApi.Tenant.Presenters.MstItem;
@@ -11,7 +11,7 @@ public class DiseaseSearchPresenter : IDiseaseSearchOutputPort
 
     public void Complete(DiseaseSearchOutputData output)
     {
-        Result.Data = new DiseaseSearchResponse(output.ListData);
+        Result.Data = new DiseaseSearchResponse(output.ListData.Select(item => new DiseaseSearchModel(item)).ToList());
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
             return monshinList;
         }
 
-        public bool SaveList(List<MonshinInforModel> monshinInforModels)
+        public bool SaveList(List<MonshinInforModel> monshinInforModels, int userId)
         {
             try
             {
@@ -68,8 +68,7 @@ namespace Infrastructure.Repositories
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
                             CreateMachine = monshinInfor.CreateMachine,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         });
                     }
 
@@ -91,8 +90,7 @@ namespace Infrastructure.Repositories
                             CreateDate = DateTime.SpecifyKind(monshinInfor.CreateDate, DateTimeKind.Utc),
                             CreateMachine = monshinInfor.CreateMachine,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         });
                     }
 
@@ -108,12 +106,10 @@ namespace Infrastructure.Repositories
                             Text = model.Text,
                             GetKbn = 0,
                             IsDeleted = 0,
-                            CreateId = TempIdentity.UserId,
+                            CreateId = userId,
                             CreateDate = DateTime.UtcNow,
-                            CreateMachine = TempIdentity.ComputerName,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName
+                            UpdateId = userId
                         });
                     }
                 }

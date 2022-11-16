@@ -14,13 +14,13 @@
 
         TenItemModel GetTenMst(int hpId, int sinDate, string itemCd);
 
-        bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem);
+        bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId);
 
-        List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount);
+        List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize);
 
         List<ByomeiMstModel> DiseaseSearch(List<string> keyCodes);
 
-        bool UpdateAdoptedByomei(int hpId, string byomeiCd);
+        bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId);
 
         List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
 
