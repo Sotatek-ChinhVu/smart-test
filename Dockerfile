@@ -24,9 +24,8 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
-RUN rm -rf EmrCloudApi.runtimeconfig.json
-
-COPY --from=build-env /app/EmrCloudApi.runtimeconfig.json .
+#RUN rm -rf EmrCloudApi.runtimeconfig.json
+#COPY --from=build-env /app/EmrCloudApi.runtimeconfig.json .
 ENV ASPNETCORE_URLS=http://+:5286
 EXPOSE 5286
 ENTRYPOINT ["dotnet", "EmrCloudApi.dll"]
