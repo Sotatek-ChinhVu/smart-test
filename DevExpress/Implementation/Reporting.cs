@@ -57,14 +57,9 @@ public class Reporting : IReporting
         var dataModel = ConvertToKarte1ExportModel(ptInf, hoken, listByomeiModelsPage1, listByomeiModelsPage2);
         var res = _karte1Export.ExportToPdf(dataModel);
         
-        if (!string.IsNullOrEmpty(res.Item2))
+        if (res.Length > 0)
         {
-            return new Karte1Output(res.Item2);
-        }
-
-        if (res.Item1.Length > 0)
-        {
-            return new Karte1Output(Karte1Status.Success, res.Item1);
+            return new Karte1Output(Karte1Status.Success, res);
         }
         
         return new Karte1Output(Karte1Status.CanNotExportPdf);
