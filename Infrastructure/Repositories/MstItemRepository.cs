@@ -161,7 +161,11 @@ namespace Infrastructure.Repositories
                 tenMst?.YjCd ?? string.Empty,
                 tenMst?.CnvUnitName ?? string.Empty,
                 tenMst?.StartDate ?? 0,
-                tenMst?.YohoKbn ?? 0
+                tenMst?.YohoKbn ?? 0,
+                tenMst?.CmtColKeta1 ?? 0,
+                tenMst?.CmtColKeta2 ?? 0,
+                tenMst?.CmtColKeta3 ?? 0,
+                tenMst?.CmtColKeta4 ?? 0
             );
         }
 
@@ -194,7 +198,11 @@ namespace Infrastructure.Repositories
                 tenMst.YjCd ?? string.Empty,
                 tenMst.CnvUnitName ?? string.Empty,
                 tenMst.StartDate,
-                tenMst.YohoKbn
+                tenMst.YohoKbn,
+                tenMst.CmtColKeta1,
+                tenMst.CmtColKeta2,
+                tenMst.CmtColKeta3,
+                tenMst.CmtColKeta4
             )).ToList();
         }
 
@@ -564,7 +572,11 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.YjCd ?? string.Empty,
                                                            item.TenMst?.CnvUnitName ?? string.Empty,
                                                            item.TenMst?.StartDate ?? 0,
-                                                           item.TenMst?.YohoKbn ?? 0
+                                                           item.TenMst?.YohoKbn ?? 0,
+                                                           item.TenMst?.CmtColKeta1 ?? 0,
+                                                           item.TenMst?.CmtColKeta2 ?? 0,
+                                                           item.TenMst?.CmtColKeta3 ?? 0,
+                                                           item.TenMst?.CmtColKeta4 ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -713,7 +725,11 @@ namespace Infrastructure.Repositories
                     entity?.YjCd ?? string.Empty,
                     entity?.CnvUnitName ?? string.Empty,
                     entity?.StartDate ?? 0,
-                    entity?.YohoKbn ?? 0
+                    entity?.YohoKbn ?? 0,
+                    entity?.CmtColKeta1 ?? 0,
+                    entity?.CmtColKeta2 ?? 0,
+                    entity?.CmtColKeta3 ?? 0,
+                    entity?.CmtColKeta4 ?? 0
                );
         }
 
