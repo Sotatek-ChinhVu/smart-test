@@ -20,22 +20,6 @@ namespace Domain.Models.KarteInfs
             CreateName = createName;
         }
 
-        public KarteInfModel()
-        {
-            HpId = 0;
-            RaiinNo = 0;
-            KarteKbn = 0;
-            SeqNo = 0;
-            PtId = 0;
-            SinDate = 0;
-            Text = string.Empty;
-            IsDeleted = 0;
-            RichText = string.Empty;
-            CreateDate = DateTime.MinValue;
-            UpdateDate = DateTime.MinValue;
-            CreateName = string.Empty;
-        }
-
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public int KarteKbn { get; private set; }
