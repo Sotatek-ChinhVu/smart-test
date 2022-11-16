@@ -32,7 +32,7 @@ namespace UseCase.NextOrder.Get
             }
         }
 
-        public int? HokenPid { get; private set; }
+        public int HokenPid { get; private set; }
 
         public int InOutKbn
         {
@@ -171,7 +171,7 @@ namespace UseCase.NextOrder.Get
 
         public List<RsvKrtOrderInfItem> OdrInfs { get; private set; }
 
-        public GroupOdrItem(string sinkyuName, List<RsvKrtOrderInfItem> odrInfs, int? hokenPid)
+        public GroupOdrItem(string sinkyuName, List<RsvKrtOrderInfItem> odrInfs, int hokenPid)
         {
             SinkyuName = sinkyuName;
             OdrInfs = odrInfs;

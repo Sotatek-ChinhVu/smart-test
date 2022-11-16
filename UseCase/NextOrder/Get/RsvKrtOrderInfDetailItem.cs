@@ -1,56 +1,57 @@
-﻿using Domain.Models.OrdInfDetails;
+﻿using Domain.Models.NextOrder;
+using Domain.Models.OrdInfDetails;
 
 namespace UseCase.NextOrder.Get
 {
     public class RsvKrtOrderInfDetailItem
     {
-        public RsvKrtOrderInfDetailItem(int hpId, long ptId, long rsvkrtNo, long rpNo, long rpEdaNo, int rowNo, int rsvDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, string masterSbt, int inOutKbn, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, int refillSetting, int cmtCol1, double odrTermVal, double cnvTermVal, string yjCd, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2)
+        public RsvKrtOrderInfDetailItem(RsvKrtOrderInfDetailModel rsvKrtOrderInfDetailModel)
         {
-            HpId = hpId;
-            PtId = ptId;
-            RsvkrtNo = rsvkrtNo;
-            RpNo = rpNo;
-            RpEdaNo = rpEdaNo;
-            RowNo = rowNo;
-            RsvDate = rsvDate;
-            SinKouiKbn = sinKouiKbn;
-            ItemCd = itemCd;
-            ItemName = itemName;
-            Suryo = suryo;
-            UnitName = unitName;
-            UnitSbt = unitSbt;
-            TermVal = termVal;
-            KohatuKbn = kohatuKbn;
-            SyohoKbn = syohoKbn;
-            SyohoLimitKbn = syohoLimitKbn;
-            DrugKbn = drugKbn;
-            YohoKbn = yohoKbn;
-            Kokuji1 = kokuji1;
-            Kokuji2 = kokuji2;
-            IsNodspRece = isNodspRece;
-            IpnCd = ipnCd;
-            IpnName = ipnName;
-            Bunkatu = bunkatu;
-            CmtName = cmtName;
-            CmtOpt = cmtOpt;
-            FontColor = fontColor;
-            CommentNewline = commentNewline;
-            MasterSbt = masterSbt;
-            InOutKbn = inOutKbn;
-            Yakka = yakka;
-            IsGetPriceInYakka = isGetPriceInYakka;
-            Ten = ten;
-            BunkatuKoui = bunkatuKoui;
-            AlternationIndex = alternationIndex;
-            KensaGaichu = kensaGaichu;
-            RefillSetting = refillSetting;
-            CmtCol1 = cmtCol1;
-            OdrTermVal = odrTermVal;
-            CnvTermVal = cnvTermVal;
-            YjCd = yjCd;
-            YohoSets = yohoSets;
-            Kasan1 = kasan1;
-            Kasan2 = kasan2;
+            HpId = rsvKrtOrderInfDetailModel.HpId;
+            PtId = rsvKrtOrderInfDetailModel.PtId;
+            RsvkrtNo = rsvKrtOrderInfDetailModel.RsvkrtNo;
+            RpNo = rsvKrtOrderInfDetailModel.RpNo;
+            RpEdaNo = rsvKrtOrderInfDetailModel.RpEdaNo;
+            RowNo = rsvKrtOrderInfDetailModel.RowNo;
+            RsvDate = rsvKrtOrderInfDetailModel.RsvDate;
+            SinKouiKbn = rsvKrtOrderInfDetailModel.SinKouiKbn;
+            ItemCd = rsvKrtOrderInfDetailModel.ItemCd;
+            ItemName = rsvKrtOrderInfDetailModel.ItemName;
+            Suryo = rsvKrtOrderInfDetailModel.Suryo;
+            UnitName = rsvKrtOrderInfDetailModel.UnitName;
+            UnitSbt = rsvKrtOrderInfDetailModel.UnitSbt;
+            TermVal = rsvKrtOrderInfDetailModel.TermVal;
+            KohatuKbn = rsvKrtOrderInfDetailModel.KohatuKbn;
+            SyohoKbn = rsvKrtOrderInfDetailModel.SyohoKbn;
+            SyohoLimitKbn = rsvKrtOrderInfDetailModel.SyohoLimitKbn;
+            DrugKbn = rsvKrtOrderInfDetailModel.DrugKbn;
+            YohoKbn = rsvKrtOrderInfDetailModel.YohoKbn;
+            Kokuji1 = rsvKrtOrderInfDetailModel.Kokuji1;
+            Kokuji2 = rsvKrtOrderInfDetailModel.Kokuji2;
+            IsNodspRece = rsvKrtOrderInfDetailModel.IsNodspRece;
+            IpnCd = rsvKrtOrderInfDetailModel.IpnCd;
+            IpnName = rsvKrtOrderInfDetailModel.IpnName;
+            Bunkatu = rsvKrtOrderInfDetailModel.Bunkatu;
+            CmtName = rsvKrtOrderInfDetailModel.CmtName;
+            CmtOpt = rsvKrtOrderInfDetailModel.CmtOpt;
+            FontColor = rsvKrtOrderInfDetailModel.FontColor;
+            CommentNewline = rsvKrtOrderInfDetailModel.CommentNewline;
+            MasterSbt = rsvKrtOrderInfDetailModel.MasterSbt;
+            InOutKbn = rsvKrtOrderInfDetailModel.InOutKbn;
+            Yakka = rsvKrtOrderInfDetailModel.Yakka;
+            IsGetPriceInYakka = rsvKrtOrderInfDetailModel.IsGetPriceInYakka;
+            Ten = rsvKrtOrderInfDetailModel.Ten;
+            BunkatuKoui = rsvKrtOrderInfDetailModel.BunkatuKoui;
+            AlternationIndex = rsvKrtOrderInfDetailModel.AlternationIndex;
+            KensaGaichu = rsvKrtOrderInfDetailModel.KensaGaichu;
+            RefillSetting = rsvKrtOrderInfDetailModel.RefillSetting;
+            CmtCol1 = rsvKrtOrderInfDetailModel.CmtCol1;
+            OdrTermVal = rsvKrtOrderInfDetailModel.OdrTermVal;
+            CnvTermVal = rsvKrtOrderInfDetailModel.CnvTermVal;
+            YjCd = rsvKrtOrderInfDetailModel.YjCd;
+            YohoSets = rsvKrtOrderInfDetailModel.YohoSets;
+            Kasan1 = rsvKrtOrderInfDetailModel.Kasan1;
+            Kasan2 = rsvKrtOrderInfDetailModel.Kasan2;
         }
 
         public int HpId { get; private set; }

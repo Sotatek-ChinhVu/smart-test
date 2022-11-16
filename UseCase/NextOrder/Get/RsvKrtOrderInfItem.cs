@@ -1,32 +1,34 @@
-﻿namespace UseCase.NextOrder.Get
+﻿using Domain.Models.NextOrder;
+
+namespace UseCase.NextOrder.Get
 {
     public class RsvKrtOrderInfItem
     {
-        public RsvKrtOrderInfItem(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, int groupOdrKouiKbn, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailItem> orderInfDetailItems)
+        public RsvKrtOrderInfItem(RsvkrtOrderInfModel rsvkrtOrderInfModel)
         {
-            HpId = hpId;
-            PtId = ptId;
-            RsvDate = rsvDate;
-            RsvkrtNo = rsvkrtNo;
-            RpNo = rpNo;
-            RpEdaNo = rpEdaNo;
-            Id = id;
-            HokenPid = hokenPid;
-            OdrKouiKbn = odrKouiKbn;
-            RpName = rpName;
-            InoutKbn = inoutKbn;
-            SikyuKbn = sikyuKbn;
-            SyohoSbt = syohoSbt;
-            SanteiKbn = santeiKbn;
-            TosekiKbn = tosekiKbn;
-            DaysCnt = daysCnt;
-            IsDeleted = isDeleted;
-            GroupOdrKouiKbn = groupOdrKouiKbn;
-            SortNo = sortNo;
-            CreateDate = createDate;
-            CreateId = createId;
-            CreateName = createName;
-            RsvKrtOrderInfDetailItems = orderInfDetailItems;
+            HpId = rsvkrtOrderInfModel.HpId;
+            PtId = rsvkrtOrderInfModel.PtId;
+            RsvDate = rsvkrtOrderInfModel.RsvDate;
+            RsvkrtNo = rsvkrtOrderInfModel.RsvkrtNo;
+            RpNo = rsvkrtOrderInfModel.RpNo;
+            RpEdaNo = rsvkrtOrderInfModel.RpEdaNo;
+            Id = rsvkrtOrderInfModel.Id;
+            HokenPid = rsvkrtOrderInfModel.HokenPid;
+            OdrKouiKbn = rsvkrtOrderInfModel.OdrKouiKbn;
+            RpName = rsvkrtOrderInfModel.RpName;
+            InoutKbn = rsvkrtOrderInfModel.InoutKbn;
+            SikyuKbn = rsvkrtOrderInfModel.SikyuKbn;
+            SyohoSbt = rsvkrtOrderInfModel.SyohoSbt;
+            SanteiKbn = rsvkrtOrderInfModel.SanteiKbn;
+            TosekiKbn = rsvkrtOrderInfModel.TosekiKbn;
+            DaysCnt = rsvkrtOrderInfModel.DaysCnt;
+            IsDeleted = rsvkrtOrderInfModel.IsDeleted;
+            GroupOdrKouiKbn = rsvkrtOrderInfModel.GroupKoui.Value;
+            SortNo = rsvkrtOrderInfModel.SortNo;
+            CreateDate = rsvkrtOrderInfModel.CreateDate;
+            CreateId = rsvkrtOrderInfModel.CreateId;
+            CreateName = rsvkrtOrderInfModel.CreateName;
+            RsvKrtOrderInfDetailItems = rsvkrtOrderInfModel.OrderInfDetailModels.Select(od => new RsvKrtOrderInfDetailItem(od)).ToList();
         }
 
         public int HpId { get; private set; }

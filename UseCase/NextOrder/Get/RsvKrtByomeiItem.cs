@@ -1,28 +1,30 @@
-﻿namespace UseCase.NextOrder.Get
+﻿using Domain.Models.NextOrder;
+
+namespace UseCase.NextOrder.Get
 {
     public class RsvKrtByomeiItem
     {
-        public RsvKrtByomeiItem(long id, int hpId, long ptId, long rsvkrtNo, long seqNo, string byomeiCd, string byomei, int syobyoKbn, int sikkanKbn, int nanbyoCd, string hosokuCmt, int isNodspRece, int isNodspKarte, int isDeleted, string icd10, string icd102013, string icd1012013, string icd1022013, List<string> prefixSuffixList)
+        public RsvKrtByomeiItem(RsvkrtByomeiModel rsvkrtByomeiModel)
         {
-            Id = id;
-            HpId = hpId;
-            PtId = ptId;
-            RsvkrtNo = rsvkrtNo;
-            SeqNo = seqNo;
-            ByomeiCd = byomeiCd;
-            Byomei = byomei;
-            SyobyoKbn = syobyoKbn;
-            SikkanKbn = sikkanKbn;
-            NanbyoCd = nanbyoCd;
-            HosokuCmt = hosokuCmt;
-            IsNodspRece = isNodspRece;
-            IsNodspKarte = isNodspKarte;
-            IsDeleted = isDeleted;
-            Icd10 = icd10;
-            Icd102013 = icd102013;
-            Icd1012013 = icd1012013;
-            Icd1022013 = icd1022013;
-            PrefixSuffixList = prefixSuffixList;
+            Id = rsvkrtByomeiModel.Id;
+            HpId = rsvkrtByomeiModel.HpId;
+            PtId = rsvkrtByomeiModel.PtId;
+            RsvkrtNo = rsvkrtByomeiModel.RsvkrtNo;
+            SeqNo = rsvkrtByomeiModel.SeqNo;
+            ByomeiCd = rsvkrtByomeiModel.ByomeiCd;
+            Byomei = rsvkrtByomeiModel.Byomei;
+            SyobyoKbn = rsvkrtByomeiModel.SyobyoKbn;
+            SikkanKbn = rsvkrtByomeiModel.SikkanKbn;
+            NanbyoCd = rsvkrtByomeiModel.NanbyoCd;
+            HosokuCmt = rsvkrtByomeiModel.HosokuCmt;
+            IsNodspRece = rsvkrtByomeiModel.IsNodspRece;
+            IsNodspKarte = rsvkrtByomeiModel.IsNodspKarte;
+            IsDeleted = rsvkrtByomeiModel.IsDeleted;
+            Icd10 = rsvkrtByomeiModel.Icd10;
+            Icd102013 = rsvkrtByomeiModel.Icd102013;
+            Icd1012013 = rsvkrtByomeiModel.Icd1012013;
+            Icd1022013 = rsvkrtByomeiModel.Icd1022013;
+            PrefixSuffixList = rsvkrtByomeiModel.PrefixSuffixList;
         }
 
         public long Id { get; private set; }
