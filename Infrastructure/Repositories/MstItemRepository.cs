@@ -208,7 +208,7 @@ namespace Infrastructure.Repositories
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
-            if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword)) 
+            if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
                 keyword = WanaKana.RomajiToKana(keyword);
 
             var listTenMstModels = new List<TenItemModel>();
@@ -599,124 +599,34 @@ namespace Infrastructure.Repositories
 
             return true;
         }
-        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount)
+        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
-            var keywordAfterConvert = keyword != String.Empty ? keyword.ToUpper()
-                                            .Replace("ｧ", "ｱ")
-                                            .Replace("ｨ", "ｲ")
-                                            .Replace("ｩ", "ｳ")
-                                            .Replace("ｪ", "ｴ")
-                                            .Replace("ｫ", "ｵ")
-                                            .Replace("ｬ", "ﾔ")
-                                            .Replace("ｭ", "ﾕ")
-                                            .Replace("ｮ", "ﾖ")
-                                            .Replace("ｯ", "ﾂ")
-                                            : String.Empty;
+            var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
             var query = _tenantDataContext.ByomeiMsts.Where(item =>
                                     (item.KanaName1 != null &&
-                                    item.KanaName1.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName1.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName2 != null &&
-                                     item.KanaName2.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                     item.KanaName2.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName3 != null &&
-                                    item.KanaName3.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName3.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName4 != null &&
-                                    item.KanaName4.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName4.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName5 != null &&
-                                    item.KanaName5.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName5.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName6 != null &&
-                                    item.KanaName6.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName6.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName7 != null &&
-                                    item.KanaName7.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName7.StartsWith(keywordHalfSize))
                                     ||
                                     (item.Sbyomei != null &&
-                                    item.Sbyomei.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .Contains(keywordAfterConvert))
+                                    item.Sbyomei.Contains(keyword))
                                     ||
                                     (item.Icd101 != null &&
                                     item.Icd101.StartsWith(keyword))
@@ -731,16 +641,18 @@ namespace Infrastructure.Repositories
                                     item.Icd1022013.StartsWith(keyword))
                                  );
 
-            query = query.Where(item => (isByomei && item.ByomeiCd.Length != 4)
-                                            || (isPrefix && item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9"))
-                                            || (isSuffix && item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8"))
+            query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate)
+                                            && (isMisaiyou || item.IsAdopted == 1)
+                                            && (isByomei || item.ByomeiCd.Length != 4)
+                                            && (isPrefix || (item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9")))
+                                            && (isSuffix || (item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8")))
                                         );
 
             var listDatas = query.OrderBy(item => item.KanaName1)
                                  .ThenByDescending(item => item.IsAdopted)
                                  .OrderByDescending(item => item.ByomeiCd.Length != 4)
                                  .ThenByDescending(item => item.ByomeiCd.Length == 4)
-                                 .Skip((pageIndex - 1) * pageCount).Take(pageCount).ToList();
+                                 .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
             List<ByomeiMstModel> listByomeies = new();
 
@@ -832,7 +744,8 @@ namespace Infrastructure.Repositories
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
+                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    mst.IsAdopted == 1
                 );
         }
 

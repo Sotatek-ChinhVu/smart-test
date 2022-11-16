@@ -17,7 +17,7 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
     {
         try
         {
-            if (inputData.PageCount < 1)
+            if (inputData.PageSize < 1)
             {
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageCount);
             }
@@ -26,8 +26,7 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
                 return new DiseaseSearchOutputData(DiseaseSearchStatus.InvalidPageIndex);
             }
 
-            string keyword = CIUtil.ToHalfsize(inputData.Keyword);
-            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, keyword, inputData.PageIndex, inputData.PageCount);
+            var listData = _inputItemRepository.DiseaseSearch(inputData.IsPrefix, inputData.IsByomei, inputData.IsSuffix, inputData.IsMisaiyou, inputData.Keyword, inputData.Sindate, inputData.PageIndex, inputData.PageSize);
             return new DiseaseSearchOutputData(listData, DiseaseSearchStatus.Successed);
         }
         catch (Exception)
