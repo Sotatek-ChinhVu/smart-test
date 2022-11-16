@@ -2,6 +2,10 @@
 {
     public interface INextOrderRepository
     {
-        (List<RsvkrtByomeiModel> byomeis, RsvkrtKarteInfModel karteInf, List<RsvkrtOrderInfModel> orderInfs) Get(int hpId, long ptId, long rsvkrtNo, int userId, int sinDate, int type);
+        List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type);
+
+        public RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo);
+
+        public List<RsvkrtOrderInfModel> GetOrderInfs(int hpId, long ptId, long rsvkrtNo, int sinDate, int userId);
     }
 }

@@ -18,21 +18,40 @@ namespace Infrastructure.Repositories
             _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public (List<RsvkrtByomeiModel> byomeis, RsvkrtKarteInfModel karteInf, List<RsvkrtOrderInfModel> orderInfs) Get(int hpId, long ptId, long rsvkrtNo, int sinDate, int userId, int type)
+        public List<RsvkrtByomeiModel> GetByomeis(int hpId, long ptId, long rsvkrtNo, int type)
         {
             var byomeis = new List<RsvkrtByomei>();
             if (type == 0)
             {
                 byomeis = _tenantDataContext.RsvkrtByomeis.Where(b => b.HpId == hpId && b.PtId == ptId && b.RsvkrtNo == rsvkrtNo && b.IsDeleted == DeleteTypes.None).ToList();
             }
-            var karteInf = _tenantDataContext.RsvkrtKarteInfs.FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None);
-            var orderInfs = _tenantDataContext.RsvkrtOdrInfs.Where(o => o.HpId == hpId && o.PtId == ptId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None).ToList();
-            var orderInfDetails = _tenantDataContext.RsvkrtOdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.RsvkrtNo == rsvkrtNo).ToList();
             List<string> codeLists = new();
             foreach (var item in byomeis)
             {
                 codeLists.AddRange(GetCodeLists(item));
             }
+
+            var byomeiMstList = _tenantDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
+
+            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b, byomeiMstList)).ToList();
+
+            return byomeiModels;
+        }
+
+        public RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo)
+        {
+           
+            var karteInf = _tenantDataContext.RsvkrtKarteInfs.FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None);
+         
+            var karteModel = ConvertKarteInfToModel(karteInf ?? new());
+
+            return karteModel;
+        }
+
+        public List<RsvkrtOrderInfModel> GetOrderInfs(int hpId, long ptId, long rsvkrtNo, int sinDate, int userId)
+        {
+            var orderInfs = _tenantDataContext.RsvkrtOdrInfs.Where(o => o.HpId == hpId && o.PtId == ptId && o.RsvkrtNo == rsvkrtNo && o.IsDeleted == DeleteTypes.None).ToList();
+            var orderInfDetails = _tenantDataContext.RsvkrtOdrInfDetails.Where(o => o.HpId == hpId && o.PtId == ptId && o.RsvkrtNo == rsvkrtNo).ToList();
 
             var itemCds = orderInfDetails.Select(od => od.ItemCd ?? string.Empty);
             var ipnCds = orderInfDetails.Select(od => od.IpnCd ?? string.Empty);
@@ -54,15 +73,9 @@ namespace Infrastructure.Repositories
             var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == 2019 && p.GrpEdaNo == 1);
             var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
 
-            var byomeiMstList = _tenantDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
-
-            var byomeiModels = byomeis.Select(b => ConvertByomeiToModel(b, byomeiMstList)).ToList();
-
-            var karteModel = ConvertKarteInfToModel(karteInf ?? new());
-
             var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o, orderInfDetails, tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, ipnNameMsts, ipnKansanMsts, listYohoSets ?? new(), tenMstYohos, kensaIrai, kensaIraiCondition)).ToList();
 
-            return (byomeiModels, karteModel, oderInfModels);
+            return oderInfModels;
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)

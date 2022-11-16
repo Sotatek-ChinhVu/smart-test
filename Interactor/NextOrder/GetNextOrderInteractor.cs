@@ -42,8 +42,12 @@ namespace Interactor.NextOrder
                 }
 
                 var insurances = _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, false).ToList();
-                var nextOrder = _nextOrderRepository.Get(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.UserId, inputData.SinDate, inputData.Type);
-                var orderInfItems = nextOrder.orderInfs.Select(
+
+                var byomeis = _nextOrderRepository.GetByomeis(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.Type);
+                var orderInfs = _nextOrderRepository.GetOrderInfs(inputData.HpId, inputData.PtId, inputData.RsvkrtNo, inputData.SinDate, inputData.UserId);
+                var karteInf = _nextOrderRepository.GetKarteInf(inputData.HpId, inputData.PtId, inputData.RsvkrtNo);
+
+                var orderInfItems = orderInfs.Select(
                         o => new RsvKrtOrderInfItem(
                                 o.HpId,
                                 o.PtId,
@@ -118,15 +122,15 @@ namespace Interactor.NextOrder
                             )
                     );
 
-                var hokenOdrInfs = nextOrder.orderInfs?
+                var hokenOdrInfs = orderInfs?
                .GroupBy(odr => odr.HokenPid)
                .Select(grp => grp.FirstOrDefault())
                .ToList();
-                if (nextOrder.byomeis.Count == 0 && nextOrder.karteInf.HpId == 0 && nextOrder.karteInf.PtId == 0 && nextOrder.karteInf.SeqNo == 0 && (hokenOdrInfs == null || hokenOdrInfs.Count == 0))
+                if (byomeis.Count == 0 && karteInf.HpId == 0 && karteInf.PtId == 0 && karteInf.SeqNo == 0 && (hokenOdrInfs == null || hokenOdrInfs.Count == 0))
                 {
                     return new GetNextOrderOutputData(new(), new(), new(), GetNextOrderStatus.NoData);
                 }
-                var byomeiItems = nextOrder.byomeis.Select(b => new RsvKrtByomeiItem(
+                var byomeiItems = byomeis.Select(b => new RsvKrtByomeiItem(
                         b.Id,
                         b.HpId,
                         b.PtId,
@@ -149,7 +153,7 @@ namespace Interactor.NextOrder
                     )).ToList();
 
                 var obj = new object();
-                var tree = new GetNextOrderOutputData(new(), nextOrder.karteInf, byomeiItems, GetNextOrderStatus.Successed);
+                var tree = new GetNextOrderOutputData(new(), karteInf, byomeiItems, GetNextOrderStatus.Successed);
                 if (hokenOdrInfs?.Count > 0)
                 {
                     Parallel.ForEach(hokenOdrInfs.Select(h => h?.HokenPid), hokenId =>
