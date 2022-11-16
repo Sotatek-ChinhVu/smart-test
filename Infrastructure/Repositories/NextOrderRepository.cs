@@ -211,7 +211,7 @@ namespace Infrastructure.Repositories
                     odrInf.Id,
                     odrInf.HokenPid,
                     odrInf.OdrKouiKbn,
-                    odrInf.RpName,
+                    odrInf.RpName ?? string.Empty,
                     odrInf.InoutKbn,
                     odrInf.SikyuKbn,
                     odrInf.SyohoSbt,

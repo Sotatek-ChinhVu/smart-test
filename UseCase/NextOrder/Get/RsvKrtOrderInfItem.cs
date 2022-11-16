@@ -49,7 +49,7 @@ namespace UseCase.NextOrder.Get
 
         public int OdrKouiKbn { get; private set; }
 
-        public string? RpName { get; private set; }
+        public string RpName { get; private set; }
 
         public int InoutKbn { get; private set; }
 

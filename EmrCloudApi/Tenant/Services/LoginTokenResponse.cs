@@ -2,6 +2,6 @@
 
 public class LoginTokenResponse
 {
-    public string HpId { get; set; }
-    public string UserId { get; set; }
+    public string HpId { get; set; } = string.Empty;
+    public string UserId { get; set; } = string.Empty;
 }

@@ -4,7 +4,7 @@ namespace Domain.Models.NextOrder
 {
     public class RsvkrtOrderInfModel
     {
-        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string? rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
+        public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
         {
             HpId = hpId;
             PtId = ptId;
@@ -49,7 +49,7 @@ namespace Domain.Models.NextOrder
 
         public int OdrKouiKbn { get; private set; }
 
-        public string? RpName { get; private set; }
+        public string RpName { get; private set; }
 
         public int InoutKbn { get; private set; }
 
