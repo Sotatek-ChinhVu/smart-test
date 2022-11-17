@@ -33,11 +33,17 @@ public class PtCmtInfRepository : IPtCmtInfRepository
 
     public void Upsert(long ptId, string text, int userId)
     {
-        var ptCmt = _tenantDataContext.PtCmtInfs.AsTracking()
-            .OrderByDescending(p => p.UpdateDate)
-            .FirstOrDefault(p => p.PtId == ptId);
-        if (ptCmt is null)
+        var ptCmtList = _tenantDataContext.PtCmtInfs.AsTracking()
+            .Where(p => p.PtId == ptId && p.IsDeleted != 1)
+            .ToList();
+
+        if (ptCmtList.Count != 1)
         {
+            foreach (var ptCmt in ptCmtList)
+            {
+                ptCmt.IsDeleted = 1;
+            }
+
             _tenantDataContext.PtCmtInfs.Add(new PtCmtInf
             {
                 HpId = 1,
@@ -51,6 +57,8 @@ public class PtCmtInfRepository : IPtCmtInfRepository
         }
         else
         {
+            var  ptCmt = ptCmtList[0];
+
             ptCmt.Text = text;
             ptCmt.UpdateDate = DateTime.UtcNow;
             ptCmt.UpdateId = userId;
