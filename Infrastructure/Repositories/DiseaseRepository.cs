@@ -124,7 +124,7 @@ namespace Infrastructure.Repositories
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
-                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
+                            ((openFrom != DiseaseViewType.FromReception && openFrom != DiseaseViewType.FromMedicalExamination) || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
 
             if (hokenId > 0)
             {
