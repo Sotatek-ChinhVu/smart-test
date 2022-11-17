@@ -9,6 +9,7 @@ using Domain.Models.PatientInfor;
 using Helper.Common;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte1;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace DevExpress.Implementation;
@@ -51,6 +52,22 @@ public class Reporting : IReporting
         }
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
 
+        //fill empty model to display
+        var totalItems = ptByomeis.Count;
+        int totalModelEmpty = 0;
+        if (totalItems >= 0 && totalItems < 9)
+        {
+            totalModelEmpty = 9 - totalItems;
+        }
+        else if (totalItems > 9)
+        {
+            totalModelEmpty = 21 - ((totalItems - 9) % 21);
+        }
+        for (int i = 0; i < totalModelEmpty; i++)
+        {
+            ptByomeis.Add(new PtDiseaseModel());
+        }
+
         var listByomeiModelsPage1 = ConvertToListKarte1ByomeiModel(ptByomeis).Item1;
         var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
 
@@ -69,19 +86,39 @@ public class Reporting : IReporting
     {
         List<Karte1ByomeiModel> listByomeiModelsPage1 = new();
         List<Karte1ByomeiModel> listByomeiModelsPage2 = new();
+
         int index = 1;
-        if (ptByomeis != null && ptByomeis.Count > 0)
+        if (ptByomeis != null && ptByomeis.Any())
         {
             foreach (var byomei in ptByomeis)
             {
-                string byomeiDisplay = byomei.Byomei;
+                string byomeiDisplay = string.Empty;
+                StringBuilder prefixList = new();
+                StringBuilder suffixList = new();
+
+                if (byomei.PrefixSuffixList.Any())
+                {
+                    foreach (var item in byomei.PrefixSuffixList)
+                    {
+                        if (item.Code.StartsWith("8"))
+                        {
+                            suffixList.Append(item.Name);
+                        }
+                        else
+                        {
+                            prefixList.Append(item.Name);
+                        }
+                    }
+                }
+                byomeiDisplay = prefixList + byomei.Byomei + suffixList;
+
                 if (byomei.SyubyoKbn == 1)
                 {
                     byomeiDisplay = "（主）" + byomeiDisplay;
                 }
-                if (byomeiDisplay.Length >= 26 && index <= 12)
+                if (byomeiDisplay.Length >= 64)
                 {
-                    byomeiDisplay = byomeiDisplay.Substring(0, 26);
+                    byomeiDisplay = byomeiDisplay.Substring(0, 64);
                 }
                 var byomeiStartDateWFormat = CIUtil.SDateToShowWDate3(byomei.StartDate).Ymd;
                 var byomeiTenkiDateWFormat = CIUtil.SDateToShowWDate3(byomei.TenkiDate).Ymd;
@@ -98,7 +135,7 @@ public class Reporting : IReporting
                                             tenkiSonota,
                                             tenkiTiyuMaru
                                         );
-                if (index <= 12)
+                if (index <= 9)
                 {
                     listByomeiModelsPage1.Add(byomeiModel);
                 }
@@ -196,7 +233,7 @@ public class Reporting : IReporting
                 kigoBango = hoken.HokenInf.Kigo + "・" + hoken.HokenInf.Bango;
                 if (!string.IsNullOrEmpty(hoken.HokenInf.EdaNo))
                 {
-                    kigoBango = kigoBango + "(" + hoken.HokenInf.EdaNo ?? string.Empty + ")";
+                    kigoBango = kigoBango + "(" + hoken.HokenInf.EdaNo + ")";
                 }
             }
             var warekiEndate = CIUtil.SDateToShowWDate3(hoken.EndDate);
@@ -205,13 +242,14 @@ public class Reporting : IReporting
             hokenSyutokuW = warekiSyutokuDate.Ymd != null ? warekiSyutokuDate.Ymd : string.Empty;
             hokensyaName = hoken.HokenInf.HokensyaName;
             hokensyaAddress = hoken.HokenInf.HokensyaAddress;
-            zokugara = hoken.HokenInf.KeizokuKbn.ToString();
+            zokugara = hoken.HokenInf.KeizokuKbn > 0 ? hoken.HokenInf.KeizokuKbn.ToString() : string.Empty;
             hokensyaTel = hoken.HokenInf.HokensyaTel;
             futansyaNo_K1 = hoken.Kohi1.FutansyaNo;
             jyukyusyaNo_K1 = hoken.Kohi1.JyukyusyaNo;
             futansyaNo_K2 = hoken.Kohi2.FutansyaNo;
             jyukyusyaNo_K2 = hoken.Kohi2.JyukyusyaNo;
         }
+
         return new Karte1ExportModel(
                 sysDateTimeS,
                 ptNum,
