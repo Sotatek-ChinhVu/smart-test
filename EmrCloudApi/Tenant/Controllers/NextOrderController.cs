@@ -7,9 +7,8 @@ using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.NextOrder.GetList;
 using UseCase.NextOrder.Get;
-using System.Threading.Tasks;
+using UseCase.NextOrder.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
