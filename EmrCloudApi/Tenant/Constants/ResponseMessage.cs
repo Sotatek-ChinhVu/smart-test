@@ -798,6 +798,7 @@
         public static readonly string InvalidKenkoKanriBangoLengthNotEquals13 = "Invalid KenkoKanri Bango Length Not Equals 13";
 
         //Next Order
+        public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
     }
 }

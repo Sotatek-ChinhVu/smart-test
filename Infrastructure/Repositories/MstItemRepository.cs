@@ -209,7 +209,12 @@ namespace Infrastructure.Repositories
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                string inputKeyword = keyword;
                 keyword = WanaKana.RomajiToKana(keyword);
+                if (WanaKana.IsRomaji(keyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    keyword = inputKeyword;
+            }
 
             var listTenMstModels = new List<TenItemModel>();
             string sBigKeyword = keyword.ToUpper()

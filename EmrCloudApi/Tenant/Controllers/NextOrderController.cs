@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Get;
+using System.Threading.Tasks;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -22,6 +24,22 @@ public class NextOrderController : ControllerBase
     {
         _bus = bus;
         _userService = userService;
+    }
+
+    [HttpGet(ApiPath.Get)]
+    public async Task<ActionResult<Response<GetNextOrderResponse>>> Get([FromQuery] GetNextOrderRequest request)
+    {
+        var user = _userService.GetLoginUser();
+        int.TryParse(user.HpId, out int hpId);
+        int.TryParse(user.UserId, out int userId);
+
+        var input = new GetNextOrderInputData(request.PtId, hpId, request.RsvkrtNo, request.SinDate, request.Type, userId);
+        var output = await Task.Run(() => _bus.Handle(input));
+
+        var presenter = new GetNextOrderPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetNextOrderResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]

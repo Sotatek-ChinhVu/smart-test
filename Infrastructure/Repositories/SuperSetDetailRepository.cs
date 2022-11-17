@@ -42,11 +42,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         if (rootSuperSet == null) return (new(), new(), new());
 
         if (rootSuperSet.Level2 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
         else if (rootSuperSet.Level3 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
         else
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
 
         var allSetByomeis = _tenantNoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         List<string> codeLists = new();
@@ -85,13 +85,16 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         Parallel.ForEach(setCds, currentSetCd =>
         {
             var taskByomei = Task<List<SetByomeiModel>>.Factory.StartNew(() => ExcuGetByomeisForEachDetailItem(currentSetCd, byomeiObj, allSetByomeis, allByomeiMstList));
-            var taskKarte = Task<SetKarteInfModel>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
+            var taskKarte = Task<SetKarteInfModel?>.Factory.StartNew(() => ExcuGetKarteForEachDetailItem(currentSetCd, karteObj, allKarteInfs));
             var taskOrder = Task<List<SetOrderInfModel>>.Factory.StartNew(() => ExcuGetOrderForEachDetailItem(currentSetCd, orderObj, hpId, sinDate, allSetOrderInfs, allSetOrderInfDetails ?? new(), tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, allIpnNameMsts, settingValues, kensaIrai, kensaIraiCondition));
 
             Task.WaitAll(taskByomei, taskKarte, taskOrder);
 
+            var karteInf = taskKarte.Result;
+
             byomeis.AddRange(taskByomei.Result);
-            karteInfs.Add(taskKarte.Result);
+            if (karteInf != null)
+                karteInfs.Add(karteInf);
             ordInfs.AddRange(taskOrder.Result);
         });
 
@@ -118,7 +121,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return byomeis;
     }
 
-    private SetKarteInfModel ExcuGetKarteForEachDetailItem(int setCd, object karteObj, List<SetKarteInf> allKarteInfs)
+    private SetKarteInfModel? ExcuGetKarteForEachDetailItem(int setCd, object karteObj, List<SetKarteInf> allKarteInfs)
     {
         var setKarteInf = allKarteInfs.FirstOrDefault(k => k.SetCd == setCd);
 
@@ -131,7 +134,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                     setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText));
             }
 
-        return new SetKarteInfModel();
+        return null;
     }
 
     private List<SetOrderInfModel> ExcuGetOrderForEachDetailItem(int setCd, object orderObj, int hpId, int sinDate, List<SetOdrInf> setOdrInfs, List<SetOdrInfDetail> setOdrInfDetails, List<TenMst> tenMsts, List<KensaMst> kensaMsts, List<IpnMinYakkaMst> yakkas, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems, List<IpnNameMst> allIpnNameMsts, Dictionary<string, int> settingValues, double kensaIrai, double kensaIraiCondition)

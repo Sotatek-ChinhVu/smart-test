@@ -77,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_NAME")]
         [MaxLength(240)]
-        public string ItemName { get; set; } = string.Empty;
+        public string? ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(24)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位種別
@@ -191,7 +191,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOKUJI1")]
         [MaxLength(1)]
-        public string Kokuji1 { get; set; } = string.Empty;
+        public string? Kokuji1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 告示等識別区分（２）
@@ -205,7 +205,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOKUJI2")]
         [MaxLength(1)]
-        public string Kokuji2 { get; set; } = string.Empty;
+        public string? Kokuji2 { get; set; } = string.Empty;
 
         /// <summary>
         /// レセ非表示区分
@@ -222,7 +222,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_CD")]
         [MaxLength(12)]
-        public string IpnCd { get; set; } = string.Empty;
+        public string? IpnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
@@ -230,7 +230,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(120)]
-        public string IpnName { get; set; } = string.Empty;
+        public string? IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分割調剤
@@ -238,7 +238,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BUNKATU")]
         [MaxLength(10)]
-        public string Bunkatu { get; set; } = string.Empty;
+        public string? Bunkatu { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント名称
@@ -247,7 +247,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(240)]
-        public string CmtName { get; set; } = string.Empty;
+        public string? CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -256,7 +256,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; } = string.Empty;
+        public string? CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色
@@ -264,7 +264,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FONT_COLOR")]
         [MaxLength(8)]
-        public string FontColor { get; set; } = string.Empty;
+        public string? FontColor { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント改行区分
