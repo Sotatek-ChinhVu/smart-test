@@ -3,6 +3,7 @@ using EmrCloudApi.Tenant.Presenters.MstItem;
 using EmrCloudApi.Tenant.Requests.MstItem;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
+using EmrCloudApi.Tenant.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -108,7 +109,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.DiseaseSearch)]
         public async Task<ActionResult<Response<DiseaseSearchResponse>>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
-            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.Keyword, request.PageIndex, request.PageCount);
+            var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new DiseaseSearchPresenter();

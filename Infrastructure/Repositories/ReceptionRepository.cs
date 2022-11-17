@@ -67,8 +67,16 @@ namespace Infrastructure.Repositories
             {
                 using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
 
+                var maxRaiinBySinDate = _tenantNoTrackingDataContext.RaiinInfs
+                                        .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate);
+
+                int uketukeNo = 0;
+                if (maxRaiinBySinDate.Any())
+                    uketukeNo = maxRaiinBySinDate.Max(x => x.UketukeNo);
+                uketukeNo++;
+
                 // Insert RaiinInf
-                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId);
+                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId, uketukeNo);
                 _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
                 _tenantNoTrackingDataContext.SaveChanges();
 
@@ -101,7 +109,7 @@ namespace Infrastructure.Repositories
 
             #region Helper methods
 
-            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId)
+            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId,int uketukeNo)
             {
                 return new RaiinInf
                 {
@@ -116,9 +124,9 @@ namespace Infrastructure.Repositories
                     YoyakuTime = model.YoyakuTime,
                     YoyakuId = model.YoyakuId,
                     UketukeSbt = model.UketukeSbt,
-                    UketukeTime = CIUtil.DateTimeToTime(DateTime.UtcNow),
+                    UketukeTime = CIUtil.DateTimeToTime(DateTime.Now),
                     UketukeId = model.UketukeId,
-                    UketukeNo = model.UketukeNo,
+                    UketukeNo = uketukeNo,
                     SinStartTime = model.SinStartTime,
                     SinEndTime = model.SinEndTime,
                     KaikeiTime = model.KaikeiTime,
