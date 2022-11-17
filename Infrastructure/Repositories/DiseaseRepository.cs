@@ -130,6 +130,11 @@ namespace Infrastructure.Repositories
                                      .ThenByDescending(p => p.TenkiDate)
                                      .ThenBy(p => p.Id);
 
+            if (hokenId > 0)
+            {
+                ptByomeiListQueryable.Where(b => b.HokenPid == hokenId && b.HokenPid == 0);
+            }
+
             var ptByomeiList = ptByomeiListQueryable.ToList();
 
             var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
@@ -208,8 +213,9 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
+        public List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
         {
+            var byomeis = new List<PtByomei>();
             foreach (var inputData in inputDatas)
             {
                 if (inputData.IsDeleted == DeleteTypes.Deleted)
@@ -223,10 +229,12 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+                    var byomei = new PtByomei();
 
                     if (ptByomei != null)
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData, hpId, userId));
+                        byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
+                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
                         ptByomei.UpdateId = userId;
@@ -234,12 +242,16 @@ namespace Infrastructure.Repositories
                     }
                     else
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData, hpId, userId));
+                        byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
+                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
                     }
+
+                    byomeis.Add(byomei);
                 }
             }
-
             _tenantTrackingDataContext.SaveChanges();
+
+            return byomeis.Select(b => b.Id).ToList();
         }
 
         private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model, int hpId, int userId)
