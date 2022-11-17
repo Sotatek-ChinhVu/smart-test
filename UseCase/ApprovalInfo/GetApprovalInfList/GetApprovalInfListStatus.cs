@@ -10,5 +10,9 @@ namespace UseCase.ApprovalInfo.GetApprovalInfList
     {
         Success = 1,
         ApprovalInfListNotExisted = 2,
+        InvalidStarDate,
+        InvalidEndDate,
+        InvalidKaId,
+        InvalidTantoId,
     }
 }

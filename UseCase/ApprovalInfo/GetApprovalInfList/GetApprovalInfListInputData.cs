@@ -10,16 +10,17 @@ namespace UseCase.ApprovalInfo.GetApprovalInfList;
 
 public class GetApprovalInfListInputData : IInputData<GetApprovalInfListOutputData>
 {
-    public GetApprovalInfListInputData(int starDate, int endDate, string kaName, string drName)
+    public GetApprovalInfListInputData(int hpId, int starDate, int endDate, int kaId, int tantoId)
     {
+        HpId = hpId;
         StarDate = starDate;
         EndDate = endDate;
-        KaName = kaName;
-        DrName = drName;
+        KaId = kaId;
+        TantoId = tantoId;
     }
-
+    public int HpId { get; private set; }
     public int StarDate { get; private set; }
     public int EndDate { get; private set; }
-    public string DrName { get; private set; }
-    public string KaName { get; private set; }
+    public int KaId { get; private set; }
+    public int TantoId { get; private set; }
 }

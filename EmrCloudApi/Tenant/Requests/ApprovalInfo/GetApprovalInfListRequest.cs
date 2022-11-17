@@ -4,8 +4,8 @@
     {
         public int StartDate { get; set; }
         public int EndDate { get; set; }
-        public string KaName { get; set; }
-        public string DrName { get; set; }
+        public int KaId { get; set; }
+        public int TantoId { get; set; }
 
     }
 }

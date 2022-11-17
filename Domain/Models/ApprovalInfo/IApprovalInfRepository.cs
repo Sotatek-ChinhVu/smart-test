@@ -11,17 +11,6 @@ namespace Domain.Models.ApprovalInfo
 {
     public interface IApprovalInfRepository
     {
-        List<ApprovalInfModel> GetList(int starDate, int endDate, int kaId, int tantoId);
-        IApprovalInfRepository BuildApprovalInf(ApprovalInf approvalInf);
-
-        IApprovalInfRepository BuildPtInf(PtInf ptInf);
-
-        IApprovalInfRepository BuildRaiinInf(RaiinInf raiinInf);
-
-        IApprovalInfRepository BuildTantoName(string tantoName);
-
-        IApprovalInfRepository BuildKaName(string kaName);
-
-        ApprovalInfModel Build();
+        List<ApprovalInfModel> GetList(int hpId, int starDate, int endDate, int kaId, int tantoId);
     }
 }

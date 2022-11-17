@@ -9,5 +9,6 @@ namespace UseCase.ApprovalInfo.GetApprovalInfList
 {
     public interface IGetApprovalInfListInputPort : IInputPort<GetApprovalInfListInputData, GetApprovalInfListOutputData>
     {
+        GetApprovalInfListOutputData Handle(GetApprovalInfListInputData input);
     }
 }

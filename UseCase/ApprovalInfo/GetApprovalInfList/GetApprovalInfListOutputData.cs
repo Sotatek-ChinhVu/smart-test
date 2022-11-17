@@ -1,21 +1,19 @@
 ﻿using Domain.Models.ApprovalInfo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.ApprovalInfo.GetApprovalInfList
+namespace UseCase.ApprovalInfo.GetApprovalInfList;
+
+public class GetApprovalInfListOutputData : IOutputData
 {
-    public class GetApprovalInfListOutputData : IOutputData
+    public GetApprovalInfListOutputData(GetApprovalInfListStatus status)
     {
-        public List<ApprovalInfModel> ApprovalInfList { get; private set; }
-        public GetApprovalInfListStatus Status { get; private set; }
-        public GetApprovalInfListOutputData(List<ApprovalInfModel> approvalInfList, GetApprovalInfListStatus status)
-        {
-            ApprovalInfList = approvalInfList;
-            Status = status;
-        }
+        Status = status;
     }
+    public GetApprovalInfListOutputData(GetApprovalInfListStatus status, List<ApprovalInfModel> approvalInfList)
+    {
+        Status = status;
+        ApprovalInfList = approvalInfList;
+    }
+    public GetApprovalInfListStatus Status { get; private set; }
+    public List<ApprovalInfModel> ApprovalInfList { get; private set; } = new List<ApprovalInfModel>();
 }

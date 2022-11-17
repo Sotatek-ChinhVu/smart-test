@@ -17,16 +17,16 @@ namespace Infrastructure.Repositories
         private readonly TenantDataContext _tenantTrackingDataContext;
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
-        public List<ApprovalInfModel> GetList(int startDate, int endDate, int kaId, int tantoId)
+        public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
             var result = new List<ApprovalInfModel>();
                 var approvalInfs = _tenantNoTrackingDataContext.ApprovalInfs.Where((x) =>
-                        x.HpId == Session.HospitalID &&
+                        x.HpId == hpId &&
                         x.SinDate >= startDate &&
                         x.SinDate <= endDate
                 );
                 var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where((x) =>
-                        x.HpId == Session.HospitalID &&
+                        x.HpId == hpId &&
                         x.IsDeleted == DeleteTypes.None &&
                         x.Status >= RaiinState.TempSave &&
                         x.SinDate >= startDate &&
@@ -35,15 +35,15 @@ namespace Infrastructure.Repositories
                         (kaId == 0 ? true : x.KaId == kaId)
                 );
                 var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where((x) =>
-                        x.HpId == Session.HospitalID &&
+                        x.HpId == hpId &&
                         x.IsDelete == 0
                 );
                 var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where((x) =>
-                        x.HpId == Session.HospitalID &&
+                        x.HpId == hpId &&
                         x.IsDeleted == 0
                 );
                 var tantoInfs = _tenantNoTrackingDataContext.UserMsts.Where((x) =>
-                        x.HpId == Session.HospitalID &&
+                        x.HpId == hpId &&
                         x.IsDeleted == 0
                 );
 
@@ -63,71 +63,30 @@ namespace Infrastructure.Repositories
                                 RaiinInf = raiinInf,
                                 PtInf = ptInf,
                                 TantoName = tantoInf.Sname,
-                                KaName = kaMst.KaName
+                                KaName = kaMst.KaName,
+                                KaId = kaMst.KaId
                             };
 
                 result = query.AsEnumerable()
                     .Where(x => x.ApprovalInf.FirstOrDefault() == null
-                             || x.ApprovalInf.OrderByDescending(m => m.SeqNo).FirstOrDefault().IsDeleted == 1)
-                    .Select((x) => new ApprovalinfRepository()
-                                .BuildApprovalInf(new ApprovalInf()
-                                {
-                                    SeqNo = x.ApprovalInf.FirstOrDefault() == null ? 1 : x.ApprovalInf.OrderByDescending(m => m.SeqNo).FirstOrDefault().SeqNo + 1,
-                                    HpId = x.RaiinInf.HpId,
-                                    PtId = x.RaiinInf.PtId,
-                                    RaiinNo = x.RaiinInf.RaiinNo,
-                                    SinDate = x.RaiinInf.SinDate,
-                                    IsDeleted = 1
-                                })
-                                .BuildPtInf(x.PtInf)
-                                .BuildRaiinInf(x.RaiinInf)
-                                .BuildTantoName(x.TantoName)
-                                .BuildKaName(x.KaName)
-                                .Build()
-                              )
-                    .OrderBy((x) => x.SinDate)
+                             || x.ApprovalInf?.OrderByDescending(m => m.SeqNo).FirstOrDefault()?.IsDeleted == 1)
+                    .Select((x) => new ApprovalInfModel(
+                                    x.RaiinInf.HpId,
+                                    0,
+                                    x.RaiinInf.RaiinNo,
+                                    x.ApprovalInf.FirstOrDefault() == null ? 1 : x.ApprovalInf.OrderByDescending(m => m.SeqNo).FirstOrDefault()?.SeqNo ?? 0  + 1,
+                                    x.RaiinInf.PtId,
+                                    x.RaiinInf.SinDate,
+                                    1,
+                                    x.PtInf.PtNum,
+                                    x.KaName,
+                                    x.PtInf.Name,
+                                    x.KaId,
+                                    x.RaiinInf.UketukeNo
+                              ))
+                    .OrderBy(x => x.SinDate)
                     .ToList();
             return result;
-        }
-
-        private ApprovalInf _approvalInf; 
-        private PtInf _ptInf;
-        private RaiinInf _raiinInf;
-        private string _kaName;
-        private string _tantoName;
-        public IApprovalInfRepository BuildApprovalInf(ApprovalInf approvalInf)
-        {
-            _approvalInf = approvalInf;
-            return this;
-        }
-
-        public IApprovalInfRepository BuildKaName(string kaName)
-        {
-            _kaName = kaName;
-            return this;
-        }
-
-        public IApprovalInfRepository BuildPtInf(PtInf ptInf)
-        {
-            _ptInf = ptInf;
-            return this;
-        }
-
-        public IApprovalInfRepository BuildRaiinInf(RaiinInf raiinInf)
-        {
-            _raiinInf = raiinInf;
-            return this;
-        }
-
-        public IApprovalInfRepository BuildTantoName(string tantoName)
-        {
-            _tantoName = tantoName;
-            return this;
-        }
-
-        public ApprovalInfModel Build()
-        {
-            return new ApprovalInfModel(_approvalInf, _ptInf, _raiinInf, _tantoName, _kaName);
         }
     }
 }

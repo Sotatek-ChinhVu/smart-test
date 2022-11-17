@@ -10,39 +10,30 @@ namespace Domain.Models.ApprovalInfo
 {
     public class ApprovalInfModel
     {
-        private ApprovalInfModel approvalInf;
-        private PtInf ptInf;
-        private RaiinInf raiinInf;
-        private string tantoName;
-
-        public ApprovalInfModel(ApprovalInf approvalInf, PtInf ptInf, RaiinInf raiinInf, string tantoName, string kaName)
+        public ApprovalInfModel(int hpId, long id, long raiinNo, int seqNo, long ptId, int sinDate, int isDeleted, long ptNum, string kanaName, string name, int kaId, int uketukeNo)
         {
-            KaName = kaName;
-        }
-
-        public ApprovalInfModel(ApprovalInfModel approvalInf, PtInf ptInf, RaiinInf raiinInf, string tantoName, string kaName)
-        {
-            this.approvalInf = approvalInf;
-            this.ptInf = ptInf;
-            this.raiinInf = raiinInf;
-            this.tantoName = tantoName;
-            KaName = kaName;
-        }
-
-        public ApprovalInfModel(int sinDate, int num, string name, string kanaName, string drName, string kaName)
-        {
+            HpId = hpId;
+            Id = id;
+            RaiinNo = raiinNo;
+            SeqNo = seqNo;
+            PtId = ptId;
             SinDate = sinDate;
-            Num = num;
-            Name = name;
+            IsDeleted = isDeleted; 
+            PtNum = ptNum;
             KanaName = kanaName;
-            DrName = drName;
-            KaName = kaName;
+            Name = name;
+            UketokeNo = uketukeNo;
         }
+        public int HpId { get; private set; }
+        public long Id { get; private set; }
+        public long RaiinNo { get; private set; }
+        public int SeqNo { get; private set; }
+        public long PtId { get; private set; }
         public int SinDate { get; private set; }
-        public int Num { get; private set; }
-        public string Name { get; private set; }
+        public int IsDeleted { get; private set; }
+        public long PtNum { get; private set; }
         public string KanaName { get; private set; }
-        public string DrName { get; private set; }
-        public string KaName { get; private set; }
+        public string Name {get; private set;}
+        public int UketokeNo { get; private set; }
     }
 }
