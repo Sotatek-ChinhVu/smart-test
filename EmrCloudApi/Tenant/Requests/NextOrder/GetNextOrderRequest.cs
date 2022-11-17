@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.NextOrder
+﻿namespace EmrCloudApi.Tenant.Requests.NextOrder
 {
     public class GetNextOrderRequest
     {

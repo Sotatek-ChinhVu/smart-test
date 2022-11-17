@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.NextOrder;
 using EmrCloudApi.Tenant.Presenters.NextOrder;
+using EmrCloudApi.Tenant.Requests.NextOrder;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.NextOrder;
 using EmrCloudApi.Tenant.Services;
@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.NextOrder.Get;
+using UseCase.NextOrder.GetList;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -38,5 +39,19 @@ public class NextOrderController : ControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetNextOrderResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetList)]
+    public async Task<ActionResult<Response<GetNextOrderListResponse>>> GetList([FromQuery] GetNextOrderListRequest request)
+    {
+        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+
+        var input = new GetNextOrderListInputData(request.PtId, hpId, request.RsvkrtKbn, request.IsDeleted);
+        var output = await Task.Run(() => _bus.Handle(input));
+
+        var presenter = new GetNextOrderListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetNextOrderListResponse>>(presenter.Result);
     }
 }
