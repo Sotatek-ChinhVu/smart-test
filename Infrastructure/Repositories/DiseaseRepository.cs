@@ -124,18 +124,18 @@ namespace Infrastructure.Repositories
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
-                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate))).OrderBy(p => p.TenkiKbn)
-                                     .ThenBy(p => p.SortNo)
-                                     .ThenByDescending(p => p.StartDate)
-                                     .ThenByDescending(p => p.TenkiDate)
-                                     .ThenBy(p => p.Id);
+                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
 
             if (hokenId > 0)
             {
-                ptByomeiListQueryable.Where(b => b.HokenPid == hokenId && b.HokenPid == 0);
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(b => b.HokenPid == hokenId || b.HokenPid == 0);
             }
 
-            var ptByomeiList = ptByomeiListQueryable.ToList();
+            var ptByomeiList = ptByomeiListQueryable.OrderBy(p => p.TenkiKbn)
+                                                    .ThenBy(p => p.SortNo)
+                                                    .ThenByDescending(p => p.StartDate)
+                                                    .ThenByDescending(p => p.TenkiDate)
+                                                    .ThenBy(p => p.Id).ToList();
 
             var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
