@@ -25,7 +25,7 @@ namespace Interactor.MedicalExamination
                 {
                     return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.InvalidSinDate);
                 }
-                if (inputData.TodayOdrs.Count == 0 || inputData.TodayByomeis.Count == 0)
+                if (inputData.TodayOdrs.Count == 0)
                 {
                     return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.InvalidDrugOrByomei);
                 }
