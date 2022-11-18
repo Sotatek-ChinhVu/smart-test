@@ -1,6 +1,5 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Requests.ExportPDF;
-using EmrCloudApi.Tenant.Services;
 using Interactor.ExportPDF;
 using Interactor.ExportPDF.Karte2;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +12,10 @@ namespace EmrCloudApi.Tenant.Controllers;
 public class ExportReportController : ControllerBase
 {
     private readonly IReporting _reporting;
-    private readonly IUserService _userService;
 
-    public ExportReportController(IReporting reporting, IUserService userService)
+    public ExportReportController(IReporting reporting)
     {
         _reporting = reporting;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.ExportKarte1)]
