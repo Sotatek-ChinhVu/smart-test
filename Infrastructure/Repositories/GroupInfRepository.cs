@@ -19,10 +19,12 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
         {
+            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
+            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
             var result =
-                from groupPatient in _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId))
-                join groupDetailMst in _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0)
-                on groupPatient.GroupCode equals groupDetailMst.GrpCode
+                from groupPatient in listGroupPatient
+                join groupDetailMst in listGroupDetailMst
+                on new {p1 = groupPatient.GroupCode, p2 = groupPatient.GroupId} equals new { p1 = groupDetailMst.GrpCode, p2 = groupDetailMst.GrpId} 
                 select new GroupInfModel
                 (
                     groupPatient.HpId,
@@ -31,7 +33,6 @@ namespace Infrastructure.Repositories
                     groupPatient.GroupCode ?? string.Empty,
                     groupDetailMst.GrpCodeName
                 );
-
             return result.ToList();
         }
 
@@ -45,6 +46,7 @@ namespace Infrastructure.Repositories
                                     x.GroupCode ?? string.Empty,
                                     ""
                                     )).ToList();
+
 
             return dataPtGrpInfs;
         }
