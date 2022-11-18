@@ -167,6 +167,7 @@ using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.NextOrder.Get;
+using UseCase.NextOrder.GetList;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -345,8 +346,8 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
-            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
+            services.AddTransient<IReporting, Reporting>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -573,7 +574,8 @@ namespace EmrCloudApi.Configs.Dependency
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
 
-            //Next order
+            //Next Order
+            busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
             busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
 
             var bus = busBuilder.Build();
