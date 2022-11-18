@@ -41,9 +41,9 @@ namespace Infrastructure.Repositories
 
         public RsvkrtKarteInfModel GetKarteInf(int hpId, long ptId, long rsvkrtNo)
         {
-           
+
             var karteInf = _tenantDataContext.RsvkrtKarteInfs.FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo && k.IsDeleted == DeleteTypes.None);
-         
+
             var karteModel = ConvertKarteInfToModel(karteInf ?? new());
 
             return karteModel;
@@ -77,6 +77,13 @@ namespace Infrastructure.Repositories
             var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o, orderInfDetails, tenMsts, kensaMsts, yakkas, ipnKasanExcludes, ipnKasanExcludeItems, ipnNameMsts, ipnKansanMsts, listYohoSets ?? new(), tenMstYohos, kensaIrai, kensaIraiCondition)).ToList();
 
             return oderInfModels;
+        }
+
+        public void Upsert(List<NextOrderModel> nextOrderModels)
+        {
+            foreach (var nextOrderModel in nextOrderModels)
+            {
+            }
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
@@ -363,6 +370,72 @@ namespace Infrastructure.Repositories
                         new(),
                         new()
                    );
+        }
+
+        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel rsvkrtByomeiModel)
+        {
+            return new RsvkrtByomei
+            {
+                Id = rsvkrtByomeiModel.Id,
+                HpId = rsvkrtByomeiModel.HpId,
+                PtId = rsvkrtByomeiModel.PtId,
+                RsvkrtNo = rsvkrtByomeiModel.RsvkrtNo,
+                SeqNo = rsvkrtByomeiModel.SeqNo,
+                ByomeiCd = rsvkrtByomeiModel.ByomeiCd,
+                SyusyokuCd1 = rsvkrtByomeiModel.PrefixSuffixList.FirstOrDefault(),
+                SyusyokuCd2 = rsvkrtByomeiModel.PrefixSuffixList.Skip(1).FirstOrDefault(),
+                SyusyokuCd3 = rsvkrtByomeiModel.PrefixSuffixList.Skip(2).FirstOrDefault(),
+                SyusyokuCd4 = rsvkrtByomeiModel.PrefixSuffixList.Skip(3).FirstOrDefault(),
+                SyusyokuCd5 = rsvkrtByomeiModel.PrefixSuffixList.Skip(4).FirstOrDefault(),
+                SyusyokuCd6 = rsvkrtByomeiModel.PrefixSuffixList.Skip(5).FirstOrDefault(),
+                SyusyokuCd7 = rsvkrtByomeiModel.PrefixSuffixList.Skip(6).FirstOrDefault(),
+                SyusyokuCd8 = rsvkrtByomeiModel.PrefixSuffixList.Skip(7).FirstOrDefault(),
+                SyusyokuCd9 = rsvkrtByomeiModel.PrefixSuffixList.Skip(8).FirstOrDefault(),
+                SyusyokuCd10 = rsvkrtByomeiModel.PrefixSuffixList.Skip(9).FirstOrDefault(),
+                SyusyokuCd11 = rsvkrtByomeiModel.PrefixSuffixList.Skip(10).FirstOrDefault(),
+                SyusyokuCd12 = rsvkrtByomeiModel.PrefixSuffixList.Skip(11).FirstOrDefault(),
+                SyusyokuCd13 = rsvkrtByomeiModel.PrefixSuffixList.Skip(12).FirstOrDefault(),
+                SyusyokuCd14 = rsvkrtByomeiModel.PrefixSuffixList.Skip(13).FirstOrDefault(),
+                SyusyokuCd15 = rsvkrtByomeiModel.PrefixSuffixList.Skip(14).FirstOrDefault(),
+                SyusyokuCd16 = rsvkrtByomeiModel.PrefixSuffixList.Skip(15).FirstOrDefault(),
+                SyusyokuCd17 = rsvkrtByomeiModel.PrefixSuffixList.Skip(16).FirstOrDefault(),
+                SyusyokuCd18 = rsvkrtByomeiModel.PrefixSuffixList.Skip(17).FirstOrDefault(),
+                SyusyokuCd19 = rsvkrtByomeiModel.PrefixSuffixList.Skip(18).FirstOrDefault(),
+                SyusyokuCd20 = rsvkrtByomeiModel.PrefixSuffixList.Skip(19).FirstOrDefault(),
+                SyusyokuCd21 = rsvkrtByomeiModel.PrefixSuffixList.Skip(20).FirstOrDefault(),
+                Byomei = rsvkrtByomeiModel.Byomei,
+                SyobyoKbn = rsvkrtByomeiModel.SyobyoKbn,
+                SikkanKbn = rsvkrtByomeiModel.SikkanKbn,
+                NanbyoCd = rsvkrtByomeiModel.NanbyoCd,
+                HosokuCmt = rsvkrtByomeiModel.HosokuCmt,
+                IsNodspKarte = rsvkrtByomeiModel.IsNodspKarte,
+                IsNodspRece = rsvkrtByomeiModel.IsNodspRece,
+                IsDeleted = rsvkrtByomeiModel.IsDeleted,
+                CreateDate = DateTime.UtcNow,
+                CreateId = userId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId
+            };
+        }
+
+        private static RsvkrtKarteInf ConvertModelToRsvkrtKarteInf(int userId, RsvkrtKarteInfModel rsvkrtKarteInfModel)
+        {
+            return new RsvkrtKarteInf
+            {
+                HpId = rsvkrtKarteInfModel.HpId,
+                PtId = rsvkrtKarteInfModel.PtId,
+                RsvDate = rsvkrtKarteInfModel.SinDate,
+                RsvkrtNo = rsvkrtKarteInfModel.RaiinNo,
+                KarteKbn = rsvkrtKarteInfModel.KarteKbn,
+                SeqNo = rsvkrtKarteInfModel.SeqNo,
+                Text = rsvkrtKarteInfModel.Text,
+                RichText = Encoding.UTF8.GetBytes(rsvkrtKarteInfModel.RichText),
+                IsDeleted = rsvkrtKarteInfModel.IsDeleted,
+                CreateDate = DateTime.UtcNow,
+                CreateId = userId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId
+            };
         }
     }
 }
