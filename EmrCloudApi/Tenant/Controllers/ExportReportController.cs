@@ -22,7 +22,7 @@ public class ExportReportController : ControllerBase
     public IActionResult GetListKarte1([FromQuery] Karte1ExportRequest request)
     {
         var output = _reporting.PrintKarte1(request.HpId, request.PtId, request.SinDate, request.HokenPid, request.TenkiByomei);
-        return File(output.DataStream.ToArray(), "application/pdf");
+        return File(output.ToArray(), "application/pdf");
     }
 
 
@@ -30,7 +30,7 @@ public class ExportReportController : ControllerBase
     public IActionResult GetListKarte2([FromQuery] Karte2ExportRequest request)
     {
         var output = _reporting.PrintKarte2(ConvertToKarte2ExportInput(request));
-        return File(output.DataStream.ToArray(), "application/pdf");
+        return File(output.ToArray(), "application/pdf");
     }
 
     private Karte2ExportInput ConvertToKarte2ExportInput(Karte2ExportRequest request)

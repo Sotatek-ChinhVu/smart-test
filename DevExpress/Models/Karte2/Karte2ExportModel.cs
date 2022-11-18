@@ -17,6 +17,22 @@ public class Karte2ExportModel
         EndDate = endDate;
         RichTextKarte2Models = richTextKarte2Models;
     }
+    
+    public Karte2ExportModel()
+    {
+        HpId = 0;
+        PtId = 0;
+        RaiinNo = 0;
+        SinDate = 0;
+        KanaName = "";
+        Name = "";
+        Sex = "";
+        Birthday = "";
+        CurrentTime = "";
+        StartDate = "";
+        EndDate = "";
+        RichTextKarte2Models = new();
+    }
 
     public int HpId { get; private set; }
 

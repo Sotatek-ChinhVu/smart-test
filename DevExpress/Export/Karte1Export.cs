@@ -1,7 +1,6 @@
 ﻿using DevExpress.DataAccess.ObjectBinding;
 using DevExpress.Inteface;
 using DevExpress.Models.Karte1;
-using DevExpress.Response.Karte1;
 using DevExpress.Template;
 using DevExpress.XtraPrinting;
 using Domain.Constant;
@@ -10,7 +9,6 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.PatientInfor;
 using Helper.Common;
-using Interactor.ExportPDF.Karte1;
 using System.Text;
 
 namespace DevExpress.Export;
@@ -28,26 +26,14 @@ public class Karte1Export : IKarte1Export
         _insuranceRepository = insuranceRepository;
     }
 
-    public Karte1Output ExportToPdf(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
+    public MemoryStream ExportToPdf(int hpId, long ptId, int sinDate, int hokenPid, bool tenkiByomei)
     {
-        if (hpId <= 0)
-        {
-            return new Karte1Output(Karte1Status.InvalidHpId);
-        }
-        else if (sinDate <= 10000000 || sinDate >= 99999999)
-        {
-            return new Karte1Output(Karte1Status.InvalidSindate);
-        }
         var ptInf = _patientInforRepository.GetById(hpId, ptId, sinDate, 0);
         if (ptInf == null)
         {
-            return new Karte1Output(Karte1Status.PtInfNotFould);
+            return ExportToPdf(new Karte1ExportModel());
         }
         var hoken = _insuranceRepository.GetPtHokenInf(hpId, hokenPid, ptId, sinDate);
-        if (hoken == null)
-        {
-            return new Karte1Output(Karte1Status.HokenNotFould);
-        }
         var ptByomeis = _diseaseRepository.GetListPatientDiseaseForReport(hpId, ptId, hokenPid, sinDate, tenkiByomei);
 
         //fill empty model to display
@@ -69,19 +55,7 @@ public class Karte1Export : IKarte1Export
         var listByomeiModelsPage1 = ConvertToListKarte1ByomeiModel(ptByomeis).Item1;
         var listByomeiModelsPage2 = ConvertToListKarte1ByomeiModel(ptByomeis).Item2;
         var dataModel = ConvertToKarte1ExportModel(ptInf, hoken, listByomeiModelsPage1, listByomeiModelsPage2);
-        var res = ExportToPdf(dataModel);
-        try
-        {
-            if (res.Length > 0)
-            {
-                return new Karte1Output(Karte1Status.Success, res);
-            }
-        }
-        catch (Exception)
-        {
-            return new Karte1Output(Karte1Status.Failed);
-        }
-        return new Karte1Output(Karte1Status.CanNotExportPdf);
+        return ExportToPdf(dataModel);
     }
 
     private Tuple<List<Karte1ByomeiModel>, List<Karte1ByomeiModel>> ConvertToListKarte1ByomeiModel(List<PtDiseaseModel> ptByomeis)

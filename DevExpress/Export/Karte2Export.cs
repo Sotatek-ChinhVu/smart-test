@@ -45,24 +45,20 @@ public class Karte2Export : IKarte2Export
         _insuranceRepository = insuranceRepository;
     }
 
-    public Karte2Output ExportToPdf(Karte2ExportInput inputData)
+    public MemoryStream ExportToPdf(Karte2ExportInput inputData)
     {
         var patientInfo = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, inputData.SinDate, 0);
         if (patientInfo == null || patientInfo.PtId == 0)
         {
-            return new Karte2Output(Karte2Status.InvalidUser);
+            return ExportToPdf(new Karte2ExportModel());
         }
         var historyKarteOdrRaiinItemWithStatus = GetHistoryKarteOdrRaiinItem(inputData);
-        if (historyKarteOdrRaiinItemWithStatus.Item2 != Karte2Status.Success)
-        {
-            return new Karte2Output(historyKarteOdrRaiinItemWithStatus.Item2);
-        }
-        var historyKarteOdrRaiinItem = historyKarteOdrRaiinItemWithStatus.Item1;
+        var historyKarteOdrRaiinItem = historyKarteOdrRaiinItemWithStatus;
         var karte2ExportModel = new Karte2ExportModel(
             hpId: patientInfo.HpId,
             ptId: patientInfo.PtId,
-            sinDate: historyKarteOdrRaiinItemWithStatus.Item1.First().SinDate,
-            raiinNo: historyKarteOdrRaiinItemWithStatus.Item1.First().RaiinNo,
+            sinDate: historyKarteOdrRaiinItemWithStatus.First().SinDate,
+            raiinNo: historyKarteOdrRaiinItemWithStatus.First().RaiinNo,
             kanaName: patientInfo.KanaName,
             name: patientInfo.Name,
             sex: patientInfo.Sex == 1 ? "（男）" : "（女）",
@@ -73,20 +69,7 @@ public class Karte2Export : IKarte2Export
             richTextKarte2Models: ConvertToRichTextKarteOrder(historyKarteOdrRaiinItem, inputData)
         );
 
-        try
-        {
-            var res = ExportToPdf(karte2ExportModel);
-            if (res.Length > 0)
-            {
-                return new Karte2Output(Karte2Status.Success, res);
-            }
-            return new Karte2Output(Karte2Status.CanNotExportPdf);
-        }
-        catch (Exception)
-        {
-            return new Karte2Output(Karte2Status.Failed);
-        }
-
+        return ExportToPdf(karte2ExportModel);
     }
 
     private List<RichTextKarteOrder> ConvertToRichTextKarteOrder(List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, Karte2ExportInput inputData)
@@ -294,14 +277,8 @@ public class Karte2Export : IKarte2Export
         }
         return result;
     }
-    private (List<HistoryKarteOdrRaiinItem>, Karte2Status) GetHistoryKarteOdrRaiinItem(Karte2ExportInput inputData)
+    private List<HistoryKarteOdrRaiinItem> GetHistoryKarteOdrRaiinItem(Karte2ExportInput inputData)
     {
-        var validate = Validate(inputData);
-        if (validate != Karte2Status.Success)
-        {
-            return new(new List<HistoryKarteOdrRaiinItem>(), validate);
-        }
-
         var query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.DeletedOdrVisibilitySetting)
                     join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, true)
                     on raiinInf.HokenPid equals ptHokenPattern.HokenPid
@@ -348,7 +325,7 @@ public class Karte2Export : IKarte2Export
 
         if (allRaiinInf == null || !allRaiinInf.Any())
         {
-            return new(new List<HistoryKarteOdrRaiinItem>(), Karte2Status.NoData);
+            return new List<HistoryKarteOdrRaiinItem>();
         }
 
         var obj = new object();
@@ -411,7 +388,7 @@ public class Karte2Export : IKarte2Export
                                     c.RichText,
                                     c.CreateName
                                 )).ToList())
-                                                             select karteGrp);
+                                select karteGrp);
                 //Excute order
                 ExcuteOrder(insuranceData, allOdrInfs, historyKarteOdrRaiin, historyKarteOdrRaiins);
             }
@@ -423,9 +400,9 @@ public class Karte2Export : IKarte2Export
         #endregion
         if (result.Any())
         {
-            return (result, Karte2Status.Success);
+            return result;
         }
-        return new(new List<HistoryKarteOdrRaiinItem>(), Karte2Status.NoData);
+        return new List<HistoryKarteOdrRaiinItem>();
     }
 
     private void FilterData(ref List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiinItems, Karte2ExportInput inputData)
@@ -527,89 +504,6 @@ public class Karte2Export : IKarte2Export
 
         historyKarteOdrRaiinItems = filteredKaruteList;
 
-        //historyKarteOdrRaiinItems.ForEach((karute) =>
-        //{
-        //    //Filter order as hoken setting
-        //    if (karute.HokenGroups != null && karute.HokenGroups.Any())
-        //    {
-        //        var listHoken = karute.HokenGroups.Where(h => listAcceptedHokenType.Contains((OrderHokenType)karute.HokenType)).ToList();
-        //        listHoken.ForEach((hoken) =>
-        //        {
-        //            if (!inputData.IsCheckedJihi)
-        //            {
-        //                hoken = new HokenGroupHistoryItem(hoken.HokenPid, hoken.HokenTitle, hoken.GroupOdrItems.Where(o => o.SanteiKbn == 0).ToList());
-        //            }
-        //            foreach (var group in hoken.GroupOdrItems.ToList())
-        //            {
-        //                if (!inputData.IsCheckedJihi && group != null && group.OdrInfs.Any())
-        //                {
-        //                    if (inputData.DeletedOdrVisibilitySetting == 0)
-        //                    {
-        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName,
-        //                            group.OdrInfs.Where(o => o.IsDeleted == 0)
-        //                            .OrderBy(o => o.SortNo)
-        //                            .ToList());
-        //                    }
-        //                    else if (inputData.DeletedOdrVisibilitySetting == 2)
-        //                    {
-        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName,
-        //                            group.OdrInfs.Where(o => o.IsDeleted != 2)
-        //                            .OrderBy(o => o.SortNo)
-        //                            .ToList());
-        //                    }
-        //                }
-        //            }
-        //            hoken.GroupOdrItems.ToList().ForEach((group) =>
-        //            {
-        //                if (!inputData.IsCheckedJihi && group != null && group.OdrInfs.Any())
-        //                {
-        //                    if (inputData.DeletedOdrVisibilitySetting == 0)
-        //                    {
-        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName, 
-        //                            group.OdrInfs.Where(o => o.IsDeleted == 0)
-        //                            .OrderBy(o => o.SortNo)
-        //                            .ToList());
-        //                    }
-        //                    else if (inputData.DeletedOdrVisibilitySetting == 2)
-        //                    {
-        //                        group = new GroupOdrGHistoryItem(group.HokenPid, group.SinkyuName, 
-        //                            group.OdrInfs?.Where(o => o.IsDeleted != 2)
-        //                            .OrderBy(o => o.SortNo)
-        //                            .ToList());
-        //                    }
-        //                }
-        //            });
-        //        });
-
-        //        karute = new HistoryKarteOdrRaiinItem(
-        //                karute.RaiinNo,
-        //                karute.SinDate,
-        //                karute.HokenPid,
-        //                karute.HokenTitle,
-        //                karute.HokenRate,
-        //                karute.SyosaisinKbn,
-        //                karute.JikanKbn,
-        //                karute.KaId,
-        //                karute.KaName,
-        //                karute.TantoId,
-        //                karute.TantoName,
-        //                karute.SanteiKbn,
-        //                karute.TagNo,
-        //                karute.SinryoTitle,
-        //                karute.HokenType,
-        //                karute.Status,
-        //                listHoken,
-        //                karute.KarteHistories,
-        //                karute.UketukeTime,
-        //                karute.UketsukeName,
-        //                karute.SinStartTime,
-        //                karute.SinEndTime,
-        //                karute.UpdateDateDisplay,
-        //                karute.UpdateUserDisplay
-        //            );
-        //    }
-        //});
-
         //Filter karte and order empty
         historyKarteOdrRaiinItems = historyKarteOdrRaiinItems.Where(k => k.HokenGroups != null && k.HokenGroups.Any() && k.KarteHistories != null && k.KarteHistories.Any()).ToList();
     }
@@ -631,46 +525,6 @@ public class Karte2Export : IKarte2Export
                 return 0;
         }
     }
-
-    private static Karte2Status Validate(Karte2ExportInput inputData)
-    {
-        if (inputData.HpId <= 0)
-        {
-            return Karte2Status.InvalidHpId;
-        }
-
-        if (inputData.PtId <= 0)
-        {
-            return Karte2Status.InvalidPtId;
-        }
-
-        if (inputData.SinDate <= 0)
-        {
-            return Karte2Status.InvalidSinDate;
-        }
-
-        if (inputData.StartDate <= 0)
-        {
-            return Karte2Status.InvalidStartDate;
-        }
-        if (inputData.EndDate <= 0)
-        {
-            return Karte2Status.InvalidEndDate;
-        }
-
-        if (!(inputData.DeletedOdrVisibilitySetting >= 0 && inputData.DeletedOdrVisibilitySetting <= 2))
-        {
-            return Karte2Status.InvalidDeleteCondition;
-        }
-
-        if (inputData.UserId <= 0)
-        {
-            return Karte2Status.InvalidUser;
-        }
-
-        return Karte2Status.Success;
-    }
-
     private void ExcuteOrder(InsuranceDataModel? insuranceData, List<OrdInfModel> allOdrInfs, HistoryKarteOdrRaiinItem historyKarteOdrRaiin, List<HistoryKarteOdrRaiinItem> historyKarteOdrRaiins)
     {
         var odrInfListByRaiinNo = allOdrInfs.Where(o => o.RaiinNo == historyKarteOdrRaiin.RaiinNo)
