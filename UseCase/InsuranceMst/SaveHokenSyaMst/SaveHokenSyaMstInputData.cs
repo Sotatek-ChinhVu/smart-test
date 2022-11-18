@@ -4,7 +4,7 @@ namespace UseCase.InsuranceMst.SaveHokenSyaMst
 {
     public class SaveHokenSyaMstInputData : IInputData<SaveHokenSyaMstOutputData>
     {
-        public SaveHokenSyaMstInputData(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1, int isKigoNa)
+        public SaveHokenSyaMstInputData(int hpId, string name, string kanaName, string houbetuKbn, string houbetu, int hokenKbn, int prefNo, string hokensyaNo, string kigo, string bango, int rateHonnin, int rateKazoku, string postCode, string address1, string address2, string tel1, int isKigoNa, int userId)
         {
             HpId = hpId;
             Name = name;
@@ -23,6 +23,7 @@ namespace UseCase.InsuranceMst.SaveHokenSyaMst
             Address2 = address2;
             Tel1 = tel1;
             IsKigoNa = isKigoNa;
+            UserId = userId;
         }
 
         public int HpId { get; private set; }
@@ -58,5 +59,8 @@ namespace UseCase.InsuranceMst.SaveHokenSyaMst
         public string Tel1 { get; private set; }
 
         public int IsKigoNa { get; private set; }
+
+        public int UserId { get; private set; }
+
     }
 }

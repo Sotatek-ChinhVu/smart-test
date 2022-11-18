@@ -24,7 +24,7 @@ namespace Interactor.PatientInfor
                     bool hasMatch = inputData.DefHokenNoModels.Select(x => x.HokenNo).Distinct().Count() > 1;
                     if (hasMatch) return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InvalidHokenNo);
 
-                    var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo);
+                    var listHokenEdaNo = _hokenMstRepository.CheckExistHokenEdaNo(inputData.DefHokenNoModels[0].HokenNo, inputData.HpId);
                     foreach (var item in inputData.DefHokenNoModels)
                     {
                         var validationStatus = item.Validation();
@@ -42,7 +42,7 @@ namespace Interactor.PatientInfor
                 }
                 else
                     return new SaveInsuranceMasterLinkageOutputData(ValidationStatus.InputDataNull);
-                bool success = _patientInforRepository.SaveInsuranceMasterLinkage(inputData.DefHokenNoModels);
+                bool success = _patientInforRepository.SaveInsuranceMasterLinkage(inputData.DefHokenNoModels, inputData.HpId, inputData.UserId);
                 var status = success ? ValidationStatus.Success : ValidationStatus.Failed;
                 return new SaveInsuranceMasterLinkageOutputData(status);
             }

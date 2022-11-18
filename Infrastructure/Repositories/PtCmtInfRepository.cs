@@ -31,29 +31,37 @@ public class PtCmtInfRepository : IPtCmtInfRepository
         return ptCmts.ToList();
     }
 
-    public void Upsert(long ptId, string text)
+    public void Upsert(long ptId, string text, int userId)
     {
-        var ptCmt = _tenantDataContext.PtCmtInfs.AsTracking()
-            .OrderByDescending(p => p.UpdateDate)
-            .FirstOrDefault(p => p.PtId == ptId);
-        if (ptCmt is null)
+        var ptCmtList = _tenantDataContext.PtCmtInfs.AsTracking()
+            .Where(p => p.PtId == ptId && p.IsDeleted != 1)
+            .ToList();
+
+        if (ptCmtList.Count != 1)
         {
+            foreach (var ptCmt in ptCmtList)
+            {
+                ptCmt.IsDeleted = 1;
+            }
+
             _tenantDataContext.PtCmtInfs.Add(new PtCmtInf
             {
                 HpId = 1,
                 PtId = ptId,
                 Text = text,
                 CreateDate = DateTime.UtcNow,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId,
+                CreateId = userId
             });
         }
         else
         {
+            var  ptCmt = ptCmtList[0];
+
             ptCmt.Text = text;
             ptCmt.UpdateDate = DateTime.UtcNow;
-            ptCmt.UpdateId = TempIdentity.UserId;
-            ptCmt.UpdateMachine = TempIdentity.ComputerName;
+            ptCmt.UpdateId = userId;
         }
 
         _tenantDataContext.SaveChanges();

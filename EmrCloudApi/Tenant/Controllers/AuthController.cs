@@ -48,8 +48,8 @@ public class AuthController : ControllerBase
         // The claims that will be persisted in the tokens.
         var claims = new Claim[]
         {
-            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new(ClaimTypes.Name, user.LoginId),
+            new(LoginUserConstant.UserId, user.UserId.ToString()),
+            new(LoginUserConstant.HpId, user.HpId.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
         var token = CreateToken(claims);

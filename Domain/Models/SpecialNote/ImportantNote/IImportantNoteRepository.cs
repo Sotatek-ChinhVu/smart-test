@@ -18,6 +18,6 @@
 
         List<PtKioRekiModel> GetKioRekiList(long ptId);
 
-        void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas);
+        void AddAlrgyDrugList(List<PtAlrgyDrugModel> inputDatas, int hpId, int userId);
     }
 }

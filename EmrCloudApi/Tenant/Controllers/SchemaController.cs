@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.Schema;
 using EmrCloudApi.Tenant.Requests.Schema;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
@@ -12,12 +14,15 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SchemaController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public SchemaController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public SchemaController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
@@ -35,7 +40,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveImageTodayOrder)]
         public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
-            var input = new SaveImageTodayOrderInputData(request.HpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            var input = new SaveImageTodayOrderInputData(hpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveImageTodayOrderPresenter();

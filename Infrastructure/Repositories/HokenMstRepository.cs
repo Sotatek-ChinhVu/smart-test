@@ -85,10 +85,10 @@ namespace Infrastructure.Repositories
 
             return result;
         }
-        public List<HokenMasterModel> CheckExistHokenEdaNo(int hokenNo)
+        public List<HokenMasterModel> CheckExistHokenEdaNo(int hokenNo, int hpId)
         {
             var existHokenEdaNo = _tenantDataContext.HokenMsts
-               .Where(x => x.HpId == TempIdentity.HpId && x.HokenNo == hokenNo)
+               .Where(x => x.HpId == hpId && x.HokenNo == hokenNo)
                .Select(x => new HokenMasterModel(
                    x.HpId,
                    x.HokenNo,

@@ -466,7 +466,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public bool SaveHokenSyaMst(HokensyaMstModel model)
+        public bool SaveHokenSyaMst(HokensyaMstModel model, int userId)
         {
             var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
             if (hoken is null)
@@ -490,8 +490,9 @@ namespace Infrastructure.Repositories
                     Address2 = model.Address2,
                     Tel1 = model.Tel1,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 };
                 _tenantDataContextTracking.HokensyaMsts.Add(create);
             }
@@ -512,8 +513,7 @@ namespace Infrastructure.Repositories
                 hoken.Address2 = model.Address2;
                 hoken.Tel1 = model.Tel1;
                 hoken.UpdateDate = DateTime.UtcNow;
-                hoken.UpdateId = TempIdentity.UserId;
-                hoken.UpdateMachine = TempIdentity.ComputerName;
+                hoken.UpdateId = userId;
             }
             return _tenantDataContextTracking.SaveChanges() > 0;
         }

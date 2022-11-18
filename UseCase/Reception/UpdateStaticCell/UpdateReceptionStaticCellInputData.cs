@@ -4,8 +4,7 @@ namespace UseCase.Reception.UpdateStaticCell;
 
 public class UpdateReceptionStaticCellInputData : IInputData<UpdateReceptionStaticCellOutputData>
 {
-    public UpdateReceptionStaticCellInputData(int hpId, int sinDate,
-        long raiinNo, long ptId, string cellName, string cellValue)
+    public UpdateReceptionStaticCellInputData(int hpId, int sinDate, long raiinNo, long ptId, string cellName, string cellValue, int userId)
     {
         HpId = hpId;
         SinDate = sinDate;
@@ -13,6 +12,7 @@ public class UpdateReceptionStaticCellInputData : IInputData<UpdateReceptionStat
         PtId = ptId;
         CellName = cellName;
         CellValue = cellValue;
+        UserId = userId;
     }
 
     public int HpId { get; private set; }
@@ -21,4 +21,5 @@ public class UpdateReceptionStaticCellInputData : IInputData<UpdateReceptionStat
     public long PtId { get; private set; }
     public string CellName { get; private set; }
     public string CellValue { get; private set; }
+    public int UserId { get; private set; }
 }

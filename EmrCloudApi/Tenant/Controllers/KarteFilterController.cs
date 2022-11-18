@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.KarteFilter;
 using EmrCloudApi.Tenant.Requests.KarteFilter;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteFilter;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteFilter.GetListKarteFilter;
@@ -12,18 +14,23 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class KarteFilterController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public KarteFilterController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public KarteFilterController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetKarteFilterMstResponse>>> GetList()
         {
-            var input = new GetKarteFilterInputData();
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            var input = new GetKarteFilterInputData(hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetKarteFilterMstPresenter();
@@ -35,7 +42,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public async Task<ActionResult<Response<SaveKarteFilterMstResponse>>> SaveList([FromBody] SaveKarteFilterMstRequest request)
         {
-            var input = new SaveKarteFilterInputData(request.KarteFilters);
+            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            var input = new SaveKarteFilterInputData(request.KarteFilters, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveKarteFilterMstPresenter();

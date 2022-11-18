@@ -114,6 +114,8 @@ public class SetMstRepository : ISetMstRepository
                     setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
                     setMst.CreateDate = DateTime.UtcNow;
                     setMst.CreateId = userId;
+                    setMst.UpdateDate = DateTime.UtcNow;
+                    setMst.UpdateId = userId;
 
                     // Save SetMst 
                     _tenantDataContext.SetMsts.Add(setMst);

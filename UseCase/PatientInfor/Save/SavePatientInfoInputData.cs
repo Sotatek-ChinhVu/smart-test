@@ -9,7 +9,7 @@ namespace UseCase.PatientInfor.Save
 {
     public class SavePatientInfoInputData : IInputData<SavePatientInfoOutputData>
     {
-        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps)
+        public SavePatientInfoInputData(PatientInforSaveModel patient, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId)
         {
             Patient = patient;
             PtKyuseis = ptKyuseis;
@@ -18,13 +18,15 @@ namespace UseCase.PatientInfor.Save
             PtGrps = ptGrps;
             HokenInfs = hokenInfs;
             HokenKohis = hokenKohis;
+            UserId = userId;
         }
         public PatientInforSaveModel Patient { get; private set; }
-        public List<PtKyuseiModel> PtKyuseis { get; private set; } = new List<PtKyuseiModel>();
-        public List<CalculationInfModel> PtSanteis { get; private set; } = new List<CalculationInfModel>();
-        public List<InsuranceModel> Insurances { get; private set; } = new List<InsuranceModel>();
-        public List<GroupInfModel> PtGrps { get; private set; } = new List<GroupInfModel>();
-        public List<HokenInfModel> HokenInfs { get; private set; } = new List<HokenInfModel>();
-        public List<KohiInfModel> HokenKohis { get; private set; } = new List<KohiInfModel>();
+        public List<PtKyuseiModel> PtKyuseis { get; private set; }
+        public List<CalculationInfModel> PtSanteis { get; private set; }
+        public List<InsuranceModel> Insurances { get; private set; }
+        public List<GroupInfModel> PtGrps { get; private set; }
+        public List<HokenInfModel> HokenInfs { get; private set; }
+        public List<KohiInfModel> HokenKohis { get; private set; }
+        public int UserId { get; private set; }
     }
 }
