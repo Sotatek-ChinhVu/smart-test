@@ -1,22 +1,27 @@
-﻿using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Tenant.Constants;
+using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 
-namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
+namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo;
+
+public class GetApprovalInfListPresenter : IGetApprovalInfListOutputPort
 {
-    public class GetApprovalInfListPresenter : IGetApprovalInfListOutputPort
+    public Response<GetApprovalInfListResponse> Result { get; private set; } = new Response<GetApprovalInfListResponse>();
+    public void Complete(GetApprovalInfListOutputData outputData)
     {
-        public Response<GetApprovalInfListResponse> Result { get; private set; } = new Response<GetApprovalInfListResponse>();
-        public void Complete(GetApprovalInfListOutputData outputData)
-        {
-            Result = new Response<GetApprovalInfListResponse>()
-            {
-                Data = new GetApprovalInfListResponse()
-                {
-                    ApprovalInfList = outputData.ApprovalInfList
-                },
-                Status = (byte)outputData.Status
-            };
-        }
+        Result.Data = new GetApprovalInfListResponse(outputData.ApprovalInfList);
+        Result.Message = GetMessage(outputData.Status);
+        Result.Status = (int)outputData.Status;
     }
+    private string GetMessage(GetApprovalInfListStatus status) => status switch
+    {
+        GetApprovalInfListStatus.Success => ResponseMessage.Success,
+        GetApprovalInfListStatus.Failed => ResponseMessage.Failed,
+        GetApprovalInfListStatus.InvalidKaId => ResponseMessage.InvalidKaId,
+        GetApprovalInfListStatus.InvalidTantoId => ResponseMessage.InvalidTantoId,
+        GetApprovalInfListStatus.InvalidStarDate => ResponseMessage.InvalidStarDate,
+        GetApprovalInfListStatus.InvalidEndDate => ResponseMessage.InvalidEndDate,
+        _ => string.Empty
+    };
 }

@@ -100,6 +100,10 @@
         public static readonly string UpsertIdNoExist = "No Exist Id";
         public static readonly string UserListExistedInputData = "UserListExistedInputData";
 
+        //ApprovalInfo
+        public static readonly string InvalidTantoId = "InvalidTantoId";
+        public static readonly string InvalidStarDate = "InvalidStarDate";
+        public static readonly string InvalidEndDate = "InvalidEndDate";
 
         //Insurance
         // Validate Main Insurance

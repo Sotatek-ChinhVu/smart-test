@@ -14,5 +14,6 @@ namespace UseCase.ApprovalInfo.GetApprovalInfList
         InvalidEndDate,
         InvalidKaId,
         InvalidTantoId,
+        Failed,
     }
 }
