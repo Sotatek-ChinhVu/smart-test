@@ -165,7 +165,10 @@ namespace Infrastructure.Repositories
                 tenMst?.CmtColKeta1 ?? 0,
                 tenMst?.CmtColKeta2 ?? 0,
                 tenMst?.CmtColKeta3 ?? 0,
-                tenMst?.CmtColKeta4 ?? 0
+                tenMst?.CmtColKeta4 ?? 0,
+                tenMst?.CmtCol2 ?? 0,
+                tenMst?.CmtCol3 ?? 0,
+                tenMst?.CmtCol4 ?? 0
             );
         }
 
@@ -202,7 +205,10 @@ namespace Infrastructure.Repositories
                 tenMst.CmtColKeta1,
                 tenMst.CmtColKeta2,
                 tenMst.CmtColKeta3,
-                tenMst.CmtColKeta4
+                tenMst.CmtColKeta4,
+                tenMst.CmtCol2,
+                tenMst.CmtCol3,
+                tenMst.CmtCol4
             )).ToList();
         }
 
@@ -581,7 +587,10 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CmtColKeta1 ?? 0,
                                                            item.TenMst?.CmtColKeta2 ?? 0,
                                                            item.TenMst?.CmtColKeta3 ?? 0,
-                                                           item.TenMst?.CmtColKeta4 ?? 0
+                                                           item.TenMst?.CmtColKeta4 ?? 0,
+                                                           item.TenMst?.CmtCol2 ?? 0,
+                                                           item.TenMst?.CmtCol3 ?? 0,
+                                                           item.TenMst?.CmtCol4 ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -734,7 +743,10 @@ namespace Infrastructure.Repositories
                     entity?.CmtColKeta1 ?? 0,
                     entity?.CmtColKeta2 ?? 0,
                     entity?.CmtColKeta3 ?? 0,
-                    entity?.CmtColKeta4 ?? 0
+                    entity?.CmtColKeta4 ?? 0,
+                    entity?.CmtCol2 ?? 0,
+                    entity?.CmtCol3 ?? 0,
+                    entity?.CmtCol4 ?? 0
                );
         }
 
