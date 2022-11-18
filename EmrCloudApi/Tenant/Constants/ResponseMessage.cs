@@ -746,7 +746,7 @@
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
         public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
         public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
-  
+
         //Account Due
         public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
         public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";
@@ -799,5 +799,6 @@
 
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
+        public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
     }
 }
