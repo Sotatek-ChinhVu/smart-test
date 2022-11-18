@@ -168,7 +168,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                 string.Empty,
                                 string.Empty,
                                 string.Empty,
-                                false
+                                b.ByomeiMst.IsAdopted == 1
                              )
                         )
                 ).ToList());
