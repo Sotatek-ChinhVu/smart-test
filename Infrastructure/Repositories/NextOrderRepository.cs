@@ -358,7 +358,10 @@ namespace Infrastructure.Repositories
                         rsvkrtMst.RsvDate,
                         rsvkrtMst.RsvName ?? string.Empty,
                         rsvkrtMst.IsDeleted,
-                        rsvkrtMst.SortNo
+                        rsvkrtMst.SortNo,
+                        new(),
+                        new(),
+                        new()
                    );
         }
     }
