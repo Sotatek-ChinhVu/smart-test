@@ -154,8 +154,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                 0,
                                 string.Empty,
                                 string.Empty,
-                                String.Empty,
-                                String.Empty,
+                                string.Empty,
+                                string.Empty,
                                 b.TodayByomeis.HokenPid,
                                 b.TodayByomeis.HosokuCmt
                               ),

@@ -32,7 +32,6 @@ namespace Interactor.MedicalExamination
                     return new GetByomeiFollowItemCdOutputData(new(), GetByomeiFollowItemCdStatus.InvalidByomeis);
                 }
 
-
                 var result = _todayOdrRepository.GetByomeisOfCheckDiseases(inputData.IsGridStyle, inputData.HpId, inputData.ItemCd, inputData.SinDate, inputData.TodayByomeis);
 
                 if (!(result?.Count > 0))
