@@ -870,7 +870,7 @@ namespace Infrastructure.Repositories
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
