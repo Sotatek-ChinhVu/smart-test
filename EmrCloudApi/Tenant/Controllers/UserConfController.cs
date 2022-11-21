@@ -43,8 +43,8 @@ public class UserConfController : ControllerBase
     [HttpPut(ApiPath.UpdateAdoptedByomeiConfig)]
     public async Task<ActionResult<Response<UpdateAdoptedByomeiConfigResponse>>> UpdateAdoptedByomeiConfig([FromBody] UpdateAdoptedByomeiConfigRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        var hpId = _userService.GetLoginUser().HpId;
+        var userId = _userService.GetLoginUser().UserId;
         var input = new UpdateAdoptedByomeiConfigInputData(request.AdoptedValue, hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 
