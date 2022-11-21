@@ -353,7 +353,7 @@
             this.xrLabel7.StylePriority.UseBorders = false;
             this.xrLabel7.StylePriority.UseFont = false;
             this.xrLabel7.StylePriority.UseTextAlignment = false;
-            this.xrLabel7.Text = "保 険 者 番 号";
+            this.xrLabel7.Text = "QUAN to Test";
             this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // xrLabel8
