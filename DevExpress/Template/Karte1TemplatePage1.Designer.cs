@@ -344,7 +344,7 @@
             this.xrLabel7.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel7.Font = new System.Drawing.Font("Leelawadee UI", 10.5F);
+           // this.xrLabel7.Font = new System.Drawing.Font("Calibri", 10.5F);
             this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(402.7111F, 65.54168F);
             this.xrLabel7.Multiline = true;
             this.xrLabel7.Name = "xrLabel7";
