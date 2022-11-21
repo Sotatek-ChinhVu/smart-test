@@ -1,15 +1,10 @@
 ﻿using Domain.Models.GroupInf;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class GroupInfRepository: IGroupInfRepository
+    public class GroupInfRepository : IGroupInfRepository
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         public GroupInfRepository(ITenantProvider tenantProvider)
@@ -19,27 +14,38 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
         {
-            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
-            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
+            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId));
+            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0);
             var result =
-                from groupPatient in listGroupPatient
-                join groupDetailMst in listGroupDetailMst
-                on new {p1 = groupPatient.GroupCode, p2 = groupPatient.GroupId} equals new { p1 = groupDetailMst.GrpCode, p2 = groupDetailMst.GrpId} 
-                select new GroupInfModel
-                (
-                    groupPatient.HpId,
-                    groupPatient.PtId,
-                    groupPatient.GroupId,
-                    groupPatient.GroupCode ?? string.Empty,
-                    groupDetailMst.GrpCodeName
-                );
-            return result.ToList();
+                (from groupPatient in listGroupPatient
+                 join groupDetailMst in listGroupDetailMst
+                 on new
+                 {
+                     p1 = groupPatient.GroupCode,
+                     p2 = groupPatient.GroupId,
+                     p3 = groupPatient.HpId
+                 } equals new
+                 {
+                     p1 = groupDetailMst.GrpCode,
+                     p2 = groupDetailMst.GrpId,
+                     p3 = groupDetailMst.HpId
+                 }
+                 select new GroupInfModel
+                 (
+                     groupPatient.HpId,
+                     groupPatient.PtId,
+                     groupPatient.GroupId,
+                     groupPatient.GroupCode ?? string.Empty,
+                     groupDetailMst.GrpCodeName
+                 )).ToList();
+            var resultData = result.DistinctBy(item => new { item.GroupCode, item.PtId }).ToList();
+            return resultData;
         }
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
             var dataPtGrpInfs = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
-                                .Select( x => new GroupInfModel(
+                                .Select(x => new GroupInfModel(
                                     hpId,
                                     ptId,
                                     x.GroupId,
