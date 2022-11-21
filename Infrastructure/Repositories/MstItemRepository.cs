@@ -165,7 +165,11 @@ namespace Infrastructure.Repositories
                 tenMst?.CmtColKeta1 ?? 0,
                 tenMst?.CmtColKeta2 ?? 0,
                 tenMst?.CmtColKeta3 ?? 0,
-                tenMst?.CmtColKeta4 ?? 0
+                tenMst?.CmtColKeta4 ?? 0,
+                tenMst?.CmtCol2 ?? 0,
+                tenMst?.CmtCol3 ?? 0,
+                tenMst?.CmtCol4 ?? 0,
+                tenMst?.IpnNameCd ?? string.Empty
             );
         }
 
@@ -202,7 +206,11 @@ namespace Infrastructure.Repositories
                 tenMst.CmtColKeta1,
                 tenMst.CmtColKeta2,
                 tenMst.CmtColKeta3,
-                tenMst.CmtColKeta4
+                tenMst.CmtColKeta4,
+                tenMst.CmtCol2,
+                tenMst.CmtCol3,
+                tenMst.CmtCol4,
+                tenMst.IpnNameCd ?? string.Empty
             )).ToList();
         }
 
@@ -548,11 +556,11 @@ namespace Infrastructure.Repositories
             {
                 listTenMst = listTenMst.Take(pageCount);
             }
-            var listTenMstData = listTenMst.ToList();
 
-            if (listTenMstData != null && listTenMstData.Any())
+            if (listTenMst != null && listTenMst.Any())
             {
-                listTenMstModels = listTenMstData.Select(item => new TenItemModel(
+
+                listTenMstModels = listTenMst.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
@@ -581,7 +589,11 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CmtColKeta1 ?? 0,
                                                            item.TenMst?.CmtColKeta2 ?? 0,
                                                            item.TenMst?.CmtColKeta3 ?? 0,
-                                                           item.TenMst?.CmtColKeta4 ?? 0
+                                                           item.TenMst?.CmtColKeta4 ?? 0,
+                                                           item.TenMst?.CmtCol2 ?? 0,
+                                                           item.TenMst?.CmtCol3 ?? 0,
+                                                           item.TenMst?.CmtCol4 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -646,12 +658,13 @@ namespace Infrastructure.Repositories
                                     item.Icd1022013.StartsWith(keyword))
                                  );
 
-            query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate)
-                                            && (isMisaiyou || item.IsAdopted == 1)
-                                            && (isByomei || item.ByomeiCd.Length != 4)
-                                            && (isPrefix || (item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9")))
-                                            && (isSuffix || (item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8")))
-                                        );
+            query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
+
+            query = query.Where(item =>
+                   (isByomei && item.ByomeiCd.Length != 4)
+                || (isPrefix && (item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9") && !item.ByomeiCd.StartsWith("8")))
+                || (isSuffix && (item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8")))
+            );
 
             var listDatas = query.OrderBy(item => item.KanaName1)
                                  .ThenByDescending(item => item.IsAdopted)
@@ -734,7 +747,11 @@ namespace Infrastructure.Repositories
                     entity?.CmtColKeta1 ?? 0,
                     entity?.CmtColKeta2 ?? 0,
                     entity?.CmtColKeta3 ?? 0,
-                    entity?.CmtColKeta4 ?? 0
+                    entity?.CmtColKeta4 ?? 0,
+                    entity?.CmtCol2 ?? 0,
+                    entity?.CmtCol3 ?? 0,
+                    entity?.CmtCol4 ?? 0,
+                    entity?.IpnNameCd ?? string.Empty
                );
         }
 
