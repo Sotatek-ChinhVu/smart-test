@@ -31,6 +31,7 @@
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
+        public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -748,7 +749,7 @@
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
         public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
         public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
-  
+
         //Account Due
         public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
         public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";

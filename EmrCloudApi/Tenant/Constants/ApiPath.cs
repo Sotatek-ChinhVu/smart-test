@@ -111,5 +111,7 @@
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetByomeiOfCheckDiseases = "GetByomeiOfCheckDiseases";
 
+        //User Config
+        public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
     }
 }
