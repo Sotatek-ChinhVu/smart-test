@@ -27,8 +27,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetMedicalExaminationHistoryResponse>>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var watch = System.Diagnostics.Stopwatch.StartNew();
             watch.Start();
             var input = new GetMedicalExaminationHistoryInputData(request.PtId, hpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, userId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);

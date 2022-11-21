@@ -40,7 +40,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveImageTodayOrder)]
         public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new SaveImageTodayOrderInputData(hpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
             var output = await Task.Run(() => _bus.Handle(input));
 

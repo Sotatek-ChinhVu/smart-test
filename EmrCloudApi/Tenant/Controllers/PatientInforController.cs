@@ -86,7 +86,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get + "PatientComment")]
         public async Task<ActionResult<Response<GetPatientCommentResponse>>> GetList([FromQuery] GetPatientCommentRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetPatientCommentInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetPatientCommentPresenter();
@@ -97,7 +97,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientById")]
         public async Task<ActionResult<Response<GetPatientInforByIdResponse>>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetPatientInforByIdInputData(hpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -110,7 +110,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListPatientGroup")]
         public async Task<ActionResult<Response<GetListGroupInfResponse>>> GetListPatientGroup([FromQuery] GetListGroupInfRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetListGroupInfInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -123,7 +123,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("InsuranceListByPtId")]
         public async Task<ActionResult<Response<GetInsuranceListResponse>>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetInsuranceListInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -136,7 +136,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchSimple")]
         public async Task<ActionResult<Response<SearchPatientInforSimpleResponse>>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, hpId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -149,7 +149,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SearchAdvanced")]
         public async Task<ActionResult<Response<SearchPatientInfoAdvancedResponse>>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, hpId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SearchPatientInfoAdvancedPresenter();
@@ -160,7 +160,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListCalculationPatient")]
         public async Task<ActionResult<Response<CalculationInfResponse>>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new CalculationInfInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -185,8 +185,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientGroupMst)]
         public async Task<ActionResult<Response<SaveListPatientGroupMstResponse>>> SavePatientGroupMst([FromBody] SaveListPatientGroupMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveListPatientGroupMstInputData(hpId, userId, ConvertToListInput(request.SaveListPatientGroupMsts));
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -199,7 +199,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetInsuranceMst")]
         public async Task<ActionResult<Response<GetInsuranceMstResponse>>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetInsuranceMstInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -212,7 +212,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchHokensyaMst")]
         public async Task<ActionResult<Response<SearchHokensyaMstResponse>>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new SearchHokensyaMstInputData(hpId, request.SinDate, request.Keyword);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -225,7 +225,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetHokenMstByFutansyaNo")]
         public async Task<ActionResult<Response<GetKohiHokenMstResponse>>> GetHokenMstByFutansyaNo([FromQuery] GetKohiHokenMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetKohiHokenMstInputData(hpId, request.SinDate, request.FutansyaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -257,7 +257,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateRousaiJibai)]
         public async Task<ActionResult<Response<ValidateRousaiJibaiResponse>>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new ValidateRousaiJibaiInputData(hpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
                 request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
                 request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
@@ -292,8 +292,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SaveHokenSyaMst")]
         public async Task<ActionResult<Response<SaveHokenSyaMstResponse>>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveHokenSyaMstInputData(hpId
                                                    , request.Name
                                                    , request.KanaName
@@ -322,7 +322,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchEmptyId)]
         public async Task<ActionResult<Response<SearchEmptyIdResponse>>> SearchEmptyId([FromQuery] SearchEmptyIdResquest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new SearchEmptyIdInputData(hpId, request.PtNum, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -335,7 +335,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDetailHokenMst)]
         public async Task<ActionResult<Response<GetDetailHokenMstResponse>>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetDetailHokenMstInputData(hpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -359,7 +359,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("ValidateMainInsurance")]
         public async Task<ActionResult<Response<ValidateMainInsuranceReponse>>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new ValidMainInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
                 request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfHokenEdra, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
                 request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate, request.SelectedHokenInfKigo, request.SelectedHokenInfBango,
@@ -378,7 +378,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceMasterLinkage)]
         public async Task<ActionResult<Response<GetInsuranceMasterLinkageResponse>>> GetInsuranceMasterLinkage([FromQuery] GetInsuranceMasterLinkageRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetInsuranceMasterLinkageInputData(hpId, request.FutansyaNo);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -391,7 +391,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public async Task<ActionResult<Response<GetPtKyuseiInfResponse>>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetPtKyuseiInfInputData(hpId, request.PtId, request.IsDeleted);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -404,8 +404,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveInsuranceMasterLinkage)]
         public async Task<ActionResult<Response<SaveInsuranceMasterLinkageResponse>>> SaveInsuranceMasterLinkage([FromBody] SaveInsuranceMasterLinkageRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels, hpId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveInsuranceMasterLinkagePresenter();
@@ -416,8 +416,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientInfo)]
         public async Task<ActionResult<Response<SavePatientInfoResponse>>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             PatientInforSaveModel patient = new PatientInforSaveModel(hpId,
                                                                       request.Patient.PtId,
                                                                       request.Patient.PtNum,
@@ -594,8 +594,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("DeletePatientInfo")]
         public async Task<ActionResult<Response<DeletePatientInfoResponse>>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new DeletePatientInfoInputData(hpId, request.PtId, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new DeletePatientInfoPresenter();
@@ -606,7 +606,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateListPattern)]
         public async Task<ActionResult<Response<ValidateListInsuranceResponse>>> ValidateListPattern([FromBody] ValidateInsuranceRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new ValidateInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.ListInsurance);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new ValidateInsurancePresenter();
@@ -617,8 +617,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SwapHoken)]
         public async Task<ActionResult<Response<SaveSwapHokenResponse>>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveSwapHokenInputData(hpId,
                                                    request.PtId,
                                                    request.HokenIdBefore,

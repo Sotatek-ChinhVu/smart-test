@@ -28,8 +28,8 @@ public class UserConfController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new GetUserConfListInputData(hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 
