@@ -344,7 +344,7 @@
             this.xrLabel7.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel7.Font = new System.Drawing.Font("Yu Gothic", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.xrLabel7.Font = new System.Drawing.Font("MS Gothic", 10.5F);
             this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(402.7111F, 65.54168F);
             this.xrLabel7.Multiline = true;
             this.xrLabel7.Name = "xrLabel7";
@@ -353,7 +353,7 @@
             this.xrLabel7.StylePriority.UseBorders = false;
             this.xrLabel7.StylePriority.UseFont = false;
             this.xrLabel7.StylePriority.UseTextAlignment = false;
-            this.xrLabel7.Text = "QUAN to Test";
+            this.xrLabel7.Text = "保 険 者 番 号";
             this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleCenter;
             // 
             // xrLabel8
@@ -2687,7 +2687,7 @@
             this.objectDataSource3});
             this.DataMember = "ListByomeiModelsPage1";
             this.DataSource = this.objectDataSource3;
-            this.Font = new System.Drawing.Font("Arial", 9.75F);
+            this.Font = new System.Drawing.Font("MS Gothic", 9.75F);
             this.Margins = new System.Drawing.Printing.Margins(51, 51, 2, 195);
             this.StyleSheet.AddRange(new DevExpress.XtraReports.UI.XRControlStyle[] {
             this.xrControlStyle1,
