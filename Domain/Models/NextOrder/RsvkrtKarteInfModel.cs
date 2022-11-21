@@ -2,12 +2,12 @@
 {
     public class RsvkrtKarteInfModel
     {
-        public RsvkrtKarteInfModel(int hpId, long ptId, int sinDate, long raiinNo, int karteKbn, long seqNo, string text, string richText, int isDeleted)
+        public RsvkrtKarteInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, int karteKbn, long seqNo, string text, string richText, int isDeleted)
         {
             HpId = hpId;
             PtId = ptId;
-            SinDate = sinDate;
-            RaiinNo = raiinNo;
+            RsvDate = rsvDate;
+            RsvkrtNo = rsvkrtNo;
             KarteKbn = karteKbn;
             SeqNo = seqNo;
             Text = text;
@@ -19,8 +19,8 @@
         {
             HpId = 0;
             PtId = 0;
-            SinDate = 0;
-            RaiinNo = 0;
+            RsvDate = 0;
+            RsvkrtNo = 0;
             KarteKbn = 0;
             SeqNo = 0;
             Text = string.Empty;
@@ -32,9 +32,9 @@
 
         public long PtId { get; private set; }
 
-        public int SinDate { get; private set; }
+        public int RsvDate { get; private set; }
 
-        public long RaiinNo { get; private set; }
+        public long RsvkrtNo { get; private set; }
 
         public int KarteKbn { get; private set; }
 

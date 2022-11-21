@@ -1,11 +1,14 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Collections.Generic;
+using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -13,6 +16,9 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         private readonly TenantDataContext _tenantDataContextTracking;
+        private readonly int rpEdaNoDefault = 1;
+        private readonly int rpNoDefault = 1;
+
         public NextOrderRepository(ITenantProvider tenantProvider)
         {
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
@@ -79,11 +85,127 @@ namespace Infrastructure.Repositories
             return oderInfModels;
         }
 
-        public void Upsert(List<NextOrderModel> nextOrderModels)
+        public bool Upsert(int userId, int hpId, long ptId, long rsvkrtNo, int rsvDate, List<NextOrderModel> nextOrderModels)
         {
-            foreach (var nextOrderModel in nextOrderModels)
+            var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
+
+            return executionStrategy.Execute(
+                () =>
+                {
+                    using var transaction = _tenantDataContextTracking.Database.BeginTransaction();
+                    try
+                    {
+
+                        var maxRpNo = GetMaxRpNo(hpId, ptId, rsvkrtNo, rsvDate);
+                        foreach (var nextOrderModel in nextOrderModels)
+                        {
+                            if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
+                            {
+                                var rsvkrtMst = _tenantDataContextTracking.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
+                                if (rsvkrtMst != null)
+                                {
+                                    rsvkrtMst.IsDeleted = DeleteTypes.Deleted;
+                                    foreach (var item in nextOrderModel.RsvkrtOrderInfs.Where(o => o.IsDeleted == DeleteTypes.Deleted || o.IsDeleted == DeleteTypes.Confirm))
+                                    {
+                                        var orderInf = _tenantDataContextTracking.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == item.HpId && o.PtId == item.PtId && item.IsDeleted == DeleteTypes.None && o.RsvkrtNo == item.RsvkrtNo);
+                                        if (orderInf != null)
+                                        {
+                                            orderInf.UpdateDate = DateTime.UtcNow;
+                                            orderInf.UpdateId = userId;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                var oldNextOrder = _tenantDataContextTracking.RsvkrtMsts.FirstOrDefault(m => m.HpId == nextOrderModel.HpId && m.PtId == nextOrderModel.PtId && m.RsvkrtNo == nextOrderModel.RsvkrtNo && m.IsDeleted == DeleteTypes.None);
+
+                                if (oldNextOrder != null)
+                                {
+                                    oldNextOrder.IsDeleted = 0;
+                                    var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
+                                    _tenantDataContextTracking.RsvkrtMsts.Add(nextOrderEntity);
+                                    _tenantDataContextTracking.SaveChanges();
+                                    var byomeisEntities = nextOrderModel.RsvkrtByomeis.Select(b => ConvertModelToRsvkrtByomei(userId, b)).ToList();
+                                    _tenantDataContextTracking.AddRange(byomeisEntities);
+                                    var karteInf = ConvertModelToRsvkrtKarteInf(userId, nextOrderModel.RsvkrtKarteInf);
+                                    _tenantDataContextTracking.Add(karteInf);
+                                    var orderInfs = nextOrderModel.RsvkrtOrderInfs.Select(o => ConvertModelToRsvkrtOrderInf(userId, o.RpNo, o));
+                                    _tenantDataContextTracking.Add(orderInfs);
+                                    foreach (var orderInf in nextOrderModel.RsvkrtOrderInfs)
+                                    {
+                                        var orderInfDetail = orderInf.OrderInfDetailModels.Select(od => ConvertModelToRsvkrtOrderInfDetail(od.RpNo, od));
+                                        _tenantDataContextTracking.Add(orderInfDetail);
+                                    }
+                                    _tenantDataContextTracking.SaveChanges();
+                                }
+                                else
+                                {
+                                    maxRpNo++;
+                                    var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
+                                    _tenantDataContextTracking.RsvkrtMsts.Add(nextOrderEntity);
+                                    _tenantDataContextTracking.SaveChanges();
+                                    var rsvkrtNo = nextOrderEntity.RsvkrtNo;
+                                    var byomeisEntities = nextOrderModel.RsvkrtByomeis.Select(b => ConvertModelToRsvkrtByomei(userId, b, rsvkrtNo)).ToList();
+                                    _tenantDataContextTracking.AddRange(byomeisEntities);
+                                    var karteInf = ConvertModelToRsvkrtKarteInf(userId, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
+                                    _tenantDataContextTracking.Add(karteInf);
+                                    var orderInfs = nextOrderModel.RsvkrtOrderInfs.Select(o => ConvertModelToRsvkrtOrderInf(userId, maxRpNo, o, rsvkrtNo));
+                                    _tenantDataContextTracking.Add(orderInfs);
+                                    foreach (var orderInf in nextOrderModel.RsvkrtOrderInfs)
+                                    {
+                                        var orderInfDetail = orderInf.OrderInfDetailModels.Select(od => ConvertModelToRsvkrtOrderInfDetail(maxRpNo, od, rsvkrtNo));
+                                        _tenantDataContextTracking.Add(orderInfDetail);
+                                    }
+                                    _tenantDataContextTracking.SaveChanges();
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+
+                        return false;
+                    }
+
+                }
+                );
+
+        }
+
+        private void UpsertOrderInf(int userId, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels)
+        {
+            foreach (var orderInf in rsvkrtOrderInfModels)
             {
+                var oldOrderInf = _tenantDataContextTracking.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == orderInf.RsvkrtNo && o.RsvDate == orderInf.RsvDate && o.IsDeleted == DeleteTypes.None);
+                if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
+                {
+                    if (oldOrderInf != null)
+                    {
+                        oldOrderInf.UpdateDate = DateTime.UtcNow;
+                        oldOrderInf.CreateId = userId;
+                    }
+                }
+                else
+                {
+                    if (oldOrderInf != null)
+                    {
+                        oldOrderInf.UpdateDate = DateTime.UtcNow;
+                        oldOrderInf.CreateId = userId;
+                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf);
+                        _tenantDataContextTracking.Add(orderInfEntity);
+                    }
+                    else
+                    {
+                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf);
+                        _tenantDataContextTracking.Add(orderInfEntity);
+                    }
+                }
             }
+
+            _tenantDataContextTracking.SaveChanges();
         }
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
@@ -372,14 +494,33 @@ namespace Infrastructure.Repositories
                    );
         }
 
-        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel rsvkrtByomeiModel)
+        private static RsvkrtMst ConvertModelToRsvkrtNextOrder(int userId, NextOrderModel nextOrderModel, RsvkrtMst? oldNextOrder)
+        {
+            return new RsvkrtMst
+            {
+                HpId = nextOrderModel.HpId,
+                PtId = nextOrderModel.PtId,
+                RsvkrtNo = nextOrderModel.RsvkrtNo,
+                RsvkrtKbn = nextOrderModel.RsvkrtKbn,
+                RsvDate = nextOrderModel.RsvDate,
+                RsvName = nextOrderModel.RsvName,
+                SortNo = nextOrderModel.SortNo,
+                IsDeleted = nextOrderModel.IsDeleted,
+                CreateDate = oldNextOrder == null ? DateTime.UtcNow : oldNextOrder.CreateDate,
+                CreateId = oldNextOrder == null ? userId : oldNextOrder.CreateId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId
+            };
+        }
+
+        private static RsvkrtByomei ConvertModelToRsvkrtByomei(int userId, RsvkrtByomeiModel rsvkrtByomeiModel, long rsvkrtNo = 0)
         {
             return new RsvkrtByomei
             {
                 Id = rsvkrtByomeiModel.Id,
                 HpId = rsvkrtByomeiModel.HpId,
                 PtId = rsvkrtByomeiModel.PtId,
-                RsvkrtNo = rsvkrtByomeiModel.RsvkrtNo,
+                RsvkrtNo = rsvkrtNo == 0 ? rsvkrtByomeiModel.RsvkrtNo : rsvkrtNo,
                 SeqNo = rsvkrtByomeiModel.SeqNo,
                 ByomeiCd = rsvkrtByomeiModel.ByomeiCd,
                 SyusyokuCd1 = rsvkrtByomeiModel.PrefixSuffixList.FirstOrDefault(),
@@ -418,14 +559,14 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtKarteInf ConvertModelToRsvkrtKarteInf(int userId, RsvkrtKarteInfModel rsvkrtKarteInfModel)
+        private static RsvkrtKarteInf ConvertModelToRsvkrtKarteInf(int userId, RsvkrtKarteInfModel rsvkrtKarteInfModel, long rsvkrtNo = 0)
         {
             return new RsvkrtKarteInf
             {
                 HpId = rsvkrtKarteInfModel.HpId,
                 PtId = rsvkrtKarteInfModel.PtId,
-                RsvDate = rsvkrtKarteInfModel.SinDate,
-                RsvkrtNo = rsvkrtKarteInfModel.RaiinNo,
+                RsvDate = rsvkrtKarteInfModel.RsvDate,
+                RsvkrtNo = rsvkrtNo == 0 ? rsvkrtKarteInfModel.RsvkrtNo : rsvkrtNo,
                 KarteKbn = rsvkrtKarteInfModel.KarteKbn,
                 SeqNo = rsvkrtKarteInfModel.SeqNo,
                 Text = rsvkrtKarteInfModel.Text,
@@ -436,6 +577,84 @@ namespace Infrastructure.Repositories
                 UpdateDate = DateTime.UtcNow,
                 UpdateId = userId
             };
+        }
+
+        private static RsvkrtOdrInf ConvertModelToRsvkrtOrderInf(int userId, long rpNo, RsvkrtOrderInfModel rsvkrtOrderInfModel, long rsvkrtNo = 0)
+        {
+            return new RsvkrtOdrInf
+            {
+                Id = rsvkrtOrderInfModel.Id,
+                HpId = rsvkrtOrderInfModel.HpId,
+                PtId = rsvkrtOrderInfModel.PtId,
+                RsvkrtNo = rsvkrtNo == 0 ? rsvkrtOrderInfModel.RsvkrtNo : rsvkrtNo,
+                RsvDate = rsvkrtOrderInfModel.RsvDate,
+                RpNo = rpNo,
+                RpEdaNo = rsvkrtOrderInfModel.RpEdaNo,
+                HokenPid = rsvkrtOrderInfModel.HokenPid,
+                OdrKouiKbn = rsvkrtOrderInfModel.OdrKouiKbn,
+                RpName = rsvkrtOrderInfModel.RpName,
+                InoutKbn = rsvkrtOrderInfModel.InoutKbn,
+                SikyuKbn = rsvkrtOrderInfModel.SikyuKbn,
+                SyohoSbt = rsvkrtOrderInfModel.SyohoSbt,
+                SanteiKbn = rsvkrtOrderInfModel.SanteiKbn,
+                TosekiKbn = rsvkrtOrderInfModel.TosekiKbn,
+                DaysCnt = rsvkrtOrderInfModel.DaysCnt,
+                IsDeleted = rsvkrtOrderInfModel.IsDeleted,
+                SortNo = rsvkrtOrderInfModel.SortNo,
+                CreateDate = DateTime.UtcNow,
+                CreateId = userId,
+                UpdateDate = DateTime.UtcNow,
+                UpdateId = userId
+            };
+        }
+
+        private static RsvkrtOdrInfDetail ConvertModelToRsvkrtOrderInfDetail(long rpNo, RsvKrtOrderInfDetailModel rsvkrtOrderInfModel, long rsvkrtNo = 0)
+        {
+            return new RsvkrtOdrInfDetail
+            {
+                HpId = rsvkrtOrderInfModel.HpId,
+                PtId = rsvkrtOrderInfModel.PtId,
+                RsvkrtNo = rsvkrtNo == 0 ? rsvkrtOrderInfModel.RsvkrtNo : rsvkrtNo,
+                RpNo = rpNo,
+                RpEdaNo = rsvkrtOrderInfModel.RpEdaNo,
+                RowNo = rsvkrtOrderInfModel.RowNo,
+                RsvDate = rsvkrtOrderInfModel.RsvDate,
+                SinKouiKbn = rsvkrtOrderInfModel.SinKouiKbn,
+                ItemCd = rsvkrtOrderInfModel.ItemCd,
+                ItemName = rsvkrtOrderInfModel.ItemName,
+                Suryo = rsvkrtOrderInfModel.Suryo,
+                UnitName = rsvkrtOrderInfModel.UnitName,
+                UnitSbt = rsvkrtOrderInfModel.UnitSbt,
+                TermVal = rsvkrtOrderInfModel.TermVal,
+                KohatuKbn = rsvkrtOrderInfModel.KohatuKbn,
+                SyohoKbn = rsvkrtOrderInfModel.SyohoKbn,
+                SyohoLimitKbn = rsvkrtOrderInfModel.SyohoLimitKbn,
+                DrugKbn = rsvkrtOrderInfModel.DrugKbn,
+                YohoKbn = rsvkrtOrderInfModel.YohoKbn,
+                Kokuji1 = rsvkrtOrderInfModel.Kokuji1,
+                Kokuji2 = rsvkrtOrderInfModel.Kokuji2,
+                IsNodspRece = rsvkrtOrderInfModel.IsNodspRece,
+                IpnCd = rsvkrtOrderInfModel.IpnCd,
+                IpnName = rsvkrtOrderInfModel.IpnName,
+                Bunkatu = rsvkrtOrderInfModel.Bunkatu,
+                CmtName = rsvkrtOrderInfModel.CmtName,
+                CmtOpt = rsvkrtOrderInfModel.CmtOpt,
+                FontColor = rsvkrtOrderInfModel.FontColor,
+                CommentNewline = rsvkrtOrderInfModel.CommentNewline
+            };
+        }
+
+        private long GetMaxRpNo(int hpId, long ptId, long rsvkrtNo, int rsvDate)
+        {
+            var odrList = _tenantDataContext.RsvkrtOdrInfs
+                .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RsvkrtNo == rsvkrtNo && odr.RsvDate == rsvDate);
+
+            if (odrList.Any())
+            {
+                return odrList.Max(odr => odr.RpNo);
+            }
+
+            return 0;
         }
     }
 }
