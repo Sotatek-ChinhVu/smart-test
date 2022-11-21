@@ -96,7 +96,7 @@ namespace Infrastructure.Repositories
             var nextOdrKarteInfs = _tenantNoTrackingDataContext.RsvkrtKarteInfs.Where(karte => karte.HpId == hpId
                                    && karte.PtId == ptId
                                    && karte.IsDeleted == 0
-                                   && !string.IsNullOrEmpty(karte.Text.Trim()))
+                                   && (karte.Text != null && !string.IsNullOrEmpty(karte.Text.Trim())))
                                    .OrderBy(karte => karte.RsvDate)
                                    .ThenBy(karte => karte.KarteKbn);
 

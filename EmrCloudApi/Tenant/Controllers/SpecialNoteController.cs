@@ -41,8 +41,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.AddAlrgyDrugList)]
         public async Task<ActionResult<Response<AddAlrgyDrugListResponse>>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
                                                         a => new AddAlrgyDrugListItemInputData(
                                                                 a.PtId,
@@ -67,8 +67,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public async Task<ActionResult<Response<SaveSpecialNoteResponse>>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveSpecialNoteInputData(hpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 

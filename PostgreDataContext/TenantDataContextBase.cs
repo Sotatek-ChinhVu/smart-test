@@ -133,6 +133,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<KarteInf>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo, e.KarteKbn });
             modelBuilder.Entity<MonshinInfo>().HasKey(r => new { r.HpId, r.PtId, r.RaiinNo, r.SeqNo });
             modelBuilder.Entity<RsvkrtOdrInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.RpNo, e.RpEdaNo, e.Id });
+            modelBuilder.Entity<RsvkrtOdrInfDetail>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.RpNo, e.RpEdaNo, e.RowNo });
             modelBuilder.Entity<PtTag>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
             modelBuilder.Entity<PtKyusei>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
             modelBuilder.Entity<RaiinKbnKoui>().HasKey(e => new { e.HpId, e.GrpId, e.KbnCd, e.SeqNo });
@@ -150,9 +151,11 @@ namespace PostgreDataContext
             modelBuilder.Entity<SyunoNyukin>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
             modelBuilder.Entity<SyunoSeikyu>().HasKey(e => new { e.HpId, e.RaiinNo, e.PtId, e.SinDate });
             modelBuilder.Entity<PtRousaiTenki>().HasKey(e => new { e.HpId, e.PtId, e.HokenId, e.SeqNo });
-            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate});
-            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo});
-            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo});
+            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate });
+            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo });
+            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
+            modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -867,5 +870,7 @@ namespace PostgreDataContext
         public DbSet<MallMessageInf> MallMessageInfs { get; set; } = default!;
 
         public DbSet<MallRenkeiInf> MallRenkeiInfs { get; set; } = default!;
+
+        public DbSet<RsvkrtByomei> RsvkrtByomeis { get; set; } = default!;
     }
 }

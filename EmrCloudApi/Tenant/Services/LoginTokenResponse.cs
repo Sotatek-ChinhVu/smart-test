@@ -2,6 +2,6 @@
 
 public class LoginTokenResponse
 {
-    public string HpId { get; set; }
-    public string UserId { get; set; }
+    public int HpId { get; set; }
+    public int UserId { get; set; }
 }
