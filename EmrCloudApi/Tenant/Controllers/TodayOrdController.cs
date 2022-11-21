@@ -33,8 +33,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertTodayOdrResponse>>> Upsert([FromBody] UpsertTodayOdrRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new UpsertTodayOrdInputData(request.SyosaiKbn, request.JikanKbn, request.HokenPid, request.SanteiKbn, request.TantoId, request.KaId, request.UketukeTime, request.SinStartTime, request.SinEndTime, request.OdrInfs.Select(
                     o => new OdrInfItemInputData(
                             hpId,
@@ -116,7 +116,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Validate)]
         public async Task<ActionResult<Response<ValidationTodayOrdResponse>>> Validate([FromBody] ValidationTodayOrdRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new ValidationTodayOrdInputData(
                 request.SyosaiKbn,
                 request.JikanKbn,
@@ -206,7 +206,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDefaultSelectPattern)]
         public async Task<ActionResult<Response<GetDefaultSelectPatternResponse>>> Validate([FromQuery] GetDefaultSelectPatternRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetDefaultSelectPatternInputData(
                             hpId,
                             request.PtId,
@@ -225,7 +225,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceComboList)]
         public async Task<ActionResult<Response<GetInsuranceComboListResponse>>> GetInsuranceComboList([FromQuery] GetInsuranceComboListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetInsuranceComboListInputData(hpId, request.PtId, request.SinDate);
             var output = await Task.Run(()=>_bus.Handle(input));
             var presenter = new GetInsuranceComboListPresenter();

@@ -28,10 +28,8 @@ public class NextOrderController : ControllerBase
     [HttpGet(ApiPath.Get)]
     public async Task<ActionResult<Response<GetNextOrderResponse>>> Get([FromQuery] GetNextOrderRequest request)
     {
-        var user = _userService.GetLoginUser();
-        int.TryParse(user.HpId, out int hpId);
-        int.TryParse(user.UserId, out int userId);
-
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new GetNextOrderInputData(request.PtId, hpId, request.RsvkrtNo, request.SinDate, request.Type, userId);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -44,8 +42,7 @@ public class NextOrderController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetNextOrderListResponse>>> GetList([FromQuery] GetNextOrderListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new GetNextOrderListInputData(request.PtId, hpId, request.RsvkrtKbn, request.IsDeleted);
         var output = await Task.Run(() => _bus.Handle(input));
 

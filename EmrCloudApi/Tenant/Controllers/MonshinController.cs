@@ -28,7 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetMonshinInforListResponse>>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetMonshinInforListInputData(hpId, request.PtId, request.SinDate, request.IsDeleted);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new GetMonshinInforListPresenter();
@@ -39,7 +39,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public async Task<ActionResult<Response<SaveMonshinInforListResponse>>> SaveList([FromBody] SaveMonshinInforListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveMonshinInputData(request.Monshins, userId);
             var output = await Task.Run(() => _bus.Handle(input));
             var presenter = new SaveMonshinInforListPresenter();
