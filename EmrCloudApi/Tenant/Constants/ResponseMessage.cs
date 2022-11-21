@@ -799,5 +799,9 @@
         public static readonly string InvalidNenkinBangoLengthNotEquals9 = "Invalid NenkinBango Length Not Equals 9";
         public static readonly string InvalidKenkoKanriBangoIsNull = "Invalid KenkoKanri Bango Is Null";
         public static readonly string InvalidKenkoKanriBangoLengthNotEquals13 = "Invalid KenkoKanri Bango Length Not Equals 13";
+
+        //Next Order
+        public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
+        public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
     }
 }

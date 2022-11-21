@@ -120,7 +120,7 @@ namespace Infrastructure.Repositories
                     YoyakuTime = model.YoyakuTime,
                     YoyakuId = model.YoyakuId,
                     UketukeSbt = model.UketukeSbt,
-                    UketukeTime = CIUtil.DateTimeToTime(DateTime.UtcNow),
+                    UketukeTime = model.UketukeTime,
                     UketukeId = model.UketukeId,
                     UketukeNo = uketukeNo,
                     SinStartTime = model.SinStartTime,

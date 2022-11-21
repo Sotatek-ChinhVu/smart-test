@@ -313,17 +313,17 @@ namespace Infrastructure.Repositories
             }
             // PostalCode
             if (!string.IsNullOrEmpty(input.PostalCode1)
-                || string.IsNullOrEmpty(input.PostalCode2))
+                && string.IsNullOrEmpty(input.PostalCode2))
             {
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.StartsWith(input.PostalCode1));
             }
             else if (!string.IsNullOrEmpty(input.PostalCode2)
-                || string.IsNullOrEmpty(input.PostalCode1))
+                && string.IsNullOrEmpty(input.PostalCode1))
             {
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.EndsWith(input.PostalCode2));
             }
             else if (!string.IsNullOrEmpty(input.PostalCode1)
-                || !string.IsNullOrEmpty(input.PostalCode2))
+                && !string.IsNullOrEmpty(input.PostalCode2))
             {
                 var postalCode = input.PostalCode1 + input.PostalCode2;
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.StartsWith(postalCode) || p.HomePost!.EndsWith(postalCode));

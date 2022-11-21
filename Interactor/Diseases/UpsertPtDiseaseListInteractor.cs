@@ -22,7 +22,7 @@ namespace Interactor.Diseases
             {
                 if (inputData.ToList() == null || inputData.ToList().Count == 0)
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListInputNoData, new());
                 }
 
                 var datas = inputData.PtDiseaseModel.Select(i => new PtDiseaseModel(
@@ -59,25 +59,25 @@ namespace Interactor.Diseases
                     var status = data.Validation();
                     if (status != ValidationStatus.Valid)
                     {
-                        return new UpsertPtDiseaseListOutputData(ConvertStatus(status));
+                        return new UpsertPtDiseaseListOutputData(ConvertStatus(status), new());
                     }
                 }
 
                 if (!_patientInforRepository.CheckExistListId(datas.Select(i => i.PtId).Distinct().ToList()))
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListPtIdNoExist, new());
                 }
                 if (!_insuranceInforRepository.CheckExistHokenPIdList(datas.Where(i => i.HokenPid > 0).Select(i => i.HokenPid).Distinct().ToList(), datas.Select(i => i.HpId).Distinct().ToList(), datas.Select(i => i.PtId).Distinct().ToList()))
                 {
-                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist);
+                    return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListHokenPIdNoExist, new());
                 }
 
-                _diseaseRepository.Upsert(datas, inputData.HpId, inputData.UserId);
-                return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success);
+                var result = _diseaseRepository.Upsert(datas, inputData.HpId, inputData.UserId);
+                return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.Success, result);
             }
             catch
             {
-                return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess);
+                return new UpsertPtDiseaseListOutputData(UpsertPtDiseaseListStatus.PtDiseaseListUpdateNoSuccess, new());
             }
 
         }

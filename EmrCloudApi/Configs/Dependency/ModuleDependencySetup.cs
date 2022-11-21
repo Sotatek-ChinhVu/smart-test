@@ -21,6 +21,7 @@ using Domain.Models.KarteKbnMst;
 using Domain.Models.MaxMoney;
 using Domain.Models.MonshinInf;
 using Domain.Models.MstItem;
+using Domain.Models.NextOrder;
 using Domain.Models.OrdInfs;
 using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
@@ -87,6 +88,7 @@ using Interactor.MaxMoney;
 using Interactor.MedicalExamination;
 using Interactor.MonshinInf;
 using Interactor.MstItem;
+using Interactor.NextOrder;
 using Interactor.OrdInfs;
 using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
@@ -166,6 +168,8 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.NextOrder.Get;
+using UseCase.NextOrder.GetList;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -345,6 +349,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
+            services.AddTransient<INextOrderRepository, NextOrderRepository>();
             services.AddTransient<IReporting, Reporting>();
         }
 
@@ -574,6 +579,10 @@ namespace EmrCloudApi.Configs.Dependency
 
             //System Config Generation 
             busBuilder.RegisterUseCase<GetSystemGenerationConfInputData, GetSystemGenerationConfInteractor>();
+
+            //Next Order
+            busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
+            busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -2,11 +2,11 @@
 {
     public class UpsertPtDiseaseListResponse
     {
-        public UpsertPtDiseaseListResponse(bool success)
+        public UpsertPtDiseaseListResponse(List<long> ids)
         {
-            Success = success;
+            Ids = ids;
         }
 
-        public bool Success { get; private set; }
+        public List<long> Ids { get; private set; }
     }
 }

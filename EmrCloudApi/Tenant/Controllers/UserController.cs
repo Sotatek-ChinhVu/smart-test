@@ -31,7 +31,7 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.Update)]
     public async Task<ActionResult<Response<CreateUserResponse>>> Save([FromBody] CreateUserRequest saveUserRequest)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new CreateUserInputData(hpId, saveUserRequest.JobCd, saveUserRequest.JobCd, saveUserRequest.KaId, saveUserRequest.KanaName, saveUserRequest.Name, saveUserRequest.Sname, saveUserRequest.LoginId, saveUserRequest.LoginPass, saveUserRequest.MayakuLicenseNo, saveUserRequest.StartDate, saveUserRequest.Endate, saveUserRequest.SortNo, 0, saveUserRequest.RenkeiCd1, saveUserRequest.DrName);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -56,8 +56,8 @@ public class UserController : ControllerBase
     [HttpPost(ApiPath.UpsertList)]
     public async Task<ActionResult<Response<UpsertUserResponse>>> Upsert([FromBody] UpsertUserRequest upsertUserRequest)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var upsertUserList = upsertUserRequest.UserInfoList.Select(u => UserInfoRequestToModel(u, hpId)).ToList();
         var input = new UpsertUserListInputData(upsertUserList, userId);
         var output = await Task.Run(() => _bus.Handle(input));

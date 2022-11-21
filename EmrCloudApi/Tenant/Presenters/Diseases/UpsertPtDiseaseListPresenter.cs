@@ -11,7 +11,7 @@ namespace EmrCloudApi.Tenant.Presenters.Diseases
 
         public void Complete(UpsertPtDiseaseListOutputData output)
         {
-            Result.Data = new UpsertPtDiseaseListResponse(output.Status == UpsertPtDiseaseListStatus.Success);
+            Result.Data = new UpsertPtDiseaseListResponse(output.Ids);
             Result.Message = GetMessage(output.Status);
             Result.Status = (int)output.Status;
         }
