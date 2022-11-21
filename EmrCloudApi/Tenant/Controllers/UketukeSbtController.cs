@@ -50,7 +50,7 @@ public class UketukeSbtController : ControllerBase
     [HttpGet(ApiPath.Get + "Next")]
     public async Task<ActionResult<Response<GetNextUketukeSbtMstResponse>>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int userId = _userService.GetLoginUser().UserId;
         var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetNextUketukeSbtMstPresenter();

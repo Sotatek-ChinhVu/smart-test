@@ -50,8 +50,8 @@ public class KaController : ControllerBase
     [HttpPost(ApiPath.SaveListKaMst)]
     public async Task<ActionResult<Response<SaveListKaMstResponse>>> Save([FromBody] SaveListKaMstRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new SaveKaMstInputData(hpId, userId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveListKaMstPresenter();

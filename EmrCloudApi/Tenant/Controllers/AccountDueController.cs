@@ -28,7 +28,7 @@ public class AccountDueController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetAccountDueListResponse>>> GetList([FromQuery] GetAccountDueListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new GetAccountDueListInputData(hpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
         var output = await Task.Run(() => _bus.Handle(input));
 
@@ -41,7 +41,7 @@ public class AccountDueController : ControllerBase
     [HttpPost(ApiPath.SaveList)]
     public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new SaveAccountDueListInputData(hpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
         var output = await Task.Run(() => _bus.Handle(input));
 
