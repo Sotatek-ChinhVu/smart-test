@@ -1,5 +1,4 @@
 ﻿using Entity.Tenant;
-using Helper.Constants;
 using Helper.Extension;
 using PostgreDataContext;
 
@@ -10,7 +9,6 @@ namespace CommonCheckers
         // private DBContextFactory dbService;
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private List<SystemConf> _systemConfigs = new List<SystemConf>();
-
         private static readonly object _threadsafelock = new object();
 
         public SystemConfig(TenantNoTrackingDataContext tenantNoTrackingDataContext)
@@ -18,6 +16,7 @@ namespace CommonCheckers
             _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
         }
 
+        int HpId = 1;
 
         public double GetSettingValue(int groupCd, int grpEdaNo = 0, int defaultValue = 0, bool fromLastestDb = false)
         {
@@ -31,7 +30,7 @@ namespace CommonCheckers
                 else
                 {
                     systemConf = _tenantNoTrackingDataContext.SystemConfs.Where(p =>
-                        p.HpId == TempIdentity.HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
+                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
                 }
                 return systemConf != null ? systemConf.Val : defaultValue;
             }
@@ -47,7 +46,7 @@ namespace CommonCheckers
             else
             {
                 systemConf = _tenantNoTrackingDataContext.SystemConfs.Where(p =>
-                    p.HpId == TempIdentity.HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
+                    p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
             }
             return systemConf != null ? true : false;
         }
@@ -64,7 +63,7 @@ namespace CommonCheckers
                 else
                 {
                     systemConf = _tenantNoTrackingDataContext.SystemConfs.Where(p =>
-                        p.HpId == TempIdentity.HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
+                        p.HpId == HpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault() ?? new SystemConf();
                 }
                 //Fix comment 894 (duong.vu)
                 //Return value in DB if and only if Param is not null or white space
@@ -89,7 +88,7 @@ namespace CommonCheckers
                 else
                 {
                     systemConfs = _tenantNoTrackingDataContext.SystemConfs.Where(p =>
-                        p.HpId == TempIdentity.HpId && p.GrpCd == groupCd).ToList();
+                        p.HpId == HpId && p.GrpCd == groupCd).ToList();
                 }
                 return systemConfs != null ? systemConfs : new List<SystemConf>();
             }
@@ -2123,7 +2122,7 @@ namespace CommonCheckers
         public SystemConf CreateNewSystemConf(int grpCd, int grpEdaNo = 0, int value = 0, string param = "")
         {
             SystemConf systemConf = new SystemConf();
-            systemConf.HpId = TempIdentity.HpId;
+            systemConf.HpId = HpId;
             systemConf.GrpCd = grpCd;
             systemConf.GrpEdaNo = grpEdaNo;
             systemConf.Val = value;

@@ -16,10 +16,10 @@ namespace CommonChecker.DB
             _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
         }
 
-        public IpnNameMstModel FindIpnNameMst(string ipnNameCd, int sinDate)
+        public IpnNameMstModel FindIpnNameMst(int hpId, string ipnNameCd, int sinDate)
         {
             var entity = _tenantNoTrackingDataContext.IpnNameMsts.Where(p =>
-                   p.HpId == TempIdentity.HpId &&
+                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    p.IpnNameCd == ipnNameCd)
@@ -28,10 +28,10 @@ namespace CommonChecker.DB
 
         }
 
-        public SanteiCntCheckModel FindSanteiCntCheck(int santeiGrpCd, int sinDate)
+        public SanteiCntCheckModel FindSanteiCntCheck(int hpId, int santeiGrpCd, int sinDate)
         {
             var entity = _tenantNoTrackingDataContext.SanteiCntChecks.Where(e =>
-                 e.HpId == TempIdentity.HpId &&
+                 e.HpId == hpId &&
                  e.SanteiGrpCd == santeiGrpCd &&
                  e.StartDate <= sinDate &&
                  e.EndDate >= sinDate)
@@ -40,10 +40,10 @@ namespace CommonChecker.DB
 
         }
 
-        public SanteiGrpDetailModel FindSanteiGrpDetail(string itemCd)
+        public SanteiGrpDetailModel FindSanteiGrpDetail(int hpId, string itemCd)
         {
             var entity = _tenantNoTrackingDataContext.SanteiGrpDetails.Where(e =>
-                 e.HpId == TempIdentity.HpId &&
+                 e.HpId == hpId &&
                  e.ItemCd == itemCd)
                  .FirstOrDefault();
 
@@ -51,10 +51,10 @@ namespace CommonChecker.DB
 
         }
 
-        public TenMstModel FindTenMst(string itemCd, int sinDate)
+        public TenMstModel FindTenMst(int hpId, string itemCd, int sinDate)
         {
             var entity = _tenantNoTrackingDataContext.TenMsts.Where(p =>
-                   p.HpId == TempIdentity.HpId &&
+                   p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
                    p.ItemCd == itemCd)
