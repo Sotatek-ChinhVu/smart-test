@@ -28,7 +28,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get)]
         public async Task<ActionResult<Response<GetStickyNoteResponse>>> Get([FromQuery] GetStickyNoteRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetStickyNoteInputData(hpId, request.PtId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -40,8 +40,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Revert)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Revert([FromBody] DeleteRevertStickyNoteRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new RevertStickyNoteInputData(hpId, request.PtId, request.SeqNo, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -53,8 +53,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Delete)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Delete([FromBody] DeleteRevertStickyNoteRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new DeleteStickyNoteInputData(hpId, request.PtId, request.SeqNo, userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -66,7 +66,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public async Task<ActionResult<Response<ActionStickyNoteResponse>>> Save([FromBody] SaveStickyNoteRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int userId = _userService.GetLoginUser().UserId;
             var input = new SaveStickyNoteInputData(request.stickyNoteModels.Select(x => x.Map()).ToList(), userId);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -78,7 +78,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.Get + "Setting")]
         public async Task<ActionResult<Response<GetSettingStickyNoteResponse>>> GetSetting([FromQuery] GetSettingStickyNoteRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int userId = _userService.GetLoginUser().UserId;
             var input = new GetSettingStickyNoteInputData(userId);
             var output = await Task.Run(() => _bus.Handle(input));
 

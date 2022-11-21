@@ -29,7 +29,7 @@ public class ColumnSettingController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetColumnSettingListResponse>>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int userId = _userService.GetLoginUser().UserId;
         var input = new GetColumnSettingListInputData(userId, req.TableName);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetColumnSettingListPresenter();
