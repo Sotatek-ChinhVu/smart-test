@@ -1,5 +1,4 @@
 ﻿namespace EmrCloudApi.Tenant.Requests.Diseases
-
 {
     public class GetPtDiseaseListRequest
     {

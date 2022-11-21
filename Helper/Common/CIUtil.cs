@@ -1538,6 +1538,13 @@ namespace Helper.Common
             }
             return ReleasedDrugType.None;
         }
+        
+        public static string DateTimeToTime(DateTime dateTime)
+        {
+            return dateTime.ToString("HHmmss");
+
+        }
+        
         public static int DayOfWeek(DateTime dateTime)
         {
             int result = 0;
@@ -1586,9 +1593,9 @@ namespace Helper.Common
             Full,
             Mix
         }
-
-        public struct WarekiYmd
-        {
+        
+    public struct WarekiYmd
+    {
 #pragma warning disable S1104 // Fields should not have public accessibility
             public string Ymd;
             public string GYmd;

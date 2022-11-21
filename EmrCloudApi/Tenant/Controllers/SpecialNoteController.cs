@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.SpecialNote;
 using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
@@ -13,19 +15,22 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SpecialNoteController
     {
         private readonly UseCaseBus _bus;
-        public SpecialNoteController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public SpecialNoteController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get)]
-        public ActionResult<Response<GetSpecialNoteResponse>> Get([FromQuery] SpecialNoteRequest request)
+        public async Task<ActionResult<Response<GetSpecialNoteResponse>>> Get([FromQuery] SpecialNoteRequest request)
         {
             var input = new GetSpecialNoteInputData(request.HpId, request.PtId);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetSpecialNotePresenter();
             presenter.Complete(output);
@@ -34,19 +39,24 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.AddAlrgyDrugList)]
-        public ActionResult<Response<AddAlrgyDrugListResponse>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
+        public async Task<ActionResult<Response<AddAlrgyDrugListResponse>>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
-                    a => new AddAlrgyDrugListItemInputData(
-                            a.PtId,
-                            a.ItemCd,
-                            a.DrugName,
-                            a.StartDate,
-                            a.EndDate,
-                            a.Cmt
-                        )
-                ).ToList());
-            var output = _bus.Handle(input);
+                                                        a => new AddAlrgyDrugListItemInputData(
+                                                                a.PtId,
+                                                                a.ItemCd,
+                                                                a.DrugName,
+                                                                a.StartDate,
+                                                                a.EndDate,
+                                                                a.Cmt
+                                                            )
+                                                        ).ToList(),
+                                                        hpId,
+                                                        userId
+                                                        );
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new AddAlrgyDrugListPresenter();
             presenter.Complete(output);
@@ -55,10 +65,12 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Save)]
-        public ActionResult<Response<SaveSpecialNoteResponse>> Save([FromBody] SpecialNoteSaveRequest request)
+        public async Task<ActionResult<Response<SaveSpecialNoteResponse>>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            var input = new SaveSpecialNoteInputData(request.HpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map());
-            var output = _bus.Handle(input);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
+            var input = new SaveSpecialNoteInputData(hpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), userId);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveSpecialNotePresenter();
             presenter.Complete(output);

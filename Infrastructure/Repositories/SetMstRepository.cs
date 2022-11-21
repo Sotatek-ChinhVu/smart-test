@@ -31,13 +31,11 @@ public class SetMstRepository : ISetMstRepository
             return new List<SetMstModel>();
         }
 
-        var listSetCd = setEntities.Select(item => item.SetCd).ToList();
-        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Byomei != String.Empty).ToList();
-        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => listSetCd.Contains(item.SetCd) && item.IsDeleted != 1 && item.Text != String.Empty).ToList();
-        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => listSetCd.Contains(item.SetCd)).ToList();
-
-        return setEntities.Select(s =>
-                new SetMstModel(
+        var result = new List<SetMstModel>();
+        var obj = new object();
+        Parallel.ForEach(setEntities, s =>
+        {
+            var item = new SetMstModel(
                     s.HpId,
                     s.SetCd,
                     s.SetKbn,
@@ -50,15 +48,30 @@ public class SetMstRepository : ISetMstRepository
                     s.WeightKbn,
                     s.Color,
                     s.IsDeleted,
-                    s.IsGroup,
-                    new SetMstTooltipModel(
-                            listByomeis.Where(item => item.SetCd == s.SetCd).Select(item => item.Byomei ?? String.Empty).ToList(),
-                            listOrders.Where(item => item.SetCd == s.SetCd).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList(),
-                            listKarteNames.Where(item => item.SetCd == s.SetCd).Select(item => item.Text ?? String.Empty).ToList()
-                        )
-                    )
-                ).ToList();
+                    s.IsGroup
+                    );
+            lock (obj)
+            {
+                result.Add(item);
+            }
+        });
+
+        return result.OrderBy(s => s.Level1)
+          .ThenBy(s => s.Level2)
+          .ThenBy(s => s.Level3).ToList();
     }
+
+    public SetMstTooltipModel GetToolTip(int hpId, int setCd)
+    {
+        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Byomei != String.Empty).Select(item => item.Byomei ?? String.Empty).ToList();
+        var listKarteNames = _tenantNoTrackingDataContext.SetKarteInf.Where(item => item.SetCd == setCd && item.HpId == hpId && item.IsDeleted != 1 && item.Text != String.Empty).Select(item => item.Text ?? String.Empty).ToList();
+        var listOrders = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(item => item.SetCd == setCd && item.HpId == hpId).Select(item => new OrderTooltipModel(item.ItemName ?? String.Empty, item.Suryo, item.UnitName ?? String.Empty)).ToList();
+
+        var result = new List<SetMstModel>();
+
+        return new SetMstTooltipModel(listKarteNames, listOrders, listByomeis);
+    }
+
 
     public SetMstModel SaveSetMstModel(int userId, int sinDate, SetMstModel setMstModel)
     {
@@ -101,6 +114,8 @@ public class SetMstRepository : ISetMstRepository
                     setMst.GenerationId = GetGenerationId(setMst.HpId, sinDate);
                     setMst.CreateDate = DateTime.UtcNow;
                     setMst.CreateId = userId;
+                    setMst.UpdateDate = DateTime.UtcNow;
+                    setMst.UpdateId = userId;
 
                     // Save SetMst 
                     _tenantDataContext.SetMsts.Add(setMst);
@@ -187,12 +202,7 @@ public class SetMstRepository : ISetMstRepository
                     setMst.WeightKbn,
                     setMst.Color,
                     setMst.IsDeleted,
-                    setMst.IsGroup,
-                    new SetMstTooltipModel(
-                            new(),
-                            new List<OrderTooltipModel>(),
-                            new()
-                        )
+                    setMst.IsGroup
                 );
         }
         catch
@@ -382,13 +392,14 @@ public class SetMstRepository : ISetMstRepository
             }
             else
             {
+                var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
+
                 var listDropUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > 0).ToList() ?? new();
                 LevelDown(2, userId, listDropUpdateLevel2);
 
-                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dropItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
+                var listDragUpdateLevel2 = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 > dragItem.Level2).ToList() ?? new();
                 LevelUp(2, userId, listDragUpdateLevel2);
 
-                var listDrag = listSetMsts.Where(mst => mst.Level1 == dragItem.Level1 && mst.Level2 == dragItem.Level2).ToList();
                 foreach (var item in listDrag)
                 {
                     item.Level1 = dropItem.Level1;
@@ -636,9 +647,9 @@ public class SetMstRepository : ISetMstRepository
         }
     }
 
-    public bool PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
+    public int PasteSetMst(int userId, int hpId, int setCdCopyItem, int setCdPasteItem)
     {
-        bool status = false;
+        int setCd = -1;
         try
         {
             var copyItem = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(mst => mst.SetCd == setCdCopyItem && mst.HpId == hpId);
@@ -646,11 +657,11 @@ public class SetMstRepository : ISetMstRepository
 
             if (copyItem == null)
             {
-                return status;
+                return setCd;
             }
             else if (pasteItem == null && setCdPasteItem != 0)
             {
-                return status;
+                return setCd;
             }
 
             // Get all SetMst with dragItem SetKbn and dragItem SetKbnEdaNo
@@ -659,25 +670,25 @@ public class SetMstRepository : ISetMstRepository
             {
                 if (CountLevelItem(copyItem, listSetMsts) + GetLevelItem(pasteItem) > 3)
                 {
-                    return status;
+                    return setCd;
                 }
                 if (copyItem.SetKbn != pasteItem.SetKbn || copyItem.SetKbnEdaNo != pasteItem.SetKbnEdaNo)
                 {
-                    return false;
+                    return setCd;
                 }
                 if (GetLevelItem(pasteItem) == 1)
                 {
                     // get index for paste
                     var lastItemLevel2 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 > 0 && item.Level3 == 0).OrderByDescending(item => item.Level2).FirstOrDefault();
                     int indexPaste = (lastItemLevel2 != null ? lastItemLevel2.Level2 : 0) + 1;
-                    status = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
+                    setCd = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
                 }
                 else if (GetLevelItem(pasteItem) == 2)
                 {
                     // get index for paste
                     var lastItemLevel3 = listSetMsts.Where(item => item.Level1 == pasteItem.Level1 && item.Level2 == pasteItem.Level2 && item.Level3 > 0).OrderByDescending(item => item.Level3).FirstOrDefault();
                     int indexPaste = (lastItemLevel3 != null ? lastItemLevel3.Level3 : 0) + 1;
-                    status = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
+                    setCd = PasteAction(indexPaste, userId, copyItem, pasteItem, listSetMsts);
                 }
             }
             else
@@ -685,20 +696,20 @@ public class SetMstRepository : ISetMstRepository
                 // get index for paste
                 var lastItemLevel1 = listSetMsts.Where(item => item.Level2 == 0 && item.Level3 == 0).OrderByDescending(item => item.Level1).FirstOrDefault();
                 int indexPaste = (lastItemLevel1 != null ? lastItemLevel1.Level1 : 0) + 1;
-                status = PasteAction(indexPaste, userId, copyItem, null, listSetMsts);
+                setCd = PasteAction(indexPaste, userId, copyItem, null, listSetMsts);
             }
 
-            return status;
+            return setCd;
         }
         catch (Exception)
         {
-            return status;
+            return setCd;
         }
     }
 
-    private bool PasteAction(int indexPaste, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
+    private int PasteAction(int indexPaste, int userId, SetMst copyItem, SetMst? pasteItem, List<SetMst> listSetMsts)
     {
-        bool status = false;
+        int setCd = -1;
         var executionStrategy = _tenantDataContext.Database.CreateExecutionStrategy();
         executionStrategy.Execute(
             () =>
@@ -723,20 +734,35 @@ public class SetMstRepository : ISetMstRepository
                                 break;
                         }
 
-                        // Convert SetMst copy to SetMst paste
-                        foreach (var item in listCopyItems)
+                        var rootSet = listCopyItems.FirstOrDefault(item => item.SetCd == copyItem.SetCd);
+                        if (rootSet != null)
                         {
-                            SetMst setMst = item.DeepClone();
-                            setMst.SetCd = 0;
-                            setMst.CreateDate = DateTime.UtcNow;
-                            setMst.CreateId = userId;
-                            setMst.UpdateDate = DateTime.UtcNow;
-                            setMst.UpdateId = userId;
-                            listPasteItems.Add(setMst);
-                        }
+                            listCopyItems.Remove(rootSet);
 
-                        _tenantDataContext.SetMsts.AddRange(listPasteItems);
-                        _tenantDataContext.SaveChanges();
+                            rootSet.SetCd = 0;
+                            rootSet.CreateDate = DateTime.UtcNow;
+                            rootSet.CreateId = userId;
+                            rootSet.UpdateDate = DateTime.UtcNow;
+                            rootSet.UpdateId = userId;
+                            _tenantDataContext.SetMsts.Add(rootSet);
+                            _tenantDataContext.SaveChanges();
+                            setCd = rootSet.SetCd;
+                            // Convert SetMst copy to SetMst paste
+                            foreach (var item in listCopyItems)
+                            {
+                                SetMst setMst = item.DeepClone();
+                                setMst.SetCd = 0;
+                                setMst.CreateDate = DateTime.UtcNow;
+                                setMst.CreateId = userId;
+                                setMst.UpdateDate = DateTime.UtcNow;
+                                setMst.UpdateId = userId;
+                                listPasteItems.Add(setMst);
+                            }
+
+                            _tenantDataContext.SetMsts.AddRange(listPasteItems);
+                            _tenantDataContext.SaveChanges();
+                            listPasteItems.Add(rootSet);
+                        }
 
                         // get paste content item
                         Dictionary<int, SetMst> dictionarySetMstMap = new();
@@ -753,18 +779,16 @@ public class SetMstRepository : ISetMstRepository
                         ReSetLevelForItem(indexPaste, copyItem, pasteItem, listPasteItems);
 
                         _tenantDataContext.SaveChanges();
-                        status = true;
                         transaction.Commit();
                     }
                     catch
                     {
-                        status = false;
                         transaction.Rollback();
                     }
                 }
             }
             );
-        return status;
+        return setCd;
     }
 
     private void ReSetLevelForItem(int indexPaste, SetMst copyItem, SetMst? pasteItem, List<SetMst> listPasteItems)

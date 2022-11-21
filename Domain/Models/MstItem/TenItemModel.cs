@@ -4,7 +4,7 @@ namespace Domain.Models.MstItem
 {
     public class TenItemModel
     {
-        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn)
+        public TenItemModel(int hpId, string itemCd, int rousaiKbn, string kanaName1, string name, int kohatuKbn, int madokuKbn, int kouseisinKbn, string odrUnitName, int endDate, int drugKbn, string masterSbt, int buiKbn, int isAdopted, double ten, int tenId, string kensaMstCenterItemCd1, string kensaMstCenterItemCd2, int cmtCol1, string ipnNameCd, int sinKouiKbn, string yjCd, string cnvUnitName, int startDate, int yohoKbn, int cmtColKeta1, int cmtColKeta2, int cmtColKeta3, int cmtColKeta4, int cmtCol2, int cmtCol3, int cmtCol4, string ipnCd)
         {
             HpId = hpId;
             ItemCd = itemCd;
@@ -31,6 +31,14 @@ namespace Domain.Models.MstItem
             CnvUnitName = cnvUnitName;
             StartDate = startDate;
             YohoKbn = yohoKbn;
+            CmtColKeta1 = cmtColKeta1;
+            CmtColKeta2 = cmtColKeta2;
+            CmtColKeta3 = cmtColKeta3;
+            CmtColKeta4 = cmtColKeta4;
+            CmtCol2 = cmtCol2;
+            CmtCol3 = cmtCol3;
+            CmtCol4 = cmtCol4;
+            IpnCD = ipnCd;
         }
 
         public TenItemModel()
@@ -58,6 +66,7 @@ namespace Domain.Models.MstItem
             YjCd = String.Empty;
             CnvUnitName = String.Empty;
             YohoKbn = 0;
+            IpnCD = string.Empty;
         }
 
         public int HpId { get; private set; }
@@ -109,6 +118,22 @@ namespace Domain.Models.MstItem
         public int StartDate { get; private set; }
 
         public int YohoKbn { get; private set; }
+
+        public int CmtColKeta1 { get; private set; }
+
+        public int CmtColKeta2 { get; private set; }
+
+        public int CmtColKeta3 { get; private set; }
+
+        public int CmtColKeta4 { get; private set; }
+
+        public int CmtCol2 { get; private set; }
+
+        public int CmtCol3 { get; private set; }
+
+        public int CmtCol4 { get; private set; }
+
+        public string IpnCD { get; private set; }
 
         public string RousaiKbnDisplay
         {

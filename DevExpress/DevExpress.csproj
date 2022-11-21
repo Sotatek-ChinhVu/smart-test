@@ -1,21 +1,94 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="22.1.6" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Interactor\Interactor.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Interactor\Interactor.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Response\" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Response\" />
-  </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="System.Drawing.Common" Version="5.0.3" />
+      <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="DevExpress.AspNetCore.Common.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.AspNetCore.Common.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.AspNetCore.Core.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.AspNetCore.Core.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.AspNetCore.Reporting.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.AspNetCore.Reporting.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.AspNetCore.Resources.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.AspNetCore.Resources.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Charts.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.Charts.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.CodeParser.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.CodeParser.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Data.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.Data.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.DataAccess.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.DataAccess.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.DataVisualization.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.DataVisualization.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Drawing.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.Drawing.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Office.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.Office.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Pdf.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.Pdf.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Pdf.v22.1.Drawing">
+        <HintPath>..\DevExpressDll\DevExpress.Pdf.v22.1.Drawing.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.PivotGrid.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.PivotGrid.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Printing.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.Printing.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.RichEdit.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.RichEdit.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.RichEdit.v22.1.Export">
+        <HintPath>..\DevExpressDll\DevExpress.RichEdit.v22.1.Export.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Sparkline.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.Sparkline.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.Xpo.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.Xpo.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.XtraCharts.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.XtraCharts.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.XtraGauges.v22.1.Core">
+        <HintPath>..\DevExpressDll\DevExpress.XtraGauges.v22.1.Core.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.XtraReports.v22.1">
+        <HintPath>..\DevExpressDll\DevExpress.XtraReports.v22.1.dll</HintPath>
+      </Reference>
+      <Reference Include="DevExpress.XtraReports.v22.1.Web">
+        <HintPath>..\DevExpressDll\DevExpress.XtraReports.v22.1.Web.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 
 </Project>

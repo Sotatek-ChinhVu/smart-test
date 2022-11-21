@@ -45,7 +45,7 @@ namespace Domain.Models.Insurance
         }
 
         [JsonConstructor]
-        public KohiInfModel(List<ConfirmDateModel> confirmDateList, string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, HokenMstModel hokenMstModel, int hokenNo, int hokenEdaNo, int prefNo, int sinDate, bool isHaveKohiMst, int isDeleted, long seqNo)
+        public KohiInfModel(List<ConfirmDateModel> confirmDateList, string futansyaNo, string jyukyusyaNo, int hokenId, int startDate, int endDate, int confirmDate, int rate, int gendoGaku, int sikakuDate, int kofuDate, string tokusyuNo, int hokenSbtKbn, string houbetu, HokenMstModel hokenMstModel, int hokenNo, int hokenEdaNo, int prefNo, int sinDate, bool isHaveKohiMst, int isDeleted, long seqNo, bool isAddNew)
         {
             ConfirmDateList = confirmDateList;
             FutansyaNo = futansyaNo;
@@ -69,6 +69,7 @@ namespace Domain.Models.Insurance
             IsHaveKohiMst = isHaveKohiMst;
             IsDeleted = isDeleted;
             SeqNo = seqNo;
+            IsAddNew = isAddNew;
         }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; }

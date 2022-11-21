@@ -20,6 +20,9 @@
         public static readonly string InvalidUsageKbn = "Invalid UsageKbn";
         public static readonly string InvalidKohiId = "Invalid HokenKohiId";
         public static readonly string InvalidGrpCd = "Invalid GrpCd";
+        public static readonly string InvalidGrpEdaNo = "Invalid GrpEdaNo";
+        public static readonly string InvalidDefaultValue = "Invalid DefaultValue";
+        public static readonly string InvalidPresentDate = "Invalid PresentDate";
         public static readonly string InvalidHpIdNotExist = "HpId not exist";
         public static readonly string InvalidStartDate = "Invalid startDate";
         public static readonly string InvalidYJCode = "Invalid YJCode";
@@ -292,7 +295,7 @@
 
         //TimeZone
         public static readonly string InvalidBirthDay = "Invalid BirthDay";
-        public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn >= 0";
+        public static readonly string InvalidCurrentTimeKbn = "Invalid CurrentTimeKbn, CurrentTimeKbn > 0";
         public static readonly string InvalidBeforeTimeKbn = "Invalid BeforeTimeKbn, BeforeTimeKbn >= 0";
         public static readonly string InvalidUketukeTime = "Invalid UketukeTime, UketukeTime >= 0";
         public static readonly string CanNotUpdateTimeZoneInf = "CurrentTimeKbn = BeforeTimeKbn, Can Not Update TimeZoneInf";
@@ -445,9 +448,6 @@
         public static readonly string TodayOrdInvalidIsDeleted = "IsDeleted must more than 0 or equal 0 and less than 2 or equal 2";
         public static readonly string TodayOrdInvalidInsertedExist = "This Rp has been exited";
         public static readonly string TodayOrdInvalidUpdatedNoExist = "This Rp hasn't been exited to update";
-
-        //MaxMoney
-        public static readonly string HokenKohiNotValidToGet = "This kohi is not valid to get maxmoney";
 
         // SuperSetDetail
         public static readonly string InvalidSetByomeiId = "Invalid SetByomeiId, SetByomeiId > 0.";
@@ -746,5 +746,59 @@
         public static readonly string SwapHokenDesInsuranceHasNotSelected = "Please select a destination insurance.";
         public static readonly string SwapHokenStartDateGreaterThanEndDate = "Enter the end date after the start date.";
         public static readonly string SwapHokenCantExecNotValidDate = "Cannot be executed because the source policy has never been used in StartDate ~ EndDate.";
+
+        //Account Due
+        public static readonly string InvalidNyukinKbn = "Invalid NyukinKbn.";
+        public static readonly string InvalidSortNo = "Invalid SortNo, must more than or equal 0.";
+        public static readonly string InvalidAdjustFutan = "Invalid AdjustFutan, must more than or equal 0.";
+        public static readonly string InvalidNyukinGaku = "Invalid NyukinGaku, must more than or equal 0.";
+        public static readonly string InvalidPaymentMethodCd = "Invalid PaymentMethodCd, must more than or equal 0.";
+        public static readonly string InvalidNyukinDate = "Invalid NyukinDate, must more than or equal 0.";
+        public static readonly string InvalidUketukeSbt = "Invalid UketukeSbt, must more than or equal 0.";
+        public static readonly string NyukinCmtMaxLength100 = "Invalid UketukeSbt, max length is 100.";
+        public static readonly string InvalidSeikyuGaku = "Invalid SeikyuGaku.";
+        public static readonly string InvalidSeikyuAdjustFutan = "Invalid SeikyuAdjustFutan.";
+        public static readonly string InvalidSeikyuTensu = "Invalid SeikyuTensu, must more than or equal 0.";
+        public static readonly string NoItemChange = "No Item Change.";
+
+        // Valid Pattern Expirated 
+        public static readonly string InvalidPatternHokenPid = "Invalid Pattern HokenPid";
+        public static readonly string InvalidPatternConfirmDate = "Invalid Pattern ConfirmDate";
+        public static readonly string InvalidHokenInfStartDate = "Invalid HokenInf StartDate";
+        public static readonly string InvalidHokenInfEndDate = "Invalid HokenInf EndDate";
+        public static readonly string InvalidConfirmDateAgeCheck = "Invalid ConfirmDate Age Check";
+        public static readonly string InvalidConfirmDateHoken = "Invalid ConfirmDate Hoken";
+        public static readonly string InvalidHokenMstDate = "Invalid HokenMst Date";
+        public static readonly string InvalidConfirmDateKohi1 = "Invalid Kohi1 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi1 = "Invalid Kohi1 MasterDate";
+        public static readonly string InvalidConfirmDateKohi2 = "Invalid Kohi2 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi2 = "Invalid Kohi2 MasterDate";
+        public static readonly string InvalidConfirmDateKohi3 = "Invalid Kohi3 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi3 = "Invalid Kohi3 MasterDate";
+        public static readonly string InvalidConfirmDateKohi4 = "Invalid Kohi4 ConfirmDate";
+        public static readonly string InvalidMasterDateKohi4 = "Invalid Kohi4 MasterDate";
+        public static readonly string InvalidPatternIsExpirated = "Invalid Pattern Expirated";
+        public static readonly string InvalidHasElderHoken = "Invalid Has ElderHoken";
+
+        // Validate Rousai Jibai
+        public static readonly string InvalidRodoBangoNull = "Invalid RodoBango Null";
+        public static readonly string InvalidRodoBangoLengthNotEquals14 = "Invalid RodoBango Length Not Equals 14";
+        public static readonly string InvalidCheckItemFirstListRousaiTenki = "Invalid Check Item First Of ListRousaiTenki";
+        public static readonly string InvalidCheckRousaiTenkiSinkei = "Invalid Check RousaiTenki Sinkei";
+        public static readonly string InvalidCheckRousaiTenkiTenki = "Invalid Check RousaiTenki Tenki";
+        public static readonly string InvalidCheckRousaiTenkiEndDate = "Invalid Check RousaiTenki EndDate";
+        public static readonly string InvalidCheckRousaiSaigaiKbnNotEquals1And2 = "Invalid Check RousaiSaigaiKbn Not Equals 1 And 2";
+        public static readonly string InvalidCheckRousaiSyobyoDateEquals0 = "Invalid Check Rousai SyobyoDate Equals 0";
+        public static readonly string InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull = "Invalid Check HokenKbn Equals 13 And RousaiSyobyoCd Is Null";
+        public static readonly string InvalidCheckRousaiRyoyoDate = "Invalid Check RousaiRyoyoDate";
+        public static readonly string InvalidCheckDateExpirated = "Invalid Check Date Expirated";
+        public static readonly string InvalidNenkinBangoIsNull = "Invalid NenkinBango Is Null";
+        public static readonly string InvalidNenkinBangoLengthNotEquals9 = "Invalid NenkinBango Length Not Equals 9";
+        public static readonly string InvalidKenkoKanriBangoIsNull = "Invalid KenkoKanri Bango Is Null";
+        public static readonly string InvalidKenkoKanriBangoLengthNotEquals13 = "Invalid KenkoKanri Bango Length Not Equals 13";
+
+        //Next Order
+        public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
+        public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
     }
 }

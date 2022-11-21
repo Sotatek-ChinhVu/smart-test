@@ -124,9 +124,18 @@ namespace Infrastructure.Repositories
                 .Where(p => p.HpId == hpId &&
                             p.PtId == ptId &&
                             p.IsDeleted != 1 &&
-                            (openFrom != DiseaseViewType.FromReception || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
+                            ((openFrom != DiseaseViewType.FromReception && openFrom != DiseaseViewType.FromMedicalExamination) || p.TenkiKbn == TenkiKbnConst.Continued || (p.StartDate <= sinDate && p.TenkiDate >= sinDate)));
 
-            var ptByomeiList = ptByomeiListQueryable.ToList();
+            if (hokenId > 0)
+            {
+                ptByomeiListQueryable = ptByomeiListQueryable.Where(b => b.HokenPid == hokenId || b.HokenPid == 0);
+            }
+
+            var ptByomeiList = ptByomeiListQueryable.OrderBy(p => p.TenkiKbn)
+                                                    .ThenBy(p => p.SortNo)
+                                                    .ThenByDescending(p => p.StartDate)
+                                                    .ThenByDescending(p => p.TenkiDate)
+                                                    .ThenBy(p => p.Id).ToList();
 
             var byomeiMstQuery = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId)
                                                              .Select(item => new { item.HpId, item.ByomeiCd, item.Sbyomei, item.Icd101, item.Icd102, item.Icd1012013, item.Icd1022013 });
@@ -200,11 +209,13 @@ namespace Infrastructure.Repositories
                         );
                 result.Add(ptDiseaseModel);
             }
+
             return result;
         }
 
-        public void Upsert(List<PtDiseaseModel> inputDatas)
+        public List<long> Upsert(List<PtDiseaseModel> inputDatas, int hpId, int userId)
         {
+            var byomeis = new List<PtByomei>();
             foreach (var inputData in inputDatas)
             {
                 if (inputData.IsDeleted == DeleteTypes.Deleted)
@@ -218,32 +229,37 @@ namespace Infrastructure.Repositories
                 else
                 {
                     var ptByomei = _tenantTrackingDataContext.PtByomeis.FirstOrDefault(p => p.HpId == inputData.HpId && p.PtId == inputData.PtId && p.Id == inputData.Id);
+                    var byomei = new PtByomei();
 
                     if (ptByomei != null)
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+                        byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
+                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
 
                         ptByomei.IsDeleted = DeleteTypes.Deleted;
-                        ptByomei.UpdateId = TempIdentity.UserId;
+                        ptByomei.UpdateId = userId;
                         ptByomei.UpdateDate = DateTime.UtcNow;
-                        ptByomei.UpdateMachine = TempIdentity.ComputerName;
                     }
                     else
                     {
-                        _tenantTrackingDataContext.PtByomeis.Add(ConvertFromModelToPtByomei(inputData));
+                        byomei = ConvertFromModelToPtByomei(inputData, hpId, userId);
+                        _tenantTrackingDataContext.PtByomeis.Add(byomei);
                     }
+
+                    byomeis.Add(byomei);
                 }
             }
-
             _tenantTrackingDataContext.SaveChanges();
+
+            return byomeis.Select(b => b.Id).ToList();
         }
 
-        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model)
+        private PtByomei ConvertFromModelToPtByomei(PtDiseaseModel model, int hpId, int userId)
         {
             var preSuffixList = model.PrefixSuffixList;
             return new PtByomei
             {
-                HpId = TempIdentity.HpId,
+                HpId = hpId,
                 PtId = model.PtId,
                 ByomeiCd = model.ByomeiCd,
                 SortNo = model.SortNo,
@@ -280,14 +296,12 @@ namespace Infrastructure.Repositories
                 TogetuByomei = model.TenkiKbn == TenkiKbnConst.InMonth ? 1 : 0,
                 IsNodspRece = model.IsNodspRece,
                 IsNodspKarte = model.IsNodspKarte,
-                CreateId = TempIdentity.UserId,
-                CreateMachine = TempIdentity.ComputerName,
+                CreateId = userId,
                 CreateDate = DateTime.UtcNow,
                 SeqNo = model.SeqNo,
                 IsImportant = model.IsImportant,
-                UpdateId = TempIdentity.UserId,
-                UpdateDate = DateTime.UtcNow,
-                UpdateMachine = TempIdentity.ComputerName
+                UpdateId = userId,
+                UpdateDate = DateTime.UtcNow
             };
         }
 

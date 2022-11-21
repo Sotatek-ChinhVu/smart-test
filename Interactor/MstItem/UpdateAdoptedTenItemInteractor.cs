@@ -30,7 +30,7 @@ namespace Interactor.MstItem
 
             try
             {
-                var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.StartDateInputItem);
+                var data = _mstItemRepository.UpdateAdoptedItemAndItemConfig(inputData.ValueAdopted, inputData.ItemCdInputItem, inputData.StartDateInputItem, inputData.HpId, inputData.UserId);
                 return new UpdateAdoptedTenItemOutputData(data, UpdateAdoptedTenItemStatus.Successed);
             }
             catch (Exception)

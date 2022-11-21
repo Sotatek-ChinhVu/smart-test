@@ -20,7 +20,7 @@ namespace UseCase.PatientInfor.SearchSimple
 
     public class PatientInfoWithGroup
     {
-        public List<GroupInfModel> GroupInfList { get; private set; }
+        public Dictionary<int, GroupInfModel> GroupInfList { get; private set; }
 
         public long PtId { get; private set; }
 
@@ -78,7 +78,7 @@ namespace UseCase.PatientInfor.SearchSimple
             HomeAddress = patientInfo.HomeAddress1 + '\u3000' + patientInfo.HomeAddress2;
             LastVisitDate = CIUtil.SDateToShowSDate(patientInfo.LastVisitDate);
 
-            GroupInfList = groupInfList;
+            GroupInfList = groupInfList.ToDictionary(item => item.GroupId, item => item);
         }
     }
 }

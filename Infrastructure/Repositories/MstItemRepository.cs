@@ -161,7 +161,15 @@ namespace Infrastructure.Repositories
                 tenMst?.YjCd ?? string.Empty,
                 tenMst?.CnvUnitName ?? string.Empty,
                 tenMst?.StartDate ?? 0,
-                tenMst?.YohoKbn ?? 0
+                tenMst?.YohoKbn ?? 0,
+                tenMst?.CmtColKeta1 ?? 0,
+                tenMst?.CmtColKeta2 ?? 0,
+                tenMst?.CmtColKeta3 ?? 0,
+                tenMst?.CmtColKeta4 ?? 0,
+                tenMst?.CmtCol2 ?? 0,
+                tenMst?.CmtCol3 ?? 0,
+                tenMst?.CmtCol4 ?? 0,
+                tenMst?.IpnNameCd ?? string.Empty
             );
         }
 
@@ -194,26 +202,43 @@ namespace Infrastructure.Repositories
                 tenMst.YjCd ?? string.Empty,
                 tenMst.CnvUnitName ?? string.Empty,
                 tenMst.StartDate,
-                tenMst.YohoKbn
+                tenMst.YohoKbn,
+                tenMst.CmtColKeta1,
+                tenMst.CmtColKeta2,
+                tenMst.CmtColKeta3,
+                tenMst.CmtColKeta4,
+                tenMst.CmtCol2,
+                tenMst.CmtCol3,
+                tenMst.CmtCol4,
+                tenMst.IpnNameCd ?? string.Empty
             )).ToList();
         }
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
         {
-            var convertHalfsizeKeyword = CIUtil.ToHalfsize(keyword);
+            if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
+            {
+                string inputKeyword = keyword;
+                keyword = WanaKana.RomajiToKana(keyword);
+                if (WanaKana.IsRomaji(keyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    keyword = inputKeyword;
+            }
+
             var listTenMstModels = new List<TenItemModel>();
-            string sBigKeyword = convertHalfsizeKeyword.ToUpper()
-           .Replace("ｧ", "ｱ")
-           .Replace("ｨ", "ｲ")
-           .Replace("ｩ", "ｳ")
-           .Replace("ｪ", "ｴ")
-           .Replace("ｫ", "ｵ")
-           .Replace("ｬ", "ﾔ")
-           .Replace("ｭ", "ﾕ")
-           .Replace("ｮ", "ﾖ")
-           .Replace("ｯ", "ﾂ");
+            string sBigKeyword = keyword.ToUpper()
+                                        .Replace("ｧ", "ｱ")
+                                        .Replace("ｨ", "ｲ")
+                                        .Replace("ｩ", "ｳ")
+                                        .Replace("ｪ", "ｴ")
+                                        .Replace("ｫ", "ｵ")
+                                        .Replace("ｬ", "ﾔ")
+                                        .Replace("ｭ", "ﾕ")
+                                        .Replace("ｮ", "ﾖ")
+                                        .Replace("ｯ", "ﾂ");
+
             var queryResult = _tenantDataContext.TenMsts.Where(t =>
-                                t.ItemCd.StartsWith(convertHalfsizeKeyword)
+                                t.ItemCd.StartsWith(keyword)
+                                || (t.SanteiItemCd != null && t.SanteiItemCd.StartsWith(keyword))
                                 || (!String.IsNullOrEmpty(t.KanaName1) && t.KanaName1.ToUpper()
                                   .Replace("ｧ", "ｱ")
                                   .Replace("ｨ", "ｲ")
@@ -531,11 +556,11 @@ namespace Infrastructure.Repositories
             {
                 listTenMst = listTenMst.Take(pageCount);
             }
-            var listTenMstData = listTenMst.ToList();
 
-            if (listTenMstData != null && listTenMstData.Any())
+            if (listTenMst != null && listTenMst.Any())
             {
-                listTenMstModels = listTenMstData.Select(item => new TenItemModel(
+
+                listTenMstModels = listTenMst.Select(item => new TenItemModel(
                                                            item.TenMst.HpId,
                                                            item.TenMst.ItemCd ?? string.Empty,
                                                            item.TenMst.RousaiKbn,
@@ -560,15 +585,23 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.YjCd ?? string.Empty,
                                                            item.TenMst?.CnvUnitName ?? string.Empty,
                                                            item.TenMst?.StartDate ?? 0,
-                                                           item.TenMst?.YohoKbn ?? 0
+                                                           item.TenMst?.YohoKbn ?? 0,
+                                                           item.TenMst?.CmtColKeta1 ?? 0,
+                                                           item.TenMst?.CmtColKeta2 ?? 0,
+                                                           item.TenMst?.CmtColKeta3 ?? 0,
+                                                           item.TenMst?.CmtColKeta4 ?? 0,
+                                                           item.TenMst?.CmtCol2 ?? 0,
+                                                           item.TenMst?.CmtCol3 ?? 0,
+                                                           item.TenMst?.CmtCol4 ?? 0,
+                                                           item.TenMst?.IpnNameCd ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
         }
-        public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem)
+        public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
-            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == TempIdentity.HpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
+            var tenMst = _tenantDataContextTracking.TenMsts.FirstOrDefault(t => t.HpId == hpId && t.ItemCd == itemCdInputItem && t.StartDate == startDateInputItem);
 
             if (tenMst == null) return false;
 
@@ -577,131 +610,40 @@ namespace Infrastructure.Repositories
             tenMst.IsAdopted = valueAdopted;
 
             tenMst.UpdateDate = DateTime.UtcNow;
-            tenMst.UpdateId = TempIdentity.UserId;
-            tenMst.UpdateMachine = TempIdentity.ComputerName;
+            tenMst.UpdateId = userId;
 
             _tenantDataContextTracking.SaveChanges();
 
             return true;
         }
-        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, string keyword, int pageIndex, int pageCount)
+        public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
-            var keywordAfterConvert = keyword != String.Empty ? keyword.ToUpper()
-                                            .Replace("ｧ", "ｱ")
-                                            .Replace("ｨ", "ｲ")
-                                            .Replace("ｩ", "ｳ")
-                                            .Replace("ｪ", "ｴ")
-                                            .Replace("ｫ", "ｵ")
-                                            .Replace("ｬ", "ﾔ")
-                                            .Replace("ｭ", "ﾕ")
-                                            .Replace("ｮ", "ﾖ")
-                                            .Replace("ｯ", "ﾂ")
-                                            : String.Empty;
+            var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
 
             var query = _tenantDataContext.ByomeiMsts.Where(item =>
                                     (item.KanaName1 != null &&
-                                    item.KanaName1.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName1.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName2 != null &&
-                                     item.KanaName2.ToUpper()
-                                     .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                     item.KanaName2.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName3 != null &&
-                                    item.KanaName3.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName3.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName4 != null &&
-                                    item.KanaName4.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName4.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName5 != null &&
-                                    item.KanaName5.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName5.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName6 != null &&
-                                    item.KanaName6.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName6.StartsWith(keywordHalfSize))
                                     ||
                                     (item.KanaName7 != null &&
-                                    item.KanaName7.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .StartsWith(keywordAfterConvert))
+                                    item.KanaName7.StartsWith(keywordHalfSize))
                                     ||
                                     (item.Sbyomei != null &&
-                                    item.Sbyomei.ToUpper()
-                                    .Replace("ｧ", "ｱ")
-                                    .Replace("ｨ", "ｲ")
-                                    .Replace("ｩ", "ｳ")
-                                    .Replace("ｪ", "ｴ")
-                                    .Replace("ｫ", "ｵ")
-                                    .Replace("ｬ", "ﾔ")
-                                    .Replace("ｭ", "ﾕ")
-                                    .Replace("ｮ", "ﾖ")
-                                    .Replace("ｯ", "ﾂ")
-                                    .Contains(keywordAfterConvert))
+                                    item.Sbyomei.Contains(keyword))
                                     ||
                                     (item.Icd101 != null &&
                                     item.Icd101.StartsWith(keyword))
@@ -716,16 +658,19 @@ namespace Infrastructure.Repositories
                                     item.Icd1022013.StartsWith(keyword))
                                  );
 
-            query = query.Where(item => (isByomei && item.ByomeiCd.Length != 4)
-                                            || (isPrefix && item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9"))
-                                            || (isSuffix && item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8"))
-                                        );
+            query = query.Where(item => (item.DelDate == 0 || item.DelDate >= sindate) && (isMisaiyou || item.IsAdopted == 1));
+
+            query = query.Where(item =>
+                   (isByomei && item.ByomeiCd.Length != 4)
+                || (isPrefix && (item.ByomeiCd.Length == 4 && !item.ByomeiCd.StartsWith("9") && !item.ByomeiCd.StartsWith("8")))
+                || (isSuffix && (item.ByomeiCd.Length == 4 && item.ByomeiCd.StartsWith("8")))
+            );
 
             var listDatas = query.OrderBy(item => item.KanaName1)
                                  .ThenByDescending(item => item.IsAdopted)
                                  .OrderByDescending(item => item.ByomeiCd.Length != 4)
                                  .ThenByDescending(item => item.ByomeiCd.Length == 4)
-                                 .Skip((pageIndex - 1) * pageCount).Take(pageCount).ToList();
+                                 .Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
 
             List<ByomeiMstModel> listByomeies = new();
 
@@ -746,16 +691,15 @@ namespace Infrastructure.Repositories
             }
             return listByomeies;
         }
-        public bool UpdateAdoptedByomei(int hpId, string byomeiCd)
+        public bool UpdateAdoptedByomei(int hpId, string byomeiCd, int userId)
         {
             if (hpId <= 0 || string.IsNullOrEmpty(byomeiCd)) return false;
             var byomeiMst = _tenantDataContext.ByomeiMsts.Where(p => p.HpId == hpId && p.ByomeiCd == byomeiCd).FirstOrDefault();
             if (byomeiMst != null)
             {
                 byomeiMst.IsAdopted = 1;
-                byomeiMst.UpdateId = TempIdentity.UserId;
+                byomeiMst.UpdateId = userId;
                 byomeiMst.UpdateDate = DateTime.UtcNow;
-                byomeiMst.UpdateMachine = TempIdentity.ComputerName;
                 _tenantDataContextTracking.SaveChanges();
             }
             return true;
@@ -799,7 +743,15 @@ namespace Infrastructure.Repositories
                     entity?.YjCd ?? string.Empty,
                     entity?.CnvUnitName ?? string.Empty,
                     entity?.StartDate ?? 0,
-                    entity?.YohoKbn ?? 0
+                    entity?.YohoKbn ?? 0,
+                    entity?.CmtColKeta1 ?? 0,
+                    entity?.CmtColKeta2 ?? 0,
+                    entity?.CmtColKeta3 ?? 0,
+                    entity?.CmtColKeta4 ?? 0,
+                    entity?.CmtCol2 ?? 0,
+                    entity?.CmtCol3 ?? 0,
+                    entity?.CmtCol4 ?? 0,
+                    entity?.IpnNameCd ?? string.Empty
                );
         }
 
@@ -814,7 +766,8 @@ namespace Infrastructure.Repositories
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
-                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty)
+                    ConvertIcd102013Display(mst.Icd1012013 ?? String.Empty, mst.Icd1022013 ?? String.Empty),
+                    mst.IsAdopted == 1
                 );
         }
 
@@ -917,7 +870,7 @@ namespace Infrastructure.Repositories
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
                 entities = entities.Where(e => e.PostCd.StartsWith(postCode1));

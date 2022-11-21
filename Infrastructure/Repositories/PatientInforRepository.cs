@@ -1,5 +1,4 @@
-﻿using Amazon.Auth.AccessControlPolicy;
-using Domain.Models.CalculationInf;
+﻿using Domain.Models.CalculationInf;
 using Domain.Models.GroupInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
@@ -28,7 +27,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum)
+        (PatientInforModel, bool) IPatientInforRepository.SearchExactlyPtNum(int ptNum, int hpId)
         {
             var ptInf = _tenantDataContext.PtInfs.Where(x => x.PtNum == ptNum).FirstOrDefault();
             if (ptInf == null)
@@ -47,7 +46,7 @@ namespace Infrastructure.Repositories
             }
 
             int lastVisitDate = _tenantDataContext.RaiinInfs
-                .Where(r => r.HpId == TempIdentity.HpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == DeleteTypes.None)
+                .Where(r => r.HpId == hpId && r.PtId == ptId && r.Status >= RaiinState.TempSave && r.IsDeleted == DeleteTypes.None)
                 .OrderByDescending(r => r.SinDate)
                 .Select(r => r.SinDate)
                 .FirstOrDefault();
@@ -56,7 +55,7 @@ namespace Infrastructure.Repositories
             return new(ptInfModel, true);
         }
 
-        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword)
+        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId)
         {
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
@@ -66,7 +65,7 @@ namespace Infrastructure.Repositories
                     ptInf = p,
                     lastVisitDate = (
                         from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
+                        where r.HpId == hpId
                             && r.PtId == p.PtId
                             && r.Status >= RaiinState.TempSave
                             && r.IsDeleted == DeleteTypes.None
@@ -80,6 +79,7 @@ namespace Infrastructure.Repositories
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
         {
+
             var itemData = _tenantDataContext.PtInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
 
 
@@ -229,13 +229,13 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public bool CheckListId(List<long> ptIds)
+        public bool CheckExistListId(List<long> ptIds)
         {
             var countPtInfs = _tenantDataContext.PtInfs.Count(x => ptIds.Contains(x.PtId) && x.IsDelete != 1);
-            return ptIds.Count <= countPtInfs;
+            return ptIds.Count == countPtInfs;
         }
 
-        public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode)
+        public List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId)
         {
             long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
@@ -246,7 +246,7 @@ namespace Infrastructure.Repositories
                     ptInf = p,
                     lastVisitDate = (
                         from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
+                        where r.HpId == hpId
                             && r.PtId == p.PtId
                             && r.Status >= RaiinState.TempSave
                             && r.IsDeleted == DeleteTypes.None
@@ -258,9 +258,9 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input)
+        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId)
         {
-            var ptInfQuery = _tenantDataContext.PtInfs.Where(p => p.HpId == TempIdentity.HpId && p.IsDelete == DeleteTypes.None);
+            var ptInfQuery = _tenantDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
             // PtNum
             if (input.FromPtNum > 0)
             {
@@ -313,17 +313,17 @@ namespace Infrastructure.Repositories
             }
             // PostalCode
             if (!string.IsNullOrEmpty(input.PostalCode1)
-                || string.IsNullOrEmpty(input.PostalCode2))
+                && string.IsNullOrEmpty(input.PostalCode2))
             {
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.StartsWith(input.PostalCode1));
             }
             else if (!string.IsNullOrEmpty(input.PostalCode2)
-                || string.IsNullOrEmpty(input.PostalCode1))
+                && string.IsNullOrEmpty(input.PostalCode1))
             {
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.EndsWith(input.PostalCode2));
             }
             else if (!string.IsNullOrEmpty(input.PostalCode1)
-                || !string.IsNullOrEmpty(input.PostalCode2))
+                && !string.IsNullOrEmpty(input.PostalCode2))
             {
                 var postalCode = input.PostalCode1 + input.PostalCode2;
                 ptInfQuery = ptInfQuery.Where(p => p.HomePost!.StartsWith(postalCode) || p.HomePost!.EndsWith(postalCode));
@@ -340,7 +340,7 @@ namespace Infrastructure.Repositories
 
             // Continue the search in the related tables. This is the slowest part.
             // VisitDate
-            var raiinInfQuery = _tenantDataContext.RaiinInfs.Where(r => r.HpId == TempIdentity.HpId && r.IsDeleted == DeleteTypes.None);
+            var raiinInfQuery = _tenantDataContext.RaiinInfs.Where(r => r.HpId == hpId && r.IsDeleted == DeleteTypes.None);
             if (input.FromVisitDate > 0 || input.ToVisitDate > 0)
             {
                 var ptIdsBySinDateQuery = raiinInfQuery;
@@ -566,7 +566,7 @@ namespace Infrastructure.Repositories
                 {
                     var byomei = trimmedByomeis[i];
                     var ptIdsByByomeiItemQuery = ptByomeiQuery.Where(p =>
-                        p.HpId == TempIdentity.HpId
+                        p.HpId == hpId
                         && (byomei.IsFreeWord ? p.ByomeiCd!.Trim() == ByomeiConstant.FreeWordCode : p.ByomeiCd!.Trim() == byomei.Code)
                         && (!byomei.IsFreeWord || p.Byomei!.Trim().Contains(byomei.Name))
                         && (input.ResultKbn == -1 || p.TenkiKbn == input.ResultKbn)
@@ -744,7 +744,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<PatientInforModel> SearchBySindate(int sindate)
+        public List<PatientInforModel> SearchBySindate(int sindate, int hpId)
         {
             var ptIdList = _tenantDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
             var ptInfWithLastVisitDate =
@@ -755,7 +755,7 @@ namespace Infrastructure.Repositories
                      ptInf = p,
                      lastVisitDate = (
                          from r in _tenantDataContext.RaiinInfs
-                         where r.HpId == TempIdentity.HpId
+                         where r.HpId == hpId
                              && r.PtId == p.PtId
                              && r.Status >= RaiinState.TempSave
                              && r.IsDeleted == DeleteTypes.None
@@ -767,7 +767,7 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode)
+        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
@@ -784,7 +784,7 @@ namespace Infrastructure.Repositories
                 ptInf = p,
                 lastVisitDate = (
                         from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
+                        where r.HpId == hpId
                             && r.PtId == p.PtId
                             && r.Status >= RaiinState.TempSave
                             && r.IsDeleted == DeleteTypes.None
@@ -796,7 +796,7 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode)
+        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
@@ -812,7 +812,7 @@ namespace Infrastructure.Repositories
                 ptInf = p,
                 lastVisitDate = (
                         from r in _tenantDataContext.RaiinInfs
-                        where r.HpId == TempIdentity.HpId
+                        where r.HpId == hpId
                             && r.PtId == p.PtId
                             && r.Status >= RaiinState.TempSave
                             && r.IsDeleted == DeleteTypes.None
@@ -898,7 +898,7 @@ namespace Infrastructure.Repositories
             return listPtKyusei;
         }
 
-        public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels)
+        public bool SaveInsuranceMasterLinkage(List<DefHokenNoModel> defHokenNoModels, int hpId, int userId)
         {
             try
             {
@@ -913,7 +913,7 @@ namespace Infrastructure.Repositories
                     {
                         _tenantTrackingDataContext.DefHokenNos.Add(new DefHokenNo()
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = hpId,
                             Digit1 = item.Digit1,
                             Digit2 = item.Digit2,
                             Digit3 = item.Digit3,
@@ -926,11 +926,9 @@ namespace Infrastructure.Repositories
                             HokenEdaNo = item.HokenEdaNo,
                             IsDeleted = 0,
                             CreateDate = DateTime.UtcNow,
-                            CreateId = TempIdentity.UserId,
-                            CreateMachine = TempIdentity.ComputerName,
+                            CreateId = userId,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName,
+                            UpdateId = userId,
                             SortNo = sortNo
                         });
                     }
@@ -941,7 +939,7 @@ namespace Infrastructure.Repositories
                     {
                         _tenantTrackingDataContext.DefHokenNos.Update(new DefHokenNo()
                         {
-                            HpId = TempIdentity.HpId,
+                            HpId = hpId,
                             Digit1 = checkExistDefHoken.Digit1,
                             Digit2 = checkExistDefHoken.Digit2,
                             Digit3 = item.Digit3,
@@ -958,8 +956,7 @@ namespace Infrastructure.Repositories
                             CreateId = checkExistDefHoken.CreateId,
                             CreateMachine = checkExistDefHoken.CreateMachine,
                             UpdateDate = DateTime.UtcNow,
-                            UpdateId = TempIdentity.UserId,
-                            UpdateMachine = TempIdentity.ComputerName,
+                            UpdateId = userId,
                             SortNo = sortNo
                         });
                     }
@@ -976,7 +973,7 @@ namespace Infrastructure.Repositories
             }
         }
 
-        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps)
+        public (bool, long) CreatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -993,25 +990,25 @@ namespace Infrastructure.Repositories
                     patientInsert.PtNum = GetAutoPtNum(hpId);
             }
             patientInsert.CreateDate = DateTime.UtcNow;
-            patientInsert.CreateId = TempIdentity.UserId;
+            patientInsert.CreateId = userId;
+            patientInsert.UpdateId = userId;
             patientInsert.UpdateDate = DateTime.UtcNow;
             patientInsert.HpId = hpId;
             _tenantTrackingDataContext.PtInfs.Add(patientInsert);
             bool resultCreatePatient = _tenantTrackingDataContext.SaveChanges() > 0;
 
             if (!resultCreatePatient)
-                return (false,0);
+                return (false, 0);
 
             if (ptSanteis != null && ptSanteis.Any())
             {
                 var ptSanteiInserts = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis, (src, dest) =>
                 {
-                    dest.CreateId = TempIdentity.UserId;
+                    dest.CreateId = userId;
                     dest.PtId = patientInsert.PtId;
                     dest.HpId = hpId;
-                    dest.UpdateMachine = TempIdentity.ComputerName;
-                    dest.CreateId = TempIdentity.UserId;
                     dest.CreateDate = DateTime.UtcNow;
+                    dest.UpdateId = userId;
                     dest.UpdateDate = DateTime.UtcNow;
                     return dest;
                 });
@@ -1025,10 +1022,10 @@ namespace Infrastructure.Repositories
                     HpId = hpId,
                     PtId = patientInsert.PtId,
                     Memo = ptInf.Memo,
-                    CreateId = TempIdentity.UserId,
-                    UpdateMachine = TempIdentity.ComputerName,
+                    CreateId = userId,
                     CreateDate = DateTime.UtcNow,
-                    UpdateDate = DateTime.UtcNow
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId
                 });
             }
 
@@ -1037,11 +1034,11 @@ namespace Infrastructure.Repositories
                 var listPtGrpInf = Mapper.Map<GroupInfModel, PtGrpInf>(ptGrps, (src, dest) =>
                 {
                     dest.CreateDate = DateTime.UtcNow;
-                    dest.CreateId = TempIdentity.UserId;
-                    dest.UpdateMachine = TempIdentity.ComputerName;
+                    dest.CreateId = userId;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
                     dest.UpdateDate = DateTime.UtcNow;
+                    dest.UpdateId = userId;
                     return dest;
                 });
                 _tenantTrackingDataContext.PtGrpInfs.AddRange(listPtGrpInf);
@@ -1052,8 +1049,8 @@ namespace Infrastructure.Repositories
                 var ptKyuseiList = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis, (src, dest) =>
                 {
                     dest.CreateDate = DateTime.UtcNow;
-                    dest.CreateId = TempIdentity.UserId;
-                    dest.UpdateMachine = TempIdentity.ComputerName;
+                    dest.CreateId = userId;
+                    dest.UpdateId = userId;
                     dest.HpId = hpId;
                     dest.PtId = patientInsert.PtId;
                     dest.UpdateDate = DateTime.UtcNow;
@@ -1063,11 +1060,12 @@ namespace Infrastructure.Repositories
             }
 
             #region Hoken parterrn
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.IsAddNew), (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.IsAddNew), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.CreateId = userId;
+                dest.UpdateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
-                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1077,10 +1075,12 @@ namespace Infrastructure.Repositories
             #endregion Hoken parterrn
 
             #region HokenInf
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=> x.IsAddNew), (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.IsAddNew), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1088,15 +1088,16 @@ namespace Infrastructure.Repositories
                 #region PtRousaiTenki
                 _tenantTrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
-                    destR.CreateId = TempIdentity.UserId;
+                    destR.CreateId = userId;
+                    destR.UpdateId = userId;
                     destR.PtId = patientInsert.PtId;
                     destR.HpId = hpId;
                     destR.Tenki = srcR.RousaiTenkiTenki;
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateId = TempIdentity.UserId;
                     destR.CreateDate = DateTime.UtcNow;
+                    destR.UpdateDate = DateTime.UtcNow;
                     return destR;
                 }));
                 #endregion
@@ -1104,12 +1105,12 @@ namespace Infrastructure.Repositories
                 #region PtHokenCheck
                 _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
-                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
-                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.CheckId = userId;
                     destCf.PtID = patientInsert.PtId;
                     destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
@@ -1124,7 +1125,9 @@ namespace Infrastructure.Repositories
             #region PtKohiInf
             List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
+                dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
                 dest.PtId = patientInsert.PtId;
                 dest.HpId = hpId;
@@ -1132,12 +1135,12 @@ namespace Infrastructure.Repositories
                 #region PtHokenCheck
                 _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
-                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
-                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.CheckId = userId;
                     destCf.PtID = patientInsert.PtId;
                     destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
@@ -1150,13 +1153,13 @@ namespace Infrastructure.Repositories
             #endregion PtKohiInf
 
             int changeDatas = _tenantTrackingDataContext.ChangeTracker.Entries().Count(x => x.State == EntityState.Modified || x.State == EntityState.Added);
-            if (changeDatas == 0 && resultCreatePatient == true)
-                return (true,patientInsert.PtId);
+            if (changeDatas == 0 && resultCreatePatient)
+                return (true, patientInsert.PtId);
 
             return (_tenantTrackingDataContext.SaveChanges() > 0, patientInsert.PtId);
         }
 
-        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps)
+        public (bool, long) UpdatePatientInfo(PatientInforSaveModel ptInf, List<PtKyuseiModel> ptKyuseis, List<CalculationInfModel> ptSanteis, List<InsuranceModel> insurances, List<HokenInfModel> hokenInfs, List<KohiInfModel> hokenKohis, List<GroupInfModel> ptGrps, int userId)
         {
             int defaultMaxDate = 99999999;
             int hpId = ptInf.HpId;
@@ -1169,8 +1172,7 @@ namespace Infrastructure.Repositories
             Mapper.Map(ptInf, patientInfo, (source, dest) =>
             {
                 dest.UpdateDate = DateTime.UtcNow;
-                dest.UpdateId = TempIdentity.UserId;
-                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.UpdateId = userId;
                 return dest;
             });
             #endregion
@@ -1183,8 +1185,7 @@ namespace Infrastructure.Repositories
                 {
                     memoCurrent.IsDeleted = 1;
                     memoCurrent.UpdateDate = DateTime.UtcNow;
-                    memoCurrent.UpdateMachine = TempIdentity.ComputerName;
-                    memoCurrent.UpdateId = TempIdentity.UserId;
+                    memoCurrent.UpdateId = userId;
                 }
                 else
                 {
@@ -1192,16 +1193,16 @@ namespace Infrastructure.Repositories
                     {
                         memoCurrent.IsDeleted = 1;
                         memoCurrent.UpdateDate = DateTime.UtcNow;
-                        memoCurrent.UpdateMachine = TempIdentity.ComputerName;
-                        memoCurrent.UpdateId = TempIdentity.UserId;
+                        memoCurrent.UpdateId = userId;
                         _tenantTrackingDataContext.PtMemos.Add(new PtMemo()
                         {
                             HpId = patientInfo.HpId,
                             PtId = patientInfo.PtId,
                             Memo = ptInf.Memo,
-                            CreateId = TempIdentity.UserId,
-                            CreateDate = DateTime.UtcNow,
-                            CreateMachine = TempIdentity.ComputerName
+                            CreateId = userId,
+                            UpdateDate = DateTime.UtcNow,
+                            UpdateId = userId,
+                            CreateDate = DateTime.UtcNow
                         });
                     }
                 }
@@ -1216,9 +1217,10 @@ namespace Infrastructure.Repositories
                         HpId = patientInfo.HpId,
                         PtId = patientInfo.PtId,
                         Memo = ptInf.Memo,
-                        CreateId = TempIdentity.UserId,
+                        CreateId = userId,
+                        UpdateDate = DateTime.UtcNow,
+                        UpdateId = userId,
                         CreateDate = DateTime.UtcNow,
-                        CreateMachine = TempIdentity.ComputerName
                     });
                 }
             }
@@ -1230,7 +1232,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in ptSanteiConfRemoves)
             {
-                item.UpdateId = TempIdentity.UserId;
+                item.UpdateId = userId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
             }
@@ -1238,8 +1240,7 @@ namespace Infrastructure.Repositories
             var ptSanteiConfListAdd = Mapper.Map<CalculationInfModel, PtSanteiConf>(ptSanteis.Where(x => x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateDate = DateTime.UtcNow;
-                dest.CreateId = TempIdentity.UserId;
-                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.CreateId = userId;
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
                 dest.UpdateDate = DateTime.UtcNow;
@@ -1257,7 +1258,7 @@ namespace Infrastructure.Repositories
                     ptSanteiUpdate.KbnVal = item.KbnVal;
                     ptSanteiUpdate.StartDate = item.StartDate;
                     ptSanteiUpdate.EndDate = item.EndDate;
-                    ptSanteiUpdate.UpdateId = TempIdentity.UserId;
+                    ptSanteiUpdate.UpdateId = userId;
                     ptSanteiUpdate.UpdateDate = DateTime.UtcNow;
                 }
             }
@@ -1270,7 +1271,7 @@ namespace Infrastructure.Repositories
 
             foreach (var item in KyuseiRemoves)
             {
-                item.UpdateId = TempIdentity.UserId;
+                item.UpdateId = userId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
             }
@@ -1278,8 +1279,8 @@ namespace Infrastructure.Repositories
             var ptKyuseiListAdd = Mapper.Map<PtKyuseiModel, PtKyusei>(ptKyuseis.Where(x => x.SeqNo == 0), (src, dest) =>
             {
                 dest.CreateDate = DateTime.UtcNow;
-                dest.CreateId = TempIdentity.UserId;
-                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.CreateId = userId;
+                dest.UpdateId = userId;
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
                 dest.UpdateDate = DateTime.UtcNow;
@@ -1293,7 +1294,6 @@ namespace Infrastructure.Repositories
                 if (kyuseiUpdate != null)
                 {
                     kyuseiUpdate.UpdateDate = DateTime.UtcNow;
-                    kyuseiUpdate.UpdateMachine = TempIdentity.ComputerName;
                     kyuseiUpdate.Name = item.Name;
                     kyuseiUpdate.KanaName = item.KanaName;
                     kyuseiUpdate.EndDate = item.EndDate;
@@ -1308,7 +1308,7 @@ namespace Infrastructure.Repositories
                                         || ptGrps.Any(_ => _.GroupId == c.GroupId && string.IsNullOrEmpty(_.GroupCode)));
             foreach (var item in GrpInRemoves)
             {
-                item.UpdateId = TempIdentity.UserId;
+                item.UpdateId = userId;
                 item.UpdateDate = DateTime.UtcNow;
                 item.IsDeleted = DeleteTypes.Deleted;
             }
@@ -1320,18 +1320,19 @@ namespace Infrastructure.Repositories
                 if (info != null && !string.IsNullOrEmpty(item.GroupCode))
                 {
                     //Remove record old
-                    info.UpdateId = TempIdentity.UserId;
+                    info.UpdateId = userId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
 
                     //clone new record
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
                     {
-                        dest.CreateId = TempIdentity.UserId;
+                        dest.CreateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateId = userId;
+                        dest.UpdateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
-                        dest.CreateMachine = TempIdentity.ComputerName;
                         return dest;
                     });
                     _tenantTrackingDataContext.PtGrpInfs.Add(model);
@@ -1340,11 +1341,12 @@ namespace Infrastructure.Repositories
                 {
                     PtGrpInf model = Mapper.Map(item, new PtGrpInf(), (source, dest) =>
                     {
-                        dest.CreateId = TempIdentity.UserId;
+                        dest.CreateId = userId;
+                        dest.UpdateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateDate = DateTime.UtcNow;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
-                        dest.CreateMachine = TempIdentity.ComputerName;
                         return dest;
                     });
                     _tenantTrackingDataContext.PtGrpInfs.Add(model);
@@ -1352,7 +1354,7 @@ namespace Infrastructure.Repositories
                 else if (info != null && string.IsNullOrEmpty(item.GroupCode))
                 {
                     //delete it 
-                    info.UpdateId = TempIdentity.UserId;
+                    info.UpdateId = userId;
                     info.UpdateDate = DateTime.UtcNow;
                     info.IsDeleted = DeleteTypes.Deleted;
                 }
@@ -1372,22 +1374,23 @@ namespace Infrastructure.Repositories
             {
                 x.IsDeleted = DeleteTypes.Deleted;
                 x.UpdateDate = DateTime.UtcNow;
-                x.UpdateId = TempIdentity.UserId;
+                x.UpdateId = userId;
             });
 
-            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
+            List<PtHokenPattern> pthokenPartterns = Mapper.Map<InsuranceModel, PtHokenPattern>(insurances.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
-                dest.UpdateMachine = TempIdentity.ComputerName;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
                 return dest;
             });
             _tenantTrackingDataContext.PtHokenPatterns.AddRange(pthokenPartterns);
-            
-            foreach(var item in insurances.Where(x => x.SeqNo != 0))
+
+            foreach (var item in insurances.Where(x => x.SeqNo != 0))
             {
                 PtHokenPattern? modelUpdate = databaseHokenPartterns.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if (modelUpdate != null)
@@ -1395,7 +1398,7 @@ namespace Infrastructure.Repositories
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
                         dest.UpdateDate = DateTime.UtcNow;
-                        dest.UpdateId = TempIdentity.UserId;
+                        dest.UpdateId = userId;
                         return dest;
                     });
             }
@@ -1403,10 +1406,12 @@ namespace Infrastructure.Repositories
 
             #region HokenInf
             //Add New
-            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x=>x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
+            List<PtHokenInf> ptHokenInfs = Mapper.Map<HokenInfModel, PtHokenInf>(hokenInfs.Where(x => x.SeqNo == 0 && x.IsAddNew), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
+                dest.UpdateDate = DateTime.UtcNow;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
                 dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
@@ -1414,14 +1419,14 @@ namespace Infrastructure.Repositories
                 #region PtRousaiTenki
                 _tenantTrackingDataContext.PtRousaiTenkis.AddRange(Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(src.ListRousaiTenki, (srcR, destR) =>
                 {
-                    destR.CreateId = TempIdentity.UserId;
+                    destR.CreateId = userId;
                     destR.PtId = patientInfo.PtId;
                     destR.HpId = hpId;
                     destR.Tenki = srcR.RousaiTenkiTenki;
                     destR.Sinkei = srcR.RousaiTenkiSinkei;
                     destR.EndDate = srcR.RousaiTenkiEndDate;
                     destR.HokenId = dest.HokenId;
-                    destR.CreateId = TempIdentity.UserId;
+                    destR.CreateId = userId;
                     destR.CreateDate = DateTime.UtcNow;
                     return destR;
                 }));
@@ -1430,12 +1435,12 @@ namespace Infrastructure.Repositories
                 #region PtHokenCheck
                 _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
-                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
-                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
                     destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
@@ -1447,7 +1452,7 @@ namespace Infrastructure.Repositories
             _tenantTrackingDataContext.PtHokenInfs.AddRange(ptHokenInfs);
 
             //Update
-            foreach(var item in hokenInfs.Where(x => x.SeqNo != 0))
+            foreach (var item in hokenInfs.Where(x => x.SeqNo != 0))
             {
                 PtHokenInf? updateHokenInf = databaseHoKentInfs.FirstOrDefault(x => x.SeqNo == item.SeqNo);
                 if (updateHokenInf != null)
@@ -1457,12 +1462,12 @@ namespace Infrastructure.Repositories
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
                         dest.UpdateDate = DateTime.UtcNow;
-                        dest.UpdateId = TempIdentity.UserId;
+                        dest.UpdateId = userId;
                         return dest;
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, TempIdentity.UserId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId).Wait();
 
                     //RousaiTenki
                     var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
@@ -1470,12 +1475,13 @@ namespace Infrastructure.Repositories
                         dest.Sinkei = src.RousaiTenkiSinkei;
                         dest.Tenki = src.RousaiTenkiTenki;
                         dest.EndDate = src.RousaiTenkiEndDate;
-                        dest.CreateId = TempIdentity.UserId;
                         dest.PtId = patientInfo.PtId;
                         dest.HpId = hpId;
                         dest.HokenId = updateHokenInf.HokenId;
-                        dest.CreateId = TempIdentity.UserId;
+                        dest.CreateId = userId;
                         dest.CreateDate = DateTime.UtcNow;
+                        dest.UpdateId = userId;
+                        dest.UpdateDate = DateTime.UtcNow;
                         return dest;
                     });
                     _tenantTrackingDataContext.PtRousaiTenkis.AddRange(listAddTenki);
@@ -1498,7 +1504,7 @@ namespace Infrastructure.Repositories
                     listRemoves.ForEach(x =>
                     {
                         x.IsDeleted = 1;
-                        x.UpdateId = TempIdentity.UserId;
+                        x.UpdateId = userId;
                         x.UpdateDate = DateTime.UtcNow;
                     });
                 }
@@ -1507,9 +1513,9 @@ namespace Infrastructure.Repositories
 
             #region HokenKohi
             //Add new
-            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x=>x.IsAddNew && x.SeqNo == 0), (src, dest) =>
+            List<PtKohi> ptKohiInfs = Mapper.Map<KohiInfModel, PtKohi>(hokenKohis.Where(x => x.IsAddNew && x.SeqNo == 0), (src, dest) =>
             {
-                dest.CreateId = TempIdentity.UserId;
+                dest.CreateId = userId;
                 dest.CreateDate = DateTime.UtcNow;
                 dest.PtId = patientInfo.PtId;
                 dest.HpId = hpId;
@@ -1517,12 +1523,12 @@ namespace Infrastructure.Repositories
                 #region PtHokenCheck
                 _tenantTrackingDataContext.PtHokenChecks.AddRange(Mapper.Map<ConfirmDateModel, PtHokenCheck>(src.ConfirmDateList, (srcCf, destCf) =>
                 {
-                    destCf.CreateId = TempIdentity.UserId;
+                    destCf.CreateId = userId;
                     destCf.CreateDate = DateTime.UtcNow;
                     destCf.CheckDate = DateTime.SpecifyKind(CIUtil.IntToDate(srcCf.ConfirmDate), DateTimeKind.Utc);
                     destCf.CheckCmt = srcCf.CheckComment;
                     destCf.HokenId = dest.HokenId;
-                    destCf.CheckId = TempIdentity.UserId;
+                    destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
                     destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
@@ -1544,12 +1550,12 @@ namespace Infrastructure.Repositories
                     {
                         dest.EndDate = src.EndDate == 0 ? defaultMaxDate : src.EndDate;
                         dest.UpdateDate = DateTime.UtcNow;
-                        dest.UpdateId = TempIdentity.UserId;
+                        dest.UpdateId = userId;
                         return dest;
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, TempIdentity.UserId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId).Wait();
                 }
             }
             #endregion HokenKohi
@@ -1633,6 +1639,8 @@ namespace Infrastructure.Repositories
                 addedHokenCheck.CheckCmt = createItem.CheckComment;
                 addedHokenCheck.CreateId = actUserId;
                 addedHokenCheck.CreateDate = DateTime.UtcNow;
+                addedHokenCheck.UpdateDate = DateTime.UtcNow;
+                addedHokenCheck.UpdateId = actUserId;
                 _tenantTrackingDataContext.PtHokenChecks.Add(addedHokenCheck);
             }
 
@@ -1652,23 +1660,21 @@ namespace Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public bool DeletePatientInfo(long ptId, int hpId = TempIdentity.HpId)
+        public bool DeletePatientInfo(long ptId, int hpId, int userId)
         {
             var patientInf = _tenantTrackingDataContext.PtInfs.FirstOrDefault(x => x.PtId == ptId && x.HpId == hpId && x.IsDelete == DeleteTypes.None);
             if (patientInf != null)
             {
                 patientInf.IsDelete = DeleteTypes.Deleted;
                 patientInf.UpdateDate = DateTime.UtcNow;
-                patientInf.UpdateId = TempIdentity.UserId;
-                patientInf.UpdateMachine = TempIdentity.ComputerName;
+                patientInf.UpdateId = userId;
                 #region PtMemo
                 var ptMemos = _tenantTrackingDataContext.PtMemos.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteTypes.None).ToList();
                 foreach (var item in ptMemos)
                 {
                     item.IsDeleted = DeleteTypes.Deleted;
                     item.UpdateDate = DateTime.UtcNow;
-                    item.UpdateId = TempIdentity.UserId;
-                    item.UpdateMachine = TempIdentity.ComputerName;
+                    item.UpdateId = userId;
                 }
                 #endregion
 
@@ -1677,9 +1683,8 @@ namespace Infrastructure.Repositories
                 ptKyuseis.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
 
@@ -1688,9 +1693,8 @@ namespace Infrastructure.Repositories
                 ptSanteis.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
 
@@ -1699,9 +1703,8 @@ namespace Infrastructure.Repositories
                 ptHokenParterns.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
 
@@ -1710,9 +1713,8 @@ namespace Infrastructure.Repositories
                 ptHokenInfs.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
 
@@ -1722,8 +1724,7 @@ namespace Infrastructure.Repositories
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateId = TempIdentity.UserId;
-                    x.UpdateMachine = TempIdentity.ComputerName;
+                    x.UpdateId = userId;
                 });
                 #endregion
 
@@ -1732,9 +1733,8 @@ namespace Infrastructure.Repositories
                 ptHokenChecks.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
 
@@ -1743,16 +1743,15 @@ namespace Infrastructure.Repositories
                 ptRousaiTenkies.ForEach(x =>
                 {
                     x.IsDeleted = DeleteTypes.Deleted;
-                    x.UpdateId = TempIdentity.UserId;
+                    x.UpdateId = userId;
                     x.UpdateDate = DateTime.UtcNow;
-                    x.UpdateMachine = TempIdentity.ComputerName;
                 });
                 #endregion
             }
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
 
-        public bool IsAllowDeletePatient(int hpId,long ptId)
+        public bool IsAllowDeletePatient(int hpId, long ptId)
         {
             var raiinInfCount = _tenantDataContext.RaiinInfs
                 .Count(p => p.HpId == hpId && p.PtId == ptId && p.Status >= RaiinState.TempSave);

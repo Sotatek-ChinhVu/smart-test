@@ -1,4 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
+﻿using Domain.Models.AccountDue;
+using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.AccountDue;
 using UseCase.AccountDue.GetAccountDueList;
@@ -11,7 +12,11 @@ public class GetAccountDueListPresenter : IGetAccountDueListOutputPort
 
     public void Complete(GetAccountDueListOutputData output)
     {
-        Result.Data = new GetAccountDueListResponse(output.AccountDueModel);
+        Result.Data = new GetAccountDueListResponse(
+                                                        output.AccountDueModel.AccountDueList.Select(item => new AccountDueDto(item)).ToList(),
+                                                        output.AccountDueModel.ListPaymentMethod,
+                                                        output.AccountDueModel.ListUketsukeSbt
+                                                    );
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

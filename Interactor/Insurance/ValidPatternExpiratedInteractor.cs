@@ -23,124 +23,124 @@ namespace Interactor.Insurance
         {
             if (inputData.HpId < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidHpId);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHpId);
             }
 
             if (inputData.PtId < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidPtId);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPtId);
             }
 
             if (inputData.SinDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidSinDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidSinDate);
             }
             
             if (inputData.PatternHokenPid < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidPatternHokenPid);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternHokenPid);
             }
             
             if (inputData.PatternConfirmDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidPatternConfirmDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternConfirmDate);
             }
             
             if (inputData.HokenInfStartDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidHokenInfStartDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHokenInfStartDate);
             }
 
             if (inputData.HokenInfEndDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidHokenInfEndDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHokenInfEndDate);
             }
 
             if (inputData.HokenMstStartDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidHokenMstStartDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHokenMstStartDate);
             }
 
             if (inputData.HokenMstEndDate < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidHokenMstEndDate);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidHokenMstEndDate);
             }
 
             if (inputData.KohiConfirmDate1 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiConfirmDate1);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiConfirmDate1);
             }
 
             if (inputData.KohiHokenMstStartDate1 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate1);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate1);
             }
 
             if (inputData.KohiHokenMstEndDate1 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate1);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate1);
             }
 
             if (inputData.KohiConfirmDate2 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiConfirmDate2);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiConfirmDate2);
             }
 
             if (inputData.KohiHokenMstStartDate2 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate2);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate2);
             }
 
             if (inputData.KohiHokenMstEndDate2 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate2);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate2);
             }
 
             if (inputData.KohiConfirmDate3 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiConfirmDate3);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiConfirmDate3);
             }
 
             if (inputData.KohiHokenMstStartDate3 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate3);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate3);
             }
 
             if (inputData.KohiHokenMstEndDate3 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate3);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate3);
             }
 
             if (inputData.KohiConfirmDate4 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiConfirmDate4);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiConfirmDate4);
             }
 
             if (inputData.KohiHokenMstStartDate4 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate4);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstStartDate4);
             }
 
             if (inputData.KohiHokenMstEndDate4 < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate4);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidKohiHokenMstEndDate4);
             }
 
             if (inputData.PatientInfBirthday < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidPatientInfBirthday);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatientInfBirthday);
             }
 
             if (inputData.PatternHokenKbn < 0)
             {
-                return new ValidPatternExpiratedOutputData(false, string.Empty, ValidPatternExpiratedStatus.InvalidPatternHokenKbn);
+                return new ValidPatternExpiratedOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidPatternExpiratedStatus.InvalidPatternHokenKbn);
             }
 
             var result = getMessageCheckValidatePattern(inputData);
-            return new ValidPatternExpiratedOutputData(String.IsNullOrEmpty(result), result, ValidPatternExpiratedStatus.ValidPatternExpiratedSuccess);
+            return result;
         }
 
-        private string getMessageCheckValidatePattern(ValidPatternExpiratedInputData inputData)
+        private ValidPatternExpiratedOutputData getMessageCheckValidatePattern(ValidPatternExpiratedInputData inputData)
         {
             var result = string.Empty;
             if (inputData.PatternHokenKbn > 0)
@@ -155,32 +155,32 @@ namespace Interactor.Insurance
                     case 1:
                     // 国保
                     case 2:
-                        var checkValidAge = _insuranceResponsitory.IsValidAgeCheck(inputData.SinDate, inputData.PatternHokenPid, inputData.HpId, inputData.PtId, inputData.PatientInfBirthday);
-                        if (!String.IsNullOrEmpty(checkValidAge))
+                        var checkValidConfirmDateAgeCheck = _insuranceResponsitory.IsValidAgeCheck(inputData.SinDate, inputData.PatternHokenPid, inputData.HpId, inputData.PtId, inputData.PatientInfBirthday);
+                        if (!String.IsNullOrEmpty(checkValidConfirmDateAgeCheck))
                         {
-                            return checkValidAge;
+                            return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateAgeCheck, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidConfirmDateAgeCheck);
                         }
                         var checkValidConfirmDateHoken = IsValidConfirmDateHoken(inputData.SinDate, inputData.PatternIsExpirated, inputData.HokenInfIsJihi, inputData.HokenInfIsNoHoken, inputData.PatternIsExpirated, inputData.PatternConfirmDate);
                         if (!String.IsNullOrEmpty(checkValidConfirmDateHoken))
                         {
-                            return checkValidConfirmDateHoken;
+                            return new ValidPatternExpiratedOutputData(false, checkValidConfirmDateHoken, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateHoken);
                         }
                         var checkValidHokenMstDate = IsValidHokenMstDate(inputData.HokenInfStartDate, inputData.HokenInfEndDate, inputData.SinDate, inputData.IsHaveHokenMst, inputData.HokenMstStartDate, inputData.HokenMstEndDate, inputData.HokenMstDisplayTextMaster);
                         if (!String.IsNullOrEmpty(checkValidHokenMstDate))
                         {
-                            return checkValidHokenMstDate;
+                            return new ValidPatternExpiratedOutputData(false, checkValidHokenMstDate, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidHokenMstDate);
                         }
                         if (!inputData.IsEmptyKohi1)
                         {
                             var checkValidKohi1 = IsValidConfirmDateKohi(inputData.KohiConfirmDate1, inputData.SinDate, inputData.PatternIsExpirated, 1);
                             if (!String.IsNullOrEmpty(checkValidKohi1))
                             {
-                                return checkValidKohi1;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohi1, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateKohi1);
                             }
                             var checkValidKohiMst1 = IsValidMasterDateKohi(inputData.SinDate, 1, inputData.KohiHokenMstDisplayTextMaster1, inputData.KohiHokenMstStartDate1, inputData.KohiHokenMstEndDate1, inputData.IsKohiHaveHokenMst1);
                             if (!String.IsNullOrEmpty(checkValidKohiMst1))
                             {
-                                return checkValidKohiMst1;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohiMst1, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidMasterDateKohi1);
                             }
                         }
                         if (!inputData.IsEmptyKohi2)
@@ -188,12 +188,12 @@ namespace Interactor.Insurance
                             var checkValidKohi2 = IsValidConfirmDateKohi(inputData.KohiConfirmDate2, inputData.SinDate, inputData.PatternIsExpirated, 2);
                             if (!String.IsNullOrEmpty(checkValidKohi2))
                             {
-                                return checkValidKohi2;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohi2, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateKohi2);
                             }
                             var checkValidKohiMst2 = IsValidMasterDateKohi(inputData.SinDate, 2, inputData.KohiHokenMstDisplayTextMaster2, inputData.KohiHokenMstStartDate2, inputData.KohiHokenMstEndDate2, inputData.IsKohiHaveHokenMst2);
                             if (!String.IsNullOrEmpty(checkValidKohiMst2))
                             {
-                                return checkValidKohiMst2;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohiMst2, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidMasterDateKohi2);
                             }
                         }
                         if (!inputData.IsEmptyKohi3)
@@ -201,12 +201,12 @@ namespace Interactor.Insurance
                             var checkValidKohi3 = IsValidConfirmDateKohi(inputData.KohiConfirmDate3, inputData.SinDate, inputData.PatternIsExpirated, 3);
                             if (!String.IsNullOrEmpty(checkValidKohi3))
                             {
-                                return checkValidKohi3;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohi3, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateKohi3);
                             }
                             var checkValidKohiMst3 = IsValidMasterDateKohi(inputData.SinDate, 3, inputData.KohiHokenMstDisplayTextMaster3, inputData.KohiHokenMstStartDate3, inputData.KohiHokenMstEndDate3, inputData.IsKohiHaveHokenMst3);
                             if (!String.IsNullOrEmpty(checkValidKohiMst3))
                             {
-                                return checkValidKohiMst3;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohiMst3, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidMasterDateKohi3);
                             }
                         }
                         if (!inputData.IsEmptyKohi4)
@@ -214,26 +214,26 @@ namespace Interactor.Insurance
                             var checkValidKohi4 = IsValidConfirmDateKohi(inputData.KohiConfirmDate4, inputData.SinDate, inputData.PatternIsExpirated, 4);
                             if (!String.IsNullOrEmpty(checkValidKohi4))
                             {
-                                return checkValidKohi4;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohi4, TypeMessage.TypeMessageConfirmation, ValidPatternExpiratedStatus.InvalidConfirmDateKohi4);
                             }
                             var checkValidKohiMst4 = IsValidMasterDateKohi(inputData.SinDate, 4, inputData.KohiHokenMstDisplayTextMaster4, inputData.KohiHokenMstStartDate4, inputData.KohiHokenMstEndDate4, inputData.IsKohiHaveHokenMst4);
                             if (!String.IsNullOrEmpty(checkValidKohiMst4))
                             {
-                                return checkValidKohiMst4;
+                                return new ValidPatternExpiratedOutputData(false, checkValidKohiMst4, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidMasterDateKohi4);
                             }
                         }
                         if (inputData.PatternIsExpirated)
                         {
                             var message = new string[] { "保険組合せ" };
                             result = String.Format(ErrorMessage.MessageType_mChk00020, message);
-                            return result;
+                            return new ValidPatternExpiratedOutputData(false, result, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidPatternIsExpirated);
                         }
                         var checkHasElderHoken = _insuranceResponsitory.HasElderHoken(inputData.SinDate, inputData.HpId, inputData.PtId, inputData.PatientInfBirthday);
                         if (!String.IsNullOrEmpty(checkHasElderHoken))
                         {
-                            return checkHasElderHoken;
+                            return new ValidPatternExpiratedOutputData(false, checkHasElderHoken, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidHasElderHoken);
                         }
-                        return result;
+                        return new ValidPatternExpiratedOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidPatternExpiratedStatus.ValidPatternExpiratedSuccess);
                     // 労災(短期給付)
                     case 11:
                     // 労災(傷病年金)
@@ -246,12 +246,12 @@ namespace Interactor.Insurance
                         {
                             var message = new string[] { "保険組合せ" };
                             result = String.Format(ErrorMessage.MessageType_mChk00020, message);
-                            return result;
+                            return new ValidPatternExpiratedOutputData(false, result, TypeMessage.TypeMessageWarning, ValidPatternExpiratedStatus.InvalidHasElderHoken);
                         }
                         break;
                 }
             }
-            return result;
+            return new ValidPatternExpiratedOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidPatternExpiratedStatus.ValidPatternExpiratedSuccess);
         }
 
         private string IsValidHokenMstDate(int startDate, int endDate, int sinDate, bool isHaveHokenMst, int hokenMstStartDate, int hokenMstEndDate, string displayTextMaster)

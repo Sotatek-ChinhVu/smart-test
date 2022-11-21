@@ -6,8 +6,6 @@ namespace Interactor.SetMst;
 
 public class SaveSetMstInteractor : ISaveSetMstInputPort
 {
-    private readonly int _hpId = TempIdentity.HpId;
-    private readonly int _userId = TempIdentity.UserId;
     private readonly ISetMstRepository _setMstRepository;
     public SaveSetMstInteractor(ISetMstRepository setMstRepository)
     {
@@ -67,7 +65,7 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
         try
         {
             var setMstModel = new SetMstModel(
-                                _hpId,
+                                inputData.HpId,
                                 inputData.SetCd,
                                 inputData.SetKbn,
                                 inputData.SetKbnEdaNo,
@@ -79,10 +77,9 @@ public class SaveSetMstInteractor : ISaveSetMstInputPort
                                 inputData.WeightKbn,
                                 inputData.Color,
                                 inputData.IsDeleted,
-                                inputData.IsGroup ? 1 : 0,
-                                new SetMstTooltipModel()
+                                inputData.IsGroup ? 1 : 0
                              );
-            var resultData = _setMstRepository.SaveSetMstModel(_userId, inputData.SinDate, setMstModel);
+            var resultData = _setMstRepository.SaveSetMstModel(inputData.UserId, inputData.SinDate, setMstModel);
             if (resultData != null)
             {
                 return new SaveSetMstOutputData(resultData, SaveSetMstStatus.Successed);

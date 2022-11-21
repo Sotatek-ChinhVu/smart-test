@@ -4,10 +4,16 @@ namespace EmrCloudApi.Tenant.Responses.AccountDue;
 
 public class GetAccountDueListResponse
 {
-    public GetAccountDueListResponse(AccountDueModel accountDueModel)
+    public GetAccountDueListResponse(List<AccountDueDto> accountDueList, Dictionary<int, string> listPaymentMethod, Dictionary<int, string> listUketsukeSbt)
     {
-        AccountDueModel = accountDueModel;
+        AccountDueList = accountDueList;
+        ListPaymentMethod = listPaymentMethod;
+        ListUketsukeSbt = listUketsukeSbt;
     }
 
-    public AccountDueModel AccountDueModel { get; private set; }
+    public List<AccountDueDto> AccountDueList { get; private set; }
+
+    public Dictionary<int, string> ListPaymentMethod { get; private set; }
+
+    public Dictionary<int, string> ListUketsukeSbt { get; private set; }
 }

@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.UketukeSbt;
 using EmrCloudApi.Tenant.Requests.UketukeSbt;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UketukeSbt;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.UketukeSbtMst.GetBySinDate;
@@ -13,40 +15,44 @@ namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UketukeSbtController : ControllerBase
 {
     private readonly UseCaseBus _bus;
+    private readonly IUserService _userService;
 
-    public UketukeSbtController(UseCaseBus bus)
+    public UketukeSbtController(UseCaseBus bus, IUserService userService)
     {
         _bus = bus;
+        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public ActionResult<Response<GetUketukeSbtMstListResponse>> GetListMst()
+    public async Task<ActionResult<Response<GetUketukeSbtMstListResponse>>> GetListMst()
     {
         var input = new GetUketukeSbtMstListInputData();
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetUketukeSbtMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "BySinDate")]
-    public ActionResult<Response<GetUketukeSbtMstBySinDateResponse>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
+    public async Task<ActionResult<Response<GetUketukeSbtMstBySinDateResponse>>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
     {
         var input = new GetUketukeSbtMstBySinDateInputData(req.SinDate);
-        var output = _bus.Handle(input);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetUketukeSbtMstBySinDatePresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "Next")]
-    public ActionResult<Response<GetNextUketukeSbtMstResponse>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
+    public async Task<ActionResult<Response<GetNextUketukeSbtMstResponse>>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
-        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId);
-        var output = _bus.Handle(input);
+        int userId = _userService.GetLoginUser().UserId;
+        var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, userId);
+        var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

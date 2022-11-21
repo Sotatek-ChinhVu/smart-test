@@ -3,6 +3,8 @@ using EmrCloudApi.Tenant.Presenters.RaiinKubun;
 using EmrCloudApi.Tenant.Requests.RaiinKubun;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinKubun;
+using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
@@ -14,19 +16,22 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RaiinKubunController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public RaiinKubunController(UseCaseBus bus)
+        private readonly IUserService _userService;
+        public RaiinKubunController(UseCaseBus bus, IUserService userService)
         {
             _bus = bus;
+            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList + "Mst")]
-        public ActionResult<Response<GetRaiinKubunMstListResponse>> GetRaiinKubunMstList([FromQuery] GetRaiinKubunMstListRequest request)
+        public async Task<ActionResult<Response<GetRaiinKubunMstListResponse>>> GetRaiinKubunMstList([FromQuery] GetRaiinKubunMstListRequest request)
         {
             var input = new GetRaiinKubunMstListInputData(request.IsDeleted);
-            var output = _bus.Handle(input);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetRaiinKubunMstListPresenter();
             presenter.Complete(output);
@@ -35,10 +40,12 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList + "KubunSetting")]
-        public ActionResult<Response<LoadDataKubunSettingResponse>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
+        public async Task<ActionResult<Response<LoadDataKubunSettingResponse>>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
         {
-            var input = new LoadDataKubunSettingInputData(request.HpId);
-            var output = _bus.Handle(input);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
+            var input = new LoadDataKubunSettingInputData(hpId, userId);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new LoadDataKubunSettingPresenter();
             presenter.Complete(output);
@@ -47,10 +54,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
-        public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
+        public async Task<ActionResult<Response<SaveDataKubunSettingResponse>>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList());
-            var output = _bus.Handle(input);
+            int userId = _userService.GetLoginUser().UserId;
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), userId);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new SaveDataKubunSettingPresenter();
             presenter.Complete(output);
@@ -59,15 +67,16 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetColumnName)]
-        public Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
+        public async Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
         {
-            var input = new GetColumnNameListInputData(request.HpId);
-            var output = _bus.Handle(input);
+            int hpId = _userService.GetLoginUser().HpId;
+            var input = new GetColumnNameListInputData(hpId);
+            var output = await Task.Run(() => _bus.Handle(input));
 
             var presenter = new GetColumnNameListPresenter();
             presenter.Complete(output);
 
-            return Task.FromResult(new ActionResult<Response<GetColumnNameListResponse>>(presenter.Result));
+            return new ActionResult<Response<GetColumnNameListResponse>>(presenter.Result);
         }
     }
 }

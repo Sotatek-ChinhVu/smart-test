@@ -24,7 +24,7 @@ namespace Interactor.PatientInfor
 
             try
             {
-                bool result = _patientInforRepository.DeletePatientInfo(inputData.PtId, inputData.HpId);
+                bool result = _patientInforRepository.DeletePatientInfo(inputData.PtId, inputData.HpId, inputData.UserId);
 
                 if (result)
                     return new DeletePatientInfoOutputData(DeletePatientInfoStatus.Successful);

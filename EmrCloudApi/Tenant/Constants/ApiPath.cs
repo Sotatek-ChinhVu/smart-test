@@ -12,6 +12,7 @@
         public const string Save = "Save";
         public const string Revert = "Revert";
         public const string Delete = "Delete";
+        public const string GetSettingValue = "GetSettingValue";
 
 
         // SuperSet
@@ -21,6 +22,8 @@
         public const string GetSuperSetDetail = "GetSuperSetDetail";
         public const string DiseaseSearch = "DiseaseSearch";
         public const string SaveSuperSetDetail = "SaveSuperSetDetail";
+        public const string GetToolTip = "GetToolTip";
+        public const string GetSuperSetDetailForTodayOrder = "GetSuperSetDetailForTodayOrder";
 
         //Mst Item
         public const string GetDosageDrugList = "GetDosageDrugList";
@@ -43,6 +46,7 @@
         public const string GetMaxRpNo = "GetMaxRpNo";
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
+        public const string GetInsuranceComboList = "GetInsuranceComboList";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";
@@ -80,7 +84,6 @@
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
-
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";

@@ -297,7 +297,7 @@ namespace Infrastructure.Repositories
             return list;
         }
 
-        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int pageIndex, int pageCount, int sinDate, string keyword)
+        public IEnumerable<HokensyaMstModel> SearchListDataHokensyaMst(int hpId, int sinDate, string keyword)
         {
             int prefNo = 0;
             var hpInf = _tenantDataContext.HpInfs.FirstOrDefault(x => x.HpId == hpId);
@@ -332,7 +332,7 @@ namespace Infrastructure.Repositories
                                                                 item.Tel1 ?? string.Empty,
                                                                 item.IsKigoNa
                                                             ))
-                                .OrderBy(item => item.HokensyaNo).Skip((pageIndex - 1) * pageCount).Take(pageCount);
+                                .OrderBy(item => item.HokensyaNo).ToList();
             return listDataPaging;
         }
 
@@ -466,7 +466,7 @@ namespace Infrastructure.Repositories
 
         }
 
-        public bool SaveHokenSyaMst(HokensyaMstModel model)
+        public bool SaveHokenSyaMst(HokensyaMstModel model, int userId)
         {
             var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
             if (hoken is null)
@@ -490,8 +490,9 @@ namespace Infrastructure.Repositories
                     Address2 = model.Address2,
                     Tel1 = model.Tel1,
                     CreateDate = DateTime.UtcNow,
-                    CreateId = TempIdentity.UserId,
-                    CreateMachine = TempIdentity.ComputerName
+                    UpdateDate = DateTime.UtcNow,
+                    UpdateId = userId,
+                    CreateId = userId
                 };
                 _tenantDataContextTracking.HokensyaMsts.Add(create);
             }
@@ -512,8 +513,7 @@ namespace Infrastructure.Repositories
                 hoken.Address2 = model.Address2;
                 hoken.Tel1 = model.Tel1;
                 hoken.UpdateDate = DateTime.UtcNow;
-                hoken.UpdateId = TempIdentity.UserId;
-                hoken.UpdateMachine = TempIdentity.ComputerName;
+                hoken.UpdateId = userId;
             }
             return _tenantDataContextTracking.SaveChanges() > 0;
         }

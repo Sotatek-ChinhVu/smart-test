@@ -8,10 +8,13 @@ namespace UseCase.PatientInfor.DeletePatient
 
         public long PtId { get; private set; }
 
-        public DeletePatientInfoInputData(int hpId, long ptId)
+        public int UserId { get; private set; }
+
+        public DeletePatientInfoInputData(int hpId, long ptId, int userId)
         {
             HpId = hpId;
             PtId = ptId;
+            UserId = userId;
         }
     }
 }
