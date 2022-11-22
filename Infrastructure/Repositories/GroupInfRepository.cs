@@ -14,8 +14,8 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
         {
-            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId));
-            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0);
+            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
+            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
             var result =
                 (from groupPatient in listGroupPatient
                  join groupDetailMst in listGroupDetailMst

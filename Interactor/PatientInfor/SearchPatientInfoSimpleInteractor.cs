@@ -51,7 +51,7 @@ namespace Interactor.PatientInfor
             switch (searchType)
             {
                 case 0:
-                    patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId);
+                    patientInfoList = _patientInforRepository.SearchContainPtNum(ptNum, keyword, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -60,7 +60,7 @@ namespace Interactor.PatientInfor
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 1:
                     int sindate = keyword.AsInteger();
-                    patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId);
+                    patientInfoList = _patientInforRepository.SearchBySindate(sindate, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -68,14 +68,14 @@ namespace Interactor.PatientInfor
 
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 2:
-                    patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId);
+                    patientInfoList = _patientInforRepository.SearchPhone(inputData.Keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
                     }
                     return new SearchPatientInfoSimpleOutputData(AppendGroupInfo(patientInfoList), SearchPatientInfoSimpleStatus.Success);
                 case 3:
-                    patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId);
+                    patientInfoList = _patientInforRepository.SearchName(keyword, isContainMode, inputData.HpId, inputData.PageIndex, inputData.PageSize);
                     if (patientInfoList.Count == 0)
                     {
                         return new SearchPatientInfoSimpleOutputData(new List<PatientInfoWithGroup>(), SearchPatientInfoSimpleStatus.NotFound);
@@ -127,13 +127,12 @@ namespace Interactor.PatientInfor
                 return 0;
             }
 
-            Regex regex = new Regex(_regPhone);
-            MatchCollection matches = regex.Matches(keyword);
+            var regex = new Regex(_regPhone);
+            var matches = regex.Matches(keyword);
             if (keyword.Length > 0 && matches.Count == 0)
             {
                 return 2;
             }
-
             return 3;
         }
     }

@@ -137,7 +137,7 @@ namespace EmrCloudApi.Tenant.Controllers
         public async Task<ActionResult<Response<SearchPatientInforSimpleResponse>>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, hpId);
+            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, hpId, request.PageIndex, request.PageSize);
             var output = await Task.Run(() => _bus.Handle(input));
 
             var present = new SearchPatientInfoSimplePresenter();
