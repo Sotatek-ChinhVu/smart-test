@@ -292,7 +292,7 @@
             this.xrLabel5.Borders = ((DevExpress.XtraPrinting.BorderSide)((((DevExpress.XtraPrinting.BorderSide.Left | DevExpress.XtraPrinting.BorderSide.Top) 
             | DevExpress.XtraPrinting.BorderSide.Right) 
             | DevExpress.XtraPrinting.BorderSide.Bottom)));
-            this.xrLabel5.Font = new System.Drawing.Font("Yu Gothic", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.xrLabel5.Font = new System.Drawing.Font("Freestyle Script", 10F);
             this.xrLabel5.LocationFloat = new DevExpress.Utils.PointFloat(7.064253E-05F, 65.54169F);
             this.xrLabel5.Multiline = true;
             this.xrLabel5.Name = "xrLabel5";
@@ -410,7 +410,7 @@
             this.txt_PtKanaName.Borders = DevExpress.XtraPrinting.BorderSide.Top;
             this.txt_PtKanaName.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtKanaName]")});
-            this.txt_PtKanaName.Font = new System.Drawing.Font("Yu Gothic", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.txt_PtKanaName.Font = new System.Drawing.Font("Freestyle Script", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
             this.txt_PtKanaName.LocationFloat = new DevExpress.Utils.PointFloat(124.7449F, 130.6508F);
             this.txt_PtKanaName.Multiline = true;
             this.txt_PtKanaName.Name = "txt_PtKanaName";
