@@ -43,55 +43,55 @@ public class VisitingController : ControllerBase
     }
 
     [HttpGet(ApiPath.Get + "ReceptionLock")]
-    public async Task<ActionResult<Response<GetReceptionLockRespone>>> GetList([FromQuery] GetReceptionLockRequest request)
+    public ActionResult<Response<GetReceptionLockRespone>> GetList([FromQuery] GetReceptionLockRequest request)
     {
         var input = new GetReceptionLockInputData(request.SinDate, request.PtId, request.RaiinNo, request.FunctionCd);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetReceptionLockPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetReceptionListResponse>>> GetList([FromQuery] GetReceptionListRequest request)
+    public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         var input = new GetReceptionListInputData(hpId, request.SinDate, request.RaiinNo, request.PtId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "ReceptionInfo")]
-    public async Task<ActionResult<Response<GetReceptionVisitingResponse>>> GetList([FromQuery] GetReceptionVisitingRequest request)
+    public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         var input = new GetReceptionVisitingInputData(hpId, request.RaiinNo);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "Settings")]
-    public async Task<ActionResult<Response<GetReceptionSettingsResponse>>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
+    public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
         int userId = _userService.GetLoginUser().UserId;
         var input = new GetReceptionSettingsInputData(userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost("SaveSettings")]
-    public async Task<ActionResult<Response<SaveVisitingListSettingsResponse>>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
+    public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
     {
         int hpId = _userService.GetLoginUser().HpId;
         int userId = _userService.GetLoginUser().UserId;
         var input = new SaveVisitingListSettingsInputData(req.Settings, hpId, userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new SaveVisitingListSettingsPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

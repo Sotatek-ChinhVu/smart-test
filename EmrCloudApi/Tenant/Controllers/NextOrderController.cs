@@ -26,12 +26,12 @@ public class NextOrderController : ControllerBase
     }
 
     [HttpGet(ApiPath.Get)]
-    public async Task<ActionResult<Response<GetNextOrderResponse>>> Get([FromQuery] GetNextOrderRequest request)
+    public ActionResult<Response<GetNextOrderResponse>> Get([FromQuery] GetNextOrderRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         int userId = _userService.GetLoginUser().UserId;
         var input = new GetNextOrderInputData(request.PtId, hpId, request.RsvkrtNo, request.SinDate, request.Type, userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderPresenter();
         presenter.Complete(output);
@@ -40,11 +40,11 @@ public class NextOrderController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetNextOrderListResponse>>> GetList([FromQuery] GetNextOrderListRequest request)
+    public ActionResult<Response<GetNextOrderListResponse>> GetList([FromQuery] GetNextOrderListRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         var input = new GetNextOrderListInputData(request.PtId, hpId, request.RsvkrtKbn, request.IsDeleted);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new GetNextOrderListPresenter();
         presenter.Complete(output);
