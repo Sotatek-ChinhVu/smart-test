@@ -41,6 +41,9 @@ public class UserConfRepository : IUserConfRepository
         var displayDrugPrice = _tenantNoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 5 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 5);
         result.Add("DisplayDrugPrice", displayDrugPrice);
+        var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
+   .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
+        result.Add("AdoptedConfirmCD", adoptedConfirmCD);
 
         return result;
     }
