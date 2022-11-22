@@ -126,12 +126,13 @@ namespace Interactor.PatientInfor
                 return 0;
             }
 
-            var regex = new Regex(_regPhone);
-            var matches = regex.Matches(keyword);
+            Regex regex = new Regex(_regPhone);
+            MatchCollection matches = regex.Matches(keyword);
             if (keyword.Length > 0 && matches.Count == 0)
             {
                 return 2;
             }
+
             return 3;
         }
     }
