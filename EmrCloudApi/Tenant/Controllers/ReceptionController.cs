@@ -91,7 +91,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Insert)]
-        public ActionResult<Response<InsertReceptionResponse>> InsertAsync([FromBody] InsertReceptionRequest request)
+        public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             int userId = _userService.GetLoginUser().UserId;
@@ -99,7 +99,7 @@ namespace EmrCloudApi.Tenant.Controllers
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
-                _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
                     new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = output.RaiinNo });
             }
 
@@ -110,7 +110,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.Update)]
-        public ActionResult<Response<UpdateReceptionResponse>> UpdateAsync([FromBody] UpdateReceptionRequest request)
+        public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             int userId = _userService.GetLoginUser().UserId;
@@ -118,8 +118,8 @@ namespace EmrCloudApi.Tenant.Controllers
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
-                _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
-                   new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
+                await _webSocketService.SendMessageAsync(FunctionCodes.ReceptionChanged,
+                    new CommonMessage { SinDate = input.Dto.Reception.SinDate, RaiinNo = input.Dto.Reception.RaiinNo });
             }
 
             var presenter = new UpdateReceptionPresenter();

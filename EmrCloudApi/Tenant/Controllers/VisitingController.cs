@@ -98,7 +98,7 @@ public class VisitingController : ControllerBase
     }
 
     [HttpPut(ApiPath.Update + "StaticCell")]
-    public ActionResult<Response<UpdateReceptionStaticCellResponse>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
         int hpId = _userService.GetLoginUser().HpId;
         int userId = _userService.GetLoginUser().UserId;
@@ -108,16 +108,16 @@ public class VisitingController : ControllerBase
         switch (output.Status)
         {
             case UpdateReceptionStaticCellStatus.RaiinInfUpdated:
-                _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
-                   new CommonMessage { RaiinNo = input.RaiinNo });
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinInfChanged,
+                    new CommonMessage { RaiinNo = input.RaiinNo });
                 break;
             case UpdateReceptionStaticCellStatus.RaiinCmtUpdated:
-                _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
-                   new CommonMessage { RaiinNo = input.RaiinNo });
+                await _webSocketService.SendMessageAsync(FunctionCodes.RaiinCmtChanged,
+                    new CommonMessage { RaiinNo = input.RaiinNo });
                 break;
             case UpdateReceptionStaticCellStatus.PatientCmtUpdated:
-                _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
-                   new CommonMessage { PtId = input.PtId });
+                await _webSocketService.SendMessageAsync(FunctionCodes.PatientCmtChanged,
+                    new CommonMessage { PtId = input.PtId });
                 break;
         }
 
@@ -127,7 +127,7 @@ public class VisitingController : ControllerBase
     }
 
     [HttpPut(ApiPath.Update + "DynamicCell")]
-    public ActionResult<Response<UpdateReceptionDynamicCellResponse>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
+    public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
         int hpId = _userService.GetLoginUser().HpId;
         int userId = _userService.GetLoginUser().UserId;
@@ -136,7 +136,7 @@ public class VisitingController : ControllerBase
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {
-            _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
+            await _webSocketService.SendMessageAsync(FunctionCodes.RaiinKubunChanged,
                 new CommonMessage { RaiinNo = input.RaiinNo });
         }
 
