@@ -64,12 +64,18 @@ namespace Infrastructure.Repositories
                 using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
 
                 var maxRaiinBySinDate = _tenantNoTrackingDataContext.RaiinInfs
-                                        .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate);
+                                        .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate).ToList();
 
-                int uketukeNo = 0;
+                int uketukeNo = dto.Reception.UketukeNo;
                 if (maxRaiinBySinDate.Any())
-                    uketukeNo = maxRaiinBySinDate.Max(x => x.UketukeNo);
-                uketukeNo++;
+                {
+                    int uketukeNoMax = maxRaiinBySinDate.Max(x => x.UketukeNo);
+                    if (uketukeNo <= uketukeNoMax)
+                    {
+                        uketukeNo = uketukeNoMax + 1;
+                    }
+                }
+
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId, uketukeNo);
@@ -105,7 +111,7 @@ namespace Infrastructure.Repositories
 
             #region Helper methods
 
-            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId,int uketukeNo)
+            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId, int uketukeNo)
             {
                 return new RaiinInf
                 {
