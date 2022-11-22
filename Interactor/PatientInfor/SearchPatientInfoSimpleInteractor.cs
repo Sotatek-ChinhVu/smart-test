@@ -13,7 +13,6 @@ namespace Interactor.PatientInfor
         private readonly IGroupInfRepository _groupInfRepository;
         private const string _regPhone = @"[^0-9^\-]";
 
-
         public SearchPatientInfoSimpleInteractor(IPatientInforRepository patientInforRepository, IGroupInfRepository groupInfRepository)
         {
             _patientInforRepository = patientInforRepository;
