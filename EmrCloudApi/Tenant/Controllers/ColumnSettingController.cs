@@ -27,21 +27,21 @@ public class ColumnSettingController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetColumnSettingListResponse>>> GetList([FromQuery] GetColumnSettingListRequest req)
+    public ActionResult<Response<GetColumnSettingListResponse>> GetList([FromQuery] GetColumnSettingListRequest req)
     {
         int userId = _userService.GetLoginUser().UserId;
         var input = new GetColumnSettingListInputData(userId, req.TableName);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public async Task<ActionResult<Response<SaveColumnSettingListResponse>>> SaveList([FromBody] SaveColumnSettingListRequest req)
+    public ActionResult<Response<SaveColumnSettingListResponse>> SaveList([FromBody] SaveColumnSettingListRequest req)
     {
         var input = new SaveColumnSettingListInputData(req.Settings);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new SaveColumnSettingListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
