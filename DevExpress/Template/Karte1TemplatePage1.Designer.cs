@@ -243,7 +243,6 @@ namespace DevExpress.Template
             this.xrLabel3.Name = "xrLabel3";
             this.xrLabel3.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabel3.SizeF = new System.Drawing.SizeF(240.8295F, 36.54165F);
-            this.xrLabel3.ForeColor = Color.Red;
             this.xrLabel3.StylePriority.UseBorders = false;
             this.xrLabel3.StylePriority.UseFont = false;
             this.xrLabel3.StylePriority.UseTextAlignment = false;
@@ -259,7 +258,6 @@ namespace DevExpress.Template
             this.xrLabel2.Name = "xrLabel2";
             this.xrLabel2.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabel2.SizeF = new System.Drawing.SizeF(93.75F, 22.95833F);
-            this.xrLabel3.ForeColor = Color.Black;
             this.xrLabel2.StylePriority.UseBorders = false;
             this.xrLabel2.StylePriority.UseFont = false;
             this.xrLabel2.StylePriority.UseTextAlignment = false;
@@ -277,7 +275,6 @@ namespace DevExpress.Template
             this.xrLabel4.Name = "xrLabel4";
             this.xrLabel4.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
             this.xrLabel4.SizeF = new System.Drawing.SizeF(131.6903F, 23.00002F);
-            this.xrLabel3.ForeColor = Color.Blue;
             this.xrLabel4.StylePriority.UseBorders = false;
             this.xrLabel4.StylePriority.UseFont = false;
             this.xrLabel4.StylePriority.UseTextAlignment = false;
@@ -429,6 +426,7 @@ namespace DevExpress.Template
             // 
             // txt_PtName
             // 
+            this.txt_PtName.Text = "公費負担者番号";
             this.txt_PtName.Borders = DevExpress.XtraPrinting.BorderSide.Bottom;
             this.txt_PtName.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
             new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "[PtName]")});
@@ -441,7 +439,6 @@ namespace DevExpress.Template
             this.txt_PtName.StylePriority.UseBorders = false;
             this.txt_PtName.StylePriority.UseFont = false;
             this.txt_PtName.StylePriority.UseTextAlignment = false;
-            this.txt_PtName.Text = "公費負担者番号";
             this.txt_PtName.TextAlignment = DevExpress.XtraPrinting.TextAlignment.MiddleLeft;
             // 
             // xrLabel11
