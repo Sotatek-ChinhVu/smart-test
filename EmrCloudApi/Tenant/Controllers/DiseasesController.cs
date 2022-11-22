@@ -29,7 +29,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public async Task<ActionResult<Response<GetPtDiseaseListResponse>>> GetDiseaseListMedicalExamination([FromQuery] GetPtDiseaseListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetPtDiseaseListInputData(hpId, request.PtId, request.SinDate, request.HokenId, request.RequestFrom);
             var output = await Task.Run(() => _bus.Handle(input));
 
@@ -42,8 +42,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Upsert)]
         public async Task<ActionResult<Response<UpsertPtDiseaseListResponse>>> Upsert([FromBody] UpsertPtDiseaseListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+            int hpId = _userService.GetLoginUser().HpId;
+            int userId = _userService.GetLoginUser().UserId;
             var input = new UpsertPtDiseaseListInputData(request.PtDiseases.Select(r => new UpsertPtDiseaseListInputItem(
                                                             r.Id,
                                                             r.PtId,
