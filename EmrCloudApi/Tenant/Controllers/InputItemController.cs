@@ -89,11 +89,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetYohoSetMstByItemCd)]
-        public async Task<ActionResult<Response<GetYohoSetMstByItemCdResponse>>> GetYohoSetMstByItemCd([FromQuery] GetYohoSetMstByItemCdRequest request)
+        public ActionResult<Response<GetYohoSetMstByItemCdResponse>> GetYohoSetMstByItemCd([FromQuery] GetYohoSetMstByItemCdRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new GetYohoMstByItemCdInputData(hpId, request.ItemCd, request.StartDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
             var presenter = new GetYohoMstByItemCdPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetYohoSetMstByItemCdResponse>>(presenter.Result);
