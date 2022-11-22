@@ -55,7 +55,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetReceptionListResponse>>> GetList([FromQuery] GetReceptionListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new GetReceptionListInputData(hpId, request.SinDate, request.RaiinNo, request.PtId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionListPresenter();
@@ -66,7 +66,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "ReceptionInfo")]
     public async Task<ActionResult<Response<GetReceptionVisitingResponse>>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
         var input = new GetReceptionVisitingInputData(hpId, request.RaiinNo);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionVisitingPresenter();
@@ -77,7 +77,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "Settings")]
     public async Task<ActionResult<Response<GetReceptionSettingsResponse>>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int userId = _userService.GetLoginUser().UserId;
         var input = new GetReceptionSettingsInputData(userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new GetReceptionSettingsPresenter();
@@ -88,8 +88,8 @@ public class VisitingController : ControllerBase
     [HttpPost("SaveSettings")]
     public async Task<ActionResult<Response<SaveVisitingListSettingsResponse>>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new SaveVisitingListSettingsInputData(req.Settings, hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveVisitingListSettingsPresenter();
@@ -100,8 +100,8 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "StaticCell")]
     public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new UpdateReceptionStaticCellInputData(
             hpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue, userId);
         var output = _bus.Handle(input);
@@ -129,8 +129,8 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "DynamicCell")]
     public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new UpdateReceptionDynamicCellInputData(
             hpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd, userId);
         var output = _bus.Handle(input);

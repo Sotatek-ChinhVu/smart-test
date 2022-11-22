@@ -39,8 +39,8 @@ public class RaiinFilterController : ControllerBase
     [HttpPost(ApiPath.SaveList + "Mst")]
     public async Task<ActionResult<Response<SaveRaiinFilterMstListResponse>>> SaveList([FromBody] SaveRaiinFilterMstListRequest req)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
+        int hpId = _userService.GetLoginUser().HpId;
+        int userId = _userService.GetLoginUser().UserId;
         var input = new SaveRaiinFilterMstListInputData(req.FilterMsts, hpId, userId);
         var output = await Task.Run(() => _bus.Handle(input));
         var presenter = new SaveRaiinFilterMstListPresenter();

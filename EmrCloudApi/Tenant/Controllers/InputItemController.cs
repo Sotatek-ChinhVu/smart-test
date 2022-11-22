@@ -18,6 +18,10 @@ using UseCase.DrugDetailData;
 using EmrCloudApi.Tenant.Presenters.DrugDetailData;
 using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Authorization;
+using EmrCloudApi.Tenant.Requests.YohoSetMst;
+using EmrCloudApi.Tenant.Responses.YohoSetMst;
+using UseCase.YohoSetMst.GetByItemCd;
+using EmrCloudApi.Tenant.Presenters.YohoSetMst;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -38,7 +42,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetDrugInf")]
         public async Task<ActionResult<Response<GetDrugInforResponse>>> GetDrugInformation([FromQuery] GetDrugInforRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetDrugInforInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run(()=>_bus.Handle(input));
 
@@ -51,7 +55,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDrugMenuTree)]
         public async Task<ActionResult<Response<GetDrugDetailResponse>>> GetDrugMenuTree([FromQuery] GetDrugDetailRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetDrugDetailInputData(hpId, request.SinDate, request.ItemCd);
             var output = await Task.Run( () => _bus.Handle(input));
 
@@ -64,7 +68,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListUsageTreeSet")]
         public async Task<ActionResult<Response<GetUsageTreeSetListResponse>>> GetUsageTree([FromQuery] GetUsageTreeSetListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
+            int hpId = _userService.GetLoginUser().HpId;
             var input = new GetUsageTreeSetInputData(hpId, request.SinDate, request.KouiKbn);
             var output =  await Task.Run( () => _bus.Handle(input));
             var present = new GetUsageTreeSetListPresenter();
@@ -82,6 +86,17 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetDrugDetailDataResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetYohoSetMstByItemCd)]
+        public ActionResult<Response<GetYohoSetMstByItemCdResponse>> GetYohoSetMstByItemCd([FromQuery] GetYohoSetMstByItemCdRequest request)
+        {
+            int hpId = _userService.GetLoginUser().HpId;
+            var input = new GetYohoMstByItemCdInputData(hpId, request.ItemCd, request.StartDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetYohoMstByItemCdPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetYohoSetMstByItemCdResponse>>(presenter.Result);
         }
     }
 }
