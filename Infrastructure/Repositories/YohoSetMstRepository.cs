@@ -2,7 +2,6 @@
 using Domain.Models.OrdInfDetails;
 using Domain.Models.YohoSetMst;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -16,13 +15,13 @@ namespace Infrastructure.Repositories
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
-        public async Task<IEnumerable<YohoSetMstModel>> GetByItemCd(int hpId, string itemcd , int startDate)
+        public IEnumerable<YohoSetMstModel> GetByItemCd(int hpId, string itemcd , int startDate)
         {
-            var tenMst = await _tenantDataContext.TenMsts.FirstOrDefaultAsync(x => x.HpId == hpId && x.ItemCd.Equals(itemcd) && x.StartDate == startDate);
+            var tenMst = _tenantDataContext.TenMsts.FirstOrDefault(x => x.HpId == hpId && x.ItemCd.Equals(itemcd) && x.StartDate == startDate);
             if(tenMst is null)
                 return Enumerable.Empty<YohoSetMstModel>();
 
-            var yohoMsts = await _tenantDataContext.YohoSetMsts.Where(x => x.IsDeleted == DeleteStatus.None && x.ItemCd.Equals(itemcd)).ToListAsync();
+            var yohoMsts = _tenantDataContext.YohoSetMsts.Where(x => x.IsDeleted == DeleteStatus.None && x.ItemCd.Equals(itemcd)).ToList();
 
             return yohoMsts.Select(x => new YohoSetMstModel(tenMst.Name ?? string.Empty, tenMst.YohoKbn, x.SetId, x.UserId, x.ItemCd));
         }
