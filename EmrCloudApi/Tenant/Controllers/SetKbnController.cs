@@ -25,11 +25,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetSetKbnMstListResponse>>> GetList([FromQuery] GetSetKbnMstListRequest request)
+        public ActionResult<Response<GetSetKbnMstListResponse>> GetList([FromQuery] GetSetKbnMstListRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new GetSetKbnMstListInputData(hpId, request.SinDate, request.SetKbnFrom, request.SetKbnTo);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetSetKbnMstListPresenter();
             presenter.Complete(output);

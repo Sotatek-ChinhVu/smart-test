@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public long Insert(ReceptionSaveDto dto, int hpId, int userId)
+        public long Insert(ReceptionSaveDto dto, int hpId, int userId, int uketukeNoMode, int uketukeNoStart)
         {
             var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
             return executionStrategy.Execute(() =>
@@ -66,6 +66,7 @@ namespace Infrastructure.Repositories
                 var maxRaiinBySinDate = _tenantNoTrackingDataContext.RaiinInfs
                                         .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate).ToList();
 
+<<<<<<< HEAD
                 int uketukeNo = dto.Reception.UketukeNo;
                 if (maxRaiinBySinDate.Any())
                 {
@@ -76,6 +77,10 @@ namespace Infrastructure.Repositories
                     }
                 }
 
+=======
+                int uketukeNo = GetNextUketukeNoBySetting
+                                  (hpId ,dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, uketukeNoMode, uketukeNoStart);
+>>>>>>> develop
 
                 // Insert RaiinInf
                 var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId, uketukeNo);
@@ -111,7 +116,34 @@ namespace Infrastructure.Repositories
 
             #region Helper methods
 
+<<<<<<< HEAD
             RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId, int uketukeNo)
+=======
+            int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo)
+            {
+                try
+                {
+                    var query = _tenantNoTrackingDataContext.RaiinInfs.Where
+                        (
+                            p => p.HpId == hpId && p.SinDate == sindate
+                            && ((uketukeMode == 1 || uketukeMode == 3) ? p.UketukeSbt == infKbn : true)
+                            && ((uketukeMode == 2 || uketukeMode == 3) ? p.KaId == kaId : true)
+                            && p.IsDeleted == DeleteTypes.None
+                        ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
+                    if (query != null)
+                    {
+                        return query.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : query.UketukeNo + 1;
+                    }
+                }
+                catch
+                {
+                    return 1;
+                }
+                return defaultUkeNo > 0 ? defaultUkeNo : 1;
+            }
+
+            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId,int uketukeNo)
+>>>>>>> develop
             {
                 return new RaiinInf
                 {
