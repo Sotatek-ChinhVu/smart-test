@@ -14,13 +14,13 @@ namespace Domain.Models.PatientInfor
 
         (PatientInforModel, bool) SearchExactlyPtNum(int ptNum, int hpId);
 
-        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId);
+        List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize);
 
-        List<PatientInforModel> SearchBySindate(int sindate, int hpId);
+        List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize);
 
-        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId);
+        List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
-        List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId);
+        List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize);
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 

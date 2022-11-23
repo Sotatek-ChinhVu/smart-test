@@ -26,10 +26,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetListImageTemplatesResponse>>> GetList()
+        public ActionResult<Response<GetListImageTemplatesResponse>> GetList()
         {
             var input = new GetListImageTemplatesInputData();
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetListImageTemplatesPresenter();
             presenter.Complete(output);
@@ -38,11 +38,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SaveImageTodayOrder)]
-        public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
+        public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new SaveImageTodayOrderInputData(hpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new SaveImageTodayOrderPresenter();
             presenter.Complete(output);

@@ -28,12 +28,12 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetOrdInfListTreeResponse>>> GetList([FromQuery] GetOrdInfListTreeRequest request)
+        public ActionResult<Response<GetOrdInfListTreeResponse>> GetList([FromQuery] GetOrdInfListTreeRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             int userId = _userService.GetLoginUser().UserId;
             var input = new GetOrdInfListTreeInputData(request.PtId, hpId, request.RaiinNo, request.SinDate, request.IsDeleted, userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetOrdInfListTreePresenter();
             presenter.Complete(output);
@@ -42,7 +42,7 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.ValidateInputItem)]
-        public async Task<ActionResult<Response<ValidationInputItemOrdInfListResponse>>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
+        public ActionResult<Response<ValidationInputItemOrdInfListResponse>> ValidateInputItem([FromBody] ValidationInputItemRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new ValidationInputItemInputData(
@@ -70,7 +70,7 @@ namespace EmrCloudApi.Tenant.Controllers
                                 )).ToList()
                             )
                     ).ToList());
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new ValidationInputItemPresenter();
             presenter.Complete(output);
@@ -79,11 +79,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.GetMaxRpNo)]
-        public async Task<ActionResult<Response<GetMaxRpNoResponse>>> GetMaxRpNo([FromBody] GetMaxRpNoRequest request)
+        public ActionResult<Response<GetMaxRpNoResponse>> GetMaxRpNo([FromBody] GetMaxRpNoRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new GetMaxRpNoInputData(request.PtId, hpId, request.RaiinNo, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetMaxRpNoPresenter();
             presenter.Complete(output);
@@ -92,11 +92,11 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetHeaderInf)]
-        public async Task<ActionResult<Response<GetHeaderInfResponse>>> GetHeaderInf([FromQuery] GetMaxRpNoRequest request)
+        public ActionResult<Response<GetHeaderInfResponse>> GetHeaderInf([FromQuery] GetMaxRpNoRequest request)
         {
             int hpId = _userService.GetLoginUser().HpId;
             var input = new GetHeaderInfInputData(request.PtId, hpId, request.RaiinNo, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetHeaderInfPresenter();
             presenter.Complete(output);

@@ -33,7 +33,7 @@ public class SystemConfRepository : ISystemConfRepository
         return systemConf != null ? systemConf.Val : 0;
     }
 
-    public string GetSettingParams(int groupCd, int grpEdaNo, int hpId)
+    public string GetSettingParams(int groupCd, int grpEdaNo, int hpId , string defaultParam = "")
     {
 
         var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo && p.HpId == hpId);
@@ -45,7 +45,7 @@ public class SystemConfRepository : ISystemConfRepository
             return systemConf.Param;
         }
 
-        return string.Empty;
+        return defaultParam;
     }
 
     private SystemConfModel ToModel(SystemConf s)

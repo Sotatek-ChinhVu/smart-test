@@ -8,5 +8,5 @@ public interface ISystemConfRepository
 
     double GetSettingValue(int groupCd, int grpEdaNo, int hpId);
 
-    string GetSettingParams(int groupCd, int grpEdaNo, int hpId);
+    string GetSettingParams(int groupCd, int grpEdaNo, int hpId, string defaultParam = "");
 }

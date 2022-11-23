@@ -107,6 +107,9 @@
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
 
+        //GetYohoSetMst
+        public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
         //Check before save medical
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetByomeiOfCheckDiseases = "GetByomeiOfCheckDiseases";

@@ -28,31 +28,31 @@ public class UketukeSbtController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public async Task<ActionResult<Response<GetUketukeSbtMstListResponse>>> GetListMst()
+    public ActionResult<Response<GetUketukeSbtMstListResponse>> GetListMst()
     {
         var input = new GetUketukeSbtMstListInputData();
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "BySinDate")]
-    public async Task<ActionResult<Response<GetUketukeSbtMstBySinDateResponse>>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
+    public ActionResult<Response<GetUketukeSbtMstBySinDateResponse>> GetBySinDate([FromQuery] GetUketukeSbtMstBySinDateRequest req)
     {
         var input = new GetUketukeSbtMstBySinDateInputData(req.SinDate);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetUketukeSbtMstBySinDatePresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpGet(ApiPath.Get + "Next")]
-    public async Task<ActionResult<Response<GetNextUketukeSbtMstResponse>>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
+    public ActionResult<Response<GetNextUketukeSbtMstResponse>> GetNext([FromQuery] GetNextUketukeSbtMstRequest req)
     {
         int userId = _userService.GetLoginUser().UserId;
         var input = new GetNextUketukeSbtMstInputData(req.SinDate, req.CurrentKbnId, userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetNextUketukeSbtMstPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);

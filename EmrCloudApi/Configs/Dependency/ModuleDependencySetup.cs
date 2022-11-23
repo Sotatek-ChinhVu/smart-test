@@ -56,6 +56,7 @@ using Domain.Models.UsageTreeSet;
 using Domain.Models.User;
 using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
+using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
 using EmrCloudApi.Tenant.Services;
 using EventProcessor.Interfaces;
@@ -114,6 +115,7 @@ using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.UserConf;
 using Interactor.VisitingList;
+using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
@@ -239,6 +241,7 @@ using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
+using UseCase.YohoSetMst.GetByItemCd;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -351,6 +354,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
             services.AddTransient<IReporting, Reporting>();
+            services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -583,6 +587,9 @@ namespace EmrCloudApi.Configs.Dependency
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
             busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
+
+            //YohoSetMst
+            busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

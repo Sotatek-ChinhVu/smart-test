@@ -12,7 +12,7 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
         {
             Result = new Response<ValidateRousaiJibaiResponse>()
             {
-                Data = new ValidateRousaiJibaiResponse(output.Result, output.Message),
+                Data = new ValidateRousaiJibaiResponse(output.Result, output.Message, output.TypeMessage),
                 Status = (byte)output.Status,
             };
             switch (output.Status)

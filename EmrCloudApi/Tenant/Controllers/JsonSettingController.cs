@@ -27,21 +27,21 @@ public class JsonSettingController : ControllerBase
     }
 
     [HttpGet(ApiPath.Get)]
-    public async Task<ActionResult<Response<GetJsonSettingResponse>>> Get([FromQuery] GetJsonSettingRequest req)
+    public ActionResult<Response<GetJsonSettingResponse>> Get([FromQuery] GetJsonSettingRequest req)
     {
         int userId = _userService.GetLoginUser().UserId;
         var input = new GetJsonSettingInputData(userId, req.Key);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetJsonSettingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.Upsert)]
-    public async Task<ActionResult<Response<UpsertJsonSettingResponse>>> Upsert([FromBody] UpsertJsonSettingRequest req)
+    public ActionResult<Response<UpsertJsonSettingResponse>> Upsert([FromBody] UpsertJsonSettingRequest req)
     {
         var input = new UpsertJsonSettingInputData(req.Setting);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new UpsertJsonSettingPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
