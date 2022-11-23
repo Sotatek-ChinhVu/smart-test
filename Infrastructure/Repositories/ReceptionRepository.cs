@@ -165,27 +165,20 @@ namespace Infrastructure.Repositories
             #endregion
         }
 
-        public int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo)
+        public int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode)
         {
-            try
+            var query = _tenantNoTrackingDataContext.RaiinInfs.Where
+                (
+                    p => p.HpId == hpId && p.SinDate == sindate
+                    && (!(uketukeMode == 1 || uketukeMode == 3) || p.UketukeSbt == infKbn)
+                    && (!(uketukeMode == 2 || uketukeMode == 3) || p.KaId == kaId)
+                    && p.IsDeleted == DeleteTypes.None
+                ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
+            if (query != null)
             {
-                var query = _tenantNoTrackingDataContext.RaiinInfs.Where
-                    (
-                        p => p.HpId == hpId && p.SinDate == sindate
-                        && ((uketukeMode == 1 || uketukeMode == 3) ? p.UketukeSbt == infKbn : true)
-                        && ((uketukeMode == 2 || uketukeMode == 3) ? p.KaId == kaId : true)
-                        && p.IsDeleted == DeleteTypes.None
-                    ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
-                if (query != null)
-                {
-                    return query.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : query.UketukeNo + 1;
-                }
+                return query.UketukeNo;
             }
-            catch
-            {
-                return 1;
-            }
-            return defaultUkeNo > 0 ? defaultUkeNo : 1;
+            return 0;
         }
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)

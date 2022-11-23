@@ -40,6 +40,6 @@ namespace Domain.Models.Reception
 
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
 
-        int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo);
+        int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
     }
 }
