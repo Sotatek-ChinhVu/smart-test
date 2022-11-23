@@ -137,7 +137,7 @@ namespace Domain.Models.Diseases
             {
                 return ValidationStatus.InvalidHpId;
             }
-            if (SortNo <= 0)
+            if (SortNo < 0)
             {
                 return ValidationStatus.InvalidSortNo;
             }
