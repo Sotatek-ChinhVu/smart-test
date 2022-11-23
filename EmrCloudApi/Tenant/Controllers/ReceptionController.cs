@@ -39,26 +39,20 @@ using UseCase.ReceptionSameVisit.Get;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class ReceptionController : ControllerBase
+    public class ReceptionController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        private readonly IUserService _userService;
-
-        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService)
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get + "ReceptionComment")]
         public ActionResult<Response<GetReceptionCommentResponse>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetReceptionCommentInputData(hpId, request.RaiinNo);
+            var input = new GetReceptionCommentInputData(HpId, request.RaiinNo);
             var output = _bus.Handle(input);
             var presenter = new GetReceptionCommentPresenter();
             presenter.Complete(output);
@@ -80,8 +74,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetLastRaiinInfs)]
         public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetLastRaiinInfsInputData(hpId, request.PtId, request.SinDate);
+            var input = new GetLastRaiinInfsInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetLastRaiinInfsPresenter();
@@ -93,9 +86,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Insert)]
         public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new InsertReceptionInputData(request.Dto, hpId, userId);
+            var input = new InsertReceptionInputData(request.Dto, HpId, UserId);
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
@@ -112,9 +103,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Update)]
         public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateReceptionInputData(request.Dto, hpId, userId);
+            var input = new UpdateReceptionInputData(request.Dto, HpId, UserId);
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
@@ -131,8 +120,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientRaiinKubun")]
         public ActionResult<Response<GetPatientRaiinKubunResponse>> GetPatientRaiinKubun([FromQuery] PatientRaiinKubunRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetPatientRaiinKubunInputData(hpId, request.PtId, request.RaiinNo, request.SinDate);
+            var input = new GetPatientRaiinKubunInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetPatientRaiinKubunPresenter();
@@ -144,8 +132,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetReceptionInsurance")]
         public ActionResult<Response<ReceptionInsuranceResponse>> GetReceptionInsurance([FromQuery] ReceptionInsuranceRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetReceptionInsuranceInputData(hpId, request.PtId, request.SinDate, request.IsShowExpiredReception);
+            var input = new GetReceptionInsuranceInputData(HpId, request.PtId, request.SinDate, request.IsShowExpiredReception);
             var output = _bus.Handle(input);
 
             var presenter = new ReceptionInsurancePresenter();
@@ -157,8 +144,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListSameVisit")]
         public ActionResult<Response<GetReceptionSameVisitResponse>> GetListSameVisit([FromQuery] GetReceptionSameVisitRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetReceptionSameVisitInputData(hpId, request.PtId, request.SinDate);
+            var input = new GetReceptionSameVisitInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionSameVisitPresenter();
@@ -170,8 +156,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetMaxMoneyData")]
         public ActionResult<Response<GetMaxMoneyResponse>> GetMaxMoney([FromQuery] GetMaxMoneyRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetMaxMoneyInputData(request.PtId, hpId, request.HokenKohiId, request.SinDate);
+            var input = new GetMaxMoneyInputData(request.PtId, HpId, request.HokenKohiId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetMaxMoneyPresenter();
@@ -183,9 +168,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SaveMaxMoneyData")]
         public ActionResult<Response<SaveMaxMoneyResponse>> SaveMaxMoney([FromBody] SaveMaxMoneyRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveMaxMoneyInputData(request.ListLimits, hpId, request.PtId, request.KohiId, request.SinYM, userId);
+            var input = new SaveMaxMoneyInputData(request.ListLimits, HpId, request.PtId, request.KohiId, request.SinYM, UserId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveMaxMoneyPresenter();
@@ -197,8 +180,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("CheckPatternSelectedExpirated")]
         public ActionResult<Response<ValidPatternExpiratedResponse>> CheckPatternSelectedExpirated([FromBody] ValidPatternExpiratedRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new ValidPatternExpiratedInputData(hpId, request.PtId, request.SinDate, request.PatternHokenPid, request.PatternIsExpirated, request.HokenInfIsJihi, request.HokenInfIsNoHoken, request.PatternConfirmDate,
+            var input = new ValidPatternExpiratedInputData(HpId, request.PtId, request.SinDate, request.PatternHokenPid, request.PatternIsExpirated, request.HokenInfIsJihi, request.HokenInfIsNoHoken, request.PatternConfirmDate,
                                                            request.HokenInfStartDate, request.HokenInfEndDate, request.IsHaveHokenMst, request.HokenMstStartDate, request.HokenMstEndDate, request.HokenMstDisplayTextMaster, request.IsEmptyKohi1,
                                                            request.IsKohiHaveHokenMst1, request.KohiConfirmDate1, request.KohiHokenMstDisplayTextMaster1, request.KohiHokenMstStartDate1, request.KohiHokenMstEndDate1,
                                                            request.IsEmptyKohi2, request.IsKohiHaveHokenMst2, request.KohiConfirmDate2, request.KohiHokenMstDisplayTextMaster2, request.KohiHokenMstStartDate2,
@@ -215,8 +197,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDataReceptionDefault)]
         public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetReceptionDefaultInputData(hpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var input = new GetReceptionDefaultInputData(HpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
             var output = _bus.Handle(input);
 
             var presenter = new GetReceptionDefaultPresenter();
@@ -228,8 +209,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDefaultSelectedTime)]
         public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetDefaultSelectedTimeInputData(hpId, request.SinDate, request.BirthDay);
+            var input = new GetDefaultSelectedTimeInputData(HpId, request.SinDate, request.BirthDay);
             var output = _bus.Handle(input);
 
             var presenter = new GetDefaultSelectedTimePresenter();
@@ -241,9 +221,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateTimeZoneDayInf)]
         public ActionResult<Response<UpdateTimeZoneDayInfResponse>> UpdateTimeZoneDayInf([FromBody] UpdateTimeZoneDayInfRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateTimeZoneDayInfInputData(hpId, userId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
+            var input = new UpdateTimeZoneDayInfInputData(HpId, UserId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
             var output = _bus.Handle(input);
 
             var presenter = new UpdateTimeZoneDayInfPresenter();
