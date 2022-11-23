@@ -11,5 +11,7 @@
         List<NextOrderModel> GetList(int hpId, long ptId, int rsvkrtKbn, bool isDeleted);
 
         bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels);
+
+        List<RsvkrtOrderInfModel> GetCheckOrderInfs(int hpId, long ptId);
     }
 }

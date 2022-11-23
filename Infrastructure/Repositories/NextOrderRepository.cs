@@ -80,6 +80,15 @@ namespace Infrastructure.Repositories
             return oderInfModels;
         }
 
+        public List<RsvkrtOrderInfModel> GetCheckOrderInfs(int hpId, long ptId)
+        {
+            var orderInfs = _tenantDataContext.RsvkrtOdrInfs.Where(o => o.HpId == hpId && o.PtId == ptId && o.IsDeleted == DeleteTypes.None).ToList();
+
+            var oderInfModels = orderInfs.Select(o => ConvertOrderInfToModel(o)).ToList();
+
+            return oderInfModels;
+        }
+
         public bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
             var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
@@ -454,6 +463,34 @@ namespace Infrastructure.Repositories
                     odrInf.CreateId,
                     createName,
                     odrInfDetailModels
+                );
+        }
+
+        private RsvkrtOrderInfModel ConvertOrderInfToModel(RsvkrtOdrInf odrInf)
+        {
+            return new RsvkrtOrderInfModel(
+                    odrInf.HpId,
+                    odrInf.PtId,
+                    odrInf.RsvDate,
+                    odrInf.RsvkrtNo,
+                    odrInf.RpNo,
+                    odrInf.RpEdaNo,
+                    odrInf.Id,
+                    odrInf.HokenPid,
+                    odrInf.OdrKouiKbn,
+                    odrInf.RpName ?? string.Empty,
+                    odrInf.InoutKbn,
+                    odrInf.SikyuKbn,
+                    odrInf.SyohoSbt,
+                    odrInf.SanteiKbn,
+                    odrInf.TosekiKbn,
+                    odrInf.DaysCnt,
+                    odrInf.IsDeleted,
+                    odrInf.SortNo,
+                    odrInf.CreateDate,
+                    odrInf.CreateId,
+                    string.Empty,
+                    new()
                 );
         }
 

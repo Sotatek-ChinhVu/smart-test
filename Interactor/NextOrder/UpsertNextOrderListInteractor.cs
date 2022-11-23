@@ -48,6 +48,8 @@ namespace Interactor.NextOrder
                 List<(int, int, RsvkrtByomeiStatus)> validationRsvkrtByomeis = new();
                 var validationOrdInfs = new List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)>();
 
+                
+
                 for (int i = 0; i < nextOrderModels.Count; i++)
                 {
                     var nextOrderModel = nextOrderModels[i];
@@ -84,6 +86,53 @@ namespace Interactor.NextOrder
                             validationOneOrdInf.Add(i2.ToString(), validationOrderInf);
                         }
                     }
+
+                    var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(inputData.HpId, inputData.PtId);
+
+                    foreach (var nextOrderItem in inputData.NextOrderItems)
+                    {
+                        var hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
+
+                    }
+                    var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
+                    object obj = new();
+                    Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
+                    {
+                        var item = nextOrderModel.RsvkrtOrderInfs[index];
+
+                        if (item.Id > 0)
+                        {
+                            var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                            if (!check)
+                            {
+                                AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                return;
+                            }
+                        }
+
+                        var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
+                        var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                        if (checkObjs.Count >= 2 && positionOrd == index)
+                        {
+                            AddErrorStatus(obj, dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                            return;
+                        }
+
+                        var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
+                        if (!checkHokenPid)
+                        {
+                            AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+
+                            return;
+                        }
+
+                        var odrDetail = item.OdrDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo);
+                        if (odrDetail != null)
+                        {
+                            var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
+                            AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                        }
+                    });
                     if (validationOneOrdInf.Any())
                         validationOrdInfs.Add((i, validationOneOrdInf));
                 }
