@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
 using EmrCloudApi.Tenant.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
@@ -22,17 +21,13 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class MstItemController : ControllerBase
+    public class MstItemController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
 
-        public MstItemController(UseCaseBus bus, IUserService userService)
+        public MstItemController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpPost(ApiPath.GetDosageDrugList)]
@@ -86,8 +81,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SearchTenItem)]
         public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, hpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
             var output = _bus.Handle(input);
             var presenter = new SearchTenItemPresenter();
             presenter.Complete(output);
@@ -97,9 +91,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
         public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, hpId, userId);
+            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, HpId, UserId);
             var output = _bus.Handle(input);
             var presenter = new UpdateAdoptedTenItemPresenter();
             presenter.Complete(output);
@@ -121,9 +113,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.UpdateAdoptedByomei)]
         public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateAdoptedByomeiInputData(hpId, request.ByomeiCd, userId);
+            var input = new UpdateAdoptedByomeiInputData(HpId, request.ByomeiCd, UserId);
             var output = _bus.Handle(input);
             var presenter = new UpdateAdoptedByomeiPresenter();
             presenter.Complete(output);
@@ -133,8 +123,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchPostCode)]
         public ActionResult<Response<SearchPostCodeRespone>> GetList([FromQuery] SearchPostCodeRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchPostCodeInputData(hpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
+            var input = new SearchPostCodeInputData(HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);
@@ -144,8 +133,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.FindTenMst)]
         public ActionResult<Response<FindtenMstResponse>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new FindTenMstInputData(hpId, request.SinDate, request.ItemCd);
+            var input = new FindTenMstInputData(HpId, request.SinDate, request.ItemCd);
             var output = _bus.Handle(input);
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);

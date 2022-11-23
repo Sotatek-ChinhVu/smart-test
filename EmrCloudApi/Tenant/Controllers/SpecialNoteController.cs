@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.SpecialNote;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SpecialNote;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SpecialNote.AddAlrgyDrugList;
@@ -14,22 +13,18 @@ using UseCase.SpecialNote.Save;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class SpecialNoteController
+    public class SpecialNoteController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public SpecialNoteController(UseCaseBus bus, IUserService userService)
+        public SpecialNoteController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get)]
         public ActionResult<Response<GetSpecialNoteResponse>> Get([FromQuery] SpecialNoteRequest request)
         {
-            var input = new GetSpecialNoteInputData(request.HpId, request.PtId);
+            var input = new GetSpecialNoteInputData(HpId, request.PtId);
             var output = _bus.Handle(input);
 
             var presenter = new GetSpecialNotePresenter();
@@ -41,8 +36,6 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.AddAlrgyDrugList)]
         public ActionResult<Response<AddAlrgyDrugListResponse>> AddAlrgyDrugList([FromBody] AddAlrgyDrugListRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
             var input = new AddAlrgyDrugListInputData(request.AlgrgyDrugs.Select(
                                                         a => new AddAlrgyDrugListItemInputData(
                                                                 a.PtId,
@@ -53,8 +46,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                                 a.Cmt
                                                             )
                                                         ).ToList(),
-                                                        hpId,
-                                                        userId
+                                                        HpId,
+                                                        UserId
                                                         );
             var output = _bus.Handle(input);
 
@@ -67,9 +60,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Save)]
         public ActionResult<Response<SaveSpecialNoteResponse>> Save([FromBody] SpecialNoteSaveRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveSpecialNoteInputData(hpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), userId);
+            var input = new SaveSpecialNoteInputData(HpId, request.PtId, request.SummaryTab.Map(), request.ImportantNoteTab.Map(), request.PatientInfoTab.Map(), UserId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveSpecialNotePresenter();
