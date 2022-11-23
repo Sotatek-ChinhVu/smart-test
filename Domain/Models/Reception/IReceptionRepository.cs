@@ -39,5 +39,7 @@ namespace Domain.Models.Reception
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
 
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
+
+        int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo);
     }
 }

@@ -26,10 +26,14 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
         }
 
         int uketukeNoMode = _systemConfRepository.GetSettingValue(1008, 0, input.HpId).AsInteger();
-        int uketukeNoStart = _systemConfRepository.GetSettingParams(1008 , 0, input.HpId, defaultParam: "1").AsInteger();
+        int uketukeNoStart = _systemConfRepository.GetSettingParams(1008, 0, input.HpId, defaultParam: "1").AsInteger();
 
+        // check end set uketukeNo
 
-        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId, uketukeNoMode , uketukeNoStart);
+        int uketukeNo = dto.Reception.UketukeNo < 0 ? _receptionRepository.GetNextUketukeNoBySetting(input.HpId, dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, uketukeNoMode, uketukeNoStart) : dto.Reception.UketukeNo;
+        dto = dto.ChangeUketukeNo(uketukeNo);
+
+        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId, uketukeNoMode, uketukeNoStart);
         return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
     }
 }
