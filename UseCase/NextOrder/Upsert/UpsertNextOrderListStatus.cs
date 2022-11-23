@@ -1,6 +1,6 @@
 ﻿namespace UseCase.NextOrder.Upsert
 {
-    public enum UpsertNextOrderStatus : byte
+    public enum UpsertNextOrderListStatus : byte
     {
         Successed = 1,
         InvalidHpId = 2,

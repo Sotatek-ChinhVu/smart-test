@@ -7,30 +7,30 @@ using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace Interactor.NextOrder
 {
-    public class UpsertNextOrderInteractor : IUpsertNextOrderInputPort
+    public class UpsertNextOrderListInteractor : IUpsertNextOrderListInputPort
     {
         private readonly INextOrderRepository _nextOrderRepository;
 
-        public UpsertNextOrderInteractor(INextOrderRepository nextOrderRepository)
+        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository)
         {
             _nextOrderRepository = nextOrderRepository;
         }
 
-        public UpsertNextOrderOutputData Handle(UpsertNextOrderInputData inputData)
+        public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
         {
             try
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new UpsertNextOrderOutputData(UpsertNextOrderStatus.InvalidHpId, new(), new(), new());
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
                 if (inputData.PtId <= 0)
                 {
-                    return new UpsertNextOrderOutputData(UpsertNextOrderStatus.InvalidPtId, new(), new(), new());
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
                 if (inputData.UserId <= 0)
                 {
-                    return new UpsertNextOrderOutputData(UpsertNextOrderStatus.InvalidUserId, new(), new(), new());
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
                 }
 
                 var nextOrderModels = inputData.NextOrderItems.Select(n => ConvertNextOrderToModel(inputData.HpId, inputData.PtId, n)).ToList();
@@ -79,14 +79,14 @@ namespace Interactor.NextOrder
                 }
                 if (validationKarteInfs.Count > 0 || validationNextOrders.Count > 0 || validationRsvkrtByomeis.Count > 0 || validationOrdInf.Count > 0)
                 {
-                    return new UpsertNextOrderOutputData(UpsertNextOrderStatus.Failed, validationNextOrders, validationOrdInf, validationKarteInfs);
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInf, validationKarteInfs, validationRsvkrtByomeis);
                 }
                 _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
-                return new UpsertNextOrderOutputData(UpsertNextOrderStatus.Successed, new(), new(), new());
+                return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
             }
             catch
             {
-                return new UpsertNextOrderOutputData(UpsertNextOrderStatus.Failed, new(), new(), new());
+                return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
             }
         }
 

@@ -32,13 +32,14 @@
 
         public enum RsvkrtByomeiStatus
         {
-            InvalidSikkanKbn = 6,
+            Success = 1,
+            UpdateNoSuccess,
+            InvalidInputNoData,
+            InvalidSikkanKbn,
             InvalidNanByoCd,
             InvalidFreeWord,
             InvalidByomei,
             InvalidId,
-            InvalidHpId,
-            InvalidPtId,
             InvalidByomeiCd,
             InvalidSyubyoKbn,
             InvalidHosokuCmt,

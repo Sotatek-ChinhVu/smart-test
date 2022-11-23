@@ -37,14 +37,6 @@ namespace Domain.Models.NextOrder
             {
                 return RsvkrtByomeiStatus.InvalidId;
             }
-            if (PtId <= 0)
-            {
-                return RsvkrtByomeiStatus.InvalidPtId;
-            }
-            if (HpId <= 0)
-            {
-                return RsvkrtByomeiStatus.InvalidHpId;
-            }
             if (RsvkrtNo <= 0)
             {
                 return RsvkrtByomeiStatus.InvalidRsvkrtNo;

@@ -2,7 +2,7 @@
 
 namespace UseCase.NextOrder.Upsert
 {
-    public class UpsertNextOrderInputData : IInputData<UpsertNextOrderOutputData>
+    public class UpsertNextOrderListInputData : IInputData<UpsertNextOrderListOutputData>
     {
         public long PtId { get; private set; }
 
@@ -12,7 +12,7 @@ namespace UseCase.NextOrder.Upsert
 
         public List<NextOrderItem> NextOrderItems { get; private set; }
 
-        public UpsertNextOrderInputData(long ptId, int hpId, int userId, List<NextOrderItem> nextOrderItems)
+        public UpsertNextOrderListInputData(long ptId, int hpId, int userId, List<NextOrderItem> nextOrderItems)
         {
             PtId = ptId;
             HpId = hpId;

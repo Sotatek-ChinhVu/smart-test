@@ -800,5 +800,8 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+        public static readonly string InvalidRsvDate = "Invalid RsvDate";
+        public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
+        public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
     }
 }

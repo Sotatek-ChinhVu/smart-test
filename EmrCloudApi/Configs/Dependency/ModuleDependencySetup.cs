@@ -168,6 +168,7 @@ using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Upsert;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -577,6 +578,7 @@ namespace EmrCloudApi.Configs.Dependency
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
             busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
+            busBuilder.RegisterUseCase<UpsertNextOrderListInputData, UpsertNextOrderListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

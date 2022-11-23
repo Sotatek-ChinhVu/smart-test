@@ -6,17 +6,18 @@ using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace UseCase.NextOrder.Upsert
 {
-    public class UpsertNextOrderOutputData : IOutputData
+    public class UpsertNextOrderListOutputData : IOutputData
     {
-        public UpsertNextOrderOutputData(UpsertNextOrderStatus status, Dictionary<int, NextOrderStatus> validationNextOrder, List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)> validationOdrs, List<(int, KarteValidationStatus)> validationKarte)
+        public UpsertNextOrderListOutputData(UpsertNextOrderListStatus status, Dictionary<int, NextOrderStatus> validationNextOrder, List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)> validationOdrs, List<(int, KarteValidationStatus)> validationKarte, List<(int, int, RsvkrtByomeiStatus)> validationByomeis)
         {
             Status = status;
             ValidationNextOrder = validationNextOrder;
             ValidationOdrs = validationOdrs;
             ValidationKarte = validationKarte;
+            ValidationByomeis = validationByomeis;
         }
 
-        public UpsertNextOrderStatus Status { get; private set; }
+        public UpsertNextOrderListStatus Status { get; private set; }
 
         public Dictionary<int, NextOrderStatus> ValidationNextOrder { get; private set; }
 
@@ -24,6 +25,6 @@ namespace UseCase.NextOrder.Upsert
 
         public List<(int, KarteValidationStatus)> ValidationKarte { get; private set; }
 
-        public (int, int, RsvkrtByomeiStatus) ValidationByomeis { get; private set; }
+        public List<(int, int, RsvkrtByomeiStatus)> ValidationByomeis { get; private set; }
     }
 }
