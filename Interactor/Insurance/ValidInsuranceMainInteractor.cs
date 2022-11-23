@@ -51,7 +51,7 @@ namespace Interactor.Insurance
                         var checkMessageIsValidJihi = IsValidJihi(inputData.SelectedHokenInfHokenNo);
                         if (!String.IsNullOrEmpty(checkMessageIsValidJihi))
                         {
-                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, ValidMainInsuranceStatus.InvalidFaild);
+                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidFaild);
                         }
                         // ignore
                         break;
@@ -84,12 +84,12 @@ namespace Interactor.Insurance
                         }
                         break;
                 }
-                return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+                return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
             }
             catch (Exception)
             {
 
-                return new ValidMainInsuranceOutputData(false, "Validate Exception", ValidMainInsuranceStatus.InvalidFaild);
+                return new ValidMainInsuranceOutputData(false, "Validate Exception", TypeMessage.TypeMessageError , ValidMainInsuranceStatus.InvalidFaild);
             }
         }
 
@@ -97,70 +97,70 @@ namespace Interactor.Insurance
         {
             if (inputData.HpId < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidHpId);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHpId);
             }
 
             if (inputData.SinDate < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSinDate);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSinDate);
             }
 
             if (inputData.PtBirthday < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidPtBirthday);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidPtBirthday);
             }
 
             if (inputData.HokenKbn < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
             }
 
             if (inputData.HokenKbn < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
             }
 
             if (inputData.SelectedHokenInfHokenNo < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenNo);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenNo);
             }
 
             if (inputData.SelectedHokenInfHokenEdraNo < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenEdraNo);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfHokenEdraNo);
             }
 
             if (inputData.SelectedHokenInfStartDate < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfStartDate);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfStartDate);
             }
 
             if (inputData.SelectedHokenInfEndDate < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfEndDate);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfEndDate);
             }
 
             if (inputData.SelectedHokenInfHonkeKbn < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfHonkeKbn);
             }
 
             if (inputData.SelectedHokenInfTokureiYm1 < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm1);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm1);
             }
 
             if (inputData.SelectedHokenInfTokureiYm2 < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm2);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfTokureiYm2);
             }
 
             if (inputData.SelectedHokenInfConfirmDate < 0)
             {
-                return new ValidMainInsuranceOutputData(false, string.Empty, ValidMainInsuranceStatus.InvalidSelectedHokenInfConfirmDate);
+                return new ValidMainInsuranceOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidSelectedHokenInfConfirmDate);
             }
 
-            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private string IsValidJihi(int selectedHokenInfHokenNo)
@@ -180,13 +180,13 @@ namespace Interactor.Insurance
             var checkMessageIsValidEmptyHoken = IsValidEmptyHoken(isSelectedHokenPattern, isAddNew, isEmptyHoken, isEmptyKohi1, isEmptyKohi2, isEmptyKohi3, isEmptyKohi4);
             if (!String.IsNullOrEmpty(checkMessageIsValidEmptyHoken))
             {
-                return new ValidMainInsuranceOutputData(false, checkMessageIsValidEmptyHoken, ValidMainInsuranceStatus.InvalidEmptyHoken);
+                return new ValidMainInsuranceOutputData(false, checkMessageIsValidEmptyHoken, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidEmptyHoken);
             }
             // Validate HokenNashi only
             var checkMessageIsValidHokenNashiOnly = IsValidHokenNashiOnly(isSelectedHokenPattern, isSelectedHokenInf, hokenKbn, selectedHokenInfHoubetu, isEmptyKohi1, isEmptyKohi2, isEmptyKohi3, isEmptyKohi4);
             if (!String.IsNullOrEmpty(checkMessageIsValidHokenNashiOnly))
             {
-                return new ValidMainInsuranceOutputData(false, checkMessageIsValidHokenNashiOnly, ValidMainInsuranceStatus.InvalidHokenNashiOnly);
+                return new ValidMainInsuranceOutputData(false, checkMessageIsValidHokenNashiOnly, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokenNashiOnly);
             }
             // Valiate HokenInf
             var checkIsValidHokenInf = IsValidHokenInf(selectedHokenInf, selectedHokenInfIsAddNew, hokenKbn, selectedHokenInfHoubetu, hpId, sinDate, selectedHokenInfTokki1, selectedHokenInfTokki2, selectedHokenInfTokki3, selectedHokenInfTokki4, selectedHokenInfTokki5, selectedHokenInfStartDate, selectedHokenInfEndDate, selectedHokenInfIsJihi, hokenSyaNo, hokenNo, isHaveSelectedHokenMst, selectedHokenInfHoubetu, sHokenMstHoubetsuNumber, sHokenMstHokenNumber, sHokenMstCheckDegit, ptBirthday, sHokenMstAgeStart, sHokenMstAgeEnd, kigo, bango, hokenMstIsKigoNa, honkeKbn, startDate, endDate, selectedHokenInfTokureiYm1, selectedHokenInfTokureiYm2, selectedHokenInfisShahoOrKokuho, selectedHokenInfisExpirated, selectedHokenInfconfirmDate, selectedHokenMstStartDate, selectedHokenMstEndDate, selectedHokenMstDisplayText);
@@ -194,7 +194,7 @@ namespace Interactor.Insurance
             {
                 return checkIsValidHokenInf;
             }
-            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private string IsValidEmptyHoken(bool isSelectedHokenPattern, bool isAddNew, bool isEmptyHoken, bool isEmptyKohi1, bool isEmptyKohi2, bool isEmptyKohi3, bool isEmptyKohi4)
@@ -229,7 +229,7 @@ namespace Interactor.Insurance
             var message = "";
             if(!selectedHokenInf)
             {
-                return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+                return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
             }
             // Validate not HokenInf
             if (hokenKbn == 1 && selectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
@@ -239,7 +239,7 @@ namespace Interactor.Insurance
             // Validate Jihi
             if (selectedHokenInfIsJihi)
             {
-                return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+                return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
             }
             var checkIsValidHokenDetail = IsValidHokenDetail(hpId, sinDate, selectedHokenInfTokki1, selectedHokenInfTokki2, selectedHokenInfTokki3, selectedHokenInfTokki4, selectedHokenInfTokki5);
             if (!checkIsValidHokenDetail.Result)
@@ -255,19 +255,19 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "保険者番号" };
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokensyaNoNull);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokensyaNoNull);
             }
             if (hokenNo == 0)
             {
                 var paramsMessage = new string[] { "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenNoEquals0);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokenNoEquals0);
             }
             if (Int32.Parse(hokenSyaNo) == 0)
             {
                 var paramsMessage = new string[] { "保険者番号は 0 〜 9 の範囲で入力してください。" };
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokensyaNoEquals0);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidHokensyaNoEquals0);
             }
             // 記号
             if (hokenSyaNo.Length == 8 && hokenSyaNo.Trim().StartsWith("39"))
@@ -277,7 +277,7 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "後期高齢者の", "被保険者証記号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00150, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokensyaNoLength8StartWith39);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidHokensyaNoLength8StartWith39);
                 }
             }
             else
@@ -287,7 +287,7 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "被保険者証記号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidKigoNull);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.InvalidKigoNull);
                 }
             }
             if (string.IsNullOrEmpty(bango)
@@ -295,13 +295,13 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "被保険者証番号" };
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidBangoNull);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.InvalidBangoNull);
             }
             if (honkeKbn == 0)
             {
                 var paramsMessage = new string[] { "本人家族区分" };
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenKbnEquals0);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.InvalidHokenKbnEquals0);
             }
             var checkIsValidYukoKigen = IsValidYukoKigen(startDate, endDate);
             if (!checkIsValidYukoKigen.Result)
@@ -316,7 +316,7 @@ namespace Interactor.Insurance
             var checkMessageIsValidConfirmDateAgeCheck = IsValidConfirmDateAgeCheck(selectedHokenInfIsAddNew, selectedHokenInfisExpirated, selectedHokenInfisShahoOrKokuho, hokenSyaNo, selectedHokenInfconfirmDate, ptBirthday, sinDate, hpId);
             if (!String.IsNullOrEmpty(checkMessageIsValidConfirmDateAgeCheck))
             {
-                return new ValidMainInsuranceOutputData(false, checkMessageIsValidConfirmDateAgeCheck, ValidMainInsuranceStatus.InvalidConfirmDateAgeCheck);
+                return new ValidMainInsuranceOutputData(false, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidConfirmDateAgeCheck);
             }
             // check valid hokenmst date
             var checkIsValidHokenMstDate = IsValidHokenMstDate(selectedHokenMstStartDate, selectedHokenMstEndDate, sinDate, selectedHokenMstDisplayText);
@@ -324,7 +324,7 @@ namespace Interactor.Insurance
             {
                 return checkIsValidHokenMstDate;
             }
-            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private ValidMainInsuranceOutputData IsValidHokenNashi(int hpId, int sinDate, string tokki1, string tokki2, string tokki3, string tokki4, string tokki5, int startDate, int endDate)
@@ -339,7 +339,7 @@ namespace Interactor.Insurance
             {
                 return checkIsValidYukoKigen;
             }
-            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private ValidMainInsuranceOutputData IsValidYukoKigen(int selectedHokenInfStartDate, int selectedHokenInfEndDate)
@@ -352,7 +352,7 @@ namespace Interactor.Insurance
                 var paramsMessage = new string[] { "保険有効終了日", "保険有効開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
             }
-            return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidYukoKigen);
+            return new ValidMainInsuranceOutputData(false, message , TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidYukoKigen);
         }
 
         private ValidMainInsuranceOutputData IsValidHokenDetail(int hpId, int sinDate, string tokki1Value, string tokki2Value, string tokki3Value, string tokki4Value, string tokki5Value)
@@ -374,31 +374,31 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "特記事項１", "2文字" };
                     message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue1);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue1);
                 }
                 if (!string.IsNullOrEmpty(tokki2Value) && tokki2Value == tokki1Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki2Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue21);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue21);
                 }
                 if (!string.IsNullOrEmpty(tokki3Value) && tokki3Value == tokki1Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki3Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue31);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue31);
                 }
                 if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki1Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue41);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue41);
                 }
                 if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki1Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue51);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue51);
                 }
             }
             if (!string.IsNullOrEmpty(tokki2Value))
@@ -407,25 +407,25 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "特記事項２", "2文字" };
                     message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue2);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue2);
                 }
                 if (!string.IsNullOrEmpty(tokki3Value) && tokki3Value == tokki2Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki3Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue23);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue23);
                 }
                 if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki2Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue24);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue24);
                 }
                 if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki2Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue25);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue25);
                 }
             }
             if (!string.IsNullOrEmpty(tokki3Value))
@@ -434,19 +434,19 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "特記事項３", "2文字" };
                     message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue3);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue3);
                 }
                 if (!string.IsNullOrEmpty(tokki4Value) && tokki4Value == tokki3Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki4Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue34);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue34);
                 }
                 if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki3Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue35);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidTokkiValue35);
                 }
             }
             if (!string.IsNullOrEmpty(tokki4Value))
@@ -455,22 +455,22 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "特記事項４", "2文字" };
                     message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue4);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidTokkiValue4);
                 }
                 if (!string.IsNullOrEmpty(tokki5Value) && tokki5Value == tokki4Value)
                 {
                     var paramsMessage = new string[] { "特記事項'" + tokki5Value + "'" };
                     message = String.Format(ErrorMessage.MessageType_mUnq00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue45);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning , ValidMainInsuranceStatus.InvalidTokkiValue45);
                 }
             }
             if (!string.IsNullOrEmpty(tokki5Value) && !_isValidLengthTokki(tokki5Value))
             {
                 var paramsMessage = new string[] { "特記事項５", "2文字" };
                 message = String.Format(ErrorMessage.MessageType_mInp00080, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkiValue5);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidTokkiValue5);
             }
-            return new ValidMainInsuranceOutputData(true, message, ValidMainInsuranceStatus.InvalidTokkiValue1);
+            return new ValidMainInsuranceOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.InvalidTokkiValue1);
         }
 
         private ValidMainInsuranceOutputData CHKHokno_Fnc(string hokenSyaNo, int hokenNo, bool isHaveSelectedHokenMst, string houbetu, string sHokenMstHoubetsuNumber, int sHokenMstHokenNumber, int sHokenMstCheckDegit, int ptBirthday, int sHokenMstAgeStart, int sHokenMstAgeEnd)
@@ -485,7 +485,7 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "保険者番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenSyaNoNullAndHokenNoNotEquals0);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokenSyaNoNullAndHokenNoNotEquals0);
                 }
             }
             //保険番号入力あり
@@ -495,13 +495,13 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenNoEquals0);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokenNoEquals0);
                 }
                 if (!isHaveSelectedHokenMst)
                 {
                     var paramsMessage = new string[] { "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenNoHaveHokenMst);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHokenNoHaveHokenMst);
                 }
                 //法別番号のチェック
                 string hokenInfHoubetu = houbetu;
@@ -513,14 +513,14 @@ namespace Interactor.Insurance
                     //その法別のレコードがあるか　あればセット
                     var paramsMessage = new string[] { "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHoubetu);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidHoubetu);
                 }
                 //チェックデジット
                 if (sHokenMstCheckDegit == 1 && !CIUtil.HokenNumberCheckDigits(Int32.Parse(hokenSyaNo)))
                 {
                     var paramsMessage = new string[] { "保険者番号" };
                     message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidCheckDigitEquals1);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidCheckDigitEquals1);
                 }
                 //生年月日から年齢を取得
                 int intAGE = -1;
@@ -536,11 +536,11 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage = new string[] { "主保険の保険が適用年齢範囲外の", "・この保険の適用年齢範囲は。" + ageStartMst + "歳 〜 " + ageEndMst + "歳 です。" };
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
-                        return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidCheckAgeHokenMst);
+                        return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageWarning, ValidMainInsuranceStatus.InvalidCheckAgeHokenMst);
                     }
                 }
             }
-            return new ValidMainInsuranceOutputData(true, string.Empty, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private ValidMainInsuranceOutputData IsValidTokkurei(int ptBirthday, int sinDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, string hokenSyaNo, bool isShahoOrKokuho, bool isExpirated)
@@ -561,9 +561,9 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "75歳到達月ですが、自己負担限度額の特例対象年月が入力されていません。", "保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidTokkurei);
+                return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidTokkurei);
             }
-            return new ValidMainInsuranceOutputData(true, message, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
 
         private string IsValidConfirmDateAgeCheck(bool isAddNew, bool isExpirated, bool isShahoOrKokuho, string hokensyaNo, int confirmDate, int ptBirthday, int sinDate, int hpId)
@@ -654,17 +654,17 @@ namespace Interactor.Insurance
                     var paramsMessage = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " ("
                             + CIUtil.SDateToShowSDate(startDate) + "～)", "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenMstStartDate);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidMainInsuranceStatus.InvalidHokenMstStartDate);
                 }
                 if (hokenEndDate < sinDate)
                 {
                     var paramsMessage = new string[] { "主保険 '" + displayTextMaster + "' の適用期間外です。" + "\n\r" + " (～"
                             + CIUtil.SDateToShowSDate(hokenEndDate) + ")", "保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                    return new ValidMainInsuranceOutputData(false, message, ValidMainInsuranceStatus.InvalidHokenMstEndDate);
+                    return new ValidMainInsuranceOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidMainInsuranceStatus.InvalidHokenMstEndDate);
                 }
             }
-            return new ValidMainInsuranceOutputData(true, message, ValidMainInsuranceStatus.ValidSuccess);
+            return new ValidMainInsuranceOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidMainInsuranceStatus.ValidSuccess);
         }
     }
 }

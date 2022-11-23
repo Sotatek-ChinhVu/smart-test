@@ -26,11 +26,11 @@ public class AccountDueController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetAccountDueListResponse>>> GetList([FromQuery] GetAccountDueListRequest request)
+    public ActionResult<Response<GetAccountDueListResponse>> GetList([FromQuery] GetAccountDueListRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         var input = new GetAccountDueListInputData(hpId, request.PtId, request.SinDate, request.IsUnpaidChecked, request.PageIndex, request.PageSize);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new GetAccountDueListPresenter();
         presenter.Complete(output);
@@ -39,11 +39,11 @@ public class AccountDueController : ControllerBase
     }
 
     [HttpPost(ApiPath.SaveList)]
-    public async Task<ActionResult<Response<SaveAccountDueListResponse>>> SaveList([FromBody] SaveAccountDueListRequest request)
+    public ActionResult<Response<SaveAccountDueListResponse>> SaveList([FromBody] SaveAccountDueListRequest request)
     {
         int hpId = _userService.GetLoginUser().HpId;
         var input = new SaveAccountDueListInputData(hpId, request.UserId, request.PtId, request.SinDate, ConvertToListSyunoNyukinInputItem(request));
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new SaveAccountDueListPresenter();
         presenter.Complete(output);

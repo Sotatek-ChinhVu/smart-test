@@ -1,10 +1,5 @@
 ﻿using Domain.Constant;
 using Helper.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Insurance.ValidPatternOther;
 
 namespace Interactor.Insurance
@@ -17,12 +12,12 @@ namespace Interactor.Insurance
             {
                 if (inputData.ValidModel.Sindate < 0)
                 {
-                    return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidSindate);
+                    return new ValidInsuranceOtherOutputData(false, String.Empty, TypeMessage.TypeMessageError , ValidInsuranceOtherStatus.InvalidSindate);
                 }
 
                 if (inputData.ValidModel.PtBirthday < 0)
                 {
-                    return new ValidInsuranceOtherOutputData(false, String.Empty, ValidInsuranceOtherStatus.InvalidPtBirthday);
+                    return new ValidInsuranceOtherOutputData(false, String.Empty, TypeMessage.TypeMessageError, ValidInsuranceOtherStatus.InvalidPtBirthday);
                 }
 
                 var messageError = "";
@@ -36,14 +31,14 @@ namespace Interactor.Insurance
                     {
                         var paramsMessageCheckDuplicate = new string[] { "同じ組合せの保険・公１・公２・公３・公４を持つ組合せ" };
                         messageError = String.Format(ErrorMessage.MessageType_mEnt00020, paramsMessageCheckDuplicate);
-                        return new ValidInsuranceOtherOutputData(false, messageError, ValidInsuranceOtherStatus.InvalidDuplicatePattern);
+                        return new ValidInsuranceOtherOutputData(false, messageError, TypeMessage.TypeMessageConfirmation, ValidInsuranceOtherStatus.InvalidDuplicatePattern);
                     }
                 }
 
                 // Check Age
                 if (inputData.ValidModel.IsSelectedHokenInfEmptyModel || !inputData.ValidModel.SelectedHokenInfIsShahoOrKokuho)
                 {
-                    return new ValidInsuranceOtherOutputData(true, String.Empty, ValidInsuranceOtherStatus.Success);
+                    return new ValidInsuranceOtherOutputData(true, String.Empty, TypeMessage.TypeMessageSuccess, ValidInsuranceOtherStatus.Success);
                 }
 
                 var checkAge = CheckAge(inputData);
@@ -51,11 +46,11 @@ namespace Interactor.Insurance
                 {
                     return checkAge;
                 }   
-                return new ValidInsuranceOtherOutputData(true, messageError, ValidInsuranceOtherStatus.Success);
+                return new ValidInsuranceOtherOutputData(true, messageError, TypeMessage.TypeMessageSuccess, ValidInsuranceOtherStatus.Success);
             }
             catch (Exception)
             {
-                return new ValidInsuranceOtherOutputData(true, "Validate Exception", ValidInsuranceOtherStatus.Success);
+                return new ValidInsuranceOtherOutputData(true, "Validate Exception", TypeMessage.TypeMessageError, ValidInsuranceOtherStatus.Success);
             }
         }
 
@@ -79,17 +74,17 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage75 = new string[] { "後期高齢者保険が入力されていません。", "保険者証" };
                         messageError = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage75);
-                        return new ValidInsuranceOtherOutputData(false, messageError, ValidInsuranceOtherStatus.InvalidAge75);
+                        return new ValidInsuranceOtherOutputData(false, messageError, TypeMessage.TypeMessageConfirmation, ValidInsuranceOtherStatus.InvalidAge75);
                     }
                     else if (age < 65 && elderHokenQuery.Any())
                     {
                         var paramsMessage65 = new string[] { "後期高齢者保険の対象外の患者に、後期高齢者保険が登録されています。", "保険者証" };
                         messageError = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage65);
-                        return new ValidInsuranceOtherOutputData(true, messageError, ValidInsuranceOtherStatus.InvalidAge65);
+                        return new ValidInsuranceOtherOutputData(true, messageError, TypeMessage.TypeMessageConfirmation, ValidInsuranceOtherStatus.InvalidAge65);
                     }
                 }
             }
-            return new ValidInsuranceOtherOutputData(true, messageError, ValidInsuranceOtherStatus.Success);
+            return new ValidInsuranceOtherOutputData(true, messageError, TypeMessage.TypeMessageSuccess, ValidInsuranceOtherStatus.Success);
         }
     }
 }

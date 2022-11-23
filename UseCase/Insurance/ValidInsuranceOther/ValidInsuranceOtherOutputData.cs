@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.Insurance.ValidPatternOther
 {
@@ -13,12 +8,15 @@ namespace UseCase.Insurance.ValidPatternOther
 
         public string Message { get; private set; }
 
+        public int TypeMessage { get; private set; }
+
         public ValidInsuranceOtherStatus Status { get; private set; }
 
-        public ValidInsuranceOtherOutputData(bool result, string message, ValidInsuranceOtherStatus status)
+        public ValidInsuranceOtherOutputData(bool result, string message, int typeMessage, ValidInsuranceOtherStatus status)
         {
             Result = result;
             Message = message;
+            TypeMessage = typeMessage;
             Status = status;
         }
     }

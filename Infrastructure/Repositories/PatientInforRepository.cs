@@ -55,7 +55,7 @@ namespace Infrastructure.Repositories
             return new(ptInfModel, true);
         }
 
-        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId)
+        public List<PatientInforModel> SearchContainPtNum(int ptNum, string keyword, int hpId, int pageIndex, int pageSize)
         {
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
@@ -74,7 +74,12 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+            return ptInfWithLastVisitDate
+                         .AsEnumerable()
+                         .Skip((pageIndex - 1) * pageSize)
+                         .Take(pageSize)
+                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
+                         .ToList();
         }
 
         public PatientInforModel? GetById(int hpId, long ptId, int sinDate, int raiinNo)
@@ -744,7 +749,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<PatientInforModel> SearchBySindate(int sindate, int hpId)
+        public List<PatientInforModel> SearchBySindate(int sindate, int hpId, int pageIndex, int pageSize)
         {
             var ptIdList = _tenantDataContext.RaiinInfs.Where(r => r.SinDate == sindate).GroupBy(r => r.PtId).Select(gr => gr.Key).ToList();
             var ptInfWithLastVisitDate =
@@ -764,10 +769,14 @@ namespace Infrastructure.Repositories
                      ).FirstOrDefault()
                  }).ToList();
 
-            return ptInfWithLastVisitDate.Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+            return ptInfWithLastVisitDate
+                                         .Skip((pageIndex - 1) * pageSize)
+                                         .Take(pageSize)
+                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
+                                         .ToList();
         }
 
-        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId)
+        public List<PatientInforModel> SearchPhone(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
@@ -793,10 +802,15 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
             };
 
-            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+            return ptInfWithLastVisitDate
+                                         .AsEnumerable()
+                                         .Skip((pageIndex - 1) * pageSize)
+                                         .Take(pageSize)
+                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
+                                         .ToList();
         }
 
-        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId)
+        public List<PatientInforModel> SearchName(string keyword, bool isContainMode, int hpId, int pageIndex, int pageSize)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
@@ -821,7 +835,12 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
             };
 
-            return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+            return ptInfWithLastVisitDate
+                                         .AsEnumerable()
+                                         .Skip((pageIndex - 1) * pageSize)
+                                         .Take(pageSize)
+                                         .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
+                                         .ToList();
         }
 
         public List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize)

@@ -106,7 +106,10 @@
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
 
-        // Check before save medical
+        //GetYohoSetMst
+        public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
+        // Medical Examination
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
     }
 }
