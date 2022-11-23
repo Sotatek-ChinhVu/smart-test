@@ -54,7 +54,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public long Insert(ReceptionSaveDto dto, int hpId, int userId, int uketukeNoMode, int uketukeNoStart)
+        public long Insert(ReceptionSaveDto dto, int hpId, int userId)
         {
             var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
             return executionStrategy.Execute(() =>

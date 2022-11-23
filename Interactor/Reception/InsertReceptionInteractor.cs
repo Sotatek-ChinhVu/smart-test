@@ -31,9 +31,9 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
         // check end set uketukeNo
 
         int uketukeNo = dto.Reception.UketukeNo < 0 ? _receptionRepository.GetNextUketukeNoBySetting(input.HpId, dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, uketukeNoMode, uketukeNoStart) : dto.Reception.UketukeNo;
-        dto = dto.ChangeUketukeNo(uketukeNo);
+        dto.ChangeUketukeNo(uketukeNo);
 
-        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId, uketukeNoMode, uketukeNoStart);
+        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
         return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
     }
 }
