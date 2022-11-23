@@ -13,24 +13,19 @@ using UseCase.JsonSetting.Upsert;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class JsonSettingController : ControllerBase
+public class JsonSettingController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
 
-    public JsonSettingController(UseCaseBus bus, IUserService userService)
+    public JsonSettingController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.Get)]
     public ActionResult<Response<GetJsonSettingResponse>> Get([FromQuery] GetJsonSettingRequest req)
     {
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new GetJsonSettingInputData(userId, req.Key);
+        var input = new GetJsonSettingInputData(UserId, req.Key);
         var output = _bus.Handle(input);
         var presenter = new GetJsonSettingPresenter();
         presenter.Complete(output);

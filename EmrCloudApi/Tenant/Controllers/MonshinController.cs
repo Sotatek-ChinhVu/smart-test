@@ -8,18 +8,15 @@ using UseCase.MonshinInfor.GetList;
 using EmrCloudApi.Tenant.Presenters.MonshinInf;
 using UseCase.MonshinInfor.Save;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class MonshinController : ControllerBase
+    public class MonshinController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IUserService _userService;
-        public MonshinController(UseCaseBus bus, IUserService userService)
+        public MonshinController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
             _userService = userService;
@@ -28,8 +25,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMonshinInforListResponse>> GetList([FromQuery] GetMonshinInforListRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetMonshinInforListInputData(hpId, request.PtId, request.SinDate, request.IsDeleted);
+            var input = new GetMonshinInforListInputData(HpId, request.PtId, request.SinDate, request.IsDeleted);
             var output = _bus.Handle(input);
             var presenter = new GetMonshinInforListPresenter();
             presenter.Complete(output);
@@ -39,8 +35,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList)]
         public ActionResult<Response<SaveMonshinInforListResponse>> SaveList([FromBody] SaveMonshinInforListRequest request)
         {
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveMonshinInputData(request.Monshins, userId);
+            var input = new SaveMonshinInputData(request.Monshins, UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveMonshinInforListPresenter();
             presenter.Complete(output);
