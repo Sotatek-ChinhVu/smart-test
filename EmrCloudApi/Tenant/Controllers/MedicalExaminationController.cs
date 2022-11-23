@@ -13,10 +13,10 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CheckedBeforeSaveMedicalController : ControllerBase
+    public class MedicalExaminationController : ControllerBase
     {
         private readonly UseCaseBus _bus;
-        public CheckedBeforeSaveMedicalController(UseCaseBus bus)
+        public MedicalExaminationController(UseCaseBus bus)
         {
             _bus = bus;
         }
