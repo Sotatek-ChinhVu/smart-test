@@ -56,7 +56,7 @@ namespace Infrastructure.Repositories
                             join kaMst in kaMsts on
                                 raiinInf.KaId equals kaMst.KaId
                             join tantoInf in tantoInfs on
-                                raiinInf.TantoId equals tantoInf.UserId
+                            raiinInf.TantoId equals tantoInf.UserId*/
                             select new
                             {
                                 ApprovalInf = approveInfList,
