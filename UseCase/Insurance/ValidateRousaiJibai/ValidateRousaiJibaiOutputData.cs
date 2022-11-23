@@ -13,12 +13,15 @@ namespace UseCase.Insurance.ValidateRousaiJibai
 
         public string Message { get; private set; }
 
+        public int TypeMessage { get; private set; }
+
         public ValidateRousaiJibaiStatus Status { get; private set; }
 
-        public ValidateRousaiJibaiOutputData(bool result, string message, ValidateRousaiJibaiStatus status)
+        public ValidateRousaiJibaiOutputData(bool result, string message, int typeMessage, ValidateRousaiJibaiStatus status)
         {
             Result = result;
             Message = message;
+            TypeMessage = typeMessage;
             Status = status;
         }
     }

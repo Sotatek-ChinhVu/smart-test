@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.Insurance.ValidKohi
 {
@@ -13,12 +8,15 @@ namespace UseCase.Insurance.ValidKohi
 
         public string Message { get; private set; }
 
+        public int TypeMessage { get; private set; }
+
         public ValidKohiStatus Status { get; private set; }
 
-        public ValidKohiOutputData(bool result, string message, ValidKohiStatus status)
+        public ValidKohiOutputData(bool result, string message, int typeMessage, ValidKohiStatus status)
         {
             Result = result;
             Message = message;
+            TypeMessage = typeMessage;
             Status = status;
         }
     }
