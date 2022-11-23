@@ -62,7 +62,7 @@ namespace Domain.Models.NextOrder
             #region Validate common
             if (flag == 0)
             {
-                if (RsvkrtNo <= 0)
+                if (RsvkrtNo < 0)
                 {
                     return OrdInfValidationStatus.InvalidRaiinNo;
                 }
@@ -70,9 +70,17 @@ namespace Domain.Models.NextOrder
                 {
                     return OrdInfValidationStatus.InvalidPtId;
                 }
-                if (RsvDate <= 0)
+                if (RsvDate < 0)
                 {
                     return OrdInfValidationStatus.InvalidSinDate;
+                }
+                if (Kokuji1.Length > 1)
+                {
+                    return OrdInfValidationStatus.InvalidKokuji1;
+                }
+                if (Kokuji2.Length > 1)
+                {
+                    return OrdInfValidationStatus.InvalidKokuji2;
                 }
             }
             #endregion

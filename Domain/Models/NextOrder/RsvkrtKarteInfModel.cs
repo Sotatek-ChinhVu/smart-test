@@ -34,7 +34,7 @@ namespace Domain.Models.NextOrder
             {
                 return KarteValidationStatus.InvalidHpId;
             }
-            if (RsvkrtNo <= 0)
+            if (RsvkrtNo < 0)
             {
                 return KarteValidationStatus.InvalidRaiinNo;
             }

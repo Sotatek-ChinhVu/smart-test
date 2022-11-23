@@ -39,7 +39,7 @@ namespace Domain.Models.NextOrder
 
             if (flag == 0)
             {
-                if (RsvkrtNo <= 0)
+                if (RsvkrtNo < 0)
                 {
                     return new("-1", OrdInfValidationStatus.InvalidRaiinNo);
                 }
@@ -63,7 +63,7 @@ namespace Domain.Models.NextOrder
                 var validate = item.Validation(flag);
                 if (validate != OrdInfValidationStatus.Valid)
                 {
-                    return new(count.ToString(), OrdInfValidationStatus.InvalidHokenPId);
+                    return new(count.ToString(), validate);
                 }
                 count++;
             }

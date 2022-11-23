@@ -13,8 +13,6 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantNoTrackingDataContext _tenantDataContext;
         private readonly TenantDataContext _tenantDataContextTracking;
-        private readonly int rpEdaNoDefault = 1;
-        private readonly int rpNoDefault = 1;
 
         public NextOrderRepository(ITenantProvider tenantProvider)
         {
@@ -92,11 +90,9 @@ namespace Infrastructure.Repositories
                     using var transaction = _tenantDataContextTracking.Database.BeginTransaction();
                     try
                     {
-
-
                         foreach (var nextOrderModel in nextOrderModels)
                         {
-                            var maxRpNo = GetMaxRpNo(hpId, ptId, nextOrderModel.RsvkrtNo, nextOrderModel.RsvDate);
+                            var maxRpNo = GetMaxRpNo(hpId, ptId, nextOrderModel.RsvkrtNo);
                             var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                             if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                             {
@@ -146,6 +142,8 @@ namespace Infrastructure.Repositories
                             }
                         }
 
+                        transaction.Commit();
+
                         return true;
                     }
                     catch
@@ -181,12 +179,12 @@ namespace Infrastructure.Repositories
                         oldOrderInf.IsDeleted = DeleteTypes.Deleted;
                         oldOrderInf.UpdateDate = DateTime.UtcNow;
                         oldOrderInf.CreateId = userId;
-                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf);
+                        var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf, orderInf.RpEdaNo + 1);
                         _tenantDataContextTracking.Add(orderInfEntity);
                         foreach (var orderInfDetail in orderInf.OrdInfDetails)
                         {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo));
-                            _tenantDataContextTracking.Add(orderInfDetailEntity);
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo, orderInf.RpEdaNo + 1));
+                            _tenantDataContextTracking.AddRange(orderInfDetailEntity);
                         }
                     }
                     else
@@ -196,8 +194,8 @@ namespace Infrastructure.Repositories
                         _tenantDataContextTracking.Add(orderInfEntity);
                         foreach (var orderInfDetail in orderInf.OrdInfDetails)
                         {
-                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, rsvkrtNo));
-                            _tenantDataContextTracking.Add(orderInfDetailEntity);
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInfEntity.RpNo, od, rsvkrtNo));
+                            _tenantDataContextTracking.AddRange(orderInfDetailEntity);
                         }
                     }
                 }
@@ -242,7 +240,7 @@ namespace Infrastructure.Repositories
 
         private long GetMaxSeqNo(long ptId, int hpId, long rsvkrtNo)
         {
-            var karteInf = _tenantDataContext.RsvkrtKarteInfs.Where(k => k.HpId == hpId && k.RsvkrtNo == rsvkrtNo && k.KarteKbn == 1 && k.PtId == ptId).OrderByDescending(k => k.SeqNo).FirstOrDefault();
+            var karteInf = _tenantDataContext.RsvkrtKarteInfs.Where(k => k.HpId == hpId && k.KarteKbn == 1 && k.PtId == ptId && k.RsvkrtNo == rsvkrtNo).OrderByDescending(k => k.SeqNo).FirstOrDefault();
 
             return karteInf != null ? karteInf.SeqNo : 0;
         }
@@ -681,7 +679,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtOdrInf ConvertModelToRsvkrtOrderInf(int userId, long rpNo, RsvkrtOrderInfModel rsvkrtOrderInfModel, long rsvkrtNo = 0)
+        private static RsvkrtOdrInf ConvertModelToRsvkrtOrderInf(int userId, long rpNo, RsvkrtOrderInfModel rsvkrtOrderInfModel, long rsvkrtNo = 0, long rpEdaNo = 1)
         {
             return new RsvkrtOdrInf
             {
@@ -691,7 +689,7 @@ namespace Infrastructure.Repositories
                 RsvkrtNo = rsvkrtNo == 0 ? rsvkrtOrderInfModel.RsvkrtNo : rsvkrtNo,
                 RsvDate = rsvkrtOrderInfModel.RsvDate,
                 RpNo = rpNo,
-                RpEdaNo = rsvkrtOrderInfModel.RpEdaNo,
+                RpEdaNo = rpEdaNo,
                 HokenPid = rsvkrtOrderInfModel.HokenPid,
                 OdrKouiKbn = rsvkrtOrderInfModel.OdrKouiKbn,
                 RpName = rsvkrtOrderInfModel.RpName,
@@ -710,7 +708,7 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private static RsvkrtOdrInfDetail ConvertModelToRsvkrtOrderInfDetail(long rpNo, RsvKrtOrderInfDetailModel rsvkrtOrderInfModel, long rsvkrtNo = 0)
+        private static RsvkrtOdrInfDetail ConvertModelToRsvkrtOrderInfDetail(long rpNo, RsvKrtOrderInfDetailModel rsvkrtOrderInfModel, long rsvkrtNo = 0, long rpEdaNo = 1)
         {
             return new RsvkrtOdrInfDetail
             {
@@ -718,7 +716,7 @@ namespace Infrastructure.Repositories
                 PtId = rsvkrtOrderInfModel.PtId,
                 RsvkrtNo = rsvkrtNo == 0 ? rsvkrtOrderInfModel.RsvkrtNo : rsvkrtNo,
                 RpNo = rpNo,
-                RpEdaNo = rsvkrtOrderInfModel.RpEdaNo,
+                RpEdaNo = rpEdaNo,
                 RowNo = rsvkrtOrderInfModel.RowNo,
                 RsvDate = rsvkrtOrderInfModel.RsvDate,
                 SinKouiKbn = rsvkrtOrderInfModel.SinKouiKbn,
@@ -746,10 +744,10 @@ namespace Infrastructure.Repositories
             };
         }
 
-        private long GetMaxRpNo(int hpId, long ptId, long rsvkrtNo, int rsvDate)
+        private long GetMaxRpNo(int hpId, long ptId, long rsvkrtNo)
         {
             var odrList = _tenantDataContext.RsvkrtOdrInfs
-                .Where(odr => odr.HpId == hpId && odr.PtId == ptId && odr.RsvkrtNo == rsvkrtNo && odr.RsvDate == rsvDate);
+                .Where(odr => odr.HpId == hpId && odr.PtId == ptId);
 
             if (odrList.Any())
             {

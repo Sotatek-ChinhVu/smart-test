@@ -89,6 +89,8 @@
             HokenPidNoExist,
             RaiinNoNoExist,
             OdrNoMapOdrDetail,
+            InvalidKokuji1,
+            InvalidKokuji2,
             Valid
         };
 

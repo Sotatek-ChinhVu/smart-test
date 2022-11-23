@@ -147,7 +147,7 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrHpId));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidRaiinNo:
-                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRaiinNo));
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.InvalidRsvkrtNo));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidRpNo:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrRpNo));
@@ -159,7 +159,7 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrPtId));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidSinDate:
-                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrSinDate));
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.InvalidRsvDate));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidHokenPId:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrHokenPid));
@@ -278,6 +278,12 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                             case OrderInfConst.OrdInfValidationStatus.OdrNoMapOdrDetail:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, string.Empty));
                                 break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidKokuji1:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, string.Empty));
+                                break;
+                            case OrderInfConst.OrdInfValidationStatus.InvalidKokuji2:
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, string.Empty));
+                                break;
                             default:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, "-1", "-1", string.Empty, string.Empty));
                                 break;
@@ -296,13 +302,13 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                         validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.UpsertKarteInfInvalidHpId);
                         break;
                     case KarteConst.KarteValidationStatus.InvalidRaiinNo:
-                        validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.UpsertKarteInfInvalidRaiinNo);
+                        validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.InvalidRsvkrtNo);
                         break;
                     case KarteConst.KarteValidationStatus.InvalidPtId:
                         validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.UpsertKarteInfInvalidPtId);
                         break;
                     case KarteConst.KarteValidationStatus.InvalidSinDate:
-                        validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.UpsertKarteInfInvalidSinDate);
+                        validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.InvalidRsvDate);
                         break;
                     case KarteConst.KarteValidationStatus.InvalidIsDelted:
                         validationKarte = new ValidationKarteInfResponse(validation.Item2, ResponseMessage.UpsertKarteInfInvalidIsDeleted);
@@ -325,6 +331,7 @@ namespace EmrCloudApi.Tenant.Presenters.NextOrder
                 var validationNextOrder = new UpsertNextOrderValidationItemResponse(validation.Value, ConvertNextOrderStatusToMessage(validation.Value));
                 validationNextOrders.Add(new UpsertNextOrderItemResponse(validation.Key, validationNextOrder));
             }
+
             var groupByomeis = outputData.ValidationByomeis.GroupBy(g => g.Item1).ToList();
             foreach (var validation in groupByomeis)
             {

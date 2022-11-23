@@ -1,4 +1,7 @@
-﻿using Domain.Models.NextOrder;
+﻿using Domain.Models.HpMst;
+using Domain.Models.NextOrder;
+using Domain.Models.PatientInfor;
+using Domain.Models.User;
 using UseCase.NextOrder.Upsert;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.NextOrderConst;
@@ -10,25 +13,31 @@ namespace Interactor.NextOrder
     public class UpsertNextOrderListInteractor : IUpsertNextOrderListInputPort
     {
         private readonly INextOrderRepository _nextOrderRepository;
+        private readonly IHpInfRepository _hpInfRepository;
+        private readonly IPatientInforRepository _patientInfRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository)
+        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository)
         {
             _nextOrderRepository = nextOrderRepository;
+            _hpInfRepository = hpInfRepository;
+            _patientInfRepository = patientInfRepository;
+            _userRepository = userRepository;
         }
 
         public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
         {
             try
             {
-                if (inputData.HpId <= 0)
+                if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
                 {
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
-                if (inputData.PtId <= 0)
+                if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistListId(new List<long> { inputData.PtId }))
                 {
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
-                if (inputData.UserId <= 0)
+                if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
                 {
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
                 }
@@ -37,7 +46,7 @@ namespace Interactor.NextOrder
                 List<(int, KarteValidationStatus)> validationKarteInfs = new();
                 Dictionary<int, NextOrderStatus> validationNextOrders = new();
                 List<(int, int, RsvkrtByomeiStatus)> validationRsvkrtByomeis = new();
-                var validationOrdInf = new List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)>();
+                var validationOrdInfs = new List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)>();
 
                 for (int i = 0; i < nextOrderModels.Count; i++)
                 {
@@ -75,11 +84,12 @@ namespace Interactor.NextOrder
                             validationOneOrdInf.Add(i2.ToString(), validationOrderInf);
                         }
                     }
-                    validationOrdInf.Add((i, validationOneOrdInf));
+                    if (validationOneOrdInf.Any())
+                        validationOrdInfs.Add((i, validationOneOrdInf));
                 }
-                if (validationKarteInfs.Count > 0 || validationNextOrders.Count > 0 || validationRsvkrtByomeis.Count > 0 || validationOrdInf.Count > 0)
+                if (validationKarteInfs.Count > 0 || validationNextOrders.Count > 0 || validationRsvkrtByomeis.Count > 0 || validationOrdInfs.Count > 0)
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInf, validationKarteInfs, validationRsvkrtByomeis);
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
                 }
                 _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());

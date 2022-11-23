@@ -20,7 +20,7 @@ namespace Domain.Models.NextOrder
         }
         public NextOrderStatus Validation()
         {
-            if (RsvkrtNo <= 0)
+            if (RsvkrtNo < 0)
             {
                 return NextOrderStatus.InvalidRsvkrtNo;
             }
