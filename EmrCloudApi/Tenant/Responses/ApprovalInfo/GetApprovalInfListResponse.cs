@@ -1,5 +1,4 @@
-﻿
-using Domain.Models.ApprovalInfo;
+﻿using Domain.Models.ApprovalInfo;
 
 namespace EmrCloudApi.Tenant.Responses.ApprovalInf
 {
@@ -10,6 +9,6 @@ namespace EmrCloudApi.Tenant.Responses.ApprovalInf
             ApprovalInfList = approvalInfList;
         }
 
-        public List<ApprovalInfModel> ApprovalInfList { get; set; } = new List<ApprovalInfModel>();
+        public List<ApprovalInfModel> ApprovalInfList { get; private set; } = new List<ApprovalInfModel>();
     }
 }
