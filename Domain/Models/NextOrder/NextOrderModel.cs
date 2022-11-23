@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.NextOrder
+﻿using static Helper.Constants.NextOrderConst;
+
+namespace Domain.Models.NextOrder
 {
     public class NextOrderModel
     {
@@ -16,7 +18,35 @@
             RsvkrtKarteInf = rsvkrtKarteInf;
             RsvkrtOrderInfs = rsvkrtOrderInfs;
         }
+        public NextOrderStatus Validation()
+        {
+            if (RsvkrtNo <= 0)
+            {
+                return NextOrderStatus.InvalidRsvkrtNo;
+            }
+            if (RsvkrtKbn != 0 && RsvkrtKbn != 1)
+            {
+                return NextOrderStatus.InvalidRsvkrtKbn;
+            }
+            if (RsvDate <= 0)
+            {
+                return NextOrderStatus.InvalidRsvDate;
+            }
+            if (RsvName.Length > 120)
+            {
+                return NextOrderStatus.InvalidRsvName;
+            }
+            if (IsDeleted < 0)
+            {
+                return NextOrderStatus.InvalidIsDeleted;
+            }
+            if (SortNo < 0)
+            {
+                return NextOrderStatus.InvalidSortNo;
+            }
 
+            return NextOrderStatus.Valid;
+        }
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }

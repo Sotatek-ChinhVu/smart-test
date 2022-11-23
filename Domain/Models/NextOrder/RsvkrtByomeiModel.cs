@@ -1,5 +1,7 @@
-﻿using Helper.Constants;
+﻿using Helper.Common;
+using Helper.Constants;
 using Helper.Extension;
+using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace Domain.Models.NextOrder
 {
@@ -26,6 +28,77 @@ namespace Domain.Models.NextOrder
             Icd102013 = icd102013;
             Icd1012013 = icd1012013;
             Icd1022013 = icd1022013;
+        }
+
+        public RsvkrtByomeiStatus Validation()
+        {
+            #region common
+            if (Id < 0)
+            {
+                return RsvkrtByomeiStatus.InvalidId;
+            }
+            if (PtId <= 0)
+            {
+                return RsvkrtByomeiStatus.InvalidPtId;
+            }
+            if (HpId <= 0)
+            {
+                return RsvkrtByomeiStatus.InvalidHpId;
+            }
+            if (RsvkrtNo <= 0)
+            {
+                return RsvkrtByomeiStatus.InvalidRsvkrtNo;
+            }
+            if (SeqNo < 0)
+            {
+                return RsvkrtByomeiStatus.InvalidSeqNo;
+            }
+            if (ByomeiCd.Length > 7)
+            {
+                return RsvkrtByomeiStatus.InvalidByomeiCd;
+            }
+            if (SyobyoKbn != 0 && SyobyoKbn != 1)
+            {
+                return RsvkrtByomeiStatus.InvalidSyubyoKbn;
+            }
+            if (HosokuCmt.Length > 80)
+            {
+                return RsvkrtByomeiStatus.InvalidHosokuCmt;
+            }
+            if (IsNodspRece != 0 && IsNodspRece != 1)
+            {
+                return RsvkrtByomeiStatus.InvalidIsNodspRece;
+            }
+            if (IsNodspKarte != 0 && IsNodspKarte != 1)
+            {
+                return RsvkrtByomeiStatus.InvalidIsNodspKarte;
+            }
+            if (IsDeleted != 0 && IsDeleted != 1)
+            {
+                return RsvkrtByomeiStatus.InvalidIsDeleted;
+            }
+            #endregion
+
+            #region advance
+            if (string.IsNullOrEmpty(Byomei) || Byomei.Length > 160)
+            {
+                return RsvkrtByomeiStatus.InvalidByomei;
+            }
+            if (!SikkanKbns.Values.Contains(SikkanKbn))
+            {
+                return RsvkrtByomeiStatus.InvalidSikkanKbn;
+            }
+            if (!NanByoCds.Values.Contains(NanbyoCd))
+            {
+                return RsvkrtByomeiStatus.InvalidNanByoCd;
+            }
+            if (CIUtil.GetByteCountFromString(Byomei) > 40 && ByomeiCd != null && ByomeiCd.Equals(PtDiseaseConst.FREE_WORD))
+            {
+                return RsvkrtByomeiStatus.InvalidFreeWord;
+            }
+            #endregion
+
+            return RsvkrtByomeiStatus.Valid;
         }
 
         public long Id { get; private set; }

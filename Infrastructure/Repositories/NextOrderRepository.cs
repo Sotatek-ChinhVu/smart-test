@@ -1,14 +1,11 @@
 ﻿using Domain.Models.NextOrder;
 using Domain.Models.OrdInfDetails;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Text;
-using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -85,7 +82,7 @@ namespace Infrastructure.Repositories
             return oderInfModels;
         }
 
-        public bool Upsert(int userId, int hpId, long ptId, long rsvkrtNo, int rsvDate, List<NextOrderModel> nextOrderModels)
+        public bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
             var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
 
@@ -96,10 +93,11 @@ namespace Infrastructure.Repositories
                     try
                     {
 
-                        var maxRpNo = GetMaxRpNo(hpId, ptId, rsvkrtNo, rsvDate);
-                        var seqNo = GetMaxSeqNo(ptId, hpId, rsvkrtNo);
+
                         foreach (var nextOrderModel in nextOrderModels)
                         {
+                            var maxRpNo = GetMaxRpNo(hpId, ptId, nextOrderModel.RsvkrtNo, nextOrderModel.RsvDate);
+                            var seqNo = GetMaxSeqNo(ptId, hpId, nextOrderModel.RsvkrtNo);
                             if (nextOrderModel.IsDeleted == DeleteTypes.Deleted || nextOrderModel.IsDeleted == DeleteTypes.Confirm)
                             {
                                 var rsvkrtMst = _tenantDataContextTracking.RsvkrtMsts.FirstOrDefault(r => r.HpId == nextOrderModel.HpId && r.PtId == nextOrderModel.PtId && r.RsvDate == nextOrderModel.RsvDate && r.RsvkrtNo == nextOrderModel.RsvkrtNo);
@@ -185,9 +183,9 @@ namespace Infrastructure.Repositories
                         oldOrderInf.CreateId = userId;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, orderInf.RpNo, orderInf);
                         _tenantDataContextTracking.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrderInfDetailModels)
+                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
                         {
-                            var orderInfDetailEntity = orderInf.OrderInfDetailModels.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo));
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, orderInf.RsvkrtNo));
                             _tenantDataContextTracking.Add(orderInfDetailEntity);
                         }
                     }
@@ -196,9 +194,9 @@ namespace Infrastructure.Repositories
                         maxRpNo++;
                         var orderInfEntity = ConvertModelToRsvkrtOrderInf(userId, maxRpNo, orderInf, rsvkrtNo);
                         _tenantDataContextTracking.Add(orderInfEntity);
-                        foreach (var orderInfDetail in orderInf.OrderInfDetailModels)
+                        foreach (var orderInfDetail in orderInf.OrdInfDetails)
                         {
-                            var orderInfDetailEntity = orderInf.OrderInfDetailModels.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, rsvkrtNo));
+                            var orderInfDetailEntity = orderInf.OrdInfDetails.Select(od => ConvertModelToRsvkrtOrderInfDetail(orderInf.RpNo, od, rsvkrtNo));
                             _tenantDataContextTracking.Add(orderInfDetailEntity);
                         }
                     }
@@ -349,7 +347,6 @@ namespace Infrastructure.Repositories
                     karteInf.PtId,
                     karteInf.RsvDate,
                     karteInf.RsvkrtNo,
-                    karteInf.KarteKbn,
                     karteInf.SeqNo,
                     karteInf.Text ?? string.Empty,
                     karteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(karteInf.RichText),
@@ -672,7 +669,7 @@ namespace Infrastructure.Repositories
                 PtId = rsvkrtKarteInfModel.PtId,
                 RsvDate = rsvkrtKarteInfModel.RsvDate,
                 RsvkrtNo = rsvkrtNo == 0 ? rsvkrtKarteInfModel.RsvkrtNo : rsvkrtNo,
-                KarteKbn = rsvkrtKarteInfModel.KarteKbn,
+                KarteKbn = 1,
                 SeqNo = seqNo,
                 Text = rsvkrtKarteInfModel.Text,
                 RichText = Encoding.UTF8.GetBytes(rsvkrtKarteInfModel.RichText),
