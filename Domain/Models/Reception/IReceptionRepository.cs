@@ -4,7 +4,7 @@ namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
-        long Insert(ReceptionSaveDto dto, int hpId, int userId);
+        long Insert(ReceptionSaveDto dto, int hpId, int userId, int uketukeNoMode ,int uketukeNoStart);
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
