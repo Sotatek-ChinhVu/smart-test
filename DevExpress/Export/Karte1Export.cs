@@ -30,11 +30,11 @@ public class Karte1Export : IKarte1Export
             });
         }
 
-        PdfExportOptions pdfExportOptions = new PdfExportOptions()
-        {
-            PdfACompatibility = PdfACompatibility.PdfA1b
-        };
-
+        PdfExportOptions pdfExportOptions = new PdfExportOptions();
+        //{
+        //    PdfACompatibility = PdfACompatibility.PdfA1b
+        //};
+        pdfExportOptions.NeverEmbeddedFonts = "Yu Gothic";
         // Export the report.
         MemoryStream stream = new();
         report.ExportToPdf(stream, pdfExportOptions);
