@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.SetKbnMst;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SetKbnMst;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SetKbnMst.GetList;
@@ -12,24 +11,19 @@ using UseCase.SetKbnMst.GetList;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class SetKbnController : ControllerBase
+    public class SetKbnController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public SetKbnController(UseCaseBus bus, IUserService userService)
+        public SetKbnController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetSetKbnMstListResponse>>> GetList([FromQuery] GetSetKbnMstListRequest request)
+        public ActionResult<Response<GetSetKbnMstListResponse>> GetList([FromQuery] GetSetKbnMstListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetSetKbnMstListInputData(hpId, request.SinDate, request.SetKbnFrom, request.SetKbnTo);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetSetKbnMstListInputData(HpId, request.SinDate, request.SetKbnFrom, request.SetKbnTo);
+            var output = _bus.Handle(input);
 
             var presenter = new GetSetKbnMstListPresenter();
             presenter.Complete(output);

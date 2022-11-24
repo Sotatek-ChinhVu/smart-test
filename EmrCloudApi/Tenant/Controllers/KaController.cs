@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.Ka;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
@@ -14,46 +13,40 @@ using UseCase.Ka.SaveList;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class KaController : ControllerBase
+public class KaController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
 
-    public KaController(UseCaseBus bus, IUserService userService)
+    public KaController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
-    public async Task<ActionResult<Response<GetKaMstListResponse>>> GetListMst()
+    public ActionResult<Response<GetKaMstListResponse>> GetListMst()
     {
         var input = new GetKaMstListInputData();
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetKaMstListPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<GetKaMstListResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetListKaCode)]
-    public async Task<ActionResult<Response<GetKaCodeMstListResponse>>> GetListKaCodeMst()
+    public ActionResult<Response<GetKaCodeMstListResponse>> GetListKaCodeMst()
     {
         var input = new GetKaCodeMstInputData();
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
         var presenter = new GetKaCodeMstListPresenter();
         presenter.Complete(output);
         return Ok(presenter.Result);
     }
 
     [HttpPost(ApiPath.SaveListKaMst)]
-    public async Task<ActionResult<Response<SaveListKaMstResponse>>> Save([FromBody] SaveListKaMstRequest request)
+    public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        var input = new SaveKaMstInputData(hpId, userId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
+        var output = _bus.Handle(input);
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);
         return new ActionResult<Response<SaveListKaMstResponse>>(presenter.Result);

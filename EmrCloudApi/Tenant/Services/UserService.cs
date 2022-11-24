@@ -12,12 +12,14 @@ public class UserService : IUserService
     }
     public LoginTokenResponse GetLoginUser()
     {
-        var result  = new LoginTokenResponse();
-        if (_httpContextAccessor.HttpContext !=null)
+        var result = new LoginTokenResponse();
+        if (_httpContextAccessor.HttpContext != null)
         {
             var user = _httpContextAccessor.HttpContext.User;
-            result.UserId = user.FindFirstValue(LoginUserConstant.UserId);
-            result.HpId = user.FindFirstValue(LoginUserConstant.HpId);
+            int.TryParse(user.FindFirstValue(LoginUserConstant.HpId), out int hpId);
+            int.TryParse(user.FindFirstValue(LoginUserConstant.UserId), out int userId);
+            result.UserId = userId;
+            result.HpId = hpId;
         }
 
         return result;

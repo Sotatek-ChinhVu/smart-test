@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.SaveImageSuperSetDetail;
@@ -24,24 +23,19 @@ using UseCase.SuperSetDetail.SuperSetDetail;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class SetController : ControllerBase
+public class SetController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
-    public SetController(UseCaseBus bus, IUserService userService)
+    public SetController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetSetMstListResponse>>> GetList([FromQuery] GetSetMstListRequest request)
+    public ActionResult<Response<GetSetMstListResponse>> GetList([FromQuery] GetSetMstListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        var input = new GetSetMstListInputData(hpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new GetSetMstListInputData(HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
+        var output = _bus.Handle(input);
 
         var presenter = new GetSetMstListPresenter();
         presenter.Complete(output);
@@ -50,11 +44,10 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetToolTip)]
-    public async Task<ActionResult<Response<GetSetMstToolTipResponse>>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
+    public ActionResult<Response<GetSetMstToolTipResponse>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        var input = new GetSetMstToolTipInputData(hpId, request.SetCd);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new GetSetMstToolTipInputData(HpId, request.SetCd);
+        var output = _bus.Handle(input);
 
         var presenter = new GetSetMstToolTipPresenter();
         presenter.Complete(output);
@@ -63,12 +56,10 @@ public class SetController : ControllerBase
     }
 
     [HttpPost(ApiPath.Save)]
-    public async Task<ActionResult<Response<SaveSetMstResponse>>> Save([FromBody] SaveSetMstRequest request)
+    public ActionResult<Response<SaveSetMstResponse>> Save([FromBody] SaveSetMstRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, hpId, userId, request.IsGroup);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
+        var output = _bus.Handle(input);
 
         var presenter = new SaveSetMstPresenter();
         presenter.Complete(output);
@@ -77,12 +68,10 @@ public class SetController : ControllerBase
     }
 
     [HttpPost(ApiPath.Reorder)]
-    public async Task<ActionResult<Response<ReorderSetMstResponse>>> Reorder([FromBody] ReorderSetMstRequest request)
+    public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        var input = new ReorderSetMstInputData(hpId, request.DragSetCd, request.DropSetCd, userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new ReorderSetMstInputData(HpId, request.DragSetCd, request.DropSetCd, UserId);
+        var output = _bus.Handle(input);
 
         var presenter = new ReorderSetMstPresenter();
         presenter.Complete(output);
@@ -91,12 +80,10 @@ public class SetController : ControllerBase
     }
 
     [HttpPost(ApiPath.Paste)]
-    public async Task<ActionResult<Response<CopyPasteSetMstResponse>>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
+    public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        var input = new CopyPasteSetMstInputData(hpId, userId, request.CopySetCd, request.PasteSetCd);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.CopySetCd, request.PasteSetCd);
+        var output = _bus.Handle(input);
 
         var presenter = new CopyPasteSetMstPresenter();
         presenter.Complete(output);
@@ -105,11 +92,10 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetSuperSetDetail)]
-    public async Task<ActionResult<Response<GetSuperSetDetailResponse>>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
+    public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        var input = new GetSuperSetDetailInputData(hpId, request.SetCd, request.Sindate);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new GetSuperSetDetailInputData(HpId, request.SetCd, request.Sindate);
+        var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailPresenter();
         presenter.Complete(output);
@@ -118,19 +104,17 @@ public class SetController : ControllerBase
     }
 
     [HttpPost(ApiPath.SaveSuperSetDetail)]
-    public async Task<ActionResult<Response<SaveSuperSetDetailResponse>>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
+    public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
         var input = new SaveSuperSetDetailInputData(
                         request.SetCd,
-                        userId,
-                        hpId,
+                        UserId,
+                        HpId,
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                        new SaveSetKarteInputItem(hpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
+                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
                         ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
                     );
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new SaveSuperSetDetailPresenter();
         presenter.Complete(output);
@@ -140,11 +124,10 @@ public class SetController : ControllerBase
 
 
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
-    public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
+    public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        var input = new SaveImageSuperSetDetailInputData(hpId, request.SetCd, request.Position, request.OldImage, Request.Body);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new SaveImageSuperSetDetailInputData(HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
+        var output = _bus.Handle(input);
 
         var presenter = new SaveImageSuperSetDetailPresenter();
         presenter.Complete(output);
@@ -153,10 +136,10 @@ public class SetController : ControllerBase
     }
 
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]
-    public async Task<ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
+    public ActionResult<Response<GetSuperSetDetailToDoTodayOrderResponse>> GetSuperSetDetailForTodayOrder([FromQuery] GetSuperSetDetailToDoTodayOrderRequest request)
     {
         var input = new GetSuperSetDetailToDoTodayOrderInputData(request.HpId, request.SetCd, request.SinDate);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailToDoTodayOrderPresenter();
         presenter.Complete(output);

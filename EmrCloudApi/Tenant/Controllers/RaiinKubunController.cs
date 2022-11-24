@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.RaiinKubun;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinKubun;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
@@ -15,23 +14,19 @@ using UseCase.RaiinKubunMst.Save;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class RaiinKubunController : ControllerBase
+    public class RaiinKubunController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public RaiinKubunController(UseCaseBus bus, IUserService userService)
+        public RaiinKubunController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList + "Mst")]
-        public async Task<ActionResult<Response<GetRaiinKubunMstListResponse>>> GetRaiinKubunMstList([FromQuery] GetRaiinKubunMstListRequest request)
+        public ActionResult<Response<GetRaiinKubunMstListResponse>> GetRaiinKubunMstList([FromQuery] GetRaiinKubunMstListRequest request)
         {
             var input = new GetRaiinKubunMstListInputData(request.IsDeleted);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetRaiinKubunMstListPresenter();
             presenter.Complete(output);
@@ -40,12 +35,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetList + "KubunSetting")]
-        public async Task<ActionResult<Response<LoadDataKubunSettingResponse>>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
+        public ActionResult<Response<LoadDataKubunSettingResponse>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new LoadDataKubunSettingInputData(hpId, userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new LoadDataKubunSettingInputData(HpId, UserId);
+            var output = _bus.Handle(input);
 
             var presenter = new LoadDataKubunSettingPresenter();
             presenter.Complete(output);
@@ -54,11 +47,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
-        public async Task<ActionResult<Response<SaveDataKubunSettingResponse>>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
+        public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), UserId);
+            var output = _bus.Handle(input);
 
             var presenter = new SaveDataKubunSettingPresenter();
             presenter.Complete(output);
@@ -67,11 +59,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetColumnName)]
-        public async Task<ActionResult<Response<GetColumnNameListResponse>>> GetColumnName([FromQuery] GetColumnNameListRequest request)
+        public ActionResult<Response<GetColumnNameListResponse>> GetColumnName([FromQuery] GetColumnNameListRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetColumnNameListInputData(hpId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetColumnNameListInputData(HpId);
+            var output = _bus.Handle(input);
 
             var presenter = new GetColumnNameListPresenter();
             presenter.Complete(output);

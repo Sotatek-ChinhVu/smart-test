@@ -13,7 +13,7 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
         {
             Result = new Response<ValidateMainInsuranceReponse>
             {
-                Data = new ValidateMainInsuranceReponse(outputData.Result, outputData.Message),
+                Data = new ValidateMainInsuranceReponse(outputData.Result, outputData.Message, outputData.TypeMessage),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

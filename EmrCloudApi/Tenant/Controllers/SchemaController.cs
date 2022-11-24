@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.Schema;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
@@ -13,23 +12,19 @@ using UseCase.Schema.SaveImageTodayOrder;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class SchemaController : ControllerBase
+    public class SchemaController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public SchemaController(UseCaseBus bus, IUserService userService)
+        public SchemaController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList)]
-        public async Task<ActionResult<Response<GetListImageTemplatesResponse>>> GetList()
+        public ActionResult<Response<GetListImageTemplatesResponse>> GetList()
         {
             var input = new GetListImageTemplatesInputData();
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetListImageTemplatesPresenter();
             presenter.Complete(output);
@@ -38,11 +33,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SaveImageTodayOrder)]
-        public async Task<ActionResult<Response<SaveImageResponse>>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
+        public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new SaveImageTodayOrderInputData(hpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new SaveImageTodayOrderInputData(HpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
+            var output = _bus.Handle(input);
 
             var presenter = new SaveImageTodayOrderPresenter();
             presenter.Complete(output);

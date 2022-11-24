@@ -4,7 +4,7 @@ using EmrCloudApi.Tenant.Responses.Insurance;
 using UseCase.Insurance.ValidKohi;
 
 namespace EmrCloudApi.Tenant.Presenters.Insurance
-{
+{ 
     public class ValidateKohiPresenter : IValidKohiOutputPort
     {
         public Response<ValidateKohiResponse> Result { get; private set; } = default!;
@@ -12,7 +12,7 @@ namespace EmrCloudApi.Tenant.Presenters.Insurance
         {
             Result = new Response<ValidateKohiResponse>()
             {
-                Data = new ValidateKohiResponse(output.Result, output.Message),
+                Data = new ValidateKohiResponse(output.Result, output.Message , output.TypeMessage),
                 Status = (byte)output.Status,
             };
             switch (output.Status)

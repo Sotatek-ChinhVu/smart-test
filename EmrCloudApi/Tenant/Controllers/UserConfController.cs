@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.UserConf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.UserConf;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
@@ -12,26 +11,20 @@ using UseCase.User.GetUserConfList;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class UserConfController : ControllerBase
+public class UserConfController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
 
-    public UserConfController(UseCaseBus bus, IUserService userService)
+    public UserConfController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList)]
-    public async Task<ActionResult<Response<GetUserConfListResponse>>> GetList([FromQuery] GetUserConfListRequest request)
+    public ActionResult<Response<GetUserConfListResponse>> GetList([FromQuery] GetUserConfListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-        var input = new GetUserConfListInputData(hpId, userId);
-        var output = await Task.Run(() => _bus.Handle(input));
+        var input = new GetUserConfListInputData(HpId, UserId);
+        var output = _bus.Handle(input);
 
         var presenter = new GetUserConfListPresenter();
         presenter.Complete(output);

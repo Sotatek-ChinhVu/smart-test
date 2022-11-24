@@ -39,37 +39,31 @@ using UseCase.ReceptionSameVisit.Get;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class ReceptionController : ControllerBase
+    public class ReceptionController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
         private readonly IWebSocketService _webSocketService;
-        private readonly IUserService _userService;
-
-        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService)
+        public ReceptionController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
         {
             _bus = bus;
             _webSocketService = webSocketService;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get + "ReceptionComment")]
-        public async Task<ActionResult<Response<GetReceptionCommentResponse>>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
+        public ActionResult<Response<GetReceptionCommentResponse>> GetReceptionComment([FromQuery] GetReceptionCommentRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetReceptionCommentInputData(hpId, request.RaiinNo);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetReceptionCommentInputData(HpId, request.RaiinNo);
+            var output = _bus.Handle(input);
             var presenter = new GetReceptionCommentPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.Get)]
-        public async Task<ActionResult<Response<GetReceptionResponse>>> Get([FromQuery] GetReceptionRequest request)
+        public ActionResult<Response<GetReceptionResponse>> Get([FromQuery] GetReceptionRequest request)
         {
             var input = new GetReceptionInputData(request.RaiinNo);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetReceptionPresenter();
             presenter.Complete(output);
@@ -78,11 +72,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetLastRaiinInfs)]
-        public async Task<ActionResult<Response<GetLastRaiinInfsResponse>>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
+        public ActionResult<Response<GetLastRaiinInfsResponse>> GetLastRaiinInfs([FromQuery] GetLastRaiinInfsRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetLastRaiinInfsInputData(hpId, request.PtId, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetLastRaiinInfsInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
 
             var presenter = new GetLastRaiinInfsPresenter();
             presenter.Complete(output);
@@ -93,9 +86,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Insert)]
         public async Task<ActionResult<Response<InsertReceptionResponse>>> InsertAsync([FromBody] InsertReceptionRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new InsertReceptionInputData(request.Dto, hpId, userId);
+            var input = new InsertReceptionInputData(request.Dto, HpId, UserId);
             var output = _bus.Handle(input);
             if (output.Status == InsertReceptionStatus.Success)
             {
@@ -112,9 +103,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.Update)]
         public async Task<ActionResult<Response<UpdateReceptionResponse>>> UpdateAsync([FromBody] UpdateReceptionRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new UpdateReceptionInputData(request.Dto, hpId, userId);
+            var input = new UpdateReceptionInputData(request.Dto, HpId, UserId);
             var output = _bus.Handle(input);
             if (output.Status == UpdateReceptionStatus.Success)
             {
@@ -129,11 +118,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetPatientRaiinKubun")]
-        public async Task<ActionResult<Response<GetPatientRaiinKubunResponse>>> GetPatientRaiinKubun([FromQuery] PatientRaiinKubunRequest request)
+        public ActionResult<Response<GetPatientRaiinKubunResponse>> GetPatientRaiinKubun([FromQuery] PatientRaiinKubunRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetPatientRaiinKubunInputData(hpId, request.PtId, request.RaiinNo, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetPatientRaiinKubunInputData(HpId, request.PtId, request.RaiinNo, request.SinDate);
+            var output = _bus.Handle(input);
 
             var presenter = new GetPatientRaiinKubunPresenter();
             presenter.Complete(output);
@@ -142,11 +130,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetReceptionInsurance")]
-        public async Task<ActionResult<Response<ReceptionInsuranceResponse>>> GetReceptionInsurance([FromQuery] ReceptionInsuranceRequest request)
+        public ActionResult<Response<ReceptionInsuranceResponse>> GetReceptionInsurance([FromQuery] ReceptionInsuranceRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetReceptionInsuranceInputData(hpId, request.PtId, request.SinDate, request.IsShowExpiredReception);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetReceptionInsuranceInputData(HpId, request.PtId, request.SinDate, request.IsShowExpiredReception);
+            var output = _bus.Handle(input);
 
             var presenter = new ReceptionInsurancePresenter();
             presenter.Complete(output);
@@ -155,11 +142,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetListSameVisit")]
-        public async Task<ActionResult<Response<GetReceptionSameVisitResponse>>> GetListSameVisit([FromQuery] GetReceptionSameVisitRequest request)
+        public ActionResult<Response<GetReceptionSameVisitResponse>> GetListSameVisit([FromQuery] GetReceptionSameVisitRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetReceptionSameVisitInputData(hpId, request.PtId, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetReceptionSameVisitInputData(HpId, request.PtId, request.SinDate);
+            var output = _bus.Handle(input);
 
             var presenter = new GetReceptionSameVisitPresenter();
             presenter.Complete(output);
@@ -168,11 +154,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet("GetMaxMoneyData")]
-        public async Task<ActionResult<Response<GetMaxMoneyResponse>>> GetMaxMoney([FromQuery] GetMaxMoneyRequest request)
+        public ActionResult<Response<GetMaxMoneyResponse>> GetMaxMoney([FromQuery] GetMaxMoneyRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetMaxMoneyInputData(request.PtId, hpId, request.HokenKohiId, request.SinDate);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetMaxMoneyInputData(request.PtId, HpId, request.HokenKohiId, request.SinDate);
+            var output = _bus.Handle(input);
 
             var presenter = new GetMaxMoneyPresenter();
             presenter.Complete(output);
@@ -181,12 +166,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost("SaveMaxMoneyData")]
-        public async Task<ActionResult<Response<SaveMaxMoneyResponse>>> SaveMaxMoney([FromBody] SaveMaxMoneyRequest request)
+        public ActionResult<Response<SaveMaxMoneyResponse>> SaveMaxMoney([FromBody] SaveMaxMoneyRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new SaveMaxMoneyInputData(request.ListLimits, hpId, request.PtId, request.KohiId, request.SinYM, userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new SaveMaxMoneyInputData(request.ListLimits, HpId, request.PtId, request.KohiId, request.SinYM, UserId);
+            var output = _bus.Handle(input);
 
             var presenter = new SaveMaxMoneyPresenter();
             presenter.Complete(output);
@@ -195,16 +178,15 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost("CheckPatternSelectedExpirated")]
-        public async Task<ActionResult<Response<ValidPatternExpiratedResponse>>> CheckPatternSelectedExpirated([FromBody] ValidPatternExpiratedRequest request)
+        public ActionResult<Response<ValidPatternExpiratedResponse>> CheckPatternSelectedExpirated([FromBody] ValidPatternExpiratedRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new ValidPatternExpiratedInputData(hpId, request.PtId, request.SinDate, request.PatternHokenPid, request.PatternIsExpirated, request.HokenInfIsJihi, request.HokenInfIsNoHoken, request.PatternConfirmDate,
+            var input = new ValidPatternExpiratedInputData(HpId, request.PtId, request.SinDate, request.PatternHokenPid, request.PatternIsExpirated, request.HokenInfIsJihi, request.HokenInfIsNoHoken, request.PatternConfirmDate,
                                                            request.HokenInfStartDate, request.HokenInfEndDate, request.IsHaveHokenMst, request.HokenMstStartDate, request.HokenMstEndDate, request.HokenMstDisplayTextMaster, request.IsEmptyKohi1,
                                                            request.IsKohiHaveHokenMst1, request.KohiConfirmDate1, request.KohiHokenMstDisplayTextMaster1, request.KohiHokenMstStartDate1, request.KohiHokenMstEndDate1,
                                                            request.IsEmptyKohi2, request.IsKohiHaveHokenMst2, request.KohiConfirmDate2, request.KohiHokenMstDisplayTextMaster2, request.KohiHokenMstStartDate2,
                                                            request.KohiHokenMstEndDate2, request.IsEmptyKohi3, request.IsKohiHaveHokenMst3, request.KohiConfirmDate3, request.KohiHokenMstDisplayTextMaster3, request.KohiHokenMstStartDate3,
                                                            request.KohiHokenMstEndDate3, request.IsEmptyKohi4, request.IsKohiHaveHokenMst4, request.KohiConfirmDate4, request.KohiHokenMstDisplayTextMaster4, request.KohiHokenMstStartDate4, request.KohiHokenMstEndDate4, request.PatientInfBirthday, request.PatternHokenKbn);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new ValidPatternExpiratedPresenter();
             presenter.Complete(output);
@@ -213,11 +195,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetDataReceptionDefault)]
-        public async Task<ActionResult<Response<GetReceptionDefaultResponse>>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
+        public ActionResult<Response<GetReceptionDefaultResponse>> GetDataReceptionDefault([FromQuery] GetReceptionDefaultRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetReceptionDefaultInputData(hpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetReceptionDefaultInputData(HpId, request.PtId, request.Sindate, request.DefaultDoctorSetting);
+            var output = _bus.Handle(input);
 
             var presenter = new GetReceptionDefaultPresenter();
             presenter.Complete(output);
@@ -226,11 +207,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetDefaultSelectedTime)]
-        public async Task<ActionResult<Response<GetDefaultSelectedTimeResponse>>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
+        public ActionResult<Response<GetDefaultSelectedTimeResponse>> GetDefaultSelectedTime([FromQuery] GetDefaultSelectedTimeRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            var input = new GetDefaultSelectedTimeInputData(hpId, request.SinDate, request.BirthDay);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetDefaultSelectedTimeInputData(HpId, request.SinDate, request.BirthDay);
+            var output = _bus.Handle(input);
 
             var presenter = new GetDefaultSelectedTimePresenter();
             presenter.Complete(output);
@@ -239,12 +219,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.UpdateTimeZoneDayInf)]
-        public async Task<ActionResult<Response<UpdateTimeZoneDayInfResponse>>> UpdateTimeZoneDayInf([FromBody] UpdateTimeZoneDayInfRequest request)
+        public ActionResult<Response<UpdateTimeZoneDayInfResponse>> UpdateTimeZoneDayInf([FromBody] UpdateTimeZoneDayInfRequest request)
         {
-            int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-            int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-            var input = new UpdateTimeZoneDayInfInputData(hpId, userId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new UpdateTimeZoneDayInfInputData(HpId, UserId, request.SinDate, request.CurrentTimeKbn, request.BeforeTimeKbn, request.UketukeTime);
+            var output = _bus.Handle(input);
 
             var presenter = new UpdateTimeZoneDayInfPresenter();
             presenter.Complete(output);

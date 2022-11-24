@@ -180,5 +180,11 @@ namespace Domain.Models.Reception
                     Comment
                 );
         }
+
+        public ReceptionModel ChangeUketukeNo(int uketukeNo)
+        {
+            UketukeNo = uketukeNo;
+            return this;
+        }
     }
 }
