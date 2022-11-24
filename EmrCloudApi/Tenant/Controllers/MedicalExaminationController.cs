@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -13,10 +14,10 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MedicalExaminationController : ControllerBase
+    public class MedicalExaminationController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public MedicalExaminationController(UseCaseBus bus)
+        public MedicalExaminationController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
         }
@@ -24,9 +25,9 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.GetInfCheckedSpecialItem)]
         public ActionResult<Response<CheckedSpecialItemResponse>> GetInfCheckedSpecialItem([FromBody] CheckedSpecialItemRequest request)
         {
-            var input = new CheckedSpecialItemInputData(request.HpId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
+            var input = new CheckedSpecialItemInputData(HpId, request.PtId, request.SinDate, request.IBirthDay, request.CheckAge, request.RaiinNo, request.OdrInfs.Select(
                 o => new OdrInfItemInputData(
-                            o.HpId,
+                            HpId,
                             o.RaiinNo,
                             o.RpNo,
                             o.RpEdaNo,
@@ -45,7 +46,7 @@ namespace EmrCloudApi.Tenant.Controllers
                             o.Id,
                             o.OdrDetails.Select(
                                     od => new OdrInfDetailItemInputData(
-                                            od.HpId,
+                                            HpId,
                                             od.RaiinNo,
                                             od.RpNo,
                                             od.RpEdaNo,
