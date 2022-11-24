@@ -848,7 +848,7 @@ namespace Infrastructure.Repositories
         {
             var isDoctor = _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
             var doctors = _tenantNoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
-            if (!doctors.Any(p => p.Id == tantoId))
+            if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
             {
                 // if have only 1 doctor in user list
                 if (doctors.Count == 2)
