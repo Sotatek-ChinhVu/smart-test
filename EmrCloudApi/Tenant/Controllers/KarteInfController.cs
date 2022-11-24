@@ -3,7 +3,7 @@ using EmrCloudApi.Tenant.Presenters.KarteInfs;
 using EmrCloudApi.Tenant.Requests.KarteInfs;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.KarteInfs;
-using Microsoft.AspNetCore.Authorization;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.KarteInfs.GetLists;
@@ -11,12 +11,10 @@ using UseCase.KarteInfs.GetLists;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class KarteInfController : ControllerBase
+    public class KarteInfController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public KarteInfController(UseCaseBus bus)
+        public KarteInfController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
         }

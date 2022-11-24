@@ -66,28 +66,22 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class PatientInforController : ControllerBase
+    public class PatientInforController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public PatientInforController(UseCaseBus bus, IUserService userService)
+        public PatientInforController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.Get + "PatientComment")]
         public ActionResult<Response<GetPatientCommentResponse>> GetList([FromQuery] GetPatientCommentRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetPatientCommentInputData(hpId, request.PtId);
+            var input = new GetPatientCommentInputData(HpId, request.PtId);
             var output = _bus.Handle(input);
             var presenter = new GetPatientCommentPresenter();
             presenter.Complete(output);
@@ -97,8 +91,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetPatientById")]
         public ActionResult<Response<GetPatientInforByIdResponse>> GetPatientById([FromQuery] GetByIdRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetPatientInforByIdInputData(hpId, request.PtId, request.SinDate, request.RaiinNo);
+            var input = new GetPatientInforByIdInputData(HpId, request.PtId, request.SinDate, request.RaiinNo);
             var output = _bus.Handle(input);
 
             var present = new GetPatientInforByIdPresenter();
@@ -110,8 +103,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListPatientGroup")]
         public ActionResult<Response<GetListGroupInfResponse>> GetListPatientGroup([FromQuery] GetListGroupInfRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetListGroupInfInputData(hpId, request.PtId);
+            var input = new GetListGroupInfInputData(HpId, request.PtId);
             var output = _bus.Handle(input);
 
             var present = new GetListGroupInfPresenter();
@@ -123,8 +115,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("InsuranceListByPtId")]
         public ActionResult<Response<GetInsuranceListResponse>> GetInsuranceListByPtId([FromQuery] GetInsuranceListRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetInsuranceListInputData(hpId, request.PtId, request.SinDate);
+            var input = new GetInsuranceListInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceListPresenter();
@@ -136,8 +127,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchSimple")]
         public ActionResult<Response<SearchPatientInforSimpleResponse>> SearchSimple([FromQuery] SearchPatientInfoSimpleRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, hpId, request.PageIndex, request.PageSize);
+            var input = new SearchPatientInfoSimpleInputData(request.Keyword, request.IsContainMode, HpId, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var present = new SearchPatientInfoSimplePresenter();
@@ -149,8 +139,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SearchAdvanced")]
         public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, hpId);
+            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, HpId);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoAdvancedPresenter();
             presenter.Complete(output);
@@ -160,8 +149,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetListCalculationPatient")]
         public ActionResult<Response<CalculationInfResponse>> GetListCalculationPatient([FromQuery] CalculationInfRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new CalculationInfInputData(hpId, request.PtId);
+            var input = new CalculationInfInputData(HpId, request.PtId);
             var output = _bus.Handle(input);
 
             var present = new CalculationInfPresenter();
@@ -185,9 +173,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientGroupMst)]
         public ActionResult<Response<SaveListPatientGroupMstResponse>> SavePatientGroupMst([FromBody] SaveListPatientGroupMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveListPatientGroupMstInputData(hpId, userId, ConvertToListInput(request.SaveListPatientGroupMsts));
+            var input = new SaveListPatientGroupMstInputData(HpId, UserId, ConvertToListInput(request.SaveListPatientGroupMsts));
             var output = _bus.Handle(input);
 
             var presenter = new SaveListPatientGroupMstPresenter();
@@ -199,8 +185,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetInsuranceMst")]
         public ActionResult<Response<GetInsuranceMstResponse>> GetInsuranceMst([FromQuery] GetInsuranceMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetInsuranceMstInputData(hpId, request.PtId, request.SinDate);
+            var input = new GetInsuranceMstInputData(HpId, request.PtId, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceMstPresenter();
@@ -212,8 +197,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("SearchHokensyaMst")]
         public ActionResult<Response<SearchHokensyaMstResponse>> SearchHokensyaMst([FromQuery] SearchHokensyaMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchHokensyaMstInputData(hpId, request.SinDate, request.Keyword);
+            var input = new SearchHokensyaMstInputData(HpId, request.SinDate, request.Keyword);
             var output = _bus.Handle(input);
 
             var presenter = new SearchHokenMstPresenter();
@@ -225,8 +209,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet("GetHokenMstByFutansyaNo")]
         public ActionResult<Response<GetKohiHokenMstResponse>> GetHokenMstByFutansyaNo([FromQuery] GetKohiHokenMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetKohiHokenMstInputData(hpId, request.SinDate, request.FutansyaNo);
+
+            var input = new GetKohiHokenMstInputData(HpId, request.SinDate, request.FutansyaNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetKohiHokenMstPresenter();
@@ -257,8 +241,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateRousaiJibai)]
         public ActionResult<Response<ValidateRousaiJibaiResponse>> ValidateRousaiJibai([FromBody] ValidateRousaiJibaiRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new ValidateRousaiJibaiInputData(hpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
+            var input = new ValidateRousaiJibaiInputData(HpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
                 request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
                 request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
                 request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate);
@@ -276,14 +259,14 @@ namespace EmrCloudApi.Tenant.Controllers
             foreach (var item in requestItems)
             {
                 listDatas.Add(new SaveListPatientGroupMstInputItem(
-                        item.GroupId,
-                        item.GroupName,
-                        item.Details.Select(detail => new SaveListPatientGroupDetailMstInputItem(
-                                item.GroupId,
-                                detail.GroupCode,
-                                detail.SeqNo,
-                                detail.GroupDetailName
-                            )).ToList()
+            item.GroupId,
+            item.GroupName,
+            item.Details.Select(detail => new SaveListPatientGroupDetailMstInputItem(
+                    item.GroupId,
+                    detail.GroupCode,
+                    detail.SeqNo,
+                    detail.GroupDetailName
+                )).ToList()
                     ));
             }
             return listDatas;
@@ -292,26 +275,24 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("SaveHokenSyaMst")]
         public ActionResult<Response<SaveHokenSyaMstResponse>> SaveHokenSyaMst([FromBody] SaveHokenSyaMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveHokenSyaMstInputData(hpId
-                                                   , request.Name
-                                                   , request.KanaName
-                                                   , request.HoubetuKbn
-                                                   , request.Houbetu
-                                                   , request.HokenKbn
-                                                   , request.PrefNo
-                                                   , request.HokensyaNo
-                                                   , request.Kigo
-                                                   , request.Bango
-                                                   , request.RateHonnin
-                                                   , request.RateKazoku
-                                                   , request.PostCode
-                                                   , request.Address1
-                                                   , request.Address2
-                                                   , request.Tel1
-                                                   , request.IsKigoNa
-                                                   , userId);
+            var input = new SaveHokenSyaMstInputData(HpId
+               , request.Name
+               , request.KanaName
+               , request.HoubetuKbn
+               , request.Houbetu
+               , request.HokenKbn
+               , request.PrefNo
+               , request.HokensyaNo
+               , request.Kigo
+               , request.Bango
+               , request.RateHonnin
+               , request.RateKazoku
+               , request.PostCode
+               , request.Address1
+               , request.Address2
+               , request.Tel1
+               , request.IsKigoNa
+               , UserId);
 
             var output = _bus.Handle(input);
             var presenter = new SaveHokenSyaMstPresenter();
@@ -322,8 +303,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.SearchEmptyId)]
         public ActionResult<Response<SearchEmptyIdResponse>> SearchEmptyId([FromQuery] SearchEmptyIdResquest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchEmptyIdInputData(hpId, request.PtNum, request.PageIndex, request.PageSize);
+            var input = new SearchEmptyIdInputData(HpId, request.PtNum, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
 
             var presenter = new SearchEmptyIdPresenter();
@@ -335,8 +315,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetDetailHokenMst)]
         public ActionResult<Response<GetDetailHokenMstResponse>> GetDetailHokenMst([FromQuery] GetDetailHokenMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetDetailHokenMstInputData(hpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
+            var input = new GetDetailHokenMstInputData(HpId, request.HokenNo, request.HokenEdaNo, request.PrefNo, request.SinDate);
             var output = _bus.Handle(input);
 
             var presenter = new GetDetailHokenMstPresenter();
@@ -359,8 +338,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("ValidateMainInsurance")]
         public ActionResult<Response<ValidateMainInsuranceReponse>> ValidateMainInsurance([FromBody] ValidateMainInsuranceRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new ValidMainInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
+            var input = new ValidMainInsuranceInputData(HpId, request.SinDate, request.PtBirthday, request.HokenKbn, request.HokenSyaNo, request.IsSelectedHokenPattern,
                 request.IsSelectedHokenInf, request.IsSelectedHokenMst, request.SelectedHokenInfHoubetu, request.SelectedHokenInfHokenNo, request.SelectedHokenInfHokenEdra, request.SelectedHokenInfIsAddNew, request.SelectedHokenInfIsJihi,
                 request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate, request.SelectedHokenInfKigo, request.SelectedHokenInfBango,
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
@@ -378,8 +356,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetInsuranceMasterLinkage)]
         public ActionResult<Response<GetInsuranceMasterLinkageResponse>> GetInsuranceMasterLinkage([FromQuery] GetInsuranceMasterLinkageRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetInsuranceMasterLinkageInputData(hpId, request.FutansyaNo);
+            var input = new GetInsuranceMasterLinkageInputData(HpId, request.FutansyaNo);
             var output = _bus.Handle(input);
 
             var presenter = new GetInsuranceMasterLinkagePresenter();
@@ -391,8 +368,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetPtKyuseiInf)]
         public ActionResult<Response<GetPtKyuseiInfResponse>> GetPtKyuseiInf([FromQuery] GetPtKyuseiInfRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetPtKyuseiInfInputData(hpId, request.PtId, request.IsDeleted);
+            var input = new GetPtKyuseiInfInputData(HpId, request.PtId, request.IsDeleted);
             var output = _bus.Handle(input);
 
             var presenter = new GetPtKyuseiInfPresenter();
@@ -404,9 +380,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveInsuranceMasterLinkage)]
         public ActionResult<Response<SaveInsuranceMasterLinkageResponse>> SaveInsuranceMasterLinkage([FromBody] SaveInsuranceMasterLinkageRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels, hpId, userId);
+            var input = new SaveInsuranceMasterLinkageInputData(request.DefHokenNoModels, HpId, UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveInsuranceMasterLinkagePresenter();
             presenter.Complete(output);
@@ -416,175 +390,172 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SavePatientInfo)]
         public ActionResult<Response<SavePatientInfoResponse>> SavePatientInfo([FromBody] SavePatientInfoRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            PatientInforSaveModel patient = new PatientInforSaveModel(hpId,
-                                                                      request.Patient.PtId,
-                                                                      request.Patient.PtNum,
-                                                                      request.Patient.KanaName,
-                                                                      request.Patient.Name,
-                                                                      request.Patient.Sex,
-                                                                      request.Patient.Birthday,
-                                                                      request.Patient.IsDead,
-                                                                      request.Patient.DeathDate,
-                                                                      request.Patient.Mail,
-                                                                      request.Patient.HomePost,
-                                                                      request.Patient.HomeAddress1,
-                                                                      request.Patient.HomeAddress2,
-                                                                      request.Patient.Tel1,
-                                                                      request.Patient.Tel2,
-                                                                      request.Patient.Setanusi,
-                                                                      request.Patient.Zokugara,
-                                                                      request.Patient.Job,
-                                                                      request.Patient.RenrakuName,
-                                                                      request.Patient.RenrakuPost,
-                                                                      request.Patient.RenrakuAddress1,
-                                                                      request.Patient.RenrakuAddress2,
-                                                                      request.Patient.RenrakuTel,
-                                                                      request.Patient.RenrakuMemo,
-                                                                      request.Patient.OfficeName,
-                                                                      request.Patient.OfficePost,
-                                                                      request.Patient.OfficeAddress1,
-                                                                      request.Patient.OfficeAddress2,
-                                                                      request.Patient.OfficeTel,
-                                                                      request.Patient.OfficeMemo,
-                                                                      request.Patient.IsRyosyoDetail,
-                                                                      request.Patient.PrimaryDoctor,
-                                                                      request.Patient.IsTester,
-                                                                      request.Patient.MainHokenPid,
-                                                                      request.Patient.ReferenceNo,
-                                                                      request.Patient.LimitConsFlg,
-                                                                      request.Patient.Memo);
+            PatientInforSaveModel patient = new PatientInforSaveModel(HpId,
+                      request.Patient.PtId,
+                      request.Patient.PtNum,
+                      request.Patient.KanaName,
+                      request.Patient.Name,
+                      request.Patient.Sex,
+                      request.Patient.Birthday,
+                      request.Patient.IsDead,
+                      request.Patient.DeathDate,
+                      request.Patient.Mail,
+                      request.Patient.HomePost,
+                      request.Patient.HomeAddress1,
+                      request.Patient.HomeAddress2,
+                      request.Patient.Tel1,
+                      request.Patient.Tel2,
+                      request.Patient.Setanusi,
+                      request.Patient.Zokugara,
+                      request.Patient.Job,
+                      request.Patient.RenrakuName,
+                      request.Patient.RenrakuPost,
+                      request.Patient.RenrakuAddress1,
+                      request.Patient.RenrakuAddress2,
+                      request.Patient.RenrakuTel,
+                      request.Patient.RenrakuMemo,
+                      request.Patient.OfficeName,
+                      request.Patient.OfficePost,
+                      request.Patient.OfficeAddress1,
+                      request.Patient.OfficeAddress2,
+                      request.Patient.OfficeTel,
+                      request.Patient.OfficeMemo,
+                      request.Patient.IsRyosyoDetail,
+                      request.Patient.PrimaryDoctor,
+                      request.Patient.IsTester,
+                      request.Patient.MainHokenPid,
+                      request.Patient.ReferenceNo,
+                      request.Patient.LimitConsFlg,
+                      request.Patient.Memo);
 
-            List<InsuranceModel> insurances = request.Insurances.Select(x => new InsuranceModel(hpId,
-                                                                                               x.PtId,
-                                                                                               0,
-                                                                                               x.SeqNo,
-                                                                                               x.HokenSbtCd,
-                                                                                               x.HokenPid,
-                                                                                               x.HokenKbn,
-                                                                                               x.HokenMemo,
-                                                                                               0,
-                                                                                               x.StartDate,
-                                                                                               x.EndDate,
-                                                                                               x.HokenId,
-                                                                                               x.Kohi1Id,
-                                                                                               x.Kohi2Id,
-                                                                                               x.Kohi3Id,
-                                                                                               x.Kohi4Id,
-                                                                                               x.IsAddNew,
-                                                                                               x.IsDeleted)).ToList();
+            List<InsuranceModel> insurances = request.Insurances.Select(x => new InsuranceModel(HpId,
+                       x.PtId,
+                       0,
+                       x.SeqNo,
+                       x.HokenSbtCd,
+                       x.HokenPid,
+                       x.HokenKbn,
+                       x.HokenMemo,
+                       0,
+                       x.StartDate,
+                       x.EndDate,
+                       x.HokenId,
+                       x.Kohi1Id,
+                       x.Kohi2Id,
+                       x.Kohi3Id,
+                       x.Kohi4Id,
+                       x.IsAddNew,
+                       x.IsDeleted)).ToList();
 
-            List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(hpId,
-                                                                                           x.PtId,
-                                                                                           x.HokenId,
-                                                                                           x.SeqNo,
-                                                                                           x.HokenNo,
-                                                                                           x.HokenEdaNo,
-                                                                                           x.HokenKbn,
-                                                                                           x.HokensyaNo,
-                                                                                           x.Kigo,
-                                                                                           x.Bango,
-                                                                                           x.EdaNo,
-                                                                                           x.HonkeKbn,
-                                                                                           x.StartDate,
-                                                                                           x.EndDate,
-                                                                                           x.SikakuDate,
-                                                                                           x.KofuDate,
-                                                                                           0,
-                                                                                           x.KogakuKbn,
-                                                                                           x.TasukaiYm,
-                                                                                           x.TokureiYm1,
-                                                                                           x.TokureiYm2,
-                                                                                           x.GenmenKbn,
-                                                                                           x.GenmenRate,
-                                                                                           x.GenmenGaku,
-                                                                                           x.SyokumuKbn,
-                                                                                           x.KeizokuKbn,
-                                                                                           x.Tokki1,
-                                                                                           x.Tokki2,
-                                                                                           x.Tokki3,
-                                                                                           x.Tokki4,
-                                                                                           x.Tokki5,
-                                                                                           x.RousaiKofuNo,
-                                                                                           x.RousaiRoudouCd,
-                                                                                           x.RousaiSaigaiKbn,
-                                                                                           x.RousaiKantokuCd,
-                                                                                           x.RousaiSyobyoDate,
-                                                                                           x.RyoyoStartDate,
-                                                                                           x.RyoyoEndDate,
-                                                                                           x.RousaiSyobyoCd,
-                                                                                           x.RousaiJigyosyoName,
-                                                                                           x.RousaiPrefName,
-                                                                                           x.RousaiCityName,
-                                                                                           x.RousaiReceCount,
-                                                                                           string.Empty,
-                                                                                           string.Empty,
-                                                                                           string.Empty,
-                                                                                           0,
-                                                                                           x.JibaiHokenName,
-                                                                                           x.JibaiHokenTanto,
-                                                                                           x.JibaiHokenTel,
-                                                                                           x.JibaiJyusyouDate,
-                                                                                           x.Houbetu,
-                                                                                           x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                                                                                                                                           c.HokenId,
-                                                                                                                                           c.SeqNo,
-                                                                                                                                           c.CheckId,
-                                                                                                                                           c.CheckName,
-                                                                                                                                           c.CheckComment,
-                                                                                                                                           c.ConfirmDate)).ToList(),
-                                                                                           x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
-                                                                                                                                           m.RousaiTenkiTenki,
-                                                                                                                                           m.RousaiTenkiEndDate,
-                                                                                                                                           m.RousaiTenkiIsDeleted,
-                                                                                                                                           m.SeqNo)).ToList(),
-                                                                                           false,
-                                                                                           x.IsDeleted,
-                                                                                           new HokenMstModel(),
-                                                                                           new HokensyaMstModel(),
-                                                                                           x.IsAddNew,
-                                                                                           false)).ToList();
+            List<HokenInfModel> hokenInfs = request.HokenInfs.Select(x => new HokenInfModel(HpId,
+                   x.PtId,
+                   x.HokenId,
+                   x.SeqNo,
+                   x.HokenNo,
+                   x.HokenEdaNo,
+                   x.HokenKbn,
+                   x.HokensyaNo,
+                   x.Kigo,
+                   x.Bango,
+                   x.EdaNo,
+                   x.HonkeKbn,
+                   x.StartDate,
+                   x.EndDate,
+                   x.SikakuDate,
+                   x.KofuDate,
+                   0,
+                   x.KogakuKbn,
+                   x.TasukaiYm,
+                   x.TokureiYm1,
+                   x.TokureiYm2,
+                   x.GenmenKbn,
+                   x.GenmenRate,
+                   x.GenmenGaku,
+                   x.SyokumuKbn,
+                   x.KeizokuKbn,
+                   x.Tokki1,
+                   x.Tokki2,
+                   x.Tokki3,
+                   x.Tokki4,
+                   x.Tokki5,
+                   x.RousaiKofuNo,
+                   x.RousaiRoudouCd,
+                   x.RousaiSaigaiKbn,
+                   x.RousaiKantokuCd,
+                   x.RousaiSyobyoDate,
+                   x.RyoyoStartDate,
+                   x.RyoyoEndDate,
+                   x.RousaiSyobyoCd,
+                   x.RousaiJigyosyoName,
+                   x.RousaiPrefName,
+                   x.RousaiCityName,
+                   x.RousaiReceCount,
+                   string.Empty,
+                   string.Empty,
+                   string.Empty,
+                   0,
+                   x.JibaiHokenName,
+                   x.JibaiHokenTanto,
+                   x.JibaiHokenTel,
+                   x.JibaiJyusyouDate,
+                   x.Houbetu,
+                   x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
+                   c.HokenId,
+                   c.SeqNo,
+                   c.CheckId,
+                   c.CheckName,
+                   c.CheckComment,
+                   c.ConfirmDate)).ToList(),
+                   x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
+                   m.RousaiTenkiTenki,
+                   m.RousaiTenkiEndDate,
+                   m.RousaiTenkiIsDeleted,
+                   m.SeqNo)).ToList(),
+                   false,
+                   x.IsDeleted,
+                   new HokenMstModel(),
+                   new HokensyaMstModel(),
+                   x.IsAddNew,
+                   false)).ToList();
 
             List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                                                                                                                                            c.HokenId,
-                                                                                                                                            c.SeqNo,
-                                                                                                                                            c.CheckId,
-                                                                                                                                            c.CheckName,
-                                                                                                                                            c.CheckComment,
-                                                                                                                                            c.ConfirmDate)).ToList(),
-                                                                                            x.FutansyaNo,
-                                                                                            x.JyukyusyaNo,
-                                                                                            x.HokenId,
-                                                                                            x.StartDate,
-                                                                                            x.EndDate,
-                                                                                            0,
-                                                                                            x.Rate,
-                                                                                            x.GendoGaku,
-                                                                                            x.SikakuDate,
-                                                                                            x.KofuDate,
-                                                                                            x.TokusyuNo,
-                                                                                            x.HokenSbtKbn,
-                                                                                            x.Houbetu,
-                                                                                            new HokenMstModel(),
-                                                                                            x.HokenNo,
-                                                                                            x.HokenEdaNo,
-                                                                                            x.PrefNo,
-                                                                                            0,
-                                                                                            false,
-                                                                                            x.IsDeleted,
-                                                                                            x.SeqNo,
-                                                                                            x.IsAddNew)).ToList();
-
+                    c.HokenId,
+                    c.SeqNo,
+                    c.CheckId,
+                    c.CheckName,
+                    c.CheckComment,
+                    c.ConfirmDate)).ToList(),
+                    x.FutansyaNo,
+                    x.JyukyusyaNo,
+                    x.HokenId,
+                    x.StartDate,
+                    x.EndDate,
+                    0,
+                    x.Rate,
+                    x.GendoGaku,
+                    x.SikakuDate,
+                    x.KofuDate,
+                    x.TokusyuNo,
+                    x.HokenSbtKbn,
+                    x.Houbetu,
+                    new HokenMstModel(),
+                    x.HokenNo,
+                    x.HokenEdaNo,
+                    x.PrefNo,
+                    0,
+                    false,
+                    x.IsDeleted,
+                    x.SeqNo,
+                    x.IsAddNew)).ToList();
 
             var input = new SavePatientInfoInputData(patient,
-                                                     request.PtKyuseis,
-                                                     request.PtSanteis,
-                                                     insurances,
-                                                     hokenInfs,
-                                                     hokenKohis,
-                                                     request.PtGrps,
-                                                     userId);
+                 request.PtKyuseis,
+                 request.PtSanteis,
+                 insurances,
+                 hokenInfs,
+                 hokenKohis,
+                 request.PtGrps,
+                 UserId);
             var output = _bus.Handle(input);
             var presenter = new SavePatientInfoPresenter();
             presenter.Complete(output);
@@ -594,9 +565,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost("DeletePatientInfo")]
         public ActionResult<Response<DeletePatientInfoResponse>> DeletePatientInfo([FromBody] DeletePatientInfoRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new DeletePatientInfoInputData(hpId, request.PtId, userId);
+            var input = new DeletePatientInfoInputData(HpId, request.PtId, UserId);
             var output = _bus.Handle(input);
             var presenter = new DeletePatientInfoPresenter();
             presenter.Complete(output);
@@ -606,8 +575,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.ValidateListPattern)]
         public ActionResult<Response<ValidateListInsuranceResponse>> ValidateListPattern([FromBody] ValidateInsuranceRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new ValidateInsuranceInputData(hpId, request.SinDate, request.PtBirthday, request.ListInsurance);
+            var input = new ValidateInsuranceInputData(HpId, request.SinDate, request.PtBirthday, request.ListInsurance);
             var output = _bus.Handle(input);
             var presenter = new ValidateInsurancePresenter();
             presenter.Complete(output);
@@ -617,17 +585,15 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SwapHoken)]
         public ActionResult<Response<SaveSwapHokenResponse>> SwapHokenParttern([FromBody] SaveSwapHokenRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveSwapHokenInputData(hpId,
-                                                   request.PtId,
-                                                   request.HokenIdBefore,
-                                                   request.HokenIdAfter,
-                                                   request.HokenPidBefore,
-                                                   request.HokenPidAfter,
-                                                   request.StartDate,
-                                                   request.EndDate,
-                                                   userId);
+            var input = new SaveSwapHokenInputData(HpId,
+               request.PtId,
+               request.HokenIdBefore,
+               request.HokenIdAfter,
+               request.HokenPidBefore,
+               request.HokenPidAfter,
+               request.StartDate,
+               request.EndDate,
+               UserId);
             var output = _bus.Handle(input);
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);

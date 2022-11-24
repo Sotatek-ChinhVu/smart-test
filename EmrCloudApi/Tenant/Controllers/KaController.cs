@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.Ka;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Ka;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Ka.GetKaCodeList;
@@ -14,17 +13,13 @@ using UseCase.Ka.SaveList;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class KaController : ControllerBase
+public class KaController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
 
-    public KaController(UseCaseBus bus, IUserService userService)
+    public KaController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList + "Mst")]
@@ -50,9 +45,7 @@ public class KaController : ControllerBase
     [HttpPost(ApiPath.SaveListKaMst)]
     public ActionResult<Response<SaveListKaMstResponse>> Save([FromBody] SaveListKaMstRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new SaveKaMstInputData(hpId, userId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
+        var input = new SaveKaMstInputData(HpId, UserId, request.KaMstRequestItems.Select(input => new SaveKaMstInputItem(input.Id, input.KaId, input.ReceKaCd, input.KaSname, input.KaName)).ToList());
         var output = _bus.Handle(input);
         var presenter = new SaveListKaMstPresenter();
         presenter.Complete(output);
