@@ -110,9 +110,8 @@
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
 
-        //Check before save medical
+        //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
-        public const string GetByomeiOfCheckDiseases = "GetByomeiOfCheckDiseases";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

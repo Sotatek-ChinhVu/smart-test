@@ -75,12 +75,13 @@ namespace Infrastructure.Repositories
 
         }
 
-        public (List<OrdInfDetailModel>, List<CheckedDiseaseModel>) GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
+        public List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
         {
             var ptByomeis = todayByomeis.Where(p => p.IsDeleted == DeleteTypes.None && p.IsInMonth);
             List<OrdInfDetailModel> drugOrders = new List<OrdInfDetailModel>();
-            List<CheckedDiseaseModel> byomeis = new();
             int odrCount = 0;
+            var checkedDiseases = new List<(string, string, List<CheckedDiseaseModel>)>();
+
             foreach (var order in todayOdrs)
             {
                 foreach (var odrDetail in order.OrdInfDetails)
@@ -105,34 +106,18 @@ namespace Infrastructure.Repositories
                     {
                         //set item name for grid mode
                         odrCount++;
+                        List<CheckedDiseaseModel> byomeis = new();
                         foreach (var byomei in byomeisByOdr)
                         {
-                            var byomeiModify = new CheckedDiseaseModel(byomei.SikkanCd, byomei.NanByoCd, byomei.Byomei, byomei.ItemCd, odrCount, odrDetail.ItemName, byomei.PtDiseaseModel, byomei.ByomeiMst);
+                            var byomeiModify = new CheckedDiseaseModel(byomei.SikkanCd, byomei.NanByoCd, byomei.Byomei, odrCount, byomei.PtDiseaseModel, byomei.ByomeiMst);
                             byomeis.Add(byomeiModify);
                         }
-                        drugOrders.Add(odrDetail);
+                        checkedDiseases.Add((odrDetail.ItemCd, odrDetail.ItemName, byomeis));
                     }
                 }
             }
 
-            return new(drugOrders, byomeis);
-        }
-
-        public List<CheckedDiseaseModel> GetByomeisOfCheckDiseases(bool isGridStyle, int hpId, string itemCd, int sinDate, List<CheckedDiseaseModel> checkedDiseases)
-        {
-            List<CheckedDiseaseModel> byomeiModels;
-            if (isGridStyle)
-            {
-                byomeiModels = checkedDiseases.OrderBy(p => p.OdrItemNo).ThenByDescending(p => p.IsAdopted).ThenBy(p => p.Byomei).ToList();
-            }
-            else
-            {
-                string santeiItemCd = GetSanteiItemCd(hpId, itemCd, sinDate);
-                byomeiModels = checkedDiseases.Where(p => p.ItemCd == itemCd || p.ItemCd == santeiItemCd)
-                    .OrderByDescending(p => p.IsAdopted).ThenBy(p => p.Byomei).ToList();
-            }
-
-            return byomeiModels;
+            return checkedDiseases;
         }
 
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
@@ -165,7 +150,7 @@ namespace Infrastructure.Repositories
 
             if (oldHeaderInfModel != null)
             {
-                if (oldHeaderInfModel?.HokenPid == hokenPid &&
+                if (oldHeaderInfModel.HokenPid == hokenPid &&
                 oldoldSyosaiKihon?.Suryo == syosaiKbn &&
                 oldJikanKihon?.Suryo == jikanKbn &&
                 oldHeaderInfModel.SanteiKbn == santeiKbn)
@@ -830,7 +815,7 @@ namespace Infrastructure.Repositories
             {
                 if (!ptByomeiModels.Any(p => p.ByomeiMst.ByomeiCd == entity.ByomeiMst.ByomeiCd))
                 {
-                    ptByomeiModels.Add(new CheckedDiseaseModel(entity.ByomeiMst.SikkanCd, entity.ByomeiMst.NanbyoCd, entity.ByomeiMst.Byomei ?? string.Empty, entity.TekiByomei.ItemCd, 0, string.Empty, new PtDiseaseModel(
+                    ptByomeiModels.Add(new CheckedDiseaseModel(entity.ByomeiMst.SikkanCd, entity.ByomeiMst.NanbyoCd, entity.ByomeiMst.Byomei ?? string.Empty, 0, new PtDiseaseModel(
                         entity.ByomeiMst.ByomeiCd, entity.ByomeiMst.Byomei ?? string.Empty, entity.ByomeiMst.SikkanCd
                         ), new ByomeiMstModel(entity.ByomeiMst.ByomeiCd, string.Empty, entity.ByomeiMst.Sbyomei ?? string.Empty, entity.ByomeiMst.KanaName1 ?? string.Empty, string.Empty, entity.ByomeiMst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty, string.Empty, string.Empty, entity.ByomeiMst.IsAdopted == 1, entity.ByomeiMst.KanaName2 ?? string.Empty, entity.ByomeiMst.KanaName3 ?? string.Empty, entity.ByomeiMst.KanaName4 ?? string.Empty, entity.ByomeiMst.KanaName5 ?? string.Empty, entity.ByomeiMst.KanaName6 ?? string.Empty, entity.ByomeiMst.KanaName7 ?? string.Empty)));
                 }

@@ -14,7 +14,7 @@ namespace EmrCloudApi.Tenant.Presenters.MedicalExamination
 
             Result = new Response<GetCheckDiseaseResponse>()
             {
-                Data = new GetCheckDiseaseResponse(outputData.DrugOrders, outputData.Byomeis),
+                Data = new GetCheckDiseaseResponse(outputData.CheckDiseaseItemOutputDatas),
                 Status = (byte)outputData.Status
             };
 

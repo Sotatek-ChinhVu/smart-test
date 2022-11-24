@@ -1,6 +1,4 @@
 ﻿using Domain.Models.Diseases;
-using Domain.Models.MstItem;
-using Domain.Models.TodayOdr;
 using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
@@ -8,7 +6,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.MedicalExamination.GetByomeiFollowItemCd;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 
@@ -119,65 +116,6 @@ namespace EmrCloudApi.Tenant.Controllers
             presenter.Complete(output);
 
             return new ActionResult<Response<GetCheckDiseaseResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.GetByomeiOfCheckDiseases)]
-        public ActionResult<Response<GetByomeiOfCheckDiseaseResponse>> GetByomeiOfCheckDiseases([FromBody] GetByomeiOfCheckDiseaseRequest request)
-        {
-            var input = new GetByomeiFollowItemCdInputData(request.IsGridStyle, request.HpId, request.ItemCd, request.SinDate, request.TodayByomeis.Select(
-                    b => new CheckedDiseaseModel(
-                            b.SikkanCd,
-                            b.NanByoCd,
-                            b.Byomei,
-                            b.ItemCd,
-                            b.OdrItemNo,
-                            b.OdrItemName,
-                            new PtDiseaseModel(
-                                b.TodayByomeis.HpId,
-                                b.TodayByomeis.PtId,
-                                b.TodayByomeis.SeqNo,
-                                b.TodayByomeis.ByomeiCd,
-                                b.TodayByomeis.SortNo,
-                                b.TodayByomeis.PrefixList.Select(p => new PrefixSuffixModel(p.Code, p.Name)).ToList(),
-                                b.TodayByomeis.Byomei,
-                                b.TodayByomeis.StartDate,
-                                b.TodayByomeis.TenkiKbn,
-                                b.TodayByomeis.TenkiDate,
-                                b.TodayByomeis.SyubyoKbn,
-                                b.TodayByomeis.SikkanKbn,
-                                b.TodayByomeis.NanByoCd,
-                                b.TodayByomeis.IsNodspRece,
-                                b.TodayByomeis.IsNodspKarte,
-                                b.TodayByomeis.IsDeleted,
-                                b.TodayByomeis.Id,
-                                b.TodayByomeis.IsImportant,
-                                0,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty,
-                                b.TodayByomeis.HokenPid,
-                                b.TodayByomeis.HosokuCmt
-                              ),
-                            new ByomeiMstModel(
-                                b.ByomeiMst.ByomeiCd,
-                                b.ByomeiMst.ByomeiType,
-                                b.ByomeiMst.Sbyomei,
-                                b.ByomeiMst.KanaName1,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty,
-                                string.Empty,
-                                b.ByomeiMst.IsAdopted == 1
-                             )
-                        )
-                ).ToList());
-            var output = _bus.Handle(input);
-
-            var presenter = new GetByomeiOfCheckDiseasePresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<GetByomeiOfCheckDiseaseResponse>>(presenter.Result);
         }
     }
 }

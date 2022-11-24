@@ -1,18 +1,14 @@
-﻿
-using Domain.Models.OrdInfDetails;
-using Domain.Models.TodayOdr;
+﻿using UseCase.MedicalExamination.GetCheckDisease;
 
 namespace EmrCloudApi.Tenant.Responses.MedicalExamination
 {
     public class GetCheckDiseaseResponse
     {
-        public GetCheckDiseaseResponse(List<OrdInfDetailModel> drugOrders, List<CheckedDiseaseModel> byomeis)
+        public GetCheckDiseaseResponse(List<GetCheckDiseaseItemOutputData> checkDiseaseItemOutputDatas)
         {
-            DrugOrders = drugOrders;
-            Byomeis = byomeis;
+            CheckDiseaseItemOutputDatas = checkDiseaseItemOutputDatas;
         }
 
-        public List<OrdInfDetailModel> DrugOrders { get; private set; }
-        public List<CheckedDiseaseModel> Byomeis { get; private set; }
+        public List<GetCheckDiseaseItemOutputData> CheckDiseaseItemOutputDatas { get; private set; }
     }
 }

@@ -19,15 +19,15 @@ namespace Interactor.MedicalExamination
             {
                 if (inputData.HpId <= 0)
                 {
-                    return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.InvalidHpId);
+                    return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.InvalidHpId);
                 }
                 if (inputData.SinDate <= 0)
                 {
-                    return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.InvalidSinDate);
+                    return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.InvalidSinDate);
                 }
                 if (inputData.TodayOdrs.Count == 0)
                 {
-                    return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.InvalidDrugOrByomei);
+                    return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.InvalidDrugOrByomei);
                 }
 
                 var result = _todayOdrRepository.GetCheckDiseases(inputData.HpId, inputData.SinDate, inputData.TodayByomeis, inputData.TodayOdrs.Select(
@@ -112,16 +112,18 @@ namespace Interactor.MedicalExamination
                         ).ToList()
                     );
 
-                if (result.Item1.Count == 0 && result.Item2.Count == 0)
+                if (result.Count == 0)
                 {
-                    return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.NoData);
+                    return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.NoData);
                 }
 
-                return new GetCheckDiseaseOutputData(result.Item1, result.Item2, GetCheckDiseaseStatus.Successed);
+                return new GetCheckDiseaseOutputData(
+                       result.Select(r => new GetCheckDiseaseItemOutputData(r.Item1, r.Item2, r.Item3.Select(r3 =>
+                       new CheckedDiseaseItem(r3.SikkanCd, r3.NanByoCd, r3.Byomei, r3.OdrItemNo, new PtDiseaseItem(r3.PtDiseaseModel), new ByomeiItem(r3.ByomeiMst), r3.IsAdopted)).ToList())).ToList(), GetCheckDiseaseStatus.Successed);
             }
             catch
             {
-                return new GetCheckDiseaseOutputData(new(), new(), GetCheckDiseaseStatus.Failed);
+                return new GetCheckDiseaseOutputData(new(), GetCheckDiseaseStatus.Failed);
             }
         }
     }

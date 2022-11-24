@@ -1,8 +1,6 @@
 ﻿using Domain.Models.Diseases;
 using Domain.Models.KarteInfs;
-using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
-using System.Collections.Generic;
 
 namespace Domain.Models.TodayOdr
 {
@@ -10,8 +8,6 @@ namespace Domain.Models.TodayOdr
     {
         bool Upsert(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, List<OrdInfModel> odrInfs, KarteInfModel karteInfModel, int userId);
 
-        (List<OrdInfDetailModel>, List<CheckedDiseaseModel>) GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs);
-
-        List<CheckedDiseaseModel> GetByomeisOfCheckDiseases(bool isGridStyle, int hpId, string itemCd, int sinDate, List<CheckedDiseaseModel> checkedDiseases);
+        List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs);
     }
 }
