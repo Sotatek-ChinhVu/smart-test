@@ -4,6 +4,7 @@ using EmrCloudApi.Tenant.Presenters.MedicalExamination;
 using EmrCloudApi.Tenant.Requests.MedicalExamination;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.GetCheckDisease;
@@ -13,10 +14,11 @@ namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MedicalExaminationController : ControllerBase
+    public class MedicalExaminationController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        public MedicalExaminationController(UseCaseBus bus)
+
+        public MedicalExaminationController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
         }
@@ -24,8 +26,8 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.GetCheckDiseases)]
         public ActionResult<Response<GetCheckDiseaseResponse>> GetCheckDiseases([FromBody] GetCheckDiseaseRequest request)
         {
-            var input = new GetCheckDiseaseInputData(request.HpId, request.SinDate, request.TodayByomeis.Select(b => new PtDiseaseModel(
-                    b.HpId,
+            var input = new GetCheckDiseaseInputData(HpId, request.SinDate, request.TodayByomeis.Select(b => new PtDiseaseModel(
+                    HpId,
                     b.PtId,
                     b.SeqNo,
                     b.ByomeiCd,
@@ -52,7 +54,7 @@ namespace EmrCloudApi.Tenant.Controllers
                     b.HosokuCmt
                 )).ToList(), request.TodayOdrs.Select(
                     o => new OdrInfItemInputData(
-                            o.HpId,
+                            HpId,
                             o.RaiinNo,
                             o.RpNo,
                             o.RpEdaNo,
@@ -71,7 +73,7 @@ namespace EmrCloudApi.Tenant.Controllers
                             o.Id,
                             o.OdrDetails.Select(
                                     od => new OdrInfDetailItemInputData(
-                                            od.HpId,
+                                            HpId,
                                             od.RaiinNo,
                                             od.RpNo,
                                             od.RpEdaNo,
