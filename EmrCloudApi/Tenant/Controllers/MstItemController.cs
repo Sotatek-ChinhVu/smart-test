@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.MstItem;
 using EmrCloudApi.Tenant.Responses.MstItem.DiseaseSearch;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
@@ -22,24 +21,20 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class MstItemController : ControllerBase
+    public class MstItemController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
 
-        public MstItemController(UseCaseBus bus, IUserService userService)
+        public MstItemController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpPost(ApiPath.GetDosageDrugList)]
-        public async Task<ActionResult<Response<GetDosageDrugListResponse>>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
+        public ActionResult<Response<GetDosageDrugListResponse>> GetDosageDrugList([FromBody] GetDosageDrugListRequest request)
         {
             var input = new GetDosageDrugListInputData(request.YjCds);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new GetDosageDrugListPresenter();
             presenter.Complete(output);
@@ -48,10 +43,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpGet(ApiPath.GetFoodAlrgy)]
-        public async Task<ActionResult<Response<GetFoodAlrgyMasterDataResponse>>> GetFoodAlrgy()
+        public ActionResult<Response<GetFoodAlrgyMasterDataResponse>> GetFoodAlrgy()
         {
             var input = new GetFoodAlrgyInputData();
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new FoodAlrgyMasterDataPresenter();
             presenter.Complete(output);
@@ -60,10 +55,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SearchOTC)]
-        public async Task<ActionResult<Response<SearchOTCResponse>>> SearchOTC([FromBody] SearchOTCRequest request)
+        public ActionResult<Response<SearchOTCResponse>> SearchOTC([FromBody] SearchOTCRequest request)
         {
             var input = new SearchOTCInputData(request.SearchValue, request.PageIndex, request.PageSize);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new SearchOTCPresenter();
             presenter.Complete(output);
@@ -72,10 +67,10 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SearchSupplement)]
-        public async Task<ActionResult<Response<SearchSupplementResponse>>> SearchSupplement([FromBody] SearchSupplementRequest request)
+        public ActionResult<Response<SearchSupplementResponse>> SearchSupplement([FromBody] SearchSupplementRequest request)
         {
             var input = new SearchSupplementInputData(request.SearchValue, request.PageIndex, request.PageSize);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new SearchSupplementPresenter();
             presenter.Complete(output);
@@ -84,33 +79,30 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.SearchTenItem)]
-        public async Task<ActionResult<Response<SearchTenItemResponse>>> SearchTenItem([FromBody] SearchTenItemRequest request)
+        public ActionResult<Response<SearchTenItemResponse>> SearchTenItem([FromBody] SearchTenItemRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, hpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new SearchTenItemInputData(request.Keyword, request.KouiKbn, request.SinDate, request.PageIndex, request.PageCount, request.GenericOrSameItem, request.YJCd, HpId, request.PointFrom, request.PointTo, request.IsRosai, request.IsMirai, request.IsExpired, request.ItemCodeStartWith);
+            var output = _bus.Handle(input);
             var presenter = new SearchTenItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpPost(ApiPath.UpdateAdoptedInputItem)]
-        public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
+        public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedInputItem([FromBody] UpdateAdoptedTenItemRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, hpId, userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new UpdateAdoptedTenItemInputData(request.ValueAdopted, request.ItemCdInputItem, request.StartDateInputItem, HpId, UserId);
+            var output = _bus.Handle(input);
             var presenter = new UpdateAdoptedTenItemPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.DiseaseSearch)]
-        public async Task<ActionResult<Response<DiseaseSearchResponse>>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
+        public ActionResult<Response<DiseaseSearchResponse>> DiseaseSearch([FromQuery] DiseaseSearchRequest request)
         {
             var input = new DiseaseSearchInputData(request.IsPrefix, request.IsByomei, request.IsSuffix, request.IsMisaiyou, request.Sindate, request.Keyword, request.PageIndex, request.PageSize);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var output = _bus.Handle(input);
 
             var presenter = new DiseaseSearchPresenter();
             presenter.Complete(output);
@@ -119,34 +111,30 @@ namespace EmrCloudApi.Tenant.Controllers
         }
 
         [HttpPost(ApiPath.UpdateAdoptedByomei)]
-        public async Task<ActionResult<Response<UpdateAdoptedTenItemResponse>>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
+        public ActionResult<Response<UpdateAdoptedTenItemResponse>> UpdateAdoptedByomei([FromBody] UpdateAdoptedByomeiRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new UpdateAdoptedByomeiInputData(hpId, request.ByomeiCd, userId);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new UpdateAdoptedByomeiInputData(HpId, request.ByomeiCd, UserId);
+            var output = _bus.Handle(input);
             var presenter = new UpdateAdoptedByomeiPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.SearchPostCode)]
-        public async Task<ActionResult<Response<SearchPostCodeRespone>>> GetList([FromQuery] SearchPostCodeRequest request)
+        public ActionResult<Response<SearchPostCodeRespone>> GetList([FromQuery] SearchPostCodeRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new SearchPostCodeInputData(hpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new SearchPostCodeInputData(HpId, request.PostCode1, request.PostCode2, request.Address, request.PageIndex, request.PageSize);
+            var output = _bus.Handle(input);
             var presenter = new SearchPostCodePresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);
         }
 
         [HttpGet(ApiPath.FindTenMst)]
-        public async Task<ActionResult<Response<FindtenMstResponse>>> FindTenMst([FromQuery] FindTenMstRequest request)
+        public ActionResult<Response<FindtenMstResponse>> FindTenMst([FromQuery] FindTenMstRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new FindTenMstInputData(hpId, request.SinDate, request.ItemCd);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new FindTenMstInputData(HpId, request.SinDate, request.ItemCd);
+            var output = _bus.Handle(input);
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);
             return Ok(presenter.Result);

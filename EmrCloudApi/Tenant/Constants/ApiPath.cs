@@ -106,5 +106,8 @@
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
+
+        //GetYohoSetMst
+        public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
     }
 }

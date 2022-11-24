@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.SystemGenerationConf;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.SystemGenerationConf;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.SystemGenerationConf;
@@ -12,25 +11,19 @@ using UseCase.SystemGenerationConf;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class SystemGenerationConfController : ControllerBase
+    public class SystemGenerationConfController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public SystemGenerationConfController(UseCaseBus bus, IUserService userService)
+        public SystemGenerationConfController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetSettingValue)]
-        public async Task<ActionResult<Response<GetSystemGenerationConfResponse>>> GetSettingValue([FromQuery] GetSystemGenerationConfRequest request)
+        public ActionResult<Response<GetSystemGenerationConfResponse>> GetSettingValue([FromQuery] GetSystemGenerationConfRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetSystemGenerationConfInputData(hpId, request.GrpCd, request.GrpEdaNo, request.PresentDate, request.DefaultValue, request.DefaultParam);
-            var output = await Task.Run(() => _bus.Handle(input));
+            var input = new GetSystemGenerationConfInputData(HpId, request.GrpCd, request.GrpEdaNo, request.PresentDate, request.DefaultValue, request.DefaultParam);
+            var output = _bus.Handle(input);
 
             var presenter = new GetSystemGenerationConfPresenter();
             presenter.Complete(output);

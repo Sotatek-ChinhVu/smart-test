@@ -40,7 +40,8 @@ namespace Infrastructure.Repositories
                                             x.ItemCd,
                                             x.OdrUnitName,
                                             x.SinKouiKbn,
-                                            x.YohoKbn
+                                            x.YohoKbn,
+                                            x.StartDate
                                         });
 
             return (from item in list
@@ -64,7 +65,8 @@ namespace Infrastructure.Repositories
                                                item.CmtOpt ?? string.Empty,
                                                subpet.OdrUnitName ?? string.Empty,
                                                (int?)subpet.SinKouiKbn ?? 0,
-                                               (int?)subpet.YohoKbn ?? 0)).ToList();
+                                               (int?)subpet.YohoKbn ?? 0,
+                                               (int?)subpet.StartDate ?? 0)).ToList();
         }
 
         public List<ListSetMstModel> GetTanSetInfs(int hpId, IEnumerable<int> usageContains, int generationId, int sinDate)
@@ -82,7 +84,8 @@ namespace Infrastructure.Repositories
                                             x.ItemCd,
                                             x.OdrUnitName,
                                             x.SinKouiKbn,
-                                            x.YohoKbn
+                                            x.YohoKbn,
+                                            x.StartDate
                                         });
 
             return (from item in list
@@ -106,7 +109,8 @@ namespace Infrastructure.Repositories
                                                item.CmtOpt ?? string.Empty,
                                                subpet.OdrUnitName ?? string.Empty,
                                                (int?)subpet.SinKouiKbn ?? 0,
-                                               (int?)subpet.YohoKbn ?? 0)).ToList();
+                                               (int?)subpet.YohoKbn ?? 0,
+                                               (int?)subpet.StartDate ?? 0)).ToList();
         }
 
         public List<ListSetMstModel> GetAllTanSetInfs(int hpId, int generationId, int sinDate)
@@ -123,7 +127,8 @@ namespace Infrastructure.Repositories
                                             x.ItemCd,
                                             x.OdrUnitName,
                                             x.SinKouiKbn,
-                                            x.YohoKbn
+                                            x.YohoKbn,
+                                            x.StartDate
                                         });
 
             return (from item in list
@@ -147,7 +152,8 @@ namespace Infrastructure.Repositories
                                                item.CmtOpt ?? string.Empty,
                                                subpet.OdrUnitName ?? string.Empty,
                                                (int?)subpet.SinKouiKbn ?? 0,
-                                               (int?)subpet.YohoKbn ?? 0)).ToList();
+                                               (int?)subpet.YohoKbn ?? 0,
+                                               (int?)subpet.StartDate ?? 0)).ToList();
         }
     }
 }

@@ -1,14 +1,12 @@
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -63,16 +61,8 @@ namespace Infrastructure.Repositories
             {
                 using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
 
-                var maxRaiinBySinDate = _tenantNoTrackingDataContext.RaiinInfs
-                                        .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate);
-
-                int uketukeNo = 0;
-                if (maxRaiinBySinDate.Any())
-                    uketukeNo = maxRaiinBySinDate.Max(x => x.UketukeNo);
-                uketukeNo++;
-
                 // Insert RaiinInf
-                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId, uketukeNo);
+                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId);
                 _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
                 _tenantNoTrackingDataContext.SaveChanges();
 
@@ -105,7 +95,7 @@ namespace Infrastructure.Repositories
 
             #region Helper methods
 
-            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId,int uketukeNo)
+            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId)
             {
                 return new RaiinInf
                 {
@@ -122,7 +112,7 @@ namespace Infrastructure.Repositories
                     UketukeSbt = model.UketukeSbt,
                     UketukeTime = model.UketukeTime,
                     UketukeId = model.UketukeId,
-                    UketukeNo = uketukeNo,
+                    UketukeNo = model.UketukeNo,
                     SinStartTime = model.SinStartTime,
                     SinEndTime = model.SinEndTime,
                     KaikeiTime = model.KaikeiTime,
@@ -173,6 +163,22 @@ namespace Infrastructure.Repositories
             }
 
             #endregion
+        }
+
+        public int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode)
+        {
+            var query = _tenantNoTrackingDataContext.RaiinInfs.Where
+                (
+                    p => p.HpId == hpId && p.SinDate == sindate
+                    && (!(uketukeMode == 1 || uketukeMode == 3) || p.UketukeSbt == infKbn)
+                    && (!(uketukeMode == 2 || uketukeMode == 3) || p.KaId == kaId)
+                    && p.IsDeleted == DeleteTypes.None
+                ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
+            if (query != null)
+            {
+                return query.UketukeNo;
+            }
+            return 0;
         }
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)
