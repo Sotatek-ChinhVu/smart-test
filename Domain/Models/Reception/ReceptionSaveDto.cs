@@ -20,6 +20,12 @@ public class ReceptionSaveDto
     public List<RaiinKbnInfDto> KubunInfs { get; private set; }
     public List<InsuranceDto> Insurances { get; private set; }
     public List<DiseaseDto> Diseases { get; private set; }
+
+    public ReceptionSaveDto ChangeUketukeNo(int uketukeNo)
+    {
+        Reception.ChangeUketukeNo(uketukeNo);
+        return this;
+    }
 }
 
 public class InsuranceDto

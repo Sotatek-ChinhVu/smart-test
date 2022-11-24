@@ -4,7 +4,7 @@ namespace Domain.Models.Reception
 {
     public interface IReceptionRepository
     {
-        long Insert(ReceptionSaveDto dto, int hpId, int userId, int uketukeNoMode ,int uketukeNoStart);
+        long Insert(ReceptionSaveDto dto, int hpId, int userId);
 
         bool Update(ReceptionSaveDto dto, int hpId, int userId);
 
@@ -39,5 +39,7 @@ namespace Domain.Models.Reception
         bool CheckExistReception(int hpId, long ptId, int sinDate, long raiinNo);
 
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
+
+        int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
     }
 }

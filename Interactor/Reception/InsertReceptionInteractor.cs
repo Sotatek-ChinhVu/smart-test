@@ -25,11 +25,21 @@ public class InsertReceptionInteractor : IInsertReceptionInputPort
             return new InsertReceptionOutputData(InsertReceptionStatus.InvalidInsuranceList, 0);
         }
 
-        int uketukeNoMode = _systemConfRepository.GetSettingValue(1008, 0, input.HpId).AsInteger();
-        int uketukeNoStart = _systemConfRepository.GetSettingParams(1008 , 0, input.HpId, defaultParam: "1").AsInteger();
+        // check end set uketukeNo
+        int uketukeNo = GetUketukeNo(input.HpId, dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, dto.Reception.UketukeNo);
+        dto.ChangeUketukeNo(uketukeNo);
 
-
-        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId, uketukeNoMode , uketukeNoStart);
+        var raiinNo = _receptionRepository.Insert(dto, input.HpId, input.UserId);
         return new InsertReceptionOutputData(InsertReceptionStatus.Success, raiinNo);
+    }
+    private int GetUketukeNo(int hpId, int sindate, int uketukeSbt, int kaId, int inputUketukeNo)
+    {
+        int uketukeNoMode = _systemConfRepository.GetSettingValue(1008, 0, hpId).AsInteger();
+        int uketukeNoStart = _systemConfRepository.GetSettingParams(1008, 0, hpId, defaultParam: "1").AsInteger();
+
+        int maxUketukeNo = _receptionRepository.GetMaxUketukeNo(hpId, sindate, uketukeSbt, kaId, uketukeNoMode);
+        int nextUketukeNo = maxUketukeNo + 1 < uketukeNoStart ? uketukeNoStart : maxUketukeNo + 1;
+
+        return inputUketukeNo < 0 ? nextUketukeNo : inputUketukeNo;
     }
 }
