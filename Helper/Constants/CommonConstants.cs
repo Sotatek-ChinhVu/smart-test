@@ -8,4 +8,5 @@ public static class CommonConstants
     public const string SubFolderSuperSet = "superset";
     public const string Schema = "schema";
     public const string SubFolderKarte1Print = "Karte1_Print_Pdf";
+    public const string SubFolderInsuranceScan = "insurance_scan";
 }
