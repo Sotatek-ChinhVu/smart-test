@@ -5,7 +5,6 @@ using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Responses.SetMst;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Schema.SaveImageSuperSetDetail;
@@ -24,23 +23,18 @@ using UseCase.SuperSetDetail.SuperSetDetail;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class SetController : ControllerBase
+public class SetController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly IUserService _userService;
-    public SetController(UseCaseBus bus, IUserService userService)
+    public SetController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetSetMstListResponse>> GetList([FromQuery] GetSetMstListRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new GetSetMstListInputData(hpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
+        var input = new GetSetMstListInputData(HpId, request.SetKbn, request.SetKbnEdaNo, request.TextSearch, request.SinDate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSetMstListPresenter();
@@ -52,8 +46,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetToolTip)]
     public ActionResult<Response<GetSetMstToolTipResponse>> GetToolTip([FromQuery] GetSetMstToolTipRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new GetSetMstToolTipInputData(hpId, request.SetCd);
+        var input = new GetSetMstToolTipInputData(HpId, request.SetCd);
         var output = _bus.Handle(input);
 
         var presenter = new GetSetMstToolTipPresenter();
@@ -65,9 +58,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Save)]
     public ActionResult<Response<SaveSetMstResponse>> Save([FromBody] SaveSetMstRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, hpId, userId, request.IsGroup);
+        var input = new SaveSetMstInputData(request.SinDate, request.SetCd, request.SetKbn, request.SetKbnEdaNo, request.GenerationId, request.Level1, request.Level2, request.Level3, request.SetName, request.WeightKbn, request.Color, request.IsDeleted, HpId, UserId, request.IsGroup);
         var output = _bus.Handle(input);
 
         var presenter = new SaveSetMstPresenter();
@@ -79,9 +70,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Reorder)]
     public ActionResult<Response<ReorderSetMstResponse>> Reorder([FromBody] ReorderSetMstRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new ReorderSetMstInputData(hpId, request.DragSetCd, request.DropSetCd, userId);
+        var input = new ReorderSetMstInputData(HpId, request.DragSetCd, request.DropSetCd, UserId);
         var output = _bus.Handle(input);
 
         var presenter = new ReorderSetMstPresenter();
@@ -93,9 +82,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.Paste)]
     public ActionResult<Response<CopyPasteSetMstResponse>> PasteSetMst([FromBody] CopyPasteSetMstRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new CopyPasteSetMstInputData(hpId, userId, request.CopySetCd, request.PasteSetCd);
+        var input = new CopyPasteSetMstInputData(HpId, UserId, request.CopySetCd, request.PasteSetCd);
         var output = _bus.Handle(input);
 
         var presenter = new CopyPasteSetMstPresenter();
@@ -107,8 +94,7 @@ public class SetController : ControllerBase
     [HttpGet(ApiPath.GetSuperSetDetail)]
     public ActionResult<Response<GetSuperSetDetailResponse>> GetSuperSetDetail([FromQuery] GetSuperSetDetailRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new GetSuperSetDetailInputData(hpId, request.SetCd, request.Sindate);
+        var input = new GetSuperSetDetailInputData(HpId, request.SetCd, request.Sindate);
         var output = _bus.Handle(input);
 
         var presenter = new GetSuperSetDetailPresenter();
@@ -120,14 +106,12 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveSuperSetDetail)]
     public ActionResult<Response<SaveSuperSetDetailResponse>> SaveSuperSetDetail([FromBody] SaveSuperSetDetailRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
         var input = new SaveSuperSetDetailInputData(
                         request.SetCd,
-                        userId,
-                        hpId,
+                        UserId,
+                        HpId,
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
-                        new SaveSetKarteInputItem(hpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
+                        new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
                         ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
                     );
         var output = _bus.Handle(input);
@@ -142,8 +126,7 @@ public class SetController : ControllerBase
     [HttpPost(ApiPath.SaveImageSuperSetDetail)]
     public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new SaveImageSuperSetDetailInputData(hpId, request.SetCd, request.Position, request.OldImage, Request.Body);
+        var input = new SaveImageSuperSetDetailInputData(HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
         var output = _bus.Handle(input);
 
         var presenter = new SaveImageSuperSetDetailPresenter();

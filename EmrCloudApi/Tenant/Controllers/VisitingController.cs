@@ -25,21 +25,15 @@ using UseCase.VisitingList.SaveSettings;
 namespace EmrCloudApi.Tenant.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-[Authorize]
-public class VisitingController : ControllerBase
+public class VisitingController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IWebSocketService _webSocketService;
-    private readonly IUserService _userService;
 
-    public VisitingController(UseCaseBus bus,
-        IWebSocketService webSocketService,
-        IUserService userService)
+    public VisitingController(UseCaseBus bus, IWebSocketService webSocketService, IUserService userService) : base(userService)
     {
         _bus = bus;
         _webSocketService = webSocketService;
-        _userService = userService;
     }
 
     [HttpGet(ApiPath.Get + "ReceptionLock")]
@@ -55,8 +49,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public ActionResult<Response<GetReceptionListResponse>> GetList([FromQuery] GetReceptionListRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new GetReceptionListInputData(hpId, request.SinDate, request.RaiinNo, request.PtId);
+        var input = new GetReceptionListInputData(HpId, request.SinDate, request.RaiinNo, request.PtId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionListPresenter();
         presenter.Complete(output);
@@ -66,8 +59,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "ReceptionInfo")]
     public ActionResult<Response<GetReceptionVisitingResponse>> GetList([FromQuery] GetReceptionVisitingRequest request)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        var input = new GetReceptionVisitingInputData(hpId, request.RaiinNo);
+        var input = new GetReceptionVisitingInputData(HpId, request.RaiinNo);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionVisitingPresenter();
         presenter.Complete(output);
@@ -77,8 +69,7 @@ public class VisitingController : ControllerBase
     [HttpGet(ApiPath.Get + "Settings")]
     public ActionResult<Response<GetReceptionSettingsResponse>> GetSettings([FromQuery] GetReceptionSettingsRequest req)
     {
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new GetReceptionSettingsInputData(userId);
+        var input = new GetReceptionSettingsInputData(UserId);
         var output = _bus.Handle(input);
         var presenter = new GetReceptionSettingsPresenter();
         presenter.Complete(output);
@@ -88,9 +79,7 @@ public class VisitingController : ControllerBase
     [HttpPost("SaveSettings")]
     public ActionResult<Response<SaveVisitingListSettingsResponse>> SaveSettings([FromBody] SaveVisitingListSettingsRequest req)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new SaveVisitingListSettingsInputData(req.Settings, hpId, userId);
+        var input = new SaveVisitingListSettingsInputData(req.Settings, HpId, UserId);
         var output = _bus.Handle(input);
         var presenter = new SaveVisitingListSettingsPresenter();
         presenter.Complete(output);
@@ -100,10 +89,8 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "StaticCell")]
     public async Task<ActionResult<Response<UpdateReceptionStaticCellResponse>>> UpdateStaticCellAsync([FromBody] UpdateReceptionStaticCellRequest req)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
         var input = new UpdateReceptionStaticCellInputData(
-            hpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue, userId);
+            HpId, req.SinDate, req.RaiinNo, req.PtId, req.CellName, req.CellValue, UserId);
         var output = _bus.Handle(input);
         switch (output.Status)
         {
@@ -129,10 +116,7 @@ public class VisitingController : ControllerBase
     [HttpPut(ApiPath.Update + "DynamicCell")]
     public async Task<ActionResult<Response<UpdateReceptionDynamicCellResponse>>> UpdateDynamicCellAsync([FromBody] UpdateReceptionDynamicCellRequest req)
     {
-        int hpId = _userService.GetLoginUser().HpId;
-        int userId = _userService.GetLoginUser().UserId;
-        var input = new UpdateReceptionDynamicCellInputData(
-            hpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd, userId);
+        var input = new UpdateReceptionDynamicCellInputData(HpId, req.SinDate, req.RaiinNo, req.PtId, req.GrpId, req.KbnCd, UserId);
         var output = _bus.Handle(input);
         if (output.Status == UpdateReceptionDynamicCellStatus.Success)
         {

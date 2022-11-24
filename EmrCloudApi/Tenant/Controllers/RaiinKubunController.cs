@@ -4,7 +4,6 @@ using EmrCloudApi.Tenant.Requests.RaiinKubun;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.RaiinKubun;
 using EmrCloudApi.Tenant.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.RaiinKubunMst.GetList;
@@ -15,16 +14,12 @@ using UseCase.RaiinKubunMst.Save;
 namespace EmrCloudApi.Tenant.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class RaiinKubunController : ControllerBase
+    public class RaiinKubunController : AuthorizeControllerBase
     {
         private readonly UseCaseBus _bus;
-        private readonly IUserService _userService;
-        public RaiinKubunController(UseCaseBus bus, IUserService userService)
+        public RaiinKubunController(UseCaseBus bus, IUserService userService) : base(userService)
         {
             _bus = bus;
-            _userService = userService;
         }
 
         [HttpGet(ApiPath.GetList + "Mst")]
@@ -42,9 +37,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetList + "KubunSetting")]
         public ActionResult<Response<LoadDataKubunSettingResponse>> LoadDataKubunSetting([FromQuery] LoadDataKubunSettingRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new LoadDataKubunSettingInputData(hpId, userId);
+            var input = new LoadDataKubunSettingInputData(HpId, UserId);
             var output = _bus.Handle(input);
 
             var presenter = new LoadDataKubunSettingPresenter();
@@ -56,8 +49,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpPost(ApiPath.SaveList + "KubunSetting")]
         public ActionResult<Response<SaveDataKubunSettingResponse>> SaveDataKubunSetting([FromBody] SaveDataKubunSettingRequest request)
         {
-            int userId = _userService.GetLoginUser().UserId;
-            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), userId);
+            var input = new SaveDataKubunSettingInputData(request.RaiinKubunMstRequest.Select(x => x.Map()).ToList(), UserId);
             var output = _bus.Handle(input);
 
             var presenter = new SaveDataKubunSettingPresenter();
@@ -69,8 +61,7 @@ namespace EmrCloudApi.Tenant.Controllers
         [HttpGet(ApiPath.GetColumnName)]
         public ActionResult<Response<GetColumnNameListResponse>> GetColumnName([FromQuery] GetColumnNameListRequest request)
         {
-            int hpId = _userService.GetLoginUser().HpId;
-            var input = new GetColumnNameListInputData(hpId);
+            var input = new GetColumnNameListInputData(HpId);
             var output = _bus.Handle(input);
 
             var presenter = new GetColumnNameListPresenter();
