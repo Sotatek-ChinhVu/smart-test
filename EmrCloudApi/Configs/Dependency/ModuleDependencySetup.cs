@@ -127,7 +127,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
-using UseCase.Document.GetListDocCategoryMst;
+using UseCase.Document.GetListDocCategory;
 using UseCase.DrugDetail;
 using UseCase.DrugDetailData;
 using UseCase.DrugInfor.Get;
@@ -590,7 +590,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
 
             // Document
-            busBuilder.RegisterUseCase<GetListDocCategoryMstInputData, GetListDocCategoryMstInteractor>();
+            busBuilder.RegisterUseCase<GetListDocCategoryInputData, GetListDocCategoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

@@ -1,15 +1,15 @@
 ﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Document;
-using UseCase.Document.GetListDocCategoryMst;
+using UseCase.Document.GetListDocCategory;
 
 namespace EmrCloudApi.Tenant.Presenters.Document;
 
-public class GetListDocCategoryMstPresenter : IGetListDocCategoryMstOutputPort
+public class GetListDocCategoryMstPresenter : IGetListDocCategoryOutputPort
 {
     public Response<GetListDocCategoryMstResponse> Result { get; private set; } = new();
 
-    public void Complete(GetListDocCategoryMstOutputData output)
+    public void Complete(GetListDocCategoryOutputData output)
     {
         Result.Data = new GetListDocCategoryMstResponse(
                                                         output.ListDocCategories.Select(item => new DocCategoryDto(item)).ToList(),
@@ -19,11 +19,11 @@ public class GetListDocCategoryMstPresenter : IGetListDocCategoryMstOutputPort
         Result.Status = (int)output.Status;
     }
 
-    private string GetMessage(GetListDocCategoryMstStatus status) => status switch
+    private string GetMessage(GetListDocCategoryStatus status) => status switch
     {
-        GetListDocCategoryMstStatus.Successed => ResponseMessage.Success,
-        GetListDocCategoryMstStatus.Failed => ResponseMessage.Failed,
-        GetListDocCategoryMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        GetListDocCategoryStatus.Successed => ResponseMessage.Success,
+        GetListDocCategoryStatus.Failed => ResponseMessage.Failed,
+        GetListDocCategoryStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         _ => string.Empty
     };
 }

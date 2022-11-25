@@ -5,7 +5,7 @@ using EmrCloudApi.Tenant.Responses.Document;
 using EmrCloudApi.Tenant.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.GetListDocCategoryMst;
+using UseCase.Document.GetListDocCategory;
 
 namespace EmrCloudApi.Tenant.Controllers;
 
@@ -22,7 +22,7 @@ public class DocumentController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetListDocumentCategory)]
     public ActionResult<Response<GetListDocCategoryMstResponse>> GetList()
     {
-        var input = new GetListDocCategoryMstInputData(HpId);
+        var input = new GetListDocCategoryInputData(HpId);
         var output = _bus.Handle(input);
 
         var presenter = new GetListDocCategoryMstPresenter();

@@ -1,10 +1,10 @@
-﻿using UseCase.Document.GetListDocCategoryMst;
+﻿using UseCase.Document.GetListDocCategory;
 
 namespace EmrCloudApi.Tenant.Responses.Document;
 
 public class DocCategoryDto
 {
-    public DocCategoryDto(DocCategoryMstOutputItem item)
+    public DocCategoryDto(DocCategoryOutputItem item)
     {
         HpId = item.HpId;
         CategoryCd = item.CategoryCd;

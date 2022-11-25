@@ -9,6 +9,13 @@ public class DocCategoryMstModel
         CategoryName = categoryName;
         SortNo = sortNo;
     }
+    public DocCategoryMstModel()
+    {
+        HpId = 0;
+        CategoryCd = 0;
+        CategoryName = string.Empty;
+        SortNo = 0;
+    }
 
     public int HpId { get; private set; }
 
