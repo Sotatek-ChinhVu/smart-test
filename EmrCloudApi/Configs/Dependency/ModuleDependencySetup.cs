@@ -5,6 +5,7 @@ using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
+using Domain.Models.Document;
 using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
@@ -71,6 +72,7 @@ using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
+using Interactor.Document;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
@@ -125,6 +127,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
+using UseCase.Document.GetListDocCategoryMst;
 using UseCase.DrugDetail;
 using UseCase.DrugDetailData;
 using UseCase.DrugInfor.Get;
@@ -352,6 +355,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
             services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
+            services.AddTransient<IDocumentRepository, DocumentRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -584,6 +588,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //YohoSetMst
             busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
+
+            // Document
+            busBuilder.RegisterUseCase<GetListDocCategoryMstInputData, GetListDocCategoryMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

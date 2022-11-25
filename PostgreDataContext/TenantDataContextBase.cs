@@ -149,6 +149,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
             modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
             modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
+            modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

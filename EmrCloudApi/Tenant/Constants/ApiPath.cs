@@ -109,5 +109,9 @@
 
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
+        // Document
+        public const string GetListDocumentCategory = "GetListDocumentCategory";
+
     }
 }
