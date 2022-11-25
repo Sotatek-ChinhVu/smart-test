@@ -23,7 +23,7 @@ public class DocumentRepository : IDocumentRepository
 
     public List<DocCategoryModel> GetAllDocCategory(int hpId)
     {
-        var listCategoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
+        var listCategoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(item => item.SortNo).ToList();
         return listCategoryDB.Select(item => ConvertToDocCategoryMstModel(item)).ToList();
     }
 
