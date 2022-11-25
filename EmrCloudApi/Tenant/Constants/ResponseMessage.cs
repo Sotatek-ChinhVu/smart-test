@@ -800,5 +800,9 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+
+        // Document
+        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+
     }
 }

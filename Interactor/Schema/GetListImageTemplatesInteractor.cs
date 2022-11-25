@@ -22,7 +22,7 @@ public class GetListImageTemplatesInteractor : IGetListImageTemplatesInputPort
         List<GetListImageTemplatesOutputItem> listFolders = new();
         List<string> listImageItems = new();
         List<string> listFolderItems = new();
-        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.Schema);
+        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.FolderSchema);
         response.Wait();
         var listDatas = response.Result;
         foreach (var item in listDatas)

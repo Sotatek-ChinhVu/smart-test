@@ -1,5 +1,4 @@
-﻿using Domain.Models.AccountDue;
-using EmrCloudApi.Tenant.Constants;
+﻿using EmrCloudApi.Tenant.Constants;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.AccountDue;
 using UseCase.AccountDue.GetAccountDueList;
