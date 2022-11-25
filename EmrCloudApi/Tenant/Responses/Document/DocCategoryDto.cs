@@ -6,13 +6,10 @@ public class DocCategoryDto
 {
     public DocCategoryDto(DocCategoryOutputItem item)
     {
-        HpId = item.HpId;
         CategoryCd = item.CategoryCd;
         CategoryName = item.CategoryName;
         SortNo = item.SortNo;
     }
-
-    public int HpId { get; private set; }
 
     public int CategoryCd { get; private set; }
 
