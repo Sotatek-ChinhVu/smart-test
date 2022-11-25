@@ -48,6 +48,31 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         }
     }
 
+    public async Task<string> UploadObjectForTenantAsync(string rootFolder, string ptId, string subFolder, string fileName, Stream stream)
+    {
+        var memoryStream = await stream.ToMemoryStreamAsync();
+        return await UploadObjectForTenantAsync(rootFolder, ptId, subFolder, fileName, memoryStream);
+    }
+
+    public async Task<string> UploadObjectForTenantAsync(string rootFolder, string ptId, string subFolder, string fileName, MemoryStream memoryStream)
+    {
+        try
+        {
+            var request = new PutObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = GetUniqueKey(subFolder, ptId, subFolder, fileName),
+                InputStream = memoryStream,
+            };
+            var response = await _s3Client.PutObjectAsync(request);
+            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
+        }
+        catch (AmazonS3Exception)
+        {
+            return string.Empty;
+        }
+    }
+
     public async Task<bool> ObjectExistsAsync(string key)
     {
         try
@@ -83,6 +108,16 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         {
             prefix += ("/" + subFolder);
         }
+
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        var extension = Path.GetExtension(fileName);
+        return $"{prefix}/{fileNameWithoutExtension}-{Guid.NewGuid()}{extension}";
+    }
+
+    private string GetUniqueKey(string rootFolder, string ptId, string subFolder, string fileName)
+    {
+        var tenantId = _tenantProvider.GetTenantId();
+        string prefix = tenantId + "/" + rootFolder + "/" + ptId + "/" + subFolder;
 
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         var extension = Path.GetExtension(fileName);
@@ -131,4 +166,5 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
 
         return listObjects;
     }
+
 }
