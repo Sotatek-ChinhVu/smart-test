@@ -117,6 +117,7 @@ using Interactor.UserConf;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.CalculationInf;
@@ -584,6 +585,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //YohoSetMst
             busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
+
+            //InsuranceScan
+            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
