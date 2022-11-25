@@ -32,10 +32,6 @@ public class InitDoctorComboInteractor : IInitDoctorComboInputPort
             {
                 return new InitDoctorComboOutputData(InitDoctorComboStatus.InvalidUserId, 0);
             }
-            else if (inputData.TantoId <= 0)
-            {
-                return new InitDoctorComboOutputData(InitDoctorComboStatus.InvalidTantoId, 0);
-            }
 
             var data = _receptionRepository.InitDoctorCombobox(inputData.UserId, inputData.TantoId, inputData.PtId, inputData.HpId, inputData.SinDate);
 

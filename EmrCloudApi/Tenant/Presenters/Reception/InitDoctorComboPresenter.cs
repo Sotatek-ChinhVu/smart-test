@@ -23,7 +23,6 @@ public class InitDoctorComboPresenter
         InitDoctorComboStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         InitDoctorComboStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         InitDoctorComboStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
-        InitDoctorComboStatus.InvalidTantoId => ResponseMessage.ReceptionInvalidTantoId,
         InitDoctorComboStatus.InvalidUserId => ResponseMessage.ReceptionInvalidUserId,
         _ => string.Empty
     };

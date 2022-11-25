@@ -69,7 +69,6 @@
 
         //Reception controller
         public static readonly string ReceptionInvalidUserId = "Invalid UserId";
-        public static readonly string ReceptionInvalidTantoId = "Invalid TantoId";
 
         //PtDisease controller
         public static readonly string PtDiseaseUpsertSuccess = "更新が成功しました";

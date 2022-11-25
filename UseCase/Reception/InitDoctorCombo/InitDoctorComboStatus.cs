@@ -7,6 +7,5 @@ public enum InitDoctorComboStatus : byte
     InvalidPtId = 2,
     InvalidSinDate = 3,
     InvalidUserId = 4,
-    InvalidTantoId = 5,
-    Failed = 6
+    Failed = 5
 }
