@@ -1,4 +1,6 @@
 ﻿using Domain.Models.HpMst;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceMst;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
@@ -16,13 +18,15 @@ namespace Interactor.NextOrder
         private readonly IHpInfRepository _hpInfRepository;
         private readonly IPatientInforRepository _patientInfRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IInsuranceRepository _insuranceRepository;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository)
+        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository)
         {
             _nextOrderRepository = nextOrderRepository;
             _hpInfRepository = hpInfRepository;
             _patientInfRepository = patientInfRepository;
             _userRepository = userRepository;
+            _insuranceRepository = insuranceRepository;
         }
 
         public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
@@ -48,11 +52,10 @@ namespace Interactor.NextOrder
                 List<(int, int, RsvkrtByomeiStatus)> validationRsvkrtByomeis = new();
                 var validationOrdInfs = new List<(int, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>)>();
 
-                
-
                 for (int i = 0; i < nextOrderModels.Count; i++)
                 {
                     var nextOrderModel = nextOrderModels[i];
+                    
 
                     var validationNextOrder = nextOrderModel.Validation();
                     if (validationNextOrder != NextOrderStatus.Valid)
@@ -88,13 +91,13 @@ namespace Interactor.NextOrder
                     }
 
                     var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(inputData.HpId, inputData.PtId);
-
+                    var hokenPids = new List<int>();
                     foreach (var nextOrderItem in inputData.NextOrderItems)
                     {
-                        var hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
+                        hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
 
                     }
-                    var checkHokens = _insuranceInforRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
+                    var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids ?? new List<int>());
                     object obj = new();
                     Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
                     {
@@ -102,35 +105,35 @@ namespace Interactor.NextOrder
 
                         if (item.Id > 0)
                         {
-                            var check = checkOderInfs.Any(c => c.HpId == item.HpId && c.PtId == item.PtId && c.RaiinNo == item.RaiinNo && c.SinDate == item.SinDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                            var check = checkOderInfs.Any(c => c.RsvkrtNo == item.RsvkrtNo && c.RsvDate == item.RsvDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
                             if (!check)
                             {
-                                AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                                AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
                                 return;
                             }
                         }
 
-                        var checkObjs = inputDataList.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
-                        var positionOrd = inputDataList.FindIndex(o => o == checkObjs.LastOrDefault());
+                        var checkObjs = nextOrderModel.RsvkrtOrderInfs.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
+                        var positionOrd = nextOrderModel.RsvkrtOrderInfs.FindIndex(o => o == checkObjs.LastOrDefault());
                         if (checkObjs.Count >= 2 && positionOrd == index)
                         {
-                            AddErrorStatus(obj, dicValidation, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                            AddErrorStatus(obj, validationOneOrdInf, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
                             return;
                         }
 
-                        var checkHokenPid = checkHokens.Any(h => h.HpId == item.HpId && h.PtId == item.PtId && h.HokenId == item.HokenPid);
+                        var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
                         if (!checkHokenPid)
                         {
-                            AddErrorStatus(obj, dicValidation, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+                            AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
 
                             return;
                         }
 
-                        var odrDetail = item.OdrDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.HpId != itemOd.HpId || item.PtId != itemOd.PtId || item.SinDate != itemOd.SinDate || item.RaiinNo != itemOd.RaiinNo);
+                        var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvDate != itemOd.RsvkrtNo);
                         if (odrDetail != null)
                         {
-                            var indexOdrDetail = item.OdrDetails.IndexOf(odrDetail);
-                            AddErrorStatus(obj, dicValidation, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                            var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
+                            AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                         }
                     });
                     if (validationOneOrdInf.Any())
@@ -287,5 +290,12 @@ namespace Interactor.NextOrder
                     0
                 );
         }
-    }
+
+        private void AddErrorStatus(object obj, Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> dicValidation, string key, KeyValuePair<string, OrdInfValidationStatus> status)
+        {
+            lock (obj)
+            {
+                dicValidation.Add(key, status);
+            }
+        }
 }
