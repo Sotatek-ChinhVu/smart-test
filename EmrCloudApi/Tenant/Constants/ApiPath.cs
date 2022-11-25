@@ -38,6 +38,7 @@
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+        public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";

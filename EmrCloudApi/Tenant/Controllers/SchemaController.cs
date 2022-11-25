@@ -4,7 +4,9 @@ using EmrCloudApi.Tenant.Requests.Schema;
 using EmrCloudApi.Tenant.Responses;
 using EmrCloudApi.Tenant.Responses.Schema;
 using EmrCloudApi.Tenant.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveImageTodayOrder;
@@ -20,6 +22,7 @@ namespace EmrCloudApi.Tenant.Controllers
             _bus = bus;
         }
 
+        [AllowAnonymous]
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListImageTemplatesResponse>> GetList()
         {
@@ -41,6 +44,17 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveImageTodayOrderPresenter();
             presenter.Complete(output);
 
+            return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveInsuranceScanImage)]
+        public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromQuery] SaveInsuranceScanRequest request)
+        {
+            var input = new SaveInsuranceScanInputData(HpId, request.PtId, request.HokenGrp, request.HokenId, request.OldImage , UserId, Request.Body);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveInsuranceScanPresenter();
+            presenter.Complete(output);
             return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
         }
     }

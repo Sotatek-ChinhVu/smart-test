@@ -800,5 +800,16 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+
+
+        //Exception
+        public static readonly string ExceptionError = "Exception error";
+
+        //InsuranceScan
+        public static readonly string SaveInsuranceScanFailedSaveToDb = "Failed save scan image to database";
+        public static readonly string InvalidImageScan = "Image scan is invalid";
+        public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
+        public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
+        public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
     }
 }
