@@ -112,6 +112,7 @@
 
         // Document
         public const string GetListDocumentCategory = "GetListDocumentCategory";
+        public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
 
     }
 }

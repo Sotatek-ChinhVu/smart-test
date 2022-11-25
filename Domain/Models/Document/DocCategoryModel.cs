@@ -1,15 +1,15 @@
 ﻿namespace Domain.Models.Document;
 
-public class DocCategoryMstModel
+public class DocCategoryModel
 {
-    public DocCategoryMstModel(int hpId, int categoryCd, string categoryName, int sortNo)
+    public DocCategoryModel(int hpId, int categoryCd, string categoryName, int sortNo)
     {
         HpId = hpId;
         CategoryCd = categoryCd;
         CategoryName = categoryName;
         SortNo = sortNo;
     }
-    public DocCategoryMstModel()
+    public DocCategoryModel()
     {
         HpId = 0;
         CategoryCd = 0;

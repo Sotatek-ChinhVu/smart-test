@@ -1,4 +1,4 @@
-﻿using UseCase.Document.GetListDocCategory;
+﻿using UseCase.Document;
 
 namespace EmrCloudApi.Tenant.Responses.Document;
 

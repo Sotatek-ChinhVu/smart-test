@@ -5,13 +5,13 @@ using UseCase.Document.GetListDocCategory;
 
 namespace EmrCloudApi.Tenant.Presenters.Document;
 
-public class GetListDocCategoryMstPresenter : IGetListDocCategoryOutputPort
+public class GetListDocCategoryPresenter : IGetListDocCategoryOutputPort
 {
-    public Response<GetListDocCategoryMstResponse> Result { get; private set; } = new();
+    public Response<GetListDocCategoryResponse> Result { get; private set; } = new();
 
     public void Complete(GetListDocCategoryOutputData output)
     {
-        Result.Data = new GetListDocCategoryMstResponse(
+        Result.Data = new GetListDocCategoryResponse(
                                                         output.ListDocCategories.Select(item => new DocCategoryDto(item)).ToList(),
                                                         output.ListTemplates.Select(item => new FileDocumentDto(item)).ToList()
                                                     );

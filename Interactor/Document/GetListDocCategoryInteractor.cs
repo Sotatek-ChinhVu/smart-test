@@ -5,6 +5,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Text;
+using UseCase.Document;
 using UseCase.Document.GetListDocCategory;
 
 namespace Interactor.Document;
@@ -43,14 +44,14 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         }
     }
 
-    private DocCategoryOutputItem ConvertToDocCategoryMstOutputItem(int hpId, DocCategoryMstModel model)
+    private DocCategoryOutputItem ConvertToDocCategoryMstOutputItem(int hpId, DocCategoryModel model)
     {
         return new DocCategoryOutputItem(
-                                                hpId,
-                                                model.CategoryCd,
-                                                model.CategoryName,
-                                                model.SortNo
-                                            );
+                                            hpId,
+                                            model.CategoryCd,
+                                            model.CategoryName,
+                                            model.SortNo
+                                        );
     }
 
     private List<FileDocumentModel> GetListDocumentTemplate(List<int> listCategoryId)

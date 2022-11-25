@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Tenant.Responses.Document;
 
-public class GetListDocCategoryMstResponse
+public class GetListDocCategoryResponse
 {
-    public GetListDocCategoryMstResponse(List<DocCategoryDto> docCategories, List<FileDocumentDto> templateFile)
+    public GetListDocCategoryResponse(List<DocCategoryDto> docCategories, List<FileDocumentDto> templateFile)
     {
         DocCategories = docCategories;
         TemplateFile = templateFile;

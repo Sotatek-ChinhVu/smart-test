@@ -15,15 +15,31 @@ public class DocumentRepository : IDocumentRepository
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
-    public List<DocCategoryMstModel> GetAllDocCategory(int hpId)
+
+    public bool CheckExistDocCategory(int hpId, int categoryCd)
+    {
+        return _tenantDataContext.DocCategoryMsts.Any(item => item.HpId == hpId && item.CategoryCd == categoryCd);
+    }
+
+    public List<DocCategoryModel> GetAllDocCategory(int hpId)
     {
         var listCategoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).ToList();
         return listCategoryDB.Select(item => ConvertToDocCategoryMstModel(item)).ToList();
     }
 
-    private DocCategoryMstModel ConvertToDocCategoryMstModel(DocCategoryMst entity)
+    public DocCategoryModel GetDocCategoryDetail(int hpId, int categoryCd)
     {
-        return new DocCategoryMstModel(
+        var categoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == categoryCd && item.IsDeleted == 0);
+        if (categoryDB != null)
+        {
+            return ConvertToDocCategoryMstModel(categoryDB);
+        }
+        return new DocCategoryModel();
+    }
+
+    private DocCategoryModel ConvertToDocCategoryMstModel(DocCategoryMst entity)
+    {
+        return new DocCategoryModel(
                 entity.HpId,
                 entity.CategoryCd,
                 entity.CategoryName ?? string.Empty,

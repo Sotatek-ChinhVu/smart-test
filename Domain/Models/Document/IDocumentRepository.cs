@@ -2,5 +2,9 @@
 
 public interface IDocumentRepository
 {
-    List<DocCategoryMstModel> GetAllDocCategory(int hpId);
+    List<DocCategoryModel> GetAllDocCategory(int hpId);
+
+    DocCategoryModel GetDocCategoryDetail(int hpId, int categoryCd);
+
+    bool CheckExistDocCategory(int hpId, int categoryCd);
 }
