@@ -97,6 +97,7 @@
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
         public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
+        public const string InitDoctorCombo = "InitDoctorCombo";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -116,5 +117,10 @@
         public const string SaveListDocumentCategory = "SaveListDocumentCategory";
         public const string SortDocCategory = "SortDocCategory";
 
+        //Medical Examination
+        public const string GetCheckDiseases = "GetCheckDiseases";
+
+        //User Config
+        public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
     }
 }

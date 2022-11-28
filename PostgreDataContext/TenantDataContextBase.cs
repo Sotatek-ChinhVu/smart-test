@@ -144,12 +144,15 @@ namespace PostgreDataContext
             modelBuilder.Entity<SyunoNyukin>().HasKey(e => new { e.HpId, e.RaiinNo, e.SeqNo });
             modelBuilder.Entity<SyunoSeikyu>().HasKey(e => new { e.HpId, e.RaiinNo, e.PtId, e.SinDate });
             modelBuilder.Entity<PtRousaiTenki>().HasKey(e => new { e.HpId, e.PtId, e.HokenId, e.SeqNo });
-            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate });
-            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo });
-            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
+            modelBuilder.Entity<TimeZoneDayInf>().HasKey(e => new { e.HpId, e.Id, e.SinDate});
+            modelBuilder.Entity<TimeZoneConf>().HasKey(e => new { e.HpId, e.YoubiKbn, e.SeqNo});
+            modelBuilder.Entity<TekiouByomeiMst>().HasKey(e => new { e.HpId, e.ItemCd, e.ByomeiCd, e.SystemData });
+            modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo});
             modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
             modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
             modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
+            modelBuilder.Entity<OnlineConsent>().HasKey(e => new {e.PtId, e.ConsKbn });
+            modelBuilder.Entity<KouiHoukatuMst>().HasKey(e => new {e.HpId, e.ItemCd, e.StartDate });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -866,5 +869,9 @@ namespace PostgreDataContext
         public DbSet<MallRenkeiInf> MallRenkeiInfs { get; set; } = default!;
 
         public DbSet<RsvkrtByomei> RsvkrtByomeis { get; set; } = default!;
+
+        public DbSet<OnlineConsent> OnlineConsents { get; set; } = default!;
+
+        public DbSet<KouiHoukatuMst> KouiHoukatuMsts { get; set; } = default!;
     }
 }
