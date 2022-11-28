@@ -843,5 +843,80 @@ namespace Infrastructure.Repositories
             }
             return new ReceptionModel(tantoId, kaId);
         }
+
+        public long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate)
+        {
+            var isDoctor = _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
+            var doctors = _tenantNoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+            if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
+            {
+                // if have only 1 doctor in user list
+                if (doctors.Count == 2)
+                {
+                    return doctors[1].Id;
+                }
+
+                if (isDoctor)
+                {
+                    return userId;
+                }
+                else
+                {
+                    var mainDoctor = _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+
+                    if (mainDoctor != null)
+                    {
+                        var userMst = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                        if (userMst?.JobCd == 1)
+                        {
+                            return mainDoctor.PrimaryDoctor;
+                        }
+                    }
+                    var defaultDoctorSetting = _tenantNoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                            p.HpId == hpId && p.GrpCd == 1009 && p.GrpEdaNo == 0)?.Val ?? 0;
+
+                    // if DefaultDoctorSetting = 1 get doctor from last visit
+                    if (defaultDoctorSetting == 1)
+                    {
+                        var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.PtId == ptId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.Status >= RaiinState.TempSave &&
+                                            (sinDate <= 0 || p.SinDate < sinDate))
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault(); ;
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+
+                    // if DefaultDoctorSetting = 2 get doctor from last reception
+                    if (defaultDoctorSetting == 2)
+                    {
+                        var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.SinDate <= sinDate)
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault();
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+                }
+
+                //if DefaultDoctorSetting = 0
+                return doctors.Count > 0 ? doctors[0].Id : 0;
+            }
+
+            return 0;
+        }
     }
 }

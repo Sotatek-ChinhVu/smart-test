@@ -200,6 +200,7 @@ using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetList;
 using UseCase.Reception.GetReceptionDefault;
 using UseCase.Reception.GetSettings;
+using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
@@ -387,6 +388,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetReceptionLockInputData, GetReceptionLockInteractor>();
             busBuilder.RegisterUseCase<GetLastRaiinInfsInputData, GetLastRaiinInfsInteractor>();
             busBuilder.RegisterUseCase<GetReceptionDefaultInputData, GetReceptionDefaultInteractor>();
+            busBuilder.RegisterUseCase<InitDoctorComboInputData, InitDoctorComboInteractor>();
 
             // Visiting
             busBuilder.RegisterUseCase<SaveVisitingListSettingsInputData, SaveVisitingListSettingsInteractor>();

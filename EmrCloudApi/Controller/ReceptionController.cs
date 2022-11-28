@@ -1,11 +1,11 @@
-﻿using EmrCloudApi.Realtime;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Messages;
 using EmrCloudApi.Presenters.MaxMoney;
 using EmrCloudApi.Presenters.PatientRaiinKubun;
 using EmrCloudApi.Presenters.Reception;
 using EmrCloudApi.Presenters.ReceptionInsurance;
 using EmrCloudApi.Presenters.ReceptionSameVisit;
+using EmrCloudApi.Realtime;
 using EmrCloudApi.Requests.MaxMoney;
 using EmrCloudApi.Requests.PatientRaiinKubun;
 using EmrCloudApi.Requests.Reception;
@@ -18,7 +18,6 @@ using EmrCloudApi.Responses.Reception;
 using EmrCloudApi.Responses.ReceptionInsurance;
 using EmrCloudApi.Responses.ReceptionSameVisit;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.ValidPatternExpirated;
@@ -29,6 +28,7 @@ using UseCase.Reception.Get;
 using UseCase.Reception.GetDefaultSelectedTime;
 using UseCase.Reception.GetLastRaiinInfs;
 using UseCase.Reception.GetReceptionDefault;
+using UseCase.Reception.InitDoctorCombo;
 using UseCase.Reception.Insert;
 using UseCase.Reception.ReceptionComment;
 using UseCase.Reception.Update;
@@ -228,6 +228,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<UpdateTimeZoneDayInfResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.InitDoctorCombo)]
+        public ActionResult<Response<InitDoctorComboResponse>> InitDoctorCombo([FromQuery] InitDoctorComboRequest request)
+        {
+            var input = new InitDoctorComboInputData(UserId, request.TantoId, request.PtId, HpId, request.SinDate);
+            var output = _bus.Handle(input);
+
+            var presenter = new InitDoctorComboPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<InitDoctorComboResponse>>(presenter.Result);
         }
     }
 }
