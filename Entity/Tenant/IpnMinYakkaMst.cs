@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
     [Table(name: "IPN_MIN_YAKKA_MST")]
+    [Index(nameof(HpId), nameof(IpnNameCd), nameof(StartDate), Name = "IPN_MIN_YAKKA_MST_IDX01")]
     [Serializable]
     public class IpnMinYakkaMst : EmrCloneable<IpnMinYakkaMst>
     {
@@ -114,7 +115,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

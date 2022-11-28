@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -1624,7 +1623,7 @@ namespace Entity.Tenant
         ///     YJ_CDの頭9桁（例外あり）
         /// </summary>
         [Column("IPN_NAME_CD")]
-        [MaxLength(12)]        
+        [MaxLength(12)]
         public string? IpnNameCd { get; set; } = string.Empty;
 
         /// <summary>
@@ -1922,7 +1921,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント種別
@@ -1936,7 +1935,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "KENSA_LABEL")]
         [CustomAttribute.DefaultValue(0)]
-        public int KensaLabel{ get; set; }
+        public int KensaLabel { get; set; }
 
         /// <summary>
         /// 外来感染症対策向上加算等
