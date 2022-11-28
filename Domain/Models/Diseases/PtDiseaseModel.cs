@@ -49,6 +49,36 @@ namespace Domain.Models.Diseases
             HosokuCmt = hosokuCmt;
         }
 
+        public PtDiseaseModel(string byomeiCd, string byomei, int sikkanKbn)
+        {
+            HpId = 0;
+            PtId = 0;
+            SeqNo = 0;
+            ByomeiCd = byomeiCd;
+            SortNo = 0;
+            PrefixSuffixList = new List<PrefixSuffixModel>();
+            Byomei = byomei;
+            IsSuspect = 0;
+            StartDate = 0;
+            TenkiKbn = 0;
+            TenkiDate = 0;
+            SyubyoKbn = 0;
+            SikkanKbn = sikkanKbn;
+            NanbyoCd = 0;
+            IsNodspRece = 0;
+            IsNodspKarte = 0;
+            IsDeleted = 0;
+            Id = 0;
+            IsImportant = 0;
+            SinDate = 0;
+            Icd10 = string.Empty;
+            Icd102013 = string.Empty;
+            Icd1012013 = string.Empty;
+            Icd1022013 = string.Empty;
+            HokenPid = 0;
+            HosokuCmt = string.Empty;
+        }
+
         public PtDiseaseModel(int hpId, long ptId, long seqNo, string byomeiCd, int sortNo,
             List<PrefixSuffixModel> prefixList, List<PrefixSuffixModel> suffixList, string byomei, int startDate, int tenkiKbn, int tenkiDate,
             int syubyoKbn, int sikkanKbn, int nanbyoCd, int isNodspRece, int isNodspKarte,
@@ -193,15 +223,15 @@ namespace Domain.Models.Diseases
                 return ValidationStatus.InvalidByomei;
             }
 
-            if (!PtDiseaseConst.TenkiKbns.Values.Contains(TenkiKbn))
+            if (!TenkiKbns.ContainsValue(TenkiKbn))
             {
                 return ValidationStatus.InvalidTenkiKbn;
             }
-            if (!PtDiseaseConst.SikkanKbns.Values.Contains(SikkanKbn))
+            if (!SikkanKbns.ContainsValue(SikkanKbn))
             {
                 return ValidationStatus.InvalidSikkanKbn;
             }
-            if (!PtDiseaseConst.NanByoCds.Values.Contains(NanbyoCd))
+            if (!NanByoCds.ContainsValue(NanbyoCd))
             {
                 return ValidationStatus.InvalidNanByoCd;
             }
