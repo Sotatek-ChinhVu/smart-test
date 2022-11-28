@@ -104,6 +104,7 @@
         public static readonly string InvalidTantoId = "InvalidTantoId";
         public static readonly string InvalidStarDate = "InvalidStarDate";
         public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
 
         //Insurance
         // Validate Main Insurance

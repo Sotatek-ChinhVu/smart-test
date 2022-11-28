@@ -1,38 +1,33 @@
 ﻿using Domain.Models.ApprovalInfo;
+using Domain.Models.User;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using UseCase.ApprovalInfo.GetApprovalInfList;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
     public class ApprovalinfRepository : IApprovalInfRepository
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
+        private readonly TenantDataContext _tenantDataContext;
 
         public ApprovalinfRepository(ITenantProvider tenantProvider)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
             var result = new List<ApprovalInfModel>();
-
             var approvalInfs = _tenantNoTrackingDataContext.ApprovalInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.SinDate >= startDate &&
                     x.SinDate <= endDate
             );
-
             var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == DeleteTypes.None &&
@@ -42,23 +37,18 @@ namespace Infrastructure.Repositories
                     (tantoId == 0 || x.TantoId == tantoId) &&
                     (kaId == 0 || x.KaId == kaId)
             );
-
             var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDelete == 0
             );
-
             var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == 0
             );
-
             var userInfs = _tenantNoTrackingDataContext.UserMsts.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == 0
             );
-
-            var userIdList = raiinInfs.Select(r => r.TantoId).Distinct().ToList();
 
             var query = from raiinInf in raiinInfs.AsEnumerable()
                         join approvalInf in approvalInfs on
@@ -79,7 +69,6 @@ namespace Infrastructure.Repositories
                             kaMst.KaName,
                             kaMst.KaId
                         };
-            var count = query.Count();
 
             result = query.Where(x => x.ApprovalInf.FirstOrDefault() == null
                          || x.ApprovalInf?.OrderByDescending(m => m.SeqNo).FirstOrDefault()?.IsDeleted == 1)
@@ -99,7 +88,54 @@ namespace Infrastructure.Repositories
                       ))
             .OrderBy(x => x.SinDate)
             .ToList();
+
             return result;
+        }
+        public void UpdateApprovalInfs(List<ApprovalInfModel> approvalInfs)
+        {
+            foreach (var inputData in approvalInfs)
+            {
+                var approvalInfo0 = _tenantDataContext.ApprovalInfs.FirstOrDefault(x => x.HpId == 1 && x.IsDeleted == 0);
+                if(inputData.Id == approvalInfo0?.Id && inputData.IsDeleted == approvalInfo0.IsDeleted && inputData.RaiinNo == approvalInfo0.RaiinNo && inputData.PtId == approvalInfo0.PtId && inputData.SinDate == approvalInfo0.SinDate )
+                {
+                    approvalInfo0.CreateId = 1;
+                    approvalInfo0.CreateDate = DateTime.Now;
+                    approvalInfo0.CreateMachine = string.Empty;
+                    approvalInfo0.UpdateId = 1;
+                    approvalInfo0.UpdateDate = DateTime.Now;
+                    approvalInfo0.UpdateMachine = string.Empty;
+                }
+
+                if(inputData.Id != approvalInfo0?.Id)
+                {
+                    _tenantDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
+                }   
+
+                if(inputData.Id == approvalInfo0?.Id && inputData.IsDeleted != approvalInfo0.IsDeleted)
+                {
+                    approvalInfo0.IsDeleted= inputData.IsDeleted;
+                }    
+            }
+            _tenantDataContext.SaveChanges();
+        }
+        private static ApprovalInf ConvertApprovalInfList(ApprovalInfModel u)
+        {
+            return new ApprovalInf
+            {
+                Id = u.Id,
+                HpId = u.HpId,
+                IsDeleted = u.IsDeleted,
+                RaiinNo = u.RaiinNo,
+                SeqNo = u.SeqNo,
+                PtId = u.PtId,
+                SinDate = u.SinDate,
+                CreateId = u.CreateId,
+                CreateDate = u.CreateDate,
+                CreateMachine = u.CreateMachine ?? string.Empty,
+                UpdateId = u.UpdateId,
+                UpdateDate = u.UpdateDate,
+                UpdateMachine = u.UpdateMachine ?? string.Empty,
+            };
         }
     }
 }
