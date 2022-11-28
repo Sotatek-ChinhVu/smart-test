@@ -35,7 +35,7 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         {
             var listDocCategory = _documentRepository.GetAllDocCategory(inputData.HpId);
             var listDocumentTemplate = GetListDocumentTemplate(listDocCategory.Select(item => item.CategoryCd).ToList());
-            var result = listDocCategory.Select(model => ConvertToDocCategoryMstOutputItem(inputData.HpId, model)).ToList();
+            var result = listDocCategory.Select(model => ConvertToDocCategoryMstOutputItem(model)).ToList();
             return new GetListDocCategoryOutputData(result, listDocumentTemplate, GetListDocCategoryStatus.Successed);
         }
         catch
@@ -44,10 +44,9 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         }
     }
 
-    private DocCategoryOutputItem ConvertToDocCategoryMstOutputItem(int hpId, DocCategoryModel model)
+    private DocCategoryOutputItem ConvertToDocCategoryMstOutputItem(DocCategoryModel model)
     {
         return new DocCategoryOutputItem(
-                                            hpId,
                                             model.CategoryCd,
                                             model.CategoryName,
                                             model.SortNo

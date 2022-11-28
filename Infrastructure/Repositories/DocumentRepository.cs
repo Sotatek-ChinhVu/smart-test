@@ -40,7 +40,6 @@ public class DocumentRepository : IDocumentRepository
     private DocCategoryModel ConvertToDocCategoryMstModel(DocCategoryMst entity)
     {
         return new DocCategoryModel(
-                entity.HpId,
                 entity.CategoryCd,
                 entity.CategoryName ?? string.Empty,
                 entity.SortNo
