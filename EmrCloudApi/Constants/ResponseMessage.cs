@@ -31,6 +31,7 @@
         public static readonly string InvalidDate = "Invalid Date";
         public static readonly string InvalidValue = "Invalid Value ";
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
+        public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
 
         //Common
@@ -68,6 +69,7 @@
         public static readonly string InvalidGroupDetailName = "Invalid GroupDetailName, GroupDetailName is required and length must be less than or equal 30";
 
         //Reception controller
+        public static readonly string ReceptionInvalidUserId = "Invalid UserId";
 
         //PtDisease controller
         public static readonly string PtDiseaseUpsertSuccess = "更新が成功しました";
