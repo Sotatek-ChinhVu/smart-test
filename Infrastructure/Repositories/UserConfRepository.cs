@@ -7,17 +7,20 @@ namespace Infrastructure.Repositories;
 
 public class UserConfRepository : IUserConfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
+    private readonly TenantDataContext _tenantTrackingDataContext;
+    private readonly TenantDataContext _tenantNoTrackingDataContext;
+    private const int ADOPTED_CONFIRM_CD = 100005;
     public static Dictionary<int, Dictionary<int, int>> ConfigGroupDefault = new();
 
     public UserConfRepository(ITenantProvider tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
+        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
     {
-        return _tenantDataContext.UserConfs
+        return _tenantNoTrackingDataContext.UserConfs
             .Where(u => u.UserId == userId && u.GrpCd >= fromGrpCd && u.GrpCd <= toGrpCd)
             .AsEnumerable().Select(u => ToModel(u)).ToList();
     }
@@ -26,20 +29,45 @@ public class UserConfRepository : IUserConfRepository
     {
         var result = new Dictionary<string, int>();
 
-        var displaySetName = _tenantDataContext.UserConfs
+        var displaySetName = _tenantNoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 2 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 2);
         result.Add("DisplaySetName", displaySetName);
-        var displayUserInput = _tenantDataContext.UserConfs
+        var displayUserInput = _tenantNoTrackingDataContext.UserConfs
           .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 3 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 3);
         result.Add("DisplayUserInput", displayUserInput);
-        var displayTimeInput = _tenantDataContext.UserConfs
+        var displayTimeInput = _tenantNoTrackingDataContext.UserConfs
     .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 4 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 4);
         result.Add("DisplayTimeInput", displayTimeInput);
-        var displayDrugPrice = _tenantDataContext.UserConfs
+        var displayDrugPrice = _tenantNoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 202 && u.GrpItemCd == 5 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(202, 5);
         result.Add("DisplayDrugPrice", displayDrugPrice);
+        var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
+   .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
+        result.Add("AdoptedConfirmCD", adoptedConfirmCD);
 
         return result;
+    }
+
+    public void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue)
+    {
+        var userConfig = _tenantTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.GrpCd == ADOPTED_CONFIRM_CD && p.UserId == userId);
+        if (userConfig == null)
+        {
+            userConfig = new UserConf()
+            {
+                HpId = hpId,
+                GrpCd = ADOPTED_CONFIRM_CD,
+                UserId = userId,
+                CreateId = userId,
+                CreateDate = DateTime.Now
+            };
+            _tenantTrackingDataContext.UserConfs.Add(userConfig);
+        }
+        userConfig.UpdateId = userId;
+        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.Val = adoptedValue;
+
+        _tenantTrackingDataContext.SaveChanges();
     }
 
     private UserConfModel ToModel(UserConf u)
