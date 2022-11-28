@@ -1,9 +1,10 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Presenters.NextOrder;
-using EmrCloudApi.Tenant.Requests.NextOrder;
-using EmrCloudApi.Tenant.Responses;
-using EmrCloudApi.Tenant.Responses.NextOrder;
-using EmrCloudApi.Tenant.Services;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Controller;
+using EmrCloudApi.Presenters.NextOrder;
+using EmrCloudApi.Requests.NextOrder;
+using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.NextOrder;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
@@ -11,16 +12,16 @@ using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
 using UseCase.NextOrder.Upsert;
 
-namespace EmrCloudApi.Tenant.Controllers;
+namespace EmrCloudApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class NextOrderController : ControllerBase
+public class NextOrderController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
     private readonly IUserService _userService;
-    public NextOrderController(UseCaseBus bus, IUserService userService)
+    public NextOrderController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
         _userService = userService;
@@ -29,11 +30,7 @@ public class NextOrderController : ControllerBase
     [HttpGet(ApiPath.Get)]
     public async Task<ActionResult<Response<GetNextOrderResponse>>> Get([FromQuery] GetNextOrderRequest request)
     {
-        var user = _userService.GetLoginUser();
-        int.TryParse(user.HpId, out int hpId);
-        int.TryParse(user.UserId, out int userId);
-
-        var input = new GetNextOrderInputData(request.PtId, hpId, request.RsvkrtNo, request.SinDate, request.Type, userId);
+        var input = new GetNextOrderInputData(request.PtId, HpId, request.RsvkrtNo, request.SinDate, request.Type, UserId);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetNextOrderPresenter();
@@ -45,9 +42,7 @@ public class NextOrderController : ControllerBase
     [HttpGet(ApiPath.GetList)]
     public async Task<ActionResult<Response<GetNextOrderListResponse>>> GetList([FromQuery] GetNextOrderListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-
-        var input = new GetNextOrderListInputData(request.PtId, hpId, request.RsvkrtKbn, request.IsDeleted);
+        var input = new GetNextOrderListInputData(request.PtId, HpId, request.RsvkrtKbn, request.IsDeleted);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new GetNextOrderListPresenter();
@@ -59,10 +54,7 @@ public class NextOrderController : ControllerBase
     [HttpPost(ApiPath.Upsert)]
     public async Task<ActionResult<Response<UpsertNextOrderListResponse>>> Upsert([FromBody] UpsertNextOrderListRequest request)
     {
-        int.TryParse(_userService.GetLoginUser().HpId, out int hpId);
-        int.TryParse(_userService.GetLoginUser().UserId, out int userId);
-
-        var input = new UpsertNextOrderListInputData(request.PtId, hpId, userId, request.NextOrderItems);
+        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems);
         var output = await Task.Run(() => _bus.Handle(input));
 
         var presenter = new UpsertNextOrderListPresenter();
