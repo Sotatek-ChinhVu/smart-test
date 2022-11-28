@@ -100,4 +100,22 @@ public class DocumentRepository : IDocumentRepository
         entity.CreateId = userId;
         return entity;
     }
+
+    public bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd)
+    {
+        // get in DB
+        var moveInItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == moveInCd);
+        var moveOutItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == moveOutCd);
+
+        // change sortNo
+        if (moveInItem != null && moveOutItem != null)
+        {
+            int moveInSortNo = moveInItem.SortNo;
+            int moveOutSortNo = moveOutItem.SortNo;
+            moveInItem.SortNo = moveOutSortNo;
+            moveOutItem.SortNo = moveInSortNo;
+            return true;
+        }
+        return false;
+    }
 }

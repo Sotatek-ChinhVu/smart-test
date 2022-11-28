@@ -1,5 +1,8 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Document;
+using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
 using EmrCloudApi.Tenant.Presenters.Document;
 using EmrCloudApi.Tenant.Requests.Document;
@@ -9,6 +12,7 @@ using UseCase.Core.Sync;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveListDocCategory;
+using UseCase.Document.SortDocCategory;
 
 namespace EmrCloudApi.Controller;
 
@@ -56,6 +60,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveListDocCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.SortDocCategory)]
+    public ActionResult<Response<SortDocCategoryResponse>> SortDocCategory([FromBody] SortDocCategoryRequest request)
+    {
+        var input = new SortDocCategoryInputData(HpId, UserId, request.MoveInCd, request.MoveOutCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new SortDocCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SortDocCategoryResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)

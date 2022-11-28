@@ -114,6 +114,7 @@
         public const string GetListDocumentCategory = "GetListDocumentCategory";
         public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
         public const string SaveListDocumentCategory = "SaveListDocumentCategory";
+        public const string SortDocCategory = "SortDocCategory";
 
     }
 }
