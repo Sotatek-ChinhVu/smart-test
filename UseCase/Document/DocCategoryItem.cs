@@ -1,15 +1,15 @@
 ﻿namespace UseCase.Document;
 
-public class DocCategoryOutputItem
+public class DocCategoryItem
 {
-    public DocCategoryOutputItem(int categoryCd, string categoryName, int sortNo)
+    public DocCategoryItem(int categoryCd, string categoryName, int sortNo)
     {
         CategoryCd = categoryCd;
         CategoryName = categoryName;
         SortNo = sortNo;
     }
 
-    public DocCategoryOutputItem()
+    public DocCategoryItem()
     {
         CategoryCd = 0;
         CategoryName = string.Empty;

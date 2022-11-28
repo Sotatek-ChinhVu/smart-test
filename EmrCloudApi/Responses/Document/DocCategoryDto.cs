@@ -4,7 +4,7 @@ namespace EmrCloudApi.Tenant.Responses.Document;
 
 public class DocCategoryDto
 {
-    public DocCategoryDto(DocCategoryOutputItem item)
+    public DocCategoryDto(DocCategoryItem item)
     {
         CategoryCd = item.CategoryCd;
         CategoryName = item.CategoryName;

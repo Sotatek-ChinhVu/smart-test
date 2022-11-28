@@ -12,14 +12,14 @@ public class GetListDocCategoryOutputData : IOutputData
         Status = status;
     }
 
-    public GetListDocCategoryOutputData(List<DocCategoryOutputItem> listDocCategories, List<FileDocumentModel> listTemplateName, GetListDocCategoryStatus status)
+    public GetListDocCategoryOutputData(List<DocCategoryItem> listDocCategories, List<FileDocumentModel> listTemplateName, GetListDocCategoryStatus status)
     {
         ListDocCategories = listDocCategories;
         ListTemplates = listTemplateName;
         Status = status;
     }
 
-    public List<DocCategoryOutputItem> ListDocCategories { get; private set; }
+    public List<DocCategoryItem> ListDocCategories { get; private set; }
 
     public List<FileDocumentModel> ListTemplates { get; private set; }
 
