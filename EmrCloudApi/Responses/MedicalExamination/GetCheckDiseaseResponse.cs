@@ -1,6 +1,6 @@
 ﻿using UseCase.MedicalExamination.GetCheckDisease;
 
-namespace EmrCloudApi.Tenant.Responses.MedicalExamination
+namespace EmrCloudApi.Responses.MedicalExamination
 {
     public class GetCheckDiseaseResponse
     {

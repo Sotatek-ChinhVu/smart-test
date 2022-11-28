@@ -1,10 +1,10 @@
 ﻿using Domain.Models.Diseases;
 using EmrCloudApi.Constants;
 using EmrCloudApi.Presenters.MedicalExamination;
+using EmrCloudApi.Requests.MedicalExamination;
 using EmrCloudApi.Responses;
+using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Services;
-using EmrCloudApi.Tenant.Requests.MedicalExamination;
-using EmrCloudApi.Tenant.Responses.MedicalExamination;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.GetCheckDisease;

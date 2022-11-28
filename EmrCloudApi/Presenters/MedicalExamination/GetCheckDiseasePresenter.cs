@@ -1,6 +1,6 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Tenant.Responses.MedicalExamination;
+using EmrCloudApi.Responses.MedicalExamination;
 using UseCase.MedicalExamination.GetCheckDisease;
 
 namespace EmrCloudApi.Presenters.MedicalExamination

@@ -1,7 +1,7 @@
 ﻿using EmrCloudApi.Requests.Diseases;
 using EmrCloudApi.Requests.MedicalExamination;
 
-namespace EmrCloudApi.Tenant.Requests.MedicalExamination
+namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class GetCheckDiseaseRequest
     {
