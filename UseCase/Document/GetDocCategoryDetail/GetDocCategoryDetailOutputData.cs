@@ -5,7 +5,7 @@ namespace UseCase.Document.GetDocCategoryDetail;
 
 public class GetDocCategoryDetailOutputData : IOutputData
 {
-    public GetDocCategoryDetailOutputData(DocCategoryOutputItem docCategory, List<FileDocumentModel> listTemplates, GetDocCategoryDetailStatus status)
+    public GetDocCategoryDetailOutputData(DocCategoryItem docCategory, List<FileDocumentModel> listTemplates, GetDocCategoryDetailStatus status)
     {
         DocCategory = docCategory;
         ListTemplates = listTemplates;
@@ -19,7 +19,7 @@ public class GetDocCategoryDetailOutputData : IOutputData
         Status = status;
     }
 
-    public DocCategoryOutputItem DocCategory { get; private set; }
+    public DocCategoryItem DocCategory { get; private set; }
 
     public List<FileDocumentModel> ListTemplates { get; private set; }
 
