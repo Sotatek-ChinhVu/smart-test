@@ -18,7 +18,7 @@ public class DocumentRepository : IDocumentRepository
 
     public bool CheckExistDocCategory(int hpId, int categoryCd)
     {
-        return _tenantDataContext.DocCategoryMsts.Any(item => item.HpId == hpId && item.CategoryCd == categoryCd);
+        return _tenantDataContext.DocCategoryMsts.Any(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == categoryCd);
     }
 
     public List<DocCategoryModel> GetAllDocCategory(int hpId)
