@@ -1,9 +1,10 @@
 ﻿using Domain.Models.HpMst;
 using Domain.Models.Insurance;
-using Domain.Models.InsuranceMst;
+using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using Infrastructure.Repositories;
 using UseCase.NextOrder.Upsert;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.NextOrderConst;
@@ -19,14 +20,16 @@ namespace Interactor.NextOrder
         private readonly IPatientInforRepository _patientInfRepository;
         private readonly IUserRepository _userRepository;
         private readonly IInsuranceRepository _insuranceRepository;
+        private readonly IMstItemRepository _mstItemRepository;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository)
+        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
         {
             _nextOrderRepository = nextOrderRepository;
             _hpInfRepository = hpInfRepository;
             _patientInfRepository = patientInfRepository;
             _userRepository = userRepository;
             _insuranceRepository = insuranceRepository;
+            _mstItemRepository = mstItemRepository;
         }
 
         public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
@@ -46,7 +49,39 @@ namespace Interactor.NextOrder
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
                 }
 
-                var nextOrderModels = inputData.NextOrderItems.Select(n => ConvertNextOrderToModel(inputData.HpId, inputData.PtId, n)).ToList();
+                var itemCds = new List<string>();
+                var ipnCds = new List<Tuple<string, string>>();
+                List<long> rsvkrtNos = new();
+                List<int> rsvkrtDates = new();
+
+                foreach (var nextOrder in inputData.NextOrderItems)
+                {
+                    rsvkrtNos.Add(nextOrder.RsvkrtNo);
+                    rsvkrtNos.Add(nextOrder.rsvkrtKarteInf.RsvkrtNo);
+                    rsvkrtDates.Add(nextOrder.RsvDate);
+                    rsvkrtDates.Add(nextOrder.rsvkrtKarteInf.RsvDate);
+                    foreach (var orderInfModel in nextOrder.rsvKrtOrderInfItems)
+                    {
+                        rsvkrtNos.Add(orderInfModel.RsvkrtNo);
+                        rsvkrtNos.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvkrtNo));
+                        rsvkrtDates.Add(orderInfModel.RsvDate);
+                        rsvkrtDates.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvDate));
+                        itemCds.AddRange(_mstItemRepository.GetCheckItemCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
+                        ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
+                    }
+                }
+
+                if (rsvkrtNos.Distinct().Count() > 1)
+                {
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
+                }
+
+                if (rsvkrtDates.Distinct().Count() > 1)
+                {
+                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                }
+
+                var nextOrderModels = inputData.NextOrderItems.Select(n => ConvertNextOrderToModel(inputData.HpId, inputData.PtId, ipnCds, n)).ToList();
                 List<(int, KarteValidationStatus)> validationKarteInfs = new();
                 Dictionary<int, NextOrderStatus> validationNextOrders = new();
                 List<(int, int, RsvkrtByomeiStatus)> validationRsvkrtByomeis = new();
@@ -55,7 +90,6 @@ namespace Interactor.NextOrder
                 for (int i = 0; i < nextOrderModels.Count; i++)
                 {
                     var nextOrderModel = nextOrderModels[i];
-                    
 
                     var validationNextOrder = nextOrderModel.Validation();
                     if (validationNextOrder != NextOrderStatus.Valid)
@@ -79,63 +113,8 @@ namespace Interactor.NextOrder
                         }
                     }
 
-                    Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOneOrdInf = new();
-                    for (int i2 = 0; i2 < nextOrderModel.RsvkrtOrderInfs.Count; i2++)
-                    {
-                        var order = nextOrderModel.RsvkrtOrderInfs[i2];
-                        var validationOrderInf = order.Validation(0);
-                        if (validationOrderInf.Value != OrdInfValidationStatus.Valid)
-                        {
-                            validationOneOrdInf.Add(i2.ToString(), validationOrderInf);
-                        }
-                    }
+                    var validationOneOrdInf = CheckValidateOrderInf(inputData.HpId, inputData.PtId, itemCds, ipnCds.Select(ipn => ipn.Item1).ToList(), nextOrderModel);
 
-                    var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(inputData.HpId, inputData.PtId);
-                    var hokenPids = new List<int>();
-                    foreach (var nextOrderItem in inputData.NextOrderItems)
-                    {
-                        hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
-
-                    }
-                    var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids ?? new List<int>());
-                    object obj = new();
-                    Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
-                    {
-                        var item = nextOrderModel.RsvkrtOrderInfs[index];
-
-                        if (item.Id > 0)
-                        {
-                            var check = checkOderInfs.Any(c => c.RsvkrtNo == item.RsvkrtNo && c.RsvDate == item.RsvDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
-                            if (!check)
-                            {
-                                AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
-                                return;
-                            }
-                        }
-
-                        var checkObjs = nextOrderModel.RsvkrtOrderInfs.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
-                        var positionOrd = nextOrderModel.RsvkrtOrderInfs.FindIndex(o => o == checkObjs.LastOrDefault());
-                        if (checkObjs.Count >= 2 && positionOrd == index)
-                        {
-                            AddErrorStatus(obj, validationOneOrdInf, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
-                            return;
-                        }
-
-                        var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
-                        if (!checkHokenPid)
-                        {
-                            AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
-
-                            return;
-                        }
-
-                        var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvkrtNo != itemOd.RsvkrtNo);
-                        if (odrDetail != null)
-                        {
-                            var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
-                            AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
-                        }
-                    });
                     if (validationOneOrdInf.Any())
                         validationOrdInfs.Add((i, validationOneOrdInf));
                 }
@@ -152,7 +131,7 @@ namespace Interactor.NextOrder
             }
         }
 
-        private Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> CheckValidateOrderInf()
+        private Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> CheckValidateOrderInf(int hpId, long ptId, List<string> itemCds, List<string> ipnCds, NextOrderModel nextOrderModel)
         {
             Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOneOrdInf = new();
             for (int i2 = 0; i2 < nextOrderModel.RsvkrtOrderInfs.Count; i2++)
@@ -165,14 +144,11 @@ namespace Interactor.NextOrder
                 }
             }
 
-            var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(inputData.HpId, inputData.PtId);
+            var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(hpId, ptId);
             var hokenPids = new List<int>();
-            foreach (var nextOrderItem in inputData.NextOrderItems)
-            {
-                hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
+            hokenPids = nextOrderModel.RsvkrtOrderInfs.Select(i => i.HokenPid).Distinct().ToList();
 
-            }
-            var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids ?? new List<int>());
+            var checkHokens = _insuranceRepository.GetCheckListHokenInf(hpId, ptId, hokenPids ?? new List<int>());
             object obj = new();
             Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
             {
@@ -210,10 +186,26 @@ namespace Interactor.NextOrder
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
                     AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
                 }
+
+                odrDetail = item.OrdInfDetails.FirstOrDefault(od => !itemCds.Contains(od.ItemCd));
+                if (odrDetail != null)
+                {
+                    var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
+                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidItemCd));
+                }
+
+                odrDetail = item.OrdInfDetails.FirstOrDefault(od => !ipnCds.Contains(od.IpnCd));
+                if (odrDetail != null)
+                {
+                    var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
+                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidIpnCd));
+                }
             });
+
+            return validationOneOrdInf;
         }
 
-        private NextOrderModel ConvertNextOrderToModel(int hpId, long ptId, NextOrderItem nextOrderItem)
+        private NextOrderModel ConvertNextOrderToModel(int hpId, long ptId, List<Tuple<string, string>> ipnCds, NextOrderItem nextOrderItem)
         {
             return new NextOrderModel(
                     hpId,
@@ -226,7 +218,7 @@ namespace Interactor.NextOrder
                     nextOrderItem.SortNo,
                     nextOrderItem.rsvKrtByomeiItems.Select(b => ConvertRsvkrtByomeiToModel(hpId, ptId, b)).ToList(),
                     ConvertRsvkrtKarteInfToModel(hpId, ptId, nextOrderItem.rsvkrtKarteInf),
-                    nextOrderItem.rsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, o)).ToList()
+                    nextOrderItem.rsvKrtOrderInfItems.Select(o => ConvertRsvkrtOrderInfToModel(hpId, ptId, ipnCds, o)).ToList()
                 );
         }
 
@@ -271,7 +263,7 @@ namespace Interactor.NextOrder
                 );
         }
 
-        private RsvkrtOrderInfModel ConvertRsvkrtOrderInfToModel(int hpId, long ptId, RsvKrtOrderInfItem rsvkrtOrderInfItem)
+        private RsvkrtOrderInfModel ConvertRsvkrtOrderInfToModel(int hpId, long ptId, List<Tuple<string, string>> ipnCds, RsvKrtOrderInfItem rsvkrtOrderInfItem)
 
         {
             return new RsvkrtOrderInfModel(
@@ -296,11 +288,11 @@ namespace Interactor.NextOrder
                     DateTime.MinValue,
                     0,
                     string.Empty,
-                    rsvkrtOrderInfItem.RsvKrtOrderInfDetailItems.Select(od => ConvertRsvkrtOrderDetailToModel(hpId, ptId, od)).ToList()
+                    rsvkrtOrderInfItem.RsvKrtOrderInfDetailItems.Select(od => ConvertRsvkrtOrderDetailToModel(hpId, ptId, ipnCds, od)).ToList()
                 );
         }
 
-        private RsvKrtOrderInfDetailModel ConvertRsvkrtOrderDetailToModel(int hpId, long ptId, RsvKrtOrderInfDetailItem rsvkrtOrderInfDetailItem)
+        private RsvKrtOrderInfDetailModel ConvertRsvkrtOrderDetailToModel(int hpId, long ptId, List<Tuple<string, string>> ipnCds, RsvKrtOrderInfDetailItem rsvkrtOrderInfDetailItem)
 
         {
             return new RsvKrtOrderInfDetailModel(
@@ -327,7 +319,7 @@ namespace Interactor.NextOrder
                     rsvkrtOrderInfDetailItem.Kokuji2,
                     rsvkrtOrderInfDetailItem.IsNodspRece,
                     rsvkrtOrderInfDetailItem.IpnCd,
-                    rsvkrtOrderInfDetailItem.IpnName,
+                    ipnCds.FirstOrDefault(ipn => ipn.Item1 == rsvkrtOrderInfDetailItem.IpnCd)?.Item2 ?? string.Empty,
                     rsvkrtOrderInfDetailItem.Bunkatu,
                     rsvkrtOrderInfDetailItem.CmtName,
                     rsvkrtOrderInfDetailItem.CmtOpt,
@@ -359,4 +351,5 @@ namespace Interactor.NextOrder
                 dicValidation.Add(key, status);
             }
         }
+    }
 }

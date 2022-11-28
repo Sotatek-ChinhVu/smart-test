@@ -24,10 +24,14 @@
 
         List<TenItemModel> GetCheckTenItemModels(int hpId, int sinDate, List<string> itemCds);
 
-        bool CheckItemCd(string ItemCd);
+        bool CheckItemCd(string itemCd);
 
         (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
         TenItemModel FindTenMst(int hpId, string itemCd, int sinDate);
+
+        List<string> GetCheckItemCds(List<string> itemCds);
+
+        List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds);
     }
 }

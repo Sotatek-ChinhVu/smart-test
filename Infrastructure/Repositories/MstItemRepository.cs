@@ -692,9 +692,19 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool CheckItemCd(string ItemCd)
+        public bool CheckItemCd(string itemCd)
         {
-            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+        }
+
+        public List<string> GetCheckItemCds(List<string> itemCds)
+        {
+            return _tenantDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+        }
+
+        public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
+        {
+            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)

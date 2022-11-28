@@ -6,6 +6,8 @@
         InvalidHpId = 2,
         InvalidPtId = 3,
         InvalidUserId = 4,
-        Failed = 5
+        InvalidRsvkrtNo = 5,
+        InvalidRsvkrtDate = 6,
+        Failed = 7
     }
 }
