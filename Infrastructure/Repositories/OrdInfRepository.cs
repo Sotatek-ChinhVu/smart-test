@@ -59,8 +59,8 @@ namespace Infrastructure.Repositories
                 allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
             }
 
-            var sindateMin = allOdrInfDetails?.Min(o => o.SinDate) ?? 0;
-            var sindateMax = allOdrInfDetails?.Max(o => o.SinDate) ?? 0;
+            var sindateMin = allOdrInfDetails?.Count() > 0 ? allOdrInfDetails.Min(o => o.SinDate) : 0;
+            var sindateMax = allOdrInfDetails?.Count() > 0 ? allOdrInfDetails.Max(o => o.SinDate) : 0;
 
             return ConvertEntityToListOrdInfModel(allOdrInf, allOdrInfDetails, hpId, sindateMin, sindateMax, userId);
         }
@@ -488,6 +488,13 @@ namespace Infrastructure.Repositories
             }
 
             return result;
+        }
+
+        public List<Tuple<string, string>> GetIpnMst(int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds)
+        {
+            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName)).ToList();
+
+            return ipnNameMsts;
         }
 
         public OrdInfModel Read(int ordId)
