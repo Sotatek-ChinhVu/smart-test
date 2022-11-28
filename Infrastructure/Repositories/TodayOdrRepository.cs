@@ -75,6 +75,7 @@ namespace Infrastructure.Repositories
 
             if (raiinInf != null)
             {
+                raiinInf.Status = 7; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;

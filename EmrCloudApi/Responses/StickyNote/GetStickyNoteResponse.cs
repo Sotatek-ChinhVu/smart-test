@@ -1,0 +1,14 @@
+﻿using Domain.Models.PtTag;
+
+namespace EmrCloudApi.Responses.StickyNote
+{
+    public class GetStickyNoteResponse
+    {
+        public GetStickyNoteResponse(List<StickyNoteModel> stickyNoteModels)
+        {
+            StickyNoteModels = stickyNoteModels;
+        }
+
+        public List<StickyNoteModel> StickyNoteModels { get; private set; }
+    }
+}

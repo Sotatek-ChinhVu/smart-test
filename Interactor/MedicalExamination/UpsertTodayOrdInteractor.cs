@@ -133,6 +133,9 @@ namespace Interactor.MedicalExamination
             var ipnMinYakaMsts = _ordInfRepository.GetCheckIpnMinYakkaMsts(hpId, sinDate, ipnNameCds);
             var refillSetting = _systemGenerationConfRepository.GetSettingValue(hpId, 2002, 0, sinDate, 999).Item1;
             var checkIsGetYakkaPrices = _ordInfRepository.CheckIsGetYakkaPrices(hpId, tenMsts ?? new List<TenItemModel>(), sinDate);
+            var sinDateMax = inputDataList.Count > 0 ? inputDataList.Max(i => i.SinDate) : 0;
+            var sinDateMin = inputDataList.Count > 0 ? inputDataList.Min(i => i.SinDate) : 0;
+            var ipnNameMsts = _ordInfRepository.GetIpnMst(hpId, sinDateMin, sinDateMax, ipnNameCds);
 
             var obj = new object();
             Parallel.ForEach(inputDataList, item =>
@@ -200,7 +203,7 @@ namespace Interactor.MedicalExamination
                                 itemDetail.Kokuji2,
                                 itemDetail.IsNodspRece,
                                 itemDetail.IpnCd,
-                                itemDetail.IpnName,
+                                ipnNameMsts.FirstOrDefault(i => i.Item1 == itemDetail.IpnCd)?.Item2 ?? string.Empty,
                                 itemDetail.JissiKbn,
                                 itemDetail.JissiDate,
                                 itemDetail.JissiId,
