@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -11,9 +12,9 @@ namespace Infrastructure.Repositories
     {
         private readonly TenantDataContext _tenantDataContext;
 
-        public MaxmoneyReposiory(TenantDataContext tenantDataContext)
+        public MaxmoneyReposiory(ITenantProvider tenantProvider)
         {
-            _tenantDataContext = tenantDataContext;
+            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<LimitListModel> GetListLimitModel(long ptId, int hpId)
