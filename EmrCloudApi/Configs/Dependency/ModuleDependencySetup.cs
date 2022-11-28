@@ -58,7 +58,7 @@ using Domain.Models.UserConf;
 using Domain.Models.VisitingListSetting;
 using Domain.Models.YohoSetMst;
 using EmrCloudApi.Realtime;
-using EmrCloudApi.Tenant.Services;
+using EmrCloudApi.Services;
 using EventProcessor.Interfaces;
 using EventProcessor.Service;
 using Infrastructure.CommonDB;
@@ -236,6 +236,7 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetUserConfList;
+using UseCase.User.MigrateDatabase;
 using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
@@ -365,6 +366,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUserListInputData, GetUserListInteractor>();
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
             busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
+            busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
