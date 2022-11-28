@@ -1,53 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "RAIIN_LIST_MST")]
-    [Index(nameof(HpId), nameof(GrpId), nameof(IsDeleted), Name = "RAIIN_LIST_MST_IDX01")]
-    public class RaiinListMst : EmrCloneable<RaiinListMst>
+    [Table(name: "ONLINE_CONSENT")]
+    public class OnlineConsent
     {
         /// <summary>
-        /// 医療機関識別ID
+        /// 患者ID
         /// 
         /// </summary>
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Column("HP_ID", Order = 1)]
-        public int HpId { get; set; }
+        [Column("PT_ID", Order = 1)]
+        public long PtId { get; set; }
 
         /// <summary>
-        /// 分類ID
-        /// 
+        /// 1:薬剤情報 2:特定健診情報 3:診療情報
         /// </summary>
         [Key]
-        [Column("GRP_ID", Order = 2)]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int GrpId { get; set; }
-
-        /// <summary>
-        /// 分類名称
-        /// 
-        /// </summary>
-        [Column("GRP_NAME")]
-        [MaxLength(20)]
-        public string? GrpName { get; set; } = string.Empty;
-
-        /// <summary>
-        /// 並び順
-        /// 
-        /// </summary>
-        [Column("SORT_NO")]
-        public int SortNo { get; set; }
-
-        /// <summary>
-        /// 削除区分
-        /// 
-        /// </summary>
-        [Column("IS_DELETED")]
+        [Column("CONS_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
-        public int IsDeleted { get; set; }
+        public int ConsKbn { get; set; }
+
+        /// <summary>
+        /// 同意日時
+        /// </summary>
+        [Column("CONS_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime ConsDate { get; set; }
+
+        /// <summary>
+        /// 有効期限
+        /// </summary>
+        [Column("LIMIT_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime LimitDate { get; set; }
 
         /// <summary>
         /// 作成日時
@@ -61,7 +48,6 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("CREATE_ID")]
-        [CustomAttribute.DefaultValue(0)]
         public int CreateId { get; set; }
 
         /// <summary>
@@ -84,7 +70,6 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("UPDATE_ID")]
-        [CustomAttribute.DefaultValue(0)]
         public int UpdateId { get; set; }
 
         /// <summary>
@@ -94,6 +79,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
-
     }
 }
