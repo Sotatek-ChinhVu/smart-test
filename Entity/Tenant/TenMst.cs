@@ -1985,5 +1985,13 @@ namespace Entity.Tenant
         [Column(name: "JIBI_SYONIKOKIN")]
         [CustomAttribute.DefaultValue(0)]
         public int JibiSyonikokin { get; set; }
+
+        /// <summary>
+        /// 削除区分
+        ///		1:削除
+        /// </summary>
+        [Column("IS_DELETED")]
+        [CustomAttribute.DefaultValue(0)]
+        public int IsDeleted { get; set; }
     }
 }

@@ -345,6 +345,18 @@ namespace Entity.Tenant
         public int CalcSpKbn { get; set; }
 
         /// <summary>
+        /// 高額療養費の合算時に公費負担を除く
+        ///     0: 公費負担を含む
+        ///     1: 公費負担を除く
+        ///     
+        /// 一般公費が対象（主補公費の場合に使用を想定）
+        /// 分点公費や生活保護は、公費負担を除くようになっている
+        /// </summary>
+        [Column(name: "KOGAKU_TOTAL_EXC_FUTAN")]
+        [CustomAttribute.DefaultValue(0)]
+        public int KogakuTotalExcFutan { get; set; }
+
+        /// <summary>
         /// 高額療養費適用区分			
         /// </summary>
         [Column(name: "KOGAKU_TEKIYO")]

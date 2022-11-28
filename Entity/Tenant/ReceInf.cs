@@ -1143,6 +1143,16 @@ namespace Entity.Tenant
         public int IsZaiiso { get; set; }
 
         /// <summary>
+        /// マル長フラグ
+        ///     0:なし
+        ///     1:あり(上限未満)
+        ///     2:あり(上限超)
+        /// </summary>
+        [Column("CHOKI_KBN")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ChokiKbn { get; set; }
+
+        /// <summary>
         /// 作成日時
         /// 
         /// </summary>

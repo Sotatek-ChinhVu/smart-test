@@ -149,6 +149,8 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo });
             modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
             modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
+            modelBuilder.Entity<OnlineConsent>().HasKey(e => new {e.PtId, e.ConsKbn });
+            modelBuilder.Entity<KouiHoukatuMst>().HasKey(e => new {e.HpId, e.ItemCd, e.StartDate });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
@@ -865,5 +867,9 @@ namespace PostgreDataContext
         public DbSet<MallRenkeiInf> MallRenkeiInfs { get; set; } = default!;
 
         public DbSet<RsvkrtByomei> RsvkrtByomeis { get; set; } = default!;
+
+        public DbSet<OnlineConsent> OnlineConsents { get; set; } = default!;
+
+        public DbSet<KouiHoukatuMst> KouiHoukatuMsts { get; set; } = default!;
     }
 }
