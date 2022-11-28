@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -1141,6 +1136,16 @@ namespace Entity.Tenant
         [Column("IS_ZAIISO")]
         [CustomAttribute.DefaultValue(0)]
         public int IsZaiiso { get; set; }
+
+        /// <summary>
+        /// マル長フラグ
+        ///     0:なし
+        ///     1:あり(上限未満)
+        ///     2:あり(上限超)
+        /// </summary>
+        [Column("CHOKI_KBN")]
+        [CustomAttribute.DefaultValue(0)]
+        public int ChokiKbn { get; set; }
 
         /// <summary>
         /// 作成日時

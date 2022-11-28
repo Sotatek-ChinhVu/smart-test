@@ -96,6 +96,7 @@
         public const string GetDataReceptionDefault = "GetDataReceptionDefault";
         public const string GetDefaultSelectedTime = "GetDefaultSelectedTime";
         public const string UpdateTimeZoneDayInf = "UpdateTimeZoneDayInf";
+        public const string InitDoctorCombo = "InitDoctorCombo";
 
         // Validate list pattern
         public const string ValidateListPattern = "ValidateListPattern";
@@ -109,7 +110,11 @@
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
 
-        // Medical Examination
+        //Medical Examination
+        public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
+
+        //User Config
+        public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
     }
 }

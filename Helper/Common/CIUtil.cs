@@ -21,7 +21,7 @@ namespace Helper.Common
             }
 
             string kanaString = RomajiString.Instance.RomajiToKana(value);
-            string fullToHalf = HalfsizeString.Instance.ToHalfsize(kanaString);
+            string fullToHalf = HenkanJ.Instance.ToHalfsize(kanaString);
 
             return fullToHalf;
         }

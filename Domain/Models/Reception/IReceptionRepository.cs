@@ -43,5 +43,7 @@ namespace Domain.Models.Reception
         ReceptionModel GetDataDefaultReception(int hpId, int ptId, int sinDate, int defaultSettingDoctor);
 
         int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode);
+
+        long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate);
     }
 }
