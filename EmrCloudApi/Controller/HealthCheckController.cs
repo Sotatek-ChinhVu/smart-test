@@ -41,7 +41,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<string> ConvertRomajiToKana(string value)
         {
             string result = RomajiString.Instance.RomajiToKana(value);
-            string result1 = HenkanJ.HankToZen(result);
+            string result1 = HenkanJ.Instance.ToHalfsize(result);
             return Ok($"RomajiToKana: {result} - KanaToHalfsize{result1}");
         }
     }

@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("TEXT")]
-        [MaxLength(200)]
+        [MaxLength(300)]
         public string? Text { get; set; } = string.Empty;
 
         /// <summary>
