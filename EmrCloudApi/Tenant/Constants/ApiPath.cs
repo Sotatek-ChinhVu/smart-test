@@ -78,6 +78,7 @@
 
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
+        public const string ValidateOneKohi = "ValidateOneKohi";
 
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";

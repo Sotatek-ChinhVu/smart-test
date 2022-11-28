@@ -66,6 +66,8 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Tenant.Services;
+using UseCase.Insurance.ValidateOneKohi;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -598,6 +600,20 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
+        }
+
+        [AllowAnonymous]
+        [HttpPost(ApiPath.ValidateOneKohi)]
+        public ActionResult<Response<ValidateOneKohiResponse>> ValidateOneKohi([FromBody] ValidateOneKohiRequest request)
+        {
+            var input = new ValidOneKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel, request.IsSelectedKohiMst, request.SelectedKohiFutansyaNo, request.SelectedKohiJyukyusyaNo,
+                request.SelectedKohiTokusyuNo, request.SelectedKohiStartDate, request.SelectedKohiEndDate, request.SelectedKohiConfirmDate, request.SelectedKohiHokenNo, request.SelectedKohiHokenEdraNo, request.SelectedKohiIsAddNew);
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidateOneKohiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidateOneKohiResponse>>(presenter.Result);
         }
     }
 }

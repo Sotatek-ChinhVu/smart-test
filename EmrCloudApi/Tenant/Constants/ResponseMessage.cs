@@ -120,6 +120,7 @@
         public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
         public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
+        public static readonly string InvalidException = "Invalid Exception";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
