@@ -17,16 +17,11 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0
 
 WORKDIR /app
 #installs libgdiplus to support System.Drawing for handling of graphics
-RUN apt-get update && \
-    apt-get install -y libc6 -f -o APT::Immediate-Configure=0 && \
-    apt-get install -y \
-        libgdiplus \
-        libicu-dev \
-        libharfbuzz0b \
-        libfontconfig1 \
-        libfreetype6 \
-        libpango-1.0-0 \
-        libpangocairo-1.0
+RUN apt-get update \
+    && apt-get install -y libgdiplus \
+    && ln -s /usr/liblibgdiplus.so /usr/libgdiplus.dll \
+    && apt-get install -y libc6-dev libx11-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-env /app/EmrCloudApi/out/ .
 #RUN rm -rf EmrCloudApi.runtimeconfig.json
