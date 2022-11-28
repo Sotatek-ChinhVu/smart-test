@@ -6,5 +6,9 @@ public interface IDocumentRepository
 
     DocCategoryModel GetDocCategoryDetail(int hpId, int categoryCd);
 
+    bool SaveListDocCategory(int hpId, int userId, List<DocCategoryModel> listModels);
+
     bool CheckExistDocCategory(int hpId, int categoryCd);
+
+    bool CheckDuplicateCategoryName(int hpId, int categoryCd, string categoryName);
 }
