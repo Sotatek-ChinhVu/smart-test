@@ -39,5 +39,9 @@
         bool CheckExistedJobCd(List<int> jobCds);
 
         bool CheckExistedLoginIdUpdate(List<long> ids, List<string> loginIds);
+
+        bool CheckLoginInfo(string userName, string password);
+
+        bool MigrateDatabase();
     }
 }
