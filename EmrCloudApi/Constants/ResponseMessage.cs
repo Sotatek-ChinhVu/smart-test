@@ -32,6 +32,7 @@
         public static readonly string InvalidValue = "Invalid Value ";
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
+        public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -290,6 +291,8 @@
         public static readonly string GetMedicalExaminationInvalidSearchCategory = "Invalid Search Category";
         public static readonly string GetMedicalExaminationInvalidSearchText = "Invalid Search Text";
         public static readonly string GetMedicalExaminationInvalidUserId = "Invalid UserId";
+        public static readonly string GetMedicalExaminationInvalidDrugOrByomei = "DrugOrders Or Byomeis Is Null";
+        public static readonly string GetMedicalExaminationInvalidByomei = "Byomeis Is Null";
 
         //OrdInf controller
 

@@ -110,5 +110,11 @@
 
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
+        //Medical Examination
+        public const string GetCheckDiseases = "GetCheckDiseases";
+
+        //User Config
+        public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
     }
 }

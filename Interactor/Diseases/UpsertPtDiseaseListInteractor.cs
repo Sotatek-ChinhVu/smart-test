@@ -82,7 +82,7 @@ namespace Interactor.Diseases
 
         }
 
-        private UpsertPtDiseaseListStatus ConvertStatus(ValidationStatus status)
+        private static UpsertPtDiseaseListStatus ConvertStatus(ValidationStatus status)
         {
             if (status == ValidationStatus.InvalidTenkiKbn)
                 return UpsertPtDiseaseListStatus.PtDiseaseListInvalidTenkiKbn;
