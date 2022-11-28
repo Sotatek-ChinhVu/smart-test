@@ -129,7 +129,7 @@ namespace Interactor.NextOrder
                             return;
                         }
 
-                        var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvDate != itemOd.RsvkrtNo);
+                        var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvkrtNo != itemOd.RsvkrtNo);
                         if (odrDetail != null)
                         {
                             var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
@@ -150,6 +150,67 @@ namespace Interactor.NextOrder
             {
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
             }
+        }
+
+        private Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> CheckValidateOrderInf()
+        {
+            Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>> validationOneOrdInf = new();
+            for (int i2 = 0; i2 < nextOrderModel.RsvkrtOrderInfs.Count; i2++)
+            {
+                var order = nextOrderModel.RsvkrtOrderInfs[i2];
+                var validationOrderInf = order.Validation(0);
+                if (validationOrderInf.Value != OrdInfValidationStatus.Valid)
+                {
+                    validationOneOrdInf.Add(i2.ToString(), validationOrderInf);
+                }
+            }
+
+            var checkOderInfs = _nextOrderRepository.GetCheckOrderInfs(inputData.HpId, inputData.PtId);
+            var hokenPids = new List<int>();
+            foreach (var nextOrderItem in inputData.NextOrderItems)
+            {
+                hokenPids = nextOrderItem.rsvKrtOrderInfItems.Select(i => i.HokenPid).Distinct().ToList();
+
+            }
+            var checkHokens = _insuranceRepository.GetCheckListHokenInf(inputData.HpId, inputData.PtId, hokenPids ?? new List<int>());
+            object obj = new();
+            Parallel.For(0, nextOrderModel.RsvkrtOrderInfs.Count, index =>
+            {
+                var item = nextOrderModel.RsvkrtOrderInfs[index];
+
+                if (item.Id > 0)
+                {
+                    var check = checkOderInfs.Any(c => c.RsvkrtNo == item.RsvkrtNo && c.RsvDate == item.RsvDate && c.RpNo == item.RpNo && c.RpEdaNo == item.RpEdaNo);
+                    if (!check)
+                    {
+                        AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.InvalidTodayOrdUpdatedNoExist));
+                        return;
+                    }
+                }
+
+                var checkObjs = nextOrderModel.RsvkrtOrderInfs.Where(o => item.Id > 0 && o.RpNo == item.RpNo).ToList();
+                var positionOrd = nextOrderModel.RsvkrtOrderInfs.FindIndex(o => o == checkObjs.LastOrDefault());
+                if (checkObjs.Count >= 2 && positionOrd == index)
+                {
+                    AddErrorStatus(obj, validationOneOrdInf, positionOrd.ToString(), new("-1", OrdInfValidationStatus.DuplicateTodayOrd));
+                    return;
+                }
+
+                var checkHokenPid = checkHokens.Any(h => h.HokenId == item.HokenPid);
+                if (!checkHokenPid)
+                {
+                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new("-1", OrdInfValidationStatus.HokenPidNoExist));
+
+                    return;
+                }
+
+                var odrDetail = item.OrdInfDetails.FirstOrDefault(itemOd => item.RpNo != itemOd.RpNo || item.RpEdaNo != itemOd.RpEdaNo || item.RsvDate != itemOd.RsvDate || item.RsvkrtNo != itemOd.RsvkrtNo);
+                if (odrDetail != null)
+                {
+                    var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
+                    AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                }
+            });
         }
 
         private NextOrderModel ConvertNextOrderToModel(int hpId, long ptId, NextOrderItem nextOrderItem)
