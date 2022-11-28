@@ -39,7 +39,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
         {
             var docCategory = _documentRepository.GetDocCategoryDetail(inputData.HpId, inputData.CategoryCd);
             var listDocumentTemplate = GetListDocumentTemplate(inputData.CategoryCd);
-            var result = new DocCategoryOutputItem(
+            var result = new DocCategoryItem(
                                                 docCategory.CategoryCd,
                                                 docCategory.CategoryName,
                                                 docCategory.SortNo

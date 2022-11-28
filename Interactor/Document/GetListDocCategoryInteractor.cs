@@ -44,9 +44,9 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         }
     }
 
-    private DocCategoryOutputItem ConvertToDocCategoryMstOutputItem(DocCategoryModel model)
+    private DocCategoryItem ConvertToDocCategoryMstOutputItem(DocCategoryModel model)
     {
-        return new DocCategoryOutputItem(
+        return new DocCategoryItem(
                                             model.CategoryCd,
                                             model.CategoryName,
                                             model.SortNo
