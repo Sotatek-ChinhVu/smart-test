@@ -68,6 +68,9 @@ using Domain.Models.InsuranceMst;
 using EmrCloudApi.Services;
 using UseCase.Insurance.ValidateOneKohi;
 using Microsoft.AspNetCore.Authorization;
+using EmrCloudApi.Tenant.Responses.Insurance;
+using EmrCloudApi.Tenant.Requests.Insurance;
+using EmrCloudApi.Tenant.Presenters.Insurance;
 
 namespace EmrCloudApi.Controller
 {
