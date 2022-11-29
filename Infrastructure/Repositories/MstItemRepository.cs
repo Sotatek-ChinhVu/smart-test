@@ -169,7 +169,10 @@ namespace Infrastructure.Repositories
                 tenMst?.CmtCol2 ?? 0,
                 tenMst?.CmtCol3 ?? 0,
                 tenMst?.CmtCol4 ?? 0,
-                tenMst?.IpnNameCd ?? string.Empty
+                tenMst?.IpnNameCd ?? string.Empty,
+                tenMst?.MinAge ?? string.Empty,
+                tenMst?.MaxAge ?? string.Empty,
+                tenMst?.SanteiItemCd ?? string.Empty
             );
         }
 
@@ -210,7 +213,10 @@ namespace Infrastructure.Repositories
                 tenMst.CmtCol2,
                 tenMst.CmtCol3,
                 tenMst.CmtCol4,
-                tenMst.IpnNameCd ?? string.Empty
+                tenMst.IpnNameCd ?? string.Empty,
+                tenMst.MinAge ?? string.Empty,
+                tenMst.MaxAge ?? string.Empty,
+                tenMst.SanteiItemCd ?? string.Empty
             )).ToList();
         }
 
@@ -593,7 +599,10 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.CmtCol2 ?? 0,
                                                            item.TenMst?.CmtCol3 ?? 0,
                                                            item.TenMst?.CmtCol4 ?? 0,
-                                                           item.TenMst?.IpnNameCd ?? string.Empty
+                                                           item.TenMst?.IpnNameCd ?? string.Empty,
+                                                           item.TenMst?.MinAge ?? string.Empty,
+                                                           item.TenMst?.MaxAge ?? string.Empty,
+                                                           item.TenMst?.SanteiItemCd ?? string.Empty
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -751,8 +760,150 @@ namespace Infrastructure.Repositories
                     entity?.CmtCol2 ?? 0,
                     entity?.CmtCol3 ?? 0,
                     entity?.CmtCol4 ?? 0,
-                    entity?.IpnNameCd ?? string.Empty
+                    entity?.IpnNameCd ?? string.Empty,
+                    entity?.MinAge ?? string.Empty,
+                    entity?.MaxAge ?? string.Empty,
+                    entity?.SanteiItemCd ?? string.Empty
                );
+        }
+
+        public List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
+        {
+            var entities = _tenantDataContext.TenMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= minSinDate &&
+                   p.EndDate >= maxSinDate &&
+                   itemCds.Contains(p.ItemCd));
+
+            return entities.Select(entity => new TenItemModel(
+                    entity.HpId,
+                    entity.ItemCd,
+                    entity.RousaiKbn,
+                    entity.KanaName1 ?? string.Empty,
+                    entity.Name ?? string.Empty,
+                    entity.KohatuKbn,
+                    entity.MadokuKbn,
+                    entity.KouseisinKbn,
+                    entity.OdrUnitName ?? string.Empty,
+                    entity.EndDate,
+                    entity.DrugKbn,
+                    entity.MasterSbt ?? string.Empty,
+                    entity.BuiKbn,
+                    entity.IsAdopted,
+                    entity.Ten,
+                    entity.TenId,
+                    string.Empty,
+                    string.Empty,
+                    entity.CmtCol1,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.SinKouiKbn,
+                    entity.YjCd ?? string.Empty,
+                    entity.CnvUnitName ?? string.Empty,
+                    entity.StartDate,
+                    entity.YohoKbn,
+                    entity.CmtColKeta1,
+                    entity.CmtColKeta2,
+                    entity.CmtColKeta3,
+                    entity.CmtColKeta4,
+                    entity.CmtCol2,
+                    entity.CmtCol3,
+                    entity.CmtCol4,
+                    entity.IpnNameCd ?? string.Empty,
+                    entity.MinAge ?? string.Empty,
+                    entity.MaxAge ?? string.Empty,
+                    entity.SanteiItemCd ?? string.Empty
+               )).ToList();
+        }
+
+        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
+        {
+            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
+
+            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+
+            else if (!string.IsNullOrEmpty(postCode1))
+                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+
+            else if (!string.IsNullOrEmpty(postCode2))
+                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+
+            if (!string.IsNullOrEmpty(address))
+            {
+                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
+                                                || (e.PrefName + e.CityName).Contains(address)
+                                                || e.PrefName.Contains(address));
+            }
+
+            var totalCount = entities.Count();
+
+            var result = entities.OrderBy(x => x.PostCd)
+                                  .ThenBy(x => x.PrefName)
+                                  .ThenBy(x => x.CityName)
+                                  .ThenBy(x => x.Banti)
+                                  .Select(x => new PostCodeMstModel(
+                                      x.Id,
+                                      x.HpId,
+                                      x.PostCd ?? string.Empty,
+                                      x.PrefKana ?? string.Empty,
+                                      x.CityKana ?? string.Empty,
+                                      x.PostalTermKana ?? string.Empty,
+                                      x.PrefName ?? string.Empty,
+                                      x.CityName ?? string.Empty,
+                                      x.Banti ?? string.Empty,
+                                      x.IsDeleted))
+                                  .Skip(pageIndex - 1).Take(pageSize)
+                                  .ToList();
+
+            return (totalCount, result);
+        }
+
+        public List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds)
+        {
+            var result = new List<ItemCmtModel>();
+            var cmtCheckMsts = _tenantDataContext.CmtCheckMsts.Where(p => p.KarteKbn == KarteConst.KarteKbn && p.HpId == hpId &&
+                                                                                    p.IsDeleted == DeleteTypes.None &&
+                                                                                    itemCds.Contains(p.ItemCd));
+
+            foreach (var itemCd in itemCds)
+            {
+                var entities = cmtCheckMsts.Where(p => p.ItemCd == itemCd).OrderBy(p => p.SortNo);
+                if (entities == null) continue;
+                foreach (var entity in entities)
+                {
+                    result.Add(new ItemCmtModel(itemCd, entity.Cmt ?? string.Empty, entity.SortNo));
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 項目グループマスタ取得
+        /// </summary>
+        /// <param name="sinDate">診療日</param>
+        /// <param name="grpSbt">項目グループ種別 1:算定回数マスタ</param>
+        /// <param name="itemGrpCd">項目グループコード</param>
+        /// <returns></returns>
+        public List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds)
+        {
+            List<ItemGrpMstModel> result = new List<ItemGrpMstModel>();
+
+            var query =
+                _tenantDataContext.itemGrpMsts.Where(p =>
+                    p.HpId == hpId &&
+                    p.GrpSbt == grpSbt &&
+                    itemGrpCds.Contains(p.ItemGrpCd) &&
+                    p.StartDate <= sinDate &&
+                    p.EndDate >= sinDate)
+                .OrderBy(p => p.HpId)
+                .ThenBy(p => p.ItemCd)
+                .ThenBy(p => p.SeqNo)
+                .ToList();
+            foreach (var entity in query)
+            {
+                result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
+            }
+            return result;
         }
 
         #region Private Function
@@ -865,47 +1016,6 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-        public (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize)
-        {
-            var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
-            if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1) && e.PostCd.EndsWith(postCode2));
-
-            else if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
-
-            else if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
-
-            if (!string.IsNullOrEmpty(address))
-            {
-                entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
-                                                || (e.PrefName + e.CityName).Contains(address)
-                                                || e.PrefName.Contains(address));
-            }
-
-            var totalCount = entities.Count();
-
-            var result = entities.OrderBy(x => x.PostCd)
-                                  .ThenBy(x => x.PrefName)
-                                  .ThenBy(x => x.CityName)
-                                  .ThenBy(x => x.Banti)
-                                  .Select(x => new PostCodeMstModel(
-                                      x.Id,
-                                      x.HpId,
-                                      x.PostCd ?? string.Empty,
-                                      x.PrefKana ?? string.Empty,
-                                      x.CityKana ?? string.Empty,
-                                      x.PostalTermKana ?? string.Empty,
-                                      x.PrefName ?? string.Empty,
-                                      x.CityName ?? string.Empty,
-                                      x.Banti ?? string.Empty,
-                                      x.IsDeleted))
-                                  .Skip(pageIndex - 1).Take(pageSize)
-                                  .ToList();
-
-            return (totalCount, result);
-        }
     }
 }
