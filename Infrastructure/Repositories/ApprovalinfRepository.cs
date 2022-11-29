@@ -106,7 +106,7 @@ namespace Infrastructure.Repositories
                     approvalInfo0.UpdateMachine = string.Empty;
                 }
 
-                if(inputData.Id != approvalInfo0?.Id)
+                if(inputData.Id != approvalInfo0?.Id && inputData.RaiinNo != approvalInfo0?.RaiinNo)
                 {
                     _tenantDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
                 }   

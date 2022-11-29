@@ -10,5 +10,16 @@ public enum UpdateApprovalInfListStatus
 {
     Success = 1,
     ApprovalInfoListInputNoData,
+    InvalidHpId,
+    InvalidId,
+    InvalidIsDeleted,
+    InvalidRaiinNo,
+    InvalidSeqNo,
+    InvalidPtId,
+    InvalidSinDate,
+    InvalidCreateMachine,
+    InvalidCreateId,
+    InvalidUpdateMachine,
+    InvalidUpdateId,
     Failed,
 }

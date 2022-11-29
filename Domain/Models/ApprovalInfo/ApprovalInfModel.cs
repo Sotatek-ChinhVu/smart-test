@@ -1,4 +1,7 @@
-﻿namespace Domain.Models.ApprovalInfo
+﻿using System.Xml.Linq;
+using static Helper.Constants.ApprovalInfConstant;
+
+namespace Domain.Models.ApprovalInfo
 {
     public class ApprovalInfModel
     {
@@ -17,12 +20,12 @@
             UketokeNo = uketukeNo;
             KaId = kaId;
         }
-        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiiNo, int seqNo, int isDeleted, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine)
+        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int isDeleted, DateTime createDate, int createId, string createMachine, DateTime updateDate, int updateId, string updateMachine)
         {
             Id = id;
             HpId = hpId;
             IsDeleted = isDeleted;
-            RaiiNo = raiiNo;
+            RaiinNo = raiinNo;
             SeqNo = seqNo;
             PtId = ptId;
             SinDate = sinDate;
@@ -45,12 +48,70 @@
         public string Name { get; private set; }
         public int UketokeNo { get; private set; }
         public int KaId { get; private set; }
-        public long RaiiNo { get; private set; }
         public DateTime CreateDate { get; private set; }
         public string CreateMachine { get; private set; }
         public int CreateId { get; private set; }
         public DateTime UpdateDate { get; private set; }
         public string UpdateMachine { get; private set; }
         public int UpdateId { get; private set; }
+        public ValidationStatus Validation()
+        {
+            if(HpId < 0)
+            {
+                return ValidationStatus.InvalidHpId;
+            }
+
+            if(Id < 0)
+            {
+                return ValidationStatus.InvalidId;
+            }
+
+            if(RaiinNo < 0)
+            {
+                return ValidationStatus.InvalidRaiinNo;
+            }
+
+            if(SeqNo < 0)
+            {
+                return ValidationStatus.InvalidSeqNo;
+            }    
+
+            if(PtId < 0)
+            {
+                return ValidationStatus.InvalidPtId;
+            } 
+            
+            if(SinDate < 0)
+            {
+                return ValidationStatus.InvalidSinDate;
+            }    
+
+            if(IsDeleted != 0 || IsDeleted != 1)
+            {
+                return ValidationStatus.InvalidIsDeleted;
+            }    
+
+            if(CreateMachine.Length >= 60)
+            {
+                return ValidationStatus.InvalidCreateMachine;
+            }  
+            
+            if(CreateId < 0)
+            {
+                return ValidationStatus.InvalidCreateId;
+            } 
+            
+            if(UpdateMachine.Length >= 60)
+            {
+                return ValidationStatus.InvalidUpdateMachine;
+            }    
+
+            if(UpdateId < 0)
+            {
+                return ValidationStatus.InvalidUpdateId;
+            }  
+            
+            return ValidationStatus.Valid;
+        }
     }
 }

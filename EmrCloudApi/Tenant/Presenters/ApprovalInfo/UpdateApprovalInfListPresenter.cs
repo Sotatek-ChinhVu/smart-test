@@ -23,6 +23,17 @@ namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
             UpdateApprovalInfListStatus.Success => ResponseMessage.Success,
             UpdateApprovalInfListStatus.ApprovalInfoListInputNoData => ResponseMessage.ApprovalInfoListInputNoData,
             UpdateApprovalInfListStatus.Failed => ResponseMessage.Failed,
+            UpdateApprovalInfListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+            UpdateApprovalInfListStatus.InvalidId => ResponseMessage.InvalidHpId,
+            UpdateApprovalInfListStatus.InvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
+            UpdateApprovalInfListStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+            UpdateApprovalInfListStatus.InvalidSeqNo => ResponseMessage.InvalidSeqNo,
+            UpdateApprovalInfListStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+            UpdateApprovalInfListStatus.InvalidSinDate => ResponseMessage.InvalidSinDate,
+            UpdateApprovalInfListStatus.InvalidCreateMachine => ResponseMessage.InvalidCreateMachine,
+            UpdateApprovalInfListStatus.InvalidCreateId => ResponseMessage.InvalidCreateId,
+            UpdateApprovalInfListStatus.InvalidUpdateId => ResponseMessage.InvalidUpdateId,
+            UpdateApprovalInfListStatus.InvalidUpdateMachine => ResponseMessage.InvalidUpdateMachine,
             _ => string.Empty
         };
     }

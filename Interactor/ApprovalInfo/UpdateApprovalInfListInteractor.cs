@@ -24,7 +24,7 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
                x.HpId,
                x.PtId,
                x.SinDate,
-               x.RaiiNo,
+               x.RaiinNo,
                x.SeqNo,
                x.IsDeleted,
                x.CreateDate,

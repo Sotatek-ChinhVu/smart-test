@@ -105,6 +105,10 @@
         public static readonly string InvalidStarDate = "InvalidStarDate";
         public static readonly string InvalidEndDate = "InvalidEndDate";
         public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
+        public static readonly string InvalidCreateId = "InvalidCreateId";
+        public static readonly string InvalidUpdateId = "InvalidUpdateId";
+        public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
+        public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
 
         //Insurance
         // Validate Main Insurance
