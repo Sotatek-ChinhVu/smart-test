@@ -2,9 +2,9 @@
 
 namespace EmrCloudApi.Responses.NextOrder
 {
-    public class UpsertOrderInfItemResponse
+    public class OrderInfItemResponse
     {
-        public UpsertOrderInfItemResponse(int nextOrderPosition, List<ValidationTodayOrdItemResponse> validationOdrs)
+        public OrderInfItemResponse(int nextOrderPosition, List<ValidationTodayOrdItemResponse> validationOdrs)
         {
             NextOrderPosition = nextOrderPosition;
             ValidationOdrs = validationOdrs;

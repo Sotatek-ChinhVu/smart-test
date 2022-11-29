@@ -2,7 +2,7 @@
 
 namespace EmrCloudApi.Requests.NextOrder
 {
-    public class UpsertNextOrderListRequest
+    public class ValidationNextOrderListRequest
     {
         public long PtId { get; set; }
 

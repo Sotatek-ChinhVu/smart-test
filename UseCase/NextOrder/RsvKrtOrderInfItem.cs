@@ -1,4 +1,4 @@
-﻿namespace UseCase.NextOrder.Upsert
+﻿namespace UseCase.NextOrder
 {
     public class RsvKrtOrderInfItem
     {

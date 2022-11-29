@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Responses.NextOrder
 {
-    public class UpsertNextOrderListResponse
+    public class ValidationNextOrderListResponse
     {
-        public UpsertNextOrderListResponse(List<NextOrderItemResponse> validationNextOrders, List<OrderInfItemResponse> validationOdrs, List<KarteInfItemResponse> validationKarte, List<ByomeiItemResponse> validationByomeis)
+        public ValidationNextOrderListResponse(List<NextOrderItemResponse> validationNextOrders, List<OrderInfItemResponse> validationOdrs, List<KarteInfItemResponse> validationKarte, List<ByomeiItemResponse> validationByomeis)
         {
             ValidationNextOrders = validationNextOrders;
             ValidationOdrs = validationOdrs;

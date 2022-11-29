@@ -2,21 +2,21 @@
 
 namespace EmrCloudApi.Responses.NextOrder
 {
-    public class UpsertByomeiItemResponse
+    public class ByomeiItemResponse
     {
-        public UpsertByomeiItemResponse(int nextOrderPosition, List<UpsertByomeiValidationItemResponse> validationByomeis)
+        public ByomeiItemResponse(int nextOrderPosition, List<ByomeiValidationItemResponse> validationByomeis)
         {
             NextOrderPosition = nextOrderPosition;
             ValidationByomeis = validationByomeis;
         }
 
         public int NextOrderPosition { get; private set; }
-        public List<UpsertByomeiValidationItemResponse> ValidationByomeis { get; private set; }
+        public List<ByomeiValidationItemResponse> ValidationByomeis { get; private set; }
     }
 
-    public class UpsertByomeiValidationItemResponse
+    public class ByomeiValidationItemResponse
     {
-        public UpsertByomeiValidationItemResponse(RsvkrtByomeiStatus status, int position, string validationMessage)
+        public ByomeiValidationItemResponse(RsvkrtByomeiStatus status, int position, string validationMessage)
         {
             Status = status;
             Position = position;

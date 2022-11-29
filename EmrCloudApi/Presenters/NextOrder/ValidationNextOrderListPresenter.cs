@@ -4,24 +4,24 @@ using EmrCloudApi.Responses.KarteInf;
 using EmrCloudApi.Responses.MedicalExamination;
 using EmrCloudApi.Responses.NextOrder;
 using Helper.Constants;
-using UseCase.NextOrder.Upsert;
+using UseCase.NextOrder.Validation;
 using static Helper.Constants.NextOrderConst;
 using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace EmrCloudApi.Presenters.NextOrder
 {
-    public class UpsertNextOrderListPresenter : IUpsertNextOrderListOutputPort
+    public class ValidationNextOrderListPresenter : IValidationNextOrderListOutputPort
     {
-        public Response<UpsertNextOrderListResponse> Result { get; private set; } = default!;
+        public Response<ValidationNextOrderListResponse> Result { get; private set; } = default!;
 
-        public void Complete(UpsertNextOrderListOutputData outputData)
+        public void Complete(ValidationNextOrderListOutputData outputData)
         {
             var validationOrders = new List<OrderInfItemResponse>();
             var validationKartes = new List<KarteInfItemResponse>();
             var validationNextOrders = new List<NextOrderItemResponse>();
             var validationByomeis = new List<ByomeiItemResponse>();
 
-            Result = new Response<UpsertNextOrderListResponse>()
+            Result = new Response<ValidationNextOrderListResponse>()
             {
                 Message = ConvertUpsertNextOrderStatusToMessage(outputData.Status),
                 Status = (byte)outputData.Status
@@ -339,7 +339,7 @@ namespace EmrCloudApi.Presenters.NextOrder
                 validationByomeis.Add(validationByomeisOfOne);
             }
 
-            Result.Data = new UpsertNextOrderListResponse(validationNextOrders, validationOrders, validationKartes, validationByomeis);
+            Result.Data = new ValidationNextOrderListResponse(validationNextOrders, validationOrders, validationKartes, validationByomeis);
         }
 
         private static string ConvertNextOrderStatusToMessage(NextOrderStatus status)
@@ -355,15 +355,15 @@ namespace EmrCloudApi.Presenters.NextOrder
             };
         }
 
-        private static string ConvertUpsertNextOrderStatusToMessage(UpsertNextOrderListStatus status)
+        private static string ConvertUpsertNextOrderStatusToMessage(ValidationNextOrderListStatus status)
         {
             return status switch
             {
-                UpsertNextOrderListStatus.InvalidUserId => ResponseMessage.InvalidUserId,
-                UpsertNextOrderListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-                UpsertNextOrderListStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-                UpsertNextOrderListStatus.Successed => ResponseMessage.Success,
-                UpsertNextOrderListStatus.Failed => ResponseMessage.Failed,
+                ValidationNextOrderListStatus.InvalidUserId => ResponseMessage.InvalidUserId,
+                ValidationNextOrderListStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+                ValidationNextOrderListStatus.InvalidPtId => ResponseMessage.InvalidPtId,
+                ValidationNextOrderListStatus.Successed => ResponseMessage.Success,
+                ValidationNextOrderListStatus.Failed => ResponseMessage.Failed,
                 _ => string.Empty,
             };
         }

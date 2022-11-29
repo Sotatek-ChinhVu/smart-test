@@ -2,9 +2,9 @@
 
 namespace EmrCloudApi.Responses.NextOrder
 {
-    public class UpsertKarteInfItemResponse
+    public class KarteInfItemResponse
     {
-        public UpsertKarteInfItemResponse(int nextOrderPosition, ValidationKarteInfResponse validationOdrs)
+        public KarteInfItemResponse(int nextOrderPosition, ValidationKarteInfResponse validationOdrs)
         {
             NextOrderPosition = nextOrderPosition;
             ValidationOdrs = validationOdrs;

@@ -2,21 +2,21 @@
 
 namespace EmrCloudApi.Responses.NextOrder
 {
-    public class UpsertNextOrderItemResponse
+    public class NextOrderItemResponse
     {
-        public UpsertNextOrderItemResponse(int nextOrderPosition, UpsertNextOrderValidationItemResponse validationNextOrders)
+        public NextOrderItemResponse(int nextOrderPosition, NextOrderValidationItemResponse validationNextOrders)
         {
             NextOrderPosition = nextOrderPosition;
             ValidationNextOrders = validationNextOrders;
         }
 
         public int NextOrderPosition { get; private set; }
-        public UpsertNextOrderValidationItemResponse ValidationNextOrders { get; private set; }
+        public NextOrderValidationItemResponse ValidationNextOrders { get; private set; }
     }
 
-    public class UpsertNextOrderValidationItemResponse
+    public class NextOrderValidationItemResponse
     {
-        public UpsertNextOrderValidationItemResponse(NextOrderStatus status, string validationMessage)
+        public NextOrderValidationItemResponse(NextOrderStatus status, string validationMessage)
         {
             Status = status;
             ValidationMessage = validationMessage;

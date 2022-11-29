@@ -4,7 +4,7 @@ using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
-using UseCase.NextOrder.Upsert;
+using UseCase.NextOrder.Validation;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.NextOrderConst;
 using static Helper.Constants.OrderInfConst;
@@ -12,7 +12,7 @@ using static Helper.Constants.RsvkrtByomeiConst;
 
 namespace Interactor.NextOrder
 {
-    public class UpsertNextOrderListInteractor : IUpsertNextOrderListInputPort
+    public class ValidationNextOrderListInteractor : IValidationNextOrderListInputPort
     {
         private readonly INextOrderRepository _nextOrderRepository;
         private readonly IHpInfRepository _hpInfRepository;
@@ -21,7 +21,7 @@ namespace Interactor.NextOrder
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IMstItemRepository _mstItemRepository;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+        public ValidationNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
         {
             _nextOrderRepository = nextOrderRepository;
             _hpInfRepository = hpInfRepository;
@@ -31,21 +31,21 @@ namespace Interactor.NextOrder
             _mstItemRepository = mstItemRepository;
         }
 
-        public UpsertNextOrderListOutputData Handle(UpsertNextOrderListInputData inputData)
+        public ValidationNextOrderListOutputData Handle(ValidationNextOrderListInputData inputData)
         {
             try
             {
                 if (inputData.HpId <= 0 || !_hpInfRepository.CheckHpId(inputData.HpId))
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidHpId, new(), new(), new(), new());
                 }
                 if (inputData.PtId <= 0 || !_patientInfRepository.CheckExistListId(new List<long> { inputData.PtId }))
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidPtId, new(), new(), new(), new());
                 }
                 if (inputData.UserId <= 0 || !_userRepository.CheckExistedUserId(inputData.UserId))
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidUserId, new(), new(), new(), new());
                 }
 
                 var itemCds = new List<string>();
@@ -84,12 +84,12 @@ namespace Interactor.NextOrder
 
                 if (rsvkrtNos.Distinct().Count() > 1)
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtNo, new(), new(), new(), new());
                 }
 
                 if (rsvkrtDates.Distinct().Count() > 1)
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.InvalidRsvkrtDate, new(), new(), new(), new());
                 }
 
                 var nextOrderModels = inputData.NextOrderItems.Select(n => NextOrderCommon.ConvertNextOrderToModel(inputData.HpId, inputData.PtId, ipnCds, n)).ToList();
@@ -131,14 +131,13 @@ namespace Interactor.NextOrder
                 }
                 if (validationKarteInfs.Count > 0 || validationNextOrders.Count > 0 || validationRsvkrtByomeis.Count > 0 || validationOrdInfs.Count > 0)
                 {
-                    return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
+                    return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
                 }
-                _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
-                return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
+                return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.Successed, new(), new(), new(), new());
             }
             catch
             {
-                return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
+                return new ValidationNextOrderListOutputData(ValidationNextOrderListStatus.Failed, new(), new(), new(), new());
             }
         }
     }
