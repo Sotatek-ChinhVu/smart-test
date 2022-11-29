@@ -2,5 +2,5 @@
 
 public static class TempIdentity
 {
-    public const string TenantId = "TenantId";
+    public const string ClinicID = "ClinicID";
 }

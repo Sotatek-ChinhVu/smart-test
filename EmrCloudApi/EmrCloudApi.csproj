@@ -28,10 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Admin\Presenters\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DevExpress\DevExpress.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Interactor\Interactor.csproj" />

@@ -84,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_NO")]
         [MaxLength(15)]
-        public string CdNo { get; set; } = string.Empty;
+        public string? CdNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -99,7 +99,7 @@ namespace Entity.Tenant
         /// RP_NOに属するSIN_KOUI.DETAIL_DATAを結合したもの　※
         /// </summary>
         [Column("KOUI_DATA")]
-        public string KouiData { get; set; } = string.Empty;
+        public string? KouiData { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

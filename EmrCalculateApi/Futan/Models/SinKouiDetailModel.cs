@@ -104,7 +104,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public string ItemCd
         {
-            get { return SinKouiDetail.ItemCd; }
+            get { return SinKouiDetail.ItemCd ?? string.Empty; }
         }
 
         /// <summary>
