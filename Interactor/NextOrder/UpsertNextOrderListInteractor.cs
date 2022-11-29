@@ -188,6 +188,7 @@ namespace Interactor.NextOrder
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
                     AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.OdrNoMapOdrDetail));
+                    return;
                 }
 
                 odrDetail = item.OrdInfDetails.FirstOrDefault(od => !itemCds.Contains(od.ItemCd));
@@ -195,6 +196,7 @@ namespace Interactor.NextOrder
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
                     AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidItemCd));
+                    return;
                 }
 
                 odrDetail = item.OrdInfDetails.FirstOrDefault(od => !ipnCds.Contains(od.IpnCd));
@@ -202,6 +204,7 @@ namespace Interactor.NextOrder
                 {
                     var indexOdrDetail = item.OrdInfDetails.IndexOf(odrDetail);
                     AddErrorStatus(obj, validationOneOrdInf, index.ToString(), new(indexOdrDetail.ToString(), OrdInfValidationStatus.InvalidIpnCd));
+                    return;
                 }
             });
 
@@ -305,7 +308,7 @@ namespace Interactor.NextOrder
                     rsvkrtOrderInfDetailItem.RpNo,
                     rsvkrtOrderInfDetailItem.RpEdaNo,
                     rsvkrtOrderInfDetailItem.RowNo,
-                    rsvkrtOrderInfDetailItem.SinKouiKbn,
+                    rsvkrtOrderInfDetailItem.RsvDate,
                     rsvkrtOrderInfDetailItem.SinKouiKbn,
                     rsvkrtOrderInfDetailItem.ItemCd,
                     rsvkrtOrderInfDetailItem.ItemName,
