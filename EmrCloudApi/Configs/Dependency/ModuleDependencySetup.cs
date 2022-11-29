@@ -175,6 +175,7 @@ using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.OrdInfs.CheckedSpecialItem;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
 using UseCase.OrdInfs.GetMaxRpNo;
@@ -331,7 +332,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
             services.AddTransient<IReceptionSameVisitRepository, ReceptionSameVisitRepository>();
             services.AddTransient<IFlowSheetRepository, FlowSheetRepository>();
-            services.AddTransient<ISystemConfRepository, SystemConfRepository>();
             services.AddTransient<IReceptionInsuranceRepository, ReceptionInsuranceRepository>();
             services.AddTransient<IKarteFilterMstRepository, KarteFilterMstRepository>();
             services.AddTransient<IColumnSettingRepository, ColumnSettingRepository>();
@@ -450,6 +450,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetMedicalExaminationHistoryInputData, GetMedicalExaminationHistoryInteractor>();
             busBuilder.RegisterUseCase<UpsertTodayOrdInputData, UpsertTodayOrdInteractor>();
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
+            busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
