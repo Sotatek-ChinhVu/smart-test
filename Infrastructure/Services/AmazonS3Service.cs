@@ -6,6 +6,7 @@ using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
 using System.Net;
+using System.Text;
 
 namespace Infrastructure.Services;
 
@@ -21,31 +22,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         var regionEndpoint = RegionEndpoint.GetBySystemName(_options.Region);
         _s3Client = new AmazonS3Client(_options.AwsAccessKeyId, _options.AwsSecretAccessKey, regionEndpoint);
         _tenantProvider = tenantProvider;
-    }
-
-    public async Task<string> UploadAnObjectAsync(bool addToTenant, string subFolder, string fileName, Stream stream)
-    {
-        var memoryStream = await stream.ToMemoryStreamAsync();
-        return await UploadAnObjectAsync(addToTenant, subFolder, fileName, memoryStream);
-    }
-
-    public async Task<string> UploadAnObjectAsync(bool addToTenant, string subFolder, string fileName, MemoryStream memoryStream)
-    {
-        try
-        {
-            var request = new PutObjectRequest
-            {
-                BucketName = _options.BucketName,
-                Key = GetUniqueKey(subFolder, fileName, addToTenant),
-                InputStream = memoryStream,
-            };
-            var response = await _s3Client.PutObjectAsync(request);
-            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
-        }
-        catch (AmazonS3Exception)
-        {
-            return string.Empty;
-        }
     }
 
     public async Task<bool> ObjectExistsAsync(string key)
@@ -69,24 +45,6 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     public void Dispose()
     {
         _s3Client.Dispose();
-    }
-
-    private string GetUniqueKey(string subFolder, string fileName, bool addToTenant)
-    {
-        var tenantId = _tenantProvider.GetTenantId();
-        var prefix = "tenants";
-        if (addToTenant)
-        {
-            prefix += "/" + tenantId;
-        }
-        if (!string.IsNullOrEmpty(subFolder))
-        {
-            prefix += ("/" + subFolder);
-        }
-
-        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        var extension = Path.GetExtension(fileName);
-        return $"{prefix}/{fileNameWithoutExtension}-{Guid.NewGuid()}{extension}";
     }
 
     private string GetAccessUrl(string key)
@@ -130,5 +88,72 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         } while (listResponse.IsTruncated);
 
         return listObjects;
+    }
+
+    public async Task<string> UploadObjectAsync(string path, string fileName, Stream stream)
+    {
+        var memoryStream = await stream.ToMemoryStreamAsync();
+        return await UploadObjectAsync(path, fileName, memoryStream);
+    }
+
+    public async Task<string> UploadObjectAsync(string path, string fileName, MemoryStream memoryStream)
+    {
+        try
+        {
+            var request = new PutObjectRequest
+            {
+                BucketName = _options.BucketName,
+                Key = path + GetUniqueFileNameKey(fileName),
+                InputStream = memoryStream,
+            };
+            var response = await _s3Client.PutObjectAsync(request);
+            return response.HttpStatusCode == HttpStatusCode.OK ? GetAccessUrl(request.Key) : string.Empty;
+        }
+        catch (AmazonS3Exception)
+        {
+            return string.Empty;
+        }
+    }
+
+    public string GetFolderUploadToPtNum(List<string> folders, long ptNum)
+    {
+        var tenantId = _tenantProvider.GetClinicID();
+        string last4Characters = ptNum.ToString().PadLeft(4, '0');
+        StringBuilder result = new();
+        result.Append(tenantId);
+        result.Append("/");
+        foreach (var item in folders)
+        {
+            result.Append(item);
+            result.Append("/");
+        }
+        result.Append(last4Characters.Substring(0, 2));
+        result.Append("/");
+        result.Append(last4Characters.Substring(2, 2));
+        result.Append("/");
+        result.Append(ptNum.ToString());
+        result.Append("/");
+        return result.ToString();
+    }
+
+    private string GetUniqueFileNameKey(string fileName)
+    {
+        var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+        var extension = Path.GetExtension(fileName);
+        return $"{fileNameWithoutExtension}-{Guid.NewGuid()}{extension}";
+    }
+
+    public string GetFolderUploadOther(List<string> folders)
+    {
+        var tenantId = _tenantProvider.GetClinicID();
+        StringBuilder result = new();
+        result.Append(tenantId);
+        result.Append("/");
+        foreach (var item in folders)
+        {
+            result.Append(item);
+            result.Append("/");
+        }
+        return result.ToString();
     }
 }
