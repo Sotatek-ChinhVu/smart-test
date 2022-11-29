@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOLIDAY_NAME")]
         [MaxLength(20)]
-        public string HolidayName { get; set; } = string.Empty;
+        public string? HolidayName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

@@ -12,6 +12,17 @@
             IsDeleted = isDeleted;
             RichText = richText;
         }
+        public KarteItemInputData()
+        {
+            HpId = 0;
+            RaiinNo = 0;
+            PtId = 0;
+            SinDate = 0;
+            Text = string.Empty;
+            IsDeleted = 0;
+            RichText = string.Empty;
+        }
+
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public long PtId { get; private set; }
