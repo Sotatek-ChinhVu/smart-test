@@ -169,9 +169,11 @@ namespace Infrastructure.Repositories
 
         private void UpsertOrderInf(int userId, long maxRpNo, List<RsvkrtOrderInfModel> rsvkrtOrderInfModels, long rsvkrtNo = 0)
         {
+            var oldOrderInfs = _tenantDataContextTracking.RsvkrtOdrInfs.Where(o => o.HpId == rsvkrtOrderInfModels.Select(o => o.HpId).Distinct().FirstOrDefault() && o.PtId == rsvkrtOrderInfModels.Select(o => o.PtId).Distinct().FirstOrDefault() && rsvkrtOrderInfModels.Select(o => o.RsvkrtNo).Contains(o.RsvkrtNo) && rsvkrtOrderInfModels.Select(o => o.RsvDate).Contains(o.RsvDate) && o.IsDeleted == DeleteTypes.None);
+
             foreach (var orderInf in rsvkrtOrderInfModels)
             {
-                var oldOrderInf = _tenantDataContextTracking.RsvkrtOdrInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == orderInf.RsvkrtNo && o.RsvDate == orderInf.RsvDate && o.IsDeleted == DeleteTypes.None);
+                var oldOrderInf = oldOrderInfs.FirstOrDefault(o => o.HpId == orderInf.HpId && o.PtId == orderInf.PtId && o.RsvkrtNo == orderInf.RsvkrtNo && o.RsvDate == orderInf.RsvDate && o.IsDeleted == DeleteTypes.None);
                 if (orderInf.IsDeleted == DeleteTypes.Deleted || orderInf.IsDeleted == DeleteTypes.Confirm)
                 {
                     if (oldOrderInf != null)
@@ -256,10 +258,11 @@ namespace Infrastructure.Repositories
 
         private void UpsertByomei(int userId, List<RsvkrtByomeiModel> byomeis, long rsvkrtNo = 0)
         {
+            var oldByomeis = _tenantDataContextTracking.RsvkrtByomeis.Where(o => byomeis.Select(b => b.HpId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.PtId).Distinct().FirstOrDefault() == o.PtId && byomeis.Select(b => b.RsvkrtNo).Contains(o.RsvkrtNo) && o.IsDeleted == DeleteTypes.None);
 
             foreach (var byomei in byomeis)
             {
-                var oldByomei = _tenantDataContextTracking.RsvkrtByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == byomei.RsvkrtNo && o.IsDeleted == DeleteTypes.None);
+                var oldByomei = oldByomeis.FirstOrDefault(o => o.HpId == byomei.HpId && o.PtId == byomei.PtId && o.RsvkrtNo == byomei.RsvkrtNo && o.IsDeleted == DeleteTypes.None);
                 if (byomei.IsDeleted == DeleteTypes.Deleted)
                 {
                     if (oldByomei != null)
@@ -320,7 +323,6 @@ namespace Infrastructure.Repositories
 
         private RsvkrtByomeiModel ConvertByomeiToModel(RsvkrtByomei byomei, List<ByomeiMst> byomeiMsts)
         {
-
             var codeLists = GetCodeLists(byomei);
             //prefix and suffix
             var byomeiMst = byomeiMsts.FirstOrDefault(item => codeLists.Contains(item.ByomeiCd)) ?? new ByomeiMst();

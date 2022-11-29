@@ -4,7 +4,6 @@ using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
-using Infrastructure.Repositories;
 using UseCase.NextOrder.Upsert;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.NextOrderConst;
@@ -68,6 +67,10 @@ namespace Interactor.NextOrder
                         rsvkrtDates.AddRange(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.RsvDate));
                         itemCds.AddRange(_mstItemRepository.GetCheckItemCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.ItemCd.Trim()).ToList()));
                         ipnCds.AddRange(_mstItemRepository.GetCheckIpnCds(orderInfModel.RsvKrtOrderInfDetailItems.Select(od => od.IpnCd.Trim()).ToList()));
+                    }
+                    foreach (var byomei in nextOrder.rsvKrtByomeiItems)
+                    {
+                        rsvkrtNos.Add(byomei.RsvkrtNo);
                     }
                 }
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Upsert;
 
 namespace EmrCloudApi.Controller;
 
@@ -42,5 +43,17 @@ public class NextOrderController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetNextOrderListResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.Upsert)]
+    public ActionResult<Response<UpsertNextOrderListResponse>> Upsert([FromBody] UpsertNextOrderListRequest request)
+    {
+        var input = new UpsertNextOrderListInputData(request.PtId, HpId, UserId, request.NextOrderItems);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpsertNextOrderListPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpsertNextOrderListResponse>>(presenter.Result);
     }
 }
