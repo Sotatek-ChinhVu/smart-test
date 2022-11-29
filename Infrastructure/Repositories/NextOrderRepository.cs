@@ -246,6 +246,12 @@ namespace Infrastructure.Repositories
                 }
             }
 
+            var karteImgs = _tenantDataContextTracking.RsvkrtKarteImgInfs.Where(k => k.HpId == karteInf.HpId && k.PtId == karteInf.PtId && karteInf.RichText.Contains(k.FileName) && k.RsvkrtNo == 0);
+            foreach (var img in karteImgs)
+            {
+                img.RsvkrtNo = karteInf.RsvkrtNo;
+            }
+
             _tenantDataContextTracking.SaveChanges();
         }
 
