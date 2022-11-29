@@ -47,16 +47,21 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
     private DocCategoryItem ConvertToDocCategoryMstOutputItem(DocCategoryModel model)
     {
         return new DocCategoryItem(
-                                            model.CategoryCd,
-                                            model.CategoryName,
-                                            model.SortNo
-                                        );
+                                        model.CategoryCd,
+                                        model.CategoryName,
+                                        model.SortNo
+                                  );
     }
 
     private List<FileDocumentModel> GetListDocumentTemplate(List<int> listCategoryId)
     {
         List<FileDocumentModel> result = new();
-        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.FolderDocument);
+        var listFolderPath = new List<string>(){
+                                                   CommonConstants.Reference,
+                                                   CommonConstants.Files
+                                                };
+        string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
+        var response = _amazonS3Service.GetListObjectAsync(path);
         response.Wait();
         var listOutputData = response.Result;
         if (listOutputData.Any())
@@ -69,9 +74,9 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
                 var listFileItem = listOutputData
                                             .Where(file => file.Contains("/" + catId + "/"))
                                             .Select(file => new FileDocumentModel(
-                                                    file.Replace(CommonConstants.FolderDocument + "/", string.Empty).Replace(catId + "/", ""),
+                                                    file.Replace(path, string.Empty).Replace(catId + "/", string.Empty),
                                                     domainUrl + file
-                                                )).ToList();
+                                             )).ToList();
                 result.AddRange(listFileItem.Where(item => !string.IsNullOrWhiteSpace(item.FileName)).Distinct().ToList());
             }
         }
