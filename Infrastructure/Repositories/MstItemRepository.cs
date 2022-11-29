@@ -220,7 +220,7 @@ namespace Infrastructure.Repositories
             )).ToList();
         }
 
-        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
+        public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
         {
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
@@ -506,6 +506,26 @@ namespace Infrastructure.Repositories
             if (!string.IsNullOrEmpty(YJCode))
             {
                 queryResult = queryResult.Where(t => !String.IsNullOrEmpty(t.YjCd) && t.YjCd.StartsWith(YJCode));
+            }
+
+            if (!isMasterSearch && !isSearch831SuffixOnly)
+            {
+                if (isSearchSanteiItem)
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0 ||
+                                                        (t.ItemCd.StartsWith("16") &&
+                                                        t.SinKouiKbn >= 60 && t.SinKouiKbn <= 69 &&
+                                                        t.IsNosearch == 1));
+                }
+                else
+                {
+                    queryResult = queryResult.Where(t => t.IsNosearch == 0);
+                }
+            }
+
+            if (isSearch831SuffixOnly)
+            {
+                queryResult = queryResult.Where(t => t.ItemCd.Length == 9 && !t.ItemCd.StartsWith("8") && (t.MasterSbt == "S" || t.MasterSbt == "R"));
             }
 
             if (pointFrom > 0)
