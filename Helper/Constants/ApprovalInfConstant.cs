@@ -21,6 +21,9 @@ namespace Helper.Constants
             InvalidCreateId,
             InvalidUpdateMachine,
             InvalidUpdateId,
+            ApprovalInfListInvalidNoExistedId,
+            ApprovalInfListExistedInputData,
+            ApprovalInfListInvalidNoExistedRaiinNo,
             Valid
         }
     }

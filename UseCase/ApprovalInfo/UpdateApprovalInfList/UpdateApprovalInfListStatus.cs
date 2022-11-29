@@ -21,5 +21,8 @@ public enum UpdateApprovalInfListStatus
     InvalidCreateId,
     InvalidUpdateMachine,
     InvalidUpdateId,
+    ApprovalInfListExistedInputData,
+    ApprovalInfListInvalidNoExistedId,
+    ApprovalInfListInvalidNoExistedRaiinNo,
     Failed,
 }

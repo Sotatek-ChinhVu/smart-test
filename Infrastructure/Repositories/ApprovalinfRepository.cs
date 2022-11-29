@@ -19,7 +19,16 @@ namespace Infrastructure.Repositories
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
-
+        public bool CheckExistedId(List<int> ids)
+        {
+            var anyId = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => ids.Contains(u.Id));
+            return anyId;
+        }
+        public bool CheckExistedRaiinNo(List<long> raiinNo)
+        {
+            var anyRaiinNo = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => raiinNo.Contains(u.RaiinNo));
+            return anyRaiinNo;
+        }
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
             var result = new List<ApprovalInfModel>();
@@ -106,14 +115,14 @@ namespace Infrastructure.Repositories
                     approvalInfo0.UpdateMachine = string.Empty;
                 }
 
-                if(inputData.Id != approvalInfo0?.Id && inputData.RaiinNo != approvalInfo0?.RaiinNo)
+                if(inputData.Id != approvalInfo0?.Id)
                 {
                     _tenantDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
                 }   
 
-                if(inputData.Id == approvalInfo0?.Id && inputData.IsDeleted != approvalInfo0.IsDeleted)
+                if(inputData.Id == approvalInfo0?.Id && inputData.RaiinNo == approvalInfo0?.RaiinNo && inputData.IsDeleted != approvalInfo0?.IsDeleted)
                 {
-                    approvalInfo0.IsDeleted= inputData.IsDeleted;
+                    approvalInfo0.IsDeleted = inputData.IsDeleted;
                 }    
             }
             _tenantDataContext.SaveChanges();

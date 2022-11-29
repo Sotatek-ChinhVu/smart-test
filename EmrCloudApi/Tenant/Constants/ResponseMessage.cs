@@ -109,6 +109,9 @@
         public static readonly string InvalidUpdateId = "InvalidUpdateId";
         public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
         public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
+        public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
+        public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
+        public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
 
         //Insurance
         // Validate Main Insurance
