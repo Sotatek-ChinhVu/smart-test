@@ -127,4 +127,32 @@ public class DocumentRepository : IDocumentRepository
         }
         return false;
     }
+
+    public bool DeleteDocCategory(int hpId, int userId, int catgoryCd)
+    {
+        // delete this item
+        var itemDelete = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == catgoryCd);
+        if (itemDelete != null)
+        {
+            itemDelete.UpdateDate = DateTime.UtcNow;
+            itemDelete.UpdateId = userId;
+            itemDelete.IsDeleted = 1;
+
+            // update sortNo other item
+            var listUpdateSortNo = _tenantDataContext.DocCategoryMsts
+                                                                    .Where(item =>
+                                                                                item.HpId == hpId
+                                                                                && item.IsDeleted == 0
+                                                                                && item.SortNo > itemDelete.SortNo
+                                                                    ).ToList();
+            foreach (var item in listUpdateSortNo)
+            {
+                item.SortNo = item.SortNo - 1;
+                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateId = userId;
+            }
+        }
+        _tenantDataContext.SaveChanges();
+        return true;
+    }
 }

@@ -10,6 +10,8 @@ public interface IDocumentRepository
 
     bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd);
 
+    bool DeleteDocCategory(int hpId, int userId, int catgoryCd);
+
     bool CheckExistDocCategory(int hpId, int categoryCd);
 
     bool CheckDuplicateCategoryName(int hpId, int categoryCd, string categoryName);
