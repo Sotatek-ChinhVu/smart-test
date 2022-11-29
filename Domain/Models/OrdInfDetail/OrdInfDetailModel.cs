@@ -1,4 +1,5 @@
 ﻿using Domain.Types;
+using Helper.Common;
 using Helper.Constants;
 using Helper.Extension;
 using static Helper.Constants.OrderInfConst;
@@ -210,6 +211,19 @@ namespace Domain.Models.OrdInfDetails
                 return string.IsNullOrEmpty(ItemCd) &&
                        string.IsNullOrEmpty(ItemName.Trim()) &&
                        SinKouiKbn == 0;
+            }
+        }
+
+        public string DisplayItemName
+        {
+            get
+            {
+                if (ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu)
+                {
+                    return ItemName + TenUtils.GetBunkatu(BunkatuKoui, Bunkatu);
+                }
+                
+                return ItemName;
             }
         }
 
