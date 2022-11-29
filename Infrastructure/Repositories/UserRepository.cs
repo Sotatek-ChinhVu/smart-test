@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Constant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Linq;
 using System.Xml.Linq;
@@ -218,6 +219,24 @@ namespace Infrastructure.Repositories
                 IsDeleted = u.IsDeleted,
             };
 
+        }
+
+        public bool CheckLoginInfo(string userName, string password)
+        {
+            return _tenantNoTrackingDataContext.UserMsts.Any(u => u.LoginId == userName && u.LoginPass == password);
+        }
+
+        public bool MigrateDatabase()
+        {
+            try
+            {
+                _tenantTrackingDataContext.Database.Migrate();
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
         }
     }
 }
