@@ -918,5 +918,26 @@ namespace Infrastructure.Repositories
 
             return 0;
         }
+
+        public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
+        {
+            int firstDate = 0;
+            var syosinBi = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                                           && x.PtId == ptId
+                                                                           && x.SinDate < sinDate
+                                                                           && x.SyosaisinKbn == SyosaiConst.Syosin
+                                                                           && x.Status >= RaiinState.TempSave
+                                                                           && x.IsDeleted == DeleteTypes.None
+                )
+                .OrderByDescending(x => x.SinDate)
+                .FirstOrDefault();
+
+            if (syosinBi != null)
+            {
+                firstDate = syosinBi.SinDate;
+            }
+
+            return firstDate;
+        }
     }
 }
