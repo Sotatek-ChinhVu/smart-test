@@ -808,5 +808,10 @@
         public static readonly string InvalidRsvDate = "Invalid RsvDate";
         public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
+        
+        //Check Special Item InvalidCheckAge
+        public static readonly string InvalidCheckAge = "Invalid Check Age";
+        public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";
+        public static readonly string InvalidIBirthDay = "Invalid IBirthDay";
     }
 }

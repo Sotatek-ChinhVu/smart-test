@@ -14,7 +14,6 @@
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
 
-
         // SuperSet
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
@@ -113,6 +112,7 @@
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
+        public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
