@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
+using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
@@ -13,19 +14,22 @@ public class SaveImageTodayOrderInteractor : ISaveImageTodayOrderInputPort
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly AmazonS3Options _options;
     private readonly IKarteInfRepository _setKbnMstRepository;
+    private readonly IPatientInforRepository _patientInforRepository;
 
-    public SaveImageTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository)
+    public SaveImageTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository, IPatientInforRepository patientInforRepository)
     {
         _amazonS3Service = amazonS3Service;
         _options = optionsAccessor.Value;
         _setKbnMstRepository = setKbnMstRepository;
+        _patientInforRepository = patientInforRepository;
     }
 
     public SaveImageTodayOrderOutputData Handle(SaveImageTodayOrderInputData input)
     {
         try
         {
-            if (input.PtId <= 0)
+            var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, 0, 0);
+            if (ptInf == null)
             {
                 return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidPtId);
             }
@@ -59,23 +63,26 @@ public class SaveImageTodayOrderInteractor : ISaveImageTodayOrderInputPort
 
             // Insert new image
             var memoryStream = input.StreamImage.ToMemoryStreamAsync().Result;
-            var subFolder = CommonConstants.SubFolderKarte;
-
             if (memoryStream.Length <= 0 && string.IsNullOrEmpty(input.OldImage))
             {
                 return new SaveImageTodayOrderOutputData(SaveImageTodayOrderStatus.InvalidFileImage);
             }
             if (memoryStream.Length > 0)
             {
+                var listFolders = new List<string>() {
+                                                        CommonConstants.Store,
+                                                        CommonConstants.Karte,
+                                                     };
                 string fileName = input.PtId.ToString().PadLeft(10, '0') + ".png";
-                var responseUpload = _amazonS3Service.UploadAnObjectAsync(true, subFolder, fileName, memoryStream);
+                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf.PtNum);
+                var responseUpload = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
                 var linkImage = responseUpload.Result;
                 listImageSaveTemps.Add(new KarteImgInfModel(
-                                    input.HpId,
-                                    input.PtId,
-                                    input.RaiinNo,
-                                    linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
-                                    String.Empty
+                                        input.HpId,
+                                        input.PtId,
+                                        input.RaiinNo,
+                                        linkImage.Replace(_options.BaseAccessUrl + "/", string.Empty),
+                                        string.Empty
                                   ));
                 _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
                 return new SaveImageTodayOrderOutputData(linkImage, SaveImageTodayOrderStatus.Successed);
