@@ -6,4 +6,5 @@ public enum GetDocCategoryDetailStatus : byte
     Failed = 2,
     InvalidHpId = 3,
     InvalidCategoryCd = 4,
+    InvalidPtId = 5,
 }

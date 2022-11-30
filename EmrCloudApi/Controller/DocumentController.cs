@@ -4,11 +4,10 @@ using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
-using EmrCloudApi.Tenant.Presenters.Document;
-using EmrCloudApi.Tenant.Requests.Document;
-using EmrCloudApi.Tenant.Responses.Document;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.CheckExistFileName;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveListDocCategory;
@@ -27,9 +26,9 @@ public class DocumentController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
-    public ActionResult<Response<GetListDocCategoryResponse>> GetList()
+    public ActionResult<Response<GetListDocCategoryResponse>> GetList([FromQuery] GetListDocCategoryRequest request)
     {
-        var input = new GetListDocCategoryInputData(HpId);
+        var input = new GetListDocCategoryInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new GetListDocCategoryPresenter();
@@ -41,7 +40,7 @@ public class DocumentController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetDetailDocumentCategory)]
     public ActionResult<Response<GetDocCategoryDetailResponse>> GetDetail([FromQuery] GetDocCategoryDetailRequest request)
     {
-        var input = new GetDocCategoryDetailInputData(HpId, request.CategoryCd);
+        var input = new GetDocCategoryDetailInputData(HpId, request.PtId, request.CategoryCd);
         var output = _bus.Handle(input);
 
         var presenter = new GetDocCategoryDetailPresenter();
@@ -72,6 +71,30 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SortDocCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.AddTemplateToCategory)]
+    public ActionResult<Response<AddTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] AddTemplateToCategoryRequest request)
+    {
+        var input = new AddTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, Request.Body);
+        var output = _bus.Handle(input);
+
+        var presenter = new AddTemplateToCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<AddTemplateToCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.CheckExistFileName)]
+    public ActionResult<Response<CheckExistFileNameResponse>> CheckExistFileName([FromBody] CheckExistFileNameRequest request)
+    {
+        var input = new CheckExistFileNameInputData(HpId, request.FileName, request.CategoryCd, request.PtId, request.IsCheckDocInf);
+        var output = _bus.Handle(input);
+
+        var presenter = new CheckExistFileNamePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckExistFileNameResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)

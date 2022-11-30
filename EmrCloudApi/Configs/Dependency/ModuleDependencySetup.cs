@@ -116,6 +116,7 @@ using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.UserConf;
+using Interactor.ApprovalInfo;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -127,6 +128,8 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
+using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.CheckExistFileName;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveListDocCategory;
@@ -248,9 +251,11 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
 using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
+using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using Domain.Models.ApprovalInfo;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -299,6 +304,7 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupRepositories(IServiceCollection services)
         {
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IApprovalInfRepository, ApprovalinfRepository>();
             services.AddTransient<IPtDiseaseRepository, DiseaseRepository>();
             services.AddTransient<IOrdInfRepository, OrdInfRepository>();
             services.AddTransient<IReceptionRepository, ReceptionRepository>();
@@ -376,6 +382,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
             busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
+
+            //ApprovalInfo
+            busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();
 
             //PtByomeis
             busBuilder.RegisterUseCase<GetPtDiseaseListInputData, GetPtDiseaseListInteractor>();
@@ -608,6 +617,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDocCategoryDetailInputData, GetDocCategoryDetailInteractor>();
             busBuilder.RegisterUseCase<SaveListDocCategoryInputData, SaveListDocCategoryInteractor>();
             busBuilder.RegisterUseCase<SortDocCategoryInputData, SortDocCategoryInteractor>();
+            busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
+            busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

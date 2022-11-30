@@ -103,6 +103,17 @@
         public static readonly string UpsertIdNoExist = "No Exist Id";
         public static readonly string UserListExistedInputData = "UserListExistedInputData";
 
+        //ApprovalInfo
+        public static readonly string InvalidStarDate = "InvalidStarDate";
+        public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
+        public static readonly string InvalidCreateId = "InvalidCreateId";
+        public static readonly string InvalidUpdateId = "InvalidUpdateId";
+        public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
+        public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
+        public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
+        public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
+        public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
 
         //Insurance
         // Validate Main Insurance
@@ -811,6 +822,8 @@
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
+        public static readonly string InvalidFileInput = "Invalid File Input!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

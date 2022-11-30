@@ -2,7 +2,7 @@
 
 public class PatientAdvancedSearchInput
 {
-    public PatientAdvancedSearchInput(int fromPtNum, int toPtNum, string name, int sex, int fromAge, int toAge,
+    public PatientAdvancedSearchInput(long fromPtNum, long toPtNum, string name, int sex, int fromAge, int toAge,
         int fromBirthDay, int toBirthDay, string postalCode1, string postalCode2, string address, string phoneNum,
         int fromVisitDate, int toVisitDate, int fromLastVisitDate, int toLastVisitDate, long fromInsuranceNum,
         long toInsuranceNum, long fromPublicExpensesNum, long toPublicExpensesNum, string fromSpecialPublicExpensesNum,
@@ -57,8 +57,8 @@ public class PatientAdvancedSearchInput
     }
 
     // 基本情報
-    public int FromPtNum { get; private set; }
-    public int ToPtNum { get; private set; }
+    public long FromPtNum { get; private set; }
+    public long ToPtNum { get; private set; }
     public string Name { get; private set; }
     public int Sex { get; private set; }
     public int FromAge { get; private set; }

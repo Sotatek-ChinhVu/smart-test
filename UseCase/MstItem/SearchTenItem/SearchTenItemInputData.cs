@@ -4,7 +4,7 @@ namespace UseCase.MstItem.SearchTenItem
 {
     public class SearchTenItemInputData : IInputData<SearchTenItemOutputData>
     {
-        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith)
+        public SearchTenItemInputData(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yJCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
         {
             Keyword = keyword;
             KouiKbn = kouiKbn;
@@ -20,6 +20,9 @@ namespace UseCase.MstItem.SearchTenItem
             IsMirai = isMirai;
             IsExpired = isExpired;
             ItemCodeStartWith = itemCodeStartWith;
+            IsMasterSearch = isMasterSearch;
+            IsSearch831SuffixOnly = isSearch831SuffixOnly;
+            IsSearchSanteiItem = isSearchSanteiItem;
         }
 
         public string Keyword { get; private set; }
@@ -49,5 +52,11 @@ namespace UseCase.MstItem.SearchTenItem
         public bool IsExpired { get; private set; }
 
         public string ItemCodeStartWith { get; private set; }
+
+        public bool IsMasterSearch { get; private set; }
+
+        public bool IsSearch831SuffixOnly { get; private set; }
+
+        public bool IsSearchSanteiItem { get; private set; }
     }
 }
