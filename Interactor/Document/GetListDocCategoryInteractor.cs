@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Document;
 using Domain.Models.HpMst;
+using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -15,14 +16,16 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IHpInfRepository _hpInfRepository;
+    private readonly IPatientInforRepository _patientInforRepository;
     private readonly AmazonS3Options _options;
 
-    public GetListDocCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
+    public GetListDocCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
     {
         _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _hpInfRepository = hpInfRepository;
+        _patientInforRepository = patientInforRepository;
     }
 
     public GetListDocCategoryOutputData Handle(GetListDocCategoryInputData inputData)
@@ -31,12 +34,19 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         {
             return new GetListDocCategoryOutputData(GetListDocCategoryStatus.InvalidHpId);
         }
+        var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
         try
         {
             var listDocCategory = _documentRepository.GetAllDocCategory(inputData.HpId);
+            var listCategory = listDocCategory.Select(model => ConvertToDocCategoryMstOutputItem(model)).ToList();
             var listDocumentTemplate = GetListDocumentTemplate(listDocCategory.Select(item => item.CategoryCd).ToList());
-            var result = listDocCategory.Select(model => ConvertToDocCategoryMstOutputItem(model)).ToList();
-            return new GetListDocCategoryOutputData(result, listDocumentTemplate, GetListDocCategoryStatus.Successed);
+            var listDocInf = GetListDocInf(inputData.HpId, inputData.PtId, ptInf != null ? ptInf.PtNum : 0);
+            return new GetListDocCategoryOutputData(
+                                                        listCategory,
+                                                        listDocumentTemplate,
+                                                        listDocInf,
+                                                        GetListDocCategoryStatus.Successed
+                                                    );
         }
         catch
         {
@@ -68,7 +78,6 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
         {
             StringBuilder domainUrl = new StringBuilder();
             domainUrl.Append(_options.BaseAccessUrl + "/");
-
             foreach (var catId in listCategoryId)
             {
                 var listFileItem = listOutputData
@@ -81,5 +90,37 @@ public class GetListDocCategoryInteractor : IGetListDocCategoryInputPort
             }
         }
         return result;
+    }
+
+    private List<DocInfModel> GetListDocInf(int hpId, long ptId, long ptNum)
+    {
+        var listDocInf = _documentRepository.GetAllDocInf(hpId, ptId);
+        var listFolderPath = new List<string>(){
+                                                   CommonConstants.Store,
+                                                   CommonConstants.Files
+                                                };
+        string path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+        var response = _amazonS3Service.GetListObjectAsync(path);
+        response.Wait();
+        var listOutputFiles = response.Result;
+        if (listOutputFiles.Any())
+        {
+            StringBuilder domainUrl = new StringBuilder();
+            domainUrl.Append(_options.BaseAccessUrl + "/");
+            foreach (var model in listDocInf)
+            {
+                var listFiles = listOutputFiles
+                                            .Where(file =>
+                                                        model.File.Contains(file)
+                                                        && file.Length > path.Length)
+                                            .ToList();
+                var fileItem = listFiles.FirstOrDefault();
+                if (fileItem != null)
+                {
+                    model.SetFileLinkForDocInf(domainUrl + fileItem);
+                }
+            }
+        }
+        return listDocInf;
     }
 }
