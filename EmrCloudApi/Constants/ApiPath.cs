@@ -110,6 +110,10 @@
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
 
+        // Document
+        public const string GetListDocumentCategory = "GetListDocumentCategory";
+        public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
+
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";

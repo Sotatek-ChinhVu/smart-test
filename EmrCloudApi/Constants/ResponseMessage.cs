@@ -805,7 +805,10 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
-        
+
+        // Document
+        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
         public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";
