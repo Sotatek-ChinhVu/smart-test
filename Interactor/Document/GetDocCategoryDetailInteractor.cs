@@ -1,5 +1,6 @@
 ﻿using Domain.Models.Document;
 using Domain.Models.HpMst;
+using Domain.Models.PatientInfor;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
@@ -15,14 +16,16 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IHpInfRepository _hpInfRepository;
+    private readonly IPatientInforRepository _patientInforRepository;
     private readonly AmazonS3Options _options;
 
-    public GetDocCategoryDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
+    public GetDocCategoryDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository)
     {
         _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
         _amazonS3Service = amazonS3Service;
         _hpInfRepository = hpInfRepository;
+        _patientInforRepository = patientInforRepository;
     }
 
     public GetDocCategoryDetailOutputData Handle(GetDocCategoryDetailInputData inputData)
@@ -35,16 +38,23 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
         {
             return new GetDocCategoryDetailOutputData(GetDocCategoryDetailStatus.InvalidCategoryCd);
         }
+        var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
         try
         {
             var docCategory = _documentRepository.GetDocCategoryDetail(inputData.HpId, inputData.CategoryCd);
             var listDocumentTemplate = GetListDocumentTemplate(inputData.CategoryCd);
-            var result = new DocCategoryItem(
+            var listDocInf = GetListDocInf(inputData.HpId, inputData.PtId, inputData.CategoryCd, ptInf != null ? ptInf.PtNum : 0);
+            var category = new DocCategoryItem(
                                                 docCategory.CategoryCd,
                                                 docCategory.CategoryName,
                                                 docCategory.SortNo
                                             );
-            return new GetDocCategoryDetailOutputData(result, listDocumentTemplate, GetDocCategoryDetailStatus.Successed);
+            return new GetDocCategoryDetailOutputData(
+                                                        category,
+                                                        listDocumentTemplate,
+                                                        listDocInf,
+                                                        GetDocCategoryDetailStatus.Successed
+                                                    );
         }
         catch
         {
@@ -55,7 +65,12 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
     private List<FileDocumentModel> GetListDocumentTemplate(int categoryId)
     {
         List<FileDocumentModel> result = new();
-        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.FolderDocument);
+        var listFolderPath = new List<string>(){
+                                                   CommonConstants.Reference,
+                                                   CommonConstants.Files
+                                                };
+        string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
+        var response = _amazonS3Service.GetListObjectAsync(path);
         response.Wait();
         var listOutputData = response.Result;
         if (listOutputData.Any())
@@ -65,11 +80,43 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             var listFileItem = listOutputData
                                         .Where(file => file.Contains("/" + categoryId + "/"))
                                         .Select(file => new FileDocumentModel(
-                                                file.Replace(CommonConstants.FolderDocument + "/", string.Empty).Replace(categoryId + "/", ""),
+                                                file.Replace(path, string.Empty).Replace(categoryId + "/", string.Empty),
                                                 domainUrl + file
                                             )).ToList();
             result.AddRange(listFileItem.Where(item => !string.IsNullOrWhiteSpace(item.FileName)).Distinct().ToList());
         }
         return result;
+    }
+
+    private List<DocInfModel> GetListDocInf(int hpId, long ptId, int categoryCd, long ptNum)
+    {
+        var listDocInf = _documentRepository.GetDocInfByCategoryCd(hpId, ptId, categoryCd);
+        var listFolderPath = new List<string>(){
+                                                   CommonConstants.Store,
+                                                   CommonConstants.Files
+                                                };
+        string path = _amazonS3Service.GetFolderUploadToPtNum(listFolderPath, ptNum);
+        var response = _amazonS3Service.GetListObjectAsync(path);
+        response.Wait();
+        var listOutputFiles = response.Result;
+        if (listOutputFiles.Any())
+        {
+            StringBuilder domainUrl = new StringBuilder();
+            domainUrl.Append(_options.BaseAccessUrl + "/");
+            foreach (var model in listDocInf)
+            {
+                var listFiles = listOutputFiles
+                                            .Where(file =>
+                                                        model.File.Contains(file)
+                                                        && file.Length > path.Length)
+                                            .ToList();
+                var fileItem = listFiles.FirstOrDefault();
+                if (fileItem != null)
+                {
+                    model.SetFileLinkForDocInf(domainUrl + fileItem);
+                }
+            }
+        }
+        return listDocInf;
     }
 }

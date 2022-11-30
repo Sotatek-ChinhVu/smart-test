@@ -15,4 +15,6 @@ public interface IAmazonS3Service
     string GetFolderUploadToPtNum(List<string> folders, long ptNum);
 
     string GetFolderUploadOther(List<string> folders);
+
+    string GetUniqueFileNameKey(string fileName);
 }

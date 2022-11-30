@@ -4,9 +4,6 @@ using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
-using EmrCloudApi.Tenant.Presenters.Document;
-using EmrCloudApi.Tenant.Requests.Document;
-using EmrCloudApi.Tenant.Responses.Document;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Document.GetDocCategoryDetail;
@@ -27,9 +24,9 @@ public class DocumentController : AuthorizeControllerBase
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
-    public ActionResult<Response<GetListDocCategoryResponse>> GetList()
+    public ActionResult<Response<GetListDocCategoryResponse>> GetList([FromQuery] GetListDocCategoryRequest request)
     {
-        var input = new GetListDocCategoryInputData(HpId);
+        var input = new GetListDocCategoryInputData(HpId, request.PtId);
         var output = _bus.Handle(input);
 
         var presenter = new GetListDocCategoryPresenter();
@@ -41,7 +38,7 @@ public class DocumentController : AuthorizeControllerBase
     [HttpGet(ApiPath.GetDetailDocumentCategory)]
     public ActionResult<Response<GetDocCategoryDetailResponse>> GetDetail([FromQuery] GetDocCategoryDetailRequest request)
     {
-        var input = new GetDocCategoryDetailInputData(HpId, request.CategoryCd);
+        var input = new GetDocCategoryDetailInputData(HpId, request.PtId, request.CategoryCd);
         var output = _bus.Handle(input);
 
         var presenter = new GetDocCategoryDetailPresenter();
