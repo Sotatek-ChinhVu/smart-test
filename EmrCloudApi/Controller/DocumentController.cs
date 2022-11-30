@@ -1,4 +1,5 @@
 ﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.Document;
 using EmrCloudApi.Requests.Document;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Document;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.SaveListDocCategory;
 
 namespace EmrCloudApi.Controller;
 
@@ -42,5 +44,27 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<GetDocCategoryDetailResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.SaveListDocumentCategory)]
+    public ActionResult<Response<SaveListDocCategoryResponse>> SaveList([FromBody] SaveListDocCategoryRequest request)
+    {
+        var input = new SaveListDocCategoryInputData(HpId, UserId, ConvertToListDocCategoryItem(request));
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveListDocCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveListDocCategoryResponse>>(presenter.Result);
+    }
+
+    private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
+    {
+        return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
+                                                    item.CategoryCd,
+                                                    item.CategoryName,
+                                                    item.SortNo,
+                                                    false
+                                              )).ToList();
     }
 }

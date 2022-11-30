@@ -808,6 +808,7 @@
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

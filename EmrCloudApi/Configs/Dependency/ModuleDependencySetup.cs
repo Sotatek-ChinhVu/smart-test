@@ -129,6 +129,7 @@ using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.SaveListDocCategory;
 using UseCase.DrugDetail;
 using UseCase.DrugDetailData;
 using UseCase.DrugInfor.Get;
@@ -604,6 +605,7 @@ namespace EmrCloudApi.Configs.Dependency
             // Document
             busBuilder.RegisterUseCase<GetListDocCategoryInputData, GetListDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetDocCategoryDetailInputData, GetDocCategoryDetailInteractor>();
+            busBuilder.RegisterUseCase<SaveListDocCategoryInputData, SaveListDocCategoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
