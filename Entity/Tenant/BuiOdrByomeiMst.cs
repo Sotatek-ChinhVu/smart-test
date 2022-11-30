@@ -11,8 +11,8 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// BUI_ODR_MST.HP_ID
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 病名部位
         /// 病名に登録された部位
-        /// </summary>  
+        /// </summary>
         [Key]
         [Column("BYOMEI_BUI", Order = 3)]
         [MaxLength(100)]
@@ -51,6 +51,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

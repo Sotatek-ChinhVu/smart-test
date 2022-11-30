@@ -678,10 +678,15 @@ namespace PostgreDataContext
         public DbSet<SingleDoseMst> SingleDoseMsts { get; set; } = default!;
 
         public DbSet<RenkeiConf> RenkeiConfs { get; set; } = default!;
+
         public DbSet<RenkeiMst> RenkeiMsts { get; set; } = default!;
+
         public DbSet<RenkeiPathConf> RenkeiPathConfs { get; set; } = default!;
+
         public DbSet<RenkeiTemplateMst> RenkeiTemplateMsts { get; set; } = default!;
+
         public DbSet<RenkeiTimingConf> RenkeiTimingConfs { get; set; } = default!;
+
         public DbSet<RenkeiTimingMst> RenkeiTimingMsts { get; set; } = default!;
 
         public DbSet<LockInf> LockInfs { get; set; } = default!;
@@ -691,6 +696,7 @@ namespace PostgreDataContext
         public DbSet<YohoSetMst> YohoSetMsts { get; set; } = default!;
 
         public DbSet<AuditTrailLog> AuditTrailLogs { get; set; } = default!;
+
         public DbSet<AuditTrailLogDetail> AuditTrailLogDetails { get; set; } = default!;
 
         public DbSet<SessionInf> SessionInfs { get; set; } = default!;

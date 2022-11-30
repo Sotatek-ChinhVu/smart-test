@@ -75,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI_CD")]
         [MaxLength(7)]
-        public string ByomeiCd { get; set; } = string.Empty;
+        public string? ByomeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 名称
@@ -83,7 +83,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SET_NAME")]
         [MaxLength(60)]
-        public string SetName { get; set; } = string.Empty;
+        public string? SetName { get; set; } = string.Empty;
 
         /// <summary>
         /// タイトル
@@ -154,7 +154,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
