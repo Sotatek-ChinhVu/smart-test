@@ -1,9 +1,9 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
-using EmrCloudApi.Tenant.Responses.Document;
+using EmrCloudApi.Responses.Document;
 using UseCase.Document.SaveListDocCategory;
 
-namespace EmrCloudApi.Tenant.Presenters.Document;
+namespace EmrCloudApi.Presenters.Document;
 
 public class SaveListDocCategoryPresenter : ISaveListDocCategoryOutputPort
 {

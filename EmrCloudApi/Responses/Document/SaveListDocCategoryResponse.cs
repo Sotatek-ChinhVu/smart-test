@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Responses.Document;
+﻿namespace EmrCloudApi.Responses.Document;
 
 public class SaveListDocCategoryResponse
 {

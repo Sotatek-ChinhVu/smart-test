@@ -90,7 +90,6 @@ public class DocumentRepository : IDocumentRepository
         return true;
     }
 
-    private DocCategoryModel ConvertToDocCategoryMstModel(DocCategoryMst entity)
     public List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd)
     {
         var docCategory = GetDocCategoryDetail(hpId, categoryCd);
