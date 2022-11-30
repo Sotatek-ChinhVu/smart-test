@@ -1,5 +1,5 @@
-﻿using EmrCloudApi.Tenant.Constants;
-using EmrCloudApi.Tenant.Responses;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Responses;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
 using UseCase.ApprovalInfo.GetApprovalInfList;
 
