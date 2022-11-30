@@ -67,7 +67,8 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
         List<FileDocumentModel> result = new();
         var listFolderPath = new List<string>(){
                                                    CommonConstants.Reference,
-                                                   CommonConstants.Files
+                                                   CommonConstants.Files,
+                                                   categoryId.ToString()
                                                 };
         string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
         var response = _amazonS3Service.GetListObjectAsync(path);
@@ -78,7 +79,6 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             StringBuilder domainUrl = new StringBuilder();
             domainUrl.Append(_options.BaseAccessUrl + "/");
             var listFileItem = listOutputData
-                                        .Where(file => file.Contains("/" + categoryId + "/"))
                                         .Select(file => new FileDocumentModel(
                                                 file.Replace(path, string.Empty).Replace(categoryId + "/", string.Empty),
                                                 domainUrl + file
@@ -107,7 +107,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             {
                 var listFiles = listOutputFiles
                                             .Where(file =>
-                                                        model.File.Contains(file)
+                                                        (path + model.File).Equals(file)
                                                         && file.Length > path.Length)
                                             .ToList();
                 var fileItem = listFiles.FirstOrDefault();
