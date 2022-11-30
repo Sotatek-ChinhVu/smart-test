@@ -1,4 +1,4 @@
-﻿namespace EmrCloudApi.Tenant.Requests.Document;
+﻿namespace EmrCloudApi.Requests.Document;
 
 public class SaveListDocCategoryRequest
 {

@@ -139,7 +139,7 @@ namespace EmrCloudApi.Controller
         [HttpPost("SearchAdvanced")]
         public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, HpId);
+            var input = new SearchPatientInfoAdvancedInputData(ConvertToPatientAdvancedSearchInput(request), HpId, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoAdvancedPresenter();
             presenter.Complete(output);
@@ -598,6 +598,54 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
+        }
+
+        private PatientAdvancedSearchInput ConvertToPatientAdvancedSearchInput(SearchPatientInfoAdvancedRequest request)
+        {
+            return new PatientAdvancedSearchInput(
+                    request.FromPtNum,
+                    request.ToPtNum,
+                    request.Name,
+                    request.Sex,
+                    request.FromAge,
+                    request.ToAge,
+                    request.FromBirthDay,
+                    request.ToBirthDay,
+                    request.PostalCode1,
+                    request.PostalCode2,
+                    request.Address,
+                    request.PhoneNum,
+                    request.FromVisitDate,
+                    request.ToVisitDate,
+                    request.FromLastVisitDate,
+                    request.ToLastVisitDate,
+                    request.FromInsuranceNum,
+                    request.ToInsuranceNum,
+                    request.FromPublicExpensesNum,
+                    request.ToPublicExpensesNum,
+                    request.FromSpecialPublicExpensesNum,
+                    request.ToSpecialPublicExpensesNum,
+                    request.HokenNum,
+                    request.Kohi1Num,
+                    request.Kohi1EdaNo,
+                    request.Kohi2Num,
+                    request.Kohi2EdaNo,
+                    request.Kohi3Num,
+                    request.Kohi3EdaNo,
+                    request.Kohi4Num,
+                    request.Kohi4EdaNo,
+                    request.PatientGroups,
+                    request.OrderLogicalOperator,
+                    request.OrderItemCodes,
+                    request.DepartmentId,
+                    request.DoctorId,
+                    request.ByomeiLogicalOperator,
+                    request.Byomeis,
+                    request.ByomeiStartDate,
+                    request.ByomeiEndDate,
+                    request.ResultKbn,
+                    request.IsSuspectedDisease
+                );
         }
     }
 }

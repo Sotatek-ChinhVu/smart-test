@@ -160,6 +160,7 @@ namespace PostgreDataContext
             modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
             modelBuilder.Entity<OnlineConsent>().HasKey(e => new {e.PtId, e.ConsKbn });
             modelBuilder.Entity<KouiHoukatuMst>().HasKey(e => new {e.HpId, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<DocInf>().HasKey(e => new {e.HpId, e.PtId, e.SinDate, e.RaiinNo, e.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;

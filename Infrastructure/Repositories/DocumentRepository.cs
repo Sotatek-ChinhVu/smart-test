@@ -34,7 +34,20 @@ public class DocumentRepository : IDocumentRepository
     public List<DocCategoryModel> GetAllDocCategory(int hpId)
     {
         var listCategoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(item => item.SortNo).ToList();
-        return listCategoryDB.Select(item => ConvertToDocCategoryMstModel(item)).ToList();
+        return listCategoryDB.Select(item => ConvertToDocCategoryModel(item)).ToList();
+    }
+
+    public List<DocInfModel> GetAllDocInf(int hpId, long ptId)
+    {
+        var listDocCategory = GetAllDocCategory(hpId);
+        var listDocDB = _tenantNoTrackingDataContext.DocInfs
+                                                                .Where(item => item.HpId == hpId
+                                                                            && item.IsDeleted == 0
+                                                                            && item.PtId == ptId)
+                                                                .OrderByDescending(x => x.SinDate)
+                                                                .ThenBy(x => x.UpdateDate)
+                                                                .ToList();
+        return listDocDB.Select(item => ConvertToDocInfModel(item, listDocCategory)).ToList();
     }
 
     public DocCategoryModel GetDocCategoryDetail(int hpId, int categoryCd)
@@ -42,7 +55,7 @@ public class DocumentRepository : IDocumentRepository
         var categoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == categoryCd && item.IsDeleted == 0);
         if (categoryDB != null)
         {
-            return ConvertToDocCategoryMstModel(categoryDB);
+            return ConvertToDocCategoryModel(categoryDB);
         }
         return new DocCategoryModel();
     }
@@ -77,7 +90,21 @@ public class DocumentRepository : IDocumentRepository
         return true;
     }
 
-    private DocCategoryModel ConvertToDocCategoryMstModel(DocCategoryMst entity)
+    public List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd)
+    {
+        var docCategory = GetDocCategoryDetail(hpId, categoryCd);
+        var listDocDB = _tenantNoTrackingDataContext.DocInfs
+                                                            .Where(item => item.HpId == hpId
+                                                                        && item.IsDeleted == 0
+                                                                        && item.CategoryCd == categoryCd
+                                                                        && item.PtId == ptId)
+                                                            .OrderByDescending(x => x.SinDate)
+                                                            .ThenBy(x => x.UpdateDate)
+                                                            .ToList();
+        return listDocDB.Select(item => ConvertToDocInfModel(item, new List<DocCategoryModel> { docCategory })).ToList();
+    }
+
+    private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
     {
         return new DocCategoryModel(
                 entity.CategoryCd,
@@ -99,5 +126,21 @@ public class DocumentRepository : IDocumentRepository
         entity.CreateDate = DateTime.UtcNow;
         entity.CreateId = userId;
         return entity;
+    }
+
+    private DocInfModel ConvertToDocInfModel(DocInf entity, List<DocCategoryModel> listDocCategory)
+    {
+        return new DocInfModel(
+                entity.HpId,
+                entity.PtId,
+                entity.SinDate,
+                entity.RaiinNo,
+                entity.SeqNo,
+                entity.CategoryCd,
+                listDocCategory.FirstOrDefault(item => item.CategoryCd == entity.CategoryCd)?.CategoryName ?? string.Empty,
+                entity.FileName,
+                entity.DspFileName,
+                entity.UpdateDate
+            );
     }
 }

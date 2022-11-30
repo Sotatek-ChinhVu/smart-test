@@ -1,9 +1,7 @@
 ﻿using EmrCloudApi.Constants;
-using EmrCloudApi.Responses;
-using EmrCloudApi.Tenant.Responses.Document;
 using UseCase.Document.GetDocCategoryDetail;
 
-namespace EmrCloudApi.Tenant.Presenters.Document;
+namespace EmrCloudApi.Responses.Document;
 
 public class GetDocCategoryDetailPresenter : IGetDocCategoryDetailOutputPort
 {
@@ -12,8 +10,9 @@ public class GetDocCategoryDetailPresenter : IGetDocCategoryDetailOutputPort
     public void Complete(GetDocCategoryDetailOutputData output)
     {
         Result.Data = new GetDocCategoryDetailResponse(
-                                                        new DocCategoryDto(output.DocCategory),
-                                                        output.ListTemplates.Select(item => new FileDocumentDto(item)).ToList()
+                                                        output.DocCategory,
+                                                        output.ListTemplates,
+                                                        output.DocInfs
                                                     );
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
@@ -24,6 +23,7 @@ public class GetDocCategoryDetailPresenter : IGetDocCategoryDetailOutputPort
         GetDocCategoryDetailStatus.Successed => ResponseMessage.Success,
         GetDocCategoryDetailStatus.Failed => ResponseMessage.Failed,
         GetDocCategoryDetailStatus.InvalidHpId => ResponseMessage.InvalidHpId,
+        GetDocCategoryDetailStatus.InvalidPtId => ResponseMessage.InvalidPtId,
         GetDocCategoryDetailStatus.InvalidCategoryCd => ResponseMessage.InvalidDocumentCategoryCd,
         _ => string.Empty
     };

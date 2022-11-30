@@ -1,5 +1,6 @@
 ﻿using Domain.Models.UserConf;
 using Entity.Tenant;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -44,6 +45,19 @@ public class UserConfRepository : IUserConfRepository
         var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
+
+        string paramSaveMedical = _tenantNoTrackingDataContext.UserConfs
+            .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
+        var isByomeiCheckTempSave = paramSaveMedical[0].AsInteger();
+        var isByomeiCheckKeisanSave = paramSaveMedical[1].AsInteger();
+        var isByomeiCheckCheckPrint = paramSaveMedical[4].AsInteger();
+        var isByomeiCheckTrialCalc = paramSaveMedical[3].AsInteger();
+        var isByomeiCheckNormalSave = paramSaveMedical[2].AsInteger();
+        result.Add("IsByomeiCheckTempSave", isByomeiCheckTempSave);
+        result.Add("IsByomeiCheckKeisanSave", isByomeiCheckKeisanSave);
+        result.Add("IsByomeiCheckCheckPrint", isByomeiCheckCheckPrint);
+        result.Add("IsByomeiCheckTrialCalc", isByomeiCheckTrialCalc);
+        result.Add("IsByomeiCheckNormalSave", isByomeiCheckNormalSave);
 
         return result;
     }
