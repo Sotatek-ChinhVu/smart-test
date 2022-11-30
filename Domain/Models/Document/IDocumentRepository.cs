@@ -10,6 +10,8 @@ public interface IDocumentRepository
 
     bool SaveListDocCategory(int hpId, int userId, List<DocCategoryModel> listModels);
 
+    bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd);
+
     List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd);
 
     bool CheckExistDocCategory(int hpId, int categoryCd);

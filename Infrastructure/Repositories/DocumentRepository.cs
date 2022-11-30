@@ -128,6 +128,33 @@ public class DocumentRepository : IDocumentRepository
         return entity;
     }
 
+    public bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd)
+    {
+        // get in DB
+        var moveInItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveInCd);
+        var moveOutItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveOutCd);
+
+        // change sortNo
+        if (moveInItem != null && moveOutItem != null)
+        {
+            int moveInSortNo = moveInItem.SortNo;
+            int moveOutSortNo = moveOutItem.SortNo;
+
+            // move in item
+            moveInItem.SortNo = moveOutSortNo;
+            moveInItem.UpdateDate = DateTime.UtcNow;
+            moveInItem.UpdateId = userId;
+
+            // move out item
+            moveOutItem.SortNo = moveInSortNo;
+            moveOutItem.UpdateDate = DateTime.UtcNow;
+            moveOutItem.UpdateId = userId;
+            _tenantDataContext.SaveChanges();
+            return true;
+        }
+        return false;
+    }
+
     private DocInfModel ConvertToDocInfModel(DocInf entity, List<DocCategoryModel> listDocCategory)
     {
         return new DocInfModel(

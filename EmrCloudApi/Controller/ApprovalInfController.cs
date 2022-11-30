@@ -1,15 +1,12 @@
-﻿using Domain.Models.ApprovalInfo;
-using EmrCloudApi.Constants;
+﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Services;
 using EmrCloudApi.Tenant.Presenters.ApprovalInfo;
 using EmrCloudApi.Tenant.Requests.ApprovalInfo;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
-using EmrCloudApi.Tenant.Responses.ApprovalInfo;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ApprovalInfo.GetApprovalInfList;
-using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Tenant.Controllers
