@@ -128,6 +128,8 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
+using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.CheckExistFileName;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveListDocCategory;
@@ -613,6 +615,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetListDocCategoryInputData, GetListDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetDocCategoryDetailInputData, GetDocCategoryDetailInteractor>();
             busBuilder.RegisterUseCase<SaveListDocCategoryInputData, SaveListDocCategoryInteractor>();
+            busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
+            busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
