@@ -98,7 +98,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("LOCK_MACHINE")]
         [MaxLength(60)]
-        public string LockMachine { get; set; } = string.Empty;
+        public string? LockMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

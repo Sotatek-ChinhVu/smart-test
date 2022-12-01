@@ -1636,6 +1636,19 @@ namespace Helper.Common
             Full,
             Mix
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns>yyyy/MM/dd HH:mm</returns>
+        public static string GetCIDateTimeStr(DateTime dateTime, bool isGetSec = false)
+        {
+            string result = string.Empty;
+            string format = isGetSec ? "yyyy/MM/dd HH:mm:ss" : "yyyy/MM/dd HH:mm";
+            result = dateTime.ToString(format);
+            return result;
+        }
     }
     public struct WarekiYmd
     {

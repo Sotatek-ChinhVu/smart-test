@@ -9,4 +9,5 @@ public static class CommonConstants
     public const string Karte = "karte";
     public const string Store = "store";
     public const string Reference = "reference";
+    public const string Files = "files";
 }

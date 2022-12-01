@@ -157,8 +157,10 @@ namespace PostgreDataContext
             modelBuilder.Entity<PtInf>().HasKey(e => new { e.HpId, e.PtId, e.SeqNo});
             modelBuilder.Entity<RsvkrtByomei>().HasKey(o => new { o.HpId, o.PtId, o.RsvkrtNo, o.SeqNo, o.Id });
             modelBuilder.Entity<RsvkrtKarteInf>().HasKey(e => new { e.HpId, e.PtId, e.RsvkrtNo, e.KarteKbn, e.SeqNo });
+            modelBuilder.Entity<DocCategoryMst>().HasKey(e => new { e.HpId, e.CategoryCd });
             modelBuilder.Entity<OnlineConsent>().HasKey(e => new {e.PtId, e.ConsKbn });
             modelBuilder.Entity<KouiHoukatuMst>().HasKey(e => new {e.HpId, e.ItemCd, e.StartDate });
+            modelBuilder.Entity<DocInf>().HasKey(e => new {e.HpId, e.PtId, e.SinDate, e.RaiinNo, e.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
