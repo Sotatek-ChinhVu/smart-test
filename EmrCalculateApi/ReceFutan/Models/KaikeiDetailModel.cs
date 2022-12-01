@@ -1,15 +1,32 @@
 ﻿using Entity.Tenant;
-using Helper.Common;
 
-namespace EmrCalculateApi.Futan.Models
+namespace EmrCalculateApi.ReceFutan.Models
 {
     public class KaikeiDetailModel
     {
         public KaikeiDetail KaikeiDetail { get; }
 
-        public KaikeiDetailModel(KaikeiDetail kaikeiDetail)
+        /// <summary>
+        /// 請求区分
+        /// </summary>
+        public int SeikyuKbn { get; } = 0;
+
+        /// <summary>
+        /// 診療科ID
+        /// </summary>
+        public int KaId { get; } = 0;
+
+        /// <summary>
+        /// 担当医ID
+        /// </summary>
+        public int TantoId { get; } = 0;
+
+        public KaikeiDetailModel(KaikeiDetail kaikeiDetail, int seikyuKbn, int kaId, int tantoId)
         {
             KaikeiDetail = kaikeiDetail;
+            SeikyuKbn = seikyuKbn;
+            KaId = kaId;
+            TantoId = tantoId;
         }
 
         /// <summary>
@@ -405,21 +422,16 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// True: 適用区分一般
-        /// </summary>
-        public bool IsKogakuTekiyoIppan { get; set; }
-
-        /// <summary>
         /// 限度額特例フラグ
         /// 
         /// </summary>
-        public bool IsTokurei
+        public int IsTokurei
         {
-            get { return (KaikeiDetail.IsTokurei == 1); }
+            get { return KaikeiDetail.IsTokurei; }
             set
             {
-                if (KaikeiDetail.IsTokurei == Convert.ToInt32(value)) return;
-                KaikeiDetail.IsTokurei = Convert.ToInt32(value);
+                if (KaikeiDetail.IsTokurei == value) return;
+                KaikeiDetail.IsTokurei = value;
             }
         }
 
@@ -427,13 +439,13 @@ namespace EmrCalculateApi.Futan.Models
         /// 多数回該当フラグ
         /// 
         /// </summary>
-        public bool IsTasukai
+        public int IsTasukai
         {
-            get { return (KaikeiDetail.IsTasukai == 1); }
+            get { return KaikeiDetail.IsTasukai; }
             set
             {
-                if (KaikeiDetail.IsTasukai == Convert.ToInt32(value)) return;
-                KaikeiDetail.IsTasukai = Convert.ToInt32(value);
+                if (KaikeiDetail.IsTasukai == value) return;
+                KaikeiDetail.IsTasukai = value;
             }
         }
 
@@ -456,25 +468,15 @@ namespace EmrCalculateApi.Futan.Models
         /// マル長適用フラグ
         /// 1:適用
         /// </summary>
-        public bool IsChoki
+        public int IsChoki
         {
-            get { return (KaikeiDetail.IsChoki == 1); }
+            get { return KaikeiDetail.IsChoki; }
             set
             {
-                if (KaikeiDetail.IsChoki == Convert.ToInt32(value)) return;
-                KaikeiDetail.IsChoki = Convert.ToInt32(value);
+                if (KaikeiDetail.IsChoki == value) return;
+                KaikeiDetail.IsChoki = value;
             }
         }
-
-        /// <summary>
-        /// マル長上限（公費計算時）
-        /// </summary>
-        public int ChokiLimit { get; set; }
-
-        /// <summary>
-        /// マル長 公費インデックス番号
-        /// </summary>
-        public int ChokiKohiNo { get; set; }
 
         /// <summary>
         /// 高額療養費限度額
@@ -482,20 +484,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int KogakuLimit
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    switch (RoundKogakuPtFutan)
-                    {
-                        case 1: //10円単位(四捨五入)
-                            return CIUtil.RoundInt(KaikeiDetail.KogakuLimit, 1);
-                        case 2: //10円単位(切り捨て)
-                            return (int)Math.Truncate((double)(KaikeiDetail.KogakuLimit) / 10) * 10;
-                    }
-                }
-                return KaikeiDetail.KogakuLimit;
-            }
+            get { return KaikeiDetail.KogakuLimit; }
             set
             {
                 if (KaikeiDetail.KogakuLimit == value) return;
@@ -509,20 +498,7 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int TotalKogakuLimit
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    switch (RoundKogakuPtFutan)
-                    {
-                        case 1: //10円単位(四捨五入)
-                            return CIUtil.RoundInt(KaikeiDetail.TotalKogakuLimit, 1);
-                        case 2: //10円単位(切り捨て)
-                            return (int)Math.Truncate((double)(KaikeiDetail.TotalKogakuLimit) / 10) * 10;
-                    }
-                }
-                return KaikeiDetail.TotalKogakuLimit;
-            }
+            get { return KaikeiDetail.TotalKogakuLimit; }
             set
             {
                 if (KaikeiDetail.TotalKogakuLimit == value) return;
@@ -732,29 +708,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int HokenFutan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.HokenFutan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.HokenFutan;
-                };
-            }
+            get { return KaikeiDetail.HokenFutan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.HokenFutan10en == value) return;
-                    KaikeiDetail.HokenFutan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.HokenFutan == value) return;
-                    KaikeiDetail.HokenFutan = value;
-                }
+                if (KaikeiDetail.HokenFutan == value) return;
+                KaikeiDetail.HokenFutan = value;
             }
         }
 
@@ -764,29 +722,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int KogakuFutan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.KogakuFutan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.KogakuFutan;
-                }
-            }
+            get { return KaikeiDetail.KogakuFutan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.KogakuFutan10en == value) return;
-                    KaikeiDetail.KogakuFutan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.KogakuFutan == value) return;
-                    KaikeiDetail.KogakuFutan = value;
-                }
+                if (KaikeiDetail.KogakuFutan == value) return;
+                KaikeiDetail.KogakuFutan = value;
             }
         }
 
@@ -796,29 +736,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int Kohi1Futan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.Kohi1Futan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.Kohi1Futan;
-                }
-            }
+            get { return KaikeiDetail.Kohi1Futan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.Kohi1Futan10en == value) return;
-                    KaikeiDetail.Kohi1Futan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.Kohi1Futan == value) return;
-                    KaikeiDetail.Kohi1Futan = value;
-                }
+                if (KaikeiDetail.Kohi1Futan == value) return;
+                KaikeiDetail.Kohi1Futan = value;
             }
         }
 
@@ -828,30 +750,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int Kohi2Futan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.Kohi2Futan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.Kohi2Futan;
-
-                }
-            }
+            get { return KaikeiDetail.Kohi2Futan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.Kohi2Futan10en == value) return;
-                    KaikeiDetail.Kohi2Futan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.Kohi2Futan == value) return;
-                    KaikeiDetail.Kohi2Futan = value;
-                }
+                if (KaikeiDetail.Kohi2Futan == value) return;
+                KaikeiDetail.Kohi2Futan = value;
             }
         }
 
@@ -861,29 +764,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int Kohi3Futan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.Kohi3Futan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.Kohi3Futan;
-                }
-            }
+            get { return KaikeiDetail.Kohi3Futan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.Kohi3Futan10en == value) return;
-                    KaikeiDetail.Kohi3Futan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.Kohi3Futan == value) return;
-                    KaikeiDetail.Kohi3Futan = value;
-                }
+                if (KaikeiDetail.Kohi3Futan == value) return;
+                KaikeiDetail.Kohi3Futan = value;
             }
         }
 
@@ -893,29 +778,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int Kohi4Futan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.Kohi4Futan10en;
-                }
-                else
-                {
-                    return KaikeiDetail.Kohi4Futan;
-                }
-            }
+            get { return KaikeiDetail.Kohi4Futan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.Kohi4Futan10en == value) return;
-                    KaikeiDetail.Kohi4Futan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.Kohi4Futan == value) return;
-                    KaikeiDetail.Kohi4Futan = value;
-                }
+                if (KaikeiDetail.Kohi4Futan == value) return;
+                KaikeiDetail.Kohi4Futan = value;
             }
         }
 
@@ -925,29 +792,11 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int IchibuFutan
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.IchibuFutan10en + KaikeiDetail.AdjustRound;
-                }
-                else
-                {
-                    return KaikeiDetail.IchibuFutan;
-                }
-            }
+            get { return KaikeiDetail.IchibuFutan; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.IchibuFutan10en == value) return;
-                    KaikeiDetail.IchibuFutan10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.IchibuFutan == value) return;
-                    KaikeiDetail.IchibuFutan = value;
-                }
+                if (KaikeiDetail.IchibuFutan == value) return;
+                KaikeiDetail.IchibuFutan = value;
             }
         }
 
@@ -957,34 +806,44 @@ namespace EmrCalculateApi.Futan.Models
         /// </summary>
         public int GenmenGaku
         {
-            get
-            {
-                if (RoundTo10en)
-                {
-                    return KaikeiDetail.GenmenGaku10en;
-                }
-                else
-                {
-                    return KaikeiDetail.GenmenGaku;
-                }
-            }
+            get { return KaikeiDetail.GenmenGaku; }
             set
             {
-                if (RoundTo10en)
-                {
-                    if (KaikeiDetail.GenmenGaku10en == value) return;
-                    KaikeiDetail.GenmenGaku10en = value;
-                }
-                else
-                {
-                    if (KaikeiDetail.GenmenGaku == value) return;
-                    KaikeiDetail.GenmenGaku = value;
-                }
+                if (KaikeiDetail.GenmenGaku == value) return;
+                KaikeiDetail.GenmenGaku = value;
             }
         }
 
         /// <summary>
-        /// 公１負担額(10円単位)
+        /// 保険負担額10円単位
+        /// 
+        /// </summary>
+        public int HokenFutan10en
+        {
+            get { return KaikeiDetail.HokenFutan10en; }
+            set
+            {
+                if (KaikeiDetail.HokenFutan10en == value) return;
+                KaikeiDetail.HokenFutan10en = value;
+            }
+        }
+
+        /// <summary>
+        /// 高額負担額10円単位
+        /// 
+        /// </summary>
+        public int KogakuFutan10en
+        {
+            get { return KaikeiDetail.KogakuFutan10en; }
+            set
+            {
+                if (KaikeiDetail.KogakuFutan10en == value) return;
+                KaikeiDetail.KogakuFutan10en = value;
+            }
+        }
+
+        /// <summary>
+        /// 公１負担額10円単位
         /// 
         /// </summary>
         public int Kohi1Futan10en
@@ -998,7 +857,7 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 公２負担額(10円単位)
+        /// 公２負担額10円単位
         /// 
         /// </summary>
         public int Kohi2Futan10en
@@ -1012,7 +871,7 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 公３負担額(10円単位)
+        /// 公３負担額10円単位
         /// 
         /// </summary>
         public int Kohi3Futan10en
@@ -1026,7 +885,7 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 公４負担額(10円単位)
+        /// 公４負担額10円単位
         /// 
         /// </summary>
         public int Kohi4Futan10en
@@ -1040,12 +899,12 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 一部負担額(10円単位)
+        /// 一部負担額10円単位
         /// 
         /// </summary>
         public int IchibuFutan10en
         {
-            get { return KaikeiDetail.IchibuFutan10en; }
+            get { return KaikeiDetail.IchibuFutan10en + KaikeiDetail.AdjustRound; }
             set
             {
                 if (KaikeiDetail.IchibuFutan10en == value) return;
@@ -1054,7 +913,7 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 減免額(10円単位)
+        /// 減免額10円単位
         /// 
         /// </summary>
         public int GenmenGaku10en
@@ -1071,23 +930,9 @@ namespace EmrCalculateApi.Futan.Models
         /// 患者負担額
         /// 
         /// </summary>
-        public int AdjustRound
-        {
-            get { return KaikeiDetail.AdjustRound; }
-            set
-            {
-                if (KaikeiDetail.AdjustRound == value) return;
-                KaikeiDetail.AdjustRound = value;
-            }
-        }
-
-        /// <summary>
-        /// 患者負担額
-        /// 
-        /// </summary>
         public int PtFutan
         {
-            get { return KaikeiDetail.PtFutan; }
+            get { return KaikeiDetail.PtFutan + KaikeiDetail.AdjustRound; }
             set
             {
                 if (KaikeiDetail.PtFutan == value) return;
@@ -1414,132 +1259,6 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 自費負担額(非課税)
-        /// 
-        /// </summary>
-        public int JihiFutanTaxfree
-        {
-            get { return KaikeiDetail.JihiFutanTaxfree; }
-            set
-            {
-                if (KaikeiDetail.JihiFutanTaxfree == value) return;
-                KaikeiDetail.JihiFutanTaxfree = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費負担額(内税・通常税率)
-        /// 
-        /// </summary>
-        public int JihiFutanTaxNr
-        {
-            get { return KaikeiDetail.JihiFutanTaxNr; }
-            set
-            {
-                if (KaikeiDetail.JihiFutanTaxNr == value) return;
-                KaikeiDetail.JihiFutanTaxNr = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費負担額(内税・軽減税率)
-        /// 
-        /// </summary>
-        public int JihiFutanTaxGen
-        {
-            get { return KaikeiDetail.JihiFutanTaxGen; }
-            set
-            {
-                if (KaikeiDetail.JihiFutanTaxGen == value) return;
-                KaikeiDetail.JihiFutanTaxGen = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費負担額(外税・通常税率)
-        /// 
-        /// </summary>
-        public int JihiFutanOuttaxNr
-        {
-            get { return KaikeiDetail.JihiFutanOuttaxNr; }
-            set
-            {
-                if (KaikeiDetail.JihiFutanOuttaxNr == value) return;
-                KaikeiDetail.JihiFutanOuttaxNr = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費負担額(内税・軽減税率)
-        /// 
-        /// </summary>
-        public int JihiFutanOuttaxGen
-        {
-            get { return KaikeiDetail.JihiFutanOuttaxGen; }
-            set
-            {
-                if (KaikeiDetail.JihiFutanOuttaxGen == value) return;
-                KaikeiDetail.JihiFutanOuttaxGen = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費内税(通常税率)
-        /// 
-        /// </summary>
-        public int JihiTaxNr
-        {
-            get { return KaikeiDetail.JihiTaxNr; }
-            set
-            {
-                if (KaikeiDetail.JihiTaxNr == value) return;
-                KaikeiDetail.JihiTaxNr = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費内税(軽減税率)
-        /// 
-        /// </summary>
-        public int JihiTaxGen
-        {
-            get { return KaikeiDetail.JihiTaxGen; }
-            set
-            {
-                if (KaikeiDetail.JihiTaxGen == value) return;
-                KaikeiDetail.JihiTaxGen = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費外税(通常税率)
-        /// 
-        /// </summary>
-        public int JihiOuttaxNr
-        {
-            get { return KaikeiDetail.JihiOuttaxNr; }
-            set
-            {
-                if (KaikeiDetail.JihiOuttaxNr == value) return;
-                KaikeiDetail.JihiOuttaxNr = value;
-            }
-        }
-
-        /// <summary>
-        /// 自費外税(軽減税率)
-        /// 
-        /// </summary>
-        public int JihiOuttaxGen
-        {
-            get { return KaikeiDetail.JihiOuttaxGen; }
-            set
-            {
-                if (KaikeiDetail.JihiOuttaxGen == value) return;
-                KaikeiDetail.JihiOuttaxGen = value;
-            }
-        }
-
-        /// <summary>
         /// 患者負担合計額
         /// 
         /// </summary>
@@ -1567,17 +1286,18 @@ namespace EmrCalculateApi.Futan.Models
             }
         }
 
+
         /// <summary>
         /// 妊婦フラグ
         /// 1:対象
         /// </summary>
-        public bool IsNinpu
+        public int IsNinpu
         {
-            get { return KaikeiDetail.IsNinpu == 1; }
+            get { return KaikeiDetail.IsNinpu; }
             set
             {
-                if (KaikeiDetail.IsNinpu == Convert.ToInt32(value)) return;
-                KaikeiDetail.IsNinpu = Convert.ToInt32(value);
+                if (KaikeiDetail.IsNinpu == value) return;
+                KaikeiDetail.IsNinpu = value;
             }
         }
 
@@ -1585,27 +1305,13 @@ namespace EmrCalculateApi.Futan.Models
         /// 在医総フラグ
         /// 1:在医総及び在医総管
         /// </summary>
-        public bool IsZaiiso
+        public int IsZaiiso
         {
-            get { return KaikeiDetail.IsZaiiso == 1; }
+            get { return KaikeiDetail.IsZaiiso; }
             set
             {
-                if (KaikeiDetail.IsZaiiso == Convert.ToInt32(value)) return;
-                KaikeiDetail.IsZaiiso = Convert.ToInt32(value);
-            }
-        }
-
-        /// <summary>
-        /// 後期高齢者
-        /// 
-        /// </summary>
-        public bool IsKouki
-        {
-            get
-            {
-                return
-                    KaikeiDetail.ReceSbt.Substring(1, 1) == "3" &&
-                    (KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt.Substring(3, 1) == "8");
+                if (KaikeiDetail.IsZaiiso == value) return;
+                KaikeiDetail.IsZaiiso = value;
             }
         }
 
@@ -1652,267 +1358,19 @@ namespace EmrCalculateApi.Futan.Models
         }
 
         /// <summary>
-        /// 高齢者
-        /// 
+        /// 主保険の有無
         /// </summary>
-        public int AgeKbn
+        public bool IsNoHoken
         {
             get
             {
-                return Convert.ToInt32(
-                    KaikeiDetail.ReceSbt.Substring(3, 1) == "0" || KaikeiDetail.ReceSbt.Substring(3, 1) == "8"
-                );
+                if (HokenKbn == 1 && ReceSbt?.Substring(1, 1) == "2")
+                {
+                    return true;
+                }
+                return false;
             }
         }
 
-        /// <summary>
-        /// true: 10円単位計算
-        /// </summary>
-        public bool RoundTo10en { get; set; } = false;
-
-        /// <summary>
-        /// 既に高額療養費で上限に達している場合でも窓口負担を発生させる際の限度額
-        /// </summary>
-        public int YusenFutan { get; set; }
-
-        /// <summary>
-        /// YusenFutanの対象となる公費の番号
-        /// </summary>
-        public int YusenFutanKohiNo { get; set; }
-
-        /// <summary>
-        /// True: 公費上限に達した
-        /// </summary>
-        public bool IsKohiLimitOver { get; set; }
-
-        /// <summary>
-        /// 高額療養費の窓口負担まるめ設定
-        ///     0:1円単位
-        ///     1:10円単位(四捨五入)
-        ///     2:10円単位(切り捨て)
-        /// </summary>
-        public int RoundKogakuPtFutan { get; set; }
-
-        /// <summary>
-        /// 公費番号の取得
-        /// </summary>
-        /// <param name="kohiId">公費ID</param>
-        /// <returns></returns>
-        public int GetKohiNo(int kohiId)
-        {
-#pragma warning disable S3358 // Ternary operators should not be nested
-            return
-                Kohi1Id == kohiId ? 1 :
-                Kohi2Id == kohiId ? 2 :
-                Kohi3Id == kohiId ? 3 :
-                Kohi4Id == kohiId ? 4 :
-                0;
-#pragma warning restore S3358 // Ternary operators should not be nested
-        }
-
-        /// <summary>
-        /// 公費の保険ID
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <returns></returns>
-        public int GetKohiId(int kohiNo)
-        {
-            switch (kohiNo)
-            {
-                case 1: return Kohi1Id;
-                case 2: return Kohi2Id;
-                case 3: return Kohi3Id;
-                case 4: return Kohi4Id;
-                default: return 0;
-            }
-        }
-
-        /// <summary>
-        /// 公費法別番号の設定
-        /// </summary>
-        /// <param name="kohiNo"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public void SetKohiHoubetu(int kohiNo, string value)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Houbetu = value;
-                    break;
-                case 2:
-                    Kohi2Houbetu = value;
-                    break;
-                case 3:
-                    Kohi3Houbetu = value;
-                    break;
-                case 4:
-                    Kohi4Houbetu = value;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 公費優先順位の設定
-        /// </summary>
-        /// <param name="kohiNo"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public void SetKohiPriority(int kohiNo, string value)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Priority = value;
-                    break;
-                case 2:
-                    Kohi2Priority = value;
-                    break;
-                case 3:
-                    Kohi3Priority = value;
-                    break;
-                case 4:
-                    Kohi4Priority = value;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 公費負担の取得
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <returns></returns>
-        public int GetKohiFutan(int kohiNo)
-        {
-            switch (kohiNo)
-            {
-                case 1: return Kohi1Futan;
-                case 2: return Kohi2Futan;
-                case 3: return Kohi3Futan;
-                case 4: return Kohi4Futan;
-                default: return 0;
-            }
-        }
-
-        /// <summary>
-        /// 公費負担の設定
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <param name="kohiFutan">公費負担額</param>
-        public void SetKohiFutan(int kohiNo, int kohiFutan)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Futan = kohiFutan;
-                    break;
-                case 2:
-                    Kohi2Futan = kohiFutan;
-                    break;
-                case 3:
-                    Kohi3Futan = kohiFutan;
-                    break;
-                case 4:
-                    Kohi4Futan = kohiFutan;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 公費負担の設定
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <param name="value">公費負担額</param>
-        public void SetKohiLimit(int kohiNo, int value)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Limit = value;
-                    break;
-                case 2:
-                    Kohi2Limit = value;
-                    break;
-                case 3:
-                    Kohi3Limit = value;
-                    break;
-                case 4:
-                    Kohi4Limit = value;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 公費負担の加算
-        /// </summary>
-        /// <param name="kaikeiDetail">今回来院の計算結果</param>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <param name="kohiFutan">公費負担額</param>
-        public void AddKohiFutan(int kohiNo, int kohiFutan)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Futan += kohiFutan;
-                    break;
-                case 2:
-                    Kohi2Futan += kohiFutan;
-                    break;
-                case 3:
-                    Kohi3Futan += kohiFutan;
-                    break;
-                case 4:
-                    Kohi4Futan += kohiFutan;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 他院負担額の設定
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <param name="value">他院負担額</param>
-        public void SetOtherFutan(int kohiNo, int value)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1OtherFutan = value;
-                    break;
-                case 2:
-                    Kohi2OtherFutan = value;
-                    break;
-                case 3:
-                    Kohi3OtherFutan = value;
-                    break;
-                case 4:
-                    Kohi4OtherFutan = value;
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 公費IDの初期化
-        /// </summary>
-        /// <param name="kohiNo">公費番号[1..4]</param>
-        /// <param name="kohiFutan">公費負担額</param>
-        public void ClearKohiId(int kohiNo)
-        {
-            switch (kohiNo)
-            {
-                case 1:
-                    Kohi1Id = 0;
-                    break;
-                case 2:
-                    Kohi2Id = 0;
-                    break;
-                case 3:
-                    Kohi3Id = 0;
-                    break;
-                case 4:
-                    Kohi4Id = 0;
-                    break;
-            }
-        }
     }
 }

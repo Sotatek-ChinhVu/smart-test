@@ -1539,6 +1539,28 @@ namespace Helper.Common
 
             return retDate;
         }
+
+        /// <summary>
+        /// 指定日が属する月の最終日を取得する
+        /// </summary>
+        /// <param name="baseDate">基準日</param>
+        /// <returns></returns>
+        public static int GetLastDateOfMonth(int baseDate)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                retDate = baseDate / 100 * 100 + DateTime.DaysInMonth(dt1.Year, dt1.Month);
+            }
+
+            return retDate;
+        }
+
         public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
         {
             //法別番号を求める

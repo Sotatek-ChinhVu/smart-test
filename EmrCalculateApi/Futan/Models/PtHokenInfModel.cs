@@ -8,10 +8,13 @@ namespace EmrCalculateApi.Futan.Models
         public PtHokenInf PtHokenInf { get; }
         public HokenMst HokenMst { get; }
 
-        public PtHokenInfModel(PtHokenInf ptHokenInf, HokenMst hokenMst)
+        private readonly int _hpPrefNo;
+
+        public PtHokenInfModel(PtHokenInf ptHokenInf, HokenMst hokenMst, int hpPrefNo)
         {
             PtHokenInf = ptHokenInf;
             HokenMst = hokenMst;
+            _hpPrefNo = hpPrefNo;
         }
 
         /// <summary>
@@ -70,16 +73,37 @@ namespace EmrCalculateApi.Futan.Models
         /// <summary>
         /// 県内国保
         /// </summary>
-        public bool IsKokPrefIn(int prefNo)
+        public bool IsKokPrefIn
         {
-            if (PtHokenInf.HokensyaNo == null)
+            get
             {
-                return false;
-            }
+                if (PtHokenInf.HokensyaNo == null)
+                {
+                    return false;
+                }
 
-            return
-                PtHokenInf.HokenKbn == HokenKbn.Kokho &&
-                PtHokenInf.HokensyaNo.Substring(PtHokenInf.HokensyaNo.Length - 6, 2) == prefNo.ToString();
+                return
+                    PtHokenInf.HokenKbn == HokenKbn.Kokho &&
+                    PtHokenInf.HokensyaNo.Substring(PtHokenInf.HokensyaNo.Length - 6, 2) == _hpPrefNo.ToString();
+            }
+        }
+
+        /// <summary>
+        /// 県外国保
+        /// </summary>
+        public bool IsKokPrefOut
+        {
+            get
+            {
+                if (PtHokenInf.HokensyaNo == null)
+                {
+                    return false;
+                }
+
+                return
+                    PtHokenInf.HokenKbn == HokenKbn.Kokho &&
+                    PtHokenInf.HokensyaNo.Substring(PtHokenInf.HokensyaNo.Length - 6, 2) != _hpPrefNo.ToString();
+            }
         }
 
         /// <summary>

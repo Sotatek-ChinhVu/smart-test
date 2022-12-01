@@ -501,14 +501,6 @@ namespace EmrCalculateApi.Futan.Models
     }
 
     /// <summary>
-    /// 高額療養費の合算対象となる一部負担金
-    /// </summary>
-    public static class KogakuIchibu
-    {
-        public const int BorderVal = 21000;
-    }
-
-    /// <summary>
     /// 集計区分(0:回上限 1:日上限 2:月上限)
     /// </summary>
     public enum CountType { Times = 0, Day = 1, Month = 2 };

@@ -106,11 +106,21 @@ namespace EmrCalculateApi.Futan.DB.Finder
                     }
                 );
 
+                var prefNo = _tenantDataContext.HpInfs
+                        .FindListQueryableNoTrack(h =>
+                            h.HpId == hpId &&
+                            h.StartDate <= sinDate
+                        )
+                        .OrderByDescending(h => h.StartDate)
+                        .Select(h => h.PrefNo)
+                        .FirstOrDefault();
+
                 var result = joinQuery.AsEnumerable().Select(
                     data =>
                         new PtHokenInfModel(
                             data.ptHokenInf,
-                            data.hokenMst //data.hokenMst
+                            data.hokenMst,
+                            prefNo
                         )
                     )
                     .FirstOrDefault();

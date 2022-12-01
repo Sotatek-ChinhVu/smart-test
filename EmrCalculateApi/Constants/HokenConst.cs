@@ -104,4 +104,20 @@
     {
         public const int None = 3;
     }
+
+    /// <summary>
+    /// 公費法別
+    /// </summary>
+    public static class KohiHoubetu
+    {
+        public const string Choki = "102";
+    }
+
+    /// <summary>
+    /// 高額療養費の合算対象となる一部負担金
+    /// </summary>
+    public static class KogakuIchibu
+    {
+        public const int BorderVal = 21000;
+    }
 }

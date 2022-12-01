@@ -11,5 +11,11 @@
         int GetRoundKogakuPtFutan();
 
         double GetJibaiRousaiRate();
+
+        int GetChokiTokki();
+
+        int GetReceKyufuKisai();
+
+        int GetReceKyufuKisai2();
     }
 }

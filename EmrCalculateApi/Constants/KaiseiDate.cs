@@ -2,6 +2,12 @@
 {
     public static class KaiseiDate
     {
+        public const int d20221001 = 20221001;
+        public const int m202210 = 202210;
+
+        public const int d20220401 = 20220401;
+        public const int m202204 = 202204;
+
         public const int d20200101 = 20200101;
         public const int m202001 = 202001;
 
