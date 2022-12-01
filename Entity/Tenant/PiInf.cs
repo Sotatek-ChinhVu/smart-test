@@ -124,6 +124,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("GENERICNAME")]
         public string? Genericname { get; set; } = string.Empty;
-
     }
 }

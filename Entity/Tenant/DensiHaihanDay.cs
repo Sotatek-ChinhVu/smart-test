@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 項目コード１
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("ITEM_CD1", Order = 3)]
         [MaxLength(10)]
         public string ItemCd1 { get; set; } = string.Empty;
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD2")]
         [MaxLength(10)]
-        public string ItemCd2 { get; set; } = string.Empty;
+        public string? ItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 背反区分
@@ -48,6 +48,7 @@ namespace Entity.Tenant
         /// 3: 何れか一方を算定する。"
         /// </summary>
         [Column("HAIHAN_KBN")]
+        [Index("DENSI_HAIHAN_DAY_IDX03", 3)]
         public int HaihanKbn { get; set; }
 
         /// <summary>
@@ -66,6 +67,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("START_DATE")]
         [CustomAttribute.DefaultValue(0)]
+        [Index("DENSI_HAIHAN_DAY_IDX03", 4)]
         public int StartDate { get; set; }
 
         /// <summary>
@@ -75,13 +77,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("END_DATE")]
         [CustomAttribute.DefaultValue(99999999)]
+        [Index("DENSI_HAIHAN_DAY_IDX03", 5)]
         public int EndDate { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         public long SeqNo { get; set; }
 
@@ -90,7 +93,7 @@ namespace Entity.Tenant
         /// "0: システム設定分
         /// 1: ユーザー設定分"
         /// </summary>
-        //[Key]
+        [Key]
         [Column("USER_SETTING", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public int UserSetting { get; set; }
@@ -103,6 +106,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TARGET_KBN")]
         [CustomAttribute.DefaultValue(0)]
+        [Index("DENSI_HAIHAN_DAY_IDX03", 6)]
         public int TargetKbn { get; set; }
 
         /// <summary>
@@ -112,6 +116,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IS_INVALID")]
         [CustomAttribute.DefaultValue(0)]
+        [Index("DENSI_HAIHAN_DAY_IDX03", 7)]
         public int IsInvalid { get; set; }
 
         /// <summary>
@@ -160,7 +165,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

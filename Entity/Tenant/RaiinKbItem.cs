@@ -1,18 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
     /// <summary>
     /// 来院区分コード項目条件設定
     /// </summary>
-    [Table ("RAIIN_KBN_ITEM")]
+    [Table("RAIIN_KBN_ITEM")]
     [Index(nameof(HpId), nameof(GrpCd), nameof(KbnCd), nameof(IsDeleted), Name = "RAIIN_KBN_ITEM_IDX01")]
     public class RaiinKbItem : EmrCloneable<RaiinKbItem>
     {
@@ -51,7 +46,7 @@ namespace Entity.Tenant
 
         [Column(name: "ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -108,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

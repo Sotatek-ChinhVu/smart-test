@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INCOME_KBN")]
         [MaxLength(20)]
-        public string IncomeKbn { get; set; } = string.Empty;
+        public string? IncomeKbn { get; set; } = string.Empty;
         /// <summary>
         /// 開始日
         /// </summary>

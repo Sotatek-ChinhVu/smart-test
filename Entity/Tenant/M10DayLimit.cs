@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ST_DATE")]
         [MaxLength(8)]
-        public string StDate { get; set; } = string.Empty;
+        public string? StDate { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用終了日
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ED_DATE")]
         [MaxLength(8)]
-        public string EdDate { get; set; } = string.Empty;
+        public string? EdDate { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(400)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
     }
 }

@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("MACHINE")]
-        public string Machine { get; set; } = string.Empty;
+        public string? Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザーID

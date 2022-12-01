@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// N ○ 添付文書ＩＤ
         /// </summary>
         [Column("PI_ID_FULL")]
-        public string PiIdFull { get; set; } = string.Empty;
+        public string? PiIdFull { get; set; } = string.Empty;
 
         /// <summary>
         /// 添付文書
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PRODUCT_NAME")]
         [MaxLength(120)]
-        public string ProductName { get; set; } = string.Empty;
+        public string? ProductName { get; set; } = string.Empty;
 
         /// <summary>
         /// 規格単位
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAKER")]
         [MaxLength(256)]
-        public string Maker { get; set; } = string.Empty;
+        public string? Maker { get; set; } = string.Empty;
 
         /// <summary>
         /// 販売会社
@@ -91,7 +91,7 @@ namespace Entity.Tenant
         /// ＹＪコード
         /// </summary>
         [Column("YJ_CD")]
-        public string YjCd { get; set; } = string.Empty;
+        public string? YjCd { get; set; } = string.Empty;
 
         /// <summary>
         /// HOT番号
@@ -106,7 +106,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SOSYO_NAME")]
         [MaxLength(80)]
-        public string SosyoName { get; set; } = string.Empty;
+        public string? SosyoName { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名
@@ -172,14 +172,14 @@ namespace Entity.Tenant
         /// 添付文書状態
         /// </summary>
         [Column("PI_STATE")]
-        public string PiState { get; set; } = string.Empty;
+        public string? PiState { get; set; } = string.Empty;
 
         /// <summary>
         /// 添付文書種別
         /// 添付文書種別
         /// </summary>
         [Column("PI_SBT")]
-        public string PiSbt { get; set; } = string.Empty;
+        public string? PiSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 備考（添付文書単位）
@@ -224,6 +224,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPD_DATE_XML")]
         public DateTime? UpdDateXml { get; set; }
-
     }
 }

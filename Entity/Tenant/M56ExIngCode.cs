@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_NAME")]
         [MaxLength(200)]
-        public string SeibunName { get; set; } = string.Empty;
+        public string? SeibunName { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法コード
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(6)]
-        public string YohoCd { get; set; } = string.Empty;
+        public string? YohoCd { get; set; } = string.Empty;
 
     }
 }

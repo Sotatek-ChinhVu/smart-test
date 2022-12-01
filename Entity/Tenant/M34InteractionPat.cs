@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("INTERACTION_PAT_CD")]
-        public string InteractionPatCd { get; set; } = string.Empty;
+        public string? InteractionPatCd { get; set; } = string.Empty;
 
     }
 }

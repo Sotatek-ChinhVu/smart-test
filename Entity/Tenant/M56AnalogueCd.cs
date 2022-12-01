@@ -22,7 +22,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ANALOGUE_NAME")]
         [MaxLength(200)]
-        public string AnalogueName { get; set; } = string.Empty;
-
+        public string? AnalogueName { get; set; } = string.Empty;
     }
 }

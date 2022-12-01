@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(400)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
     }
 }

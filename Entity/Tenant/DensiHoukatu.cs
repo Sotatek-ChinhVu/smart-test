@@ -20,16 +20,16 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string ItemCd { get; set; }
 
         /// <summary>
         /// 新設年月日
         /// レコード情報を新設した日付を西暦年4桁、月2桁及び日2桁の8桁で表す。
         /// </summary>
-        //[Key]
+        [Key]
         [Column("START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }
@@ -84,14 +84,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOUKATU_GRP_NO")]
         [MaxLength(7)]
-        public string HoukatuGrpNo { get; set; } = string.Empty;
+        public string? HoukatuGrpNo { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザー設定
         /// "0: システム設定分
         /// 1: ユーザー設定分"
         /// </summary>
-        //[Key]
+        [Key]
         [Column("USER_SETTING", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public int UserSetting { get; set; }
@@ -151,7 +151,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

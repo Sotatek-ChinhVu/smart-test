@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("FUKUSAYO_INIT_CMT")]
-        public string FukusayoInitCmt { get; set; } = string.Empty;
+        public string? FukusayoInitCmt { get; set; } = string.Empty;
 
     }
 }

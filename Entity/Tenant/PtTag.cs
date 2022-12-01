@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         //[Key]
-        [Column(name:"PT_ID", Order = 2)]
+        [Column(name: "PT_ID", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
@@ -199,7 +198,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

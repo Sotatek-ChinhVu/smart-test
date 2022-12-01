@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("PRECAUTION_CD")]
-        public string PrecautionCd { get; set; } = string.Empty;
+        public string? PrecautionCd { get; set; } = string.Empty;
 
     }
 }

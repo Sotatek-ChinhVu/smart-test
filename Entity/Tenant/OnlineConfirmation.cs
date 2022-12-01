@@ -35,14 +35,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEGMENT_OF_RESULT")]
         [MaxLength(1)]
-        public string SegmentOfResult { get; set; } = string.Empty;
+        public string? SegmentOfResult { get; set; } = string.Empty;
 
         /// <summary>
         /// エラーメッセージ			
         /// </summary>
         [Column("ERROR_MESSAGE")]
         [MaxLength(60)]
-        public string ErrorMessage { get; set; } = string.Empty;
+        public string? ErrorMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

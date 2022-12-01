@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_CD")]
         [MaxLength(10)]
-        public string CenterCd { get; set; } = string.Empty;
+        public string? CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// センター名称
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_NAME")]
         [MaxLength(120)]
-        public string CenterName { get; set; } = string.Empty;
+        public string? CenterName { get; set; } = string.Empty;
 
         /// <summary>
         /// 主区分
@@ -97,6 +97,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

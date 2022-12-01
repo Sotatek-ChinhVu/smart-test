@@ -22,6 +22,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN")]
         [MaxLength(200)]
-        public string Seibun { get; set; } = string.Empty;
+        public string? Seibun { get; set; } = string.Empty;
     }
 }

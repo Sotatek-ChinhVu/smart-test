@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD1")]
         [MaxLength(10)]
-        public string ItemCd1 { get; set; } = string.Empty;
+        public string? ItemCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード２
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD2")]
         [MaxLength(10)]
-        public string ItemCd2 { get; set; } = string.Empty;
+        public string? ItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード３
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD3")]
         [MaxLength(10)]
-        public string ItemCd3 { get; set; } = string.Empty;
+        public string? ItemCd3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード４
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD4")]
         [MaxLength(10)]
-        public string ItemCd4 { get; set; } = string.Empty;
+        public string? ItemCd4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード５
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD5")]
         [MaxLength(10)]
-        public string ItemCd5 { get; set; } = string.Empty;
+        public string? ItemCd5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード６
@@ -78,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD6")]
         [MaxLength(10)]
-        public string ItemCd6 { get; set; } = string.Empty;
+        public string? ItemCd6 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード７
@@ -86,7 +86,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD7")]
         [MaxLength(10)]
-        public string ItemCd7 { get; set; } = string.Empty;
+        public string? ItemCd7 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード８
@@ -94,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD8")]
         [MaxLength(10)]
-        public string ItemCd8 { get; set; } = string.Empty;
+        public string? ItemCd8 { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目コード９
@@ -102,7 +102,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD9")]
         [MaxLength(10)]
-        public string ItemCd9 { get; set; } = string.Empty;
+        public string? ItemCd9 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特例条件
@@ -224,6 +224,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

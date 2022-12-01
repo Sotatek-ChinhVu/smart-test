@@ -1,13 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-	/// <summary>
-	/// 患者公費情報
-	/// </summary>
-	[Table("PT_KOHI")]
+    /// <summary>
+    /// 患者公費情報
+    /// </summary>
+    [Table("PT_KOHI")]
     public class PtKohi : EmrCloneable<PtKohi>
     {
         /// <summary>
@@ -15,7 +14,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("HP_ID", Order = 1)]
-		public int HpId { get; set; }
+        public int HpId { get; set; }
 
         /// <summary>
         /// 患者ID
@@ -23,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("PT_ID", Order = 2)]
-		public long PtId { get; set; }
+        public long PtId { get; set; }
 
         /// <summary>
         /// 保険ID
@@ -31,21 +30,21 @@ namespace Entity.Tenant
         /// </summary>
         [Key]
         [Column("HOKEN_ID", Order = 3)]
-		public int HokenId { get; set; }
+        public int HokenId { get; set; }
 
-		/// <summary>
-		/// 連番
-		/// </summary>
-		[Key]
-		[Column("SEQ_NO", Order = 4)]
-		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-		public long SeqNo { get; set; }
+        /// <summary>
+        /// 連番
+        /// </summary>
+        [Key]
+        [Column("SEQ_NO", Order = 4)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long SeqNo { get; set; }
 
-		/// <summary>
-		/// 都道府県番号
-		///		保険マスタの都道府県番号
-		/// </summary>
-		[Column("PREF_NO")]
+        /// <summary>
+        /// 都道府県番号
+        ///		保険マスタの都道府県番号
+        /// </summary>
+        [Column("PREF_NO")]
         public int PrefNo { get; set; }
 
         /// <summary>
@@ -69,22 +68,22 @@ namespace Entity.Tenant
         [MaxLength(8)]
         public string? FutansyaNo { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 受給者番号
-		/// </summary>
-		[Column("JYUKYUSYA_NO")]
+        /// <summary>
+        /// 受給者番号
+        /// </summary>
+        [Column("JYUKYUSYA_NO")]
         [MaxLength(7)]
         public string? JyukyusyaNo { get; set; } = string.Empty;
 
 
-		/// <summary>
-		/// 保険種別区分
-		///		2:マル長
-		///		5:生活保護 
-		///		6:分点公費
-		///		7:一般公費  
-		/// </summary>
-		[Column(name: "HOKEN_SBT_KBN")]
+        /// <summary>
+        /// 保険種別区分
+        ///		2:マル長
+        ///		5:生活保護 
+        ///		6:分点公費
+        ///		7:一般公費  
+        /// </summary>
+        [Column(name: "HOKEN_SBT_KBN")]
         [CustomAttribute.DefaultValue(0)]
         public int HokenSbtKbn { get; set; }
 
@@ -96,58 +95,58 @@ namespace Entity.Tenant
         [MaxLength(3)]
         public string? Houbetu { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 特殊受給者番号
-		/// </summary>
-		[Column("TOKUSYU_NO")]
+        /// <summary>
+        /// 特殊受給者番号
+        /// </summary>
+        [Column("TOKUSYU_NO")]
         [MaxLength(20)]
         public string? TokusyuNo { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 資格取得日
-		///		yyyymmdd	
-		/// </summary>
-		[Column("SIKAKU_DATE")]
+        /// <summary>
+        /// 資格取得日
+        ///		yyyymmdd	
+        /// </summary>
+        [Column("SIKAKU_DATE")]
         [CustomAttribute.DefaultValue(0)]
         public int SikakuDate { get; set; }
 
-		/// <summary>
-		/// 交付日
-		///		yyyymmdd
-		/// </summary>
-		[Column("KOFU_DATE")]
+        /// <summary>
+        /// 交付日
+        ///		yyyymmdd
+        /// </summary>
+        [Column("KOFU_DATE")]
         [CustomAttribute.DefaultValue(0)]
         public int KofuDate { get; set; }
 
-		/// <summary>
-		/// 適用開始日
-		///		yyyymmdd
-		/// </summary>
-		[Column("START_DATE")]
+        /// <summary>
+        /// 適用開始日
+        ///		yyyymmdd
+        /// </summary>
+        [Column("START_DATE")]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
 
-		/// <summary>
-		/// 適用終了日
-		///		yyyymmdd
-		/// </summary>
-		[Column("END_DATE")]
+        /// <summary>
+        /// 適用終了日
+        ///		yyyymmdd
+        /// </summary>
+        [Column("END_DATE")]
         [CustomAttribute.DefaultValue(0)]
         public int EndDate { get; set; }
 
-		/// <summary>
-		/// 負担率
-		///		yyyymmdd
-		/// </summary>
-		[Column("RATE")]
+        /// <summary>
+        /// 負担率
+        ///		yyyymmdd
+        /// </summary>
+        [Column("RATE")]
         [CustomAttribute.DefaultValue(0)]
         public int Rate { get; set; }
 
-		/// <summary>
-		/// 一部負担限度額
-		///		yyyymmdd
-		/// </summary>
-		[Column("GENDOGAKU")]
+        /// <summary>
+        /// 一部負担限度額
+        ///		yyyymmdd
+        /// </summary>
+        [Column("GENDOGAKU")]
         [CustomAttribute.DefaultValue(0)]
         public int GendoGaku { get; set; }
 
@@ -156,48 +155,48 @@ namespace Entity.Tenant
         ///		1:削除
         /// </summary>
         [Column("IS_DELETED")]
-		[CustomAttribute.DefaultValue(0)]
+        [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
-		/// <summary>
-		/// 作成日時	
-		/// </summary>
-		[Column("CREATE_DATE")]
-		[CustomAttribute.DefaultValueSql("current_timestamp")]
-		public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// 作成日時	
+        /// </summary>
+        [Column("CREATE_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime CreateDate { get; set; }
 
-		/// <summary>
-		/// 作成者		
-		/// </summary>
-		[Column(name: "CREATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int CreateId { get; set; }
+        /// <summary>
+        /// 作成者		
+        /// </summary>
+        [Column(name: "CREATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int CreateId { get; set; }
 
-		/// <summary>
-		/// 作成端末			
-		/// </summary>
-		[Column(name: "CREATE_MACHINE")]
-		[MaxLength(60)]
-		public string? CreateMachine { get; set; } = string.Empty;
+        /// <summary>
+        /// 作成端末			
+        /// </summary>
+        [Column(name: "CREATE_MACHINE")]
+        [MaxLength(60)]
+        public string? CreateMachine { get; set; } = string.Empty;
 
-		/// <summary>
-		/// 更新日時			
-		/// </summary>
-		[Column("UPDATE_DATE")]
-		public DateTime UpdateDate { get; set; }
+        /// <summary>
+        /// 更新日時			
+        /// </summary>
+        [Column("UPDATE_DATE")]
+        public DateTime UpdateDate { get; set; }
 
-		/// <summary>
-		/// 更新者			
-		/// </summary>
-		[Column(name: "UPDATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int UpdateId { get; set; }
+        /// <summary>
+        /// 更新者			
+        /// </summary>
+        [Column(name: "UPDATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UpdateId { get; set; }
 
-		/// <summary>
-		/// 更新端末			
-		/// </summary>
-		[Column(name: "UPDATE_MACHINE")]
-		[MaxLength(60)]
-		public string? UpdateMachine { get; set; }  = string.Empty;
-	}
+        /// <summary>
+        /// 更新端末			
+        /// </summary>
+        [Column(name: "UPDATE_MACHINE")]
+        [MaxLength(60)]
+        public string? UpdateMachine { get; set; } = string.Empty;
+    }
 }

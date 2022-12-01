@@ -51,14 +51,14 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("IRAI_FILE")]
-        public string IraiFile { get; set; } = string.Empty;
+        public string? IraiFile { get; set; } = string.Empty;
 
         ///<summary>
         ///依頼リスト		
         /// 
         /// </summary>
         [Column("IRAI_LIST")]
-        public byte[] IraiList { get; set; } = default!;
+        public byte[]? IraiList { get; set; } = default!;
 
         /// <summary>
         /// 作成日時
@@ -104,6 +104,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

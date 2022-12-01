@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療日
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "SIN_DATE", Order = 2)]
         public int SinDate { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         ///     診療日内の連番
         /// </summary>
-        //[Key]
+        [Key]
         [Column(name: "SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }
@@ -103,6 +103,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

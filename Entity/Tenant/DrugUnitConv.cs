@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 適用開始日
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("START_DATE", Order = 2)]
         public int StartDate { get; set; }
 
@@ -82,7 +82,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

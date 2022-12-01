@@ -62,6 +62,5 @@ namespace Entity.Tenant
         [Column("PARAM")]
         [MaxLength(300)]
         public string? Param { get; set; } = string.Empty;
-
     }
 }

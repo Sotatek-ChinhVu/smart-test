@@ -9,16 +9,16 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(ItemCd1), nameof(HaihanKbn), nameof(StartDate), nameof(TargetKbn), nameof(IsInvalid), Name = "DENSI_HAIHAN_CUSTOM_IDX03")]
     public class DensiHaihanCustom : EmrCloneable<DensiHaihanCustom>
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
         /// <summary>
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
 
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD2")]
         [MaxLength(10)]
-        public string ItemCd2 { get; set; } = string.Empty;
+        public string? ItemCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 背反区分
@@ -178,7 +178,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

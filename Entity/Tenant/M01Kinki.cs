@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KYODO_CD")]
         [MaxLength(3)]
-        public string KyodoCd { get; set; } = string.Empty;
+        public string? KyodoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 強度
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KYODO")]
         [MaxLength(2)]
-        public string Kyodo { get; set; } = string.Empty;
+        public string? Kyodo { get; set; } = string.Empty;
 
         /// <summary>
         /// データ区分
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DATA_KBN")]
         [MaxLength(1)]
-        public string DataKbn { get; set; } = string.Empty;
+        public string? DataKbn { get; set; } = string.Empty;
 
     }
 }

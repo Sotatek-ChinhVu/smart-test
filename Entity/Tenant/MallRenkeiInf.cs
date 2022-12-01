@@ -91,6 +91,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
-
     }
 }

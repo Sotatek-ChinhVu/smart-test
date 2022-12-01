@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MATERIAL_NAME")]
         [MaxLength(120)]
-        public string MaterialName { get; set; } = string.Empty;
+        public string? MaterialName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -75,6 +75,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;   
-
     }
 }

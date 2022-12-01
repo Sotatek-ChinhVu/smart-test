@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("STANDARD_BYOTAI")]
         [MaxLength(400)]
-        public string StandardByotai { get; set; } = string.Empty;
+        public string? StandardByotai { get; set; } = string.Empty;
 
         /// <summary>
         /// 病態抽出区分
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(400)]
-        public string Byomei { get; set; } = string.Empty;
+        public string? Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// ＩＣＤ１０コード
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ICD10")]
         [MaxLength(5)]
-        public string Icd10 { get; set; } = string.Empty;
+        public string? Icd10 { get; set; } = string.Empty;
 
         /// <summary>
         /// レセ電算コード
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_CD")]
         [MaxLength(33)]
-        public string ReceCd { get; set; } = string.Empty;
+        public string? ReceCd { get; set; } = string.Empty;
 
     }
 }

@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("FORM_CD")]
-        public string FormCd { get; set; } = string.Empty;
+        public string? FormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 色調
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("KONO_CD")]
-        public string KonoCd { get; set; } = string.Empty;
+        public string? KonoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 副作用コード

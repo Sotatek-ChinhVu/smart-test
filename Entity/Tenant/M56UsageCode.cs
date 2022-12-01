@@ -21,6 +21,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO")]
         [MaxLength(200)]
-        public string Yoho { get; set; } = string.Empty;
+        public string? Yoho { get; set; } = string.Empty;
     }
 }

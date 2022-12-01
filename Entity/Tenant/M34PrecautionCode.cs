@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PRECAUTION_CMT")]
         [MaxLength(200)]
-        public string PrecautionCmt { get; set; } = string.Empty;
+        public string? PrecautionCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 属性コード
@@ -57,7 +57,6 @@ namespace Entity.Tenant
         /// 1:男性 2:女性
         /// </summary>
         [Column("SEX_CD")]
-        public string SexCd { get; set; } = string.Empty;
-
+        public string? SexCd { get; set; } = string.Empty;
     }
 }

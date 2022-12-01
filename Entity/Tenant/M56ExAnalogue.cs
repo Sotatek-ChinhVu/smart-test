@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-    [Table(name: "M56_EX_ANALOGUE   ")]
+    [Table(name: "M56_EX_ANALOGUE")]
     public class M56ExAnalogue : EmrCloneable<M56ExAnalogue>
     {
         /// <summary>
@@ -31,6 +31,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ANALOGUE_CD")]
         [MaxLength(9)]
-        public string AnalogueCd { get; set; } = string.Empty;
+        public string? AnalogueCd { get; set; } = string.Empty;
     }
 }

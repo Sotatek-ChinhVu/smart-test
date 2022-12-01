@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIKIN_CD")]
         [MaxLength(9)]
-        public string KikinCd { get; set; } = string.Empty;
+        public string? KikinCd { get; set; } = string.Empty;
 
         /// <summary>
         /// YJコード
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ATTENTION_CMT")]
         [MaxLength(500)]
-        public string AttentionCmt { get; set; } = string.Empty;
+        public string? AttentionCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 作用機序
@@ -58,7 +58,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WORKING_MECHANISM")]
         [MaxLength(1000)]
-        public string WorkingMechanism { get; set; } = string.Empty;
-
+        public string? WorkingMechanism { get; set; } = string.Empty;
     }
 }

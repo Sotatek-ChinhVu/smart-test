@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOSEISYO_CD")]
         [MaxLength(12)]
-        public string KoseisyoCd { get; set; } = string.Empty;
+        public string? KoseisyoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 基金コード
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIKIN_CD")]
         [MaxLength(9)]
-        public string KikinCd { get; set; } = string.Empty;
+        public string? KikinCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 製品名
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_NAME")]
         [MaxLength(200)]
-        public string DrugName { get; set; } = string.Empty;
+        public string? DrugName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医薬品名称読み１
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KANA1")]
         [MaxLength(100)]
-        public string DrugKana1 { get; set; } = string.Empty;
+        public string? DrugKana1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 医薬品名称読み２
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(400)]
-        public string IpnName { get; set; } = string.Empty;
+        public string? IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 一般名読み
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_KANA")]
         [MaxLength(100)]
-        public string IpnKana { get; set; } = string.Empty;
+        public string? IpnKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価単位数量
@@ -85,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YAKKA_UNIT")]
         [MaxLength(20)]
-        public string YakkaUnit { get; set; } = string.Empty;
+        public string? YakkaUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分量・力価
@@ -100,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_RIKIKA_UNIT")]
         [MaxLength(30)]
-        public string SeibunRikikaUnit { get; set; } = string.Empty;
+        public string? SeibunRikikaUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 容量・重量
@@ -154,7 +154,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KBN_CD")]
         [MaxLength(1)]
-        public string DrugKbnCd { get; set; } = string.Empty;
+        public string? DrugKbnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬剤区分
@@ -162,7 +162,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KBN")]
         [MaxLength(10)]
-        public string DrugKbn { get; set; } = string.Empty;
+        public string? DrugKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形区分コード
@@ -170,7 +170,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM_KBN_CD")]
         [MaxLength(3)]
-        public string FormKbnCd { get; set; } = string.Empty;
+        public string? FormKbnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形区分
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM_KBN")]
         [MaxLength(100)]
-        public string FormKbn { get; set; } = string.Empty;
+        public string? FormKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 毒薬フラグ
@@ -265,7 +265,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIKAKU_UNIT")]
         [MaxLength(100)]
-        public string KikakuUnit { get; set; } = string.Empty;
+        public string? KikakuUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価換算式
@@ -273,7 +273,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YAKKA_RATE_FORMURA")]
         [MaxLength(30)]
-        public string YakkaRateFormura { get; set; } = string.Empty;
+        public string? YakkaRateFormura { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価換算可能単位
@@ -281,7 +281,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YAKKA_RATE_UNIT")]
         [MaxLength(40)]
-        public string YakkaRateUnit { get; set; } = string.Empty;
+        public string? YakkaRateUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価基準収載日付
@@ -305,7 +305,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAIN_DRUG_CD")]
         [MaxLength(8)]
-        public string MainDrugCd { get; set; } = string.Empty;
+        public string? MainDrugCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表医薬品名
@@ -313,7 +313,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAIN_DRUG_NAME")]
         [MaxLength(400)]
-        public string MainDrugName { get; set; } = string.Empty;
+        public string? MainDrugName { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表医薬品名読み
@@ -321,7 +321,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAIN_DRUG_KANA")]
         [MaxLength(400)]
-        public string MainDrugKana { get; set; } = string.Empty;
+        public string? MainDrugKana { get; set; } = string.Empty;
 
         /// <summary>
         /// キー成分
@@ -329,7 +329,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KEY_SEIBUN")]
         [MaxLength(200)]
-        public string KeySeibun { get; set; } = string.Empty;
+        public string? KeySeibun { get; set; } = string.Empty;
 
         /// <summary>
         /// 配合剤フラグ
@@ -347,6 +347,5 @@ namespace Entity.Tenant
         [Column("MAIN_DRUG_NAME_FLG")]
         [MaxLength(1)]
         public string? MainDrugNameFlg { get; set; } = string.Empty;
-
     }
 }

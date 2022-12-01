@@ -32,7 +32,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("JOB_NAME")]
         [MaxLength(10)]
-        public string JobName { get; set; } = string.Empty;
+        public string? JobName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

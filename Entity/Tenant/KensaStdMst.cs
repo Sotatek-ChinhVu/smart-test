@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD")]
         [MaxLength(60)]
-        public string MaleStd { get; set; } = string.Empty;
+        public string? MaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値下限
@@ -47,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_LOW")]
         [MaxLength(60)]
-        public string MaleStdLow { get; set; } = string.Empty;
+        public string? MaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 男性基準値上限
@@ -55,7 +55,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MALE_STD_HIGH")]
         [MaxLength(60)]
-        public string MaleStdHigh { get; set; } = string.Empty;
+        public string? MaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD")]
         [MaxLength(60)]
-        public string FemaleStd { get; set; } = string.Empty;
+        public string? FemaleStd { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値下限
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_LOW")]
         [MaxLength(60)]
-        public string FemaleStdLow { get; set; } = string.Empty;
+        public string? FemaleStdLow { get; set; } = string.Empty;
 
         /// <summary>
         /// 女性基準値上限
@@ -79,7 +79,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FEMALE_STD_HIGH")]
         [MaxLength(60)]
-        public string FemaleStdHigh { get; set; } = string.Empty;
+        public string? FemaleStdHigh { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -124,6 +124,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

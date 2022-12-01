@@ -24,6 +24,5 @@ namespace Entity.Tenant
         [Column("BYOTAI_CLASS_CD", Order = 2)]
         [MaxLength(4)]
         public string ByotaiClassCd { get; set; } = string.Empty;
-
     }
 }

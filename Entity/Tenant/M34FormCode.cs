@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM")]
         [MaxLength(80)]
-        public string Form { get; set; } = string.Empty;
+        public string? Form { get; set; } = string.Empty;
 
     }
 }

@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_NAME")]
         [MaxLength(200)]
-        public string ClassName { get; set; } = string.Empty;
+        public string? ClassName { get; set; } = string.Empty;
 
         /// <summary>
         /// 系統重複チェック対象フラグ
@@ -30,7 +30,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_DUPLICATION")]
         [MaxLength(1)]
-        public string ClassDuplication { get; set; } = string.Empty;
-
+        public string? ClassDuplication { get; set; } = string.Empty;
     }
 }

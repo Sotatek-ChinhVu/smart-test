@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KASSEITAI_CD")]
         [MaxLength(9)]
-        public string KasseitaiCd { get; set; } = string.Empty;
+        public string? KasseitaiCd { get; set; } = string.Empty;
 
     }
 }

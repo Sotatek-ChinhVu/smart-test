@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-	/// <summary>
-	/// 診療科マスタ
-	/// </summary>
-	[Table(name: "KA_MST")]
+    /// <summary>
+    /// 診療科マスタ
+    /// </summary>
+    [Table(name: "KA_MST")]
     [Index(nameof(KaId), Name = "PT_KA_MST_IDX01")]
     public class KaMst : EmrCloneable<KaMst>
     {
@@ -30,7 +29,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 診療科ID
         /// </summary>
-       
+
         [Column("KA_ID")]
         public int KaId { get; set; }
 
@@ -70,45 +69,45 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
-		/// <summary>
-		/// 作成日時	
-		/// </summary>
-		[Column("CREATE_DATE")]
-		[CustomAttribute.DefaultValueSql("current_timestamp")]
-		public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// 作成日時	
+        /// </summary>
+        [Column("CREATE_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime CreateDate { get; set; }
 
-		/// <summary>
-		/// 作成者		
-		/// </summary>
-		[Column(name: "CREATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int CreateId { get; set; }
+        /// <summary>
+        /// 作成者		
+        /// </summary>
+        [Column(name: "CREATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int CreateId { get; set; }
 
-		/// <summary>
-		/// 作成端末			
-		/// </summary>
-		[Column(name: "CREATE_MACHINE")]
-		[MaxLength(60)]
-		public string? CreateMachine { get; set; } = string.Empty;
+        /// <summary>
+        /// 作成端末			
+        /// </summary>
+        [Column(name: "CREATE_MACHINE")]
+        [MaxLength(60)]
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
         [Column("UPDATE_DATE")]
-		public DateTime UpdateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
 
-		/// <summary>
-		/// 更新者			
-		/// </summary>
-		[Column(name: "UPDATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int UpdateId { get; set; }
+        /// <summary>
+        /// 更新者			
+        /// </summary>
+        [Column(name: "UPDATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UpdateId { get; set; }
 
-		/// <summary>
-		/// 更新端末			
-		/// </summary>
-		[Column(name: "UPDATE_MACHINE")]
-		[MaxLength(60)]
-		public string? UpdateMachine { get; set; }  = string.Empty;
+        /// <summary>
+        /// 更新端末			
+        /// </summary>
+        [Column(name: "UPDATE_MACHINE")]
+        [MaxLength(60)]
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

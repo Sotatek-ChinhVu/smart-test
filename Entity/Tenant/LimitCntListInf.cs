@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -65,7 +60,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 来院番号
@@ -80,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -136,7 +131,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

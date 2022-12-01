@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(100)]
-        public string IpnName { get; set; } = string.Empty;
+        public string? IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番

@@ -33,6 +33,5 @@ namespace Entity.Tenant
         [Column("SEIBUN_CD", Order = 3)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;
-
     }
 }

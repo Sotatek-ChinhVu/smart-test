@@ -21,6 +21,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MAJOR_DIV_NAME")]
         [MaxLength(100)]
-        public string MajorDivName { get; set; } = string.Empty;
+        public string? MajorDivName { get; set; } = string.Empty;
     }
 }

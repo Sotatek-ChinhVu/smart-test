@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KA_NAME")]
         [MaxLength(40)]
-        public string KaName { get; set; } = string.Empty;
+        public string? KaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時

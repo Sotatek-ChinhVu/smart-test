@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KBN")]
         [MaxLength(2)]
-        public string DrugKbn { get; set; } = string.Empty;
+        public string? DrugKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法コード
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(6)]
-        public string YohoCd { get; set; } = string.Empty;
+        public string? YohoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 配合剤フラグ
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HAIGOU_FLG")]
         [MaxLength(1)]
-        public string HaigouFlg { get; set; } = string.Empty;
+        public string? HaigouFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 輸液フラグ
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YUEKI_FLG")]
         [MaxLength(1)]
-        public string YuekiFlg { get; set; } = string.Empty;
+        public string? YuekiFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 漢方フラグ
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KANPO_FLG")]
         [MaxLength(1)]
-        public string KanpoFlg { get; set; } = string.Empty;
+        public string? KanpoFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 全身作用フラグ
@@ -62,6 +62,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ZENSINSAYO_FLG")]
         [MaxLength(1)]
-        public string ZensinsayoFlg { get; set; } = string.Empty;
+        public string? ZensinsayoFlg { get; set; } = string.Empty;
     }
 }

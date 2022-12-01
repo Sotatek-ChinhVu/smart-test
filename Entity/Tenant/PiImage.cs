@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(30)]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -86,6 +86,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

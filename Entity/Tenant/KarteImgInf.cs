@@ -67,7 +67,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(100)]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// メッセージ
@@ -75,7 +75,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE")]
         [MaxLength(2000)]
-        public string Message { get; set; } = string.Empty;
-
+        public string? Message { get; set; } = string.Empty;
     }
 }

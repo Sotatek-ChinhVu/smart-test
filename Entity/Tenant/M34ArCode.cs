@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUKUSAYO_CMT")]
         [MaxLength(200)]
-        public string FukusayoCmt { get; set; } = string.Empty;
+        public string? FukusayoCmt { get; set; } = string.Empty;
 
     }
 }

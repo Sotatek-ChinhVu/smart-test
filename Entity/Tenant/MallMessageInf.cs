@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE")]
         [MaxLength(400)]
-        public string Message { get; set; } = string.Empty;
+        public string? Message { get; set; } = string.Empty;
 
         /// <summary>
         /// 日付

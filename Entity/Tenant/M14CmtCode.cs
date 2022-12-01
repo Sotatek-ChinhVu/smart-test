@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ATTENTION_CMT")]
         [MaxLength(500)]
-        public string AttentionCmt { get; set; } = string.Empty;
+        public string? AttentionCmt { get; set; } = string.Empty;
 
     }
 }

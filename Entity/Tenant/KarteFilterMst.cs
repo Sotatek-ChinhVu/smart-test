@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILTER_NAME")]
         [MaxLength(20)]
-        public string FilterName { get; set; } = string.Empty;
+        public string? FilterName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -111,6 +111,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

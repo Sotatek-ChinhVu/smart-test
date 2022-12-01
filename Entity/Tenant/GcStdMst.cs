@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 基準値区分
         /// 0:体重 1:身長
         /// </summary>
-        //[Key]
+        [Key]
         [Column("STD_KBN", Order = 2)]
         public int StdKbn { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 性別
         /// 1:男 2:女
         /// </summary>
-        //[Key]
+        [Key]
         [Column("SEX", Order = 3)]
         public int Sex { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 位置
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("POINT", Order = 4)]
         public double Point { get; set; }
 
@@ -182,7 +182,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

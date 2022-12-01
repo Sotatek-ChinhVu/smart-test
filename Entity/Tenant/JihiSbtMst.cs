@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NAME")]
         [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

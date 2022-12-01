@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INTERACTION_PAT_CMT")]
         [MaxLength(200)]
-        public string InteractionPatCmt { get; set; } = string.Empty;
+        public string? InteractionPatCmt { get; set; } = string.Empty;
 
     }
 }

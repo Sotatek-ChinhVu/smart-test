@@ -21,21 +21,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("OTC_CD")]
         [MaxLength(12)]
-        public string OtcCd { get; set; } = string.Empty;
+        public string? OtcCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品名
         /// </summary>
         [Column("TRADE_NAME")]
         [MaxLength(200)]
-        public string TradeName { get; set; } = string.Empty;
+        public string? TradeName { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品名読み
         /// </summary>
         [Column("TRADE_KANA")]
         [MaxLength(400)]
-        public string TradeKana { get; set; } = string.Empty;
+        public string? TradeKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類コード
@@ -43,21 +43,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CLASS_CD")]
         [MaxLength(2)]
-        public string ClassCd { get; set; } = string.Empty;
+        public string? ClassCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 会社コード
         /// </summary>
         [Column("COMPANY_CD")]
         [MaxLength(4)]
-        public string CompanyCd { get; set; } = string.Empty;
+        public string? CompanyCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 商品コード
         /// </summary>
         [Column("TRADE_CD")]
         [MaxLength(3)]
-        public string TradeCd { get; set; } = string.Empty;
+        public string? TradeCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 剤形コード

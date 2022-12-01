@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EVENT_NAME")]
         [MaxLength(100)]
-        public string EventName { get; set; } = string.Empty;
+        public string? EventName { get; set; } = string.Empty;
 
         /// <summary>
         /// 監査証跡
@@ -38,6 +38,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_DATE")]
         public DateTime CreateDate { get; set; }
-
     }
 }

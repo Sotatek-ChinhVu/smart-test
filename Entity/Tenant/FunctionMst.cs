@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUNCTION_NAME")]
         [MaxLength(100)]
-        public string FunctionName { get; set; } = string.Empty;
+        public string? FunctionName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -70,7 +70,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

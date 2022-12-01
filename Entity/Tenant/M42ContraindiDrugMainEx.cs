@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FAMILY_CD")]
         [MaxLength(1)]
-        public string FamilyCd { get; set; } = string.Empty;
+        public string? FamilyCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 注意コメントコード
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("CMT_CD", Order = 4)]
         [MaxLength(7)]
-        public string CmtCd { get; set; } = string.Empty;
+        public string? CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 機序コード
@@ -71,7 +71,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIJYO_CD")]
         [MaxLength(7)]
-        public string KijyoCd { get; set; } = string.Empty;
-
+        public string? KijyoCd { get; set; } = string.Empty;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// <summary>
         /// カテゴリコード
         /// </summary>
-        //[Key]
+        [Key]
         [Column("CATEGORY_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryCd { get; set; }
@@ -30,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CATEGORY_NAME")]
         [MaxLength(120)]
-        public string CategoryName { get; set; } = string.Empty;
+        public string? CategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -86,6 +85,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

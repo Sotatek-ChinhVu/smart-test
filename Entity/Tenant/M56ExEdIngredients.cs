@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_CD")]
         [MaxLength(9)]
-        public string SeibunCd { get; set; } = string.Empty;
+        public string? SeibunCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 成分索引コード
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_INDEX_CD")]
         [MaxLength(3)]
-        public string SeibunIndexCd { get; set; } = string.Empty;
+        public string? SeibunIndexCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 種別
@@ -54,7 +54,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PRODRUG_CHECK")]
         [MaxLength(1)]
-        public string ProdrugCheck { get; set; } = string.Empty;
+        public string? ProdrugCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 類似成分チェック対象フラグ
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ANALOGUE_CHECK")]
         [MaxLength(1)]
-        public string AnalogueCheck { get; set; } = string.Empty;
+        public string? AnalogueCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 溶解液チェック対象フラグ
@@ -70,7 +70,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOKAIEKI_CHECK")]
         [MaxLength(1)]
-        public string YokaiekiCheck { get; set; } = string.Empty;
+        public string? YokaiekiCheck { get; set; } = string.Empty;
 
         /// <summary>
         /// 添加物チェック対象フラグ
@@ -78,7 +78,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TENKABUTU_CHECK")]
         [MaxLength(1)]
-        public string TenkabutuCheck { get; set; } = string.Empty;
-
+        public string? TenkabutuCheck { get; set; } = string.Empty;
     }
 }
