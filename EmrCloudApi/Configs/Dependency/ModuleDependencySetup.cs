@@ -256,6 +256,7 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
+using UseCase.Document.SaveDocInf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -619,6 +620,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SortDocCategoryInputData, SortDocCategoryInteractor>();
             busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
             busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
+            busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

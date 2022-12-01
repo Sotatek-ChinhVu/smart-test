@@ -886,7 +886,7 @@ namespace Infrastructure.Repositories
                                             (sinDate <= 0 || p.SinDate < sinDate))
                                 .OrderByDescending(p => p.SinDate)
                                 .ThenByDescending(p => p.RaiinNo)
-                                .FirstOrDefault(); ;
+                                .FirstOrDefault();
 
                         if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
                         {
@@ -938,6 +938,11 @@ namespace Infrastructure.Repositories
             }
 
             return firstDate;
+        }
+
+        public bool CheckExistRaiinNo(int hpId, long ptId, long raiinNo)
+        {
+            return _tenantNoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
         }
     }
 }

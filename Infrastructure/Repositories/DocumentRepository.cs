@@ -104,30 +104,6 @@ public class DocumentRepository : IDocumentRepository
         return listDocDB.Select(item => ConvertToDocInfModel(item, new List<DocCategoryModel> { docCategory })).ToList();
     }
 
-    private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
-    {
-        return new DocCategoryModel(
-                entity.CategoryCd,
-                entity.CategoryName ?? string.Empty,
-                entity.SortNo
-            );
-    }
-
-    private DocCategoryMst ConvertToNewDocCategoryMst(int hpId, int userId, DocCategoryModel model)
-    {
-        DocCategoryMst entity = new();
-        entity.HpId = hpId;
-        entity.CategoryCd = model.CategoryCd;
-        entity.CategoryName = model.CategoryName;
-        entity.SortNo = model.SortNo;
-        entity.UpdateDate = DateTime.UtcNow;
-        entity.UpdateId = userId;
-        entity.IsDeleted = 0;
-        entity.CreateDate = DateTime.UtcNow;
-        entity.CreateId = userId;
-        return entity;
-    }
-
     public bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd)
     {
         // get in DB
@@ -155,6 +131,101 @@ public class DocumentRepository : IDocumentRepository
         return false;
     }
 
+    public DocInfModel GetDocInfDetail(int hpId, long ptId, int sinDate, long raiinNo, int seqNo)
+    {
+        var docInfDB = _tenantNoTrackingDataContext.DocInfs.FirstOrDefault(entity =>
+                                                                entity.HpId == hpId
+                                                                && entity.PtId == ptId
+                                                                && entity.SinDate == sinDate
+                                                                && entity.RaiinNo == raiinNo
+                                                                && entity.SeqNo == seqNo
+                                                                && entity.IsDeleted == 0
+                                                            );
+        if (docInfDB == null)
+        {
+            return new DocInfModel();
+        }
+        var docCategory = GetDocCategoryDetail(hpId, docInfDB.CategoryCd);
+        return ConvertToDocInfModel(docInfDB, new List<DocCategoryModel> { docCategory });
+    }
+
+    public bool SaveDocInf(int userId, DocInfModel model)
+    {
+        if (model.SeqNo <= 0)
+        {
+            _tenantDataContext.DocInfs.Add(ConvertToNewDocInf(userId, model));
+        }
+        else
+        {
+            var docInfDB = _tenantDataContext.DocInfs.FirstOrDefault(entity =>
+                                                                entity.HpId == model.HpId
+                                                                && entity.PtId == model.PtId
+                                                                && entity.SinDate == model.SinDate
+                                                                && entity.RaiinNo == model.RaiinNo
+                                                                && entity.SeqNo == model.SeqNo
+                                                            );
+            if (docInfDB == null)
+            {
+                return false;
+            }
+            docInfDB.CategoryCd = model.CategoryCd;
+            if (model.FileName.Length > 0)
+            {
+                docInfDB.FileName = model.FileName;
+            }
+            docInfDB.DspFileName = model.DisplayFileName;
+            docInfDB.UpdateDate = DateTime.UtcNow;
+            docInfDB.UpdateId = userId;
+        }
+
+        _tenantDataContext.SaveChanges();
+        return true;
+    }
+
+    #region private function
+    private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
+    {
+        return new DocCategoryModel(
+                entity.CategoryCd,
+                entity.CategoryName ?? string.Empty,
+                entity.SortNo
+            );
+    }
+
+    private DocCategoryMst ConvertToNewDocCategoryMst(int hpId, int userId, DocCategoryModel model)
+    {
+        DocCategoryMst entity = new();
+        entity.HpId = hpId;
+        entity.CategoryCd = model.CategoryCd;
+        entity.CategoryName = model.CategoryName;
+        entity.SortNo = model.SortNo;
+        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateId = userId;
+        entity.IsDeleted = 0;
+        entity.CreateDate = DateTime.UtcNow;
+        entity.CreateId = userId;
+        return entity;
+    }
+
+    private DocInf ConvertToNewDocInf(int userId, DocInfModel model)
+    {
+        DocInf entity = new();
+        entity.HpId = model.HpId;
+        entity.PtId = model.PtId;
+        entity.SinDate = model.SinDate;
+        entity.RaiinNo = model.RaiinNo;
+        entity.SeqNo = GetLastDocInfSeqNo(model.HpId, model.PtId, model.SinDate, model.RaiinNo) + 1;
+        entity.CategoryCd = model.CategoryCd;
+        entity.FileName = model.FileName;
+        entity.DspFileName = model.DisplayFileName;
+        entity.UpdateDate = DateTime.UtcNow;
+        entity.UpdateId = userId;
+        entity.IsDeleted = 0;
+        entity.CreateDate = DateTime.UtcNow;
+        entity.CreateId = userId;
+        return entity;
+    }
+
     private DocInfModel ConvertToDocInfModel(DocInf entity, List<DocCategoryModel> listDocCategory)
     {
         return new DocInfModel(
@@ -170,4 +241,16 @@ public class DocumentRepository : IDocumentRepository
                 entity.UpdateDate
             );
     }
+
+    private int GetLastDocInfSeqNo(int hpId, long ptId, int sinDate, long raiinNo)
+    {
+        var lastSeqNo = _tenantNoTrackingDataContext.DocInfs.Where(entity =>
+                                                                entity.HpId == hpId
+                                                                && entity.PtId == ptId
+                                                                && entity.SinDate == sinDate
+                                                                && entity.RaiinNo == raiinNo
+                                                            ).Max(item => item.SeqNo);
+        return lastSeqNo;
+    }
+    #endregion
 }

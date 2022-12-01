@@ -10,6 +10,7 @@ using UseCase.Document.AddTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
 
@@ -97,6 +98,17 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<CheckExistFileNameResponse>>(presenter.Result);
     }
 
+    [HttpPost(ApiPath.SaveDocInf)]
+    public ActionResult<Response<SaveDocInfResponse>> SaveDocInf([FromQuery] SaveDocInfRequest request)
+    {
+        var input = new SaveDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo, request.CategoryCd, request.FileName, request.DisplayFileName, Request.Body);
+        var output = _bus.Handle(input);
+
+        var presenter = new SaveDocInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<SaveDocInfResponse>>(presenter.Result);
+    }
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
