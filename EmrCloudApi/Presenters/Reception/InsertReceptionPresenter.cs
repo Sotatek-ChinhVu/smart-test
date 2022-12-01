@@ -19,6 +19,7 @@ public class InsertReceptionPresenter : IInsertReceptionOutputPort
     private string GetMessage(InsertReceptionStatus status) => status switch
     {
         InsertReceptionStatus.Success => ResponseMessage.Success,
+        InsertReceptionStatus.InvalidInsuranceList => ResponseMessage.InvalidInsuranceList,
         _ => string.Empty
     };
 }
