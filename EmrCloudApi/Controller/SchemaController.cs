@@ -5,6 +5,7 @@ using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveImageTodayOrder;
@@ -41,6 +42,17 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveImageTodayOrderPresenter();
             presenter.Complete(output);
 
+            return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.SaveInsuranceScanImage)]
+        public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromQuery] SaveInsuranceScanRequest request)
+        {
+            var input = new SaveInsuranceScanInputData(HpId, request.PtId, request.HokenGrp, request.HokenId, request.UrlOldImage , UserId, Request.Body);
+            var output = _bus.Handle(input);
+
+            var presenter = new SaveInsuranceScanPresenter();
+            presenter.Complete(output);
             return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
         }
     }
