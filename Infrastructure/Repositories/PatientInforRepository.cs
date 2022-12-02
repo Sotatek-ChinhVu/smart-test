@@ -263,7 +263,7 @@ namespace Infrastructure.Repositories
             return ptInfWithLastVisitDate.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
         }
 
-        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId)
+        public List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize)
         {
             var ptInfQuery = _tenantDataContext.PtInfs.Where(p => p.HpId == hpId && p.IsDelete == DeleteTypes.None);
             // PtNum
@@ -646,7 +646,12 @@ namespace Infrastructure.Repositories
                     ).FirstOrDefault()
                 };
 
-            return ptInfWithLastVisitDateQuery.AsEnumerable().Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate)).ToList();
+            return ptInfWithLastVisitDateQuery
+                                            .AsEnumerable()
+                                            .Skip((pageIndex - 1) * pageSize)
+                                            .Take(pageSize)
+                                            .Select(p => ToModel(p.ptInf, string.Empty, p.lastVisitDate))
+                                            .ToList();
 
             #region Helper methods
 
@@ -1783,6 +1788,9 @@ namespace Infrastructure.Repositories
         public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
         {
             var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            if (hokenMst is null)
+                return new HokenMstModel();
+
             return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
             {
                 return dest;

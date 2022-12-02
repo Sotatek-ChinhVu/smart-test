@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// テンプレートID
         /// 1以上の値
         /// </summary>
-        //[Key]
+        
         [Column("TEMPLATE_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int TemplateId { get; set; }
@@ -31,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEMPLATE_NAME")]
         [MaxLength(255)]
-        public string TemplateName { get; set; } = string.Empty;
+        public string? TemplateName { get; set; } = string.Empty;
 
         /// <summary>
         /// パラメーター
@@ -39,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM")]
         [MaxLength(1000)]
-        public string Param { get; set; } = string.Empty;
+        public string? Param { get; set; } = string.Empty;
 
         /// <summary>
         /// ファイル名
@@ -47,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE")]
         [MaxLength(300)]
-        public string File { get; set; } = string.Empty;
+        public string? File { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -70,6 +69,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
-
     }
 }

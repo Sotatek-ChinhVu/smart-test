@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,24 +6,24 @@ namespace Entity.Tenant
     [Table(name: "Z_LIMIT_LIST_INF")]
     public class ZLimitListInf : EmrCloneable<ZLimitListInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -79,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 来院番号
@@ -108,7 +107,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -164,7 +163,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// Id

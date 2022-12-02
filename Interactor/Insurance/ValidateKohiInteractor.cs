@@ -1,4 +1,5 @@
 ﻿using Domain.Constant;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.PatientInfor;
 using Helper.Common;
@@ -9,6 +10,7 @@ namespace Interactor.Insurance
     public class ValidateKohiInteractor : IValidKohiInputPort
     {
         private readonly IPatientInforRepository _patientInforRepository;
+
         public ValidateKohiInteractor(IPatientInforRepository patientInforRepository)
         {
             _patientInforRepository = patientInforRepository;
@@ -16,203 +18,103 @@ namespace Interactor.Insurance
 
         public ValidKohiOutputData Handle(ValidKohiInputData inputData)
         {
+            var validateDetails = new List<ResultValidateInsurance<ValidKohiStatus>>();
             try
             {
                 if (inputData.SinDate < 0)
-                {
-                    return new ValidKohiOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidSindate);
-                }
+                    validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidSindate, string.Empty, TypeMessage.TypeMessageError));
+
                 if (inputData.PtBirthday < 0)
-                {
-                    return new ValidKohiOutputData(false, string.Empty, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidPtBirthday);
-                }
+                    validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidPtBirthday, string.Empty, TypeMessage.TypeMessageError));
+
                 // Get HokenMst Kohi1
-                var hokenMstKohi1 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo1, inputData.SelectedKohiHokenEdraNo1);
-                if (hokenMstKohi1 == null)
-                {
-                    hokenMstKohi1 = new HokenMstModel();
-                }
+                var hokenMstKohi = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo, inputData.SelectedKohiHokenEdraNo);
+                if (hokenMstKohi is null)
+                    hokenMstKohi = new HokenMstModel();
+
                 //IsValidKohi1
-                var checkMessageKohi1 = IsValidKohi(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, inputData.SelectedKohiTokusyuNo1, inputData.SelectedKohiStartDate1, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1, hokenMstKohi1.IsFutansyaNoCheck, hokenMstKohi1.IsJyukyusyaNoCheck, hokenMstKohi1.IsTokusyuNoCheck, hokenMstKohi1.StartDate, hokenMstKohi1.EndDate, hokenMstKohi1.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew1);
-                if (!checkMessageKohi1.Result)
-                {
-                    return checkMessageKohi1;
-                }
+                IsValidKohi(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiJyukyusyaNo, inputData.SelectedKohiTokusyuNo, inputData.SelectedKohiStartDate, inputData.SelectedKohiEndDate, inputData.SelectedKohiConfirmDate, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsTokusyuNoCheck, hokenMstKohi.StartDate, hokenMstKohi.EndDate, hokenMstKohi.DisplayTextMaster, 1, inputData.SinDate, inputData.SelectedKohiIsAddNew);
+
                 // check Kohi No Function1
-                var checkMessageKohiNoFnc1 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel1, inputData.IsSelectedKohiMst1, inputData.SelectedKohiHokenNo1, inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiTokusyuNo1, hokenMstKohi1.IsJyukyusyaNoCheck, hokenMstKohi1.IsFutansyaNoCheck, hokenMstKohi1.JyuKyuCheckDigit, hokenMstKohi1.CheckDigit, hokenMstKohi1.Houbetu, inputData.SelectedKohiJyukyusyaNo1, hokenMstKohi1.AgeStart, hokenMstKohi1.AgeEnd, 1, inputData.PtBirthday);
-                if (!checkMessageKohiNoFnc1.Result)
-                {
-                    return checkMessageKohiNoFnc1;
-                }
-
-                // Get HokenMst Kohi2
-                var hokenMstKohi2 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo2, inputData.SelectedKohiHokenEdraNo2);
-                if (hokenMstKohi2 == null)
-                {
-                    hokenMstKohi2 = new HokenMstModel();
-                }
-                //IsValidKohi2
-                var checkMessageKohi2 = IsValidKohi(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, inputData.SelectedKohiTokusyuNo2, inputData.SelectedKohiStartDate2, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2, hokenMstKohi2.IsFutansyaNoCheck, hokenMstKohi2.IsJyukyusyaNoCheck, hokenMstKohi2.IsTokusyuNoCheck, hokenMstKohi2.StartDate, hokenMstKohi2.EndDate, hokenMstKohi2.DisplayTextMaster, 2, inputData.SinDate, inputData.SelectedKohiIsAddNew2);
-                if (!checkMessageKohi2.Result)
-                {
-                    return checkMessageKohi2;
-                }
-                // check Kohi No Function 2
-                var checkMessageKohiNoFnc2 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel2, inputData.IsSelectedKohiMst2, inputData.SelectedKohiHokenNo2, inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiTokusyuNo2, hokenMstKohi2.IsJyukyusyaNoCheck, hokenMstKohi2.IsFutansyaNoCheck, hokenMstKohi2.JyuKyuCheckDigit, hokenMstKohi2.CheckDigit, hokenMstKohi2.Houbetu, inputData.SelectedKohiJyukyusyaNo2, hokenMstKohi2.AgeStart, hokenMstKohi2.AgeEnd, 2, inputData.PtBirthday);
-                if (!checkMessageKohiNoFnc2.Result)
-                {
-                    return checkMessageKohiNoFnc2;
-                }
-                // Get HokenMst Kohi3
-                var hokenMstKohi3 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo3, inputData.SelectedKohiHokenEdraNo3);
-                if (hokenMstKohi3 == null)
-                {
-                    hokenMstKohi3 = new HokenMstModel();
-                }
-                //IsValidKohi3
-                var checkMessageKohi3 = IsValidKohi(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, inputData.SelectedKohiTokusyuNo3, inputData.SelectedKohiStartDate3, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3, hokenMstKohi3.IsFutansyaNoCheck, hokenMstKohi3.IsJyukyusyaNoCheck, hokenMstKohi3.IsTokusyuNoCheck, hokenMstKohi3.StartDate, hokenMstKohi3.EndDate, hokenMstKohi3.DisplayTextMaster, 3, inputData.SinDate, inputData.SelectedKohiIsAddNew3);
-                if (!checkMessageKohi3.Result)
-                {
-                    return checkMessageKohi3;
-                }
-                // check Kohi No Function 3
-                var checkMessageKohiNoFnc3 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel3, inputData.IsSelectedKohiMst3, inputData.SelectedKohiHokenNo3, inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiTokusyuNo3, hokenMstKohi3.IsJyukyusyaNoCheck, hokenMstKohi3.IsFutansyaNoCheck, hokenMstKohi3.JyuKyuCheckDigit, hokenMstKohi3.CheckDigit, hokenMstKohi3.Houbetu, inputData.SelectedKohiJyukyusyaNo3, hokenMstKohi3.AgeStart, hokenMstKohi3.AgeEnd, 3, inputData.PtBirthday);
-                if (!checkMessageKohiNoFnc3.Result)
-                {
-                    return checkMessageKohiNoFnc3;
-                }
-                // Get HokenMst Kohi4
-                var hokenMstKohi4 = _patientInforRepository.GetHokenMstByInfor(inputData.SelectedKohiHokenNo4, inputData.SelectedKohiHokenEdraNo4);
-                if (hokenMstKohi4 == null)
-                {
-                    hokenMstKohi4 = new HokenMstModel();
-                }
-                //IsValidKohi4
-                var checkMessageKohi4 = IsValidKohi(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, inputData.SelectedKohiTokusyuNo4, inputData.SelectedKohiStartDate4, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4, hokenMstKohi4.IsFutansyaNoCheck, hokenMstKohi4.IsJyukyusyaNoCheck, hokenMstKohi4.IsTokusyuNoCheck, hokenMstKohi4.StartDate, hokenMstKohi4.EndDate, hokenMstKohi4.DisplayTextMaster, 4, inputData.SinDate, inputData.SelectedKohiIsAddNew4);
-                if (!checkMessageKohi4.Result)
-                {
-                    return checkMessageKohi4;
-                }
-                // check Kohi No Function 4
-                var checkMessageKohiNoFnc4 = IsValidKohiNo_Fnc(inputData.IsKohiEmptyModel4, inputData.IsSelectedKohiMst4, inputData.SelectedKohiHokenNo4, inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiTokusyuNo4, hokenMstKohi4.IsJyukyusyaNoCheck, hokenMstKohi4.IsFutansyaNoCheck, hokenMstKohi4.JyuKyuCheckDigit, hokenMstKohi4.CheckDigit, hokenMstKohi4.Houbetu, inputData.SelectedKohiJyukyusyaNo4, hokenMstKohi4.AgeStart, hokenMstKohi4.AgeEnd, 4, inputData.PtBirthday);
-                if (!checkMessageKohiNoFnc4.Result)
-                {
-                    return checkMessageKohiNoFnc4;
-                }
-                var checkMessageKohiAll = IsvalidKohiAll(inputData.IsKohiEmptyModel1, inputData.IsKohiEmptyModel2, inputData.IsKohiEmptyModel3, inputData.IsKohiEmptyModel4,
-                                                         inputData.SelectedKohiFutansyaNo1, inputData.SelectedKohiJyukyusyaNo1, hokenMstKohi1.DisplayTextMaster, hokenMstKohi1.StartDate, inputData.SelectedKohiEndDate1, inputData.SelectedKohiConfirmDate1,
-                                                         inputData.SelectedKohiFutansyaNo2, inputData.SelectedKohiJyukyusyaNo2, hokenMstKohi2.DisplayTextMaster, hokenMstKohi2.StartDate, inputData.SelectedKohiEndDate2, inputData.SelectedKohiConfirmDate2,
-                                                         inputData.SelectedKohiFutansyaNo3, inputData.SelectedKohiJyukyusyaNo3, hokenMstKohi3.DisplayTextMaster, hokenMstKohi3.StartDate, inputData.SelectedKohiEndDate3, inputData.SelectedKohiConfirmDate3,
-                                                         inputData.SelectedKohiFutansyaNo4, inputData.SelectedKohiJyukyusyaNo4, hokenMstKohi4.DisplayTextMaster, hokenMstKohi4.StartDate, inputData.SelectedKohiEndDate4, inputData.SelectedKohiConfirmDate4);
-                if (!checkMessageKohiAll.Result)
-                {
-                    return checkMessageKohiAll;
-                }
-                return new ValidKohiOutputData(true, string.Empty, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
+                IsValidKohiNo_Fnc(ref validateDetails, inputData.IsKohiEmptyModel, inputData.IsSelectedKohiMst, inputData.SelectedKohiHokenNo, inputData.SelectedKohiFutansyaNo, inputData.SelectedKohiTokusyuNo, hokenMstKohi.IsJyukyusyaNoCheck, hokenMstKohi.IsFutansyaNoCheck, hokenMstKohi.JyuKyuCheckDigit, hokenMstKohi.CheckDigit, hokenMstKohi.Houbetu, inputData.SelectedKohiJyukyusyaNo, hokenMstKohi.AgeStart, hokenMstKohi.AgeEnd, 1, inputData.PtBirthday);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                return new ValidKohiOutputData(false, "Validate Exception", TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFaild);
+                validateDetails.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
+            return new ValidKohiOutputData(validateDetails);
         }
 
-        private ValidKohiOutputData IsValidKohi(bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew)
+        private void IsValidKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModdel, bool isHokenMstModel, string futansyaNo, string jyukyusyaNo, string tokusyuNo, int startDate, int endDate, int confirmDate, int hokenMstIsFutansyaCheckFlag, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsTokusyuCheckFlag, int hokenMstModelStartDate, int hokenMstModelEndDate, string hokenMstDisplayText, int numberKohi, int sinDate, bool isAddNew)
         {
             var message = "";
             var numberMessage = "";
 
             if (numberKohi == 1)
-            {
                 numberMessage = "１";
-            }
             else if (numberKohi == 2)
-            {
                 numberMessage = "２";
-            }
             else if (numberKohi == 3)
-            {
                 numberMessage = "３";
-            }
             else
-            {
                 numberMessage = "４";
-            }
 
-            if (!isKohiModdel)
+            if (isKohiModdel)
             {
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel4, message, TypeMessage.TypeMessageError));
                 }
             }
 
-            if (!isHokenMstModel && !isKohiModdel)
+            if (!isHokenMstModel)
             {
                 var paramsMessage = new string[] { "公費" + numberMessage + "保険番号" };
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty4, message, TypeMessage.TypeMessageError));
                 }
             }
 
             // check validate data
-            var checkValidateData = CheckValidData(numberMessage, numberKohi, futansyaNo, hokenMstIsFutansyaCheckFlag, jyukyusyaNo, hokenMstIsJyukyusyaCheckFlag, tokusyuNo, hokenMstIsTokusyuCheckFlag);
-            if (!checkValidateData.Result)
-            {
-                return checkValidateData;
-            }
+            CheckValidData(ref result, numberMessage, numberKohi, futansyaNo, hokenMstIsFutansyaCheckFlag, jyukyusyaNo, hokenMstIsJyukyusyaCheckFlag, tokusyuNo, hokenMstIsTokusyuCheckFlag);
 
             // check kohi date
-            var checkKohiDate = CheckKohiDate(startDate, endDate, numberMessage, numberKohi);
-            if (!checkKohiDate.Result)
-            {
-                return checkKohiDate;
-            }
+            CheckKohiDate(ref result, startDate, endDate, numberMessage, numberKohi);
 
             // check confirm date kohi
-            var checkMessageIsValidConfirmDateKohi = IsValidConfirmDateKohi(confirmDate, numberMessage, sinDate, isAddNew, numberKohi);
-            if (!checkMessageIsValidConfirmDateKohi.Result)
-            {
-                return checkMessageIsValidConfirmDateKohi;
-            }
+            IsValidConfirmDateKohi(ref result, confirmDate, numberMessage, sinDate, isAddNew, numberKohi);
 
             // master date kohi IsValidMasterDateKohi
-            var checkMasterDateKohi = CheckMasterDateKohi(hokenMstModelStartDate, hokenMstModelEndDate, sinDate, numberMessage, hokenMstDisplayText, numberKohi);
-            if (!checkMasterDateKohi.Result)
-            {
-                return checkMasterDateKohi;
-            }
-
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
+            CheckMasterDateKohi(ref result, hokenMstModelStartDate, hokenMstModelEndDate, sinDate, numberMessage, hokenMstDisplayText, numberKohi);
         }
 
-        private ValidKohiOutputData CheckValidData(string numberMessage, int numberKohi, string futansyaNo, int hokenMstIsFutansyaCheckFlag, string jyukyusyaNo, int hokenMstIsJyukyusyaCheckFlag, string tokusyuNo, int hokenMstIsTokusyuCheckFlag)
+        private void CheckValidData(ref List<ResultValidateInsurance<ValidKohiStatus>> result, string numberMessage, int numberKohi, string futansyaNo, int hokenMstIsFutansyaCheckFlag, string jyukyusyaNo, int hokenMstIsJyukyusyaCheckFlag, string tokusyuNo, int hokenMstIsTokusyuCheckFlag)
         {
             var message = "";
             if (string.IsNullOrEmpty(futansyaNo.Trim())
@@ -222,19 +124,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty4, message, TypeMessage.TypeMessageError));
                 }
             }
             else if (string.IsNullOrEmpty(jyukyusyaNo.Trim())
@@ -244,19 +146,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidJyukyusyaNo1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidJyukyusyaNo1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidJyukyusyaNo2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidJyukyusyaNo2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidJyukyusyaNo3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidJyukyusyaNo3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidJyukyusyaNo4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidJyukyusyaNo4, message, TypeMessage.TypeMessageError));
                 }
             }
             else if (string.IsNullOrEmpty(tokusyuNo.Trim())
@@ -266,19 +168,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidTokusyuNo1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidTokusyuNo2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidTokusyuNo3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidTokusyuNo4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidTokusyuNo4, message, TypeMessage.TypeMessageError));
                 }
             }
             if (!string.IsNullOrEmpty(futansyaNo) && Int32.Parse(futansyaNo) == 0)
@@ -287,25 +189,24 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidFutansyaNo01);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo01, message, TypeMessage.TypeMessageWarning));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidFutansyaNo02);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo02, message, TypeMessage.TypeMessageWarning));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidFutansyaNo03);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo03, message, TypeMessage.TypeMessageWarning));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidFutansyaNo04);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNo04, message, TypeMessage.TypeMessageWarning));
                 }
             }
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
         }
 
-        private ValidKohiOutputData CheckKohiDate(int startDate, int endDate, string numberMessage, int numberKohi)
+        private void CheckKohiDate(ref List<ResultValidateInsurance<ValidKohiStatus>> result, int startDate, int endDate, string numberMessage, int numberKohi)
         {
             var message = "";
             int kohiYukoFromDate = startDate;
@@ -316,75 +217,24 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidKohiYukoDate1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiYukoDate1, message, TypeMessage.TypeMessageWarning));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidKohiYukoDate2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiYukoDate2, message, TypeMessage.TypeMessageWarning));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidKohiYukoDate3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiYukoDate3, message, TypeMessage.TypeMessageWarning));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageWarning, ValidKohiStatus.InvalidKohiYukoDate4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiYukoDate4, message, TypeMessage.TypeMessageWarning));
                 }
             }
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
         }
 
-        private ValidKohiOutputData CheckMasterDateKohi(int hokenMstModelStartDate, int hokenMstModelEndDate, int sinDate, string numberMessage, string hokenMstDisplayText, int numberKohi)
-        {
-            var message = "";
-            if (hokenMstModelStartDate > sinDate)
-            {
-                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
-                            + CIUtil.SDateToShowSDate(hokenMstModelStartDate) + "～)", "保険番号" };
-                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                if (numberKohi == 1)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstStartDate1);
-                }
-                else if (numberKohi == 2)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstStartDate2);
-                }
-                else if (numberKohi == 3)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstStartDate3);
-                }
-                else
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstStartDate4);
-                }
-            }
-            if (hokenMstModelEndDate < sinDate)
-            {
-                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
-                            + CIUtil.SDateToShowSDate(hokenMstModelEndDate) + "～)", "保険番号" };
-                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
-                if (numberKohi == 1)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstEndDate1);
-                }
-                else if (numberKohi == 2)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstEndDate2);
-                }
-                else if (numberKohi == 3)
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstEndDate3);
-                }
-                else
-                {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiHokenMstEndDate4);
-                }
-            }
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
-        }
-
-        private ValidKohiOutputData IsValidConfirmDateKohi(int confirmDate, string numberMessage, int sinDate, bool isAddNew, int numberKohi)
+        private void IsValidConfirmDateKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, int confirmDate, string numberMessage, int sinDate, bool isAddNew, int numberKohi)
         {
             var message = "";
             int kouhi1ConfirmDate = confirmDate;
@@ -393,11 +243,7 @@ namespace Interactor.Insurance
                 || sinDate != confirmKohi1YM)
             {
                 // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
-                if (isAddNew)
-                {
-                    return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
-                }
-                else
+                if (!isAddNew)
                 {
                     var paramsMessage = new string[] { "公費" + numberMessage, "受給者証等" };
                     message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
@@ -407,122 +253,74 @@ namespace Interactor.Insurance
             {
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiConfirmDate1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiConfirmDate1, message, TypeMessage.TypeMessageConfirmation));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiConfirmDate2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiConfirmDate2, message, TypeMessage.TypeMessageConfirmation));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiConfirmDate3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiConfirmDate3, message, TypeMessage.TypeMessageConfirmation));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageConfirmation, ValidKohiStatus.InvalidKohiConfirmDate4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiConfirmDate4, message, TypeMessage.TypeMessageConfirmation));
                 }
-            }
-            else
-            {
-                return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
             }
         }
 
-        private ValidKohiOutputData IsvalidKohiAll(bool isKohiEmptyModel1, bool isKohiEmptyModel2, bool isKohiEmptyModel3, bool isKohiEmptyModel4, string futansyaNo1, string jyukyusyaNo1, string displayTextMaster1, int startDate1, int endDate1, int confirmDate1, string futansyaNo2, string jyukyusyaNo2, string displayTextMaster2, int startDate2, int endDate2, int confirmDate2, string futansyaNo3, string jyukyusyaNo3, string displayTextMaster3, int startDate3, int endDate3, int confirmDate3, string futansyaNo4, string jyukyusyaNo4, string displayTextMaster4, int startDate4, int endDate4, int confirmDate4)
+
+        private void CheckMasterDateKohi(ref List<ResultValidateInsurance<ValidKohiStatus>> result, int hokenMstModelStartDate, int hokenMstModelEndDate, int sinDate, string numberMessage, string hokenMstDisplayText, int numberKohi)
         {
             var message = "";
-            if (isKohiEmptyModel2 && isKohiEmptyModel1)
+            if (hokenMstModelStartDate > sinDate)
             {
-                var paramsMessage = new string[] { "公費１" };
-                message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty21);
-            }
-
-            if (isKohiEmptyModel3)
-            {
-                if (isKohiEmptyModel1)
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(hokenMstModelStartDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                if (numberKohi == 1)
                 {
-                    var paramsMessage = new string[] { "公費１" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty31);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstStartDate1, message, TypeMessage.TypeMessageConfirmation));
                 }
-
-                if (isKohiEmptyModel2)
+                else if (numberKohi == 2)
                 {
-                    var paramsMessage = new string[] { "公費２" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty32);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstStartDate2, message, TypeMessage.TypeMessageConfirmation));
                 }
-            }
-
-            if (isKohiEmptyModel4)
-            {
-                if (isKohiEmptyModel1)
+                else if (numberKohi == 3)
                 {
-                    var paramsMessage = new string[] { "公費１" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty41);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstStartDate3, message, TypeMessage.TypeMessageConfirmation));
                 }
-
-                if (isKohiEmptyModel2)
+                else
                 {
-                    var paramsMessage = new string[] { "公費２" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty42);
-                }
-
-                if (isKohiEmptyModel3)
-                {
-                    var paramsMessage = new string[] { "公費３" };
-                    message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmpty43);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstStartDate4, message, TypeMessage.TypeMessageConfirmation));
                 }
             }
-            // check duplicate 1
-            if (!isKohiEmptyModel1 && ((!isKohiEmptyModel2 && (futansyaNo1 == futansyaNo2 && jyukyusyaNo1 == jyukyusyaNo2 && displayTextMaster1 == displayTextMaster2 && startDate1 == startDate2 && endDate1 == endDate2 && confirmDate1 == confirmDate2))
-                   || (!isKohiEmptyModel3 && (futansyaNo1 == futansyaNo3 && jyukyusyaNo1 == jyukyusyaNo3 && displayTextMaster1 == displayTextMaster3 && startDate1 == startDate3 && endDate1 == endDate3 && confirmDate1 == confirmDate3))
-                   || (!isKohiEmptyModel4 && (futansyaNo1 == futansyaNo4 && jyukyusyaNo1 == jyukyusyaNo4 && displayTextMaster1 == displayTextMaster4 && startDate1 == startDate4 && endDate1 == endDate4 && confirmDate1 == confirmDate4))
-                    ))
+            if (hokenMstModelEndDate < sinDate)
             {
-                var paramsMessage = new string[] { "同じ公費は選択できません。" };
-                message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidDuplicateKohi1);
+                var paramsMessage = new string[] { "公費" + numberMessage + " '" + hokenMstDisplayText + "' の適用期間外です。" + "\n\r" + " ("
+                            + CIUtil.SDateToShowSDate(hokenMstModelEndDate) + "～)", "保険番号" };
+                message = String.Format(ErrorMessage.MessageType_mChk00080, paramsMessage);
+                if (numberKohi == 1)
+                {
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEndDate1, message, TypeMessage.TypeMessageConfirmation));
+                }
+                else if (numberKohi == 2)
+                {
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEndDate2, message, TypeMessage.TypeMessageConfirmation));
+                }
+                else if (numberKohi == 3)
+                {
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEndDate3, message, TypeMessage.TypeMessageConfirmation));
+                }
+                else
+                {
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEndDate4, message, TypeMessage.TypeMessageConfirmation));
+                }
             }
-            // check duplicate 2
-            if (!isKohiEmptyModel2 && ((!isKohiEmptyModel1 && (futansyaNo1 == futansyaNo2 && jyukyusyaNo1 == jyukyusyaNo2 && displayTextMaster1 == displayTextMaster2 && startDate1 == startDate2 && endDate1 == endDate2 && confirmDate1 == confirmDate2))
-                   || (!isKohiEmptyModel3 && (futansyaNo2 == futansyaNo3 && jyukyusyaNo2 == jyukyusyaNo3 && displayTextMaster2 == displayTextMaster3 && startDate2 == startDate3 && endDate2 == endDate3 && confirmDate2 == confirmDate3))
-                   || (!isKohiEmptyModel4 && (futansyaNo2 == futansyaNo4 && jyukyusyaNo2 == jyukyusyaNo4 && displayTextMaster2 == displayTextMaster4 && startDate2 == startDate4 && endDate2 == endDate4 && confirmDate2 == confirmDate4))
-                    ))
-            {
-                var paramsMessage = new string[] { "同じ公費は選択できません。" };
-                message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidDuplicateKohi2);
-            }
-            // check duplicate 3
-            if (!isKohiEmptyModel3 && ((!isKohiEmptyModel1 && (futansyaNo1 == futansyaNo3 && jyukyusyaNo1 == jyukyusyaNo3 && displayTextMaster1 == displayTextMaster3 && startDate1 == startDate3 && endDate1 == endDate3 && confirmDate1 == confirmDate3))
-                   || (!isKohiEmptyModel2 && (futansyaNo2 == futansyaNo3 && jyukyusyaNo2 == jyukyusyaNo3 && displayTextMaster2 == displayTextMaster3 && startDate2 == startDate3 && endDate2 == endDate3 && confirmDate2 == confirmDate3))
-                   || (!isKohiEmptyModel4 && (futansyaNo3 == futansyaNo4 && jyukyusyaNo3 == jyukyusyaNo4 && displayTextMaster3 == displayTextMaster4 && startDate3 == startDate4 && endDate3 == endDate4 && confirmDate3 == confirmDate4))
-                    ))
-            {
-                var paramsMessage = new string[] { "同じ公費は選択できません。" };
-                message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidDuplicateKohi3);
-            }
-            // check duplicate 4
-            if (!isKohiEmptyModel4 && ((!isKohiEmptyModel1 && (futansyaNo1 == futansyaNo4 && jyukyusyaNo1 == jyukyusyaNo4 && displayTextMaster1 == displayTextMaster4 && startDate1 == startDate4 && endDate1 == endDate4 && confirmDate1 == confirmDate4))
-                   || (!isKohiEmptyModel2 && (futansyaNo2 == futansyaNo4 && jyukyusyaNo2 == jyukyusyaNo4 && displayTextMaster2 == displayTextMaster4 && startDate2 == startDate4 && endDate2 == endDate4 && confirmDate2 == confirmDate4))
-                   || (!isKohiEmptyModel3 && (futansyaNo3 == futansyaNo4 && jyukyusyaNo3 == jyukyusyaNo4 && displayTextMaster3 == displayTextMaster4 && startDate3 == startDate4 && endDate3 == endDate4 && confirmDate3 == confirmDate4))
-                    ))
-            {
-                var paramsMessage = new string[] { "同じ公費は選択できません。" };
-                message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidDuplicateKohi4);
-            }
-
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
         }
 
-        private ValidKohiOutputData IsValidKohiNo_Fnc(bool isKohiModel, bool isKohiMstModel, int hokenNo, string futansyaNo, string tokusyuNo, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsFutansyaCheckFlag, int hokenMstJyukyuCheckDigit, int hokenMstCheckDigit, string hokenMstHoubetu, string jyukyusyaNo, int hokenMstAgeStartDate, int hokenMstAgeEndDate, int numberKohi, int ptBirthday)
+        private void IsValidKohiNo_Fnc(ref List<ResultValidateInsurance<ValidKohiStatus>> result, bool isKohiModel, bool isKohiMstModel, int hokenNo, string futansyaNo, string tokusyuNo, int hokenMstIsJyukyusyaCheckFlag, int hokenMstIsFutansyaCheckFlag, int hokenMstJyukyuCheckDigit, int hokenMstCheckDigit, string hokenMstHoubetu, string jyukyusyaNo, int hokenMstAgeStartDate, int hokenMstAgeEndDate, int numberKohi, int ptBirthday)
         {
             var message = "";
             var numberMessage = "";
@@ -547,19 +345,19 @@ namespace Interactor.Insurance
             {
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiEmptyModel4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiEmptyModel4, message, TypeMessage.TypeMessageError));
                 }
             }
 
@@ -571,19 +369,19 @@ namespace Interactor.Insurance
                 message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                 if (numberKohi == 1)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty1);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty1, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 2)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty2);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty2, message, TypeMessage.TypeMessageError));
                 }
                 else if (numberKohi == 3)
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty3);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty3, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
-                    return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidKohiHokenMstEmpty4);
+                    result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidKohiHokenMstEmpty4, message, TypeMessage.TypeMessageError));
                 }
             }
             if (hokenNo != 0)
@@ -595,19 +393,19 @@ namespace Interactor.Insurance
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
                     if (numberKohi == 1)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty1);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty1, message, TypeMessage.TypeMessageError));
                     }
                     else if (numberKohi == 2)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty2);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty2, message, TypeMessage.TypeMessageError));
                     }
                     else if (numberKohi == 3)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty3);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty3, message, TypeMessage.TypeMessageError));
                     }
                     else
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutansyaNoEmpty4);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutansyaNoEmpty4, message, TypeMessage.TypeMessageError));
                     }
                 }
                 //法別番号のチェック
@@ -626,19 +424,19 @@ namespace Interactor.Insurance
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                         if (numberKohi == 1)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckHBT1);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckHBT1, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 2)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckHBT2);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckHBT2, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 3)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckHBT3);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckHBT3, message, TypeMessage.TypeMessageError));
                         }
                         else
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckHBT4);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckHBT4, message, TypeMessage.TypeMessageError));
                         }
                     }
                     //チェックデジット
@@ -648,19 +446,19 @@ namespace Interactor.Insurance
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                         if (numberKohi == 1)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitFutansyaNo1);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo1, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 2)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitFutansyaNo2);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo2, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 3)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitFutansyaNo3);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo3, message, TypeMessage.TypeMessageError));
                         }
                         else
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitFutansyaNo4);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitFutansyaNo4, message, TypeMessage.TypeMessageError));
                         }
                     }
                     if (hokenMstIsJyukyusyaCheckFlag == 1 && hokenMstJyukyuCheckDigit == 1 && !CIUtil.HokenNumberCheckDigits(Int32.Parse(jyukyusyaNo)))
@@ -669,19 +467,19 @@ namespace Interactor.Insurance
                         message = String.Format(ErrorMessage.MessageType_mNG01010, paramsMessage);
                         if (numberKohi == 1)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo1);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo1, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 2)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo2);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo2, message, TypeMessage.TypeMessageError));
                         }
                         else if (numberKohi == 3)
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo3);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo3, message, TypeMessage.TypeMessageError));
                         }
                         else
                         {
-                            return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo4);
+                            result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckDigitJyukyusyaNo4, message, TypeMessage.TypeMessageError));
                         }
                     }
 
@@ -701,19 +499,19 @@ namespace Interactor.Insurance
                             message = String.Format(ErrorMessage.MessageType_mEnt01041, paramsMessage);
                             if (numberKohi == 1)
                             {
-                                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckAge1);
+                                result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckAge1, message, TypeMessage.TypeMessageError));
                             }
                             else if (numberKohi == 2)
                             {
-                                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckAge2);
+                                result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckAge2, message, TypeMessage.TypeMessageError));
                             }
                             else if (numberKohi == 3)
                             {
-                                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckAge3);
+                                result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckAge3, message, TypeMessage.TypeMessageError));
                             }
                             else
                             {
-                                return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidMstCheckAge4);
+                                result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidMstCheckAge4, message, TypeMessage.TypeMessageError));
                             }
                         }
                     }
@@ -729,23 +527,22 @@ namespace Interactor.Insurance
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
                     if (numberKohi == 1)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutanJyoTokuNull1);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutanJyoTokuNull1, message, TypeMessage.TypeMessageError));
                     }
                     else if (numberKohi == 2)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutanJyoTokuNull2);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutanJyoTokuNull2, message, TypeMessage.TypeMessageError));
                     }
                     else if (numberKohi == 3)
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutanJyoTokuNull3);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutanJyoTokuNull3, message, TypeMessage.TypeMessageError));
                     }
                     else
                     {
-                        return new ValidKohiOutputData(false, message, TypeMessage.TypeMessageError, ValidKohiStatus.InvalidFutanJyoTokuNull4);
+                        result.Add(new ResultValidateInsurance<ValidKohiStatus>(ValidKohiStatus.InvalidFutanJyoTokuNull4, message, TypeMessage.TypeMessageError));
                     }
                 }
             }
-            return new ValidKohiOutputData(true, message, TypeMessage.TypeMessageSuccess, ValidKohiStatus.InvalidSuccess);
         }
     }
 }

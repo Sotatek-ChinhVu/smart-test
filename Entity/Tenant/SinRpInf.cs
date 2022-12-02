@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("SIN_RP_INF_IDX01", 1)]
@@ -22,7 +21,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         //[Index("SIN_RP_INF_IDX01", 2)]
         //[Index("SIN_RP_INF_IDX02", 2)]
@@ -32,7 +31,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 3)]
         //[Index("SIN_RP_INF_IDX01", 3)]
         //[Index("SIN_RP_INF_IDX02", 3)]
@@ -42,7 +41,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RP_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RpNo { get; set; }
@@ -84,7 +83,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_NO")]
         [MaxLength(15)]
-        public string CdNo { get; set; } = string.Empty;
+        public string? CdNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -99,7 +98,7 @@ namespace Entity.Tenant
         /// RP_NOに属するSIN_KOUI.DETAIL_DATAを結合したもの　※
         /// </summary>
         [Column("KOUI_DATA")]
-        public string KouiData { get; set; } = string.Empty;
+        public string? KouiData { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -153,7 +152,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

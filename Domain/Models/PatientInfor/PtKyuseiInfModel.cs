@@ -48,7 +48,7 @@
             {
                 try
                 {
-                    return Name.Substring(0, Name.IndexOf("　"));
+                    return Name.Substring(Name.IndexOf("　") + 1);
                 }
                 catch (Exception)
                 {
@@ -64,7 +64,7 @@
             {
                 try
                 {
-                    return Name.Substring(Name.IndexOf("　") + 1);
+                    return Name.Substring(0, Name.IndexOf("　"));
                 }
                 catch (Exception)
                 {
@@ -80,7 +80,7 @@
             {
                 try
                 {
-                    return KanaName.Substring(0, KanaName.IndexOf(" "));
+                    return KanaName.Substring(KanaName.IndexOf("　") + 1);
                 }
                 catch (Exception)
                 {
@@ -92,11 +92,11 @@
 
         private string SetLastKanaName()
         {
-            if (!string.IsNullOrWhiteSpace(KanaName) && KanaName.Contains(" "))
+            if (!string.IsNullOrWhiteSpace(KanaName) && KanaName.Contains("　"))
             {
                 try
                 {
-                    return KanaName.Substring(KanaName.IndexOf(" ") + 1);
+                    return KanaName.Substring(0, KanaName.IndexOf("　"));
                 }
                 catch (Exception)
                 {

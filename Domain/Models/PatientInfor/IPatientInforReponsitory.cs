@@ -24,7 +24,7 @@ namespace Domain.Models.PatientInfor
 
         List<PatientInforModel> SearchSimple(string keyword, bool isContainMode, int hpId);
 
-        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId);
+        List<PatientInforModel> GetAdvancedSearchResults(PatientAdvancedSearchInput input, int hpId, int pageIndex, int pageSize);
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 

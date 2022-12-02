@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -14,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("USER_MST_IDX01", 1)]
         public int HpId { get; set; }
@@ -185,7 +184,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

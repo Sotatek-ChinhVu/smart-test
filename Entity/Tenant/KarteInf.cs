@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int HpId { get; set; }
@@ -33,7 +33,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// カルテ区分
         /// KARTE_KBN_MST.KARTE_KBN
         /// </summary>
-        //[Key]
+        
         [Column("KARTE_KBN", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int KarteKbn { get; set; }
@@ -49,7 +49,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long SeqNo { get; set; }

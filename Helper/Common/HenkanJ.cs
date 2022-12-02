@@ -1,61 +1,85 @@
-﻿using System.Runtime.InteropServices;
+﻿using Microsoft.VisualBasic;
+using System.Reflection;
 using System.Text;
 
 namespace Helper.Common
 {
-    public static class HenkanJ
+    public class HenkanJ
     {
-        private const uint LOCALE_SYSTEM_DEFAULT = 0x0800;
-        private const uint LCMAP_HALFWIDTH = 0x00400000;
-        private const uint LCMAP_FULLWIDTH = 0x00800000;
-
-        /// <summary>
-        /// Convert string from fullsize to halfsize
-        /// </summary>
-        /// <param name="fullWidth"></param>
-        /// <returns></returns>
-        public static string HankToZen(string fullWidth)
+        private static HenkanJ? _instance;
+        public static HenkanJ Instance
         {
-            try
+            get
             {
-                StringBuilder sb = new StringBuilder(256);
-                LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_HALFWIDTH, fullWidth, -1, sb, sb.Capacity);
-                //This function does not convert \ → ￥
-                //Replace by hand
-                sb = sb.Replace("\\", "￥");
-                //Win7の仕様変更（結合できない濁点[゛]が[?]に変換される）
-                sb = sb.Replace("゛", "?");
-                //Win7の仕様変更（結合できない半濁点[゜]が[?]に変換される）
-                sb = sb.Replace("゜", "?");
-
-                return sb.ToString();
-            }
-            catch
-            {
-                return "";
+                if (_instance == null)
+                {
+                    _instance = new HenkanJ();
+                }
+                return _instance;
             }
         }
 
-        /// <summary>
-        /// Convert string from halfsize to fullsize
-        /// </summary>
-        /// <param name="halfWidth"></param>
-        /// <returns></returns>
-        public static string ZenToHank(string halfWidth)
+        private readonly List<string> _japaneseCharacterList = new List<string>();
+        private HenkanJ()
         {
-            try
+            var assembly = Assembly.GetExecutingAssembly();
+            if (assembly == null)
             {
-                StringBuilder sb = new StringBuilder(256);
-                LCMapString(LOCALE_SYSTEM_DEFAULT, LCMAP_FULLWIDTH, halfWidth, -1, sb, sb.Capacity);
-                return sb.ToString();
+                return;
             }
-            catch
+            var resourceStream = assembly.GetManifestResourceStream(@"Helper.Resources.Fullsize-Halfsize.txt");
+            if (resourceStream == null)
             {
-                return "";
+                return;
+            }
+            using (var reader = new StreamReader(resourceStream, Encoding.UTF8))
+            {
+                while (!reader.EndOfStream)
+                {
+                    string? splitMe = reader.ReadLine();
+                    if (splitMe == null)
+                    {
+                        continue;
+                    }
+                    _japaneseCharacterList.Add(splitMe);
+                }
             }
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        private static extern int LCMapString(uint Locale, uint dwMapFlags, string lpSrcStr, int cchSrc, StringBuilder lpDestStr, int cchDest);
+        public string ToHalfsize(string value)
+        {
+            string result = value.ToLower();
+            string fullsize = string.Empty;
+            string halfsize = string.Empty;
+
+            foreach (string row in _japaneseCharacterList)
+            {
+                var split = row.Split('@');
+                fullsize = split[0];
+                halfsize = split[1];
+
+                result = result.Replace(fullsize, halfsize);
+            }
+
+            return result;
+        }
+
+        public string ToFullsize(string value)
+        {
+            string result = value.ToLower();
+            string fullsize = string.Empty;
+            string halfsize = string.Empty;
+
+            foreach (string row in _japaneseCharacterList)
+            {
+                var split = row.Split('@');
+                fullsize = split[0];
+                halfsize = split[1];
+
+                result = result.Replace(halfsize, fullsize);
+            }
+
+            return result;
+        }
     }
 }

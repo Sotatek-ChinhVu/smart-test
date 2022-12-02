@@ -15,13 +15,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIKIN_CD")]
         [MaxLength(9)]
-        public string KikinCd { get; set; } = string.Empty;
+        public string? KikinCd { get; set; } = string.Empty;
 
         /// <summary>
         /// YJコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// アレルギー区分
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("FOOD_KBN", Order = 2)]
         [MaxLength(2)]
         public string FoodKbn { get; set; } = string.Empty;
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 添付文書レベル
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("TENPU_LEVEL", Order = 3)]
         [MaxLength(2)]
         public string TenpuLevel { get; set; } = string.Empty;
@@ -50,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ATTENTION_CMT")]
         [MaxLength(500)]
-        public string AttentionCmt { get; set; } = string.Empty;
+        public string? AttentionCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 作用機序
@@ -58,7 +58,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WORKING_MECHANISM")]
         [MaxLength(1000)]
-        public string WorkingMechanism { get; set; } = string.Empty;
-
+        public string? WorkingMechanism { get; set; } = string.Empty;
     }
 }

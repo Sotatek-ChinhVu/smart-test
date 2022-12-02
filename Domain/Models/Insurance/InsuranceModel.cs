@@ -707,7 +707,7 @@ namespace Domain.Models.InsuranceInfor
                     }
                     else
                     {
-                        prefix += HenkanJ.HankToZen(thirNum.AsString()) + "併";
+                        prefix += HenkanJ.Instance.ToHalfsize(thirNum.AsString()) + "併";
                     }
                 }
 

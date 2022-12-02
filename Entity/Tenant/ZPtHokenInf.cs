@@ -10,24 +10,24 @@ namespace Entity.Tenant
     [Table("Z_PT_HOKEN_INF")]
     public class ZPtHokenInf : EmrCloneable<ZPtHokenInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EDA_NO")]
         [MaxLength(2)]
-        public string EdaNo { get; set; } = string.Empty;
+        public string? EdaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 保険番号枝番
@@ -85,21 +85,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOKENSYA_NO")]
         [MaxLength(8)]
-        public string HokensyaNo { get; set; } = string.Empty;
+        public string? HokensyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 記号
         /// </summary>
         [Column("KIGO")]
         [MaxLength(80)]
-        public string Kigo { get; set; } = string.Empty;
+        public string? Kigo { get; set; } = string.Empty;
 
         /// <summary>
         /// 番号
         /// </summary>
         [Column("BANGO")]
         [MaxLength(80)]
-        public string Bango { get; set; } = string.Empty;
+        public string? Bango { get; set; } = string.Empty;
 
         /// <summary>
         /// 本人家族区分
@@ -145,35 +145,35 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 被保険者名
         /// </summary>
         [Column("HOKENSYA_NAME")]
         [MaxLength(100)]
-        public string HokensyaName { get; set; } = string.Empty;
+        public string? HokensyaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 被保険者郵便番号
         /// </summary>
         [Column("HOKENSYA_POST")]
         [MaxLength(7)]
-        public string HokensyaPost { get; set; } = string.Empty;
+        public string? HokensyaPost { get; set; } = string.Empty;
 
         /// <summary>
         /// 被保険者住所
         /// </summary>
         [Column("HOKENSYA_ADDRESS")]
         [MaxLength(100)]
-        public string HokensyaAddress { get; set; } = string.Empty;
+        public string? HokensyaAddress { get; set; } = string.Empty;
 
         /// <summary>
         /// 被保険者電話番号
         /// </summary>
         [Column("HOKENSYA_TEL")]
         [MaxLength(15)]
-        public string HokensyaTel { get; set; } = string.Empty;
+        public string? HokensyaTel { get; set; } = string.Empty;
 
         /// <summary>
         /// 継続区分
@@ -331,35 +331,35 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TOKKI1")]
         [MaxLength(2)]
-        public string Tokki1 { get; set; } = string.Empty;
+        public string? Tokki1 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項２
         /// </summary>
         [Column("TOKKI2")]
         [MaxLength(2)]
-        public string Tokki2 { get; set; } = string.Empty;
+        public string? Tokki2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項３
         /// </summary>
         [Column("TOKKI3")]
         [MaxLength(2)]
-        public string Tokki3 { get; set; } = string.Empty;
+        public string? Tokki3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項４
         /// </summary>
         [Column("TOKKI4")]
         [MaxLength(2)]
-        public string Tokki4 { get; set; } = string.Empty;
+        public string? Tokki4 { get; set; } = string.Empty;
 
         /// <summary>
         /// 特記事項５
         /// </summary>
         [Column("TOKKI5")]
         [MaxLength(2)]
-        public string Tokki5 { get; set; } = string.Empty;
+        public string? Tokki5 { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災交付番号
@@ -369,7 +369,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ROUSAI_KOFU_NO")]
         [MaxLength(14)]
-        public string RousaiKofuNo { get; set; } = string.Empty;
+        public string? RousaiKofuNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災災害区分
@@ -385,21 +385,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ROUSAI_JIGYOSYO_NAME")]
         [MaxLength(80)]
-        public string RousaiJigyosyoName { get; set; } = string.Empty;
+        public string? RousaiJigyosyoName { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災都道府県名
         /// </summary>
         [Column("ROUSAI_PREF_NAME")]
         [MaxLength(10)]
-        public string RousaiPrefName { get; set; } = string.Empty;
+        public string? RousaiPrefName { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災所在地郡市区名
         /// </summary>
         [Column("ROUSAI_CITY_NAME")]
         [MaxLength(20)]
-        public string RousaiCityName { get; set; } = string.Empty;
+        public string? RousaiCityName { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災傷病年月日
@@ -414,21 +414,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ROUSAI_SYOBYO_CD")]
         [MaxLength(2)]
-        public string RousaiSyobyoCd { get; set; } = string.Empty;
+        public string? RousaiSyobyoCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災労働局コード
         /// </summary>
         [Column("ROUSAI_ROUDOU_CD")]
         [MaxLength(2)]
-        public string RousaiRoudouCd { get; set; } = string.Empty;
+        public string? RousaiRoudouCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災監督署コード
         /// </summary>
         [Column("ROUSAI_KANTOKU_CD")]
         [MaxLength(2)]
-        public string RousaiKantokuCd { get; set; } = string.Empty;
+        public string? RousaiKantokuCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 労災レセ請求回数
@@ -442,21 +442,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("JIBAI_HOKEN_NAME")]
         [MaxLength(100)]
-        public string JibaiHokenName { get; set; } = string.Empty;
+        public string? JibaiHokenName { get; set; } = string.Empty;
 
         /// <summary>
         /// 自賠保険担当者
         /// </summary>
         [Column("JIBAI_HOKEN_TANTO")]
         [MaxLength(40)]
-        public string JibaiHokenTanto { get; set; } = string.Empty;
+        public string? JibaiHokenTanto { get; set; } = string.Empty;
 
         /// <summary>
         /// 自賠保険連絡先
         /// </summary>
         [Column("JIBAI_HOKEN_TEL")]
         [MaxLength(15)]
-        public string JibaiHokenTel { get; set; } = string.Empty;
+        public string? JibaiHokenTel { get; set; } = string.Empty;
 
         /// <summary>
         /// 自賠受傷日
