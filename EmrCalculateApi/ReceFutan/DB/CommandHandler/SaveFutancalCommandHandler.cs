@@ -27,7 +27,7 @@ namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 
                 receInfs.ForEach(x =>
                 {
-                    x.CreateDate = DateTime.Now;
+                    x.CreateDate = DateTime.UtcNow;
                     x.CreateId = Hardcode.UserID;
                     x.CreateMachine = Hardcode.ComputerName;
                 }
@@ -63,7 +63,7 @@ namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 
                 receInfEdits.ForEach(x =>
                     {
-                        x.UpdateDate = DateTime.Now;
+                        x.UpdateDate = DateTime.UtcNow;
                         x.UpdateId = 0;  //計算による自動削除のため未指定
                         x.UpdateMachine = Hardcode.ComputerName;
                         x.IsDeleted = DeleteStatus.DeleteFlag;
@@ -86,7 +86,7 @@ namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 
                 receInfPreEdits.ForEach(x =>
                 {
-                    x.CreateDate = DateTime.Now;
+                    x.CreateDate = DateTime.UtcNow;
                     x.CreateId = Hardcode.UserID;
                     x.CreateMachine = Hardcode.ComputerName;
                 }
@@ -109,7 +109,7 @@ namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 
                 receFutanKbns.ForEach(x =>
                 {
-                    x.CreateDate = DateTime.Now;
+                    x.CreateDate = DateTime.UtcNow;
                     x.CreateId = Hardcode.UserID;
                     x.CreateMachine = Hardcode.ComputerName;
                 }
@@ -132,7 +132,7 @@ namespace EmrCalculateApi.ReceFutan.DB.CommandHandler
 
                 receInfJds.ForEach(x =>
                 {
-                    x.CreateDate = DateTime.Now;
+                    x.CreateDate = DateTime.UtcNow;
                     x.CreateId = Hardcode.UserID;
                     x.CreateMachine = Hardcode.ComputerName;
                 }
