@@ -1783,6 +1783,9 @@ namespace Infrastructure.Repositories
         public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
         {
             var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            if (hokenMst is null)
+                return new HokenMstModel();
+
             return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
             {
                 return dest;
