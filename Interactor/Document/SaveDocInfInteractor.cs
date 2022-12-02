@@ -6,6 +6,7 @@ using Domain.Models.User;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
+using System.Text.RegularExpressions;
 using UseCase.Document.SaveDocInf;
 
 namespace Interactor.Document;
@@ -45,7 +46,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
             {
                 return new SaveDocInfOutputData(SaveDocInfStatus.InvalidFileInput);
             }
-            else if (memoryStream.Length > 0)
+            else if (memoryStream.Length > 0 && inputData.SeqNo <= 0)
             {
                 var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
                 var listFolderPath = new List<string>(){
@@ -92,7 +93,8 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
 
     private SaveDocInfStatus ValidateInputData(SaveDocInfInputData inputData)
     {
-        var regxFile = @"^.*\.(docx|DOCX|xls|XLS)$";
+        var regxFile = @"^.*\.(docx|DOCX|xls|XLS|xlsx|XLSX)$";
+        var rg = new Regex(regxFile);
         if (inputData.SinDate.ToString().Length != 8)
         {
             return SaveDocInfStatus.InvalidSindate;
@@ -109,7 +111,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         {
             return SaveDocInfStatus.InvalidDisplayFileName;
         }
-        else if (inputData.FileName.Length == 0)
+        else if (rg.Matches(inputData.FileName).Count == 0 && inputData.SeqNo <= 0)
         {
             return SaveDocInfStatus.InvalidDocInfFileName;
         }

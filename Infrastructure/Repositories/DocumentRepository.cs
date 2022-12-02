@@ -170,10 +170,6 @@ public class DocumentRepository : IDocumentRepository
                 return false;
             }
             docInfDB.CategoryCd = model.CategoryCd;
-            if (model.FileName.Length > 0)
-            {
-                docInfDB.FileName = model.FileName;
-            }
             docInfDB.DspFileName = model.DisplayFileName;
             docInfDB.UpdateDate = DateTime.UtcNow;
             docInfDB.UpdateId = userId;
