@@ -1,5 +1,5 @@
 # emr-cloud-be
-# Backend SMART-Karte Web application
+# Backend Smart-Karte Web application
 
 ## How to install
 Clone project to local using git command or download a zip file
