@@ -47,9 +47,9 @@ namespace Interactor.Schema
             MemoryStream memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
 
             // Delete old image
-            if (!string.IsNullOrEmpty(inputData.OldImage))
+            if (!string.IsNullOrEmpty(inputData.UrlOldImage))
             {
-                string key = inputData.OldImage.Replace(_options.BaseAccessUrl + "/", string.Empty);
+                string key = inputData.UrlOldImage.Replace(_options.BaseAccessUrl + "/", string.Empty);
                 if (_amazonS3Service.ObjectExistsAsync(key).Result)
                 {
                     var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
@@ -67,9 +67,9 @@ namespace Interactor.Schema
                     return new SaveInsuranceScanOutputData(string.Empty , SaveInsuranceScanStatus.OldImageNotFound);
             }
 
-            if (memoryStream.Length <= 0 && string.IsNullOrEmpty(inputData.OldImage))
+            if (memoryStream.Length <= 0 && string.IsNullOrEmpty(inputData.UrlOldImage))
             {
-                if(!string.IsNullOrEmpty(inputData.OldImage)) //OldImage is not null and has removed above. 
+                if(!string.IsNullOrEmpty(inputData.UrlOldImage)) //OldImage is not null and has removed above. 
                 {
                     return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.RemoveOldImageSuccessful);
                 }    

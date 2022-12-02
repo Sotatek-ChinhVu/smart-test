@@ -48,7 +48,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.SaveInsuranceScanImage)]
         public ActionResult<Response<SaveImageResponse>> SaveInsuranceScanImage([FromQuery] SaveInsuranceScanRequest request)
         {
-            var input = new SaveInsuranceScanInputData(HpId, request.PtId, request.HokenGrp, request.HokenId, request.OldImage , UserId, Request.Body);
+            var input = new SaveInsuranceScanInputData(HpId, request.PtId, request.HokenGrp, request.HokenId, request.UrlOldImage , UserId, Request.Body);
             var output = _bus.Handle(input);
 
             var presenter = new SaveInsuranceScanPresenter();

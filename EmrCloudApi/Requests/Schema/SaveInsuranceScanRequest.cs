@@ -8,6 +8,6 @@
 
         public int HokenId { get; set; }
 
-        public string OldImage { get; set; } = string.Empty;
+        public string UrlOldImage { get; set; } = string.Empty;
     }
 }
