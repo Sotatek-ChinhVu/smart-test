@@ -653,7 +653,6 @@ namespace EmrCloudApi.Controller
                 );
         }
 
-        [AllowAnonymous]
         [HttpPost(ApiPath.ValidateOneKohi)]
         public ActionResult<Response<ValidateOneKohiResponse>> ValidateOneKohi([FromBody] ValidateOneKohiRequest request)
         {
