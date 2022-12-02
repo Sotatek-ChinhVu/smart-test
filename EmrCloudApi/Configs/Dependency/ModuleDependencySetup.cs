@@ -120,6 +120,7 @@ using Interactor.ApprovalInfo;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.CalculationInf;
@@ -619,6 +620,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SortDocCategoryInputData, SortDocCategoryInteractor>();
             busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
             busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
+
+            //InsuranceScan
+            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
