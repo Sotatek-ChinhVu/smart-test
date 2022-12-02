@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// ファイルID
         /// </summary>
-        [Key]
+        
         [Column("FILE_ID", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FileId { get; set; }
@@ -28,14 +28,14 @@ namespace Entity.Tenant
         /// 患者番号
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        [Key]
+        
         [Column("PT_ID", Order = 3)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 取得日
         /// </summary>
-        [Key]
+        
         [Column("GET_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int GetDate { get; set; }
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ファイル番号
         /// </summary>
-        [Key]
+        
         [Column("FILE_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int FileNo { get; set; }

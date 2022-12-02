@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// グループコード
         /// 警告メッセージに表示する名称
         /// </summary>
-        //[Key]
+        
         [Column("SANTEI_GRP_CD", Order = 2)]
         public int SanteiGrpCd { get; set; }
 

@@ -9,7 +9,7 @@ namespace Entity.Tenant
     [Table(name: "Z_DOC_INF")]
     public class ZDocInf : EmrCloneable<ZDocInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

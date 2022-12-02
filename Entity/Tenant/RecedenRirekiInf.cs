@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_ID", Order = 3)]
         public int HokenId { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 4)]
         public int SinYm { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 連番
         /// 同一HP_ID, PT_ID, HOKEN_ID, SIN_YM内での連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }

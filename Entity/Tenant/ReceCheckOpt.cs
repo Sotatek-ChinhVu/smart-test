@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// エラーコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ERR_CD", Order = 2)]
         [MaxLength(5)]
         public string ErrCd { get; set; } = string.Empty;

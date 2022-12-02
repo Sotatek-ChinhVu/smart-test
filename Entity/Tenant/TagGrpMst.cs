@@ -9,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// 付箋分類番号
         /// 0-分類なし、99-"チームカルテ"
         /// </summary>
-        //[Key]
+        
         [Column("TAG_GRP_NO", Order = 2)]
         public int TagGrpNo { get; set; }
 

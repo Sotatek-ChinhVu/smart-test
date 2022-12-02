@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 区分コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

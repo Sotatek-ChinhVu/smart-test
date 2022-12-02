@@ -14,21 +14,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 分類番号
         /// </summary>
-        [Key]
+        
         [Column(name: "GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 分類項目コード
         /// </summary>
-        [Key]
+        
         [Column(name: "GRP_CODE", Order = 3)]
         [MaxLength(2)]
         public string GrpCode { get; set; } = string.Empty;
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        
         [Column(name: "SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }

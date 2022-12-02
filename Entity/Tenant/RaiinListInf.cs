@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SIN_DATE", Order = 3)]
         public int SinDate { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 4)]
         public long RaiinNo { get; set; }
 
@@ -43,7 +43,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("GRP_ID", Order = 5)]
         public int GrpId { get; set; }
 
@@ -84,7 +84,7 @@ namespace Entity.Tenant
         ///		3: 文書
         ///		4: ファイル
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_LIST_KBN", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int RaiinListKbn { get; set; }

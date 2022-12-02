@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "Z_UKETUKE_SBT_DAY_INF")]
     public class ZUketukeSbtDayInf : EmrCloneable<ZUketukeSbtDayInf>
     {
-        [Key]
+        
         [Column("OP_ID")]
         public long OpId { get; set; }
 

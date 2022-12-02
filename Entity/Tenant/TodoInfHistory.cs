@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 履歴番号
         ///     変更していく旅に増えていく
         /// </summary>
-        [Key]
+        
         [Column(name: "REVISION", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Revision { get; set; }
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -26,21 +26,21 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO番号 
         /// </summary>
-        //[Key]
+        
         [Column("TODO_NO", Order = 3)]
         public int TodoNo { get; set; }
 
         /// <summary>
         /// TODO枝番 
         /// </summary>
-        //[Key]
+        
         [Column("TODO_EDA_NO", Order = 4)]
         public int TodoEdaNo { get; set; }
 
         /// <summary>
         /// 患者ID 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 5)]
         public long PtId { get; set; }
 

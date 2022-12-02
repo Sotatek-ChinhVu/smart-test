@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// 添付文書
         /// N ○ 添付文書ＩＤの下6桁
         /// </summary>
-        [Key]
+        
         [Column(name: "PI_ID", Order = 1)]
         public string PiId { get; set; } = string.Empty;
 
@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// 添付文書
         /// N ○ 枝番号
         /// </summary>
-        [Key]
+        
         [Column(name: "BRANCH", Order = 2)]
         public string Branch { get; set; } = string.Empty;
 
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// JPN
         /// N ○ ＪＰＮコード
         /// </summary>
-        [Key]
+        
         [Column(name: "JPN", Order = 3)]
         public string Jpn { get; set; } = string.Empty;
 

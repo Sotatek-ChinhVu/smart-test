@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ID
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -20,21 +20,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// セットコード
         /// </summary>
-        //[Key]
+        
         [Column("SET_CD", Order = 2)]
         public int SetCd { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         public long SeqNo { get; set; }
 

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// アレルギー区分
         /// 
         /// </summary>
-        [Key]
+        
         [Column("FOOD_KBN", Order = 1)]
         [MaxLength(2)]
         public string FoodKbn { get; set; } = string.Empty;

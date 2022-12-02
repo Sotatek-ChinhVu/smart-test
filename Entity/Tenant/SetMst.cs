@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("SET_MST_UI001", 1)]
         //[Index("SET_MST_IDX01", 1)]
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         /// セットコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SET_CD", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetCd { get; set; }

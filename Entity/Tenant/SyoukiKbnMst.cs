@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 症状詳記区分
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SYOUKI_KBN", Order = 1)]
         public int SyoukiKbn { get; set; }
 
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// 適用開始年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_YM", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int StartYm { get; set; }

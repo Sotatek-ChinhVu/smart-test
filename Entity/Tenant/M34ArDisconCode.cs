@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 副作用コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("FUKUSAYO_CD", Order = 1)]
         [MaxLength(6)]
         public string FukusayoCd { get; set; } = string.Empty;

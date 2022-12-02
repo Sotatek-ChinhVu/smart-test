@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// カテゴリID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("CATEGORY_ID", Order = 1)]
         public int CategoryId { get; set; }
 

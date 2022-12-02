@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 会社コード
         /// 数字4桁
         /// </summary>
-        [Key]
+        
         [Column("MAKER_CD", Order = 1)]
         public string MakerCd { get; set; } = string.Empty;
 

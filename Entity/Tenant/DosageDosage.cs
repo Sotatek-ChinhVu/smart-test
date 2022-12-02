@@ -10,14 +10,14 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        [Key]
+        
         [Column("DOEI_CD", Order = 1)]
         public string DoeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// ＤＯＥＩコード連番
         /// </summary>
-        [Key]
+        
         [Column("DOEI_SEQ_NO", Order = 2)]
         public int DoeiSeqNo { get; set; }
 

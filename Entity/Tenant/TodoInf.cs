@@ -9,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO番号 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("TODO_NO", Order = 2)]
         public int TodoNo { get; set; }
@@ -25,14 +25,14 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO枝番 
         /// </summary>
-        //[Key]
+        
         [Column("TODO_EDA_NO", Order = 3)]
         public int TodoEdaNo { get; set; }
 
         /// <summary>
         /// 患者ID 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 4)]
         public long PtId { get; set; }
 

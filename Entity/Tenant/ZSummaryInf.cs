@@ -11,7 +11,7 @@ namespace Entity.Tenant
     [Table(name: "Z_SUMMARY_INF")]
     public class ZSummaryInf : EmrCloneable<ZSummaryInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// コメントコード
         /// CM または KJ で始まり5桁の数字が続く
         /// </summary>
-        [Key]
+        
         [Column("CMT_CD", Order = 1)]
         [MaxLength(7)]
         public string CmtCd { get; set; } = string.Empty;

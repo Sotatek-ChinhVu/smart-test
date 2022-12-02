@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 有効開始年月日
         ///     yyyymmdd
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 3)]
         public int StartDate { get; set; }
 

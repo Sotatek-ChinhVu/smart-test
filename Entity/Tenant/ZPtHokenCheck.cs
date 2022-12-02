@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table("Z_PT_HOKEN_CHECK")]
     public class ZPtHokenCheck : EmrCloneable<ZPtHokenCheck>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

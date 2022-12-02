@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 相互作用コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("INTERACTION_PAT_CD", Order = 1)]
         public string InteractionPatCd { get; set; } = string.Empty;
 

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// シリアルナンバー
         /// 管理用通し番号　1~9999999
         /// </summary>
-        [Key]
+        
         [Column("SERIAL_NUM", Order = 1)]
         public int SerialNum { get; set; }
 

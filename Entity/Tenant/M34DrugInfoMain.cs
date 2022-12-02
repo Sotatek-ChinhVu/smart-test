@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医薬品コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 

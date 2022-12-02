@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 資格確認履歴番号
         /// </summary>
-        [Key]
+        
         [Column("ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }

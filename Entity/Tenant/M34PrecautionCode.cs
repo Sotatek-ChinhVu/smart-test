@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 注意事項コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PRECAUTION_CD", Order = 1)]
         public string PrecautionCd { get; set; } = string.Empty;
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 拡張コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("EXTEND_CD", Order = 2)]
         public string ExtendCd { get; set; } = string.Empty;
 

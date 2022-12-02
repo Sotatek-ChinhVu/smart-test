@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table("Z_PT_JIBKAR")]
     public class ZPtJibkar : EmrCloneable<ZPtJibkar>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

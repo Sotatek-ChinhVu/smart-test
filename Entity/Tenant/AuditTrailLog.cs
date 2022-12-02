@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// ログID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("LOG_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long LogId { get; set; }

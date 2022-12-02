@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// カテゴリID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("CATEGORY_ID", Order = 1)]
         public int CategoryId { get; set; }
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        [Key]
+        
         [Column("EDA_NO", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }

@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 労働局コード
         /// </summary>
-        [Key]
+        
         [Column(name: "ROUDOU_CD", Order = 1)]
         [MaxLength(2)]
         public string RoudouCd { get; set; } = string.Empty;

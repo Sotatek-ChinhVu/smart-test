@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// フィルターID
         /// </summary>
-        [Key]
+        
         [Column("FILTER_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int FilterId { get; set; }

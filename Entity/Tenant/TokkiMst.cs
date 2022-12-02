@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("TOKKI_MST_IDX01", 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 特記事項コード
         /// </summary>
-        //[Key]
+        
         [Column(name: "TOKKI_CD", Order = 2)]
         //[Index("TOKKI_MST_IDX01", 2)]
         [MaxLength(2)]

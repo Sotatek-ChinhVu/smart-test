@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// セット区分
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SET_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbn { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// セット区分枝番
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SET_KBN_EDA_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SetKbnEdaNo { get; set; }
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 世代ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("GENERATION_ID", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int GenerationId { get; set; }

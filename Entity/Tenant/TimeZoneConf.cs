@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
         //[Index("TIME_ZONE_CONF_IDX01", 1)]
         public int HpId { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 曜日区分
         ///     1..7:日曜～土曜
         /// </summary>
-        //[Key]
+        
         [Column(name: "YOUBI_KBN", Order = 2)]
         //[Index("TIME_ZONE_CONF_IDX01", 2)]
         public int YoubiKbn { get; set; }
@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column(name: "SEQ_NO", Order = 3)]
         //[Index("TIME_ZONE_CONF_IDX01", 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

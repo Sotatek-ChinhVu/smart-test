@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 検査依頼コード
         /// SEQUENCE
         /// </summary>
-        //[Key]
+        
         [Column("IRAI_CD", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long IraiCd { get; set; }

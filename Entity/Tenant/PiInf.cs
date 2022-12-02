@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 添付文書ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PI_ID", Order = 1)]
         [MaxLength(6)]
         public string PiId { get; set; } = string.Empty;

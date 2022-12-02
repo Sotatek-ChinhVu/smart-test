@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "Z_PT_ALRGY_FOOD")]
     public class ZPtAlrgyFood : EmrCloneable<ZPtAlrgyFood>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

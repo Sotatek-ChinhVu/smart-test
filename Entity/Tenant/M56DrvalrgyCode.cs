@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// アレルギー関連系統コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("DRVALRGY_CD", Order = 1)]
         [MaxLength(8)]
         public string DrvalrgyCd { get; set; } = string.Empty;

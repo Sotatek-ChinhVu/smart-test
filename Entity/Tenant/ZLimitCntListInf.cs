@@ -6,7 +6,7 @@ namespace Entity.Tenant
     [Table(name: "Z_LIMIT_CNT_LIST_INF")]
     public class ZLimitCntListInf : EmrCloneable<ZLimitCntListInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

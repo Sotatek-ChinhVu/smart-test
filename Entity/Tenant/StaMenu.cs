@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// メニューID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("MENU_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MenuId { get; set; }

@@ -12,7 +12,7 @@ namespace Entity.Tenant
     [Table("Z_PT_HOKEN_PATTERN")]
     public class ZPtHokenPattern : EmrCloneable<ZPtHokenPattern>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

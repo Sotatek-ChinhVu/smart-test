@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// セットID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SET_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SetId { get; set; }

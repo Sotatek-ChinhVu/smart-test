@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// 機能コード
         /// FUNCTION_MST.FUNCTION_CD
         /// </summary>
-        [Key]
+        
         [Column("FUNCTION_CD", Order = 1)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 1: 参照権限
         /// 99:使用不可"
         /// </summary>
-        //[Key]
+        
         [Column("PERMISSION", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int Permission { get; set; }

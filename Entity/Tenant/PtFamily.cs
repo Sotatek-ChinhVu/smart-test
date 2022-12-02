@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// 家族ID
         ///     患者の家族を識別するための番号
         /// </summary>
-        [Key]
+        
         [Column("FAMILY_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long FamilyId { get; set; }

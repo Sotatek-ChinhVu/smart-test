@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 検査項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("KENSA_ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string KensaItemCd { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("KENSA_ITEM_SEQ_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int KensaItemSeqNo { get; set; }

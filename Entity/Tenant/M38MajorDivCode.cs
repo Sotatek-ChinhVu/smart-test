@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 大分類コード
         /// 数字1桁
         /// </summary>
-        [Key]
+        
         [Column("MAJOR_DIV_CD", Order = 1)]
         public string MajorDivCd { get; set; } = string.Empty;
 

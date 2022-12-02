@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// 機能コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("FUNCTION_CD", Order = 1)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;

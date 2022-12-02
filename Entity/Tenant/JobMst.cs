@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 職種コード
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("JOB_CD", Order = 2)]
         public int JobCd { get; set; }

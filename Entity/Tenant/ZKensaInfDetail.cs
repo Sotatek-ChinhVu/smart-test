@@ -6,7 +6,7 @@ namespace Entity.Tenant
     [Table(name: "Z_KENSA_INF_DETAIL")]
     public class ZKensaInfDetail : EmrCloneable<ZKensaInfDetail>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

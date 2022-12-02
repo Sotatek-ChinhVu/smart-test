@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "Z_RECE_INF_EDIT")]
     public class ZReceInfEdit : EmrCloneable<ZReceInfEdit>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

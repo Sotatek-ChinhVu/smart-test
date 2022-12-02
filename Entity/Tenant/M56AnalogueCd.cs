@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 類似成分コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ANALOGUE_CD", Order = 1)]
         [MaxLength(9)]
         public string AnalogueCd { get; set; } = string.Empty;

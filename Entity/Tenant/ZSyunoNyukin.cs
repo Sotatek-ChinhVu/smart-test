@@ -9,7 +9,7 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(RaiinNo), nameof(IsDeleted), Name = "SYUNO_NYUKIN_IDX01")]
     public class ZSyunoNyukin : EmrCloneable<ZSyunoNyukin>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

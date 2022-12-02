@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 材料コード
         /// KENSA_MST.MATERIAL_CD
         /// </summary>
-        //[Key]
+        
         [Column("MATERIAL_CD", Order = 2)]
         public long MaterialCd { get; set; }
 

@@ -9,7 +9,7 @@ namespace Entity.Tenant
     [Table("RSV_FRAME_INF")]
     public class RsvFrameInf : EmrCloneable<RsvFrameInf>
     {
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -17,28 +17,28 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約枠ID
         /// </summary>
-        //[Key]
+        
         [Column("RSV_FRAME_ID", Order = 3)]
         public int RsvFrameId { get; set; }
 
         /// <summary>
         /// 診療日
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 4)]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 開始時間
         /// </summary>
-        //[Key]
+        
         [Column("START_TIME", Order = 5)]
         public int StartTime { get; set; }
 

@@ -12,7 +12,7 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(PtId), nameof(EndDate), nameof(IsDeleted), Name = "PT_KYUSEI_IDX01")]
     public class ZPtKyusei : EmrCloneable<ZPtKyusei>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

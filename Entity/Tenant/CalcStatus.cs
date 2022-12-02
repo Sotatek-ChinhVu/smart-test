@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// 計算ID
         /// SEQUENCE
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("CALC_ID", Order = 1)]
         public long CalcId { get; set; }

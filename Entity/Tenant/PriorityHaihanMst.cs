@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 背反グループコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HAIHAN_GRP", Order = 2)]
         public long HaihanGrp { get; set; }
 
@@ -118,7 +118,7 @@ namespace Entity.Tenant
         /// 新設年月日
         /// レコード情報を新設した日付を西暦年4桁、月2桁及び日2桁の8桁で表す。
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -155,7 +155,7 @@ namespace Entity.Tenant
         /// "0: システム設定分
         /// 1: ユーザー設定分"
         /// </summary>
-        //[Key]
+        
         [Column("USER_SETTING", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int UserSetting { get; set; }

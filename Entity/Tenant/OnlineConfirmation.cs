@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 受付番号
         /// オンライン資格確認システムが払い出す受付番号
         /// </summary>
-        [Key]
+        
         [Column("RECEPTION_NO")]
         public string ReceptionNo { get; set; } = string.Empty;
 

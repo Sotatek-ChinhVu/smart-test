@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("SIN_RP_INF_IDX01", 1)]
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         //[Index("SIN_RP_INF_IDX01", 2)]
         //[Index("SIN_RP_INF_IDX02", 2)]
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 3)]
         //[Index("SIN_RP_INF_IDX01", 3)]
         //[Index("SIN_RP_INF_IDX02", 3)]
@@ -41,7 +41,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RP_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int RpNo { get; set; }

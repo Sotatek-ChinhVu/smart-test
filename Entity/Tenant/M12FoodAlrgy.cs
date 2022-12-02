@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// YJコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// アレルギー区分
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("FOOD_KBN", Order = 2)]
         [MaxLength(2)]
         public string FoodKbn { get; set; } = string.Empty;
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 添付文書レベル
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("TENPU_LEVEL", Order = 3)]
         [MaxLength(2)]
         public string TenpuLevel { get; set; } = string.Empty;

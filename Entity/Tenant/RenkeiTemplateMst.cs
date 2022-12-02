@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// テンプレートID
         /// 1以上の値
         /// </summary>
-        //[Key]
+        
         [Column("TEMPLATE_ID", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int TemplateId { get; set; }

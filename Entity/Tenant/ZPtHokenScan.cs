@@ -11,7 +11,7 @@ namespace Entity.Tenant
 
     public class ZPtHokenScan : EmrCloneable<ZPtHokenScan>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

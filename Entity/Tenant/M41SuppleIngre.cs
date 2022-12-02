@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// サプリメント成分コード
         /// 9Sで始まり、5桁の数字が続く
         /// </summary>
-        [Key]
+        
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;

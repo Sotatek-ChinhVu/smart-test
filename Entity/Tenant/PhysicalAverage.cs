@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 実施年度
         /// 
         /// </summary>
-        [Key]
+        
         [Column("JISSI_YEAR", Order = 1)]
         public int JissiYear { get; set; }
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 年齢
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("AGE_YEAR", Order = 2)]
         public int AgeYear { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 月齢
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("AGE_MONTH", Order = 3)]
         public int AgeMonth { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 日齢
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("AGE_DAY", Order = 4)]
         public int AgeDay { get; set; }
 

@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医薬品コード
         /// </summary>
-        [Key]
+        
         [Column(name: "YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        [Key]
+        
         [Column(name: "DOEI_CD", Order = 2)]
         [MaxLength(8)]
         public string DoeiCd { get; set; } = string.Empty;

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// レセ診療科コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("RECE_KA_CD", Order = 1)]
         [MaxLength(2)]
         public string ReceKaCd { get; set; } = string.Empty;

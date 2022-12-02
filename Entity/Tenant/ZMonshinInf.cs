@@ -8,7 +8,7 @@ namespace Entity.Tenant
     [Table(name: "Z_MONSHIN_INF")]
     public class ZMonshinInf : EmrCloneable<ZMonshinInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 効能効果コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("KONO_CD", Order = 1)]
         public string KonoCd { get; set; } = string.Empty;
 

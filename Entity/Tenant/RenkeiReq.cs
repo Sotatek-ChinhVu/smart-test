@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 要求ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("REQ_ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ReqId { get; set; }

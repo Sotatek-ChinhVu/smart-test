@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 単位コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("UNIT_CD", Order = 1)]
         public int UnitCd { get; set; }
 

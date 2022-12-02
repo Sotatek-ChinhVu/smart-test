@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// セットID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }

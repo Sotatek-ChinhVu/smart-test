@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 合成グループ
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("GOSEI_GRP", Order = 2)]
         public int GoseiGrp { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 合成項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("GOSEI_ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string GoseiItemCd { get; set; } = string.Empty;
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 4)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 四肢加算区分
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SISI_KBN", Order = 5)]
         public int SisiKbn { get; set; }
 
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// 使用開始日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 6)]
         public int StartDate { get; set; }
 

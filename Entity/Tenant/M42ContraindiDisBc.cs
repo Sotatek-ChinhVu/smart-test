@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 病態コード
         /// BY で始まり5桁の数字が続く
         /// </summary>
-        [Key]
+        
         [Column("BYOTAI_CD", Order = 1)]
         [MaxLength(7)]
         public string ByotaiCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 病態分類コード
         /// BC で始まり2桁の数字が続く
         /// </summary>
-        //[Key]
+        
         [Column("BYOTAI_CLASS_CD", Order = 2)]
         [MaxLength(4)]
         public string ByotaiClassCd { get; set; } = string.Empty;

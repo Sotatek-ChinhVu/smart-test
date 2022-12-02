@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "Z_SANTEI_INF_DETAIL")]
     public class ZSanteiInfDetail : EmrCloneable<ZSanteiInfDetail>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 3)]
         public long RaiinNo { get; set; }
 

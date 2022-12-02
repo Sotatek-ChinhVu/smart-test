@@ -11,7 +11,7 @@ namespace Entity.Tenant
     [Table(name: "Z_SEIKATUREKI_INF")]
     public class ZSeikaturekiInf : EmrCloneable<ZSeikaturekiInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

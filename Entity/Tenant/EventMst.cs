@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// イベントコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("EVENT_CD", Order = 1)]
         [MaxLength(11)]
         public string EventCd { get; set; } = string.Empty;

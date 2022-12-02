@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
 		/// 医療機関識別ID
 		/// </summary>
-		[Key]
+		
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 保険者番号
         /// </summary>
-        [Key]
+        
         [Column(name: "HOKENSYA_NO", Order = 2)]
         [MaxLength(8)]
         public string? HokensyaNo { get; set; } = string.Empty;

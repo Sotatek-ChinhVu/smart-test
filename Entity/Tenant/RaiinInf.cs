@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long RaiinNo { get; set; }

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// センターコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("CENTER_CD", Order = 2)]
         [MaxLength(10)]
         public string CenterCd { get; set; } = string.Empty;
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// 作成日時
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("CREATE_DATE", Order = 3)]
         public DateTime CreateDate { get; set; }
 

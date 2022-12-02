@@ -14,14 +14,14 @@ namespace Entity.Tenant
         /// <summary>
         ///医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 分類ID
         /// </summary>
-        [Key]
+        
         [Column("GRP_ID", Order = 2)]
         public int GrpCd { get; set; }
 

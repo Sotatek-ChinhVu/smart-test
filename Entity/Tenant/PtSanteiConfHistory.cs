@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 履歴番号
         ///     変更していく旅に増えていく
         /// </summary>
-        [Key]
+        
         [Column(name: "REVISION", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Revision { get; set; }
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column(name: "HP_ID", Order = 2)]
         public int HpId { get; set; }
 
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         /// 患者ID
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column(name: "PT_ID", Order = 3)]
         public long PtId { get; set; }
 
@@ -66,7 +66,7 @@ namespace Entity.Tenant
         /// 連番
         ///     区分番号枝番の枝番
         /// </summary>
-        //[Key]
+        
         [Column(name: "SEQ_NO", Order = 4)]
         public long SeqNo { get; set; }
 

@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約種別
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("YOYAKU_SBT", Order = 2)]
         public int YoyakuSbt { get; set; }

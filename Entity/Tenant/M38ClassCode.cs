@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 分類コード
         /// 数字2桁
         /// </summary>
-        [Key]
+        
         [Column("CLASS_CD", Order = 1)]
         public string ClassCd { get; set; } = string.Empty;
 

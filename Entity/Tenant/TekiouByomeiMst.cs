@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 病名コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("BYOMEI_CD", Order = 3)]
         [MaxLength(7)]
         public string ByomeiCd { get; set; } = string.Empty;
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// システム管理データ
         /// 1:配信したマスタ
         /// </summary>
-        //[Key]
+        
         [Column("SYSTEM_DATA", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SystemData { get; set; }

@@ -9,7 +9,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// TODO区分番号 
         /// </summary>
-        //[Key]
+        
         [Column("TODO_KBN_NO", Order = 2)]
         public int TodoKbnNo { get; set; }
 

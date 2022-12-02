@@ -16,28 +16,28 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 分類コード
         /// </summary>
-        //[Key]
+        
         [Column("GRP_CD", Order = 2)]
         public int GrpCd { get; set; }
 
         /// <summary>
         /// 分類枝番
         /// </summary>
-        //[Key]
+        
         [Column("GRP_EDA_NO", Order = 3)]
         public int GrpEdaNo { get; set; }
 
         /// <summary>
         /// 連番 
         /// </summary
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeqNo { get; set; }

@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 3)]
         public int SinYm { get; set; }
 
@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// 診療日
         /// アフターケアの場合に使用
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DAY", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDay { get; set; }
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 保険ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_ID", Order = 5)]
         public int HokenId { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("SEQ_NO", Order = 6)]
         public int SeqNo { get; set; }

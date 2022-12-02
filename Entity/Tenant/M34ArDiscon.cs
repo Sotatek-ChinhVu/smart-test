@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医薬品コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         public string YjCd { get; set; } = string.Empty;
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 2)]
         public int SeqNo { get; set; }
 

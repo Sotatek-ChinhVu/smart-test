@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 英数字7桁
         /// </summary>
-        [Key]
+        
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;

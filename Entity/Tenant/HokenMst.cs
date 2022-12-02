@@ -13,35 +13,35 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 都道府県番号
         /// </summary>
-        [Key]
+        
         [Column(name: "PREF_NO", Order = 2)]
         public int PrefNo { get; set; }
 
         /// <summary>
         /// 保険番号
         /// </summary>
-        [Key]
+        
         [Column(name: "HOKEN_NO", Order = 3)]
         public int HokenNo { get; set; }
 
         /// <summary>
         /// 保険番号枝番
         /// </summary>
-        [Key]
+        
         [Column(name: "HOKEN_EDA_NO", Order = 4)]
         public int HokenEdaNo { get; set; }
 
         /// <summary>
         /// 適用開始日
         /// </summary>
-        [Key]
+        
         [Column(name: "START_DATE", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }

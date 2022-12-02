@@ -10,7 +10,7 @@ namespace Entity.Tenant
     [Table(name: "Z_PT_FAMILY")]
     public class ZPtFamily : EmrCloneable<ZPtFamily>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

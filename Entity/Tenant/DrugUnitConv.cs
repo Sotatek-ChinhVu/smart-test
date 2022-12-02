@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ITEM_CD", Order = 1)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 適用開始日
         /// 
         /// </summary>
-        [Key]
+        
         [Column("START_DATE", Order = 2)]
         public int StartDate { get; set; }
 

@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 連携ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RENKEI_ID", Order = 2)]
         public int RenkeiId { get; set; }
 

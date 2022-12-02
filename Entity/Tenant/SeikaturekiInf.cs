@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         //[Index("SEIKATUREKI_INF_IDX01", 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

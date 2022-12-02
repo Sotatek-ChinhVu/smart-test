@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("UKETUKE_SBT_MST_IDX01", 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 区分ID
         /// </summary>
-        //[Key]
+        
         [Column("KBN_ID", Order = 2)]
         //[Index("UKETUKE_SBT_MST_IDX01", 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

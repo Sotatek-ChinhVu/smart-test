@@ -6,7 +6,7 @@ namespace Entity.Tenant
     [Table(name: "RSV_FRAME_WITH")]
     public class RsvFrameWith : EmrCloneable<RsvFrameWith>
     {
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -15,7 +15,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -24,7 +24,7 @@ namespace Entity.Tenant
         /// 予約枠ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RSV_FRAME_ID", Order = 3)]
         public int RsvFrameId { get; set; }
 

@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "KINKI_MST")]
     public class KinkiMst : EmrCloneable<KinkiMst>
     {
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// Aコード
         /// TEN_MST.ITEM_CD
         /// </summary>
-        //[Key]
+        
         [Column("A_CD", Order = 3)]
         [MaxLength(10)]
         public string ACd { get; set; } = string.Empty;
@@ -42,7 +42,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 

@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 機能コード
         /// FUNCTION_MST.FUNCTION_CD
         /// </summary>
-        //[Key]
+        
         [Column("FUNCTION_CD", Order = 3)]
         [MaxLength(8)]
         public string FunctionCd { get; set; } = string.Empty;

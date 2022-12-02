@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医薬品コード
         /// YJコード
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 添付文書レベル
         /// 1:禁忌　2:原則禁忌　3:慎重投与
         /// </summary>
-        //[Key]
+        
         [Column("TENPU_LEVEL", Order = 2)]
         public int TenpuLevel { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 病態コード
         /// BYで始まり5桁の数字が続く
         /// </summary>
-        //[Key]
+        
         [Column("BYOTAI_CD", Order = 3)]
         [MaxLength(7)]
         public string ByotaiCd { get; set; } = string.Empty;
@@ -60,7 +60,7 @@ namespace Entity.Tenant
         /// 注意コメントコード
         /// CMで始まり5桁の数字が続く
         /// </summary>
-        //[Key]
+        
         [Column("CMT_CD", Order = 4)]
         [MaxLength(7)]
         public string? CmtCd { get; set; } = string.Empty;

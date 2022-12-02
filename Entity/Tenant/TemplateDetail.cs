@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("TEMPLATE_DETAIL_PKEY", 1)]
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// テンプレートコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("TEMPLATE_CD", Order = 2)]
         //[Index("TEMPLATE_DETAIL_PKEY", 2)]
         public int TemplateCd { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_DETAIL_PKEY", 3)]
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// コントロールID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("CONTROL_ID", Order = 4)]
         //[Index("TEMPLATE_DETAIL_PKEY", 4)]
         public int ControlId { get; set; }

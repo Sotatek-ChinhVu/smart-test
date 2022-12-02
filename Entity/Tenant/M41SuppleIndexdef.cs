@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 索引語コード
         /// Iで始まる、6桁の数字
         /// </summary>
-        [Key]
+        
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;

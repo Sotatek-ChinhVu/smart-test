@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 自費種別
         /// TEN_MST.自費種別
         /// </summary>
-        //[Key]
+        
         [Column("JIHI_SBT", Order = 2)]
         public int JihiSbt { get; set; }
 

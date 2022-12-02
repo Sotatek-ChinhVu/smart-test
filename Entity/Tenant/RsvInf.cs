@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 予約枠ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RSV_FRAME_ID", Order = 2)]
         public int RsvFrameId { get; set; }
 
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDate { get; set; }
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 開始時間
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_TIME", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartTime { get; set; }
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// 予約番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 5)]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }

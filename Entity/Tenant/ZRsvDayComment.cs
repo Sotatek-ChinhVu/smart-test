@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "Z_RSV_DAY_COMMENT")]
     public class ZRsvDayComment : EmrCloneable<ZRsvDayComment>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 

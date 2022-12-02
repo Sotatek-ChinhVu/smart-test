@@ -12,7 +12,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 診療行為コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 4)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 適用開始日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 5)]
         public int StartDate { get; set; }
 
@@ -52,7 +52,7 @@ namespace Entity.Tenant
         /// コメントコード
         /// コメントマスターの請求コード
         /// </summary>
-        //[Key]
+        
         [Column("COMMENT_CD", Order = 6)]
         [MaxLength(10)]
         public string? CommentCd { get; set; } = string.Empty;
@@ -115,7 +115,7 @@ namespace Entity.Tenant
         /// 項番
         /// 記載要領別表Ⅰの「項番」列の値
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_NO", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int ItemNo { get; set; }
@@ -132,7 +132,7 @@ namespace Entity.Tenant
         /// 枝番
         /// 項番内に複数の条件がある場合、条件ごとに連番
         /// </summary>
-        //[Key]
+        
         [Column("EDA_NO", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }

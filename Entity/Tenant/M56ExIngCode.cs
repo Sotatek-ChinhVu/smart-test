@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 成分索引コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEIBUN_INDEX_CD", Order = 2)]
         [MaxLength(3)]
         public string SeibunIndexCd { get; set; } = string.Empty;

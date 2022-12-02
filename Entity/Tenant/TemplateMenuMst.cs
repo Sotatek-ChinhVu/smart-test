@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 選択肢区分
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("MENU_KBN", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 2)]
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 3)]

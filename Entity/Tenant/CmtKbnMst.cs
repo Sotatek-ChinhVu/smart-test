@@ -107,7 +107,7 @@ namespace Entity.Tenant
         /// ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -34,12 +34,12 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("EDA_NO", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
 
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 5)]
         public long Id { get; set; }
