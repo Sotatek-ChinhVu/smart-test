@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -86,6 +85,5 @@ namespace Entity.Tenant
         [Column("CREATE_MACHINE")]
         [MaxLength(60)]
         public string? CreateMachine { get; set; } = string.Empty;
-
     }
 }

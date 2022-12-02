@@ -15,18 +15,18 @@ namespace Entity.Tenant
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NYUKIN_CMT")]
         [MaxLength(100)]
-        public string NyukinCmt { get; set; } = string.Empty;
+        public string? NyukinCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -196,6 +196,6 @@ namespace Entity.Tenant
         /// 入金時の診療明細
         /// </summary>
         [Column("NYUKINJI_DETAIL")]
-        public string NyukinjiDetail { get; set; } = string.Empty;
+        public string? NyukinjiDetail { get; set; } = string.Empty;
     }
 }

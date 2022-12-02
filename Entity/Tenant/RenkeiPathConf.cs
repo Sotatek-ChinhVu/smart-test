@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -51,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PATH")]
         [MaxLength(300)]
-        public string Path { get; set; } = string.Empty;
+        public string? Path { get; set; } = string.Empty;
 
         /// <summary>
         /// 端末名
@@ -60,7 +59,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MACHINE")]
         [MaxLength(60)]
-        public string Machine { get; set; } = string.Empty;
+        public string? Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字コード
@@ -76,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WORK_PATH")]
         [MaxLength(300)]
-        public string WorkPath { get; set; } = string.Empty;
+        public string? WorkPath { get; set; } = string.Empty;
 
         /// <summary>
         /// 監視間隔（sec）
@@ -92,7 +91,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM")]
         [MaxLength(1000)]
-        public string Param { get; set; } = string.Empty;
+        public string? Param { get; set; } = string.Empty;
 
         /// <summary>
         /// ユーザー名
@@ -100,7 +99,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("USER")]
         [MaxLength(100)]
-        public string User { get; set; } = string.Empty;
+        public string? User { get; set; } = string.Empty;
 
         /// <summary>
         /// パスワード
@@ -108,7 +107,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PASSWORD")]
         [MaxLength(100)]
-        public string PassWord { get; set; } = string.Empty;
+        public string? PassWord { get; set; } = string.Empty;
 
         /// <summary>
         /// 無効区分
@@ -124,7 +123,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(300)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -170,7 +169,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

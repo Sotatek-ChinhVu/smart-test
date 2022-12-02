@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -82,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// Update type: 
@@ -93,6 +92,5 @@ namespace Entity.Tenant
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
         public string UpdateType { get; set; } = string.Empty;
-
     }
 }

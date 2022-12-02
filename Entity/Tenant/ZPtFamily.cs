@@ -16,18 +16,18 @@ namespace Entity.Tenant
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 家族ID
@@ -95,14 +95,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; } = string.Empty;
+        public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
         /// </summary>
         [Column("NAME")]
         [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 性別
@@ -142,7 +142,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(120)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

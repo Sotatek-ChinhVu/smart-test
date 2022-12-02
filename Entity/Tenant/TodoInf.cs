@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -78,13 +77,13 @@ namespace Entity.Tenant
         /// コメント１ 
         /// </summary>
         [Column("CMT1")]
-        public string Cmt1 { get; set; } = string.Empty;
+        public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
         [Column("CMT2")]
-        public string Cmt2 { get; set; } = string.Empty;
+        public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済
@@ -140,7 +139,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

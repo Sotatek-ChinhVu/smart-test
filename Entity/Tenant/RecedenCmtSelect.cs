@@ -1,7 +1,6 @@
-﻿    using Microsoft.EntityFrameworkCore;
-    using System;
-    using System.ComponentModel.DataAnnotations;
-    using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
@@ -56,7 +55,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("COMMENT_CD", Order = 6)]
         [MaxLength(10)]
-        public string CommentCd { get; set; } = string.Empty;
+        public string? CommentCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 有効区分
@@ -110,7 +109,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 項番
@@ -127,7 +126,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NO")]
         [MaxLength(64)]
-        public string KbnNo { get; set; } = string.Empty;
+        public string? KbnNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 枝番

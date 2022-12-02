@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -38,7 +37,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NAME")]
         [MaxLength(200)]
-        public string Name { get; set; } = string.Empty;
-
+        public string? Name { get; set; } = string.Empty;
     }
 }

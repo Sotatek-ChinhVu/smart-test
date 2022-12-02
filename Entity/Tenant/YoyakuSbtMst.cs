@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -42,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEFAULT_CMT")]
         [MaxLength(120)]
-        public string DefaultCmt { get; set; } = string.Empty;
+        public string? DefaultCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -98,6 +93,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

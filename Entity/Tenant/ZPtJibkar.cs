@@ -13,25 +13,25 @@ namespace Entity.Tenant
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         [Column("HP_ID")]
         public int HpId { get; set; }
 
         [Column("WEB_ID")]
         [MaxLength(16)]
-        public string WebId { get; set; } = string.Empty;
+        public string?  WebId { get; set; } = string.Empty;
 
         [Column("PT_ID")]
         public long PtId { get; set; }

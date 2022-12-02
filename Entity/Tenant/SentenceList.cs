@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -79,7 +74,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SENTENCE")]
         [MaxLength(400)]
-        public string Sentence { get; set; } = string.Empty;
+        public string? Sentence { get; set; } = string.Empty;
 
         /// <summary>
         /// 選択種別
@@ -136,6 +131,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -20,9 +19,18 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        //[Key]
+        [Key]
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
+
+        /// <summary>
+        /// システム区分
+        /// 
+        /// </summary>
+        [Key]
+        [Column("SYSTEM_KBN", Order = 3)]
+        [CustomAttribute.DefaultValue(0)]
+        public int SystemKbn { get; set; }
 
         /// <summary>
         /// 患者ID
@@ -99,7 +107,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

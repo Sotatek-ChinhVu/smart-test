@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -87,7 +86,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD")]
         [MaxLength(10)]
-        public string CmtCd { get; set; } = string.Empty;
+        public string? CmtCd { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント名称
@@ -95,7 +94,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_NAME")]
         [MaxLength(32)]
-        public string CmtName { get; set; } = string.Empty;
+        public string? CmtName { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文
@@ -103,7 +102,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(38)]
-        public string CmtOpt { get; set; } = string.Empty;
-
+        public string? CmtOpt { get; set; } = string.Empty;
     }
 }

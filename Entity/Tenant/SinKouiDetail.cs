@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -71,7 +70,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("ROW_NO", Order = 6)]
         public int RowNo { get; set; }
-        
+
         /// <summary>
         /// レコード識別
         /// レセプト電算に記録するレコード識別

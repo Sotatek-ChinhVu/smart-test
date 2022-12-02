@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -76,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目連番
@@ -94,7 +93,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEL_ITEM_CD")]
         [MaxLength(10)]
-        public string DelItemCd { get; set; } = string.Empty;
+        public string? DelItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除項目算定日

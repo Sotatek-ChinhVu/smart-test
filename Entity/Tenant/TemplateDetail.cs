@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -25,7 +24,7 @@ namespace Entity.Tenant
         //[Key]
         [Column("TEMPLATE_CD", Order = 2)]
         //[Index("TEMPLATE_DETAIL_PKEY", 2)]
-        public int TemplateCd { get; set; } 
+        public int TemplateCd { get; set; }
 
         /// <summary>
         /// 連番
@@ -65,7 +64,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TITLE")]
         [MaxLength(200)]
-        public string Title { get; set; } = string.Empty;
+        public string? Title { get; set; } = string.Empty;
 
         /// <summary>
         /// タイプ
@@ -93,7 +92,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEFAULT_VAL")]
         [MaxLength(200)]
-        public string DefaultVal { get; set; } = string.Empty;
+        public string? DefaultVal { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位名称
@@ -101,7 +100,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT")]
         [MaxLength(20)]
-        public string Unit { get; set; } = string.Empty;
+        public string? Unit { get; set; } = string.Empty;
 
         /// <summary>
         /// 改行フラグ
@@ -173,7 +172,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORMULA")]
         [MaxLength(200)]
-        public string Formula { get; set; } = string.Empty;
+        public string? Formula { get; set; } = string.Empty;
 
         /// <summary>
         /// 小数桁
@@ -208,7 +207,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RENKEI_CD")]
         [MaxLength(20)]
-        public string RenkeiCd { get; set; } = string.Empty;
+        public string? RenkeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 背景色
@@ -216,7 +215,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BACKGROUND_COLOR")]
         [MaxLength(8)]
-        public string BackgroundColor { get; set; } = string.Empty;
+        public string? BackgroundColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 文字色
@@ -224,7 +223,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FONT_COLOR")]
         [MaxLength(8)]
-        public string FontColor { get; set; } = string.Empty;
+        public string? FontColor { get; set; } = string.Empty;
 
         /// <summary>
         /// 太字
@@ -294,7 +293,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -82,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_1")]
         [MaxLength(100)]
-        public string Message1 { get; set; } = string.Empty;
+        public string? Message1 { get; set; } = string.Empty;
 
         /// <summary>
         /// メッセージ２
@@ -90,7 +89,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MESSAGE_2")]
         [MaxLength(100)]
-        public string Message2 { get; set; } = string.Empty;
+        public string? Message2 { get; set; } = string.Empty;
 
         /// <summary>
         /// チェックフラグ
@@ -144,7 +143,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

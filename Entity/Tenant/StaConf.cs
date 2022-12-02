@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -38,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("VAL")]
         [MaxLength(1200)]
-        public string Val { get; set; } = string.Empty;
+        public string? Val { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -84,7 +83,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

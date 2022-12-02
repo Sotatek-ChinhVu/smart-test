@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -83,7 +82,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SYUKEI_SAKI")]
         [MaxLength(4)]
-        public string SyukeiSaki { get; set; } = string.Empty;
+        public string? SyukeiSaki { get; set; } = string.Empty;
 
         /// <summary>
         /// 包括対象検査
@@ -142,7 +141,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEN_COUNT")]
         [MaxLength(20)]
-        public string TenCount { get; set; } = string.Empty;
+        public string? TenCount { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数欄回数
@@ -190,7 +189,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_KBN")]
         [MaxLength(2)]
-        public string CdKbn { get; set; } = string.Empty;
+        public string? CdKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表レコード識別
@@ -198,7 +197,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REC_ID")]
         [MaxLength(2)]
-        public string RecId { get; set; } = string.Empty;
+        public string? RecId { get; set; } = string.Empty;
 
         /// <summary>
         /// 自費種別
@@ -221,7 +220,7 @@ namespace Entity.Tenant
         /// 詳細を文字列化したもの ※
         /// </summary>
         [Column("DETAIL_DATA")]
-        public string DetailData { get; set; } = string.Empty;
+        public string? DetailData { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定日情報1
@@ -524,7 +523,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

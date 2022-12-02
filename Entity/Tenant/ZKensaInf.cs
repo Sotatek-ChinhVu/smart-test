@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -13,18 +12,18 @@ namespace Entity.Tenant
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -116,7 +115,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CENTER_CD")]
         [MaxLength(10)]
-        public string CenterCd { get; set; } = string.Empty;
+        public string? CenterCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 乳び
@@ -124,7 +123,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NYUBI")]
         [MaxLength(3)]
-        public string Nyubi { get; set; } = string.Empty;
+        public string? Nyubi { get; set; } = string.Empty;
 
         /// <summary>
         /// 溶血
@@ -132,7 +131,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOKETU")]
         [MaxLength(3)]
-        public string Yoketu { get; set; } = string.Empty;
+        public string? Yoketu { get; set; } = string.Empty;
 
         /// <summary>
         /// ビリルビン
@@ -140,7 +139,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BILIRUBIN")]
         [MaxLength(3)]
-        public string Bilirubin { get; set; } = string.Empty;
+        public string? Bilirubin { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -192,8 +191,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
 

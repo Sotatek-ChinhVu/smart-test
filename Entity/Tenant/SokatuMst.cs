@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -82,7 +81,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REPORT_NAME")]
         [MaxLength(30)]
-        public string ReportName { get; set; } = string.Empty;
+        public string? ReportName { get; set; } = string.Empty;
 
         /// <summary>
         /// 印刷タイプ
@@ -139,7 +138,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DISK_KIND")]
         [MaxLength(10)]
-        public string DiskKind { get; set; } = string.Empty;
+        public string? DiskKind { get; set; } = string.Empty;
 
         /// <summary>
         /// 媒体枚数
@@ -193,7 +192,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 印刷順指定
@@ -202,6 +201,5 @@ namespace Entity.Tenant
         [Column("IS_SORT")]
         [CustomAttribute.DefaultValue(0)]
         public int IsSort { get; set; }
-
     }
 }

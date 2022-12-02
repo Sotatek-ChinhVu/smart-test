@@ -116,6 +116,5 @@ namespace Entity.Tenant
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
-
     }
 }

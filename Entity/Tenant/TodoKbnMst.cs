@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -27,7 +26,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TODO_KBN_NAME")]
         [MaxLength(20)]
-        public string TodoKbnName { get; set; } = string.Empty;
+        public string? TodoKbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 動作コード 
@@ -73,7 +72,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

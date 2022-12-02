@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -78,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_NO")]
         [MaxLength(15)]
-        public string CdNo { get; set; } = string.Empty;
+        public string? CdNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -140,7 +139,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

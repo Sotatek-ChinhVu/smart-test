@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -51,7 +50,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REQ_TYPE")]
         [MaxLength(2)]
-        public string ReqType { get; set; } = string.Empty;
+        public string? ReqType { get; set; } = string.Empty;
 
         /// <summary>
         /// ステータス
@@ -67,7 +66,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ERR_MST")]
         [MaxLength(120)]
-        public string ErrMst { get; set; } = string.Empty;
+        public string? ErrMst { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -111,7 +110,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -85,7 +84,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(10)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 上限超動作
@@ -105,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TARGET_CD")]
         [MaxLength(10)]
-        public string TargetCd { get; set; } = string.Empty;
+        public string? TargetCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 特殊条件
@@ -159,6 +158,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

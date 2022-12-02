@@ -1,13 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-	/// <summary>
-	/// 労働局マスタ
-	/// </summary>
-	[Table(name: "ROUDOU_MST")]
+    /// <summary>
+    /// 労働局マスタ
+    /// </summary>
+    [Table(name: "ROUDOU_MST")]
     public class RoudouMst : EmrCloneable<RoudouMst>
     {
         /// <summary>
@@ -30,13 +29,13 @@ namespace Entity.Tenant
         /// 登録日時
         /// </summary>
         [Column("CREATE_DATE")]
-		[CustomAttribute.DefaultValueSql("current_timestamp")]
-		public DateTime CreateDate { get; set; }
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime CreateDate { get; set; }
 
-		/// <summary>
-		/// 更新日時			
-		/// </summary>
-		[Column("UPDATE_DATE")]
-		public DateTime UpdateDate { get; set; }
-	}
+        /// <summary>
+        /// 更新日時			
+        /// </summary>
+        [Column("UPDATE_DATE")]
+        public DateTime UpdateDate { get; set; }
+    }
 }

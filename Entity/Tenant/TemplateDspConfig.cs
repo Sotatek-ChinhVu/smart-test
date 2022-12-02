@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -57,6 +56,5 @@ namespace Entity.Tenant
         [Column("IS_DSP")]
         [CustomAttribute.DefaultValue(0)]
         public int IsDsp { get; set; }
-
     }
 }

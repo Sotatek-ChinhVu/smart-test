@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -48,7 +47,6 @@ namespace Entity.Tenant
         /// 3: 何れか一方を算定する。"
         /// </summary>
         [Column("HAIHAN_KBN")]
-        [Index("DENSI_HAIHAN_DAY_IDX03", 3)]
         public int HaihanKbn { get; set; }
 
         /// <summary>
@@ -67,7 +65,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("START_DATE")]
         [CustomAttribute.DefaultValue(0)]
-        [Index("DENSI_HAIHAN_DAY_IDX03", 4)]
         public int StartDate { get; set; }
 
         /// <summary>
@@ -77,7 +74,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("END_DATE")]
         [CustomAttribute.DefaultValue(99999999)]
-        [Index("DENSI_HAIHAN_DAY_IDX03", 5)]
         public int EndDate { get; set; }
 
         /// <summary>
@@ -106,7 +102,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TARGET_KBN")]
         [CustomAttribute.DefaultValue(0)]
-        [Index("DENSI_HAIHAN_DAY_IDX03", 6)]
         public int TargetKbn { get; set; }
 
         /// <summary>
@@ -116,7 +111,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IS_INVALID")]
         [CustomAttribute.DefaultValue(0)]
-        [Index("DENSI_HAIHAN_DAY_IDX03", 7)]
         public int IsInvalid { get; set; }
 
         /// <summary>
