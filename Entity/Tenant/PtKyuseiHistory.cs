@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; } = string.Empty;
+        public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         [Column(name: "NAME")]
         [MaxLength(100)]
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 終了日
@@ -122,6 +122,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }

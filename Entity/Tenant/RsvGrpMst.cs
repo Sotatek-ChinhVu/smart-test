@@ -36,7 +36,7 @@ namespace Entity.Tenant
         [Required]
         [Column("RSV_GRP_NAME")]
         [MaxLength(60)]
-        public string RsvGrpName { get; set; } = string.Empty;
+        public string? RsvGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

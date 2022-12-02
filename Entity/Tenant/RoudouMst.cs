@@ -23,7 +23,7 @@ namespace Entity.Tenant
         [Column(name: "ROUDOU_NAME")]
         [MaxLength(60)]
         [Required]
-        public string RoudouName { get; set; } = string.Empty;
+        public string? RoudouName { get; set; } = string.Empty;
 
         /// <summary>
         /// 登録日時

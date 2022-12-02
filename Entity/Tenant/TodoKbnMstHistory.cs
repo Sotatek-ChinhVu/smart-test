@@ -35,7 +35,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TODO_KBN_NAME")]
         [MaxLength(20)]
-        public string TodoKbnName { get; set; } = string.Empty;
+        public string? TodoKbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 動作コード 
@@ -91,6 +91,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }

@@ -23,7 +23,7 @@ namespace Entity.Tenant
         [Column("FOOD_NAME")]
         [Required]
         [MaxLength(60)]
-        public string FoodName { get; set; } = string.Empty;
+        public string? FoodName { get; set; } = string.Empty;
 
     }
 }

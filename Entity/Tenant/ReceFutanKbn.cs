@@ -61,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTAN_KBN_CD")]
         [MaxLength(1)]
-        public string FutanKbnCd { get; set; } = string.Empty;
+        public string? FutanKbnCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時

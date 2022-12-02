@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KIO_CD")]
         [MaxLength(1)]
-        public string KioCd { get; set; } = string.Empty;
+        public string? KioCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 家族歴コード

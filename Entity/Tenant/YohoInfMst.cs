@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO_SUFFIX")]
         [MaxLength(240)]
-        public string YohoSuffix { get; set; } = string.Empty;
+        public string? YohoSuffix { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時

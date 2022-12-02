@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("B_CD")]
         [MaxLength(10)]
-        public string BCd { get; set; } = string.Empty;
+        public string? BCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番

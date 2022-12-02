@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEXT")]
         [MaxLength(1000)]
-        public string Text { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// 主保険保険ID

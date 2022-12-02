@@ -33,7 +33,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM_NAME")]
         [MaxLength(100)]
-        public string FormName { get; set; } = string.Empty;
+        public string? FormName { get; set; } = string.Empty;
 
         /// <summary>
         /// 帳票タイプ

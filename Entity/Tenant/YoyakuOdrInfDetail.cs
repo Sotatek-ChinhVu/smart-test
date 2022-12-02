@@ -211,7 +211,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IPN_NAME")]
         [MaxLength(120)]
-        public string IpnName { get; set; } = string.Empty;
+        public string? IpnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分割調剤
