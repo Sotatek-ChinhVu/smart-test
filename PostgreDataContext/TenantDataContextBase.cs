@@ -417,6 +417,12 @@ namespace PostgreDataContext
             modelBuilder.Entity<ZSyunoNyukin>().HasKey(e => new { e.OpId });
             modelBuilder.Entity<ZTodoInf>().HasKey(e => new { e.OpId });
             modelBuilder.Entity<ZUketukeSbtDayInf>().HasKey(e => new { e.OpId });
+            modelBuilder.Entity<HpInf>().HasKey(h => new { h.HpId, h.StartDate });
+            modelBuilder.Entity<IpnKasanMst>().HasKey(i => new { i.HpId, i.StartDate, i.IpnNameCd, i.SeqNo });
+            modelBuilder.Entity<M56AnalogueCd>().HasKey(i => new { i.AnalogueCd });
+            modelBuilder.Entity<PtFamily>().HasKey(p => new { p.PtId });
+            modelBuilder.Entity<SokatuMst>().HasKey(s => new { s.HpId, s.PrefNo, s.StartYm, s.ReportEdaNo, s.ReportId });
+            modelBuilder.Entity<TemplateMst>().HasKey(s => new { s.HpId, s.TemplateCd, s.SeqNo });
         }
 
         public DbSet<JsonSetting> JsonSettings { get; set; } = default!;
