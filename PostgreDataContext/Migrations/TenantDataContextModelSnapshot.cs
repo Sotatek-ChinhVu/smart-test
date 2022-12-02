@@ -969,6 +969,28 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
 
+                    b.Property<string>("DelItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("DEL_ITEM_CD");
+
+                    b.Property<int>("DelSbt")
+                        .HasColumnType("integer")
+                        .HasColumnName("DEL_SBT");
+
+                    b.Property<int>("HokenId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HOKEN_ID");
+
+                    b.Property<int>("IsWarning")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_WARNING");
+
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD");
+
                     b.Property<int>("LogSbt")
                         .HasColumnType("integer")
                         .HasColumnName("LOG_SBT");
@@ -976,6 +998,14 @@ namespace PostgreDataContext.Migrations
                     b.Property<int>("SinDate")
                         .HasColumnType("integer")
                         .HasColumnName("SIN_DATE");
+
+                    b.Property<int>("TermCnt")
+                        .HasColumnType("integer")
+                        .HasColumnName("TERM_CNT");
+
+                    b.Property<int>("TermSbt")
+                        .HasColumnType("integer")
+                        .HasColumnName("TERM_SBT");
 
                     b.Property<string>("Text")
                         .IsRequired()

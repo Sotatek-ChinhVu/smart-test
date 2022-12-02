@@ -103,7 +103,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             var request = new PutObjectRequest
             {
                 BucketName = _options.BucketName,
-                Key = path + GetUniqueFileNameKey(fileName),
+                Key = path + fileName,
                 InputStream = memoryStream,
             };
             var response = await _s3Client.PutObjectAsync(request);
@@ -136,7 +136,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
         return result.ToString();
     }
 
-    private string GetUniqueFileNameKey(string fileName)
+    public string GetUniqueFileNameKey(string fileName)
     {
         var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         var extension = Path.GetExtension(fileName);

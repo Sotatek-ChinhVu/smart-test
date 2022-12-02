@@ -71,8 +71,9 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
                                                         CommonConstants.SetPic,
                                                         input.SetCd.ToString()
                                                     };
-                string fileName = input.SetCd.ToString().PadLeft(10, '0') + ".png";
                 string path = _amazonS3Service.GetFolderUploadOther(listFolders);
+                string fileName = input.SetCd.ToString().PadLeft(10, '0') + ".png";
+                fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
                 var responseUpload = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
                 var linkImage = responseUpload.Result;
                 listImageSaveTemps.Add(new SetKarteImgInfModel(
