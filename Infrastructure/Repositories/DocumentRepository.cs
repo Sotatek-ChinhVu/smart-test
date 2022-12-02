@@ -179,6 +179,27 @@ public class DocumentRepository : IDocumentRepository
         return true;
     }
 
+    public bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo)
+    {
+        var docInfDB = _tenantDataContext.DocInfs.FirstOrDefault(entity =>
+                                                                entity.HpId == hpId
+                                                                && entity.PtId == ptId
+                                                                && entity.SinDate == sinDate
+                                                                && entity.RaiinNo == raiinNo
+                                                                && entity.SeqNo == seqNo
+                                                                && entity.IsDeleted == 0
+                                                            );
+        if (docInfDB == null)
+        {
+            return false;
+        }
+        docInfDB.IsDeleted = 1;
+        docInfDB.UpdateDate = DateTime.UtcNow;
+        docInfDB.UpdateId = userId;
+        _tenantDataContext.SaveChanges();
+        return true;
+    }
+
     #region private function
     private DocCategoryModel ConvertToDocCategoryModel(DocCategoryMst entity)
     {
@@ -249,5 +270,6 @@ public class DocumentRepository : IDocumentRepository
                                                             ).ToList();
         return listDocInf.Any() ? listDocInf.Max(item => item.SeqNo) : 0;
     }
+
     #endregion
 }
