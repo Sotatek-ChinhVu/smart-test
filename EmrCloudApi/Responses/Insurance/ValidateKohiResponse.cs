@@ -1,16 +1,18 @@
-﻿namespace EmrCloudApi.Responses.Insurance
+﻿using Domain.Models.Insurance;
+using UseCase.Insurance.ValidKohi;
+
+namespace EmrCloudApi.Responses.Insurance
 {
     public class ValidateKohiResponse
     {
-        public ValidateKohiResponse(bool resultCheck, string message, int typeMessage)
+        public ValidateKohiResponse(bool resultCheck, List<ResultValidateInsurance<ValidKohiStatus>> details)
         {
             ResultCheck = resultCheck;
-            Message = message;
-            TypeMessage = typeMessage;
+            Details = details;
         }
 
         public bool ResultCheck { get; private set; }
-        public string Message { get; private set; }
-        public int TypeMessage { get; private set; }
+
+        public List<ResultValidateInsurance<ValidKohiStatus>> Details { get; private set; }
     }
 }
