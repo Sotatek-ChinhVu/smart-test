@@ -65,13 +65,13 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_FORM_CD")]
         [MaxLength(6)]
-        public string DrugFormCd { get; set; } = string.Empty;
+        public string? DrugFormCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法コード
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(6)]
-        public string YohoCd { get; set; } = string.Empty;
+        public string? YohoCd { get; set; } = string.Empty;
     }
 }

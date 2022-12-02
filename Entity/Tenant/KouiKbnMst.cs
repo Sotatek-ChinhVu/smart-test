@@ -57,7 +57,7 @@ namespace Entity.Tenant
         [Required]
         [Column("KOUI_NAME")]
         [MaxLength(20)]
-        public string KouiName { get; set; } = string.Empty;
+        public string? KouiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

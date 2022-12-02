@@ -30,7 +30,7 @@ namespace Entity.Tenant
         [Required]
         [Column("SBT_NAME")]
         [MaxLength(120)]
-        public string SbtName { get; set; } = string.Empty;
+        public string? SbtName { get; set; } = string.Empty;
 
         /// <summary>
         /// 初期コメント

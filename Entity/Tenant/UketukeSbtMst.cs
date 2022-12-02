@@ -32,7 +32,7 @@ namespace Entity.Tenant
         [Column(name: "KBN_NAME")]
         [MaxLength(20)]
         [Required]
-        public string KbnName { get; set; } = string.Empty;
+        public string? KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

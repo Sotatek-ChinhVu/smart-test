@@ -65,7 +65,7 @@ namespace Entity.Tenant
         [Column("ZOKUGARA_CD")]
         [Required]
         [MaxLength(10)]
-        public string ZokugaraCd { get; set; } = string.Empty;
+        public string? ZokugaraCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

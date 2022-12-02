@@ -29,7 +29,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TAG_GRP_NAME")]
         [MaxLength(20)]
-        public string TagGrpName { get; set; } = string.Empty;
+        public string? TagGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類色

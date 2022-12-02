@@ -32,7 +32,7 @@ namespace Entity.Tenant
         [Column(name: "TOKKI_NAME")]
         [MaxLength(20)]
         [Required]
-        public string TokkiName { get; set; } = string.Empty;
+        public string? TokkiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 使用開始日

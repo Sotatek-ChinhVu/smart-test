@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column(name: "MEMO")]
-        public string Memo { get; set; } = string.Empty;
+        public string? Memo { get; set; } = string.Empty;
 
         /// <summary>
         /// メモデータ
@@ -101,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "BACKGROUND_COLOR")]
         [MaxLength(8)]
-        public string BackgroundColor { get; set; } = string.Empty;
+        public string? BackgroundColor { get; set; } = string.Empty;
 
 
         [Column(name: "TAG_GRP_CD")]

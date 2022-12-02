@@ -104,7 +104,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi3Houbetu { get; set; } = string.Empty;
+        public string? Kohi3Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公４法別

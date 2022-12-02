@@ -32,7 +32,7 @@ namespace Entity.Tenant
         [Column(name: "KANTOKU_NAME")]
         [MaxLength(60)]
         [Required]
-        public string KantokuName { get; set; } = string.Empty;
+        public string? KantokuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 登録日時		

@@ -64,7 +64,7 @@ namespace Entity.Tenant
         [Column(name: "NAME")]
         [MaxLength(100)]
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 終了日

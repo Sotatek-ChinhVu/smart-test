@@ -154,6 +154,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }

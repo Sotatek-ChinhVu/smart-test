@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 来院番号

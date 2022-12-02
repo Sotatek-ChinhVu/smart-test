@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(40)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 使用開始日

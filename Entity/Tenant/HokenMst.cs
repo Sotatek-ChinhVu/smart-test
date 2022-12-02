@@ -87,7 +87,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 制度名
@@ -95,7 +95,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOKEN_NAME")]
         [MaxLength(100)]
-        public string HokenName { get; set; } = string.Empty;
+        public string? HokenName { get; set; } = string.Empty;
 
         /// <summary>
         /// 制度略称
@@ -103,7 +103,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOKEN_SNAME")]
         [MaxLength(20)]
-        public string HokenSname { get; set; } = string.Empty;
+        public string? HokenSname { get; set; } = string.Empty;
 
         /// <summary>
         /// 制度略号
@@ -111,7 +111,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOKEN_NAME_CD")]
         [MaxLength(5)]
-        public string HokenNameCd { get; set; } = string.Empty;
+        public string? HokenNameCd { get; set; } = string.Empty;
 
 
         /// <summary>

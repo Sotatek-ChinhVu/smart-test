@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// フィルター名称
         /// </summary>
         [Column("FILTER_NAME")]
-        public string FilterName { get; set; } = string.Empty;
+        public string? FilterName { get; set; } = string.Empty;
         /// <summary>
         /// 選択区分
         /// </summary>
@@ -102,6 +102,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }

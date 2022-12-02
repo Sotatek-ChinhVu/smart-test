@@ -85,13 +85,13 @@ namespace Entity.Tenant
         /// コメント１ 
         /// </summary>
         [Column("CMT1")]
-        public string Cmt1 { get; set; } = string.Empty;
+        public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２ 
         /// </summary>
         [Column("CMT2")]
-        public string Cmt2 { get; set; } = string.Empty;
+        public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// 済
@@ -157,6 +157,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_TYPE")]
         [MaxLength(6)]
-        public string UpdateType { get; set; } = string.Empty;
+        public string? UpdateType { get; set; } = string.Empty;
     }
 }
