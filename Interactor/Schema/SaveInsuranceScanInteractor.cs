@@ -67,8 +67,6 @@ namespace Interactor.Schema
                     return new SaveInsuranceScanOutputData(string.Empty , SaveInsuranceScanStatus.OldImageNotFound);
             }
 
-            string subFolder = CommonConstants.InsuranceScan;
-
             if (memoryStream.Length <= 0 && string.IsNullOrEmpty(inputData.OldImage))
             {
                 if(!string.IsNullOrEmpty(inputData.OldImage)) //OldImage is not null and has removed above. 
@@ -83,7 +81,8 @@ namespace Interactor.Schema
             if (memoryStream.Length > 0)
             {
                 var listFolders = new List<string>() {
-                                                        subFolder
+                                                        CommonConstants.Store,
+                                                        CommonConstants.InsuranceScan,
                                                      };
                 string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf.PtNum);
 
