@@ -28,6 +28,7 @@ public class SaveDocInfPresenter : ISaveDocInfOutputPort
         SaveDocInfStatus.InvalidSindate => ResponseMessage.InvalidSinDate,
         SaveDocInfStatus.InvalidDisplayFileName => ResponseMessage.InvalidDocInfFileName,
         SaveDocInfStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+        SaveDocInfStatus.InvalidDocInfFileName => ResponseMessage.InvalidDocInfFileName,
         _ => string.Empty
     };
 }

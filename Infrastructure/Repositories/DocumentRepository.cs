@@ -163,6 +163,7 @@ public class DocumentRepository : IDocumentRepository
                                                                 && entity.SinDate == model.SinDate
                                                                 && entity.RaiinNo == model.RaiinNo
                                                                 && entity.SeqNo == model.SeqNo
+                                                                && entity.IsDeleted == 0
                                                             );
             if (docInfDB == null)
             {
@@ -244,13 +245,13 @@ public class DocumentRepository : IDocumentRepository
 
     private int GetLastDocInfSeqNo(int hpId, long ptId, int sinDate, long raiinNo)
     {
-        var lastSeqNo = _tenantNoTrackingDataContext.DocInfs.Where(entity =>
+        var listDocInf = _tenantNoTrackingDataContext.DocInfs.Where(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.PtId == ptId
                                                                 && entity.SinDate == sinDate
                                                                 && entity.RaiinNo == raiinNo
-                                                            ).Max(item => item.SeqNo);
-        return lastSeqNo;
+                                                            ).ToList();
+        return listDocInf.Any() ? listDocInf.Max(item => item.SeqNo) : 0;
     }
     #endregion
 }

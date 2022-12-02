@@ -111,7 +111,7 @@ public class SaveDocInfInteractor : ISaveDocInfInputPort
         }
         else if (inputData.FileName.Length == 0)
         {
-            return SaveDocInfStatus.InvalidFileName;
+            return SaveDocInfStatus.InvalidDocInfFileName;
         }
         if (inputData.SeqNo > 0)
         {
