@@ -63,6 +63,7 @@ namespace UseCase.Insurance.ValidMainInsurance
         InvalidConfirmDateAgeCheck = 52,
         InvalidHokenMstStartDate = 53,
         InvalidHokenMstEndDate = 54,
-        InvalidSelectedHokenInfHokenEdraNo = 55
+        InvalidSelectedHokenInfHokenEdraNo = 55,
+        InvalidJihi = 56
     }
 }

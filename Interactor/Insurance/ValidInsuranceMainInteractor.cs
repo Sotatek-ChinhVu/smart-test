@@ -51,7 +51,7 @@ namespace Interactor.Insurance
                         var checkMessageIsValidJihi = IsValidJihi(inputData.SelectedHokenInfHokenNo);
                         if (!String.IsNullOrEmpty(checkMessageIsValidJihi))
                         {
-                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidFaild);
+                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidJihi);
                         }
                         // ignore
                         break;
