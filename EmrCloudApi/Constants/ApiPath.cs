@@ -119,6 +119,7 @@
         public const string CheckExistFileName = "CheckExistFileName";
         public const string SaveDocInf = "SaveDocInf";
         public const string DeleteDocInf = "DeleteDocInf";
+        public const string DeleteDocTemplate = "DeleteDocTemplate";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
