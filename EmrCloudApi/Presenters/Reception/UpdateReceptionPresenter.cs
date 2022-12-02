@@ -20,6 +20,7 @@ public class UpdateReceptionPresenter : IUpdateReceptionOutputPort
     {
         UpdateReceptionStatus.NotFound => ResponseMessage.NotFound,
         UpdateReceptionStatus.Success => ResponseMessage.Success,
+        UpdateReceptionStatus.InvalidInsuranceList => ResponseMessage.InvalidInsuranceList,
         _ => string.Empty
     };
 }
