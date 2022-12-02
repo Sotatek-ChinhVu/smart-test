@@ -50,7 +50,7 @@ public class InsuranceDto
         }
 
         //Check for duplicate
-        if (ConfirmDateList.Count != ConfirmDateList.Where(item => item.SinDate.ToString().Length == 8).GroupBy(item => new {item.SinDate, item.IsDelete}).Distinct().Count())
+        if (ConfirmDateList.Count != ConfirmDateList.GroupBy(item => new {item.SinDate, item.IsDelete}).Distinct().Count())
         {
             return false;
         }
