@@ -26,6 +26,6 @@ Run project :
 		
 - With VS code :
 	open folder project & terminal and run command. 
-	1. ```cd EmrCloudApi``` to go internal EmrCloudApi Project
-	2. ```dotnet build``` to build project
-	3. ```dotnet run``` to run.
+	- ```cd EmrCloudApi``` to go internal EmrCloudApi Project
+	- ```dotnet build``` to build project
+	- ```dotnet run``` to run.
