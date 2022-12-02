@@ -827,6 +827,7 @@
         public static readonly string InvalidFileInput = "Invalid File Input!";
         public static readonly string DocInfNotFount = "DocInf Not Fount!";
         public static readonly string TemplateNotFount = "Template Not Fount!";
+        public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
