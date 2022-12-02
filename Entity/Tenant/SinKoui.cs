@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("SIN_KOUI_IDX01", 1)]
@@ -24,7 +23,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         //[Index("SIN_KOUI_IDX01", 2)]
         //[Index("SIN_KOUI_IDX02", 2)]
@@ -36,7 +35,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 3)]
         //[Index("SIN_KOUI_IDX01", 3)]
         //[Index("SIN_KOUI_IDX02", 3)]
@@ -48,7 +47,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// SIN_RP_INF.RP_NO
         /// </summary>
-        //[Key]
+        
         [Column("RP_NO", Order = 4)]
         //[Index("SIN_KOUI_IDX02", 4)]
         public int RpNo { get; set; }
@@ -57,7 +56,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 5)]
         public int SeqNo { get; set; }
 
@@ -83,7 +82,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SYUKEI_SAKI")]
         [MaxLength(4)]
-        public string SyukeiSaki { get; set; } = string.Empty;
+        public string? SyukeiSaki { get; set; } = string.Empty;
 
         /// <summary>
         /// 包括対象検査
@@ -142,7 +141,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TEN_COUNT")]
         [MaxLength(20)]
-        public string TenCount { get; set; } = string.Empty;
+        public string? TenCount { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数欄回数
@@ -190,7 +189,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_KBN")]
         [MaxLength(2)]
-        public string CdKbn { get; set; } = string.Empty;
+        public string? CdKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 代表レコード識別
@@ -198,7 +197,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("REC_ID")]
         [MaxLength(2)]
-        public string RecId { get; set; } = string.Empty;
+        public string? RecId { get; set; } = string.Empty;
 
         /// <summary>
         /// 自費種別
@@ -221,7 +220,7 @@ namespace Entity.Tenant
         /// 詳細を文字列化したもの ※
         /// </summary>
         [Column("DETAIL_DATA")]
-        public string DetailData { get; set; } = string.Empty;
+        public string? DetailData { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定日情報1
@@ -524,7 +523,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

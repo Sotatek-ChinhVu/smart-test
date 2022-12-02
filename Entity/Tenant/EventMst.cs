@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// イベントコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("EVENT_CD", Order = 1)]
         [MaxLength(11)]
         public string EventCd { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EVENT_NAME")]
         [MaxLength(100)]
-        public string EventName { get; set; } = string.Empty;
+        public string? EventName { get; set; } = string.Empty;
 
         /// <summary>
         /// 監査証跡
@@ -38,6 +38,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CREATE_DATE")]
         public DateTime CreateDate { get; set; }
-
     }
 }

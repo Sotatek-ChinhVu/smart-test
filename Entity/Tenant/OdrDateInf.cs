@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +12,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -22,7 +21,7 @@ namespace Entity.Tenant
         /// 分類ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
@@ -39,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("GRP_NAME")]
         [MaxLength(20)]
-        public string GrpName { get; set; } = string.Empty;
+        public string? GrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -93,7 +92,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

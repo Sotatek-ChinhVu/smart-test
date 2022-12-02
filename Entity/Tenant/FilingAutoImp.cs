@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -38,7 +38,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MACHINE")]
         [MaxLength(60)]
-        public string Machine { get; set; } = string.Empty;
+        public string? Machine { get; set; } = string.Empty;
 
         /// <summary>
         /// 取り込みパス
@@ -46,7 +46,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("IMP_PATH")]
         [MaxLength(300)]
-        public string ImpPath { get; set; } = string.Empty;
+        public string? ImpPath { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除フラグ
@@ -100,7 +100,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

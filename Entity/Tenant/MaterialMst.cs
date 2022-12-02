@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 材料コード
         /// KENSA_MST.MATERIAL_CD
         /// </summary>
-        //[Key]
+        
         [Column("MATERIAL_CD", Order = 2)]
         public long MaterialCd { get; set; }
 
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MATERIAL_NAME")]
         [MaxLength(120)]
-        public string MaterialName { get; set; } = string.Empty;
+        public string? MaterialName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -75,6 +75,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;   
-
     }
 }

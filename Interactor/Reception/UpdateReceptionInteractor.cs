@@ -1,5 +1,4 @@
 ﻿using Domain.Models.Reception;
-using UseCase.Reception.Insert;
 using UseCase.Reception.Update;
 
 namespace Interactor.Reception;

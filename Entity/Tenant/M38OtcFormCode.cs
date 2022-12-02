@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// 剤形コード
         /// FMで始まり、4桁の数字が続く
         /// </summary>
-        [Key]
+        
         [Column(name: "FORM_CD", Order = 1)]
         public string FormCd { get; set; } = string.Empty;
 
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "FORM")]
         [MaxLength(80)]
-        public string Form { get; set; } = string.Empty;
+        public string? Form { get; set; } = string.Empty;
     }
 
 }

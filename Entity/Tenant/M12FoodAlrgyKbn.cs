@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// アレルギー区分
         /// 
         /// </summary>
-        [Key]
+        
         [Column("FOOD_KBN", Order = 1)]
         [MaxLength(2)]
         public string FoodKbn { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace Entity.Tenant
         [Column("FOOD_NAME")]
         [Required]
         [MaxLength(60)]
-        public string FoodName { get; set; } = string.Empty;
+        public string? FoodName { get; set; } = string.Empty;
 
     }
 }

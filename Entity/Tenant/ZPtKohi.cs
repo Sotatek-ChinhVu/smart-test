@@ -10,24 +10,24 @@ namespace Entity.Tenant
     [Table("Z_PT_KOHI")]
     public class ZPtKohi : EmrCloneable<ZPtKohi>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -85,21 +85,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FUTANSYA_NO")]
         [MaxLength(8)]
-        public string FutansyaNo { get; set; } = string.Empty;
+        public string? FutansyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 受給者番号
         /// </summary>
         [Column("JYUKYUSYA_NO")]
         [MaxLength(7)]
-        public string JyukyusyaNo { get; set; } = string.Empty;
+        public string? JyukyusyaNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 特殊受給者番号
         /// </summary>
         [Column("TOKUSYU_NO")]
         [MaxLength(20)]
-        public string TokusyuNo { get; set; } = string.Empty;
+        public string? TokusyuNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 資格取得日
@@ -215,6 +215,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
     }
 }

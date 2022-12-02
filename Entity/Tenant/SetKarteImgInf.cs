@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -14,7 +13,7 @@ namespace Entity.Tenant
         /// ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -58,6 +57,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(100)]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; } = string.Empty;
     }
 }

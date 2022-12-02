@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
 		public int HpId { get; set; }
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
 		/// 開始日
 		///     yyyymmdd
 		/// </summary>
-		//[Key]
+		
 		[Column(name: "START_DATE", Order = 2)]
 		public int StartDate { get; set; }
 
