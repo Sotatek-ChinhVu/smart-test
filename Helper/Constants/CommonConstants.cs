@@ -10,5 +10,5 @@ public static class CommonConstants
     public const string Store = "store";
     public const string Reference = "reference";
     public const string Files = "files";
-    public const string SubFolderInsuranceScan = "insurance_scan";
+    public const string InsuranceScan = "insurance_scan";
 }

@@ -4,7 +4,6 @@ using EmrCloudApi.Requests.Schema;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.Schema;
 using EmrCloudApi.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
@@ -22,7 +21,6 @@ namespace EmrCloudApi.Controller
             _bus = bus;
         }
 
-        [AllowAnonymous]
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetListImageTemplatesResponse>> GetList()
         {
