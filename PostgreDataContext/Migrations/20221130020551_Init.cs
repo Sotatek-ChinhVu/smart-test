@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace PostgreDataContext.Migrations
 {
-    public partial class _20221128110008_Init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -344,6 +344,13 @@ namespace PostgreDataContext.Migrations
                     SIN_DATE = table.Column<int>(type: "integer", nullable: false),
                     LOG_SBT = table.Column<int>(type: "integer", nullable: false),
                     TEXT = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    HOKEN_ID = table.Column<int>(type: "integer", nullable: false),
+                    ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    DEL_ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    DEL_SBT = table.Column<int>(type: "integer", nullable: false),
+                    IS_WARNING = table.Column<int>(type: "integer", nullable: false),
+                    TERM_CNT = table.Column<int>(type: "integer", nullable: false),
+                    TERM_SBT = table.Column<int>(type: "integer", nullable: false),
                     CREATE_DATE = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CREATE_ID = table.Column<int>(type: "integer", nullable: false),
                     CREATE_MACHINE = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true),
@@ -383,7 +390,7 @@ namespace PostgreDataContext.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CMT_CHECK_MST   ",
+                name: "CMT_CHECK_MST",
                 columns: table => new
                 {
                     HP_ID = table.Column<int>(type: "integer", nullable: false),
@@ -392,7 +399,7 @@ namespace PostgreDataContext.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SORT_NO = table.Column<int>(type: "integer", nullable: false),
                     KARTE_KBN = table.Column<int>(type: "integer", nullable: false),
-                    CMT = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
+                    CMT = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: true),
                     IS_DELETED = table.Column<int>(type: "integer", nullable: false),
                     CREATE_DATE = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CREATE_ID = table.Column<int>(type: "integer", nullable: false),
@@ -403,7 +410,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CMT_CHECK_MST   ", x => new { x.HP_ID, x.ITEM_CD, x.SEQ_NO });
+                    table.PrimaryKey("PK_CMT_CHECK_MST", x => new { x.HP_ID, x.ITEM_CD, x.SEQ_NO });
                 });
 
             migrationBuilder.CreateTable(
@@ -778,7 +785,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DENSI_SANTEI_KAISU", x => x.ID);
+                    table.PrimaryKey("PK_DENSI_SANTEI_KAISU", x => new { x.HP_ID, x.ID, x.ITEM_CD, x.SEQ_NO, x.USER_SETTING });
                 });
 
             migrationBuilder.CreateTable(
@@ -1248,14 +1255,13 @@ namespace PostgreDataContext.Migrations
                 name: "HOLIDAY_MST",
                 columns: table => new
                 {
-                    HP_ID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    HP_ID = table.Column<int>(type: "integer", nullable: false),
                     SIN_DATE = table.Column<int>(type: "integer", nullable: false),
                     SEQ_NO = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     HOLIDAY_KBN = table.Column<int>(type: "integer", nullable: false),
                     KYUSIN_KBN = table.Column<int>(type: "integer", nullable: false),
-                    HOLIDAY_NAME = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    HOLIDAY_NAME = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     IS_DELETED = table.Column<int>(type: "integer", nullable: false),
                     CREATE_DATE = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CREATE_ID = table.Column<int>(type: "integer", nullable: false),
@@ -1266,7 +1272,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HOLIDAY_MST", x => x.HP_ID);
+                    table.PrimaryKey("PK_HOLIDAY_MST", x => new { x.HP_ID, x.SIN_DATE, x.SEQ_NO });
                 });
 
             migrationBuilder.CreateTable(
@@ -1423,7 +1429,7 @@ namespace PostgreDataContext.Migrations
                     START_DATE = table.Column<int>(type: "integer", nullable: false),
                     SEQ_NO = table.Column<int>(type: "integer", nullable: false),
                     END_DATE = table.Column<int>(type: "integer", nullable: false),
-                    ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
                     CREATE_DATE = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CREATE_ID = table.Column<int>(type: "integer", nullable: false),
                     CREATE_MACHINE = table.Column<string>(type: "character varying(60)", maxLength: 60, nullable: true),
@@ -1433,7 +1439,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ITEM_GRP_MST", x => x.HP_ID);
+                    table.PrimaryKey("PK_ITEM_GRP_MST", x => new { x.HP_ID, x.GRP_SBT, x.ITEM_GRP_CD, x.SEQ_NO, x.START_DATE });
                 });
 
             migrationBuilder.CreateTable(
@@ -6889,7 +6895,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SIN_KOUI_COUNT", x => x.HP_ID);
+                    table.PrimaryKey("PK_SIN_KOUI_COUNT", x => new { x.HP_ID, x.PT_ID, x.SIN_YM, x.SIN_DAY, x.RAIIN_NO, x.RP_NO, x.SEQ_NO });
                 });
 
             migrationBuilder.CreateTable(
@@ -6902,36 +6908,36 @@ namespace PostgreDataContext.Migrations
                     RP_NO = table.Column<int>(type: "integer", nullable: false),
                     SEQ_NO = table.Column<int>(type: "integer", nullable: false),
                     ROW_NO = table.Column<int>(type: "integer", nullable: false),
-                    REC_ID = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    REC_ID = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
                     ITEM_SBT = table.Column<int>(type: "integer", nullable: false),
-                    ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    ODR_ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    ITEM_NAME = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    ODR_ITEM_CD = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    ITEM_NAME = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     SURYO = table.Column<double>(type: "double precision", nullable: false),
                     SURYO2 = table.Column<double>(type: "double precision", nullable: false),
                     FMT_KBN = table.Column<int>(type: "integer", nullable: false),
                     UNIT_CD = table.Column<int>(type: "integer", nullable: false),
-                    UNIT_NAME = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    UNIT_NAME = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     TEN = table.Column<double>(type: "double precision", nullable: false),
                     ZEI = table.Column<double>(type: "double precision", nullable: false),
                     IS_NODSP_RECE = table.Column<int>(type: "integer", nullable: false),
                     IS_NODSP_PAPER_RECE = table.Column<int>(type: "integer", nullable: false),
                     IS_NODSP_RYOSYU = table.Column<int>(type: "integer", nullable: false),
-                    CMT_OPT = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: false),
-                    CMT1 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    CMT_CD1 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    CMT_OPT1 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: false),
-                    CMT2 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    CMT_CD2 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    CMT_OPT2 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: false),
-                    CMT3 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    CMT_CD3 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
-                    CMT_OPT3 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: false),
+                    CMT_OPT = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: true),
+                    CMT1 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CMT_CD1 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    CMT_OPT1 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: true),
+                    CMT2 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CMT_CD2 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    CMT_OPT2 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: true),
+                    CMT3 = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    CMT_CD3 = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    CMT_OPT3 = table.Column<string>(type: "character varying(240)", maxLength: 240, nullable: true),
                     IS_DELETED = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SIN_KOUI_DETAIL", x => x.HP_ID);
+                    table.PrimaryKey("PK_SIN_KOUI_DETAIL", x => new { x.HP_ID, x.PT_ID, x.SIN_YM, x.RP_NO, x.SEQ_NO, x.ROW_NO });
                 });
 
             migrationBuilder.CreateTable(
@@ -6947,9 +6953,9 @@ namespace PostgreDataContext.Migrations
                     HOKEN_KBN = table.Column<int>(type: "integer", nullable: false),
                     SIN_KOUI_KBN = table.Column<int>(type: "integer", nullable: false),
                     SIN_ID = table.Column<int>(type: "integer", nullable: false),
-                    CD_NO = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
+                    CD_NO = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
                     SANTEI_KBN = table.Column<int>(type: "integer", nullable: false),
-                    KOUI_DATA = table.Column<string>(type: "text", nullable: false),
+                    KOUI_DATA = table.Column<string>(type: "text", nullable: true),
                     IS_DELETED = table.Column<int>(type: "integer", nullable: false),
                     CREATE_DATE = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CREATE_ID = table.Column<int>(type: "integer", nullable: false),
@@ -6960,7 +6966,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SIN_RP_INF", x => x.HP_ID);
+                    table.PrimaryKey("PK_SIN_RP_INF", x => new { x.HP_ID, x.PT_ID, x.SIN_YM, x.RP_NO });
                 });
 
             migrationBuilder.CreateTable(
@@ -7521,7 +7527,7 @@ namespace PostgreDataContext.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TEKIOU_BYOMEI_MST", x => x.HP_ID);
+                    table.PrimaryKey("PK_TEKIOU_BYOMEI_MST", x => new { x.HP_ID, x.ITEM_CD, x.BYOMEI_CD, x.SYSTEM_DATA });
                 });
 
             migrationBuilder.CreateTable(
@@ -10877,7 +10883,7 @@ namespace PostgreDataContext.Migrations
                 name: "CALC_STATUS");
 
             migrationBuilder.DropTable(
-                name: "CMT_CHECK_MST   ");
+                name: "CMT_CHECK_MST");
 
             migrationBuilder.DropTable(
                 name: "CMT_KBN_MST");

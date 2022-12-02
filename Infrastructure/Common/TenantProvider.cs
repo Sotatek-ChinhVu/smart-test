@@ -26,9 +26,9 @@ namespace Infrastructure.CommonDB
             return _configuration["TenantDbSample"];
         }
 
-        public string GetTenantId()
+        public string GetClinicID()
         {
-            return TempIdentity.TenantId;
+            return TempIdentity.ClinicID;
         }
 
         public TenantNoTrackingDataContext GetNoTrackingDataContext()

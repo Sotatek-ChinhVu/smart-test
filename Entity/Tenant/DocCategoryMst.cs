@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CATEGORY_NAME")]
         [MaxLength(120)]
-        public string CategoryName { get; set; } = string.Empty;
+        public string? CategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順

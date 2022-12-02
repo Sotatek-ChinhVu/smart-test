@@ -14,7 +14,6 @@
         public const string Delete = "Delete";
         public const string GetSettingValue = "GetSettingValue";
 
-
         // SuperSet
         public const string Validate = "Validate";
         public const string Reorder = "Reorder";
@@ -112,8 +111,17 @@
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
 
+        // Document
+        public const string GetListDocumentCategory = "GetListDocumentCategory";
+        public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
+        public const string SaveListDocumentCategory = "SaveListDocumentCategory";
+        public const string SortDocCategory = "SortDocCategory";
+        public const string AddTemplateToCategory = "AddTemplateToCategory";
+        public const string CheckExistFileName = "CheckExistFileName";
+
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
+        public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";

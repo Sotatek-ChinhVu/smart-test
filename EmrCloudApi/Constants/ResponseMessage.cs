@@ -103,6 +103,17 @@
         public static readonly string UpsertIdNoExist = "No Exist Id";
         public static readonly string UserListExistedInputData = "UserListExistedInputData";
 
+        //ApprovalInfo
+        public static readonly string InvalidStarDate = "InvalidStarDate";
+        public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
+        public static readonly string InvalidCreateId = "InvalidCreateId";
+        public static readonly string InvalidUpdateId = "InvalidUpdateId";
+        public static readonly string InvalidUpdateMachine = "InvalidUpdateMachine";
+        public static readonly string InvalidCreateMachine = "InvalidCreateMachine";
+        public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
+        public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";
+        public static readonly string ApprovalInfListInvalidNoExistedRaiinNo = "ApprovalInfListInvalidNoExistedRaiinNo";
 
         //Insurance
         // Validate Main Insurance
@@ -682,6 +693,7 @@
         public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
+        public static readonly string InvalidInsuranceList = "Invalid Insurance List";
 
         //Message Error Common
         public static readonly string MInp00010 = "{0}を入力してください。";
@@ -806,5 +818,18 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+
+        // Document
+        public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
+        public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
+        public static readonly string InvalidFileInput = "Invalid File Input!";
+
+        //Check Special Item InvalidCheckAge
+        public static readonly string InvalidCheckAge = "Invalid Check Age";
+        public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";
+        public static readonly string InvalidIBirthDay = "Invalid IBirthDay";
     }
 }

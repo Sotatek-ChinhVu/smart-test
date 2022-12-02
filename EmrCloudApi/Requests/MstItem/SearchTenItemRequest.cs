@@ -29,5 +29,11 @@
         public bool IsExpired { get; set; } = false;
 
         public string ItemCodeStartWith { get; set; } = string.Empty;
+
+        public bool IsMasterSearch { get; set; }
+
+        public bool IsSearch831SuffixOnly { get; set; }
+
+        public bool IsSearchSanteiItem { get; set; }
     }
 }

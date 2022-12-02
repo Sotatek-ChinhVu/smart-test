@@ -22,20 +22,25 @@ public class GetListImageTemplatesInteractor : IGetListImageTemplatesInputPort
         List<GetListImageTemplatesOutputItem> listFolders = new();
         List<string> listImageItems = new();
         List<string> listFolderItems = new();
-        var response = _amazonS3Service.GetListObjectAsync(CommonConstants.Schema);
+        var listFolderPath = new List<string>(){
+                                                    CommonConstants.Reference,
+                                                    CommonConstants.Schema
+                                                };
+        string path = _amazonS3Service.GetFolderUploadOther(listFolderPath);
+        var response = _amazonS3Service.GetListObjectAsync(path);
         response.Wait();
         var listDatas = response.Result;
         foreach (var item in listDatas)
         {
-            var start = item.IndexOf("/");
-            var end = item.IndexOf("/", start + 1);
+            var start = item.IndexOf(path) + path.Length;
+            var end = item.IndexOf("/", path.Length + 1);
             var imageName = _options.BaseAccessUrl + "/" + item;
             imageName = imageName.Replace(" ", "%20").Replace("+", "%2B");
             listImageItems.Add(imageName);
 
             if (end > start)
             {
-                var folderName = item.Substring(start + 1, end - start - 1);
+                var folderName = item.Substring(start, end - start);
                 if (!listFolderItems.Contains(folderName))
                 {
                     listFolderItems.Add(folderName);
@@ -43,7 +48,7 @@ public class GetListImageTemplatesInteractor : IGetListImageTemplatesInputPort
             }
             else
             {
-                var folderName = item.Substring(start + 1);
+                var folderName = item.Substring(start);
                 if (!listFolderItems.Contains(folderName))
                 {
                     listFolderItems.Add(folderName);
