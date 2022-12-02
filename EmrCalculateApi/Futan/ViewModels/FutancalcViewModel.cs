@@ -18,6 +18,7 @@ namespace EmrCalculateApi.Futan.ViewModels
 #pragma warning disable S1121
 #pragma warning disable S1481
 #pragma warning disable CS8602
+#pragma warning disable CS8625
 #pragma warning disable S2184
 #pragma warning disable S3267
 #pragma warning disable S1125
@@ -133,7 +134,7 @@ namespace EmrCalculateApi.Futan.ViewModels
         )
         {
             FutanCalculateMain(
-                ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, new List<RaiinInfModel>(), seikyuUp
+                ptId, sinDate, default, sinKouiCounts, sinKouis, sinKouiDetails, sinRpInfs, null, seikyuUp
             );
         }
 
