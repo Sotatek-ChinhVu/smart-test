@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Halfsize.txt" />
+    <None Remove="Resources\Fullsize-Halfsize.txt" />
     <None Remove="Resources\JapaneseCharacters.txt" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Halfsize.txt" />
+    <EmbeddedResource Include="Resources\Fullsize-Halfsize.txt" />
     <EmbeddedResource Include="Resources\JapaneseCharacters.txt" />
   </ItemGroup>
 

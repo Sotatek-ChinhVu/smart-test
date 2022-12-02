@@ -1,12 +1,9 @@
-using EmrCloudApi.Tenant.Services;
 using EmrCloudApi.Configs.Dependency;
 using EmrCloudApi.Configs.Options;
 using EmrCloudApi.Realtime;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using PostgreDataContext;
 using Serilog;
 using Serilog.Events;
 using System.Text;
@@ -65,14 +62,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// This config is needed for EF Core Migrations to find the DbContext
-builder.Services.AddDbContext<TenantDataContext>(options =>
-{
-    var connectionStr = builder.Configuration["TenantDbSample"];
-    //var connectionStr = "host=develop-smartkarte-postgres.ckthopedhq8w.ap-northeast-1.rds.amazonaws.com;port=5432;database=smartkarte;user id=postgres;password=Emr!23456789";
-    options.UseNpgsql(connectionStr);
-});
-
 // Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -105,14 +94,6 @@ var dependencySetup = new ModuleDependencySetup();
 dependencySetup.Run(builder.Services);
 
 var app = builder.Build();
-
-// Run EF Core Migrations on startup
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    var context = services.GetRequiredService<TenantDataContext>();
-    context.Database.Migrate();
-}
 
 //Add config from json file
 string enviroment = "Development";

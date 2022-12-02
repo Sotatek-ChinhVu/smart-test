@@ -1,11 +1,17 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.Diseases;
+using Domain.Models.KarteInfs;
+using Domain.Models.MstItem;
+using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
+using Helper.Common;
 using Helper.Constants;
+using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -24,6 +30,8 @@ namespace Infrastructure.Repositories
         private readonly int rpEdaNoDefault = 1;
         private readonly int rpNoDefault = 1;
         private readonly int daysCntDefalt = 1;
+
+        private const string SUSPECT_FLAG = "の疑い";
 
         public TodayOdrRepository(ITenantProvider tenantProvider)
         {
@@ -69,12 +77,58 @@ namespace Infrastructure.Repositories
 
         }
 
+        public List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs)
+        {
+            var ptByomeis = todayByomeis.Where(p => p.IsDeleted == DeleteTypes.None && p.IsInMonth);
+            List<OrdInfDetailModel> drugOrders = new List<OrdInfDetailModel>();
+            int odrCount = 0;
+            var checkedDiseases = new List<(string, string, List<CheckedDiseaseModel>)>();
+
+            foreach (var order in todayOdrs)
+            {
+                foreach (var odrDetail in order.OrdInfDetails)
+                {
+                    string itemCd = odrDetail.ItemCd;
+                    if (string.IsNullOrEmpty(itemCd) ||
+                        itemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ||
+                        itemCd == ItemCdConst.Con_Refill) continue;
+
+                    string santeiItemCd = GetSanteiItemCd(hpId, itemCd, sinDate);
+
+                    var byomeisByOdr = GetTekiouByomeiByOrder(hpId, new List<string>() { itemCd, santeiItemCd });
+                    if (byomeisByOdr.Count == 0) continue;
+
+                    // No.6510 future byomei check
+                    List<string> byomeiCds = byomeisByOdr.Select(p => p.ByomeiMst.ByomeiCd).ToList();
+                    if (!drugOrders.Exists(p => p.ItemCd == odrDetail.ItemCd)
+                        && !ptByomeis.Where(p => (p.HokenPid == 0 || p.HokenPid == order.HokenPid)
+                        && p.StartDate <= sinDate && (!p.IsTenki || p.TenkiDate >= sinDate)
+                        && (!odrDetail.IsDrug || !p.Byomei.AsString().Contains(SUSPECT_FLAG)))
+                        .Any(p => byomeiCds.Contains(p.ByomeiCd)))
+                    {
+                        //set item name for grid mode
+                        odrCount++;
+                        List<CheckedDiseaseModel> byomeis = new();
+                        foreach (var byomei in byomeisByOdr)
+                        {
+                            var byomeiModify = new CheckedDiseaseModel(byomei.SikkanCd, byomei.NanByoCd, byomei.Byomei, odrCount, byomei.PtDiseaseModel, byomei.ByomeiMst);
+                            byomeis.Add(byomeiModify);
+                        }
+                        checkedDiseases.Add((odrDetail.ItemCd, odrDetail.ItemName, byomeis));
+                    }
+                }
+            }
+
+            return checkedDiseases;
+        }
+
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
         {
             var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
 
             if (raiinInf != null)
             {
+                raiinInf.Status = 7; // temperaror with status 7
                 raiinInf.SyosaisinKbn = syosaiKbn;
                 raiinInf.JikanKbn = jikanKbn;
                 raiinInf.HokenPid = hokenPid;
@@ -99,7 +153,7 @@ namespace Infrastructure.Repositories
 
             if (oldHeaderInfModel != null)
             {
-                if (oldHeaderInfModel?.HokenPid == hokenPid &&
+                if (oldHeaderInfModel.HokenPid == hokenPid &&
                 oldoldSyosaiKihon?.Suryo == syosaiKbn &&
                 oldJikanKihon?.Suryo == jikanKbn &&
                 oldHeaderInfModel.SanteiKbn == santeiKbn)
@@ -731,6 +785,200 @@ namespace Infrastructure.Repositories
             }
 
             return 0;
+        }
+
+        ///<summary>
+        ///指定の月数後の日付を取得する
+        ///休日の場合は、その前の休日以外の日付
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">月数</param>
+        ///<returns>基準日の指定月数後の休日以外の日付</returns>
+        public int MonthsAfterExcludeHoliday(int hpId, int baseDate, int term)
+        {
+            int retDate = CIUtil.MonthsAfter(baseDate, term);
+
+            DateTime? dt;
+            DateTime dt1;
+
+            dt = CIUtil.SDateToDateTime(retDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                int i = 1;
+
+                while (IsHoliday(hpId, CIUtil.DateTimeToInt(dt1)) == true)
+                {
+                    // 休日の場合、1日前に移動
+                    dt1 = dt1.AddDays(-1);
+                    i++;
+                    if (i > 31)
+                    {
+                        break;
+                    }
+                }
+                retDate = CIUtil.DateTimeToInt(dt1);
+            }
+            return retDate;
+        }
+
+        private bool IsHoliday(int hpId, int datetime)
+        {
+            var holidayMst = _tenantNoTrackingDataContext.HolidayMsts
+                .Where(p =>
+                    p.HpId == hpId &&
+                    p.SinDate == datetime &&
+                    p.HolidayKbn > 0 &&
+                    p.KyusinKbn > 0 &&
+                    p.IsDeleted != DeleteTypes.Deleted)
+                .FirstOrDefault();
+            return holidayMst != null;
+        }
+
+        /// <summary>
+        /// 指定の期間に指定の項目が何回算定されているかカウントする
+        /// ※複数項目用
+        /// </summary>
+        /// <param name="ptId">患者ID</param>
+        /// <param name="startDate">カウント開始日</param>
+        /// <param name="endDate">カウント終了日</param>
+        /// <param name="sinDate">診療日（除外する日）</param>
+        /// <param name="itemCds">カウントする項目のリスト</param>
+        /// <param name="santeiKbn">算定区分</param>
+        /// <returns>算定回数</returns>
+        public double SanteiCount(int hpId, long ptId, int startDate, int endDate, int sinDate, long raiinNo, List<string> itemCds, List<int> santeiKbns, List<int> hokenKbns)
+        {
+            int startYm = startDate / 100;
+            int endYm = endDate / 100;
+
+            List<int> checkHokenKbn = new List<int>();
+
+            if (hokenKbns != null)
+            {
+                checkHokenKbn = hokenKbns;
+            }
+
+            List<int> checkSanteiKbn = new List<int>();
+
+            if (santeiKbns != null)
+            {
+                checkSanteiKbn = santeiKbns;
+            }
+
+            var sinRpInfs = _tenantNoTrackingDataContext.SinRpInfs.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinYm >= startYm &&
+                o.SinYm <= endYm &&
+                checkHokenKbn.Contains(o.HokenKbn) &&
+                checkSanteiKbn.Contains(o.SanteiKbn)
+            );
+            var sinKouiCounts = _tenantNoTrackingDataContext.SinKouiCounts.Where(o =>
+                o.HpId == hpId &&
+                o.PtId == ptId &&
+                o.SinDate >= startDate &&
+                o.SinDate <= endDate &&
+                o.RaiinNo != raiinNo);
+            var sinKouiDetails = _tenantNoTrackingDataContext.SinKouiDetails.Where(p =>
+                p.HpId == hpId &&
+                p.PtId == ptId &&
+                p.SinYm >= startYm &&
+                p.SinYm <= endYm &&
+                itemCds.Contains(p.ItemCd ?? string.Empty) &&
+                p.FmtKbn != 10  // 在がん医総のダミー項目を除く
+                );
+
+            var joinQuery = (
+                from sinKouiDetail in sinKouiDetails
+                join sinKouiCount in sinKouiCounts on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo, sinKouiDetail.SeqNo } equals
+                    new { sinKouiCount.HpId, sinKouiCount.PtId, sinKouiCount.SinYm, sinKouiCount.RpNo, sinKouiCount.SeqNo }
+                join sinRpInf in sinRpInfs on
+                    new { sinKouiDetail.HpId, sinKouiDetail.PtId, sinKouiDetail.SinYm, sinKouiDetail.RpNo } equals
+                    new { sinRpInf.HpId, sinRpInf.PtId, sinRpInf.SinYm, sinRpInf.RpNo }
+                where
+                    sinKouiDetail.HpId == hpId &&
+                    sinKouiDetail.PtId == ptId &&
+                    sinKouiDetail.SinYm >= startYm &&
+                    sinKouiDetail.SinYm <= endYm &&
+                    itemCds.Contains(sinKouiDetail.ItemCd ?? string.Empty) &&
+                    sinKouiCount.SinDate >= startDate &&
+                    sinKouiCount.SinDate <= endDate &&
+                    sinKouiCount.RaiinNo != raiinNo
+                group new { sinKouiDetail, sinKouiCount } by new { sinKouiCount.HpId } into A
+                select new { sum = A.Sum(a => (double)a.sinKouiCount.Count * (a.sinKouiDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(a.sinKouiDetail.ItemCd ?? string.Empty) ? 1 : a.sinKouiDetail.Suryo)) }
+            );
+
+            var result = joinQuery.ToList();
+            if (result.Any())
+            {
+                return result.FirstOrDefault()?.sum ?? 0;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, List<string> itemCds, int minSinDate, int maxSinDate)
+        {
+            List<int> unitCds = new List<int> { 53, 121, 131, 138, 141, 142, 143, 144, 145, 146, 147, 148, 997, 998, 999 };
+
+            var entities = _tenantNoTrackingDataContext.DensiSanteiKaisus.Where((x) =>
+                    x.HpId == hpId &&
+                    itemCds.Contains(x.ItemCd) &&
+                    x.StartDate <= minSinDate &&
+                    x.EndDate >= maxSinDate &&
+                    x.IsInvalid == 0 &&
+                    unitCds.Contains(x.UnitCd)
+                ).ToList();
+
+            List<DensiSanteiKaisuModel> results = new List<DensiSanteiKaisuModel>();
+            entities?.ForEach(entity =>
+            {
+                results.Add(new DensiSanteiKaisuModel(entity.Id, entity.HpId, entity.ItemCd, entity.UnitCd, entity.MaxCount, entity.SpJyoken, entity.StartDate, entity.EndDate, entity.SeqNo, entity.UserSetting, entity.TargetKbn, entity.TermCount, entity.TermSbt, entity.IsInvalid, entity.ItemGrpCd));
+            });
+
+            return results;
+        }
+
+        private string GetSanteiItemCd(int hpId, string itemCd, int sinDate)
+        {
+            var tenMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(p => p.HpId == hpId &&
+                                                                                  p.ItemCd == itemCd &&
+                                                                                  p.StartDate <= sinDate &&
+                                                                                  p.EndDate >= sinDate);
+            if (tenMst != null)
+            {
+                return tenMst.SanteiItemCd ?? string.Empty;
+            }
+            return string.Empty;
+        }
+
+        public List<CheckedDiseaseModel> GetTekiouByomeiByOrder(int hpId, List<string> itemCds)
+        {
+            var tekiouByomeiMsts = _tenantNoTrackingDataContext.TekiouByomeiMsts.Where(p => p.HpId == hpId && itemCds.Contains(p.ItemCd) && p.IsInvalid == 0);
+            var byomeiMsts = _tenantNoTrackingDataContext.ByomeiMsts.Where(p => p.HpId == hpId);
+
+            var query = from tekiByomei in tekiouByomeiMsts
+                        join byomeiMst in byomeiMsts
+                        on tekiByomei.ByomeiCd equals byomeiMst.ByomeiCd
+                        select new
+                        {
+                            ByomeiMst = byomeiMst,
+                            TekiByomei = tekiByomei
+                        };
+            var ptByomeiModels = new List<CheckedDiseaseModel>();
+            foreach (var entity in query)
+            {
+                if (!ptByomeiModels.Any(p => p.ByomeiMst.ByomeiCd == entity.ByomeiMst.ByomeiCd))
+                {
+                    ptByomeiModels.Add(new CheckedDiseaseModel(entity.ByomeiMst.SikkanCd, entity.ByomeiMst.NanbyoCd, entity.ByomeiMst.Byomei ?? string.Empty, 0, new PtDiseaseModel(
+                        entity.ByomeiMst.ByomeiCd, entity.ByomeiMst.Byomei ?? string.Empty, entity.ByomeiMst.SikkanCd
+                        ), new ByomeiMstModel(entity.ByomeiMst.ByomeiCd, string.Empty, entity.ByomeiMst.Sbyomei ?? string.Empty, entity.ByomeiMst.KanaName1 ?? string.Empty, string.Empty, entity.ByomeiMst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty, string.Empty, string.Empty, entity.ByomeiMst.IsAdopted == 1, entity.ByomeiMst.KanaName2 ?? string.Empty, entity.ByomeiMst.KanaName3 ?? string.Empty, entity.ByomeiMst.KanaName4 ?? string.Empty, entity.ByomeiMst.KanaName5 ?? string.Empty, entity.ByomeiMst.KanaName6 ?? string.Empty, entity.ByomeiMst.KanaName7 ?? string.Empty)));
+                }
+            }
+            return ptByomeiModels;
         }
     }
 }

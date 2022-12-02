@@ -21,7 +21,7 @@ namespace Helper.Common
             }
 
             string kanaString = RomajiString.Instance.RomajiToKana(value);
-            string fullToHalf = HalfsizeString.Instance.ToHalfsize(kanaString);
+            string fullToHalf = HenkanJ.Instance.ToHalfsize(kanaString);
 
             return fullToHalf;
         }
@@ -1407,6 +1407,138 @@ namespace Helper.Common
 
             return (PtID * 10 + digit);
         }
+
+        public static int DaysBetween(DateTime from, DateTime to)
+        {
+            return (int)(to - @from).TotalDays;
+        }
+
+        public static DateTime StrToDate(string dateTimeStr)
+        {
+            DateTime result = new DateTime();
+            if (string.IsNullOrEmpty(dateTimeStr)) return result;
+            try
+            {
+                result = DateTime.ParseExact(dateTimeStr, "yyyy/MM/dd", CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                result = DateTime.MinValue;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 文字列をint型に変換する
+        /// 変換に失敗した場合、defaultValを返す
+        /// </summary>
+        /// <param name="str">変換する文字列</param>
+        /// <param name="defaultVal">変換できなかった時に返す値</param>
+        /// <returns>引数strをint型に変換した値</returns>
+        public static int StrToIntDef(string str, int defaultVal)
+        {
+            int ret;
+
+            if (int.TryParse(str, out ret) == false)
+            {
+                ret = defaultVal;
+            }
+
+            return ret;
+        }
+
+        ///<summary>
+        ///指定の週数前の日曜日の日付を取得する
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">週数</param>
+        ///<returns>基準日の指定週数前の週の日曜日の日付</returns>
+        public static int WeeksBefore(int baseDate, int term)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddDays((int)dt1.DayOfWeek * -1 + (-7 * (term - 1)));
+                retDate = DateTimeToInt(dt1);
+            }
+
+            return retDate;
+        }
+
+        ///<summary>
+        ///指定の月数前の初日の日付を取得する
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">月数</param>
+        ///<returns>基準日の指定月数前の月の初日の日付</returns>
+        public static int MonthsBefore(int baseDate, int term)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddMonths(term * -1);
+                retDate = DateTimeToInt(dt1);
+                retDate = retDate / 100 * 100 + 1;
+            }
+            return retDate;
+        }
+
+
+        ///<summary>
+        ///指定の年数前の月の初日の日付を取得する
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">年数</param>
+        ///<returns>基準日の指定年数前の月の初日の日付</returns>
+        public static int YearsBefore(int baseDate, int term)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddYears(term * -1);
+                retDate = DateTimeToInt(dt1);
+                retDate = retDate / 100 * 100 + 1;
+            }
+            return retDate;
+        }
+
+        ///<summary>
+        ///指定の日数前の日付を取得する
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">日数</param>
+        ///<returns>基準日の指定日数前の日付</returns>
+        public static int DaysBefore(int baseDate, int term)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddDays((term - 1) * -1);
+                retDate = DateTimeToInt(dt1);
+            }
+
+            return retDate;
+        }
         public static void GetHokensyaHoubetu(string hokensyaNo, ref string hokensyaNoSearch, ref string houbetuNo)
         {
             //法別番号を求める
@@ -1426,6 +1558,28 @@ namespace Helper.Common
                 default:
                     break;
             }
+        }
+
+        ///<summary>
+        ///指定の月数後の日付を取得する
+        ///</summary>
+        ///<param name="baseDate">基準日</param>
+        ///<param name="term">月数</param>
+        ///<returns>基準日の指定月数後の日付</returns>
+        public static int MonthsAfter(int baseDate, int term)
+        {
+            DateTime? dt;
+            DateTime dt1;
+            int retDate = baseDate;
+
+            dt = SDateToDateTime(baseDate);
+            if (dt != null)
+            {
+                dt1 = (DateTime)dt;
+                dt1 = dt1.AddMonths(term);
+                retDate = DateTimeToInt(dt1);
+            }
+            return retDate;
         }
 
         public static string DateTimeToTime(DateTime dateTime)
@@ -1481,6 +1635,19 @@ namespace Helper.Common
             Short,
             Full,
             Mix
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns>yyyy/MM/dd HH:mm</returns>
+        public static string GetCIDateTimeStr(DateTime dateTime, bool isGetSec = false)
+        {
+            string result = string.Empty;
+            string format = isGetSec ? "yyyy/MM/dd HH:mm:ss" : "yyyy/MM/dd HH:mm";
+            result = dateTime.ToString(format);
+            return result;
         }
     }
     public struct WarekiYmd

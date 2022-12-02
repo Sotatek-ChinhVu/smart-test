@@ -1,14 +1,12 @@
 using Domain.Constant;
 using Domain.Models.Reception;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Infrastructure.Repositories
 {
@@ -56,21 +54,15 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public long Insert(ReceptionSaveDto dto, int hpId, int userId, int uketukeNoMode, int uketukeNoStart)
+        public long Insert(ReceptionSaveDto dto, int hpId, int userId)
         {
             var executionStrategy = _tenantNoTrackingDataContext.Database.CreateExecutionStrategy();
             return executionStrategy.Execute(() =>
             {
                 using var transaction = _tenantNoTrackingDataContext.Database.BeginTransaction();
 
-                var maxRaiinBySinDate = _tenantNoTrackingDataContext.RaiinInfs
-                                        .Where(x => x.IsDeleted == DeleteStatus.None && x.SinDate == dto.Reception.SinDate);
-
-                int uketukeNo = GetNextUketukeNoBySetting
-                                  (hpId ,dto.Reception.SinDate, dto.Reception.UketukeSbt, dto.Reception.KaId, uketukeNoMode, uketukeNoStart);
-
                 // Insert RaiinInf
-                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId, uketukeNo);
+                var raiinInf = CreateNewRaiinInf(dto.Reception, hpId, userId);
                 _tenantNoTrackingDataContext.RaiinInfs.Add(raiinInf);
                 _tenantNoTrackingDataContext.SaveChanges();
 
@@ -103,30 +95,7 @@ namespace Infrastructure.Repositories
 
             #region Helper methods
 
-            int GetNextUketukeNoBySetting(int hpId, int sindate, int infKbn, int kaId, int uketukeMode, int defaultUkeNo)
-            {
-                try
-                {
-                    var query = _tenantNoTrackingDataContext.RaiinInfs.Where
-                        (
-                            p => p.HpId == hpId && p.SinDate == sindate
-                            && ((uketukeMode == 1 || uketukeMode == 3) ? p.UketukeSbt == infKbn : true)
-                            && ((uketukeMode == 2 || uketukeMode == 3) ? p.KaId == kaId : true)
-                            && p.IsDeleted == DeleteTypes.None
-                        ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
-                    if (query != null)
-                    {
-                        return query.UketukeNo + 1 < defaultUkeNo ? defaultUkeNo : query.UketukeNo + 1;
-                    }
-                }
-                catch
-                {
-                    return 1;
-                }
-                return defaultUkeNo > 0 ? defaultUkeNo : 1;
-            }
-
-            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId,int uketukeNo)
+            RaiinInf CreateNewRaiinInf(ReceptionModel model, int hpId, int userId)
             {
                 return new RaiinInf
                 {
@@ -143,7 +112,7 @@ namespace Infrastructure.Repositories
                     UketukeSbt = model.UketukeSbt,
                     UketukeTime = model.UketukeTime,
                     UketukeId = model.UketukeId,
-                    UketukeNo = uketukeNo,
+                    UketukeNo = model.UketukeNo,
                     SinStartTime = model.SinStartTime,
                     SinEndTime = model.SinEndTime,
                     KaikeiTime = model.KaikeiTime,
@@ -194,6 +163,22 @@ namespace Infrastructure.Repositories
             }
 
             #endregion
+        }
+
+        public int GetMaxUketukeNo(int hpId, int sindate, int infKbn, int kaId, int uketukeMode)
+        {
+            var query = _tenantNoTrackingDataContext.RaiinInfs.Where
+                (
+                    p => p.HpId == hpId && p.SinDate == sindate
+                    && (!(uketukeMode == 1 || uketukeMode == 3) || p.UketukeSbt == infKbn)
+                    && (!(uketukeMode == 2 || uketukeMode == 3) || p.KaId == kaId)
+                    && p.IsDeleted == DeleteTypes.None
+                ).OrderByDescending(p => p.UketukeNo).FirstOrDefault();
+            if (query != null)
+            {
+                return query.UketukeNo;
+            }
+            return 0;
         }
 
         public bool Update(ReceptionSaveDto dto, int hpId, int userId)
@@ -857,6 +842,102 @@ namespace Infrastructure.Repositories
                 kaId = getKaIdDefault.KaId;
             }
             return new ReceptionModel(tantoId, kaId);
+        }
+
+        public long InitDoctorCombobox(int userId, int tantoId, long ptId, int hpId, int sinDate)
+        {
+            var isDoctor = _tenantNoTrackingDataContext.UserMsts.Any(u => u.UserId == userId && u.IsDeleted == DeleteTypes.None && u.JobCd == 1);
+            var doctors = _tenantNoTrackingDataContext.UserMsts.Where(p => p.StartDate <= sinDate && p.EndDate >= sinDate && p.JobCd == 1).OrderBy(p => p.SortNo).ToList();
+            if (tantoId <= 0 || !doctors.Any(p => p.Id == tantoId))
+            {
+                // if have only 1 doctor in user list
+                if (doctors.Count == 2)
+                {
+                    return doctors[1].Id;
+                }
+
+                if (isDoctor)
+                {
+                    return userId;
+                }
+                else
+                {
+                    var mainDoctor = _tenantNoTrackingDataContext.PtInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.IsDelete != 1);
+
+                    if (mainDoctor != null)
+                    {
+                        var userMst = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == mainDoctor.PrimaryDoctor && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+                        if (userMst?.JobCd == 1)
+                        {
+                            return mainDoctor.PrimaryDoctor;
+                        }
+                    }
+                    var defaultDoctorSetting = _tenantNoTrackingDataContext.SystemConfs.FirstOrDefault(p =>
+                            p.HpId == hpId && p.GrpCd == 1009 && p.GrpEdaNo == 0)?.Val ?? 0;
+
+                    // if DefaultDoctorSetting = 1 get doctor from last visit
+                    if (defaultDoctorSetting == 1)
+                    {
+                        var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.PtId == ptId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.Status >= RaiinState.TempSave &&
+                                            (sinDate <= 0 || p.SinDate < sinDate))
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault(); ;
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+
+                    // if DefaultDoctorSetting = 2 get doctor from last reception
+                    if (defaultDoctorSetting == 2)
+                    {
+                        var lastRaiinInf = _tenantNoTrackingDataContext.RaiinInfs
+                                .Where(p => p.HpId == hpId &&
+                                            p.IsDeleted == DeleteTypes.None &&
+                                            p.SinDate <= sinDate)
+                                .OrderByDescending(p => p.SinDate)
+                                .ThenByDescending(p => p.RaiinNo)
+                                .FirstOrDefault();
+
+                        if (lastRaiinInf != null && lastRaiinInf.TantoId > 0)
+                        {
+                            return lastRaiinInf.TantoId;
+                        }
+                    }
+                }
+
+                //if DefaultDoctorSetting = 0
+                return doctors.Count > 0 ? doctors[0].Id : 0;
+            }
+
+            return 0;
+        }
+
+        public int GetFirstVisitWithSyosin(int hpId, long ptId, int sinDate)
+        {
+            int firstDate = 0;
+            var syosinBi = _tenantNoTrackingDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                                           && x.PtId == ptId
+                                                                           && x.SinDate < sinDate
+                                                                           && x.SyosaisinKbn == SyosaiConst.Syosin
+                                                                           && x.Status >= RaiinState.TempSave
+                                                                           && x.IsDeleted == DeleteTypes.None
+                )
+                .OrderByDescending(x => x.SinDate)
+                .FirstOrDefault();
+
+            if (syosinBi != null)
+            {
+                firstDate = syosinBi.SinDate;
+            }
+
+            return firstDate;
         }
     }
 }
