@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +27,7 @@ namespace Entity.Tenant
         /// バージョン
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("VERSION", Order = 3)]
         [MaxLength(10)]
         public string Version { get; set; } = string.Empty;

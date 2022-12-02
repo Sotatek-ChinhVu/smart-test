@@ -14,7 +14,7 @@ namespace Entity.Tenant
         /// 計算ID
         /// SEQUENCE
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("CALC_ID", Order = 1)]
         public long CalcId { get; set; }
@@ -63,6 +63,7 @@ namespace Entity.Tenant
         [Column("CLEAR_RECE_CHK")]
         [CustomAttribute.DefaultValue(0)]
         public int ClearReceChk { get; set; }
+
         /// <summary>
         /// 状態
         /// 0:未済 1:計算中 8:異常終了 9:終了
@@ -77,7 +78,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時
@@ -125,7 +126,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

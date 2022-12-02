@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 3)]
         public int SinDate { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 4)]
         public long RaiinNo { get; set; }
 
@@ -51,7 +51,7 @@ namespace Entity.Tenant
         /// 保険組合せID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_PID", Order = 5)]
         public int HokenPid { get; set; }
 
@@ -59,7 +59,7 @@ namespace Entity.Tenant
         /// 合算調整Pid
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ADJUST_PID", Order = 6)]
         [CustomAttribute.DefaultValue(0)]
         public int AdjustPid { get; set; }
@@ -142,7 +142,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOUBETU")]
         [MaxLength(3)]
-        public string Houbetu { get; set; } = string.Empty;
+        public string? Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公１法別
@@ -150,7 +150,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI1_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi1Houbetu { get; set; } = string.Empty;
+        public string? Kohi1Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公２法別
@@ -158,7 +158,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI2_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi2Houbetu { get; set; } = string.Empty;
+        public string? Kohi2Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公３法別
@@ -166,7 +166,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi3Houbetu { get; set; } = string.Empty;
+        public string? Kohi3Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公４法別
@@ -174,7 +174,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI4_HOUBETU")]
         [MaxLength(3)]
-        public string Kohi4Houbetu { get; set; } = string.Empty;
+        public string? Kohi4Houbetu { get; set; } = string.Empty;
 
         /// <summary>
         /// 公費１優先順位
@@ -182,7 +182,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI1_PRIORITY")]
         [MaxLength(8)]
-        public string Kohi1Priority { get; set; } = string.Empty;
+        public string? Kohi1Priority { get; set; } = string.Empty;
 
         /// <summary>
         /// 公費２優先順位
@@ -190,7 +190,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI2_PRIORITY")]
         [MaxLength(8)]
-        public string Kohi2Priority { get; set; } = string.Empty;
+        public string? Kohi2Priority { get; set; } = string.Empty;
 
         /// <summary>
         /// 公費３優先順位
@@ -198,7 +198,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI3_PRIORITY")]
         [MaxLength(8)]
-        public string Kohi3Priority { get; set; } = string.Empty;
+        public string? Kohi3Priority { get; set; } = string.Empty;
 
         /// <summary>
         /// 公費４優先順位
@@ -206,7 +206,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KOHI4_PRIORITY")]
         [MaxLength(8)]
-        public string Kohi4Priority { get; set; } = string.Empty;
+        public string? Kohi4Priority { get; set; } = string.Empty;
 
         /// <summary>
         /// 本人家族区分
@@ -561,7 +561,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RECE_SBT")]
         [MaxLength(4)]
-        public string ReceSbt { get; set; } = string.Empty;
+        public string? ReceSbt { get; set; } = string.Empty;
 
         /// <summary>
         /// 実日数
@@ -809,7 +809,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 妊婦フラグ

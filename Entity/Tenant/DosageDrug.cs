@@ -17,7 +17,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医薬品コード
         /// </summary>
-        [Key]
+        
         [Column(name: "YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        //[Key]
+        
         [Column(name: "DOEI_CD", Order = 2)]
         [MaxLength(8)]
         public string DoeiCd { get; set; } = string.Empty;
@@ -35,21 +35,21 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_KBN")]
         [MaxLength(1)]
-        public string DgurKbn { get; set; } = string.Empty;
+        public string? DgurKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 規格単位
         /// </summary>
         [Column("KIKAKU_UNIT")]
         [MaxLength(100)]
-        public string KikakiUnit { get; set; } = string.Empty;
+        public string? KikakiUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 薬価単位
         /// </summary>
         [Column("YAKKA_UNIT")]
         [MaxLength(20)]
-        public string YakkaiUnit { get; set; } = string.Empty;
+        public string? YakkaiUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 力価係数
@@ -62,7 +62,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("RIKIKA_UNIT")]
         [MaxLength(30)]
-        public string RikikaUnit { get; set; } = string.Empty;
+        public string? RikikaUnit { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -70,7 +70,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOUKAIEKI_CD")]
         [MaxLength(1)]
-        public string YoukaiekiCd { get; set; } = string.Empty;
-
+        public string? YoukaiekiCd { get; set; } = string.Empty;
     }
 }

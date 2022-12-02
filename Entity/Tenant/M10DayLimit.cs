@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 個別医薬品コード
         /// YJコード
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 連番
         /// 1..99
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 2)]
         public int SeqNo { get; set; }
 
@@ -37,7 +37,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ST_DATE")]
         [MaxLength(8)]
-        public string StDate { get; set; } = string.Empty;
+        public string? StDate { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用終了日
@@ -45,7 +45,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ED_DATE")]
         [MaxLength(8)]
-        public string EdDate { get; set; } = string.Empty;
+        public string? EdDate { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント
@@ -53,7 +53,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(400)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
     }
 }

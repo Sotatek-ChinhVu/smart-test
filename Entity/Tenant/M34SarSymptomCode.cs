@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 重大な副作用の初期症状コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("FUKUSAYO_INIT_CD", Order = 1)]
         [MaxLength(6)]
         public string FukusayoInitCd { get; set; } = string.Empty;
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("FUKUSAYO_INIT_CMT")]
-        public string FukusayoInitCmt { get; set; } = string.Empty;
+        public string? FukusayoInitCmt { get; set; } = string.Empty;
 
     }
 }

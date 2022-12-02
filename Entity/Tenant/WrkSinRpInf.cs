@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("WRK_SIN_RP_INF_IDX01", 1)]
@@ -37,7 +36,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -45,7 +44,7 @@ namespace Entity.Tenant
         /// 保険区分
         /// 0:健保 1:労災 2:アフターケア 3:自賠 4:自費
         /// </summary>
-        //[Key]
+        
         [Column("HOKEN_KBN", Order = 3)]
         public int HokenKbn { get; set; }
 
@@ -53,7 +52,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("RP_NO", Order = 4)]
         public int RpNo { get; set; }
 
@@ -78,7 +77,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CD_NO")]
         [MaxLength(15)]
-        public string CdNo { get; set; } = string.Empty;
+        public string? CdNo { get; set; } = string.Empty;
 
         /// <summary>
         /// 算定区分
@@ -140,7 +139,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
