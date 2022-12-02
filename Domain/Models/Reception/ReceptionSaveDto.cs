@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Domain.Models.Reception;
 
@@ -30,7 +29,7 @@ public class ReceptionSaveDto
 
 public class InsuranceDto
 {
-    public InsuranceDto(int hokenId, List<int> confirmDateList)
+    public InsuranceDto(int hokenId, List<ConfirmDateDto> confirmDateList)
     {
         HokenId = hokenId;
         ConfirmDateList = confirmDateList;
@@ -41,24 +40,24 @@ public class InsuranceDto
     /// <summary>
     /// ConfirmDate template: yyyyMMdd
     /// </summary>
-    public List<int> ConfirmDateList { get; private set; }
+    public List<ConfirmDateDto> ConfirmDateList { get; private set; }
 
     public bool IsValidData()
     {
-        if (ConfirmDateList.Any(c => c < 10000000 || 99999999 < c))
+        if (ConfirmDateList.Any(c => c.SinDate.ToString().Length != 8))
         {
             return false;
         }
 
         //Check for duplicate
-        if (ConfirmDateList.Count != ConfirmDateList.Distinct().Count())
+        if (ConfirmDateList.Count != ConfirmDateList.Select(item => item.SinDate).Distinct().Count())
         {
             return false;
         }
 
         foreach (var confirmDate in ConfirmDateList)
         {
-            if (!DateTime.TryParseExact(confirmDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
+            if (!DateTime.TryParseExact(confirmDate.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.None, out _))
             {
                 return false;
             }

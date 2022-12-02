@@ -692,6 +692,7 @@
         public static readonly string InvalidPatternOtherAge75 = "Warning hokenInf age >= 75 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidPatternOtherAge65 = "Warning hokenInf age < 65 and hokensyaNo length 8 and start 39";
         public static readonly string InvalidCheckDuplicatePattern = "Warning pattern duplicate";
+        public static readonly string InvalidInsuranceList = "Invalid Insurance List";
 
         //Message Error Common
         public static readonly string MInp00010 = "{0}を入力してください。";
