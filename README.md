@@ -17,7 +17,7 @@ See README.md on
 - Tests.UnitTest project for X-unit testing
 
 ## How to run
-- Go to Appsettings.json in API.EmrCloudApi Project . Set value for "TenantDbSample" key is database connection string.
+- Go to env.json in API.EmrCloudApi Project (env.Development for local , env.Production for production , env.Staging for staging) .Set value for "TenantDbSample" key is database connection string. 
 - With Visual studio : 
 Build Project : right click API.EmrCalculateApi => Build or Rebuild.
 Run project :
