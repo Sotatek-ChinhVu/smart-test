@@ -1491,7 +1491,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId, false).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId, false);
 
                     //RousaiTenki
                     var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
@@ -1579,7 +1579,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId, true).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId, true);
                 }
             }
             #endregion HokenKohi
@@ -1637,7 +1637,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        private Task UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
+        private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
         {
             int hokenGrp = 1;
             if (hokenKohi)
@@ -1681,7 +1681,6 @@ namespace Infrastructure.Repositories
                     modelUpdate.UpdateDate = DateTime.UtcNow;
                 }
             }
-            return Task.CompletedTask;
         }
 
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
