@@ -24,15 +24,15 @@ namespace EmrCloudApi.Controller
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
                 DocumentTitle = "PDF Report",
-                Out = @"D:\PDFCreator\Employee_Report.pdf"
+                Out = @"D:\Karte1Report.pdf"
             };
             var objectSettings = new ObjectSettings
             {
                 PagesCount = true,
                 HtmlContent = TemplateGenerator.GetHTMLString(),
                 WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css") },
-                HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = "Report Footer" }
+                HeaderSettings = { FontName = "Yu Gothic UI", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+                FooterSettings = { FontName = "Yu Gothic UI", FontSize = 9, Line = true, Center = "Report Footer" }
             };
             var pdf = new HtmlToPdfDocument()
             {
