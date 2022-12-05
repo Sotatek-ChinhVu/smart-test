@@ -25,12 +25,6 @@ namespace CalculateUnitTest
             var mockLogger = new Mock<IEmrLogger>();
 
             FutancalcViewModel futanCalcVM = new FutancalcViewModel(mockTenantProvider.Object, mockSystemConfigProvider.Object, mockLogger.Object);
-            futanCalcVM.SystemConf = new SystemConfs(
-                chokiFutan: 0,
-                chokiDateRange: 0,
-                roundKogakuPtFutan: 0
-            );
-
             return futanCalcVM;
         }
 
