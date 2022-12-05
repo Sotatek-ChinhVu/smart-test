@@ -6,7 +6,6 @@ namespace KarteReport.Utility
     {
         public static string GetHTMLString()
         {
-            var employees = DataStorage.GetAllEmployees();
             var sb = new StringBuilder();
             sb.Append(@"
                         <html>

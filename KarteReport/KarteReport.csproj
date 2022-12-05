@@ -11,4 +11,8 @@
     <PackageReference Include="DotNetCorePdf" Version="1.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
 </Project>
