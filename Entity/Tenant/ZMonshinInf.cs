@@ -8,24 +8,24 @@ namespace Entity.Tenant
     [Table(name: "Z_MONSHIN_INF")]
     public class ZMonshinInf : EmrCloneable<ZMonshinInf>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -64,13 +64,13 @@ namespace Entity.Tenant
         /// テキスト
         /// </summary>
         [Column("TEXT")]
-        public string Text { get; set; } = string.Empty;
+        public string? Text { get; set; } = string.Empty;
 
         /// <summary>
         /// リッチテキスト
         /// </summary>
         [Column("RTEXT")]
-        public string Rtext { get; set; } = string.Empty;
+        public string? Rtext { get; set; } = string.Empty;
 
         /// <summary>
         /// 取込区分
@@ -127,6 +127,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

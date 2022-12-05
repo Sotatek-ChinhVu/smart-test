@@ -4,6 +4,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -155,7 +156,7 @@ namespace Infrastructure.Repositories
 
                 return confirmDateList
                     .Where(c => c.hokenCheck.HokenGrp == hokenGrp && c.hokenCheck.HokenId == hokenId)
-                    .Select(c => new ConfirmDateModel(c.hokenCheck.HokenGrp, c.hokenCheck.HokenId, c.hokenCheck.SeqNo, c.hokenCheck.CheckId, c.userMst.KanaName ?? string.Empty, c.hokenCheck.CheckCmt ?? string.Empty, c.hokenCheck.CheckDate))
+                    .Select(c => new ConfirmDateModel(c.hokenCheck.HokenGrp, c.hokenCheck.HokenId, c.hokenCheck.SeqNo, c.hokenCheck.CheckId, c.userMst.Name ?? string.Empty, c.hokenCheck.CheckCmt ?? string.Empty, c.hokenCheck.CheckDate))
                     .ToList();
             }
             var RoudouMsts = _tenantDataContext.RoudouMsts.OrderBy(entity => entity.RoudouCd);
@@ -1298,6 +1299,54 @@ namespace Infrastructure.Repositories
                 return itemHokenMst;
             }
             return new HokenMstModel();
+        }
+
+        public bool SaveInsuraneScan(InsuranceScanModel insuranceScan, int userId)
+        {
+            var model = _tenantDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == insuranceScan.HpId
+                                                                       && x.PtId == insuranceScan.PtId
+                                                                       && x.HokenGrp == insuranceScan.HokenGrp
+                                                                       && x.HokenId == insuranceScan.HokenId
+                                                                       && x.IsDeleted == DeleteStatus.None);
+            if(model is null)
+            {
+                _tenantDataContext.Add(new PtHokenScan()
+                {
+                    PtId = insuranceScan.PtId,
+                    HpId = insuranceScan.HpId,
+                    HokenGrp = insuranceScan.HokenGrp,
+                    HokenId = insuranceScan.HokenId,
+                    FileName = insuranceScan.FileName,
+                    IsDeleted = DeleteStatus.None,
+                    CreateDate = DateTime.UtcNow,
+                    CreateId = userId
+                });
+            }
+            else
+            {
+                model.FileName = insuranceScan.FileName;
+                model.UpdateDate = DateTime.UtcNow;
+                model.UpdateId = userId;
+            }
+            return _tenantDataContext.SaveChanges() > 0;
+        }
+
+        public bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId)
+        {
+            var model = _tenantDataContext.PtHokenScans.FirstOrDefault(x => x.HpId == insuranceScan.HpId
+                                                                       && x.PtId == insuranceScan.PtId
+                                                                       && x.HokenGrp == insuranceScan.HokenGrp
+                                                                       && x.HokenId == insuranceScan.HokenId
+                                                                       && x.IsDeleted == DeleteStatus.None);
+
+            if (model is null)
+                return false;
+
+            model.IsDeleted = DeleteStatus.DeleteFlag;
+            model.UpdateDate = DateTime.UtcNow;
+            model.UpdateId = userId;
+
+            return _tenantDataContext.SaveChanges() > 0;
         }
     }
 }

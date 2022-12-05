@@ -17,21 +17,21 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
         /// <summary>
         /// 年齢区分
         /// </summary>
-        //[Key]
+        
         [Column("AGE_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int AgeKbn { get; set; }
         /// <summary>
         /// 高額療養費区分
         /// </summary>
-        //[Key]
+        
         [Column("KOGAKU_KBN", Order = 3)]
         public int KogakuKbn { get; set; }
         /// <summary>
@@ -39,11 +39,11 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INCOME_KBN")]
         [MaxLength(20)]
-        public string IncomeKbn { get; set; } = string.Empty;
+        public string? IncomeKbn { get; set; } = string.Empty;
         /// <summary>
         /// 開始日
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }

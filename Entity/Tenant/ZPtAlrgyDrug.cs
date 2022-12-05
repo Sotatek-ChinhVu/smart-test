@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,24 +6,24 @@ namespace Entity.Tenant
     [Table(name: "Z_PT_ALRGY_DRUG")]
     public class ZPtAlrgyDrug : EmrCloneable<ZPtAlrgyDrug>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -62,7 +61,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 医薬品名称
@@ -70,7 +69,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_NAME")]
         [MaxLength(100)]
-        public string DrugName { get; set; } = string.Empty;
+        public string? DrugName { get; set; } = string.Empty;
 
         /// <summary>
         /// 発症日
@@ -94,7 +93,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT")]
         [MaxLength(100)]
-        public string Cmt { get; set; } = string.Empty;
+        public string? Cmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -148,7 +147,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

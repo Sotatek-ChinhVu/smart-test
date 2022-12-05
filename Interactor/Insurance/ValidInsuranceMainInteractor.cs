@@ -51,13 +51,13 @@ namespace Interactor.Insurance
                         var checkMessageIsValidJihi = IsValidJihi(inputData.SelectedHokenInfHokenNo);
                         if (!String.IsNullOrEmpty(checkMessageIsValidJihi))
                         {
-                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidFaild);
+                            return new ValidMainInsuranceOutputData(false, checkMessageIsValidJihi, TypeMessage.TypeMessageError, ValidMainInsuranceStatus.InvalidJihi);
                         }
                         // ignore
                         break;
                     // 社保
                     case 1:
-                        var checkIsValidShaho = IsValidShaho(inputData.IsSelectedHokenPattern, inputData.SelectedHokenInfIsAddNew, inputData.SelectedHokenPatternIsEmptyHoken,
+                        var checkIsValidShaho = IsValidShaho(inputData.IsSelectedHokenPattern, inputData.SelectedHokenPatternIsAddNew, inputData.SelectedHokenPatternIsEmptyHoken,
                                                 inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4, inputData.IsSelectedHokenInf, inputData.HokenKbn,
                                                 inputData.SelectedHokenInfHoubetu, inputData.IsSelectedHokenInf, inputData.SelectedHokenInfIsAddNew, inputData.HpId, inputData.SinDate,
                                                 inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5,

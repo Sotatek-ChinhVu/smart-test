@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -19,28 +14,28 @@ namespace Entity.Tenant
         /// <summary>
         ///医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 分類ID
         /// </summary>
-        //[Key]
+        
         [Column("GRP_ID", Order = 2)]
         public int GrpId { get; set; }
 
         /// <summary>
         /// 分類ID
         /// </summary>
-        //[Key]
+        
         [Column("KBN_CD", Order = 3)]
         public int KbnCd { get; set; }
 
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column(name: "SEQ_NO", Order = 4)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -100,6 +95,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

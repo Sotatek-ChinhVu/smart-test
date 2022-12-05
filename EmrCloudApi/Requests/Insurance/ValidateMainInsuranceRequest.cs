@@ -75,5 +75,7 @@
         public bool SelectedHokenPatternIsExpirated { get; set; }
 
         public bool SelectedHokenPatternIsEmptyHoken { get; set; }
+
+        public bool SelectedHokenPatternIsAddNew { get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +12,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -21,15 +20,15 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
-        [Column(name:"PT_ID", Order = 2)]
+        
+        [Column(name: "PT_ID", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column(name: "SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long SeqNo { get; set; }
@@ -39,7 +38,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column(name: "MEMO")]
-        public string Memo { get; set; } = string.Empty;
+        public string? Memo { get; set; } = string.Empty;
 
         /// <summary>
         /// メモデータ
@@ -102,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "BACKGROUND_COLOR")]
         [MaxLength(8)]
-        public string BackgroundColor { get; set; } = string.Empty;
+        public string? BackgroundColor { get; set; } = string.Empty;
 
 
         [Column(name: "TAG_GRP_CD")]
@@ -199,7 +198,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
