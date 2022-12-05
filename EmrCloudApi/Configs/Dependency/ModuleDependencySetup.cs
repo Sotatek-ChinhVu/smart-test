@@ -257,6 +257,8 @@ using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -286,6 +288,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<Reporting>>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton(typeof(ILogger), logger!);
         }
 
