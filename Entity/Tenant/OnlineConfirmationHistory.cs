@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 資格確認履歴番号
         /// </summary>
-        [Key]
+        
         [Column("ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
@@ -43,7 +42,7 @@ namespace Entity.Tenant
         /// 資格確認結果
         /// </summary>
         [Column("CONFIRMATION_RESULT")]
-        public string ConfirmationResult { get; set; } = string.Empty;
+        public string? ConfirmationResult { get; set; } = string.Empty;
 
         /// <summary>
         /// 登録日時

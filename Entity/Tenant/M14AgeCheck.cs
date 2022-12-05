@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// YJコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("YJ_CD", Order = 1)]
         [MaxLength(12)]
         public string YjCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 注意コメントコード
         /// TNC で始まり4桁の数字が続く
         /// </summary>
-        //[Key]
+        
         [Column("ATTENTION_CMT_CD", Order = 2)]
         [MaxLength(7)]
         public string AttentionCmtCd { get; set; } = string.Empty;
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WORKING_MECHANISM")]
         [MaxLength(1000)]
-        public string WorkingMechanism { get; set; } = string.Empty;
+        public string? WorkingMechanism { get; set; } = string.Empty;
 
         /// <summary>
         /// 添付文書レベル
@@ -48,7 +48,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TENPU_LEVEL")]
         [MaxLength(2)]
-        public string TenpuLevel { get; set; } = string.Empty;
+        public string? TenpuLevel { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢区分フラグ
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGE_KBN")]
         [MaxLength(1)]
-        public string AgeKbn { get; set; } = string.Empty;
+        public string? AgeKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 体重区分フラグ
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WEIGHT_KBN")]
         [MaxLength(1)]
-        public string WeightKbn { get; set; } = string.Empty;
+        public string? WeightKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 性別区分フラグ
@@ -73,7 +73,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEX_KBN")]
         [MaxLength(1)]
-        public string SexKbn { get; set; } = string.Empty;
+        public string? SexKbn { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢条件下限値
@@ -102,6 +102,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("WEIGHT_MAX")]
         public double WeightMax { get; set; }
-
     }
 }
