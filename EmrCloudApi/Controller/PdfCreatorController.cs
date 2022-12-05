@@ -15,7 +15,7 @@ namespace EmrCloudApi.Controller
             _converter = converter;
         }
         [HttpGet]
-        public IActionResult CreatePDF()
+        public IActionResult ReturnStream()
         {
             var globalSettings = new GlobalSettings
             {
@@ -23,8 +23,6 @@ namespace EmrCloudApi.Controller
                 Orientation = Orientation.Portrait,
                 PaperSize = PaperKind.A4,
                 Margins = new MarginSettings { Top = 10 },
-                DocumentTitle = "PDF Report",
-                Out = @"D:\Karte1Report.pdf"
             };
             var objectSettings = new ObjectSettings
             {
@@ -39,8 +37,9 @@ namespace EmrCloudApi.Controller
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-            _converter.Convert(pdf);
-            return Ok("Successfully created PDF document.");
+
+            MemoryStream ms = new MemoryStream(_converter.Convert(pdf));
+            return File(ms, "application/pdf");
         }
     }
 }
