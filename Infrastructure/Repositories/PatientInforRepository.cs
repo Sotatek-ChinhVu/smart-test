@@ -1491,7 +1491,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId, false).Wait();
 
                     //RousaiTenki
                     var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
@@ -1579,7 +1579,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId, true).Wait();
                 }
             }
             #endregion HokenKohi
