@@ -494,7 +494,7 @@ namespace EmrCloudApi.Controller
                    x.JibaiJyusyouDate,
                    x.Houbetu,
                    x.ConfirmDates.Select(c => new ConfirmDateModel(
-                       c.IsHokenGrpKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern,
+                       c.HokenGrp,
                        c.HokenId,
                        c.SeqNo,
                        c.CheckId,
@@ -515,7 +515,7 @@ namespace EmrCloudApi.Controller
 
             List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c =>
                     new ConfirmDateModel(
-                        c.IsHokenGrpKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern,
+                        c.HokenGrp,
                         c.HokenId,
                         c.SeqNo,
                         c.CheckId,
