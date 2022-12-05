@@ -1466,7 +1466,6 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
