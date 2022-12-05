@@ -1467,6 +1467,7 @@ namespace Infrastructure.Repositories
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
                     destCf.HpId = hpId;
+                    destCf.HokenGrp = 1;
                     return destCf;
                 }));
                 #endregion
@@ -1553,7 +1554,7 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
