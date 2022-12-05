@@ -121,6 +121,7 @@
         public const string SaveDocInf = "SaveDocInf";
         public const string DeleteDocInf = "DeleteDocInf";
         public const string DeleteDocTemplate = "DeleteDocTemplate";
+        public const string MoveTemplateToOtherCategory = "MoveTemplateToOtherCategory";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";

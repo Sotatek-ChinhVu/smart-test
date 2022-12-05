@@ -7,8 +7,7 @@ public enum MoveTemplateToOtherCategoryStatus : byte
     InvalidHpId = 3,
     InvalidOldCategoryCd = 4,
     InvalidNewCategoryCd = 5,
-    InvalidFileName = 6,
-    FileTemplateNotFould = 7,
-    FileTemplateIsExistInNewFolder = 8,
-    VaidateSuccess = 9
+    FileTemplateNotFould = 6,
+    FileTemplateIsExistInNewFolder = 7,
+    VaidateSuccess = 8
 }

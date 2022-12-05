@@ -829,6 +829,10 @@
         public static readonly string DocInfNotFount = "DocInf Not Fount!";
         public static readonly string TemplateNotFount = "Template Not Fount!";
         public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
+        public static readonly string InvalidNewCategoryCd = "Invalid NewCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidOldCategoryCd = "Invalid OldCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string FileTemplateNotFould = "File template not fould!";
+        public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

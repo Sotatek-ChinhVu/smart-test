@@ -72,7 +72,7 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
             var request = new CopyObjectRequest
             {
                 SourceBucket = sourceFolder,
-                SourceKey = sourceFileName,
+                SourceKey = sourceFolder + "/" + sourceFileName,
                 DestinationBucket = destinationFolder,
                 DestinationKey = destinationFolder + "/" + destinationFileName,
             };
