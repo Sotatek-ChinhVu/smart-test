@@ -4,12 +4,13 @@ namespace UseCase.Schema.SaveListImageTodayOrder;
 
 public class SaveListFileTodayOrderInputData : IInputData<SaveListFileTodayOrderOutputData>
 {
-    public SaveListFileTodayOrderInputData(int hpId, long ptId, long raiinNo, List<FileItem> listImages)
+    public SaveListFileTodayOrderInputData(int hpId, long ptId, long raiinNo, List<FileItem> listImages, List<long> listFileDeletes)
     {
         HpId = hpId;
         PtId = ptId;
         RaiinNo = raiinNo;
         ListImages = listImages;
+        ListFileIdDeletes = listFileDeletes;
     }
 
     public int HpId { get; private set; }
@@ -18,5 +19,7 @@ public class SaveListFileTodayOrderInputData : IInputData<SaveListFileTodayOrder
 
     public long RaiinNo { get; private set; }
 
-    public List<FileItem> ListImages { get; set; }
+    public List<FileItem> ListImages { get; private set; }
+
+    public List<long> ListFileIdDeletes { get; private set; }
 }

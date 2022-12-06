@@ -387,6 +387,7 @@
         public static readonly string InvalidOldImage = "Invalid old image.";
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
+        public static readonly string InvalidListFileDeletes = "Invalid list file id deletes.";
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";

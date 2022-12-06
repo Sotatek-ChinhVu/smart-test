@@ -3,7 +3,6 @@ using Domain.Models.KarteInfs;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Helper.Constants;
-using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
@@ -34,13 +33,14 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
     {
         try
         {
+            var lastSeqNo = _setKbnMstRepository.GetLastSeqNo(input.HpId, input.PtId, input.RaiinNo);
             var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, 0, 0);
-            var validateResponse = ValidateInput(input, ptInf);
+            var validateResponse = ValidateInput(lastSeqNo, input, ptInf);
             if (validateResponse.Item1 != SaveListFileTodayOrderStatus.ValidateSuccess)
             {
                 return new SaveListFileTodayOrderOutputData(validateResponse.Item1);
             }
-            List<KarteImgInfModel> listImageSaveTemps = new();
+            List<KarteImgInfModel> listFileAddNews = new();
             var listFileItems = validateResponse.Item2;
             if (listFileItems.Any())
             {
@@ -57,19 +57,17 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
                     var linkImage = responseUpload.Result;
                     if (linkImage.Length > 0)
                     {
-                        listImageSaveTemps.Add(new KarteImgInfModel(
+                        listFileAddNews.Add(new KarteImgInfModel(
                                             input.HpId,
                                             input.PtId,
                                             input.RaiinNo,
-                                            linkImage.Replace(_options.BaseAccessUrl + "/", string.Empty),
-                                            string.Empty
+                                            linkImage.Replace(_options.BaseAccessUrl + "/", string.Empty)
                                       ));
                     }
                 }
-                _setKbnMstRepository.SaveListImageKarteImgTemp(listImageSaveTemps);
-                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed);
             }
-            return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
+            var resultData = _setKbnMstRepository.SaveListFileKarte(input.HpId, input.PtId, input.RaiinNo, lastSeqNo, listFileAddNews, input.ListFileIdDeletes);
+            return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, resultData);
         }
         catch (Exception)
         {
@@ -77,7 +75,7 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
         }
     }
 
-    private Tuple<SaveListFileTodayOrderStatus, List<FileItem>> ValidateInput(SaveListFileTodayOrderInputData input, PatientInforModel? ptInf)
+    private Tuple<SaveListFileTodayOrderStatus, List<FileItem>> ValidateInput(long lastSeqNo, SaveListFileTodayOrderInputData input, PatientInforModel? ptInf)
     {
         List<FileItem> listFileItems = new();
         if (ptInf == null)
@@ -88,9 +86,13 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
         {
             return Tuple.Create(SaveListFileTodayOrderStatus.InvalidHpId, listFileItems);
         }
-        else if (!_receptionRepository.CheckListNo(new List<long>() { input.RaiinNo }))
+        else if (!_receptionRepository.CheckExistRaiinNo(input.HpId, input.PtId, input.RaiinNo))
         {
             return Tuple.Create(SaveListFileTodayOrderStatus.InvalidRaiinNo, listFileItems);
+        }
+        else if (input.ListFileIdDeletes.Any() && !_setKbnMstRepository.CheckExistListFile(input.HpId, input.PtId, lastSeqNo, input.RaiinNo, input.ListFileIdDeletes))
+        {
+            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidListFileIdDeletes, listFileItems);
         }
         if (input.ListImages.Any())
         {
@@ -107,10 +109,7 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
                 }
             }
         }
-        else
-        {
-            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidFileImage, listFileItems);
-        }
+
         return Tuple.Create(SaveListFileTodayOrderStatus.ValidateSuccess, listFileItems);
     }
 }

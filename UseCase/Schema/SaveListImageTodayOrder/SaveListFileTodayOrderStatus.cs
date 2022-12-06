@@ -8,5 +8,6 @@ public enum SaveListFileTodayOrderStatus : byte
     InvalidPtId = 4,
     InvalidHpId = 5,
     InvalidRaiinNo = 6,
-    ValidateSuccess = 7,
+    InvalidListFileIdDeletes = 7,
+    ValidateSuccess = 8,
 }

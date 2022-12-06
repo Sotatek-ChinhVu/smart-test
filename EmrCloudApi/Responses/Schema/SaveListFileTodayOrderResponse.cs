@@ -2,10 +2,10 @@
 
 public class SaveListFileTodayOrderResponse
 {
-    public SaveListFileTodayOrderResponse(bool success)
+    public SaveListFileTodayOrderResponse(List<long> listFileIds)
     {
-        Success = success;
+        ListFileIds = listFileIds;
     }
 
-    public bool Success { get; private set; }
+    public List<long> ListFileIds { get; private set; }
 }
