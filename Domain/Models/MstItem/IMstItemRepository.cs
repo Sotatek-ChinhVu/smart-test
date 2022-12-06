@@ -10,7 +10,7 @@
 
         (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize);
 
-        (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith);
+        (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem);
 
         TenItemModel GetTenMst(int hpId, int sinDate, string itemCd);
 
@@ -29,5 +29,13 @@
         (int, List<PostCodeMstModel>) PostCodeMstModels(int hpId, string postCode1, string postCode2, string address, int pageIndex, int pageSize);
 
         TenItemModel FindTenMst(int hpId, string itemCd, int sinDate);
+
+        List<TenItemModel> FindTenMst(int hpId, List<string> itemCds, int minSinDate, int maxSinDate);
+
+        List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
+
+        List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
+
+        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
     }
 }

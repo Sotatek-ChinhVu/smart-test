@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -17,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column(name: "HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約種別
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("YOYAKU_SBT", Order = 2)]
         public int YoyakuSbt { get; set; }
@@ -35,14 +30,14 @@ namespace Entity.Tenant
         [Required]
         [Column("SBT_NAME")]
         [MaxLength(120)]
-        public string SbtName { get; set; } = string.Empty;
+        public string? SbtName { get; set; } = string.Empty;
 
         /// <summary>
         /// 初期コメント
         /// </summary>
         [Column("DEFAULT_CMT")]
         [MaxLength(120)]
-        public string DefaultCmt { get; set; } = string.Empty;
+        public string? DefaultCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -98,6 +93,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

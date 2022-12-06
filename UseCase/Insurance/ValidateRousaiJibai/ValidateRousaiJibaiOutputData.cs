@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Models.Insurance;
 using UseCase.Core.Sync.Core;
 
 namespace UseCase.Insurance.ValidateRousaiJibai
 {
     public class ValidateRousaiJibaiOutputData : IOutputData
     {
-        public bool Result { get; private set; }
+        public bool Result { get => !ValidateDetails.Any(); }
 
-        public string Message { get; private set; }
+        public List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> ValidateDetails { get; private set; } = new List<ResultValidateInsurance<ValidateRousaiJibaiStatus>>();
 
-        public ValidateRousaiJibaiStatus Status { get; private set; }
-
-        public ValidateRousaiJibaiOutputData(bool result, string message, ValidateRousaiJibaiStatus status)
+        public ValidateRousaiJibaiOutputData(List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> details)
         {
-            Result = result;
-            Message = message;
-            Status = status;
+            ValidateDetails = details;
         }
     }
 }

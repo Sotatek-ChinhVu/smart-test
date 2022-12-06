@@ -17,20 +17,20 @@ namespace Entity.Tenant
         /// <summary>
         /// 都道府県番号
         /// </summary>
-        [Key]
+        
         [Column("PREF_NO", Order = 1)]
         public int PrefNo { get; set; }
         /// <summary>
         /// 法別番号
         /// </summary>
-        //[Key]
+        
         [Column("HOUBETU", Order = 2)]
         [MaxLength(3)]
         public string Houbetu { get; set; } = string.Empty;
         /// <summary>
         /// 優先順位
         /// </summary>
-        //[Key]
+        
         [Column("PRIORITY_NO", Order = 3)]
         [MaxLength(5)]
         public string PriorityNo { get; set; } = string.Empty;
@@ -70,6 +70,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

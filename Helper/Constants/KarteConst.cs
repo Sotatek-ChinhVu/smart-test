@@ -13,5 +13,7 @@
             PtIdNoExist,
             Valid
         };
+
+        public const int KarteKbn = 1;
     }
 }

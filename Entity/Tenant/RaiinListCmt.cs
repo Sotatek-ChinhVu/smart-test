@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +12,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -36,7 +35,7 @@ namespace Entity.Tenant
         /// 来院番号
         /// 
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -44,7 +43,7 @@ namespace Entity.Tenant
         /// コメント区分
         /// 1:SOAP欄の1行目 9:備考
         /// </summary>
-        [Key]
+        
         [Column("CMT_KBN", Order = 3)]
         public int CmtKbn { get; set; }
 
@@ -61,7 +60,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("TEXT")]
-        [MaxLength(200)]
+        [MaxLength(300)]
         public string? Text { get; set; } = string.Empty;
 
         /// <summary>
@@ -117,6 +116,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; } = string.Empty;
-
     }
 }

@@ -265,7 +265,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            string halfSizeValue = HenkanJ.ZenToHank(input);
+            string halfSizeValue = HenkanJ.Instance.ToHalfsize(input);
             if (itemName.Contains("日"))
             {
                 if (halfSizeValue.AsInteger() != 0 && halfSizeValue.Length == 7)
@@ -280,7 +280,7 @@ namespace Helper.Common
                     {
                         return cmtOpt;
                     }
-                    return HenkanJ.HankToZen(halfSizeValue);
+                    return HenkanJ.Instance.ToFullsize(halfSizeValue);
                 }
                 else
                 {
@@ -289,7 +289,7 @@ namespace Helper.Common
                     {
                         return cmtOpt;
                     }
-                    cmtOpt = HenkanJ.HankToZen(CIUtil.SDateToWDate(intDateValue).AsString());
+                    cmtOpt = HenkanJ.Instance.ToFullsize(CIUtil.SDateToWDate(intDateValue).AsString());
                     return cmtOpt;
                 }
             }
@@ -336,7 +336,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            string halfSizeValue = HenkanJ.ZenToHank(input);
+            string halfSizeValue = HenkanJ.Instance.ToHalfsize(input);
             int intConvertValue;
             if (!int.TryParse(halfSizeValue, out intConvertValue))
             {
@@ -356,7 +356,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            return HenkanJ.HankToZen(halfSizeValue.PadLeft(4, '0'));
+            return HenkanJ.Instance.ToFullsize(halfSizeValue.PadLeft(4, '0'));
         }
 
         public static string GetCmtOpt852(string input)
@@ -367,7 +367,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            string halfSizeValue = HenkanJ.ZenToHank(input);
+            string halfSizeValue = HenkanJ.Instance.ToHalfsize(input);
             int intConvertValue;
             if (!int.TryParse(halfSizeValue, out intConvertValue))
             {
@@ -379,7 +379,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            return HenkanJ.HankToZen(intConvertValue.AsString().PadLeft(5, '0'));
+            return HenkanJ.Instance.ToFullsize(intConvertValue.AsString().PadLeft(5, '0'));
         }
 
         public static string GetCmtOpt853(string input, int sinDate = 0)
@@ -391,7 +391,7 @@ namespace Helper.Common
             }
 
             input = CIUtil.Copy(input.PadLeft(6, '0'), 1, 6);
-            string halfSizeValue = HenkanJ.ZenToHank(input);
+            string halfSizeValue = HenkanJ.Instance.ToHalfsize(input);
             string day = CIUtil.Copy(halfSizeValue, 1, 2);
             string time = CIUtil.Copy(halfSizeValue, 3, 4);
             int intConvertValue;
@@ -421,7 +421,7 @@ namespace Helper.Common
                 return cmtOpt;
             }
 
-            return HenkanJ.HankToZen(halfSizeValue.PadLeft(6, '0'));
+            return HenkanJ.Instance.ToFullsize(halfSizeValue.PadLeft(6, '0'));
         }
     }
 

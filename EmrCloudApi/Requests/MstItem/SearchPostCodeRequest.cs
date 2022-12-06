@@ -1,0 +1,12 @@
+﻿namespace EmrCloudApi.Requests.MstItem
+{
+    public class SearchPostCodeRequest
+    {
+        public int HpId { get; set; }
+        public string PostCode1 { get; set; } = string.Empty;
+        public string PostCode2 { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
+        public int PageIndex { get; set; }
+        public int PageSize { get; set; }
+    }
+}

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// 薬価基準コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("YAKKA_CD", Order = 2)]
         [MaxLength(12)]
         public string YakkaCd { get; set; } = string.Empty;
@@ -29,7 +28,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -38,7 +37,7 @@ namespace Entity.Tenant
         /// 開始日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("START_DATE", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public int StartDate { get; set; }
@@ -57,7 +56,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN")]
         [MaxLength(255)]
-        public string Seibun { get; set; } = string.Empty;
+        public string? Seibun { get; set; } = string.Empty;
 
         /// <summary>
         /// 品目名
@@ -65,7 +64,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HINMOKU")]
         [MaxLength(255)]
-        public string Hinmoku { get; set; } = string.Empty;
+        public string? Hinmoku { get; set; } = string.Empty;
 
         /// <summary>
         /// 区分
@@ -180,7 +179,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

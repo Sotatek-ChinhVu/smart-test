@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -16,7 +10,7 @@ namespace Entity.Tenant
         /// セットID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -25,13 +19,13 @@ namespace Entity.Tenant
         /// File name
         /// </summary>
         [Column(name: "FILE_NAME")]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// Version
         /// </summary>
         [Column(name: "VERSION")]
-        public string Version { get; set; } = string.Empty;
+        public string? Version { get; set; } = string.Empty;
 
         /// <summary>
         /// IS_PG
@@ -80,7 +74,7 @@ namespace Entity.Tenant
         /// ERR MESSAGE
         /// </summary>
         [Column(name: "ERR_MESSAGE")]
-        public string ErrMessage { get; set; } = string.Empty;
+        public string? ErrMessage { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

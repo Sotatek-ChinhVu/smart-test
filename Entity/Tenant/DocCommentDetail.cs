@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// カテゴリID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("CATEGORY_ID", Order = 1)]
         public int CategoryId { get; set; }
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("EDA_NO", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int EdaNo { get; set; }
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("COMMENT")]
         [MaxLength(1000)]
-        public string Comment { get; set; } = string.Empty;
+        public string? Comment { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -92,7 +92,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

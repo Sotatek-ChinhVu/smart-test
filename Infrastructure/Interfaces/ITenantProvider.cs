@@ -13,7 +13,7 @@ namespace Infrastructure.Interfaces
 
         string GetTenantInfo();
        
-        string GetTenantId();
+        string GetClinicID();
 
         TenantNoTrackingDataContext GetNoTrackingDataContext();
 

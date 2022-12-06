@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         //[Index("SIN_KOUI_DETAIL_IDX01", 1)]
@@ -25,7 +24,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         //[Index("SIN_KOUI_DETAIL_IDX01", 2)]
         //[Index("SIN_KOUI_DETAIL_IDX02", 2)]
@@ -37,7 +36,7 @@ namespace Entity.Tenant
         /// 診療年月
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_YM", Order = 3)]
         //[Index("SIN_KOUI_DETAIL_IDX01", 3)]
         //[Index("SIN_KOUI_DETAIL_IDX02", 3)]
@@ -50,7 +49,7 @@ namespace Entity.Tenant
         /// 剤番号
         /// SIN_KOUI.RP_NO
         /// </summary>
-        //[Key]
+        
         [Column("RP_NO", Order = 4)]
         //[Index("SIN_KOUI_DETAIL_IDX02", 4)]
         public int RpNo { get; set; }
@@ -59,7 +58,7 @@ namespace Entity.Tenant
         /// 連番
         /// SIN_KOUI.SEQ_NO
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 5)]
         //[Index("SIN_KOUI_DETAIL_IDX02", 5)]
         public int SeqNo { get; set; }
@@ -68,17 +67,17 @@ namespace Entity.Tenant
         /// 行番号
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ROW_NO", Order = 6)]
         public int RowNo { get; set; }
-        
+
         /// <summary>
         /// レコード識別
         /// レセプト電算に記録するレコード識別
         /// </summary>
         [Column("REC_ID")]
         [MaxLength(2)]
-        public string RecId { get; set; } = string.Empty;
+        public string? RecId { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目種別
@@ -95,7 +94,7 @@ namespace Entity.Tenant
         [Column("ITEM_CD")]
         [MaxLength(10)]
         //[Index("SIN_KOUI_DETAIL_IDX04", 4)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// オーダー項目コード
@@ -103,7 +102,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ODR_ITEM_CD")]
         [MaxLength(10)]
-        public string OdrItemCd { get; set; } = string.Empty;
+        public string? OdrItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 項目名称
@@ -111,7 +110,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_NAME")]
         [MaxLength(1000)]
-        public string ItemName { get; set; } = string.Empty;
+        public string? ItemName { get; set; } = string.Empty;
 
         /// <summary>
         /// 数量
@@ -151,7 +150,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNIT_NAME")]
         [MaxLength(20)]
-        public string UnitName { get; set; } = string.Empty;
+        public string? UnitName { get; set; } = string.Empty;
 
         /// <summary>
         /// 点数
@@ -203,7 +202,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT")]
         [MaxLength(240)]
-        public string CmtOpt { get; set; } = string.Empty;
+        public string? CmtOpt { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント１
@@ -211,7 +210,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT1")]
         [MaxLength(1000)]
-        public string Cmt1 { get; set; } = string.Empty;
+        public string? Cmt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード１
@@ -219,7 +218,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD1")]
         [MaxLength(10)]
-        public string CmtCd1 { get; set; } = string.Empty;
+        public string? CmtCd1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文１
@@ -227,7 +226,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT1")]
         [MaxLength(240)]
-        public string CmtOpt1 { get; set; } = string.Empty;
+        public string? CmtOpt1 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント２
@@ -235,7 +234,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT2")]
         [MaxLength(1000)]
-        public string Cmt2 { get; set; } = string.Empty;
+        public string? Cmt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード２
@@ -243,7 +242,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD2")]
         [MaxLength(10)]
-        public string CmtCd2 { get; set; } = string.Empty;
+        public string? CmtCd2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文２
@@ -251,7 +250,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT2")]
         [MaxLength(240)]
-        public string CmtOpt2 { get; set; } = string.Empty;
+        public string? CmtOpt2 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント３
@@ -259,7 +258,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT3")]
         [MaxLength(1000)]
-        public string Cmt3 { get; set; } = string.Empty;
+        public string? Cmt3 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメントコード３
@@ -267,7 +266,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_CD3")]
         [MaxLength(10)]
-        public string CmtCd3 { get; set; } = string.Empty;
+        public string? CmtCd3 { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント文３
@@ -275,7 +274,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CMT_OPT3")]
         [MaxLength(240)]
-        public string CmtOpt3 { get; set; } = string.Empty;
+        public string? CmtOpt3 { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

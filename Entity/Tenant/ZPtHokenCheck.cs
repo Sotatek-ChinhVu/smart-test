@@ -7,24 +7,24 @@ namespace Entity.Tenant
     [Table("Z_PT_HOKEN_CHECK")]
     public class ZPtHokenCheck : EmrCloneable<ZPtHokenCheck>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 病院コード
@@ -79,14 +79,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CHECK_MACHINE")]
         [MaxLength(60)]
-        public string CheckMachine { get; set; } = string.Empty;
+        public string? CheckMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 確認コメント
         /// </summary>
         [Column("CHECK_CMT")]
         [MaxLength(100)]
-        public string CheckCmt { get; set; } = string.Empty;
+        public string? CheckCmt { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分

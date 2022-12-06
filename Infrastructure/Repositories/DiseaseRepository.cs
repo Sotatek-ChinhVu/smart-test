@@ -144,7 +144,7 @@ namespace Infrastructure.Repositories
                                  join ptByomeiMst in byomeiMstQuery on new { ptByomei.HpId, ptByomei.ByomeiCd } equals new { ptByomeiMst.HpId, ptByomeiMst.ByomeiCd }
                                  select ptByomeiMst).ToList();
 
-            List<PtDiseaseModel> result = new List<PtDiseaseModel>();
+            List<PtDiseaseModel> result = new();
             foreach (var ptByomei in ptByomeiList)
             {
                 var byomeiMst = byomeiMstList.FirstOrDefault(item => item.ByomeiCd == ptByomei.ByomeiCd);
@@ -180,7 +180,7 @@ namespace Infrastructure.Repositories
                         icd1022013 = byomeiMst.Icd1022013;
                     }
                 }
-                PtDiseaseModel ptDiseaseModel = new PtDiseaseModel(
+                var ptDiseaseModel = new PtDiseaseModel(
                         ptByomei.HpId,
                         ptByomei.PtId,
                         ptByomei.SeqNo,
@@ -307,7 +307,7 @@ namespace Infrastructure.Repositories
 
         private List<PrefixSuffixModel> SyusyokuCdToList(PtByomei ptByomei)
         {
-            List<string> codeList = new List<string>()
+            List<string> codeList = new()
             {
                 ptByomei.SyusyokuCd1 ?? string.Empty,
                 ptByomei.SyusyokuCd2 ?? string.Empty,
@@ -340,7 +340,7 @@ namespace Infrastructure.Repositories
 
             var byomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => codeList.Contains(b.ByomeiCd)).ToList();
 
-            List<PrefixSuffixModel> result = new List<PrefixSuffixModel>();
+            List<PrefixSuffixModel> result = new();
             foreach (var code in codeList)
             {
                 var byomeiMst = byomeiMstList.FirstOrDefault(b => b.ByomeiCd == code);
