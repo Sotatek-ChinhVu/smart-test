@@ -12,6 +12,7 @@ using UseCase.MstItem.FindTenMst;
 using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
+using UseCase.MstItem.GetSelectiveComment;
 using UseCase.MstItem.SearchOTC;
 using UseCase.MstItem.SearchPostCode;
 using UseCase.MstItem.SearchSupplement;
@@ -161,6 +162,16 @@ namespace EmrCloudApi.Controller
             var presenter = new UpdateAdoptedItemListPresenter();
             presenter.Complete(output);
 
+            return Ok(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetSelectiveComment)]
+        public ActionResult<Response<GetSelectiveCommentResponse>> GetSelectiveComment([FromQuery] GetSelectiveCommentRequest request)
+        {
+            var input = new GetSelectiveCommentInputData(HpId, request.ItemCds.Trim().Split(",").ToList(), request.SinDate);
+            var output = _bus.Handle(input);
+            var presenter = new GetSelectiveCommentPresenter();
+            presenter.Complete(output);
             return Ok(presenter.Result);
         }
     }

@@ -998,6 +998,102 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        public List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
+        {
+            List<ItemCommentSuggestionModel> result = _tenantDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
+                                                                              item.StartDate <= sinDate &&
+                                                                              sinDate <= item.EndDate)
+                                                 .AsEnumerable()
+                                                 .Select(item => new ItemCommentSuggestionModel(
+                                                     "【" + item.Name + "】",
+                                                     item.ItemCd,
+                                                     item?.SanteiItemCd ?? string.Empty,
+                                                     new List<RecedenCmtSelectModel>()
+                                                 ))
+                                                 .ToList();
+
+            if (result.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemCdCmtSelect = result.Select(item => item.SanteiItemCd).ToList();
+            listItemCdCmtSelect.AddRange(listItemCd);
+            listItemCdCmtSelect = listItemCdCmtSelect.Distinct().ToList();
+
+            var listRecedenCmtSelectAll = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                               listItemCdCmtSelect.Contains(item.ItemCd ?? string.Empty) &&
+                                               item.StartDate <= sinDate &&
+                                               sinDate <= item.EndDate &&
+                                               isInvalidList.Contains(item.IsInvalid))
+                .ToList();
+
+            if (listRecedenCmtSelectAll.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemNo = listRecedenCmtSelectAll.GroupBy(item => new { item.ItemCd, item.CommentCd })
+                .Select(grp => grp.OrderBy(r => r.ItemNo).First())
+                .Select(item => item.ItemNo)
+                .Distinct()
+                .ToList();
+
+            List<RecedenCmtSelect> listRecedenCmtMinEda = new List<RecedenCmtSelect>();
+
+            var listRecedenCmtSelect = _tenantDataContext.RecedenCmtSelects
+               .Where(item => item.HpId == hpId &&
+                                              listItemCdCmtSelect.Contains(item.ItemCd) &&
+                                              listItemNo.Contains(item.ItemNo) &&
+                                              item.StartDate <= sinDate &&
+                                              sinDate <= item.EndDate &&
+                                              isInvalidList.Contains(item.IsInvalid))
+               .ToList();
+            listRecedenCmtMinEda.AddRange(listRecedenCmtSelect);
+
+            if (!isRecalculation)
+            {
+                var listRecedenCmtSelectShinryo = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                      item.ItemCd == "199999999" &&
+                                      listItemNo.Contains(item.ItemNo) &&
+                                      item.StartDate <= sinDate &&
+                                      sinDate <= item.EndDate &&
+                                      isInvalidList.Contains(item.IsInvalid));
+                listRecedenCmtMinEda.AddRange(listRecedenCmtSelectShinryo);
+            }
+
+            var listCommentCd = listRecedenCmtMinEda.Select(item => item.CommentCd).Distinct();
+
+            var listTenMst = _tenantDataContext.TenMsts
+                .Where(item => item.HpId == hpId &&
+                                         listCommentCd.Contains(item.ItemCd) &&
+                                         item.StartDate <= sinDate &&
+                                         sinDate <= item.EndDate);
+
+            var listComment = (from recedenCmtSelect in listRecedenCmtMinEda
+                               join tenMst in listTenMst on
+                                   recedenCmtSelect.CommentCd equals tenMst.ItemCd
+                               select new RecedenCmtSelectModel(
+                                   tenMst.CmtSbt,
+                                   recedenCmtSelect.ItemCd,
+                                   recedenCmtSelect.CommentCd ?? string.Empty,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.ItemNo,
+                                   recedenCmtSelect.EdaNo,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.SortNo,
+                                   recedenCmtSelect.CondKbn
+                               )).ToList();
+            foreach (var inputCodeItem in result)
+            {
+                var listCommentWithCode = listComment.Where(item =>
+                    item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
+                    .OrderBy(item => item.ItemNo)
+                    .ToList();
+                inputCodeItem.SetData(listCommentWithCode);
+            }
+
+            return result;
+        }
+
         #region Private Function
         private static ByomeiMstModel ConvertToByomeiMstModel(ByomeiMst mst)
         {

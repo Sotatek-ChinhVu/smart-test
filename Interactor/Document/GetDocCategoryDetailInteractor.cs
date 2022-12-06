@@ -107,7 +107,7 @@ public class GetDocCategoryDetailInteractor : IGetDocCategoryDetailInputPort
             {
                 var listFiles = listOutputFiles
                                             .Where(file =>
-                                                        (path + model.File).Equals(file)
+                                                        (path + model.FileName).Equals(file)
                                                         && file.Length > path.Length)
                                             .ToList();
                 var fileItem = listFiles.FirstOrDefault();

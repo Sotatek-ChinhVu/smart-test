@@ -10,7 +10,7 @@ namespace UseCase.Insurance.ValidateRousaiJibai
 {
     public class ValidateRousaiJibaiInputData : IInputData<ValidateRousaiJibaiOutputData>
     {
-        public ValidateRousaiJibaiInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate)
+        public ValidateRousaiJibaiInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate,bool selectedHokenInfHokenMasterModelIsNull)
         {
             HpId = hpId;
             HokenKbn = hokenKbn;
@@ -29,6 +29,7 @@ namespace UseCase.Insurance.ValidateRousaiJibai
             SelectedHokenInfNenkinBango = selectedHokenInfNenkinBango;
             SelectedHokenInfKenkoKanriBango = selectedHokenInfKenkoKanriBango;
             SelectedHokenInfConfirmDate = selectedHokenInfConfirmDate;
+            SelectedHokenInfHokenMasterModelIsNull = selectedHokenInfHokenMasterModelIsNull;
         }
 
         public int HpId { get; private set; }
@@ -64,5 +65,6 @@ namespace UseCase.Insurance.ValidateRousaiJibai
         public string SelectedHokenInfKenkoKanriBango { get; private set; }
 
         public int SelectedHokenInfConfirmDate { get; private set; }
+        public bool SelectedHokenInfHokenMasterModelIsNull { get; private set; }
     }
 }

@@ -39,5 +39,7 @@
         List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId);
 
         bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId);
+
+        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
     }
 }
