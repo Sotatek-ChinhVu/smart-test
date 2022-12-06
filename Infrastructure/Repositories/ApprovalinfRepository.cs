@@ -1,7 +1,6 @@
 ﻿using Domain.Models.ApprovalInfo;
 using Entity.Tenant;
 using Helper.Constants;
-using IdentityServer3.Core.Services;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -115,11 +114,13 @@ namespace Infrastructure.Repositories
                     approvalInfo.UpdateId = 1;
                     approvalInfo.UpdateDate = DateTime.Now;
                     approvalInfo.UpdateMachine = string.Empty;
+                    approvalInfo.SeqNo = approvalInfo.SeqNo + 1;
                 }
 
                 if (inputData.Id != approvalInfo?.Id)
                 {
                     _tenantDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
+                    
                 }
 
                 if (inputData.Id == approvalInfo?.Id && inputData.RaiinNo == approvalInfo?.RaiinNo && inputData.IsDeleted != approvalInfo?.IsDeleted)
@@ -139,8 +140,9 @@ namespace Infrastructure.Repositories
                 PtId = u.PtId,
                 SinDate = u.SinDate,
                 RaiinNo = u.RaiinNo,
-                SeqNo = u.SeqNo,
-                IsDeleted = u.IsDeleted
+                SeqNo = 1,
+                IsDeleted = u.IsDeleted,
+
             };
         }
     }

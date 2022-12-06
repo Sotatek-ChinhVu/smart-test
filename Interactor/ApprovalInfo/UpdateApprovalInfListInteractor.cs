@@ -1,4 +1,5 @@
 ﻿using Domain.Models.ApprovalInfo;
+using Helper.Constants;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using static Helper.Constants.ApprovalInfConstant;
 
@@ -22,34 +23,19 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
                 return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfoListInputNoData);
             }
 
-            var datas = input.ApprovalInfs.Select(x => new ApprovalInfModel(
-               x.Id,
-               x.HpId,
-               x.PtId,
-               x.SinDate,
-               x.RaiinNo,
-               x.SeqNo,
-               x.IsDeleted,
-               0,
-               "",
-               "",
-               0,
-               0
-                )).ToList();
-
-            var checkInputId = datas.Where(u => u.Id > 0).Select(u => u.Id);
+            var checkInputId = input.ToList().Where(u => u.Id > 0).Select(u => u.Id);
             if (checkInputId.Count() != checkInputId.Distinct().Count())
             {
                 return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
             }
 
-            var checkInputRaiinNo = datas.Where(u => u.Id > 0).Select(u => u.Id);
+            var checkInputRaiinNo = input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo);
             if (checkInputRaiinNo.Count() != checkInputRaiinNo.Distinct().Count())
             {
                 return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
             }
 
-            foreach (var data in datas)
+            foreach (var data in input.ToList())
             {
                 var status = data.Validation();
                 if (status != ValidationStatus.Valid)
@@ -58,17 +44,17 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
                 }
             }
 
-            if (!_approvalInfRepository.CheckExistedId(datas.Where(u => u.Id > 0).Select(u => u.Id).ToList()))
+            if (!_approvalInfRepository.CheckExistedId(input.ToList().Where(u => u.Id > 0).Select(u => u.Id).ToList()))
             {
                 return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
             }
 
-            if (!_approvalInfRepository.CheckExistedRaiinNo(datas.Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo).ToList()))
+            if (!_approvalInfRepository.CheckExistedRaiinNo(input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo).ToList()))
             {
                 return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedRaiinNo);
             }
 
-            _approvalInfRepository.UpdateApprovalInfs(datas);
+            _approvalInfRepository.UpdateApprovalInfs(input.ToList());
 
             return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.Success);
         }
@@ -81,19 +67,19 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
     private static UpdateApprovalInfListStatus ConvertStatusApprovalInf(ValidationStatus status)
     {
         if (status == ValidationStatus.InvalidHpId)
-            return UpdateApprovalInfListStatus.InvalidHpId;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidHpId;
         if (status == ValidationStatus.InvalidId)
-            return UpdateApprovalInfListStatus.InvalidId;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidId;
         if (status == ValidationStatus.InvalidPtId)
-            return UpdateApprovalInfListStatus.InvalidPtId;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidPtId;
         if (status == ValidationStatus.InvalidSinDate)
-            return UpdateApprovalInfListStatus.InvalidSinDate;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidSinDate;
         if (status == ValidationStatus.InvalidRaiinNo)
-            return UpdateApprovalInfListStatus.InvalidRaiinNo;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidRaiinNo;
         if (status == ValidationStatus.InvalidSeqNo)
-            return UpdateApprovalInfListStatus.InvalidSeqNo;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidSeqNo;
         if (status == ValidationStatus.InvalidIsDeleted)
-            return UpdateApprovalInfListStatus.InvalidIsDeleted;
+            return UpdateApprovalInfListStatus.ApprovalInfoInvalidIsDeleted;
         if (status == ValidationStatus.ApprovalInfListExistedInputData)
             return UpdateApprovalInfListStatus.ApprovalInfListExistedInputData;
         if (status == ValidationStatus.ApprovalInfListInvalidNoExistedId)
