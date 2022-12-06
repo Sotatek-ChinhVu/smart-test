@@ -84,6 +84,7 @@
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
+        public const string GetSelectiveComment = "GetSelectiveComment";
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
