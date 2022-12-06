@@ -223,7 +223,7 @@ namespace EmrCloudApi.Controller
         public ActionResult<Response<ValidateKohiResponse>> ValidateOneKohi([FromBody] ValidateKohiRequest request)
         {
             var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel, request.IsSelectedKohiMst, request.SelectedKohiFutansyaNo, request.SelectedKohiJyukyusyaNo,
-                request.SelectedKohiTokusyuNo, request.SelectedKohiStartDate, request.SelectedKohiEndDate, request.SelectedKohiConfirmDate, request.SelectedKohiHokenNo, request.SelectedKohiHokenEdraNo, request.SelectedKohiIsAddNew);
+                request.SelectedKohiTokusyuNo, request.SelectedKohiStartDate, request.SelectedKohiEndDate, request.SelectedKohiConfirmDate, request.SelectedKohiHokenNo, request.SelectedKohiHokenEdraNo, request.SelectedKohiIsAddNew, request.SelectedHokenPatternIsExpirated);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateKohiPresenter();
