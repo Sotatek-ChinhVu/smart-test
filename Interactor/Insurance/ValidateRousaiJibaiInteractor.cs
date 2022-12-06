@@ -36,11 +36,7 @@ namespace Interactor.Insurance
                         break;
                     // 自賠責
                     case 14:
-                        var checkMessageIsValidJibai = IsValidJibai(inputData.ListRousaiTenki);
-                        if (!String.IsNullOrEmpty(checkMessageIsValidJibai))
-                        {
-                            validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, checkMessageIsValidJibai, TypeMessage.TypeMessageError));
-                        }
+                        IsValidJibai(ref validateDeatails, inputData.ListRousaiTenki, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfHokenMasterModelIsNull, inputData.SelectedHokenInfIsAddNew, inputData.SinDate);
                         break;
                 }
             }
@@ -119,7 +115,7 @@ namespace Interactor.Insurance
             CommonCheckForRosai(ref validateDeatails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
         }
 
-        private string IsValidJibai(List<RousaiTenkiModel> listRousaiTenkis)
+        private void IsValidJibai(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, List<RousaiTenkiModel> listRousaiTenkis, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool SelectedHokenInfHokenMasterModelIsNull, bool selectedHokenInfIsAddNew, int sinDate)
         {
             var message = "";
             if (listRousaiTenkis != null && listRousaiTenkis.Count > 0)
@@ -129,7 +125,7 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "転帰事由" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    return message;
+                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
@@ -159,11 +155,39 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage = new string[] { errorMsg };
                         message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                        return message;
+                        validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
                     }
                 }
             }
-            return message;
+
+            int JibaiYokoFromDate = selectedHokenInfStartDate;
+            int JibaiYokoToDate = selectedHokenInfEndDate;
+            if (JibaiYokoFromDate != 0 && JibaiYokoToDate != 0 && JibaiYokoFromDate > JibaiYokoToDate)
+            {
+                var paramsMessage = new string[] { "自賠有効終了日", "自賠有効開始日以降" };
+                message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
+                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
+            }
+
+            if (SelectedHokenInfHokenMasterModelIsNull)
+            {
+                var paramsMessage = new string[] { "負担率" };
+                message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
+                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageError));
+            }
+
+            if (selectedHokenInfIsAddNew)
+            {
+                if ((selectedHokenInfEndDate > 0 && selectedHokenInfEndDate < sinDate)
+                    || (selectedHokenInfStartDate > 0 && selectedHokenInfStartDate > sinDate))
+                {
+
+                    var paramsMessage = new string[] { "負担率" };
+                    var paramsMessage2 = new string[] { "無視する", "戻る" };
+                    message = String.Format(ErrorMessage.MessageType_mChk00020, paramsMessage, paramsMessage2);
+                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageWarning));
+                }
+            }
         }
 
         private void CheckValidateInput(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, ValidateRousaiJibaiInputData inputData)

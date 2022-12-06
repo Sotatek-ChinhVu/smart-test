@@ -35,6 +35,7 @@ namespace UseCase.Insurance.ValidateRousaiJibai
         InvalidNenkinBangoLengthNotEquals9 = 24,
         InvalidKenkoKanriBangoIsNull = 25,
         InvalidKenkoKanriBangoLengthNotEquals13 = 26,
-        InvalidRousaiRyoyoDate = 27
+        InvalidRousaiRyoyoDate = 27,
+        InvalidSelectedHokenInfHokenMasterModelIsNull = 28
     }
 }
