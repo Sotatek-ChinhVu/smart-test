@@ -118,6 +118,7 @@
         public const string SortDocCategory = "SortDocCategory";
         public const string AddTemplateToCategory = "AddTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
+        public const string SaveDocInf = "SaveDocInf";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";

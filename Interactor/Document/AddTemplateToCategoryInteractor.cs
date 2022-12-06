@@ -49,8 +49,11 @@ public class AddTemplateToCategoryInteractor : IAddTemplateToCategoryInputPort
             string filePath = _amazonS3Service.GetFolderUploadOther(listFolderPath);
             var response = _amazonS3Service.UploadObjectAsync(filePath, inputData.FileName, memoryStream);
             response.Wait();
-            var resultSuccess = response.Result;
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Successed);
+            if (response.Result.Length > 0)
+            {
+                return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Successed);
+            }
+            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Failed);
         }
         catch
         {
