@@ -258,6 +258,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using UseCase.Schema.SaveListImageTodayOrder;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -553,6 +554,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Schema
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+            busBuilder.RegisterUseCase<SaveListFileTodayOrderInputData, SaveListFileTodayOrderInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();

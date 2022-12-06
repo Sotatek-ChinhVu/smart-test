@@ -97,10 +97,9 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
             foreach (var image in input.ListImages)
             {
                 string fileName = _amazonS3Service.GetUniqueFileNameKey(image.FileName);
-                var memoryStream = image.StreamImage.ToMemoryStreamAsync().Result;
-                if (memoryStream.Length > 0)
+                if (image.StreamImage.Length > 0)
                 {
-                    listFileItems.Add(new FileItem(fileName, memoryStream));
+                    listFileItems.Add(new FileItem(fileName, image.StreamImage));
                 }
                 else
                 {
