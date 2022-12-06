@@ -1692,13 +1692,13 @@ namespace Helper.Common
             }
             return retDate;
         }
-        
+
         public static string DateTimeToTime(DateTime dateTime)
         {
             return dateTime.ToString("HHmmss");
 
         }
-        
+
         public static int DayOfWeek(DateTime dateTime)
         {
             int result = 0;
@@ -1764,16 +1764,15 @@ namespace Helper.Common
     public struct WarekiYmd
     {
 #pragma warning disable S1104 // Fields should not have public accessibility
-            public string Ymd;
-            public string GYmd;
-            public string Gengo;
-            public int GengoId;
-            public int Year;
-            public int Month;
-            public int Day;
+        public string Ymd;
+        public string GYmd;
+        public string Gengo;
+        public int GengoId;
+        public int Year;
+        public int Month;
+        public int Day;
 #pragma warning restore S1104 // Fields should not have public accessibility
-        }
-
-
     }
+
+
 }
