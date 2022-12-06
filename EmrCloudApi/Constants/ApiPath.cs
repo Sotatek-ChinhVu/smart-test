@@ -33,6 +33,8 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";

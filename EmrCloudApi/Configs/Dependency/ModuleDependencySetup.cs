@@ -1,8 +1,11 @@
 ﻿using DevExpress.Export;
 using DevExpress.Implementation;
 using DevExpress.Inteface;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using Domain.CalculationInf;
 using Domain.Models.AccountDue;
+using Domain.Models.ApprovalInfo;
 using Domain.Models.ColumnSetting;
 using Domain.Models.Diseases;
 using Domain.Models.Document;
@@ -68,6 +71,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.SpecialNote;
 using Infrastructure.Services;
 using Interactor.AccountDue;
+using Interactor.ApprovalInfo;
 using Interactor.Byomei;
 using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
@@ -116,13 +120,13 @@ using Interactor.UketukeSbtMst;
 using Interactor.UsageTreeSet;
 using Interactor.User;
 using Interactor.UserConf;
-using Interactor.ApprovalInfo;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
+using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.CalculationInf;
 using UseCase.ColumnSetting.GetList;
 using UseCase.ColumnSetting.SaveList;
@@ -171,6 +175,7 @@ using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
+using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -179,6 +184,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -252,13 +258,9 @@ using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
 using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
-using UseCase.ApprovalInfo.GetApprovalInfList;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using Domain.Models.ApprovalInfo;
-using DinkToPdf;
-using DinkToPdf.Contracts;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -537,6 +539,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
             busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
             busBuilder.RegisterUseCase<FindTenMstInputData, FindTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetAdoptedItemListInputData, GetAdoptedItemListInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
+using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.SearchOTC;
@@ -17,6 +18,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.MstItem.UpdateAdoptedItemList;
 
 namespace EmrCloudApi.Controller
 {
@@ -137,6 +139,28 @@ namespace EmrCloudApi.Controller
             var output = _bus.Handle(input);
             var presenter = new FindTenMstPresenter();
             presenter.Complete(output);
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetAdoptedItemList)]
+        public ActionResult<Response<FindtenMstResponse>> GetAdoptedItemList([FromBody] GetAdoptedItemListRequest request)
+        {
+            var input = new GetAdoptedItemListInputData(request.ItemCds, request.SinDate, HpId);
+            var output = _bus.Handle(input);
+            var presenter = new GetAdoptedItemListPresenter();
+            presenter.Complete(output);
+
+            return Ok(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.UpdateAdoptedItemList)]
+        public ActionResult<Response<UpdateAdoptedItemListResponse>> UpdateAdoptedItemList([FromBody] UpdateAdoptedItemListRequest request)
+        {
+            var input = new UpdateAdoptedItemListInputData(request.ValueAdopted, request.ItemCds, request.SinDate, HpId, UserId);
+            var output = _bus.Handle(input);
+            var presenter = new UpdateAdoptedItemListPresenter();
+            presenter.Complete(output);
+
             return Ok(presenter.Result);
         }
     }
