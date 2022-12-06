@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImageTodayOrder;
 using UseCase.Schema.SaveListImageTodayOrder;
 
 namespace EmrCloudApi.Controller
@@ -32,18 +31,6 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetListImageTemplatesResponse>>(presenter.Result);
-        }
-
-        [HttpPost(ApiPath.SaveImageTodayOrder)]
-        public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageTodayOrderRequest request)
-        {
-            var input = new SaveImageTodayOrderInputData(HpId, request.PtId, request.RaiinNo, request.OldImage, Request.Body);
-            var output = _bus.Handle(input);
-
-            var presenter = new SaveImageTodayOrderPresenter();
-            presenter.Complete(output);
-
-            return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
         }
 
         [HttpPost(ApiPath.SaveInsuranceScanImage)]
