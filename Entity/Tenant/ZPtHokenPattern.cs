@@ -12,24 +12,24 @@ namespace Entity.Tenant
     [Table("Z_PT_HOKEN_PATTERN")]
     public class ZPtHokenPattern : EmrCloneable<ZPtHokenPattern>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -131,7 +131,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOKEN_MEMO")]
         [MaxLength(400)]
-        public string HokenMemo { get; set; } = string.Empty;
+        public string? HokenMemo { get; set; } = string.Empty;
 
         /// <summary>
         /// 適用開始日

@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// ログID
         /// AUDIT_TRAILINC_LOG.LOG_ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("LOG_ID", Order = 1)]
         public long LogId { get; set; }
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("HOSOKU")]
-        public string Hosoku { get; set; } = string.Empty;
+        public string? Hosoku { get; set; } = string.Empty;
 
     }
 }

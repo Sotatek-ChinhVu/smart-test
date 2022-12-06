@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -21,14 +21,14 @@ namespace Entity.Tenant
         /// 患者ID
         ///     患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 診療日
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 3)]
         [CustomAttribute.DefaultValue(0)]
         public int SinDate { get; set; }
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 4)]
         [CustomAttribute.DefaultValue(0)]
         public long RaiinNo { get; set; }
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 5)]
         [CustomAttribute.DefaultValue(1)]
         public int SeqNo { get; set; }
@@ -63,7 +63,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FILE_NAME")]
         [MaxLength(300)]
-        public string FileName { get; set; } = string.Empty;
+        public string? FileName { get; set; } = string.Empty;
 
         /// <summary>
         /// 表示用ファイル名
@@ -71,7 +71,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DSP_FILE_NAME")]
         [MaxLength(300)]
-        public string DspFileName { get; set; } = string.Empty;
+        public string? DspFileName { get; set; } = string.Empty ;
 
         /// <summary>
         /// ロック区分
@@ -147,6 +147,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

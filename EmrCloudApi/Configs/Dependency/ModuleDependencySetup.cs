@@ -120,6 +120,7 @@ using Interactor.ApprovalInfo;
 using Interactor.VisitingList;
 using Interactor.YohoSetMst;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Schema.Insurance.SaveInsuranceScan;
 using UseCase.AccountDue.GetAccountDueList;
 using UseCase.AccountDue.SaveAccountDueList;
 using UseCase.CalculationInf;
@@ -257,6 +258,8 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.ApprovalInfo;
 using UseCase.Document.SaveDocInf;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -286,6 +289,7 @@ namespace EmrCloudApi.Configs.Dependency
         {
             var serviceProvider = services.BuildServiceProvider();
             var logger = serviceProvider.GetService<ILogger<Reporting>>();
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
             services.AddSingleton(typeof(ILogger), logger!);
         }
 
@@ -621,6 +625,9 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
             busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
             busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
+
+            //InsuranceScan
+            busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

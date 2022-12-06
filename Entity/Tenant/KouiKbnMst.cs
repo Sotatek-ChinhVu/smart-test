@@ -12,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 行為区分ID
         /// </summary>
-        //[Key]
+        
         [Column("KOUI_KBN_ID", Order = 2)]
         public int KouiKbnId { get; set; }
 
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         [Required]
         [Column("KOUI_NAME")]
         [MaxLength(20)]
-        public string KouiName { get; set; } = string.Empty;
+        public string? KouiName { get; set; } = string.Empty;
 
         /// <summary>
         /// 作成日時	

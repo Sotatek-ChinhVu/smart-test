@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// シリアルナンバー
         /// 管理用通し番号　1~9999999
         /// </summary>
-        [Key]
+        
         [Column("SERIAL_NUM", Order = 1)]
         public int SerialNum { get; set; }
 
@@ -19,7 +19,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 英数字7桁
         /// </summary>
-        //[Key]
+        
         [Column("SEIBUN_CD", Order = 2)]
         [MaxLength(7)]
         public string SeibunCd { get; set; } = string.Empty;
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// 種別
         /// 1:成分　2:添加物
         /// </summary>
-        //[Key]
+        
         [Column("SBT", Order = 3)]
         public int Sbt { get; set; }
     }

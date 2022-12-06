@@ -134,6 +134,7 @@
         public static readonly string InvalidSelectedHokenMstEndDate = "Invalid SelectedHokenMst EndDate";
         public static readonly string InvalidHistoryPid = "Invalid HistoryPid";
         public static readonly string InvalidSelectedHokenPid = "Invalid SelectedHokenPid";
+        public static readonly string InvalidException = "Invalid Exception";
 
         // Validate Pattern
         public static readonly string InvalidPatternJihiSelectedHokenInfHokenNoEquals0 = "Invalid SelectedHokenInf HokenNo Equals 0";
@@ -830,5 +831,16 @@
         public static readonly string InvalidCheckAge = "Invalid Check Age";
         public static readonly string InvalidOdrInfDetail = "Invalid OdrInfDetail";
         public static readonly string InvalidIBirthDay = "Invalid IBirthDay";
+
+
+        //Exception
+        public static readonly string ExceptionError = "Exception error";
+
+        //InsuranceScan
+        public static readonly string SaveInsuranceScanFailedSaveToDb = "Failed save scan image to database";
+        public static readonly string InvalidImageScan = "Image scan is invalid";
+        public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
+        public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
+        public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
     }
 }
