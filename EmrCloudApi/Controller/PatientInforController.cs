@@ -66,6 +66,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Services;
+using Domain.Constant;
 
 namespace EmrCloudApi.Controller
 {
@@ -492,13 +493,14 @@ namespace EmrCloudApi.Controller
                    x.JibaiHokenTel,
                    x.JibaiJyusyouDate,
                    x.Houbetu,
-                   x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                   c.HokenId,
-                   c.SeqNo,
-                   c.CheckId,
-                   c.CheckName,
-                   c.CheckComment,
-                   c.ConfirmDate)).ToList(),
+                   x.ConfirmDates.Select(c => new ConfirmDateModel(
+                       c.HokenGrp,
+                       c.HokenId,
+                       c.SeqNo,
+                       c.CheckId,
+                       c.CheckName,
+                       c.CheckComment,
+                       c.ConfirmDate)).ToList(),
                    x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
                    m.RousaiTenkiTenki,
                    m.RousaiTenkiEndDate,
@@ -511,13 +513,16 @@ namespace EmrCloudApi.Controller
                    x.IsAddNew,
                    false)).ToList();
 
-            List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                    c.HokenId,
-                    c.SeqNo,
-                    c.CheckId,
-                    c.CheckName,
-                    c.CheckComment,
-                    c.ConfirmDate)).ToList(),
+            List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(
+                    x.ConfirmDates.Select(c =>
+                        new ConfirmDateModel(
+                            c.HokenGrp,
+                            c.HokenId,
+                            c.SeqNo,
+                            c.CheckId,
+                            c.CheckName,
+                            c.CheckComment,
+                            c.ConfirmDate)).ToList(),
                     x.FutansyaNo,
                     x.JyukyusyaNo,
                     x.HokenId,
