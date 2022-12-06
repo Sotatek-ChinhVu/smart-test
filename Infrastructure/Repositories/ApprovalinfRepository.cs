@@ -1,11 +1,9 @@
 ﻿using Domain.Models.ApprovalInfo;
-using Domain.Models.User;
 using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
+using IdentityServer3.Core.Services;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -19,16 +17,19 @@ namespace Infrastructure.Repositories
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
+
         public bool CheckExistedId(List<int> ids)
         {
-            var anyId = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => ids.Contains(u.Id));
-            return anyId;
+            var countIds = _tenantNoTrackingDataContext.ApprovalInfs.Count(u => ids.Contains(u.Id));
+            return ids.Count == countIds;
         }
-        public bool CheckExistedRaiinNo(List<long> raiinNo)
+
+        public bool CheckExistedRaiinNo(List<long> raiinNos)
         {
-            var anyRaiinNo = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => raiinNo.Contains(u.RaiinNo));
-            return anyRaiinNo;
+            var countRaiinNos = _tenantNoTrackingDataContext.ApprovalInfs.Count(u => raiinNos.Contains(u.RaiinNo));
+            return raiinNos.Count == countRaiinNos;
         }
+
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
             var result = new List<ApprovalInfModel>();
@@ -99,6 +100,48 @@ namespace Infrastructure.Repositories
             .ToList();
 
             return result;
+        }
+
+        public void UpdateApprovalInfs(List<ApprovalInfModel> approvalInfs)
+        {
+            foreach (var inputData in approvalInfs)
+            {
+                var approvalInfo = _tenantDataContext.ApprovalInfs.FirstOrDefault(x => x.HpId == 1 && x.IsDeleted == 0);
+                if (inputData.Id == approvalInfo?.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate)
+                {
+                    approvalInfo.CreateId = 1;
+                    approvalInfo.CreateDate = DateTime.Now;
+                    approvalInfo.CreateMachine = string.Empty;
+                    approvalInfo.UpdateId = 1;
+                    approvalInfo.UpdateDate = DateTime.Now;
+                    approvalInfo.UpdateMachine = string.Empty;
+                }
+
+                if (inputData.Id != approvalInfo?.Id)
+                {
+                    _tenantDataContext.ApprovalInfs.AddRange(ConvertApprovalInfList(inputData));
+                }
+
+                if (inputData.Id == approvalInfo?.Id && inputData.RaiinNo == approvalInfo?.RaiinNo && inputData.IsDeleted != approvalInfo?.IsDeleted)
+                {
+                    approvalInfo.IsDeleted = inputData.IsDeleted;
+                }
+            }
+            _tenantDataContext.SaveChanges();
+        }
+
+        private static ApprovalInf ConvertApprovalInfList(ApprovalInfModel u)
+        {
+            return new ApprovalInf
+            {
+                Id = u.Id,
+                HpId = u.HpId,
+                PtId = u.PtId,
+                SinDate = u.SinDate,
+                RaiinNo = u.RaiinNo,
+                SeqNo = u.SeqNo,
+                IsDeleted = u.IsDeleted
+            };
         }
     }
 }

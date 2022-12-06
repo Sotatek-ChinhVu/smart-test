@@ -1,12 +1,15 @@
-﻿using EmrCloudApi.Constants;
+﻿using Domain.Models.ApprovalInfo;
+using EmrCloudApi.Constants;
 using EmrCloudApi.Controller;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Services;
 using EmrCloudApi.Tenant.Presenters.ApprovalInfo;
 using EmrCloudApi.Tenant.Requests.ApprovalInfo;
 using EmrCloudApi.Tenant.Responses.ApprovalInf;
+using EmrCloudApi.Tenant.Responses.ApprovalInfo;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.ApprovalInfo.GetApprovalInfList;
+using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using UseCase.Core.Sync;
 
 namespace EmrCloudApi.Tenant.Controllers
@@ -29,6 +32,27 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new GetApprovalInfListPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<GetApprovalInfListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.Update)]
+        public async Task<ActionResult<Response<UpdateApprovalInfListResponse>>> Update([FromBody] UpdateApprovalInfRequest request)
+        {
+            var input = new UpdateApprovalInfListInputData(request.ApprovalIfnList.Select(x => new ApprovalInfModel(
+                                                            x.Id,
+                                                            HpId,
+                                                            x.PtId,
+                                                            x.SinDate,
+                                                            x.RaiinNo,
+                                                            x.SeqNo,
+                                                            x.IsDeleted
+                                                            )).ToList(),
+                                                            UserId
+                                                            );
+            var output = await Task.Run(() => _bus.Handle(input));
+
+            var presenter = new UpdateApprovalInfListPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<UpdateApprovalInfListResponse>>(presenter.Result);
         }
     }
 }
