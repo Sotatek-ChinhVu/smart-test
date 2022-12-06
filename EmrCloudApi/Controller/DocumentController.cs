@@ -109,6 +109,7 @@ public class DocumentController : AuthorizeControllerBase
 
         return new ActionResult<Response<SaveDocInfResponse>>(presenter.Result);
     }
+
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
