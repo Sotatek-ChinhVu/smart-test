@@ -1,22 +1,15 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Domain.Models.User;
-using EmrCalculateApi.Futan.Models;
+﻿using EmrCalculateApi.Futan.Models;
 using EmrCalculateApi.Futan.ViewModels;
 using EmrCalculateApi.Interface;
 using Entity.Tenant;
-using Infrastructure.Interfaces;
 using Moq;
-using PostgreDataContext;
 
 namespace CalculateUnitTest
 {
-    public class ReceFutanUT
+    public class ReceFutanUT : BaseUT
     {
         private FutancalcViewModel newFutanCalcVM()
         {
-            var mockTenantProvider = new Mock<ITenantProvider>();
-            mockTenantProvider.Setup(repo => repo.GetTrackingTenantDataContext()).Returns(new TenantDataContext("host=10.2.15.78;port=5432;database=EmrCloud;user id=postgres;password=Emr!23"));
-
             var mockSystemConfigProvider = new Mock<ISystemConfigProvider>();
             mockSystemConfigProvider.Setup(repo => repo.GetChokiFutan()).Returns(0);
             mockSystemConfigProvider.Setup(repo => repo.GetChokiDateRange()).Returns(0);
@@ -24,7 +17,7 @@ namespace CalculateUnitTest
 
             var mockLogger = new Mock<IEmrLogger>();
 
-            FutancalcViewModel futanCalcVM = new FutancalcViewModel(mockTenantProvider.Object, mockSystemConfigProvider.Object, mockLogger.Object);
+            FutancalcViewModel futanCalcVM = new FutancalcViewModel(TenantProvider, mockSystemConfigProvider.Object, mockLogger.Object);
             return futanCalcVM;
         }
 

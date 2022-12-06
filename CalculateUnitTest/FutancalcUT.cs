@@ -1,16 +1,10 @@
 ﻿namespace CalculateUnitTest
 {
-    public class FutancalcUT
+    public class FutancalcUT : BaseUT
     {
         [SetUp]
         public void Setup()
         {
-        }
-
-        [Test]
-        public void Test1()
-        {
-            Assert.Pass();
         }
     }
 }
