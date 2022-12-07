@@ -35,9 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "6.Tests", "6.Tests", "{74CA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{6225E703-8D83-468C-88AC-0BA89C702F99}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7.Reporting", "7.Reporting", "{ACED399F-8FA5-474E-9F99-A157EF1F3487}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "8.EventProcessor", "8.EventProcessor", "{B0E35762-2F9C-42DE-921C-176D26441839}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "7.EventProcessor", "7.EventProcessor", "{B0E35762-2F9C-42DE-921C-176D26441839}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EventProcessor", "EventProcessorService\EventProcessor.csproj", "{9F8AD91F-ABD6-4F68-B12A-4C6C13EB34B8}"
 EndProject
