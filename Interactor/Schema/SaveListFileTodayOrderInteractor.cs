@@ -6,6 +6,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace Interactor.Schema;
@@ -57,17 +58,26 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
                     var linkImage = responseUpload.Result;
                     if (linkImage.Length > 0)
                     {
+                        var host = new StringBuilder();
+                        host.Append(_options.BaseAccessUrl);
+                        host.Append("/");
+                        host.Append(path);
+                        linkImage = linkImage.Replace(host.ToString(), string.Empty);
                         listFileAddNews.Add(new KarteImgInfModel(
                                             input.HpId,
                                             input.PtId,
                                             input.RaiinNo,
-                                            linkImage.Replace(_options.BaseAccessUrl + "/", string.Empty)
+                                            linkImage
                                       ));
                     }
                 }
             }
             var resultData = _setKbnMstRepository.SaveListFileKarte(input.HpId, input.PtId, input.RaiinNo, lastSeqNo, listFileAddNews, input.ListFileIdDeletes);
-            return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, resultData);
+            if (resultData > 0)
+            {
+                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, resultData);
+            }
+            return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
         catch (Exception)
         {
@@ -101,6 +111,12 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
                 string fileName = _amazonS3Service.GetUniqueFileNameKey(image.FileName);
                 if (image.StreamImage.Length > 0)
                 {
+                    if (fileName.Length > 100)
+                    {
+                        int lastIndex = fileName.IndexOf(".");
+                        string extentFile = fileName.Substring(lastIndex);
+                        fileName = fileName.Substring(0, 100 - extentFile.Length - 1) + extentFile;
+                    }
                     listFileItems.Add(new FileItem(fileName, image.StreamImage));
                 }
                 else

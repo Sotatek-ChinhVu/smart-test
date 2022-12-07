@@ -154,14 +154,13 @@ namespace Infrastructure.Repositories
             // insert new entity
             foreach (var model in listModel)
             {
-                var fileName = model.FileName.Length > 100 ? model.FileName.Substring(model.FileName.Length - 100, 100) : model.FileName;
                 KarteImgInf entity = new();
                 entity.HpId = model.HpId;
                 entity.PtId = model.PtId;
                 entity.RaiinNo = model.RaiinNo;
                 entity.Position = position;
                 entity.SeqNo = lastSeqNo + 1;
-                entity.FileName = fileName;
+                entity.FileName = model.FileName;
                 result.Add(entity);
                 position += 1;
             }
