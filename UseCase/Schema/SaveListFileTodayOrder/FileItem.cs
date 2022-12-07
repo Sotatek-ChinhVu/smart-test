@@ -1,4 +1,4 @@
-﻿namespace UseCase.Schema.SaveListImageTodayOrder;
+﻿namespace UseCase.Schema.SaveListFileTodayOrder;
 
 public class FileItem
 {

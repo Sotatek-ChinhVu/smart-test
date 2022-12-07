@@ -259,7 +259,7 @@ using Domain.Models.ApprovalInfo;
 using UseCase.Document.SaveDocInf;
 using DinkToPdf;
 using DinkToPdf.Contracts;
-using UseCase.Schema.SaveListImageTodayOrder;
+using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace EmrCloudApi.Configs.Dependency
 {

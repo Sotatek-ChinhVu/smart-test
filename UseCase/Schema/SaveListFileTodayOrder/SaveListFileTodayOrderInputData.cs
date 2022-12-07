@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Schema.SaveListImageTodayOrder;
+namespace UseCase.Schema.SaveListFileTodayOrder;
 
 public class SaveListFileTodayOrderInputData : IInputData<SaveListFileTodayOrderOutputData>
 {

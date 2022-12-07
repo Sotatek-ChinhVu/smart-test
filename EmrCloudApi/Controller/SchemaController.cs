@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Schema.Insurance.SaveInsuranceScan;
 using UseCase.Core.Sync;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveListImageTodayOrder;
+using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace EmrCloudApi.Controller
 {
