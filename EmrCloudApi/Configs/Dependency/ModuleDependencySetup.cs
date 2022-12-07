@@ -152,6 +152,7 @@ using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
+using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.ValidKohi;
 using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
@@ -263,10 +264,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Document.SaveDocInf;
-using DinkToPdf;
-using DinkToPdf.Contracts;
-using UseCase.Insurance.ValidHokenInfAllType;
 
 namespace EmrCloudApi.Configs.Dependency
 {
