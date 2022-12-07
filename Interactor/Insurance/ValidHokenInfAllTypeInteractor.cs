@@ -34,6 +34,50 @@ namespace Interactor.Insurance
                 CheckValidateInput(ref validateDetails, inputData);
                 switch (inputData.HokenKbn)
                 {
+                    case 0:
+                        break;
+                    case 1:
+                    case 2:
+                        IsValidHokenInf(ref validateDetails,
+                                inputData.SelectedHokenInf,
+                                inputData.SelectedHokenInfIsAddNew,
+                                inputData.HokenKbn,
+                                inputData.SelectedHokenInfHoubetu,
+                                inputData.HpId,
+                                inputData.SinDate,
+                                inputData.SelectedHokenInfTokki1,
+                                inputData.SelectedHokenInfTokki2,
+                                inputData.SelectedHokenInfTokki3,
+                                inputData.SelectedHokenInfTokki4,
+                                inputData.SelectedHokenInfTokki5,
+                                inputData.SelectedHokenInfStartDate,
+                                inputData.SelectedHokenInfEndDate,
+                                inputData.SelectedHokenInfIsJihi,
+                                inputData.HokenSyaNo ?? string.Empty,
+                                hokenMst.HokenNo,
+                                inputData.IsSelectedHokenMst,
+                                inputData.SelectedHokenInfHoubetu,
+                                hokenMst.Houbetu,
+                                hokenMst.HokenNo,
+                                hokenMst.CheckDigit,
+                                inputData.PtBirthday,
+                                hokenMst.AgeStart,
+                                hokenMst.AgeEnd,
+                                inputData.SelectedHokenInfKigo,
+                                inputData.SelectedHokenInfBango,
+                                hokenSyaMst.IsKigoNa,
+                                inputData.SelectedHokenInfHonkeKbn,
+                                inputData.SelectedHokenInfStartDate,
+                                inputData.SelectedHokenInfEndDate,
+                                inputData.SelectedHokenInfTokureiYm1,
+                                inputData.SelectedHokenInfTokureiYm2,
+                                inputData.SelectedHokenInfisShahoOrKokuho,
+                                inputData.SelectedHokenInfisExpirated,
+                                inputData.SelectedHokenInfconfirmDate,
+                                hokenMst.StartDate,
+                                hokenMst.EndDate,
+                                hokenMst.DisplayTextMaster);
+                        break;
                     // 労災(短期給付)	
                     case 11:
                         IsValidRodo(ref validateDetails, inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
@@ -51,46 +95,6 @@ namespace Interactor.Insurance
                         IsValidJibai(ref validateDetails, inputData.ListRousaiTenki, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfHokenMasterModelIsNull, inputData.SelectedHokenInfIsAddNew, inputData.SinDate);
                         break;
                 }
-
-                IsValidHokenInf(ref validateDetails,
-                                inputData.SelectedHokenInf,
-                                inputData.SelectedHokenInfIsAddNew,
-                                inputData.HokenKbn,
-                                inputData.SelectedHokenInfHoubetu,
-                                inputData.HpId,
-                                inputData.SinDate,
-                                inputData.SelectedHokenInfTokki1,
-                                inputData.SelectedHokenInfTokki2, 
-                                inputData.SelectedHokenInfTokki3, 
-                                inputData.SelectedHokenInfTokki4,
-                                inputData.SelectedHokenInfTokki5, 
-                                inputData.SelectedHokenInfStartDate, 
-                                inputData.SelectedHokenInfEndDate,
-                                inputData.SelectedHokenInfIsJihi,
-                                inputData.HokenSyaNo ?? string.Empty,
-                                hokenMst.HokenNo, 
-                                inputData.IsSelectedHokenMst,
-                                inputData.SelectedHokenInfHoubetu,
-                                hokenMst.Houbetu,
-                                hokenMst.HokenNo,
-                                hokenMst.CheckDigit,
-                                inputData.PtBirthday, 
-                                hokenMst.AgeStart,
-                                hokenMst.AgeEnd,
-                                inputData.SelectedHokenInfKigo,
-                                inputData.SelectedHokenInfBango,
-                                hokenSyaMst.IsKigoNa,
-                                inputData.SelectedHokenInfHonkeKbn,
-                                inputData.SelectedHokenInfStartDate,
-                                inputData.SelectedHokenInfEndDate,
-                                inputData.SelectedHokenInfTokureiYm1,
-                                inputData.SelectedHokenInfTokureiYm2,
-                                inputData.SelectedHokenInfisShahoOrKokuho,
-                                inputData.SelectedHokenInfisExpirated,
-                                inputData.SelectedHokenInfconfirmDate,
-                                hokenMst.StartDate,
-                                hokenMst.EndDate,
-                                hokenMst.DisplayTextMaster);
             }
             catch (Exception ex)
             {
