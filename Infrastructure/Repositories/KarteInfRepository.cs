@@ -176,6 +176,7 @@ namespace Infrastructure.Repositories
                                                                                 && item.RaiinNo == rainNo
                                                                                 && item.SeqNo == lastSeqNo
                                                                                 )
+                                                                    .OrderBy(item => item.Position)
                                                                     .Select(item => new KarteImgInfModel(
                                                                             item.Id,
                                                                             item.HpId,

@@ -31,7 +31,8 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return new SuperSetDetailModel(
                 GetSetByomeiList(hpId, setCd),
                 GetSetKarteInfModel(hpId, setCd),
-                GetSetGroupOrdInfModel(hpId, setCd, sindate)
+                GetSetGroupOrdInfModel(hpId, setCd, sindate),
+                GetListSetKarteFileModel(hpId, setCd)
             );
     }
 
@@ -245,6 +246,21 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 setKarteInf.SetCd,
                 setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)
             );
+    }
+
+    private List<SetKarteFileModel> GetListSetKarteFileModel(int hpId, int setCd)
+    {
+        long lastSeqNo = GetLastSeqNo(hpId, setCd);
+        var result = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item =>
+                                                                    item.HpId == hpId
+                                                                    && item.SetCd == setCd
+                                                                    && item.SeqNo == lastSeqNo)
+                                                                .OrderBy(item => item.Position)
+                                                                .Select(item => new SetKarteFileModel(
+                                                                   item.Id,
+                                                                   item.FileName ?? string.Empty
+                                                                 )).ToList();
+        return result;
     }
 
     #endregion
@@ -1160,5 +1176,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     public bool CheckExistSupperSetDetail(int hpId, int setCd)
     {
         return _tenantNoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd && item.IsDeleted == 0);
+    }
+
+    public long GetLastSeqNo(int hpId, int setCd)
+    {
+        var lastItem = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList()?.MaxBy(item => item.SeqNo);
+        return lastItem != null ? lastItem.SeqNo : 0;
     }
 }

@@ -6,13 +6,13 @@ using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace Interactor.Schema;
 
-public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
+public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
 {
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
 
-    public SaveListFileTodayOrderInteractor(IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository)
+    public SaveListFileInteractor(IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository)
     {
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
