@@ -1,18 +1,26 @@
 ﻿using Domain.Models.KarteInfs;
+using Domain.Models.PatientInfor;
+using Helper.Constants;
+using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.KarteInf.GetList;
 
 namespace Interactor.KarteInfs;
 
 public class GetListKarteInfInteractor : IGetListKarteInfInputPort
 {
+    private readonly IAmazonS3Service _amazonS3Service;
     private readonly IKarteInfRepository _karteInfRepository;
     private readonly AmazonS3Options _options;
-    public GetListKarteInfInteractor(IOptions<AmazonS3Options> optionsAccessor, IKarteInfRepository karteInfRepository)
+    private readonly IPatientInforRepository _patientInforRepository;
+    public GetListKarteInfInteractor(IOptions<AmazonS3Options> optionsAccessor, IKarteInfRepository karteInfRepository, IPatientInforRepository patientInforRepository, IAmazonS3Service amazonS3Service)
     {
         _karteInfRepository = karteInfRepository;
         _options = optionsAccessor.Value;
+        _patientInforRepository = patientInforRepository;
+        _amazonS3Service = amazonS3Service;
     }
 
     public GetListKarteInfOutputData Handle(GetListKarteInfInputData inputData)
@@ -36,13 +44,26 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
             return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
         }
 
-        List<string> listFile = new();
+        List<KarteFileOutputItem> listFile = new();
         var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo);
         if (listKarteFile.Any())
         {
+            var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+            List<string> listFolders = new();
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
             foreach (var file in listKarteFile)
             {
-                listFile.Add(_options.BaseAccessUrl + "/" + file.FileName);
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(file.FileName);
+                listFile.Add(new KarteFileOutputItem(
+                        file.Id,
+                        fileName.ToString()
+                    ));
             }
         }
 

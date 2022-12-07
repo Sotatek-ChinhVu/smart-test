@@ -4,7 +4,7 @@ namespace EmrCloudApi.Responses.KarteInf;
 
 public class KarteFileDto
 {
-    public KarteFileDto(KarteImgInfOutputItem model)
+    public KarteFileDto(KarteFileOutputItem model)
     {
         Id = model.Id;
         FileName = model.FileName;

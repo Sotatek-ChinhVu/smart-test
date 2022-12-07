@@ -1,8 +1,8 @@
 ﻿namespace UseCase.KarteInf.GetList;
 
-public class KarteImgInfOutputItem
+public class KarteFileOutputItem
 {
-    public KarteImgInfOutputItem(long id, string fileName)
+    public KarteFileOutputItem(long id, string fileName)
     {
         Id = id;
         FileName = fileName;

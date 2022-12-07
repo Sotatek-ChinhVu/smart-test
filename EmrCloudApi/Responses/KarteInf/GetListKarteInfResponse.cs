@@ -8,7 +8,7 @@ namespace EmrCloudApi.Responses.KarteInf
 
         public List<KarteFileDto> ListKarteFile { get; private set; }
 
-        public GetListKarteInfResponse(List<GetListKarteInfOuputItem> karteInfs, List<KarteImgInfOutputItem> listKarteFile)
+        public GetListKarteInfResponse(List<GetListKarteInfOuputItem> karteInfs, List<KarteFileOutputItem> listKarteFile)
         {
             KarteInfs = karteInfs.Select(item => new KarteInfDto(item)).ToList();
             ListKarteFile = listKarteFile.Select(item => new KarteFileDto(item)).ToList();
