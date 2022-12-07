@@ -27,5 +27,7 @@
         public int SelectedKohiHokenEdraNo { get; set; }
 
         public bool SelectedKohiIsAddNew { get; set; }
+
+        public bool SelectedHokenPatternIsExpirated { get; private set; }
     }
 }

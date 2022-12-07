@@ -146,7 +146,7 @@ namespace Infrastructure.Repositories
                 entity.RaiinNo = updateItem.RaiinNo;
                 entity.Position = position;
                 entity.SeqNo = lastSeqNo + 1;
-                entity.FileName = updateItem?.FileName?.Length > 100 ? updateItem?.FileName.Substring(0, 100) : updateItem?.FileName;
+                entity.FileName = updateItem.FileName;
                 result.Add(entity);
                 position += 1;
             }
@@ -154,13 +154,14 @@ namespace Infrastructure.Repositories
             // insert new entity
             foreach (var model in listModel)
             {
+                var fileName = model.FileName.Length > 100 ? model.FileName.Substring(model.FileName.Length - 100, 100) : model.FileName;
                 KarteImgInf entity = new();
                 entity.HpId = model.HpId;
                 entity.PtId = model.PtId;
                 entity.RaiinNo = model.RaiinNo;
                 entity.Position = position;
                 entity.SeqNo = lastSeqNo + 1;
-                entity.FileName = model.FileName.Length > 100 ? model.FileName.Substring(0, 100) : model.FileName;
+                entity.FileName = fileName;
                 result.Add(entity);
                 position += 1;
             }
