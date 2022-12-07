@@ -14,7 +14,7 @@ public class DocInfDto
         SeqNo = model.SeqNo;
         CategoryCd = model.CategoryCd;
         CategoryName = model.CategoryName;
-        File = model.File;
+        FileName = model.FileName;
         DisplayFileName = model.DisplayFileName;
         UpdateDate = CIUtil.GetCIDateTimeStr(model.UpdateDate);
         FileLink = model.FileLink;
@@ -34,7 +34,7 @@ public class DocInfDto
 
     public string CategoryName { get; private set; }
 
-    public string File { get; private set; }
+    public string FileName { get; private set; }
 
     public string DisplayFileName { get; private set; }
 

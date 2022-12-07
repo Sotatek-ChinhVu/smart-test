@@ -35,5 +35,7 @@
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
+
+        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
     }
 }
