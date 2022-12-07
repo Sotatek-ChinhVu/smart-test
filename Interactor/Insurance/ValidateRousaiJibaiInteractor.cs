@@ -15,39 +15,39 @@ namespace Interactor.Insurance
 
         public ValidateRousaiJibaiOutputData Handle(ValidateRousaiJibaiInputData inputData)
         {
-            var validateDeatails = new List<ResultValidateInsurance<ValidateRousaiJibaiStatus>>();
+            var validateDetails = new List<ResultValidateInsurance<ValidateRousaiJibaiStatus>>();
             try
             {
-                CheckValidateInput(ref validateDeatails, inputData);
+                CheckValidateInput(ref validateDetails, inputData);
 
                 switch (inputData.HokenKbn)
                 {
                     // 労災(短期給付)	
                     case 11:
-                        IsValidRodo(ref validateDeatails, inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
+                        IsValidRodo(ref validateDetails, inputData.SelectedHokenInfRodoBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         break;
                     // 労災(傷病年金)
                     case 12:
-                        IsValidNenkin(ref validateDeatails, inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
+                        IsValidNenkin(ref validateDetails, inputData.SelectedHokenInfNenkinBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         break;
                     // アフターケア
                     case 13:
-                        IsValidKenko(ref validateDeatails, inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
+                        IsValidKenko(ref validateDetails, inputData.SelectedHokenInfKenkoKanriBango, inputData.HokenKbn, inputData.ListRousaiTenki, inputData.SelectedHokenInfRousaiSaigaiKbn, inputData.SelectedHokenInfRousaiSyobyoDate, inputData.SelectedHokenInfRousaiSyobyoCd, inputData.SelectedHokenInfRyoyoStartDate, inputData.SelectedHokenInfRyoyoEndDate, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SinDate, inputData.SelectedHokenInfIsAddNew, inputData.HpId);
                         break;
                     // 自賠責
                     case 14:
-                        IsValidJibai(ref validateDeatails, inputData.ListRousaiTenki, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfHokenMasterModelIsNull, inputData.SelectedHokenInfIsAddNew, inputData.SinDate);
+                        IsValidJibai(ref validateDetails, inputData.ListRousaiTenki, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfHokenMasterModelIsNull, inputData.SelectedHokenInfIsAddNew, inputData.SinDate);
                         break;
                 }
             }
             catch (Exception ex)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidFaild, ex.Message, TypeMessage.TypeMessageError));
             }
-            return new ValidateRousaiJibaiOutputData(validateDeatails);
+            return new ValidateRousaiJibaiOutputData(validateDetails);
         }
 
-        private void IsValidRodo(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
+        private void IsValidRodo(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, string rodoBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
             var rousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
@@ -57,19 +57,19 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "労働保険番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRodoBangoNull, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRodoBangoNull, message, TypeMessage.TypeMessageError));
                 }
                 if (rodoBango.Trim().Length != 14)
                 {
                     var paramsMessage = new string[] { "労働保険番号", " 14桁" };
                     message = String.Format(ErrorMessage.MessageType_mInp00040, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRodoBangoLengthNotEquals14, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRodoBangoLengthNotEquals14, message, TypeMessage.TypeMessageError));
                 }
             }
-            CommonCheckForRosai(ref validateDeatails, hokenKbn, listRousaiTenkis, rousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
+            CommonCheckForRosai(ref validateDetails, hokenKbn, listRousaiTenkis, rousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
         }
 
-        private void IsValidNenkin(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
+        private void IsValidNenkin(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, string nenkinBago, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
             var systemConfigRousaiKufu = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
@@ -79,19 +79,19 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "年金証書番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidNenkinBangoIsNull, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidNenkinBangoIsNull, message, TypeMessage.TypeMessageError));
                 }
                 if (nenkinBago.Trim().Length != 9)
                 {
                     var paramsMessage = new string[] { "年金証書番号", " 9桁" };
                     message = String.Format(ErrorMessage.MessageType_mInp00040, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidNenkinBangoLengthNotEquals9, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidNenkinBangoLengthNotEquals9, message, TypeMessage.TypeMessageError));
                 }
             }
             var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
-            CommonCheckForRosai(ref validateDeatails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
+            CommonCheckForRosai(ref validateDetails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
         }
-        private void IsValidKenko(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, string kenkoKanriBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
+        private void IsValidKenko(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, string kenkoKanriBango, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew, int hpId)
         {
             var message = "";
             var systemConfigRousaiKufuValidate = (int)_systemConfRepository.GetSettingValue(1006, 0, hpId);
@@ -101,21 +101,21 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "健康管理手帳番号" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoIsNull, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoIsNull, message, TypeMessage.TypeMessageError));
                 }
                 if (kenkoKanriBango.Trim().Length != 13)
                 {
                     var paramsMessage = new string[] { "健康管理手帳番号", " 13桁" };
                     message = String.Format(ErrorMessage.MessageType_mInp00040, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoLengthNotEquals13, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidKenkoKanriBangoLengthNotEquals13, message, TypeMessage.TypeMessageError));
                 }
             }
 
             var systemConfigRousaiReceder = (int)_systemConfRepository.GetSettingValue(100003, 0, hpId);
-            CommonCheckForRosai(ref validateDeatails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
+            CommonCheckForRosai(ref validateDetails, hokenKbn, listRousaiTenkis, systemConfigRousaiReceder, sHokenInfRousaiSaigaiKbn, sHokenInfRousaiSyobyoDate, sHokenInfRousaiSyobyoCd, sHokenInfRyoyoStartDate, sHokenInfRyoyoEndDate, sHokenInfStartDate, sHokenInfEndDate, sinDate, isAddNew);
         }
 
-        private void IsValidJibai(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, List<RousaiTenkiModel> listRousaiTenkis, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool SelectedHokenInfHokenMasterModelIsNull, bool selectedHokenInfIsAddNew, int sinDate)
+        private void IsValidJibai(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, List<RousaiTenkiModel> listRousaiTenkis, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool SelectedHokenInfHokenMasterModelIsNull, bool selectedHokenInfIsAddNew, int sinDate)
         {
             var message = "";
             if (listRousaiTenkis != null && listRousaiTenkis.Count > 0)
@@ -125,7 +125,7 @@ namespace Interactor.Insurance
                 {
                     var paramsMessage = new string[] { "転帰事由" };
                     message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
                 }
                 else
                 {
@@ -155,7 +155,7 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage = new string[] { errorMsg };
                         message = String.Format(ErrorMessage.MessageType_mFree00030, paramsMessage);
-                        validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
+                        validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
                     }
                 }
             }
@@ -166,14 +166,14 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "自賠有効終了日", "自賠有効開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, message, TypeMessage.TypeMessageError));
             }
 
             if (SelectedHokenInfHokenMasterModelIsNull)
             {
                 var paramsMessage = new string[] { "負担率" };
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageError));
             }
 
             if (selectedHokenInfIsAddNew)
@@ -185,65 +185,65 @@ namespace Interactor.Insurance
                     var paramsMessage = new string[] { "負担率" };
                     var paramsMessage2 = new string[] { "無視する", "戻る" };
                     message = String.Format(ErrorMessage.MessageType_mChk00020, paramsMessage, paramsMessage2);
-                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageWarning));
+                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfHokenMasterModelIsNull, message, TypeMessage.TypeMessageWarning));
                 }
             }
         }
 
-        private void CheckValidateInput(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, ValidateRousaiJibaiInputData inputData)
+        private void CheckValidateInput(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, ValidateRousaiJibaiInputData inputData)
         {
             if (inputData.HpId < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidHpId, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidHpId, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.HokenKbn < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidHokenKbn, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidHokenKbn, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SinDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSinDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSinDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfRousaiSaigaiKbn < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSaigaiKbn, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfRousaiSyobyoDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRousaiSyobyoDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfRyoyoStartDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoStartDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfRyoyoEndDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfRyoyoEndDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfStartDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfStartDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfEndDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfEndDate, string.Empty, TypeMessage.TypeMessageError));
             }
 
             if (inputData.SelectedHokenInfConfirmDate < 0)
             {
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, string.Empty, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidSelectedHokenInfConfirmDate, string.Empty, TypeMessage.TypeMessageError));
             }
         }
 
-        private void CommonCheckForRosai(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDeatails, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int rosaiReceden, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
+        private void CommonCheckForRosai(ref List<ResultValidateInsurance<ValidateRousaiJibaiStatus>> validateDetails, int hokenKbn, List<RousaiTenkiModel> listRousaiTenkis, int rosaiReceden, int sHokenInfRousaiSaigaiKbn, int sHokenInfRousaiSyobyoDate, string sHokenInfRousaiSyobyoCd, int sHokenInfRyoyoStartDate, int sHokenInfRyoyoEndDate, int sHokenInfStartDate, int sHokenInfEndDate, int sinDate, bool isAddNew)
         {
             var message = "";
             if (hokenKbn == 11 || hokenKbn == 12)
@@ -258,7 +258,7 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage = new string[] { "新継再別" };
                         message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                        validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckItemFirstListRousaiTenki, message, TypeMessage.TypeMessageError));
+                        validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckItemFirstListRousaiTenki, message, TypeMessage.TypeMessageError));
                     }
                     else
                     {
@@ -299,13 +299,13 @@ namespace Interactor.Insurance
                             switch (checkTypeRousaiTenki)
                             {
                                 case 1:
-                                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiSinkei, message, TypeMessage.TypeMessageError));
+                                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiSinkei, message, TypeMessage.TypeMessageError));
                                     break;
                                 case 2:
-                                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiTenki, message, TypeMessage.TypeMessageError));
+                                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiTenki, message, TypeMessage.TypeMessageError));
                                     break;
                                 case 3:
-                                    validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiEndDate, message, TypeMessage.TypeMessageError));
+                                    validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiTenkiEndDate, message, TypeMessage.TypeMessageError));
                                     break;
                             }
                         }
@@ -317,14 +317,14 @@ namespace Interactor.Insurance
                     {
                         var paramsMessage = new string[] { "災害区分" };
                         message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                        validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiSaigaiKbnNotEquals1And2, message, TypeMessage.TypeMessageError));
+                        validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiSaigaiKbnNotEquals1And2, message, TypeMessage.TypeMessageError));
                     }
 
                     if (sHokenInfRousaiSyobyoDate == 0)
                     {
                         var paramsMessage = new string[] { "傷病年月日" };
                         message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                        validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiSyobyoDateEquals0, message, TypeMessage.TypeMessageError));
+                        validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiSyobyoDateEquals0, message, TypeMessage.TypeMessageError));
                     }
                 }
             }
@@ -332,7 +332,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "傷病コード" };
                 message = String.Format(ErrorMessage.MessageType_mInp00010, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckHokenKbnEquals13AndRousaiSyobyoCdIsNull, message, TypeMessage.TypeMessageError));
             }
 
             // 労災・療養期間ﾁｪｯｸ
@@ -342,7 +342,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災療養終了日", "労災療養開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRousaiRyoyoDate, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidRousaiRyoyoDate, message, TypeMessage.TypeMessageError));
             }
 
             // 労災・有効期限ﾁｪｯｸ
@@ -352,14 +352,14 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災有効終了日", "労災有効開始日以降" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiRyoyoDate, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckRousaiRyoyoDate, message, TypeMessage.TypeMessageError));
             }
             // 労災・期限切れﾁｪｯｸ(有効保険の場合のみ)
             if (!DataChkFn10(sinDate, sHokenInfStartDate, sHokenInfEndDate, isAddNew))
             {
                 var paramsMessage = new string[] { "労災保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDeatails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidateRousaiJibaiStatus>(ValidateRousaiJibaiStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
             }
         }
 

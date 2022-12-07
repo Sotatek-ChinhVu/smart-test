@@ -263,6 +263,10 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using UseCase.Document.SaveDocInf;
+using DinkToPdf;
+using DinkToPdf.Contracts;
+using UseCase.Insurance.ValidHokenInfAllType;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -427,6 +431,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidMainInsuranceInputData, ValidInsuranceMainInteractor>();
             busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
+            busBuilder.RegisterUseCase<ValidHokenInfAllTypeInputData, ValidHokenInfAllTypeInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
