@@ -160,7 +160,7 @@ using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -545,7 +545,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Schema
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
-            busBuilder.RegisterUseCase<SaveListFileTodayOrderInputData, SaveListFileTodayOrderInteractor>();
+            busBuilder.RegisterUseCase<SaveListFileTodayOrderInputData, SaveListFileInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();

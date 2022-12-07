@@ -1,4 +1,4 @@
-﻿namespace UseCase.KarteInfs.GetLists
+﻿namespace UseCase.KarteInf.GetList
 {
     public enum GetListKarteInfStatus : byte
     {
