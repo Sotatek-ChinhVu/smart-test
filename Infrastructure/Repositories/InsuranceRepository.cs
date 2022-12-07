@@ -1295,7 +1295,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceFutanRound,
                                         hokenMst.ReceZeroKisai,
                                         hokenMst.ReceSpKbn,
-                                        prefactureName);
+                                        prefactureName,
+                                        hokenMst.PrefNo);
                 return itemHokenMst;
             }
             return new HokenMstModel();
