@@ -2,10 +2,10 @@
 
 public class SaveListFileTodayOrderResponse
 {
-    public SaveListFileTodayOrderResponse(long seqNo)
+    public SaveListFileTodayOrderResponse(List<string> listKarteFile)
     {
-        SeqNo = seqNo;
+        ListKarteFile = listKarteFile;
     }
 
-    public long SeqNo { get; private set; }
+    public List<string> ListKarteFile { get; private set; }
 }

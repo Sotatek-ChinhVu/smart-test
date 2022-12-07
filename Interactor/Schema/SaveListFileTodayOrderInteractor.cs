@@ -1,12 +1,7 @@
-﻿using Domain.Models.HpMst;
-using Domain.Models.KarteInfs;
-using Domain.Models.PatientInfor;
-using Domain.Models.Reception;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.SuperSetDetail;
 using Helper.Constants;
 using Infrastructure.Interfaces;
-using Infrastructure.Options;
-using Microsoft.Extensions.Options;
-using System.Text;
 using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace Interactor.Schema;
@@ -14,68 +9,50 @@ namespace Interactor.Schema;
 public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
 {
     private readonly IAmazonS3Service _amazonS3Service;
-    private readonly AmazonS3Options _options;
-    private readonly IKarteInfRepository _setKbnMstRepository;
     private readonly IPatientInforRepository _patientInforRepository;
-    private readonly IHpInfRepository _hpInfRepository;
-    private readonly IReceptionRepository _receptionRepository;
+    private readonly ISuperSetDetailRepository _superSetDetailRepository;
 
-    public SaveListFileTodayOrderInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IKarteInfRepository setKbnMstRepository, IPatientInforRepository patientInforRepository, IHpInfRepository hpInfRepository, IReceptionRepository receptionRepository)
+    public SaveListFileTodayOrderInteractor(IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository)
     {
         _amazonS3Service = amazonS3Service;
-        _options = optionsAccessor.Value;
-        _setKbnMstRepository = setKbnMstRepository;
         _patientInforRepository = patientInforRepository;
-        _hpInfRepository = hpInfRepository;
-        _receptionRepository = receptionRepository;
+        _superSetDetailRepository = superSetDetailRepository;
     }
 
     public SaveListFileTodayOrderOutputData Handle(SaveListFileTodayOrderInputData input)
     {
         try
         {
-            var lastSeqNo = _setKbnMstRepository.GetLastSeqNo(input.HpId, input.PtId, input.RaiinNo);
             var ptInf = _patientInforRepository.GetById(input.HpId, input.PtId, 0, 0);
-            var validateResponse = ValidateInput(lastSeqNo, input, ptInf);
+            var validateResponse = ValidateInput(input, ptInf);
             if (validateResponse.Item1 != SaveListFileTodayOrderStatus.ValidateSuccess)
             {
                 return new SaveListFileTodayOrderOutputData(validateResponse.Item1);
             }
-            List<KarteImgInfModel> listFileAddNews = new();
             var listFileItems = validateResponse.Item2;
+
+            List<string> result = new();
             if (listFileItems.Any())
             {
-                var listFolders = new List<string>() {
-                                                        CommonConstants.Store,
-                                                        CommonConstants.Karte,
-                                                     };
-
-                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
-
+                var pathResponse = GetPath(input.TypeUpload, ptInf != null ? ptInf.PtNum : 0, input.SetCd);
+                if (pathResponse.Item1 != SaveListFileTodayOrderStatus.ValidateSuccess)
+                {
+                    return new SaveListFileTodayOrderOutputData(pathResponse.Item1);
+                }
+                string path = pathResponse.Item2;
                 foreach (var item in listFileItems)
                 {
                     var responseUpload = _amazonS3Service.UploadObjectAsync(path, item.FileName, item.StreamImage);
                     var linkImage = responseUpload.Result;
                     if (linkImage.Length > 0)
                     {
-                        var host = new StringBuilder();
-                        host.Append(_options.BaseAccessUrl);
-                        host.Append("/");
-                        host.Append(path);
-                        linkImage = linkImage.Replace(host.ToString(), string.Empty);
-                        listFileAddNews.Add(new KarteImgInfModel(
-                                            input.HpId,
-                                            input.PtId,
-                                            input.RaiinNo,
-                                            linkImage
-                                      ));
+                        result.Add(linkImage);
                     }
                 }
             }
-            var resultData = _setKbnMstRepository.SaveListFileKarte(input.HpId, input.PtId, input.RaiinNo, lastSeqNo, listFileAddNews, input.ListFileIdDeletes);
-            if (resultData > 0)
+            if (result.Any())
             {
-                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, resultData);
+                return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Successed, result);
             }
             return new SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus.Failed);
         }
@@ -85,24 +62,49 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
         }
     }
 
-    private Tuple<SaveListFileTodayOrderStatus, List<FileItem>> ValidateInput(long lastSeqNo, SaveListFileTodayOrderInputData input, PatientInforModel? ptInf)
+    private Tuple<SaveListFileTodayOrderStatus, string> GetPath(int typeUpload, long ptNum, int setCd)
+    {
+        List<string> listFolders = new();
+        string path = string.Empty;
+        switch (typeUpload)
+        {
+            case TypeUploadConstant.UploadKarteFile:
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
+                break;
+            case TypeUploadConstant.UploadSupperSetDetailFile:
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                listFolders.Add(CommonConstants.SetPic);
+                listFolders.Add(setCd.ToString());
+                path = _amazonS3Service.GetFolderUploadOther(listFolders);
+                break;
+            case TypeUploadConstant.UploadNextOrderFile:
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                listFolders.Add(CommonConstants.NextPic);
+                path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptNum);
+                break;
+            default:
+                return Tuple.Create(SaveListFileTodayOrderStatus.InvalidTypeUpload, string.Empty);
+        }
+        return Tuple.Create(SaveListFileTodayOrderStatus.ValidateSuccess, path);
+    }
+
+    private Tuple<SaveListFileTodayOrderStatus, List<FileItem>> ValidateInput(SaveListFileTodayOrderInputData input, PatientInforModel? ptInf)
     {
         List<FileItem> listFileItems = new();
-        if (ptInf == null)
+        if (input.TypeUpload == TypeUploadConstant.UploadSupperSetDetailFile && !_superSetDetailRepository.CheckExistSupperSetDetail(input.HpId, input.SetCd))
         {
-            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidPtId, listFileItems);
+            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidSetCd, listFileItems);
         }
-        else if (!_hpInfRepository.CheckHpId(input.HpId))
+        else
         {
-            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidHpId, listFileItems);
-        }
-        else if (!_receptionRepository.CheckExistRaiinNo(input.HpId, input.PtId, input.RaiinNo))
-        {
-            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidRaiinNo, listFileItems);
-        }
-        else if (input.ListFileIdDeletes.Any() && !_setKbnMstRepository.CheckExistListFile(input.HpId, input.PtId, lastSeqNo, input.RaiinNo, input.ListFileIdDeletes))
-        {
-            return Tuple.Create(SaveListFileTodayOrderStatus.InvalidListFileIdDeletes, listFileItems);
+            if (ptInf == null)
+            {
+                return Tuple.Create(SaveListFileTodayOrderStatus.InvalidPtId, listFileItems);
+            }
         }
         if (input.ListImages.Any())
         {
@@ -125,7 +127,6 @@ public class SaveListFileTodayOrderInteractor : ISaveListFileTodayOrderInputPort
                 }
             }
         }
-
         return Tuple.Create(SaveListFileTodayOrderStatus.ValidateSuccess, listFileItems);
     }
 }

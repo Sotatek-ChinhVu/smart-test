@@ -38,7 +38,7 @@
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
-        public const string SaveListFile = "SaveListFile";
+        public const string UploadListFileKarte = "UploadListFileKarte";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
