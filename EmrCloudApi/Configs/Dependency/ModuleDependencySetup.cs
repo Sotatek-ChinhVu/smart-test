@@ -171,6 +171,7 @@ using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
+using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetSelectiveComment;
@@ -180,6 +181,7 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
 using UseCase.OrdInfs.CheckedSpecialItem;
@@ -225,6 +227,7 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveImageSuperSetDetail;
+using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -255,7 +258,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -528,6 +530,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
             busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
             busBuilder.RegisterUseCase<FindTenMstInputData, FindTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetAdoptedItemListInputData, GetAdoptedItemListInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
