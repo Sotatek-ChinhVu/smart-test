@@ -73,7 +73,7 @@ namespace Interactor.Insurance
                                 inputData.SelectedHokenInfTokureiYm2,
                                 inputData.SelectedHokenInfisShahoOrKokuho,
                                 inputData.SelectedHokenInfisExpirated,
-                                inputData.SelectedHokenInfconfirmDate,
+                                inputData.SelectedHokenInfConfirmDate,
                                 hokenMst.StartDate,
                                 hokenMst.EndDate,
                                 hokenMst.DisplayTextMaster,

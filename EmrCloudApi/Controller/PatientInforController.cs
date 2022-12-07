@@ -648,6 +648,7 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+        
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
         {
@@ -684,7 +685,6 @@ namespace EmrCloudApi.Controller
                                             request.SelectedHokenInfTokureiYm2,
                                             request.SelectedHokenInfisShahoOrKokuho,
                                             request.SelectedHokenInfisExpirated, 
-                                            request.SelectedHokenInfconfirmDate, 
                                             request.SelectedHokenInfHokenNo, 
                                             request.SelectedHokenInfHokenEdraNo,
                                             request.IsSelectedHokenMst, 
