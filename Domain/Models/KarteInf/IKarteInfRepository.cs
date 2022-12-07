@@ -8,7 +8,7 @@
 
         int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText);
 
-        List<long> SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes);
+        long SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes);
 
         bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes);
 

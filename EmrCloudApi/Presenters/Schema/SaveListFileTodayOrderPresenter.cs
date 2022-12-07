@@ -11,7 +11,7 @@ public class SaveListFileTodayOrderPresenter : ISaveListFileTodayOrderOutputPort
 
     public void Complete(SaveListFileTodayOrderOutputData outputData)
     {
-        Result.Data = new SaveListFileTodayOrderResponse(outputData.ListFileIds);
+        Result.Data = new SaveListFileTodayOrderResponse(outputData.SeqNo);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

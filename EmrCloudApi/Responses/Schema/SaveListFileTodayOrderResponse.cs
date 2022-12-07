@@ -2,10 +2,10 @@
 
 public class SaveListFileTodayOrderResponse
 {
-    public SaveListFileTodayOrderResponse(List<long> listFileIds)
+    public SaveListFileTodayOrderResponse(long seqNo)
     {
-        ListFileIds = listFileIds;
+        SeqNo = seqNo;
     }
 
-    public List<long> ListFileIds { get; private set; }
+    public long SeqNo { get; private set; }
 }

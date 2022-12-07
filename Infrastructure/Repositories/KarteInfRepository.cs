@@ -78,7 +78,7 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public List<long> SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes)
+        public long SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes)
         {
             try
             {
@@ -95,11 +95,15 @@ namespace Infrastructure.Repositories
                     _tenantTrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
                 }
                 _tenantTrackingDataContext.SaveChanges();
-                return listFileInsert.Select(item => item.Id).ToList();
+                if (listFileInsert.Any())
+                {
+                    return listFileInsert.First().SeqNo;
+                }
+                return 0;
             }
             catch (Exception)
             {
-                return new();
+                return 0;
             }
         }
 

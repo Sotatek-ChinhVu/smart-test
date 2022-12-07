@@ -4,19 +4,19 @@ namespace UseCase.Schema.SaveListImageTodayOrder;
 
 public class SaveListFileTodayOrderOutputData : IOutputData
 {
-    public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status, List<long> listFileIds)
-    {
-        Status = status;
-        ListFileIds = listFileIds;
-    }
-
     public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status)
     {
         Status = status;
-        ListFileIds = new();
+        SeqNo = 0;
+    }
+
+    public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status, long seqNo)
+    {
+        Status = status;
+        SeqNo = seqNo;
     }
 
     public SaveListFileTodayOrderStatus Status { get; private set; }
 
-    public List<long> ListFileIds { get; private set; }
+    public long SeqNo { get; private set; }
 }
