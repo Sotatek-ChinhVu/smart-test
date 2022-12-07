@@ -79,6 +79,9 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        //validate ValidHokenInf AllType
+        public const string ValidHokenInfAllType = "ValidHokenInfAllType";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
