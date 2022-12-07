@@ -29,6 +29,9 @@ namespace EmrCloudApi.Responses.Insurance
             IsDeleted = kohiInfModel.IsDeleted;
             IsAddNew = kohiInfModel.IsAddNew;
             SeqNo = kohiInfModel.SeqNo;
+            IsLimitList = kohiInfModel.HokenMstModel.IsLimitList;
+            CalcSpKbn = kohiInfModel.HokenMstModel.CalcSpKbn;
+            PrefNoMst = kohiInfModel.HokenMstModel.PrefactureName;
         }
 
         public List<ConfirmDateDto> ConfirmDateList { get; private set; }
@@ -86,5 +89,12 @@ namespace EmrCloudApi.Responses.Insurance
                 return !(StartDate <= SinDate && EndDate >= SinDate);
             }
         }
+
+        public int IsLimitList { get; private set; }
+
+        public int CalcSpKbn { get; private set; }
+
+        public string PrefNoMst { get; private set; }
+
     }
 }

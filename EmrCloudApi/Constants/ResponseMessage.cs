@@ -330,7 +330,7 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
-        public static readonly string InvalidSetCd = "Invalid SetCd, SetCd >= 0";
+        public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
         public static readonly string InvalidGenarationId = "Invalid GenarationId, GenarationId >= 0";
@@ -387,7 +387,7 @@
         public static readonly string InvalidOldImage = "Invalid old image.";
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
-        public static readonly string InvalidListFileDeletes = "Invalid list file id deletes.";
+        public static readonly string InvalidTypeUpload = "Invalid type upload.";
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";

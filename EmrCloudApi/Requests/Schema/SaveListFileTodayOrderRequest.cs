@@ -4,5 +4,7 @@ public class SaveListFileTodayOrderRequest
 {
     public long PtId { get; set; }
 
-    public long RaiinNo { get; set; }
+    public int SetCd { get; set; }
+
+    public int TypeUpload { get; set; }
 }

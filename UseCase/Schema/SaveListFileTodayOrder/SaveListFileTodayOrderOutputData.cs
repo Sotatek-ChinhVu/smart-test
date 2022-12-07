@@ -7,16 +7,16 @@ public class SaveListFileTodayOrderOutputData : IOutputData
     public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status)
     {
         Status = status;
-        SeqNo = 0;
+        ListKarteFile = new();
     }
 
-    public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status, long seqNo)
+    public SaveListFileTodayOrderOutputData(SaveListFileTodayOrderStatus status, List<string> listKarteFile)
     {
         Status = status;
-        SeqNo = seqNo;
+        ListKarteFile = listKarteFile;
     }
 
     public SaveListFileTodayOrderStatus Status { get; private set; }
 
-    public long SeqNo { get; private set; }
+    public List<string> ListKarteFile { get; private set; }
 }

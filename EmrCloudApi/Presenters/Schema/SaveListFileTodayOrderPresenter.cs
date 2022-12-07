@@ -11,7 +11,7 @@ public class SaveListFileTodayOrderPresenter : ISaveListFileTodayOrderOutputPort
 
     public void Complete(SaveListFileTodayOrderOutputData outputData)
     {
-        Result.Data = new SaveListFileTodayOrderResponse(outputData.SeqNo);
+        Result.Data = new SaveListFileTodayOrderResponse(outputData.ListKarteFile);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }
@@ -20,11 +20,10 @@ public class SaveListFileTodayOrderPresenter : ISaveListFileTodayOrderOutputPort
     {
         SaveListFileTodayOrderStatus.Successed => ResponseMessage.Success,
         SaveListFileTodayOrderStatus.Failed => ResponseMessage.Failed,
-        SaveListFileTodayOrderStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         SaveListFileTodayOrderStatus.InvalidPtId => ResponseMessage.InvalidPtId,
-        SaveListFileTodayOrderStatus.InvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
         SaveListFileTodayOrderStatus.InvalidFileImage => ResponseMessage.InvalidFileImage,
-        SaveListFileTodayOrderStatus.InvalidListFileIdDeletes => ResponseMessage.InvalidListFileDeletes,
+        SaveListFileTodayOrderStatus.InvalidSetCd => ResponseMessage.InvalidSetCd,
+        SaveListFileTodayOrderStatus.InvalidTypeUpload => ResponseMessage.InvalidTypeUpload,
         _ => string.Empty
     };
 }

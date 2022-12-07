@@ -1156,4 +1156,9 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
         return termVal;
     }
+
+    public bool CheckExistSupperSetDetail(int hpId, int setCd)
+    {
+        return _tenantNoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd && item.IsDeleted == 0);
+    }
 }
