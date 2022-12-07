@@ -13,5 +13,7 @@
         bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes);
 
         long GetLastSeqNo(int hpId, long ptId, long rainNo);
+
+        List<KarteImgInfModel> GetListKarteFile(int hpId, long ptId, long rainNo);
     }
 }

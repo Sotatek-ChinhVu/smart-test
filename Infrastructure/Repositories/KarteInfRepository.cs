@@ -166,5 +166,23 @@ namespace Infrastructure.Repositories
             }
             return result;
         }
+
+        public List<KarteImgInfModel> GetListKarteFile(int hpId, long ptId, long rainNo)
+        {
+            var lastSeqNo = GetLastSeqNo(hpId, ptId, rainNo);
+            var result = _tenantNoTrackingDataContext.KarteImgInfs.Where(item =>
+                                                                                item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.RaiinNo == rainNo
+                                                                                && item.SeqNo == lastSeqNo
+                                                                                )
+                                                                    .Select(item => new KarteImgInfModel(
+                                                                            item.HpId,
+                                                                            item.PtId,
+                                                                            item.RaiinNo,
+                                                                            item.FileName ?? string.Empty
+                                                                    )).ToList();
+            return result;
+        }
     }
 }
