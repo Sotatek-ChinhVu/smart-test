@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -41,14 +41,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
         /// <summary>
         /// 剤番号
         /// </summary>
-        [Key]
+        
         [Column("RP_NO", Order = 3)]
         [CustomAttribute.DefaultValue(1)]
         public long RpNo { get; set; }
@@ -57,7 +57,7 @@ namespace Entity.Tenant
         /// 剤枝番
         ///     剤に変更があった場合、カウントアップ
         /// </summary>
-        [Key]
+        
         [Column("RP_EDA_NO", Order = 4)]
         [CustomAttribute.DefaultValue(1)]
         public long RpEdaNo { get; set; }
@@ -65,7 +65,7 @@ namespace Entity.Tenant
         /// <summary>
         /// ID
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 5)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

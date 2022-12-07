@@ -126,5 +126,11 @@ namespace Domain.Models.Insurance
         }
 
         public bool IsAddNew { get; private set; }
+
+        public int IsLimitList { get => HokenMstModel.IsLimitList; }
+
+        public int CalcSpKbn { get => HokenMstModel.CalcSpKbn; }
+
+        public string PrefNoMst { get => HokenMstModel.PrefactureName; }
     }
 }

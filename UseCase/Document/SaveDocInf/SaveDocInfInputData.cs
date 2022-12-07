@@ -18,9 +18,9 @@ public class SaveDocInfInputData : IInputData<SaveDocInfOutputData>
         StreamImage = streamImage;
     }
 
-    public SaveDocInfInputData SetFileName(string file)
+    public SaveDocInfInputData SetFileName(string fileName)
     {
-        FileName = file;
+        FileName = fileName;
         return this;
     }
 

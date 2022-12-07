@@ -10,14 +10,14 @@ namespace Entity.Tenant
         /// <summary>
         /// ＤＯＥＩコード
         /// </summary>
-        [Key]
+        
         [Column("DOEI_CD", Order = 1)]
         public string DoeiCd { get; set; } = string.Empty;
 
         /// <summary>
         /// ＤＯＥＩコード連番
         /// </summary>
-        //[Key]
+        
         [Column("DOEI_SEQ_NO", Order = 2)]
         public int DoeiSeqNo { get; set; }
 
@@ -26,7 +26,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KONOKOKA_CD")]
         [MaxLength(7)]
-        public string KonokokaCd { get; set; } = string.Empty;
+        public string? KonokokaCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 検査条件組合せコード
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KENSA_PCD")]
         [MaxLength(7)]
-        public string KensaPcd { get; set; } = string.Empty;
+        public string? KensaPcd { get; set; } = string.Empty;
 
         /// <summary>
         /// 年齢条件_以上
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("AGE_CD")]
         [MaxLength(1)]
-        public string AgeCd { get; set; } = string.Empty;
+        public string? AgeCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 体重条件_以上
@@ -92,7 +92,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DRUG_ROUTE")]
         [MaxLength(40)]
-        public string DrugRoute { get; set; } = string.Empty;
+        public string? DrugRoute { get; set; } = string.Empty;
 
         /// <summary>
         /// 頓用フラグ
@@ -100,60 +100,60 @@ namespace Entity.Tenant
         /// </summary>
         [Column("USE_FLG")]
         [MaxLength(1)]
-        public string UseFlg { get; set; } = string.Empty;
+        public string? UseFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与要件
         /// </summary>
         [Column("DRUG_CONDITION")]
         [MaxLength(400)]
-        public string DrugCondition { get; set; } = string.Empty;
+        public string? DrugCondition { get; set; } = string.Empty;
 
         /// <summary>
         /// 効能効果
         /// </summary>
         [Column("KONOKOKA")]
-        public string Konokoka { get; set; } = string.Empty;
+        public string? Konokoka { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法用量
         /// </summary>
         [Column("USAGE_DOSAGE")]
-        public string UsageDosage { get; set; } = string.Empty;
+        public string? UsageDosage { get; set; } = string.Empty;
 
         /// <summary>
         /// 表ファイル名コード
         /// </summary>
         [Column("FILENAME_CD")]
         [MaxLength(7)]
-        public string FilenameCd { get; set; } = string.Empty;
+        public string? FilenameCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与手技
         /// </summary>
         [Column("DRUG_SYUGI")]
-        public string DrugSyugi { get; set; } = string.Empty;
+        public string? DrugSyugi { get; set; } = string.Empty;
 
         /// <summary>
         /// 適応対象部位
         /// </summary>
         [Column("TEKIO_BUI")]
         [MaxLength(300)]
-        public string TekioBui { get; set; } = string.Empty;
+        public string? TekioBui { get; set; } = string.Empty;
 
         /// <summary>
         /// 溶解希釈関連
         /// </summary>
         [Column("YOUKAI_KISYAKU")]
         [MaxLength(1500)]
-        public string YoukaiKisyaku { get; set; } = string.Empty;
+        public string? YoukaiKisyaku { get; set; } = string.Empty;
 
         /// <summary>
         /// 推奨希釈液
         /// </summary>
         [Column("KISYAKUEKI")]
         [MaxLength(500)]
-        public string Kisyakueki { get; set; } = string.Empty;
+        public string? Kisyakueki { get; set; } = string.Empty;
 
         /// <summary>
         /// 推奨溶解液
@@ -161,7 +161,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOUKAIEKI")]
         [MaxLength(500)]
-        public string Youkaieki { get; set; } = string.Empty;
+        public string? Youkaieki { get; set; } = string.Empty;
 
         /// <summary>
         /// 排他フラグ
@@ -170,7 +170,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HAITA_FLG")]
         [MaxLength(1)]
-        public string HaitaFlg { get; set; } = string.Empty;
+        public string? HaitaFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 不適切希釈液
@@ -178,7 +178,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NG_KISYAKUEKI")]
         [MaxLength(500)]
-        public string NgKisyakueki { get; set; } = string.Empty;
+        public string? NgKisyakueki { get; set; } = string.Empty;
 
         /// <summary>
         /// 不適切溶解液
@@ -186,7 +186,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("NG_YOUKAIEKI")]
         [MaxLength(500)]
-        public string NgYoukaieki { get; set; } = string.Empty;
+        public string? NgYoukaieki { get; set; } = string.Empty;
 
         /// <summary>
         /// 併用医薬品
@@ -194,7 +194,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("COMBI_DRUG")]
         [MaxLength(200)]
-        public string CombiDrug { get; set; } = string.Empty;
+        public string? CombiDrug { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与連結コード
@@ -216,7 +216,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SINGLE_DRUG_FLG")]
         [MaxLength(1)]
-        public string SingleDrugFlg { get; set; } = string.Empty;
+        public string? SingleDrugFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 休減薬コード
@@ -226,7 +226,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KYUGEN_CD")]
         [MaxLength(1)]
-        public string KyugenCd { get; set; } = string.Empty;
+        public string? KyugenCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与量チェックフラグ
@@ -234,7 +234,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DOSAGE_CHECK_FLG")]
         [MaxLength(1)]
-        public string DosageCheckFlg { get; set; } = string.Empty;
+        public string? DosageCheckFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 一回量最小値
@@ -256,7 +256,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ONCE_UNIT")]
         [MaxLength(30)]
-        public string OnceUnit { get; set; } = string.Empty;
+        public string? OnceUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 一回量上限値
@@ -271,7 +271,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ONCE_LIMIT_UNIT")]
         [MaxLength(30)]
-        public string OnceLimitUnit { get; set; } = string.Empty;
+        public string? OnceLimitUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 一日投与量最小回数
@@ -307,7 +307,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DAY_UNIT")]
         [MaxLength(30)]
-        public string DayUnit { get; set; } = string.Empty;
+        public string? DayUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 一日量上限値
@@ -322,7 +322,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DAY_LIMIT_UNIT")]
         [MaxLength(30)]
-        public string DayLimitUnit { get; set; } = string.Empty;
+        public string? DayLimitUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 起床時
@@ -403,7 +403,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DOSAGE_LIMIT_UNIT")]
         [MaxLength(1)]
-        public string DosageLimitUnit { get; set; } = string.Empty;
+        public string? DosageLimitUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 単位期間投与量上限値
@@ -417,7 +417,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UNITTERM_UNIT")]
         [MaxLength(30)]
-        public string UnittermUnit { get; set; } = string.Empty;
+        public string? UnittermUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 用量追加フラグ
@@ -425,7 +425,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DOSAGE_ADD_FLG")]
         [MaxLength(1)]
-        public string DosageAddFlg { get; set; } = string.Empty;
+        public string? DosageAddFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 適宜増減フラグ
@@ -433,7 +433,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INC_DEC_FLG")]
         [MaxLength(1)]
-        public string IncDecFlg { get; set; } = string.Empty;
+        public string? IncDecFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 適宜減量フラグ
@@ -441,7 +441,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("DEC_FLG")]
         [MaxLength(1)]
-        public string DecFlg { get; set; } = string.Empty;
+        public string? DecFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与量増減間隔
@@ -456,7 +456,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INC_DEC_INTERVAL_UNIT")]
         [MaxLength(1)]
-        public string IncDecIntervalUnit { get; set; } = string.Empty;
+        public string? IncDecIntervalUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 減量限界値
@@ -478,7 +478,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INC_DEC_LIMIT_UNIT")]
         [MaxLength(30)]
-        public string IncDecLimitUnit { get; set; } = string.Empty;
+        public string? IncDecLimitUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 時間関連
@@ -486,7 +486,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("TIME_DEPEND")]
         [MaxLength(1000)]
-        public string TimeDepend { get; set; } = string.Empty;
+        public string? TimeDepend { get; set; } = string.Empty;
 
         /// <summary>
         /// 標準判定投与期間
@@ -501,7 +501,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("JUDGE_TERM_UNIT")]
         [MaxLength(1)]
-        public string JudgeTermUnit { get; set; } = string.Empty;
+        public string? JudgeTermUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 延長容認フラグ
@@ -509,7 +509,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("EXTEND_FLG")]
         [MaxLength(1)]
-        public string ExtendFlg { get; set; } = string.Empty;
+        public string? ExtendFlg { get; set; } = string.Empty;
 
         /// <summary>
         /// 追加期間
@@ -524,7 +524,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ADD_TERM_UNIT")]
         [MaxLength(1)]
-        public string AddTermUnit { get; set; } = string.Empty;
+        public string? AddTermUnit { get; set; } = string.Empty;
 
         /// <summary>
         /// 投与間隔警告フラグ
@@ -532,6 +532,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("INTERVAL_WARNING_FLG")]
         [MaxLength(1)]
-        public string IntervalWarningFlg { get; set; } = string.Empty;
+        public string? IntervalWarningFlg { get; set; } = string.Empty;
     }
 }

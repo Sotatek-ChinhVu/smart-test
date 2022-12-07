@@ -19,5 +19,9 @@ namespace Domain.Models.Insurance
         int GetDefaultSelectPattern(int hpId, long ptId, int sinDate, int historyPid, int selectedHokenPid);
 
         List<InsuranceModel> GetInsuranceList(int hpId, long ptId, int sinDate);
+
+        bool SaveInsuraneScan(InsuranceScanModel insuranceScan,int userId);
+
+        bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId);
     }
 }

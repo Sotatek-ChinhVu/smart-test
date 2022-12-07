@@ -10,14 +10,14 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PT_ID", Order = 1)]
         public long PtId { get; set; }
 
         /// <summary>
         /// 1:薬剤情報 2:特定健診情報 3:診療情報
         /// </summary>
-        [Key]
+        
         [Column("CONS_KBN", Order = 2)]
         [CustomAttribute.DefaultValue(0)]
         public int ConsKbn { get; set; }

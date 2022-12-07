@@ -13,7 +13,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 労働局コード	
         /// </summary>
-        [Key]
+        
         [Column(name: "ROUDOU_CD", Order = 1)]
 		[MaxLength(2)]
         public string RoudouCd { get; set; } = string.Empty;
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 監督署コード
         /// </summary>
-        [Key]
+        
         [Column(name: "KANTOKU_CD", Order = 2)]
 		[MaxLength(2)]
         public string KantokuCd { get; set; } = string.Empty;
@@ -32,7 +32,7 @@ namespace Entity.Tenant
         [Column(name: "KANTOKU_NAME")]
         [MaxLength(60)]
         [Required]
-        public string KantokuName { get; set; } = string.Empty;
+        public string? KantokuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 登録日時		

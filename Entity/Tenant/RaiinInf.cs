@@ -1,14 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
 {
-	/// <summary>
-	/// 来院情報
-	/// </summary>
-	[Table("RAIIN_INF")]
+    /// <summary>
+    /// 来院情報
+    /// </summary>
+    [Table("RAIIN_INF")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(IsDeleted), Name = "RAIIN_INF_IDX01")]
     [Index(nameof(HpId), nameof(PtId), nameof(SinDate), nameof(Status), nameof(SyosaisinKbn), nameof(IsDeleted), Name = "RAIIN_INF_IDX02")]
     public class RaiinInf : EmrCloneable<RaiinInf>
@@ -16,7 +15,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        //[Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -27,20 +26,20 @@ namespace Entity.Tenant
         [Column("PT_ID")]
         public long PtId { get; set; }
 
-		/// <summary>
-		/// 診療日
-		///		yyyymmdd	
-		/// </summary>
-		[Column("SIN_DATE")]
+        /// <summary>
+        /// 診療日
+        ///		yyyymmdd	
+        /// </summary>
+        [Column("SIN_DATE")]
         public int SinDate { get; set; }
 
         /// <summary>
         /// 来院番号
         /// </summary>
-        [Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-		public long RaiinNo { get; set; }
+        public long RaiinNo { get; set; }
 
         /// <summary>
         /// 親来院番号
@@ -61,30 +60,30 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int Status { get; set; }
 
-		/// <summary>
-		/// 予約フラグ
-		///		1:予約の来院		
-		/// </summary>
-		[Column("IS_YOYAKU")]
+        /// <summary>
+        /// 予約フラグ
+        ///		1:予約の来院		
+        /// </summary>
+        [Column("IS_YOYAKU")]
         [CustomAttribute.DefaultValue(0)]
         public int IsYoyaku { get; set; }
 
-		/// <summary>
-		/// 予約時間
-		///		HH24MISS
-		/// </summary>
-		[Column("YOYAKU_TIME")]
-		[MaxLength(6)]
-		[CustomAttribute.DefaultValue("0")]
-		public string? YoyakuTime { get; set; } = string.Empty;
+        /// <summary>
+        /// 予約時間
+        ///		HH24MISS
+        /// </summary>
+        [Column("YOYAKU_TIME")]
+        [MaxLength(6)]
+        [CustomAttribute.DefaultValue("0")]
+        public string? YoyakuTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 予約者ID
         /// </summary>
         [Column("YOYAKU_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int YoyakuId { get; set; }
-       
+        [CustomAttribute.DefaultValue(0)]
+        public int YoyakuId { get; set; }
+
         /// <summary>
         /// 受付種別
         /// </summary>
@@ -187,11 +186,11 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int SyosaisinKbn { get; set; }
 
-		/// <summary>
-		/// 時間枠区分
-		///		受付時設定、ODR_INF更新後はトリガーで設定							
-		/// </summary>
-		[Column("JIKAN_KBN")]
+        /// <summary>
+        /// 時間枠区分
+        ///		受付時設定、ODR_INF更新後はトリガーで設定							
+        /// </summary>
+        [Column("JIKAN_KBN")]
         [CustomAttribute.DefaultValue(0)]
         public int JikanKbn { get; set; }
 
@@ -217,45 +216,45 @@ namespace Entity.Tenant
         [CustomAttribute.DefaultValue(0)]
         public int IsDeleted { get; set; }
 
-		/// <summary>
-		/// 作成日時	
-		/// </summary>
-		[Column("CREATE_DATE")]
-		[CustomAttribute.DefaultValueSql("current_timestamp")]
-		public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// 作成日時	
+        /// </summary>
+        [Column("CREATE_DATE")]
+        [CustomAttribute.DefaultValueSql("current_timestamp")]
+        public DateTime CreateDate { get; set; }
 
-		/// <summary>
-		/// 作成者		
-		/// </summary>
-		[Column(name: "CREATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int CreateId { get; set; }
+        /// <summary>
+        /// 作成者		
+        /// </summary>
+        [Column(name: "CREATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int CreateId { get; set; }
 
-		/// <summary>
-		/// 作成端末			
-		/// </summary>
-		[Column(name: "CREATE_MACHINE")]
-		[MaxLength(60)]
-		public string? CreateMachine { get; set; } = string.Empty;
+        /// <summary>
+        /// 作成端末			
+        /// </summary>
+        [Column(name: "CREATE_MACHINE")]
+        [MaxLength(60)]
+        public string? CreateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 更新日時			
         /// </summary>
         [Column("UPDATE_DATE")]
-		public DateTime UpdateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
 
-		/// <summary>
-		/// 更新者			
-		/// </summary>
-		[Column(name: "UPDATE_ID")]
-		[CustomAttribute.DefaultValue(0)]
-		public int UpdateId { get; set; }
+        /// <summary>
+        /// 更新者			
+        /// </summary>
+        [Column(name: "UPDATE_ID")]
+        [CustomAttribute.DefaultValue(0)]
+        public int UpdateId { get; set; }
 
-		/// <summary>
-		/// 更新端末			
-		/// </summary>
-		[Column(name: "UPDATE_MACHINE")]
-		[MaxLength(60)]
-		public string? UpdateMachine { get; set; }  = string.Empty;
+        /// <summary>
+        /// 更新端末			
+        /// </summary>
+        [Column(name: "UPDATE_MACHINE")]
+        [MaxLength(60)]
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

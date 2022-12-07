@@ -1,23 +1,17 @@
-﻿using UseCase.Core.Sync.Core;
+﻿using Domain.Models.Insurance;
+using UseCase.Core.Sync.Core;
 
 namespace UseCase.Insurance.ValidMainInsurance
 {
     public class ValidMainInsuranceOutputData : IOutputData
     {
-        public bool Result { get; private set; }
+        public bool Result { get => !ValidateDetails.Any(); }
 
-        public string Message { get; private set; }
+        public List<ResultValidateInsurance<ValidMainInsuranceStatus>> ValidateDetails { get; private set; } = new List<ResultValidateInsurance<ValidMainInsuranceStatus>>();
 
-        public int TypeMessage { get; private set; }
-
-        public ValidMainInsuranceStatus Status { get; private set; }
-
-        public ValidMainInsuranceOutputData(bool result, string message, int typeMessage, ValidMainInsuranceStatus status)
+        public ValidMainInsuranceOutputData(List<ResultValidateInsurance<ValidMainInsuranceStatus>> details)
         {
-            Result = result;
-            Message = message;
-            TypeMessage = typeMessage;
-            Status = status;
+            ValidateDetails = details;
         }
     }
 }

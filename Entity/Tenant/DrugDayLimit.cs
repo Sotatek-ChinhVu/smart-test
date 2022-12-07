@@ -7,7 +7,7 @@ namespace Entity.Tenant
     [Table(name: "DRUG_DAY_LIMIT")]
     public class DrugDayLimit : EmrCloneable<DrugDayLimit>
     {
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -16,7 +16,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -25,7 +25,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -34,7 +34,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 
@@ -114,7 +114,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

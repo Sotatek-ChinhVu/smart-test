@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +14,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -32,35 +31,35 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "POST_CD")]
         [MaxLength(7)]
-        public string PostCd { get; set; } = string.Empty;
+        public string? PostCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 都道府県名カナ
         /// </summary>
         [Column(name: "PREF_KANA")]
         [MaxLength(60)]
-        public string PrefKana { get; set; } = string.Empty;
+        public string? PrefKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 市区町村名カナ
         /// </summary>
         [Column(name: "CITY_KANA")]
         [MaxLength(60)]
-        public string CityKana { get; set; } = string.Empty;
+        public string? CityKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 町域名カナ
         /// </summary>
         [Column(name: "POSTAL_TERM_KANA")]
         [MaxLength(150)]
-        public string PostalTermKana { get; set; } = string.Empty;
+        public string? PostalTermKana { get; set; } = string.Empty;
 
         /// <summary>
         /// 都道府県名
         /// </summary>
         [Column(name: "PREF_NAME")]
         [MaxLength(40)]
-        public string PrefName { get; set; } = string.Empty;
+        public string? PrefName { get; set; } = string.Empty;
 
 
         /// <summary>
@@ -68,14 +67,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "CITY_NAME")]
         [MaxLength(40)]
-        public string CityName { get; set; } = string.Empty;
+        public string? CityName { get; set; } = string.Empty;
 
         /// <summary>
         /// 町域名
         /// </summary>
         [Column(name: "BANTI")]
         [MaxLength(100)]
-        public string Banti { get; set; } = string.Empty;
+        public string? Banti { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -124,6 +123,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

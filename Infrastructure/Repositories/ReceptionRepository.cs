@@ -328,7 +328,6 @@ namespace Infrastructure.Repositories
                 var oldHokenCheckDB = _tenantTrackingDataContext.PtHokenChecks
                                             .Where(item =>
                                                             hokenIds.Contains(item.HokenId)
-                                                            && item.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern
                                                             && item.HpId == hpId
                                                             && item.PtID == ptId
                                                             && item.IsDeleted == 0
@@ -336,9 +335,11 @@ namespace Infrastructure.Repositories
 
                 foreach (var insuranceItem in insurances)
                 {
-                    var listCheckTime = oldHokenCheckDB.Where(item => item.HokenId == insuranceItem.HokenId)
+                    var hokenGrp = insuranceItem.IsHokenGroupKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern;
+                    var listCheckTime = oldHokenCheckDB.Where(item => 
+                                                                    item.HokenId == insuranceItem.HokenId
+                                                                    && item.HokenGrp == hokenGrp)
                                                         .OrderByDescending(item => item.CheckDate)
-                                                        .Select(item => item.CheckDate.ToString("yyyyMMdd"))
                                                         .ToList();
 
                     var listHokenCheckInsertInput = insuranceItem.ConfirmDateList.Where(item => item.SeqNo == 0).ToList();
@@ -350,24 +351,47 @@ namespace Infrastructure.Repositories
                                              listHokenCheckUpdateInput.Select(item => item.SeqNo).Contains(item.SeqNo)
                                              && item.HpId == hpId
                                              && item.PtID == ptId
+                                             && item.HokenId == insuranceItem.HokenId
+                                             && item.HokenGrp == hokenGrp
                                              && item.IsDeleted == 0)
                                  .ToList();
 
+                    // Update PtHokenCheck
                     foreach (var update in listHokenCheckUpdateInput)
                     {
-                        var checkDatetime = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
+                        var checkDatetimeInput = DateTime.ParseExact(update.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
                         var hokenCheckItem = listUpdateItemDB.FirstOrDefault(item => item.SeqNo == update.SeqNo);
                         if (hokenCheckItem != null)
                         {
                             hokenCheckItem.UpdateDate = DateTime.UtcNow;
                             hokenCheckItem.UpdateId = userId;
-                            if (!listCheckTime.Contains(update.SinDate.ToString()))
+
+                            /// <summary>
+                            /// Update check date:
+                            /// If checkDate of item in database is not equal checkDate input,
+                            /// and checkDate input not equal other checkDate in database
+                            /// then update checkDate
+                            /// </summary>
+                            if (!hokenCheckItem.CheckDate.ToString("yyyyMMdd").Equals(update.SinDate.ToString())
+                                && !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(update.SinDate.ToString()))
                             {
-                                hokenCheckItem.CheckDate = checkDatetime;
+                                hokenCheckItem.CheckDate = checkDatetimeInput;
+                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
+                                if (removeItem != null)
+                                {
+                                    listCheckTime.Remove(removeItem);
+                                }
                             }
+
+                            // update isDelete
                             if (update.IsDelete)
                             {
                                 hokenCheckItem.IsDeleted = 1;
+                                var removeItem = listCheckTime.FirstOrDefault(item => item.SeqNo == update.SeqNo);
+                                if (removeItem != null)
+                                {
+                                    listCheckTime.Remove(removeItem);
+                                }
                             }
                             else
                             {
@@ -381,14 +405,13 @@ namespace Infrastructure.Repositories
                     foreach (var item in listHokenCheckInsertInput)
                     {
                         var checkDatetime = DateTime.ParseExact(item.SinDate.ToString(), "yyyyMMdd", CultureInfo.InvariantCulture).ToUniversalTime();
-                        var listSinDateUpdate = listHokenCheckUpdateInput.Select(item => item.SinDate.ToString()).ToList();
-                        if (listCheckTime == null || !listCheckTime.Contains(item.SinDate.ToString()) || listSinDateUpdate.Contains(item.SinDate.ToString()))
+                        if (listCheckTime == null || !listCheckTime.Select(item => item.CheckDate.ToString("yyyyMMdd")).ToList().Contains(item.SinDate.ToString()))
                         {
                             listHokenCheckAddNew.Add(new PtHokenCheck
                             {
                                 HpId = hpId,
                                 PtID = ptId,
-                                HokenGrp = HokenGroupConstant.HokenGroupHokenPattern,
+                                HokenGrp = hokenGrp,
                                 HokenId = insuranceItem.HokenId,
                                 CheckDate = checkDatetime,
                                 CheckCmt = item.Comment,

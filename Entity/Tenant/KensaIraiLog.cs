@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -27,7 +27,7 @@ namespace Entity.Tenant
         /// センターコード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("CENTER_CD", Order = 2)]
         [MaxLength(10)]
         public string CenterCd { get; set; } = string.Empty;
@@ -51,20 +51,20 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("IRAI_FILE")]
-        public string IraiFile { get; set; } = string.Empty;
+        public string? IraiFile { get; set; } = string.Empty;
 
         ///<summary>
         ///依頼リスト		
         /// 
         /// </summary>
         [Column("IRAI_LIST")]
-        public byte[] IraiList { get; set; } = default!;
+        public byte[]? IraiList { get; set; } = default!;
 
         /// <summary>
         /// 作成日時
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("CREATE_DATE", Order = 3)]
         public DateTime CreateDate { get; set; }
 
@@ -104,6 +104,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

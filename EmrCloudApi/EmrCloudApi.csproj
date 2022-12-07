@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DevExpress\DevExpress.csproj" />
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Interactor\Interactor.csproj" />
     <ProjectReference Include="..\UseCase\UseCase.csproj" />

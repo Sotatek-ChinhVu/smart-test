@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,11 +8,11 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(WebId), nameof(PtId), Name = "PT_JIBKAR_IDX01")]
     public class PtJibkar : EmrCloneable<PtJibkar>
     {
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
-        //[Key]
+        
         [Column("WEB_ID", Order = 2)]
         [MaxLength(16)]
         public string WebId { get; set; } = string.Empty;
@@ -70,6 +69,6 @@ namespace Entity.Tenant
 
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

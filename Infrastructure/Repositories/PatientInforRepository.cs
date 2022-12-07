@@ -1466,8 +1466,8 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
+                    destCf.HokenGrp = 1;
                     return destCf;
                 }));
                 #endregion
@@ -1491,7 +1491,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId, false);
 
                     //RousaiTenki
                     var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
@@ -1554,7 +1554,7 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
@@ -1579,7 +1579,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId, true);
                 }
             }
             #endregion HokenKohi
@@ -1637,7 +1637,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        private Task UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
+        private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
         {
             int hokenGrp = 1;
             if (hokenKohi)
@@ -1681,7 +1681,6 @@ namespace Infrastructure.Repositories
                     modelUpdate.UpdateDate = DateTime.UtcNow;
                 }
             }
-            return Task.CompletedTask;
         }
 
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
@@ -1788,6 +1787,9 @@ namespace Infrastructure.Repositories
         public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
         {
             var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            if (hokenMst is null)
+                return new HokenMstModel();
+
             return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
             {
                 return dest;

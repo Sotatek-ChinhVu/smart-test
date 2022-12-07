@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -11,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +19,7 @@ namespace Entity.Tenant
         /// メニューID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("MENU_ID", Order = 2)]
         public int MenuId { get; set; }
 
@@ -48,7 +47,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("MENU_NAME")]
         [MaxLength(100)]
-        public string MenuName { get; set; } = string.Empty;
+        public string? MenuName { get; set; } = string.Empty;
 
         /// <summary>
         /// 分類コード
@@ -102,7 +101,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PARAM_HINT")]
         [MaxLength(100)]
-        public string ParamHint { get; set; } = string.Empty;
+        public string? ParamHint { get; set; } = string.Empty;
 
         /// <summary>
         /// 設定値－最小値
@@ -142,7 +141,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("ITEM_CD")]
         [MaxLength(10)]
-        public string ItemCd { get; set; } = string.Empty;
+        public string? ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 都道府県番号
@@ -169,8 +168,8 @@ namespace Entity.Tenant
         [Column("MANAGER_KBN")]
         [CustomAttribute.DefaultValue(0)]
         public int ManagerKbn { get; set; }
-        
-        
+
+
         [Column("IS_VALUE")]
         [CustomAttribute.DefaultValue(1)]
         public int IsValue { get; set; }
@@ -223,7 +222,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }
