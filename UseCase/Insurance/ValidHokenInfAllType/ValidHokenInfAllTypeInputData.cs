@@ -5,7 +5,7 @@ namespace UseCase.Insurance.ValidHokenInfAllType
 {
     public class ValidHokenInfAllTypeInputData : IInputData<ValidHokenInfAllTypeOutputData>
     {
-        public ValidHokenInfAllTypeInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate, bool selectedHokenInfHokenMasterModelIsNull, bool selectedHokenInf, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, string selectedHokenInfHoubetu, bool selectedHokenInfIsJihi, string hokenSyaNo, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool isSelectedHokenMst, int selectedHokenInfHonkeKbn, int ptBirthday)
+        public ValidHokenInfAllTypeInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate, bool selectedHokenInfHokenMasterModelIsNull, bool selectedHokenInf, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, string selectedHokenInfHoubetu, bool selectedHokenInfIsJihi, string hokenSyaNo, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool isSelectedHokenMst, int selectedHokenInfHonkeKbn, int ptBirthday,bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount,bool hokenInfIsNoHoken,int hokenInfConfirmDate)
         {
             HpId = hpId;
             HokenKbn = hokenKbn;
@@ -46,6 +46,10 @@ namespace UseCase.Insurance.ValidHokenInfAllType
             IsSelectedHokenMst = isSelectedHokenMst;
             SelectedHokenInfHonkeKbn = selectedHokenInfHonkeKbn;
             PtBirthday = ptBirthday;
+            SelectedHokenInfIsAddHokenCheck = selectedHokenInfIsAddHokenCheck;
+            SelectedHokenInfHokenChecksCount = selectedHokenInfHokenChecksCount;
+            HokenInfIsNoHoken = hokenInfIsNoHoken;
+            HokenInfConfirmDate = hokenInfConfirmDate;
         }
 
         public int HpId { get; private set; }
@@ -125,5 +129,13 @@ namespace UseCase.Insurance.ValidHokenInfAllType
         public int SelectedHokenInfHonkeKbn { get; private set; }
 
         public int PtBirthday { get; private set; }
+
+        public bool SelectedHokenInfIsAddHokenCheck { get; private set; }
+
+        public int SelectedHokenInfHokenChecksCount { get; private set; }
+
+        public bool HokenInfIsNoHoken { get; set; }
+
+        public int HokenInfConfirmDate { get; set; }
     }
 }

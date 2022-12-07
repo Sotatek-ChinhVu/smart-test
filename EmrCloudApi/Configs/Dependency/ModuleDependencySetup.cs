@@ -1,9 +1,4 @@
-﻿using DevExpress.Export;
-using DevExpress.Implementation;
-using DevExpress.Inteface;
-using DinkToPdf;
-using DinkToPdf.Contracts;
-using Domain.CalculationInf;
+﻿using Domain.CalculationInf;
 using Domain.Models.AccountDue;
 using Domain.Models.ApprovalInfo;
 using Domain.Models.ColumnSetting;
@@ -80,7 +75,6 @@ using Interactor.Document;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
-using Interactor.ExportPDF;
 using Interactor.FlowSheet;
 using Interactor.GrpInf;
 using Interactor.HokenMst;
@@ -166,7 +160,7 @@ using UseCase.Ka.GetList;
 using UseCase.Ka.SaveList;
 using UseCase.KarteFilter.GetListKarteFilter;
 using UseCase.KarteFilter.SaveListKarteFilter;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
@@ -233,7 +227,7 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveImageSuperSetDetail;
-using UseCase.Schema.SaveImageTodayOrder;
+using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -292,9 +286,6 @@ namespace EmrCloudApi.Configs.Dependency
         private void SetupLogger(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger<Reporting>>();
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-            services.AddSingleton(typeof(ILogger), logger!);
         }
 
         private void SetupInterfaces(IServiceCollection services)
@@ -305,8 +296,6 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IUserService, UserService>();
 
-            // Export
-            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
 
@@ -370,13 +359,11 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IHpInfRepository, HpInfRepository>();
             services.AddTransient<ITodayOdrRepository, TodayOdrRepository>();
             services.AddTransient<IHokenMstRepository, HokenMstRepository>();
-            services.AddTransient<IKarte1Export, Karte1Export>();
             services.AddTransient<IPtTagRepository, PtTagRepository>();
             services.AddTransient<IAccountDueRepository, AccountDueRepository>();
             services.AddTransient<ITimeZoneRepository, TimeZoneRepository>();
             services.AddTransient<ISwapHokenRepository, SwapHokenRepository>();
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
-            services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
         }
@@ -561,8 +548,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetKohiHokenMstInputData, GetKohiHokenMstInteractor>();
 
             // Schema
-            busBuilder.RegisterUseCase<SaveImageTodayOrderInputData, SaveImageTodayOrderInteractor>();
             busBuilder.RegisterUseCase<GetListImageTemplatesInputData, GetListImageTemplatesInteractor>();
+            busBuilder.RegisterUseCase<SaveListFileTodayOrderInputData, SaveListFileInteractor>();
 
             // SuperSetDetail
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
