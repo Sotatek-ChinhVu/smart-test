@@ -2,13 +2,16 @@
 
 public class KarteImgInfModel
 {
-    public KarteImgInfModel(int hpId, long ptId, long raiinNo, string fileName)
+    public KarteImgInfModel(long id, int hpId, long ptId, long raiinNo, string fileName)
     {
+        Id = id;
         HpId = hpId;
         PtId = ptId;
         RaiinNo = raiinNo;
         FileName = fileName;
     }
+
+    public long Id { get; private set; }
 
     public int HpId { get; private set; }
 

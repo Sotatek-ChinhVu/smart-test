@@ -1,10 +1,10 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.KarteInfs.GetLists;
+namespace UseCase.KarteInf.GetList;
 
 public class GetListKarteInfOutputData : IOutputData
 {
-    public GetListKarteInfOutputData(List<GetListKarteInfOuputItem> karteInfs, List<string> listKarteFile, GetListKarteInfStatus status)
+    public GetListKarteInfOutputData(List<GetListKarteInfOuputItem> karteInfs, List<KarteImgInfOutputItem> listKarteFile, GetListKarteInfStatus status)
     {
         KarteInfs = karteInfs;
         ListKarteFile = listKarteFile;
@@ -20,7 +20,7 @@ public class GetListKarteInfOutputData : IOutputData
 
     public List<GetListKarteInfOuputItem> KarteInfs { get; private set; }
 
-    public List<string> ListKarteFile { get; private set; }
+    public List<KarteImgInfOutputItem> ListKarteFile { get; private set; }
 
     public GetListKarteInfStatus Status { get; private set; }
 

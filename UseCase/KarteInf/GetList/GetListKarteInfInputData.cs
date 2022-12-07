@@ -1,6 +1,6 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.KarteInfs.GetLists;
+namespace UseCase.KarteInf.GetList;
 
 public class GetListKarteInfInputData : IInputData<GetListKarteInfOutputData>
 {

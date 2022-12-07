@@ -1,7 +1,7 @@
 ﻿using Domain.Models.KarteInfs;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 
 namespace Interactor.KarteInfs;
 

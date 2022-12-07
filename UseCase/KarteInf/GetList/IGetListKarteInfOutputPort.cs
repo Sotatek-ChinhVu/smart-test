@@ -1,5 +1,5 @@
 ﻿using UseCase.Core.Sync.Core;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 
 namespace UseCase.KarteInf.GetList
 {

@@ -1,4 +1,4 @@
-﻿using UseCase.KarteInfs.GetLists;
+﻿using UseCase.KarteInf.GetList;
 
 namespace EmrCloudApi.Responses.KarteInf;
 

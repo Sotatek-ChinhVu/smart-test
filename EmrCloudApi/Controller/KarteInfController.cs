@@ -6,7 +6,7 @@ using EmrCloudApi.Responses.KarteInf;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.KarteInfs.GetLists;
+using UseCase.KarteInf.GetList;
 
 namespace EmrCloudApi.Controller
 {
