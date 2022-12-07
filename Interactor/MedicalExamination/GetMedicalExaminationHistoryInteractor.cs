@@ -65,7 +65,8 @@ namespace Interactor.MedicalExamination
                 }
                 else
                 {
-                    query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory)
+                    query = from raiinInf in _receptionRepository.GetList(inputData.HpId, inputData.PtId, inputData.KarteDeleteHistory).Where(r => karteFilter != null && (karteFilter.IsAllDepartment == true || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
+                           (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)))
                             join ptHokenPattern in _insuranceRepository.GetListHokenPattern(inputData.HpId, inputData.PtId, allowDisplayDeleted)
                             on raiinInf.HokenPid equals ptHokenPattern.HokenPid
                             select raiinInf;

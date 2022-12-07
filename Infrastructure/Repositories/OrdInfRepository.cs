@@ -42,8 +42,8 @@ namespace Infrastructure.Repositories
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos)
         {
             var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
-            var rpNo = allOdrInf?.Select(o => o.RpNo);
-            var rpEdNo = allOdrInf?.Select(o => o.RpEdaNo);
+            var rpNo = allOdrInf?.Select(o => o.RpNo).Distinct();
+            var rpEdNo = allOdrInf?.Select(o => o.RpEdaNo).Distinct();
             var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (rpNo != null && rpNo.Contains(o.RpNo)) && (rpEdNo != null && rpEdNo.Contains(o.RpEdaNo)))?.ToList();
 
             if (deleteCondition == 0)
