@@ -76,7 +76,11 @@ namespace Interactor.Insurance
                                 inputData.SelectedHokenInfconfirmDate,
                                 hokenMst.StartDate,
                                 hokenMst.EndDate,
-                                hokenMst.DisplayTextMaster);
+                                hokenMst.DisplayTextMaster,
+                                inputData.HokenInfIsNoHoken,
+                                inputData.HokenInfConfirmDate,
+                                inputData.SelectedHokenInfIsAddHokenCheck,
+                                inputData.SelectedHokenInfHokenChecksCount);
                         break;
                     // 労災(短期給付)	
                     case 11:
@@ -430,7 +434,7 @@ namespace Interactor.Insurance
             return true;
         }
 
-        private void IsValidHokenInf(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, bool selectedHokenInf, bool selectedHokenInfIsAddNew, int hokenKbn, string selectedHokenInfHoubetu, int hpId, int sinDate, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsJihi, string hokenSyaNo, int hokenNo, bool isHaveSelectedHokenMst, string houbetu, string sHokenMstHoubetsuNumber, int sHokenMstHokenNumber, int sHokenMstCheckDegit, int ptBirthday, int sHokenMstAgeStart, int sHokenMstAgeEnd, string kigo, string bango, int hokenMstIsKigoNa, int honkeKbn, int startDate, int endDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenMstStartDate, int selectedHokenMstEndDate, string selectedHokenMstDisplayText)
+        private void IsValidHokenInf(ref List<ResultValidateInsurance<ValidHokenInfAllTypeStatus>> validateDetails, bool selectedHokenInf, bool selectedHokenInfIsAddNew, int hokenKbn, string selectedHokenInfHoubetu, int hpId, int sinDate, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsJihi, string hokenSyaNo, int hokenNo, bool isHaveSelectedHokenMst, string houbetu, string sHokenMstHoubetsuNumber, int sHokenMstHokenNumber, int sHokenMstCheckDegit, int ptBirthday, int sHokenMstAgeStart, int sHokenMstAgeEnd, string kigo, string bango, int hokenMstIsKigoNa, int honkeKbn, int startDate, int endDate, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenMstStartDate, int selectedHokenMstEndDate, string selectedHokenMstDisplayText,bool hokenInfIsNoHoken, int hokenInfConfirmDate,bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount)
         {
             var message = "";
             if (!selectedHokenInf)
@@ -513,6 +517,21 @@ namespace Interactor.Insurance
             {
                 validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidConfirmDateAgeCheck, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError));
             }
+
+            string checkMessageIsValidConfirmDateHoken = IsValidConfirmDateHoken(sinDate,
+                                                            selectedHokenInfisExpirated,
+                                                            selectedHokenInfIsJihi,
+                                                            hokenInfIsNoHoken,
+                                                            selectedHokenInfisExpirated,
+                                                            hokenInfConfirmDate,
+                                                            selectedHokenInfIsAddNew,
+                                                            selectedHokenInfIsAddHokenCheck,
+                                                            selectedHokenInfHokenChecksCount);
+            if (!string.IsNullOrEmpty(checkMessageIsValidConfirmDateHoken))
+            {
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError));
+            }
+
             // check valid hokenmst date
             IsValidHokenMstDate(ref validateDetails, selectedHokenInfStartDate, selectedHokenInfEndDate, sinDate, selectedHokenMstDisplayText, selectedHokenMstStartDate, selectedHokenMstEndDate);
         }
@@ -845,6 +864,40 @@ namespace Interactor.Insurance
                 return false;
             }
             return true;
+        }
+
+        public string IsValidConfirmDateHoken(int sinDate, bool isExpirated, bool hokenInfIsJihi, bool hokenInfIsNoHoken, bool hokenInfIsExpirated, int hokenInfConfirmDate, bool selectedHokenInfIsAddNew, bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount)
+        {
+            var checkComfirmDateHoken = "";
+            if (isExpirated)
+            {
+                return checkComfirmDateHoken;
+            }
+            if (hokenInfIsJihi || hokenInfIsNoHoken || hokenInfIsExpirated)
+            {
+                return checkComfirmDateHoken;
+            }
+            // 主保険・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
+            // check main hoken, apply for new hoken only
+            int HokenConfirmDate = hokenInfConfirmDate;
+            int ConfirmHokenYM = Int32.Parse(CIUtil.Copy(HokenConfirmDate.ToString(), 1, 6));
+            int SinYM = Int32.Parse(CIUtil.Copy(sinDate.ToString(), 1, 6));
+            if (HokenConfirmDate == 0
+                || SinYM != ConfirmHokenYM)
+            {
+                if (selectedHokenInfIsAddNew || (selectedHokenInfIsAddHokenCheck && selectedHokenInfHokenChecksCount <= 0))
+                {
+                    //Ignore
+                }
+                else
+                {
+                    var stringParams = new string[] { "保険", "保険証" };
+                    var stringParams2 = new string[] { "無視する", "戻る" };
+                    checkComfirmDateHoken = string.Format(ErrorMessage.MessageType_mChk00030, stringParams, stringParams2);
+                    return checkComfirmDateHoken;
+                }
+            }
+            return checkComfirmDateHoken;
         }
     }
 }

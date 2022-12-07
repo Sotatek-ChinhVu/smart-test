@@ -689,7 +689,12 @@ namespace EmrCloudApi.Controller
                                             request.SelectedHokenInfHokenEdraNo,
                                             request.IsSelectedHokenMst, 
                                             request.SelectedHokenInfHonkeKbn,
-                                            request.PtBirthday);
+                                            request.PtBirthday,
+                                            request.SelectedHokenInfIsAddHokenCheck,
+                                            request.SelectedHokenInfHokenChecksCount,
+                                            request.HokenInfIsNoHoken,
+                                            request.HokenInfConfirmDate);
+
             var output = _bus.Handle(input);
 
             var presenter = new ValidHokenInfAllTypePresenter();
