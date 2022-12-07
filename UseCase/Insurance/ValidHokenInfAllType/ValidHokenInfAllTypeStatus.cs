@@ -64,6 +64,7 @@
         InvalidTokkurei = 59,
         InvalidHokenMstStartDate = 60,
         InvalidHokenMstEndDate = 61,
-        InvalidPtBirthday = 62
+        InvalidPtBirthday = 62,
+        InValidConfirmDateHoken = 63
     }
 }
