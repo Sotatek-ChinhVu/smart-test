@@ -11,4 +11,6 @@ public interface ISuperSetDetailRepository
     List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd);
 
     (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sinDate);
+    
+    bool CheckExistSupperSetDetail(int hpId, int setCd);
 }

@@ -78,48 +78,32 @@ namespace Infrastructure.Repositories
                 );
         }
 
-        public bool SaveListImageKarteImgTemp(List<KarteImgInfModel> listModel)
+        public long SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes)
         {
-            bool status = false;
             try
             {
-                var hpId = listModel.FirstOrDefault()?.HpId;
-                var ptId = listModel.FirstOrDefault()?.PtId;
-                var listRaiinNo = listModel.Select(item => item.RaiinNo).ToList();
-                var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-                var listKarteImgInfs = _tenantTrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && listRaiinNo.Contains(item.RaiinNo) && listOldFileName.Contains(item.FileName)).ToList();
+                var listOldFiles = _tenantTrackingDataContext.KarteImgInfs.Where(item =>
+                                                        item.HpId == hpId
+                                                        && item.PtId == ptId
+                                                        && item.RaiinNo == raiinNo
+                                                        && item.SeqNo == lastSeqNo).ToList();
 
-                foreach (var model in listModel)
+                var listUpdateSeqNo = listOldFiles.Where(item => !listFileDeletes.Contains(item.Id)).ToList();
+                var listFileInsert = ConvertListKarteImgInf(lastSeqNo, listUpdateSeqNo, listModel);
+                if (listFileInsert.Any())
                 {
-                    var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.RaiinNo == model.RaiinNo && item.FileName.Equals(model.OldFileName)) ?? new KarteImgInf { Id = 0, PtId = 0, HpId = 0, RaiinNo = 0 };
-                    if (karteImgInf.Id == 0 && karteImgInf.HpId == 0 && karteImgInf.PtId == 0 && karteImgInf.RaiinNo == 0)
-                    {
-                        karteImgInf.HpId = model.HpId;
-                        karteImgInf.RaiinNo = model.RaiinNo;
-                        karteImgInf.FileName = model.FileName;
-                        karteImgInf.PtId = model.PtId;
-                        _tenantTrackingDataContext.KarteImgInfs.Add(karteImgInf);
-                    }
-                    else
-                    {
-                        if (model.FileName != String.Empty)
-                        {
-                            karteImgInf.RaiinNo = model.RaiinNo;
-                            karteImgInf.FileName = model.FileName;
-                        }
-                        else
-                        {
-                            _tenantTrackingDataContext.KarteImgInfs.Remove(karteImgInf);
-                        }
-                    }
+                    _tenantTrackingDataContext.KarteImgInfs.AddRange(listFileInsert);
                 }
                 _tenantTrackingDataContext.SaveChanges();
-                status = true;
-                return status;
+                if (listFileInsert.Any())
+                {
+                    return listFileInsert.First().SeqNo;
+                }
+                return 0;
             }
             catch (Exception)
             {
-                return status;
+                return 0;
             }
         }
 
@@ -129,6 +113,58 @@ namespace Infrastructure.Repositories
                 return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).LastOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate <= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate) && k.KarteKbn == 1)?.SinDate ?? -1;
             else
                 return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate >= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate) && k.KarteKbn == 1)?.SinDate ?? -1;
+        }
+
+        public bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes)
+        {
+            var fileExists = _tenantNoTrackingDataContext.KarteImgInfs.Count(item =>
+                                                                                item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.SeqNo == seqNo
+                                                                                && item.RaiinNo == rainNo
+                                                                                && listFileDeletes.Distinct().Contains(item.Id));
+            return fileExists == listFileDeletes?.Count();
+        }
+
+        public long GetLastSeqNo(int hpId, long ptId, long rainNo)
+        {
+            var lastItem = _tenantNoTrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == rainNo).ToList()?.MaxBy(item => item.SeqNo);
+            return lastItem != null ? lastItem.SeqNo : 0;
+        }
+
+        private List<KarteImgInf> ConvertListKarteImgInf(long lastSeqNo, List<KarteImgInf> listKarteImgInfUpdateSeqNo, List<KarteImgInfModel> listModel)
+        {
+            List<KarteImgInf> result = new();
+            int position = 1;
+
+            // update seqNo
+            foreach (var updateItem in listKarteImgInfUpdateSeqNo)
+            {
+                KarteImgInf entity = new();
+                entity.HpId = updateItem.HpId;
+                entity.PtId = updateItem.PtId;
+                entity.RaiinNo = updateItem.RaiinNo;
+                entity.Position = position;
+                entity.SeqNo = lastSeqNo + 1;
+                entity.FileName = updateItem.FileName;
+                result.Add(entity);
+                position += 1;
+            }
+
+            // insert new entity
+            foreach (var model in listModel)
+            {
+                KarteImgInf entity = new();
+                entity.HpId = model.HpId;
+                entity.PtId = model.PtId;
+                entity.RaiinNo = model.RaiinNo;
+                entity.Position = position;
+                entity.SeqNo = lastSeqNo + 1;
+                entity.FileName = model.FileName;
+                result.Add(entity);
+                position += 1;
+            }
+            return result;
         }
     }
 }
