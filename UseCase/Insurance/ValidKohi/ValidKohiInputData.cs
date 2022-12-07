@@ -4,7 +4,7 @@ namespace UseCase.Insurance.ValidKohi
 {
     public class ValidKohiInputData : IInputData<ValidKohiOutputData>
     {
-        public ValidKohiInputData(int sinDate, int ptBirthday, bool isKohiEmptyModel, bool isSelectedKohiMst, string selectedKohiFutansyaNo, string selectedKohiJyukyusyaNo, string selectedKohiTokusyuNo, int selectedKohiStartDate, int selectedKohiEndDate, int selectedKohiConfirmDate, int selectedKohiHokenNo, int selectedKohiHokenEdraNo, bool selectedKohiIsAddNew)
+        public ValidKohiInputData(int sinDate, int ptBirthday, bool isKohiEmptyModel, bool isSelectedKohiMst, string selectedKohiFutansyaNo, string selectedKohiJyukyusyaNo, string selectedKohiTokusyuNo, int selectedKohiStartDate, int selectedKohiEndDate, int selectedKohiConfirmDate, int selectedKohiHokenNo, int selectedKohiHokenEdraNo, bool selectedKohiIsAddNew,bool selectedHokenPatternIsExpirated)
         {
             SinDate = sinDate;
             PtBirthday = ptBirthday;
@@ -19,6 +19,7 @@ namespace UseCase.Insurance.ValidKohi
             SelectedKohiHokenNo = selectedKohiHokenNo;
             SelectedKohiHokenEdraNo = selectedKohiHokenEdraNo;
             SelectedKohiIsAddNew = selectedKohiIsAddNew;
+            SelectedHokenPatternIsExpirated = selectedHokenPatternIsExpirated;
         }
 
         public int SinDate { get; private set; }
@@ -46,5 +47,7 @@ namespace UseCase.Insurance.ValidKohi
         public int SelectedKohiHokenEdraNo { get; private set; }
 
         public bool SelectedKohiIsAddNew { get; private set; }
+
+        public bool SelectedHokenPatternIsExpirated { get; private set; }
     }
 }
