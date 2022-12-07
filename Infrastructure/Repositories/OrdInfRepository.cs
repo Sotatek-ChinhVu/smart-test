@@ -41,23 +41,24 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<OrdInfModel> GetList(long ptId, int hpId, int userId, int deleteCondition, List<long> raiinNos)
         {
-            var allOdrInf = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo))?.ToList();
-            var rpNo = allOdrInf?.Select(o => o.RpNo).Distinct();
-            var rpEdNo = allOdrInf?.Select(o => o.RpEdaNo).Distinct();
-            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && (rpNo != null && rpNo.Contains(o.RpNo)) && (rpEdNo != null && rpEdNo.Contains(o.RpEdaNo)))?.ToList();
+            var allOdrInfQ = _tenantNoTrackingDataContext.OdrInfs.Where(odr => odr.PtId == ptId && odr.HpId == hpId && odr.OdrKouiKbn != 10 && raiinNos.Contains(odr.RaiinNo));
 
+            var allOdrInf = new List<OdrInf>();
             if (deleteCondition == 0)
             {
-                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None).ToList();
+                allOdrInf = allOdrInfQ.Where(r => r.IsDeleted == DeleteTypes.None)?.ToList();
             }
             else if (deleteCondition == 1)
             {
-                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted).ToList();
+                allOdrInf = allOdrInfQ?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted).ToList();
             }
             else
             {
-                allOdrInf = allOdrInf?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
+                allOdrInf = allOdrInfQ?.Where(r => r.IsDeleted == DeleteTypes.None || r.IsDeleted == DeleteTypes.Deleted || r.IsDeleted == DeleteTypes.Confirm).ToList();
             }
+            var rpNoAndEdaNo = allOdrInf?.Select(o => new Tuple<long, long>(o.RpNo, o.RpEdaNo));
+
+            var allOdrInfDetails = _tenantNoTrackingDataContext.OdrInfDetails.Where(o => o.PtId == ptId && o.HpId == hpId && raiinNos.Contains(o.RaiinNo) && (rpNoAndEdaNo != null && rpNoAndEdaNo.Any(rp => rp.Item1 == o.RpNo && rp.Item2 == o.RpEdaNo)))?.ToList();
 
             var sindateMin = allOdrInfDetails?.Count() > 0 ? allOdrInfDetails.Min(o => o.SinDate) : 0;
             var sindateMax = allOdrInfDetails?.Count() > 0 ? allOdrInfDetails.Max(o => o.SinDate) : 0;
