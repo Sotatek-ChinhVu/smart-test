@@ -1,8 +1,10 @@
 ﻿using Domain.Models.Diseases;
+using Domain.Models.Document;
 using Domain.Models.KarteInfs;
 using Domain.Models.MstItem;
 using Domain.Models.OrdInfDetails;
 using Domain.Models.OrdInfs;
+using Domain.Models.Reception;
 using Domain.Models.TodayOdr;
 using Entity.Tenant;
 using Helper.Common;
@@ -11,7 +13,6 @@ using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -979,6 +980,65 @@ namespace Infrastructure.Repositories
                 }
             }
             return ptByomeiModels;
+        }
+
+        public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId)
+        {
+            // Check lockMedicalExamination
+            var raiinInfo = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDeleted == DeleteTypes.None);
+            long oyaRaiinNo = raiinInfo != null ? raiinInfo.OyaRaiinNo : 0;
+            LockInfModel result = _lockInfFinder.CheckLockInfo(Session.HospitalID, PtId, FunctionCode.MedicalExaminationCode, RaiinNo, oyaRaiinNo, SinDate);
+            IsMedicalExaminationLocked = result != null && result.LockLevel == 0;
+        }
+
+        public LockInfModel CheckLockInfo(int hpID, long ptID_B, string functionCD_B, long raiinNo_B, long oyaRaiinNo_B, int sinDate_B, string token, int currentUserID)
+        {
+            var listCheckedResult =
+                (
+                    from lockInf in _tenantNoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.Machine != token)
+                    join raiinInf in _tenantNoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpID)
+                    on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
+                    from lockedRaiinInf in rfg.DefaultIfEmpty()
+                    join lockMst in _tenantNoTrackingDataContext.LockInfs.Where(m => m.FunctionCdB == functionCD_B && m.IsInvalid == 0)
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    join userMst in dbService.UserMstRepository.FindListQueryableNoTrack(u => u.HpId == hpID && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
+                    on lockInf.UserId equals userMst.UserId into gj
+                    from lockedUserInf in gj.DefaultIfEmpty()
+                    join functionMst in dbService.FunctionMstRepository.FindListQueryableNoTrack()
+                    on lockInf.FunctionCd equals functionMst.FunctionCd
+                    where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && (lockInf.Machine != machineName || lockInf.UserId != currentUserID))
+                    orderby lockMst.LockLevel, lockMst.LockRange
+                    select new
+                    {
+                        lockInf,
+                        lockMst,
+                        lockedUserInf,
+                        functionMst,
+                        lockedRaiinInf
+                    }
+                ).ToList();
+
+            if (listCheckedResult == null) return null;
+
+            for (int i = 0; i < listCheckedResult.Count; i++)
+            {
+                var checkedResult = listCheckedResult[i];
+                if (checkedResult.lockMst.LockRange == 1 && checkedResult.lockInf.RaiinNo != raiinNo_B)
+                {
+                    continue;
+                }
+                else if (checkedResult.lockMst.LockRange == 2 && checkedResult.lockedRaiinInf != null && checkedResult.lockedRaiinInf.OyaRaiinNo != oyaRaiinNo_B)
+                {
+                    continue;
+                }
+                else if (checkedResult.lockMst.LockRange == 3 && checkedResult.lockInf.SinDate != sinDate_B)
+                {
+                    continue;
+                }
+                return new LockInfModel(checkedResult.lockInf, checkedResult.lockMst, checkedResult.lockedUserInf, checkedResult.functionMst);
+            }
+
+            return null;
         }
     }
 }
