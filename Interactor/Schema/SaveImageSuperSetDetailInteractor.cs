@@ -1,5 +1,4 @@
-﻿using Domain.Models.KarteInfs;
-using Domain.Models.SuperSetDetail;
+﻿using Domain.Models.SuperSetDetail;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;
@@ -35,7 +34,7 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
             // Delete old image
             if (!string.IsNullOrEmpty(input.OldImage))
             {
-                string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", String.Empty);
+                string key = input.OldImage.Replace(_options.BaseAccessUrl + "/", string.Empty);
                 if (_amazonS3Service.ObjectExistsAsync(key).Result)
                 {
                     var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
@@ -47,7 +46,7 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
                             input.HpId,
                             input.SetCd,
                             input.Position,
-                            String.Empty,
+                            string.Empty,
                             key
                         ));
                 }
@@ -59,7 +58,6 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
 
             // Insert new image
             var memoryStream = input.StreamImage.ToMemoryStreamAsync().Result;
-            var subFolder = CommonConstants.SubFolderSuperSet + "/" + input.SetCd.ToString();
 
             if (memoryStream.Length <= 0 && string.IsNullOrEmpty(input.OldImage))
             {
@@ -67,15 +65,23 @@ public class SaveImageSuperSetDetailInteractor : ISaveImageSuperSetDetailInputPo
             }
             if (memoryStream.Length > 0)
             {
+                var listFolders = new List<string>(){
+                                                        CommonConstants.Store,
+                                                        CommonConstants.Karte,
+                                                        CommonConstants.SetPic,
+                                                        input.SetCd.ToString()
+                                                    };
+                string path = _amazonS3Service.GetFolderUploadOther(listFolders);
                 string fileName = input.SetCd.ToString().PadLeft(10, '0') + ".png";
-                var responseUpload = _amazonS3Service.UploadAnObjectAsync(false, subFolder, fileName, memoryStream);
+                fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
+                var responseUpload = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
                 var linkImage = responseUpload.Result;
                 listImageSaveTemps.Add(new SetKarteImgInfModel(
-                                    input.HpId,
-                                    input.SetCd,
-                                    input.Position,
-                                    linkImage.Replace(_options.BaseAccessUrl + "/", String.Empty),
-                                    String.Empty
+                                        input.HpId,
+                                        input.SetCd,
+                                        input.Position,
+                                        linkImage.Replace(_options.BaseAccessUrl + "/", string.Empty),
+                                        string.Empty
                                   ));
                 _superSetDetailRepository.SaveListSetKarteImgTemp(listImageSaveTemps);
                 return new SaveImageSuperSetDetailOutputData(linkImage, SaveImageSuperSetDetailStatus.Successed);

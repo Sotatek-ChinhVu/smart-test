@@ -10,7 +10,7 @@ namespace Entity.Admin
 {
     internal class TenantDetail
     {
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 

@@ -801,5 +801,28 @@ namespace Infrastructure.Repositories
 
             return 0;
         }
+
+        public List<NextOrderFileModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
+        {
+            var lastSeqNo = GetLastSeqNo(hpId, ptId, rsvkrtNo);
+            var result = _tenantDataContext.RsvkrtKarteImgInfs.Where(item =>
+                                                                                item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && item.RsvkrtNo == rsvkrtNo
+                                                                                && item.SeqNo == lastSeqNo
+                                                                                )
+                                                                    .OrderBy(item => item.Position)
+                                                                    .Select(item => new NextOrderFileModel(
+                                                                            item.Id,
+                                                                            item.FileName ?? string.Empty
+                                                                    )).ToList();
+            return result;
+        }
+
+        public long GetLastSeqNo(int hpId, long ptId, long rsvkrtNo)
+        {
+            var lastItem = _tenantDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RsvkrtNo == rsvkrtNo).ToList()?.MaxBy(item => item.SeqNo);
+            return lastItem != null ? lastItem.SeqNo : 0;
+        }
     }
 }

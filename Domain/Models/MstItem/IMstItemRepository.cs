@@ -10,7 +10,7 @@
 
         (List<SearchSupplementModel>, int) GetListSupplement(string searchValue, int pageIndex, int pageSize);
 
-        (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith);
+        (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem);
 
         TenItemModel GetTenMst(int hpId, int sinDate, string itemCd);
 
@@ -35,6 +35,12 @@
         List<ItemCmtModel> GetCmtCheckMsts(int hpId, int userId, List<string> itemCds);
 
         List<ItemGrpMstModel> FindItemGrpMst(int hpId, int sinDate, int grpSbt, List<long> itemGrpCds);
+
+        List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId);
+
+        bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId);
+
+        List<ItemCommentSuggestionModel> GetSelectiveComment(int hpCd, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false);
 
         List<string> GetCheckItemCds(List<string> itemCds);
 

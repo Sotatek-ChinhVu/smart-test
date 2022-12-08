@@ -66,6 +66,9 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Services;
+using Domain.Constant;
+using UseCase.Insurance.ValidHokenInfAllType;
+using System.Collections.Generic;
 
 namespace EmrCloudApi.Controller
 {
@@ -139,7 +142,7 @@ namespace EmrCloudApi.Controller
         [HttpPost("SearchAdvanced")]
         public ActionResult<Response<SearchPatientInfoAdvancedResponse>> GetList([FromBody] SearchPatientInfoAdvancedRequest request)
         {
-            var input = new SearchPatientInfoAdvancedInputData(request.SearchInput, HpId);
+            var input = new SearchPatientInfoAdvancedInputData(ConvertToPatientAdvancedSearchInput(request), HpId, request.PageIndex, request.PageSize);
             var output = _bus.Handle(input);
             var presenter = new SearchPatientInfoAdvancedPresenter();
             presenter.Complete(output);
@@ -220,21 +223,14 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.ValidateKohi)]
-        public ActionResult<Response<ValidateKohiResponse>> ValidateKohi([FromBody] ValidateKohiRequest request)
+        public ActionResult<Response<ValidateKohiResponse>> ValidateOneKohi([FromBody] ValidateKohiRequest request)
         {
-            var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel1, request.IsSelectedKohiMst1, request.SelectedKohiFutansyaNo1, request.SelectedKohiJyukyusyaNo1,
-                request.SelectedKohiTokusyuNo1, request.SelectedKohiStartDate1, request.SelectedKohiEndDate1, request.SelectedKohiConfirmDate1, request.SelectedKohiHokenNo1, request.SelectedKohiHokenEdraNo1, request.SelectedKohiIsAddNew1,
-                request.IsKohiEmptyModel2, request.IsSelectedKohiMst2, request.SelectedKohiFutansyaNo2, request.SelectedKohiJyukyusyaNo2,
-                request.SelectedKohiTokusyuNo2, request.SelectedKohiStartDate2, request.SelectedKohiEndDate2, request.SelectedKohiConfirmDate2, request.SelectedKohiHokenNo2, request.SelectedKohiHokenEdraNo2, request.SelectedKohiIsAddNew2,
-                request.IsKohiEmptyModel3, request.IsSelectedKohiMst3, request.SelectedKohiFutansyaNo3, request.SelectedKohiJyukyusyaNo3, request.SelectedKohiTokusyuNo3, request.SelectedKohiStartDate3, request.SelectedKohiEndDate3,
-                request.SelectedKohiConfirmDate3, request.SelectedKohiHokenNo3, request.SelectedKohiHokenEdraNo3, request.SelectedKohiIsAddNew3,
-                request.IsKohiEmptyModel4, request.IsSelectedKohiMst4, request.SelectedKohiFutansyaNo4, request.SelectedKohiJyukyusyaNo4, request.SelectedKohiTokusyuNo4, request.SelectedKohiStartDate4, request.SelectedKohiEndDate4,
-                request.SelectedKohiConfirmDate4, request.SelectedKohiHokenNo4, request.SelectedKohiHokenEdraNo4, request.SelectedKohiIsAddNew4);
+            var input = new ValidKohiInputData(request.SinDate, request.PtBirthday, request.IsKohiEmptyModel, request.IsSelectedKohiMst, request.SelectedKohiFutansyaNo, request.SelectedKohiJyukyusyaNo,
+                request.SelectedKohiTokusyuNo, request.SelectedKohiStartDate, request.SelectedKohiEndDate, request.SelectedKohiConfirmDate, request.SelectedKohiHokenNo, request.SelectedKohiHokenEdraNo, request.SelectedKohiIsAddNew, request.SelectedHokenPatternIsExpirated);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateKohiPresenter();
             presenter.Complete(output);
-
             return new ActionResult<Response<ValidateKohiResponse>>(presenter.Result);
         }
 
@@ -244,7 +240,7 @@ namespace EmrCloudApi.Controller
             var input = new ValidateRousaiJibaiInputData(HpId, request.HokenKbn, request.SinDate, request.IsSelectedHokenInf, request.SelectedHokenInfRodoBango,
                 request.ListRousaiTenki, request.SelectedHokenInfRousaiSaigaiKbn, request.SelectedHokenInfRousaiSyobyoDate, request.SelectedHokenInfRousaiSyobyoCd,
                 request.SelectedHokenInfRyoyoStartDate, request.SelectedHokenInfRyoyoEndDate, request.SelectedHokenInfStartDate, request.SelectedHokenInfEndDate,
-                request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate);
+                request.SelectedHokenInfIsAddNew, request.SelectedHokenInfNenkinBango, request.SelectedHokenInfKenkoKanriBango, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfHokenMasterModelIsNull);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateRousaiJibaiPresenter();
@@ -344,7 +340,7 @@ namespace EmrCloudApi.Controller
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
                 request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
                 request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
-                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken);
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew, request.HokenInfIsNoHoken, request.SelectedHokenInfHokenChecksCount);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateMainInsurancePresenter();
@@ -499,13 +495,14 @@ namespace EmrCloudApi.Controller
                    x.JibaiHokenTel,
                    x.JibaiJyusyouDate,
                    x.Houbetu,
-                   x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                   c.HokenId,
-                   c.SeqNo,
-                   c.CheckId,
-                   c.CheckName,
-                   c.CheckComment,
-                   c.ConfirmDate)).ToList(),
+                   x.ConfirmDates.Select(c => new ConfirmDateModel(
+                       c.HokenGrp,
+                       c.HokenId,
+                       c.SeqNo,
+                       c.CheckId,
+                       c.CheckName,
+                       c.CheckComment,
+                       c.ConfirmDate)).ToList(),
                    x.RousaiTenkis.Select(m => new RousaiTenkiModel(m.RousaiTenkiSinkei,
                    m.RousaiTenkiTenki,
                    m.RousaiTenkiEndDate,
@@ -518,13 +515,16 @@ namespace EmrCloudApi.Controller
                    x.IsAddNew,
                    false)).ToList();
 
-            List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(x.ConfirmDates.Select(c => new ConfirmDateModel(c.HokenGrp,
-                    c.HokenId,
-                    c.SeqNo,
-                    c.CheckId,
-                    c.CheckName,
-                    c.CheckComment,
-                    c.ConfirmDate)).ToList(),
+            List<KohiInfModel> hokenKohis = request.HokenKohis.Select(x => new KohiInfModel(
+                    x.ConfirmDates.Select(c =>
+                        new ConfirmDateModel(
+                            c.HokenGrp,
+                            c.HokenId,
+                            c.SeqNo,
+                            c.CheckId,
+                            c.CheckName,
+                            c.CheckComment,
+                            c.ConfirmDate)).ToList(),
                     x.FutansyaNo,
                     x.JyukyusyaNo,
                     x.HokenId,
@@ -598,6 +598,109 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
+        }
+
+        private PatientAdvancedSearchInput ConvertToPatientAdvancedSearchInput(SearchPatientInfoAdvancedRequest request)
+        {
+            return new PatientAdvancedSearchInput(
+                    request.FromPtNum,
+                    request.ToPtNum,
+                    request.Name,
+                    request.Sex,
+                    request.FromAge,
+                    request.ToAge,
+                    request.FromBirthDay,
+                    request.ToBirthDay,
+                    request.PostalCode1,
+                    request.PostalCode2,
+                    request.Address,
+                    request.PhoneNum,
+                    request.FromVisitDate,
+                    request.ToVisitDate,
+                    request.FromLastVisitDate,
+                    request.ToLastVisitDate,
+                    request.FromInsuranceNum,
+                    request.ToInsuranceNum,
+                    request.FromPublicExpensesNum,
+                    request.ToPublicExpensesNum,
+                    request.FromSpecialPublicExpensesNum,
+                    request.ToSpecialPublicExpensesNum,
+                    request.HokenNum,
+                    request.Kohi1Num,
+                    request.Kohi1EdaNo,
+                    request.Kohi2Num,
+                    request.Kohi2EdaNo,
+                    request.Kohi3Num,
+                    request.Kohi3EdaNo,
+                    request.Kohi4Num,
+                    request.Kohi4EdaNo,
+                    request.PatientGroups,
+                    request.OrderLogicalOperator,
+                    request.OrderItemCodes,
+                    request.DepartmentId,
+                    request.DoctorId,
+                    request.ByomeiLogicalOperator,
+                    request.Byomeis,
+                    request.ByomeiStartDate,
+                    request.ByomeiEndDate,
+                    request.ResultKbn,
+                    request.IsSuspectedDisease
+                );
+        }
+
+        
+        [HttpPost(ApiPath.ValidHokenInfAllType)]
+        public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
+        {
+            var input = new ValidHokenInfAllTypeInputData(HpId,
+                                            request.HokenKbn,
+                                            request.SinDate, 
+                                            request.IsSelectedHokenInf,
+                                            request.SelectedHokenInfRodoBango, 
+                                            request.ListRousaiTenki, 
+                                            request.SelectedHokenInfRousaiSaigaiKbn, 
+                                            request.SelectedHokenInfRousaiSyobyoDate,
+                                            request.SelectedHokenInfRousaiSyobyoCd, 
+                                            request.SelectedHokenInfRyoyoStartDate,
+                                            request.SelectedHokenInfRyoyoEndDate,
+                                            request.SelectedHokenInfStartDate,
+                                            request.SelectedHokenInfEndDate,
+                                            request.SelectedHokenInfIsAddNew,
+                                            request.SelectedHokenInfNenkinBango,
+                                            request.SelectedHokenInfKenkoKanriBango,
+                                            request.SelectedHokenInfConfirmDate,
+                                            request.SelectedHokenInfHokenMasterModelIsNull,
+                                            request.SelectedHokenInf,
+                                            request.SelectedHokenInfTokki1,
+                                            request.SelectedHokenInfTokki2,
+                                            request.SelectedHokenInfTokki3,
+                                            request.SelectedHokenInfTokki4,
+                                            request.SelectedHokenInfTokki5,
+                                            request.SelectedHokenInfHoubetu,
+                                            request.SelectedHokenInfIsJihi,
+                                            request.HokenSyaNo,
+                                            request.SelectedHokenInfKigo,
+                                            request.SelectedHokenInfBango,
+                                            request.SelectedHokenInfTokureiYm1,
+                                            request.SelectedHokenInfTokureiYm2,
+                                            request.SelectedHokenInfisShahoOrKokuho,
+                                            request.SelectedHokenInfisExpirated, 
+                                            request.SelectedHokenInfHokenNo, 
+                                            request.SelectedHokenInfHokenEdraNo,
+                                            request.IsSelectedHokenMst, 
+                                            request.SelectedHokenInfHonkeKbn,
+                                            request.PtBirthday,
+                                            request.SelectedHokenInfIsAddHokenCheck,
+                                            request.SelectedHokenInfHokenChecksCount,
+                                            request.HokenInfIsNoHoken,
+                                            request.HokenInfConfirmDate);
+
+            var output = _bus.Handle(input);
+
+            var presenter = new ValidHokenInfAllTypePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ValidHokenInfAllTypeResponse>>(presenter.Result);
         }
     }
 }

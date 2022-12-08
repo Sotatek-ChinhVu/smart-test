@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 病院コード
         /// KARTE_FILTER_MST.HP_ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// ユーザーID
         /// KARTE_FILTER_MST.USER_ID
         /// </summary>
-        //[Key]
+        
         [Column("USER_ID", Order = 2)]
         public int UserId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Entity.Tenant
         /// フィルタID
         /// KARTE_FILTER_MST.FILTER_ID
         /// </summary>
-        //[Key]
+        
         [Column("FILTER_ID", Order = 3)]
         public long FilterId { get; set; }
 
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("FILTER_ITEM_CD", Order = 4)]
         public int FilterItemCd { get; set; }
 
@@ -44,7 +44,7 @@ namespace Entity.Tenant
         /// 枝番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("FILTER_EDA_NO", Order = 5)]
         public int FilterEdaNo { get; set; }
 
@@ -62,6 +62,5 @@ namespace Entity.Tenant
         [Column("PARAM")]
         [MaxLength(300)]
         public string? Param { get; set; } = string.Empty;
-
     }
 }

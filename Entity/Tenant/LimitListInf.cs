@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +11,7 @@ namespace Entity.Tenant
         /// <summary>
         /// Id
         /// </summary>
-        [Key]
+        
         [Column(name: "ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
@@ -66,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 来院番号
@@ -151,7 +150,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

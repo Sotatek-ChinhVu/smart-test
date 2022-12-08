@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 成分コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SEIBUN_CD", Order = 1)]
         [MaxLength(9)]
         public string SeibunCd { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 成分索引コード
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEIBUN_INDEX_CD", Order = 2)]
         [MaxLength(3)]
         public string SeibunIndexCd { get; set; } = string.Empty;
@@ -31,7 +31,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SEIBUN_NAME")]
         [MaxLength(200)]
-        public string SeibunName { get; set; } = string.Empty;
+        public string? SeibunName { get; set; } = string.Empty;
 
         /// <summary>
         /// 用法コード
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("YOHO_CD")]
         [MaxLength(6)]
-        public string YohoCd { get; set; } = string.Empty;
+        public string? YohoCd { get; set; } = string.Empty;
 
     }
 }

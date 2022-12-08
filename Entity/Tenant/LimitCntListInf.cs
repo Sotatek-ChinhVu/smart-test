@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Entity.Tenant
 {
@@ -15,7 +10,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -24,7 +19,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 患者を識別するためのシステム固有の番号
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -32,7 +27,7 @@ namespace Entity.Tenant
         /// 公費ID
         /// PT_KOHI.KOHI_ID
         /// </summary>
-        //[Key]
+        
         [Column("KOHI_ID", Order = 3)]
         public int KohiId { get; set; }
 
@@ -40,7 +35,7 @@ namespace Entity.Tenant
         /// 診療日
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SIN_DATE", Order = 4)]
         public int SinDate { get; set; }
 
@@ -48,7 +43,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 5)]
         public int SeqNo { get; set; }
 
@@ -65,7 +60,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("SORT_KEY")]
         [MaxLength(61)]
-        public string SortKey { get; set; } = string.Empty;
+        public string? SortKey { get; set; } = string.Empty;
 
         /// <summary>
         /// 来院番号
@@ -80,7 +75,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BIKO")]
         [MaxLength(200)]
-        public string Biko { get; set; } = string.Empty;
+        public string? Biko { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -136,7 +131,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

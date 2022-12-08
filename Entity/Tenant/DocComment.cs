@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// カテゴリID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("CATEGORY_ID", Order = 1)]
         public int CategoryId { get; set; }
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("CATEGORY_NAME")]
         [MaxLength(1000)]
-        public string CategoryName { get; set; } = string.Empty;
+        public string? CategoryName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -36,7 +36,7 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("REPLACE_WORD")]
-        public string ReplaceWord { get; set; } = string.Empty;
+        public string? ReplaceWord { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -90,7 +90,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

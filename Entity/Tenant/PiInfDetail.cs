@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 添付文書ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PI_ID", Order = 1)]
         [MaxLength(6)]
         public string PiId { get; set; } = string.Empty;
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// "規格毎の情報の場合、「001」からの連番になる
         /// 添付文書単位の情報の場合、「999」をセット"
         /// </summary>
-        [Key]
+        
         [Column("BRANCH", Order = 2)]
         [MaxLength(3)]
         public string Branch { get; set; } = string.Empty;
@@ -30,7 +30,7 @@ namespace Entity.Tenant
         /// JPNコード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("JPN", Order = 3)]
         [MaxLength(6)]
         public string Jpn { get; set; } = string.Empty;
@@ -39,7 +39,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        [Key]
+        
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 
@@ -55,7 +55,6 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [Column("TEXT")]
-        public string Text { get; set; } = string.Empty;
-
+        public string? Text { get; set; } = string.Empty;
     }
 }

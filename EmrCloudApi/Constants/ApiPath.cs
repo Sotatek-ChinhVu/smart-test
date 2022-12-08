@@ -33,10 +33,14 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+        public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
+        public const string UploadListFileKarte = "UploadListFileKarte";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -78,11 +82,15 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        //validate ValidHokenInf AllType
+        public const string ValidHokenInfAllType = "ValidHokenInfAllType";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
+        public const string GetSelectiveComment = "GetSelectiveComment";
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
@@ -109,6 +117,16 @@
 
         //GetYohoSetMst
         public const string GetYohoSetMstByItemCd = "GetYohoSetMstByItemCd";
+
+        // Document
+        public const string GetListDocumentCategory = "GetListDocumentCategory";
+        public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
+        public const string SaveListDocumentCategory = "SaveListDocumentCategory";
+        public const string SortDocCategory = "SortDocCategory";
+        public const string AddTemplateToCategory = "AddTemplateToCategory";
+        public const string CheckExistFileName = "CheckExistFileName";
+        public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
