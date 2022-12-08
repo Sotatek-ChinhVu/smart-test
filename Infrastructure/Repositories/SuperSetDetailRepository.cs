@@ -544,7 +544,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, Dictionary<string, int> settingValues, double yakka, TenMst tenMst, IpnNameMst ipnNameMst, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int odrInfOdrKouiKbn)
     {
-        var syohoKbn = CalculateSyoho(ordInfDetail, settingValues, tenMst, odrInfOdrKouiKbn, ipnNameMst.IpnName);
+        var syohoKbn = CalculateSyoho(ordInfDetail, settingValues, tenMst, odrInfOdrKouiKbn, ipnNameMst.IpnName ?? string.Empty);
         var termVal = CorrectTermVal(ordInfDetail.UnitSbt, tenMst, ordInfDetail.OdrTermVal);
 
         string displayItemName = ordInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ? ordInfDetail.ItemName + TenUtils.GetBunkatu(ordInfDetail.SinKouiKbn, ordInfDetail.Bunkatu ?? string.Empty) : ordInfDetail.ItemName ?? string.Empty;
@@ -571,7 +571,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                         tenMst.Kokuji2 ?? string.Empty,
                         ordInfDetail.IsNodspRece,
                         tenMst.IpnNameCd ?? string.Empty,
-                        ipnNameMst.IpnName,
+                        ipnNameMst.IpnName ?? string.Empty,
                         ordInfDetail.Bunkatu ?? string.Empty,
                         ordInfDetail.CmtName ?? string.Empty,
                         ordInfDetail.CmtOpt ?? string.Empty,
@@ -826,7 +826,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
             // if set karte have image, update setKarteImage
             var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
-            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName))).ToList())
+            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName ?? string.Empty))).ToList())
             {
                 item.Position = 10;
             }
@@ -981,11 +981,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var setCd = listModel.FirstOrDefault()?.SetCd;
             var listPosition = listModel.Select(item => item.Position).ToList();
             var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName)).ToList();
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName ?? string.Empty)).ToList();
 
             foreach (var model in listModel)
             {
-                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName.Equals(model.OldFileName));
+                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName?.Equals(model.OldFileName) == true);
                 if (karteImgInf == null)
                 {
                     karteImgInf = new SetKarteImgInf();

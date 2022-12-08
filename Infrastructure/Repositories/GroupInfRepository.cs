@@ -36,7 +36,7 @@ namespace Infrastructure.Repositories
                      groupPatient.PtId,
                      groupPatient.GroupId,
                      groupPatient.GroupCode ?? string.Empty,
-                     groupDetailMst.GrpCodeName
+                     groupDetailMst.GrpCodeName ?? string.Empty
                  )).ToList();
             var resultData = result.DistinctBy(item => new { item.GroupCode, item.PtId }).ToList();
             return resultData;

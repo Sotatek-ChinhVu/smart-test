@@ -26,12 +26,12 @@ namespace Infrastructure.Repositories
                     r => new DosageDrugModel(
                             r.YjCd,
                             r.DoeiCd,
-                            r.DgurKbn,
-                            r.KikakiUnit,
-                            r.YakkaiUnit,
+                            r.DgurKbn ?? string.Empty,
+                            r.KikakiUnit ?? string.Empty,
+                            r.YakkaiUnit ?? string.Empty,
                             r.RikikaRate,
-                            r.RikikaUnit,
-                            r.YoukaiekiCd,
+                            r.RikikaUnit ?? string.Empty,
+                            r.YoukaiekiCd ?? string.Empty,
                             listDosageDosages.FirstOrDefault(item => item.DoeiCd == r.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
                    )).ToList();
         }
@@ -53,26 +53,26 @@ namespace Infrastructure.Repositories
                         from form in formLeft.DefaultIfEmpty()
                         join usagecode in UsageCodes on main.YohoCd equals usagecode.YohoCd into usageLeft
                         from usage in usageLeft.DefaultIfEmpty()
-                        where (main.TradeKana.Contains(searchValue)
-                                || main.TradeName.Contains(searchValue)
-                                || maker.MakerKana.Contains(searchValue)
-                                || maker.MakerName.Contains(searchValue))
+                        where ((main.TradeKana ?? string.Empty).Contains(searchValue)
+                                || (main.TradeName ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerKana ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerName ?? string.Empty).Contains(searchValue))
                         select new OtcItemModel(
                             main.SerialNum,
-                            main.OtcCd,
-                            main.TradeName,
-                            main.TradeKana,
-                            main.ClassCd,
-                            main.CompanyCd,
-                            main.TradeCd,
-                            main.DrugFormCd,
-                            main.YohoCd,
-                            form.Form,
-                            maker.MakerName,
-                            maker.MakerKana,
-                            usage.Yoho,
-                            clas.ClassName,
-                            clas.MajorDivCd
+                            main.OtcCd ?? string.Empty,
+                            main.TradeName ?? string.Empty,
+                            main.TradeKana ?? string.Empty,
+                            main.ClassCd ?? string.Empty,
+                            main.CompanyCd ?? string.Empty,
+                            main.TradeCd ?? string.Empty,
+                            main.DrugFormCd ?? string.Empty,
+                            main.YohoCd ?? string.Empty,
+                            form.Form ?? string.Empty,
+                            maker.MakerName ?? string.Empty,
+                            maker.MakerKana ?? string.Empty,
+                            usage.Yoho ?? string.Empty,
+                            clas.ClassName ?? string.Empty,
+                            clas.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(
                  x.FoodKbn,
-                 x.FoodName
+                 x.FoodName ?? string.Empty
             )).ToList();
             return aleFoodKbns;
         }
@@ -105,12 +105,12 @@ namespace Infrastructure.Repositories
                              from supplement in supplementList.DefaultIfEmpty()
                              join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
                              from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where indexDef.IndexWord.Contains(searchValue)
+                             where (indexDef.IndexWord ?? string.Empty).Contains(searchValue)
                              select new SearchSupplementModel(
                                  ingreItem.SeibunCd,
-                                 ingreItem.Seibun,
-                                 indexDef.IndexWord,
-                                 indexDef.TokuhoFlg,
+                                 ingreItem.Seibun ?? string.Empty,
+                                 indexDef.IndexWord ?? string.Empty,
+                                 indexDef.TokuhoFlg ?? string.Empty,
                                  supplement.IndexCd
                              )).AsQueryable();
 
@@ -912,19 +912,19 @@ namespace Infrastructure.Repositories
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
 
             else if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
 
             if (!string.IsNullOrEmpty(address))
             {
                 entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
                                                 || (e.PrefName + e.CityName).Contains(address)
-                                                || e.PrefName.Contains(address));
+                                                || (e.PrefName != null && e.PrefName.Contains(address)));
             }
 
             var totalCount = entities.Count();

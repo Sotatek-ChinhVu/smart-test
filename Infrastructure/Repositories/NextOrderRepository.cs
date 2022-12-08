@@ -231,7 +231,7 @@ namespace Infrastructure.Repositories
         private static List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
             var query = from yoho in listYohoSetMst
-                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                        join ten in listTenMst on yoho.ItemCd?.Trim() equals ten.ItemCd.Trim()
                         select new
                         {
                             Yoho = yoho,
