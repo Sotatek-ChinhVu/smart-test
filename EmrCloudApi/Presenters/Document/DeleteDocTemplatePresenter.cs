@@ -20,7 +20,7 @@ public class DeleteDocTemplatePresenter : IDeleteDocTemplateOutputPort
     {
         DeleteDocTemplateStatus.Successed => ResponseMessage.Success,
         DeleteDocTemplateStatus.Failed => ResponseMessage.Failed,
-        DeleteDocTemplateStatus.TemplateNotFount => ResponseMessage.TemplateNotFount,
+        DeleteDocTemplateStatus.TemplateNotFound => ResponseMessage.TemplateNotFound,
         _ => string.Empty
     };
 }

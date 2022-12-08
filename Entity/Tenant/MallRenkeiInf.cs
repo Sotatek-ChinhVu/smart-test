@@ -10,7 +10,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -18,7 +18,7 @@ namespace Entity.Tenant
         /// <summary>
         /// 来院番号
         /// </summary>
-        //[Key]
+        
         [Column("RAIIN_NO", Order = 2)]
         public long RaiinNo { get; set; }
 
@@ -91,6 +91,5 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_DATE")]
         public DateTime UpdateDate { get; set; }
-
     }
 }

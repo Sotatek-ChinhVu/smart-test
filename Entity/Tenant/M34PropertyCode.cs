@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 属性コード
         /// 
         /// </summary>
-        [Key]
+        
         [Column("PROPERTY_CD", Order = 1)]
         public int PropertyCd { get; set; }
 
@@ -21,7 +21,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("PROPERTY")]
         [MaxLength(100)]
-        public string Property { get; set; } = string.Empty;
+        public string? Property { get; set; } = string.Empty;
 
     }
 }

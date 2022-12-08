@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -66,7 +65,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("BYOMEI")]
         [MaxLength(160)]
-        public string Byomei { get; set; } = string.Empty;
+        public string? Byomei { get; set; } = string.Empty;
 
         /// <summary>
         /// 補足コメント
@@ -74,14 +73,14 @@ namespace Entity.Tenant
         /// </summary>
         [Column("HOSOKU_COMMENT")]
         [MaxLength(80)]
-        public string HosokuComment { get; set; } = string.Empty;
+        public string? HosokuComment { get; set; } = string.Empty;
 
         /// <summary>
         /// コメント
         /// 
         /// </summary>
         [Column("COMMENT")]
-        public string Comment { get; set; } = string.Empty;
+        public string? Comment { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -135,12 +134,12 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
         /// </summary>
-        [Key]
+        
         [Column("ID", Order = 1)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

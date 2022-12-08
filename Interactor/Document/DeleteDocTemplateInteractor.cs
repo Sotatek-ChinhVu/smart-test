@@ -27,7 +27,7 @@ public class DeleteDocTemplateInteractor : IDeleteDocTemplateInputPort
             checkExist.Wait();
             if (!checkExist.Result)
             {
-                return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.TemplateNotFount);
+                return new DeleteDocTemplateOutputData(DeleteDocTemplateStatus.TemplateNotFound);
             }
             var response = _amazonS3Service.DeleteObjectAsync(path + inputData.FileTemplateName);
             response.Wait();

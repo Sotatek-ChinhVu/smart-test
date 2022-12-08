@@ -4,5 +4,5 @@ public enum DeleteDocTemplateStatus : byte
 {
     Successed = 1,
     Failed = 2,
-    TemplateNotFount = 3,
+    TemplateNotFound = 3,
 }

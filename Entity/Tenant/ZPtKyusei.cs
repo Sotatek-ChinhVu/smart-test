@@ -12,24 +12,24 @@ namespace Entity.Tenant
     [Index(nameof(HpId), nameof(PtId), nameof(EndDate), nameof(IsDeleted), Name = "PT_KYUSEI_IDX01")]
     public class ZPtKyusei : EmrCloneable<ZPtKyusei>
     {
-        [Key]
+        
         [Column("OP_ID", Order = 1)]
         public long OpId { get; set; }
 
         [Column("OP_TYPE")]
         [MaxLength(10)]
-        public string OpType { get; set; } = string.Empty;
+        public string? OpType { get; set; } = string.Empty;
 
         [Column("OP_TIME")]
         public DateTime OpTime { get; set; }
 
         [Column("OP_ADDR")]
         [MaxLength(100)]
-        public string OpAddr { get; set; } = string.Empty;
+        public string? OpAddr { get; set; } = string.Empty;
 
         [Column("OP_HOSTNAME")]
         [MaxLength(100)]
-        public string OpHostName { get; set; } = string.Empty;
+        public string? OpHostName { get; set; } = string.Empty;
 
         /// <summary>
         /// 医療機関識別ID
@@ -56,7 +56,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "KANA_NAME")]
         [MaxLength(100)]
-        public string KanaName { get; set; } = string.Empty;
+        public string? KanaName { get; set; } = string.Empty;
 
         /// <summary>
         /// 氏名
@@ -64,7 +64,7 @@ namespace Entity.Tenant
         [Column(name: "NAME")]
         [MaxLength(100)]
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string? Name { get; set; } = string.Empty;
 
         /// <summary>
         /// 終了日

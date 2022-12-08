@@ -16,7 +16,6 @@ namespace Entity.Tenant
         /// 
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
@@ -25,7 +24,6 @@ namespace Entity.Tenant
         /// 連番[0..zzzz]
         /// </summary>
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
         [Column("FORM_NO", Order = 2)]
         public int FormNo { get; set; }
 
@@ -35,7 +33,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM_NAME")]
         [MaxLength(100)]
-        public string FormName { get; set; } = string.Empty;
+        public string? FormName { get; set; } = string.Empty;
 
         /// <summary>
         /// 帳票タイプ
@@ -114,7 +112,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("FORM")]
         [MaxLength(100)]
-        public string Form { get; set; } = string.Empty;
+        public string? Form { get; set; } = string.Empty;
 
         /// <summary>
         /// 初期設定ベース
@@ -184,7 +182,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

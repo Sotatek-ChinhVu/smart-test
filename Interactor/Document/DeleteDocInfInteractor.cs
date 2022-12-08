@@ -28,7 +28,7 @@ public class DeleteDocInfInteractor : IDeleteDocInfInputPort
             var docInfDetail = _documentRepository.GetDocInfDetail(inputData.HpId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.SeqNo);
             if (docInfDetail.RaiinNo == 0)
             {
-                return new DeleteDocInfOutputData(DeleteDocInfStatus.DocInfNotFount);
+                return new DeleteDocInfOutputData(DeleteDocInfStatus.DocInfNotFound);
             }
             var ptNum = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0)?.PtNum ?? 0;
             var listFolderPath = new List<string>(){

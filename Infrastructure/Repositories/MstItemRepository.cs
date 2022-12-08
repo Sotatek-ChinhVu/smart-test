@@ -627,6 +627,7 @@ namespace Infrastructure.Repositories
             }
             return (listTenMstModels, totalCount);
         }
+
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
@@ -645,6 +646,77 @@ namespace Infrastructure.Repositories
 
             return true;
         }
+
+        public bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate && t.IsDeleted == DeleteTypes.None).ToList();
+
+            if (tenMsts.Count == 0) return false;
+
+            for (int i = 0; i < tenMsts.Count; i++)
+            {
+                var tenMst = tenMsts[i];
+                if (tenMst.IsAdopted == valueAdopted) return false;
+
+                tenMst.IsAdopted = valueAdopted;
+
+                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateId = userId;
+            }
+
+            return _tenantDataContextTracking.SaveChanges() > 0;
+        }
+
+        public List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMstModels = new List<TenItemModel>();
+            if (tenMsts != null && tenMsts.Any())
+            {
+                tenMstModels = tenMsts.Select(item => new TenItemModel(
+                                                           item.HpId,
+                                                           item.ItemCd ?? string.Empty,
+                                                           item.RousaiKbn,
+                                                           item.KanaName1 ?? string.Empty,
+                                                           item.Name ?? string.Empty,
+                                                           item.KohatuKbn,
+                                                           item.MadokuKbn,
+                                                           item.KouseisinKbn,
+                                                           item.OdrUnitName ?? string.Empty,
+                                                           item.EndDate,
+                                                           item.DrugKbn,
+                                                           item.MasterSbt ?? string.Empty,
+                                                           item.BuiKbn,
+                                                           item.IsAdopted,
+                                                           0,
+                                                           item.TenId,
+                                                           string.Empty,
+                                                           string.Empty,
+                                                           item.CmtCol1,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.SinKouiKbn,
+                                                           item.YjCd ?? string.Empty,
+                                                           item.CnvUnitName ?? string.Empty,
+                                                           item.StartDate,
+                                                           item.YohoKbn,
+                                                           item.CmtColKeta1,
+                                                           item.CmtColKeta2,
+                                                           item.CmtColKeta3,
+                                                           item.CmtColKeta4,
+                                                           item.CmtCol2,
+                                                           item.CmtCol3,
+                                                           item.CmtCol4,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.MinAge ?? string.Empty,
+                                                           item.MaxAge ?? string.Empty,
+                                                           item.SanteiItemCd ?? string.Empty)).ToList();
+            }
+
+            return tenMstModels;
+        }
+
         public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
@@ -734,9 +806,19 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool CheckItemCd(string ItemCd)
+        public bool CheckItemCd(string itemCd)
         {
-            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+        }
+
+        public List<string> GetCheckItemCds(List<string> itemCds)
+        {
+            return _tenantDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+        }
+
+        public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
+        {
+            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
@@ -923,6 +1005,102 @@ namespace Infrastructure.Repositories
             {
                 result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
             }
+            return result;
+        }
+
+        public List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
+        {
+            List<ItemCommentSuggestionModel> result = _tenantDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
+                                                                              item.StartDate <= sinDate &&
+                                                                              sinDate <= item.EndDate)
+                                                 .AsEnumerable()
+                                                 .Select(item => new ItemCommentSuggestionModel(
+                                                     "【" + item.Name + "】",
+                                                     item.ItemCd,
+                                                     item?.SanteiItemCd ?? string.Empty,
+                                                     new List<RecedenCmtSelectModel>()
+                                                 ))
+                                                 .ToList();
+
+            if (result.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemCdCmtSelect = result.Select(item => item.SanteiItemCd).ToList();
+            listItemCdCmtSelect.AddRange(listItemCd);
+            listItemCdCmtSelect = listItemCdCmtSelect.Distinct().ToList();
+
+            var listRecedenCmtSelectAll = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                               listItemCdCmtSelect.Contains(item.ItemCd ?? string.Empty) &&
+                                               item.StartDate <= sinDate &&
+                                               sinDate <= item.EndDate &&
+                                               isInvalidList.Contains(item.IsInvalid))
+                .ToList();
+
+            if (listRecedenCmtSelectAll.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemNo = listRecedenCmtSelectAll.GroupBy(item => new { item.ItemCd, item.CommentCd })
+                .Select(grp => grp.OrderBy(r => r.ItemNo).First())
+                .Select(item => item.ItemNo)
+                .Distinct()
+                .ToList();
+
+            List<RecedenCmtSelect> listRecedenCmtMinEda = new List<RecedenCmtSelect>();
+
+            var listRecedenCmtSelect = _tenantDataContext.RecedenCmtSelects
+               .Where(item => item.HpId == hpId &&
+                                              listItemCdCmtSelect.Contains(item.ItemCd) &&
+                                              listItemNo.Contains(item.ItemNo) &&
+                                              item.StartDate <= sinDate &&
+                                              sinDate <= item.EndDate &&
+                                              isInvalidList.Contains(item.IsInvalid))
+               .ToList();
+            listRecedenCmtMinEda.AddRange(listRecedenCmtSelect);
+
+            if (!isRecalculation)
+            {
+                var listRecedenCmtSelectShinryo = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                      item.ItemCd == "199999999" &&
+                                      listItemNo.Contains(item.ItemNo) &&
+                                      item.StartDate <= sinDate &&
+                                      sinDate <= item.EndDate &&
+                                      isInvalidList.Contains(item.IsInvalid));
+                listRecedenCmtMinEda.AddRange(listRecedenCmtSelectShinryo);
+            }
+
+            var listCommentCd = listRecedenCmtMinEda.Select(item => item.CommentCd).Distinct();
+
+            var listTenMst = _tenantDataContext.TenMsts
+                .Where(item => item.HpId == hpId &&
+                                         listCommentCd.Contains(item.ItemCd) &&
+                                         item.StartDate <= sinDate &&
+                                         sinDate <= item.EndDate);
+
+            var listComment = (from recedenCmtSelect in listRecedenCmtMinEda
+                               join tenMst in listTenMst on
+                                   recedenCmtSelect.CommentCd equals tenMst.ItemCd
+                               select new RecedenCmtSelectModel(
+                                   tenMst.CmtSbt,
+                                   recedenCmtSelect.ItemCd,
+                                   recedenCmtSelect.CommentCd ?? string.Empty,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.ItemNo,
+                                   recedenCmtSelect.EdaNo,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.SortNo,
+                                   recedenCmtSelect.CondKbn
+                               )).ToList();
+            foreach (var inputCodeItem in result)
+            {
+                var listCommentWithCode = listComment.Where(item =>
+                    item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
+                    .OrderBy(item => item.ItemNo)
+                    .ToList();
+                inputCodeItem.SetData(listCommentWithCode);
+            }
+
             return result;
         }
 
