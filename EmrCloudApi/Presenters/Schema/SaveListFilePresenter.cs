@@ -5,13 +5,13 @@ using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace EmrCloudApi.Presenters.Schema;
 
-public class SaveListFileTodayOrderPresenter : ISaveListFileTodayOrderOutputPort
+public class SaveListFilePresenter : ISaveListFileTodayOrderOutputPort
 {
-    public Response<SaveListFileTodayOrderResponse> Result { get; private set; } = new();
+    public Response<SaveListFileResponse> Result { get; private set; } = new();
 
     public void Complete(SaveListFileTodayOrderOutputData outputData)
     {
-        Result.Data = new SaveListFileTodayOrderResponse(outputData.ListKarteFile);
+        Result.Data = new SaveListFileResponse(outputData.ListKarteFile);
         Result.Message = GetMessage(outputData.Status);
         Result.Status = (int)outputData.Status;
     }

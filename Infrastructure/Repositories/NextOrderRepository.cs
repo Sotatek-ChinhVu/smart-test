@@ -89,10 +89,10 @@ namespace Infrastructure.Repositories
             return oderInfModels;
         }
 
-        public bool Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
+        public long Upsert(int userId, int hpId, long ptId, List<NextOrderModel> nextOrderModels)
         {
             var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
-
+            long rsvkrtNo = 0;
             return executionStrategy.Execute(
                 () =>
                 {
@@ -134,6 +134,7 @@ namespace Infrastructure.Repositories
                                     oldNextOrder.IsDeleted = nextOrderModel.IsDeleted;
                                     oldNextOrder.UpdateDate = DateTime.UtcNow;
                                     oldNextOrder.UpdateId = userId;
+                                    rsvkrtNo = oldNextOrder.RsvkrtNo;
                                     UpsertByomei(userId, nextOrderModel.RsvkrtByomeis);
                                     UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf);
                                     UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs);
@@ -143,7 +144,7 @@ namespace Infrastructure.Repositories
                                     var nextOrderEntity = ConvertModelToRsvkrtNextOrder(userId, nextOrderModel, oldNextOrder);
                                     _tenantDataContextTracking.RsvkrtMsts.Add(nextOrderEntity);
                                     _tenantDataContextTracking.SaveChanges();
-                                    var rsvkrtNo = nextOrderEntity.RsvkrtNo;
+                                    rsvkrtNo = nextOrderEntity.RsvkrtNo;
                                     UpsertByomei(userId, nextOrderModel.RsvkrtByomeis, rsvkrtNo);
                                     UpsertKarteInf(userId, seqNo, nextOrderModel.RsvkrtKarteInf, rsvkrtNo);
                                     UpsertOrderInf(userId, maxRpNo, nextOrderModel.RsvkrtOrderInfs, rsvkrtNo);
@@ -153,15 +154,14 @@ namespace Infrastructure.Repositories
 
                         transaction.Commit();
 
-                        return true;
+                        return rsvkrtNo;
                     }
                     catch
                     {
                         transaction.Rollback();
 
-                        return false;
+                        return rsvkrtNo;
                     }
-
                 }
                 );
 
@@ -804,7 +804,7 @@ namespace Infrastructure.Repositories
 
         public List<NextOrderFileModel> GetNextOrderFiles(int hpId, long ptId, long rsvkrtNo)
         {
-            var lastSeqNo = GetLastSeqNo(hpId, ptId, rsvkrtNo);
+            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
             var result = _tenantDataContext.RsvkrtKarteImgInfs.Where(item =>
                                                                                 item.HpId == hpId
                                                                                 && item.PtId == ptId
@@ -819,10 +819,102 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public long GetLastSeqNo(int hpId, long ptId, long rsvkrtNo)
+        public long GetLastNextOrderSeqNo(int hpId, long ptId)
         {
-            var lastItem = _tenantDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RsvkrtNo == rsvkrtNo).ToList()?.MaxBy(item => item.SeqNo);
+            var lastItem = _tenantDataContext.RsvkrtKarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId).ToList()?.MaxBy(item => item.SeqNo);
             return lastItem != null ? lastItem.SeqNo : 0;
+        }
+
+        public bool SaveListFileNextOrder(int hpId, long ptId, long rsvkrtNo, List<string> listFileName, bool saveTempFile)
+        {
+            try
+            {
+                if (saveTempFile)
+                {
+                    var listFileInsert = ConvertListInsertTempNextOrderFile(hpId, ptId, listFileName);
+                    if (listFileInsert.Any())
+                    {
+                        _tenantDataContextTracking.RsvkrtKarteImgInfs.AddRange(listFileInsert);
+                    }
+                }
+                else
+                {
+                    UpdateSeqNoNextOrderFile(hpId, ptId, rsvkrtNo, listFileName);
+                }
+                return _tenantDataContextTracking.SaveChanges() > 0;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private void UpdateSeqNoNextOrderFile(int hpId, long ptId, long rsvkrtNo, List<string> listFileName)
+        {
+            int position = 1;
+            var lastSeqNo = GetLastNextOrderSeqNo(hpId, ptId);
+            var listOldFile = _tenantDataContextTracking.RsvkrtKarteImgInfs.Where(item =>
+                                               item.HpId == hpId
+                                               && item.PtId == ptId
+                                               && item.SeqNo == lastSeqNo
+                                               && item.SeqNo != 0
+                                               && item.FileName != null
+                                               && listFileName.Contains(item.FileName)
+                                               ).ToList();
+
+            var listUpdateFiles = _tenantDataContextTracking.RsvkrtKarteImgInfs.Where(item =>
+                                               item.HpId == hpId
+                                               && item.PtId == ptId
+                                               && item.RsvkrtNo == 0
+                                               && item.SeqNo == 0
+                                               && item.FileName != null
+                                               && listFileName.Contains(item.FileName)
+                                               ).ToList();
+            foreach (var item in listOldFile)
+            {
+                RsvkrtKarteImgInf newFile = item;
+                newFile.Id = 0;
+                newFile.RsvkrtNo = rsvkrtNo;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = position;
+                _tenantDataContextTracking.RsvkrtKarteImgInfs.Add(newFile);
+                position++;
+            }
+
+            foreach (var item in listUpdateFiles)
+            {
+                item.RsvkrtNo = rsvkrtNo;
+                item.SeqNo = lastSeqNo + 1;
+                item.RsvkrtNo = rsvkrtNo;
+                item.Position = position;
+                position++;
+            }
+        }
+
+        private List<RsvkrtKarteImgInf> ConvertListInsertTempNextOrderFile(int hpId, long ptId, List<string> listFileNames)
+        {
+            List<RsvkrtKarteImgInf> result = new();
+            int position = 1;
+
+            // insert new entity
+            foreach (var name in listFileNames)
+            {
+                RsvkrtKarteImgInf entity = new();
+                entity.HpId = hpId;
+                entity.PtId = ptId;
+                entity.RsvkrtNo = 0;
+                entity.Position = position;
+                entity.SeqNo = 0;
+                entity.FileName = name;
+                result.Add(entity);
+                position += 1;
+            }
+            return result;
+        }
+
+        public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)
+        {
+            throw new NotImplementedException();
         }
     }
 }

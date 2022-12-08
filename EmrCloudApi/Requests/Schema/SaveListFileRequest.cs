@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Schema;
 
-public class SaveListFileTodayOrderRequest
+public class SaveListFileRequest
 {
     public long PtId { get; set; }
 

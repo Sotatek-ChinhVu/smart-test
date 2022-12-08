@@ -130,24 +130,24 @@ public class GetNextOrderInteractor : IGetNextOrderInputPort
             return new GetNextOrderOutputData(GetNextOrderStatus.Failed);
         }
     }
-    private List<NextOrderFileItem> GetListNextOrderFile(int hpId, long ptId, long rsvkrtNo)
+    private List<string> GetListNextOrderFile(int hpId, long ptId, long rsvkrtNo)
     {
         var nextOrderFiles = _nextOrderRepository.GetNextOrderFiles(hpId, ptId, rsvkrtNo);
-        List<NextOrderFileItem> result = new();
+        List<string> result = new();
         var ptInf = _patientInforRepository.GetById(hpId, ptId, 0, 0);
         List<string> listFolders = new();
         listFolders.Add(CommonConstants.Store);
         listFolders.Add(CommonConstants.Karte);
         listFolders.Add(CommonConstants.NextPic);
         string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
-        var fileName = new StringBuilder();
-        fileName.Append(_options.BaseAccessUrl);
-        fileName.Append("/");
-        fileName.Append(path);
         foreach (var file in nextOrderFiles)
         {
+            var fileName = new StringBuilder();
+            fileName.Append(_options.BaseAccessUrl);
+            fileName.Append("/");
+            fileName.Append(path);
             fileName.Append(file.FileName);
-            result.Add(new NextOrderFileItem(file.Id, fileName.ToString()));
+            result.Add(fileName.ToString());
         }
         return result;
     }
