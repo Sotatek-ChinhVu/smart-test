@@ -933,8 +933,8 @@ namespace Infrastructure.Repositories
                                                                               sinDate <= item.EndDate)
                                                  .AsEnumerable()
                                                  .Select(item => new ItemCommentSuggestionModel(
-                                                     "【" + item.Name + "】",
                                                      item.ItemCd,
+                                                     "【" + item.Name + "】",
                                                      item?.SanteiItemCd ?? string.Empty,
                                                      new List<RecedenCmtSelectModel>()
                                                  ))
