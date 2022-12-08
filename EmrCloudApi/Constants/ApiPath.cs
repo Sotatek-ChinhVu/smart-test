@@ -111,6 +111,7 @@
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+        public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
