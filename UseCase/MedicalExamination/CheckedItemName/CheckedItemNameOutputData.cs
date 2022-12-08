@@ -1,20 +1,16 @@
-﻿using Domain.Models.TodayOdr;
-using UseCase.Core.Sync.Core;
-using static Helper.Constants.KarteConst;
-using static Helper.Constants.OrderInfConst;
-using static Helper.Constants.RaiinInfConst;
+﻿using UseCase.Core.Sync.Core;
 
 namespace UseCase.MedicalExamination.CheckedItemName
 {
     public class CheckedItemNameOutputData : IOutputData
     {
-        public CheckedItemNameOutputData(CheckedItemNameStatus status, Dictionary<string, string> checkedItemName)
+        public CheckedItemNameOutputData(CheckedItemNameStatus status, Dictionary<string, string> checkedItemNames)
         {
             Status = status;
-            CheckedItemName = checkedItemName;
+            CheckedItemNames = checkedItemNames;
         }
 
         public CheckedItemNameStatus Status { get; private set; }
-        public Dictionary<string, string> CheckedItemName { get; private set; }
+        public Dictionary<string, string> CheckedItemNames { get; private set; }
     }
 }

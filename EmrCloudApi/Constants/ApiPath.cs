@@ -127,6 +127,7 @@
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
+        public const string GetInfCheckedItemName = "GetInfCheckedItemName";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
