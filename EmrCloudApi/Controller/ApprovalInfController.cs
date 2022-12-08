@@ -38,7 +38,7 @@ namespace EmrCloudApi.Tenant.Controllers
         public async Task<ActionResult<Response<UpdateApprovalInfListResponse>>> Update([FromBody] UpdateApprovalInfRequest request)
         {
             var token = "";
-            var input = new UpdateApprovalInfListInputData(request.ApprovalIfnList.Select(x => new ApprovalInfModel(
+            var input = new UpdateApprovalInfListInputData( request.ApprovalIfnList.Select(x => new ApprovalInfModel(
                                                             x.Id,
                                                             HpId,
                                                             x.PtId,
