@@ -53,12 +53,12 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
             listFolders.Add(CommonConstants.Store);
             listFolders.Add(CommonConstants.Karte);
             string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
-            var fileName = new StringBuilder();
-            fileName.Append(_options.BaseAccessUrl);
-            fileName.Append("/");
-            fileName.Append(path);
             foreach (var file in listKarteFile)
             {
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
                 fileName.Append(file);
                 listFile.Add(fileName.ToString());
             }

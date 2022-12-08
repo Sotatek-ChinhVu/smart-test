@@ -92,43 +92,7 @@ namespace Infrastructure.Repositories
                 }
                 else
                 {
-                    int position = 1;
-                    var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
-                    var listOldFile = _tenantTrackingDataContext.KarteImgInfs.Where(item =>
-                                                       item.HpId == hpId
-                                                       && item.PtId == ptId
-                                                       && item.RaiinNo == raiinNo
-                                                       && item.SeqNo == lastSeqNo
-                                                       && item.FileName != null
-                                                       && listFileName.Contains(item.FileName)
-                                                       ).ToList();
-
-                    var listUpdateFiles = _tenantTrackingDataContext.KarteImgInfs.Where(item =>
-                                                       item.HpId == hpId
-                                                       && item.PtId == ptId
-                                                       && item.RaiinNo == 0
-                                                       && item.SeqNo == 0
-                                                       && item.FileName != null
-                                                       && listFileName.Contains(item.FileName)
-                                                       ).ToList();
-                    foreach (var item in listOldFile)
-                    {
-                        KarteImgInf newFile = new();
-                        newFile = item;
-                        newFile.Id = 0;
-                        newFile.SeqNo = lastSeqNo + 1;
-                        newFile.Position = position;
-                        _tenantTrackingDataContext.KarteImgInfs.Add(newFile);
-                        position++;
-                    }
-
-                    foreach (var item in listUpdateFiles)
-                    {
-                        item.RaiinNo = raiinNo;
-                        item.SeqNo = lastSeqNo + 1;
-                        item.Position = position;
-                        position++;
-                    }
+                    UpdateSeqNoKarteFile(hpId, ptId, raiinNo, listFileName);
                 }
                 return _tenantTrackingDataContext.SaveChanges() > 0;
             }
@@ -184,6 +148,47 @@ namespace Infrastructure.Repositories
             return result;
         }
 
+        private void UpdateSeqNoKarteFile(int hpId, long ptId, long raiinNo, List<string> listFileName)
+        {
+            int position = 1;
+            var lastSeqNo = GetLastSeqNo(hpId, ptId, raiinNo);
+            var listOldFile = _tenantTrackingDataContext.KarteImgInfs.Where(item =>
+                                               item.HpId == hpId
+                                               && item.PtId == ptId
+                                               && item.RaiinNo == raiinNo
+                                               && item.SeqNo == lastSeqNo
+                                               && item.FileName != null
+                                               && listFileName.Contains(item.FileName)
+                                               ).ToList();
+
+            var listUpdateFiles = _tenantTrackingDataContext.KarteImgInfs.Where(item =>
+                                               item.HpId == hpId
+                                               && item.PtId == ptId
+                                               && item.RaiinNo == 0
+                                               && item.SeqNo == 0
+                                               && item.FileName != null
+                                               && listFileName.Contains(item.FileName)
+                                               ).ToList();
+            foreach (var item in listOldFile)
+            {
+                KarteImgInf newFile;
+                newFile = item;
+                newFile.Id = 0;
+                newFile.SeqNo = lastSeqNo + 1;
+                newFile.Position = position;
+                _tenantTrackingDataContext.KarteImgInfs.Add(newFile);
+                position++;
+            }
+
+            foreach (var item in listUpdateFiles)
+            {
+                item.RaiinNo = raiinNo;
+                item.SeqNo = lastSeqNo + 1;
+                item.Position = position;
+                position++;
+            }
+        }
+
         public List<string> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile)
         {
             var lastSeqNo = searchTempFile ? 0 : GetLastSeqNo(hpId, ptId, raiinNo);
@@ -204,13 +209,13 @@ namespace Infrastructure.Repositories
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)
         {
             var listDeletes = _tenantTrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId
-                                                                && item.PtId == 883
+                                                                && item.PtId == ptId
                                                                 && item.SeqNo == 0
                                                                 && item.RaiinNo == 0
                                                                 && item.FileName != null
                                                                 && listFileNames.Contains(item.FileName)
                                                             ).ToList();
-            _tenantTrackingDataContext.RemoveRange(listDeletes);
+            _tenantTrackingDataContext.KarteImgInfs.RemoveRange(listDeletes);
             return _tenantTrackingDataContext.SaveChanges() > 0;
         }
     }

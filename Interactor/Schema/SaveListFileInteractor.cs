@@ -82,7 +82,7 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
                 case TypeUploadConstant.UploadKarteFile:
                     return _karteInfRepository.SaveListFileKarte(input.HpId, input.PtId, 0, listFileNames, true);
                 case TypeUploadConstant.UploadSupperSetDetailFile:
-                    break;
+                    return _superSetDetailRepository.SaveListSetKarteFileTemp(input.HpId, 0, listFileNames, true);
                 case TypeUploadConstant.UploadNextOrderFile:
                     break;
                 default:

@@ -5,7 +5,7 @@ namespace EmrCloudApi.Responses.NextOrder;
 
 public class GetNextOrderResponse
 {
-    public GetNextOrderResponse(List<GroupHokenItem> groupHokenItems, RsvkrtKarteInfModel karteInfModel, List<RsvKrtByomeiItem> byomeiItems, List<NextOrderFileItem> nextOrderFileItems)
+    public GetNextOrderResponse(List<GroupHokenItem> groupHokenItems, RsvkrtKarteInfModel karteInfModel, List<RsvKrtByomeiItem> byomeiItems, List<string> nextOrderFileItems)
     {
         GroupHokenItems = groupHokenItems;
         KarteInfModel = karteInfModel;
@@ -19,5 +19,5 @@ public class GetNextOrderResponse
 
     public List<RsvKrtByomeiItem> ByomeiItems { get; private set; }
 
-    public List<NextOrderFileItem> NextOrderFileItems { get; private set; }
+    public List<string> NextOrderFileItems { get; private set; }
 }
