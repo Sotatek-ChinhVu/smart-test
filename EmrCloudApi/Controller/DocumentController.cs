@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Document.AddTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocInf;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveDocInf;
@@ -108,6 +109,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveDocInfResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.DeleteDocInf)]
+    public ActionResult<Response<DeleteDocInfResponse>> DeleteDocInf([FromBody] DeleteDocInfRequest request)
+    {
+        var input = new DeleteDocInfInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.SeqNo);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocInfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocInfResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)

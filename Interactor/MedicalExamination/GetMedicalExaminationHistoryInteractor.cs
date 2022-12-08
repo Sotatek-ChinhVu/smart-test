@@ -486,6 +486,8 @@ namespace Interactor.MedicalExamination
                                                                         od.YohoSets,
                                                                         od.Kasan1,
                                                                         od.Kasan2,
+                                                                        od.CnvUnitName,
+                                                                        od.OdrUnitName,
                                                                         od.HasCmtName
                                                                 )
                                                                 ).ToList(),

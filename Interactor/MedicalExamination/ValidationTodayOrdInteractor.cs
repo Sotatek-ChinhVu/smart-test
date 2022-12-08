@@ -230,7 +230,9 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                ""
                             );
                     lock (objDetail)
                     {
