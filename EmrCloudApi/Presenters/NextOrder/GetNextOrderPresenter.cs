@@ -13,7 +13,7 @@ namespace EmrCloudApi.Presenters.NextOrder
         {
             Result = new Response<GetNextOrderResponse>()
             {
-                Data = new GetNextOrderResponse(outputData.GroupHokenItems, outputData.KarteInf, outputData.ByomeiItems),
+                Data = new GetNextOrderResponse(outputData.GroupHokenItems, outputData.KarteInf, outputData.ByomeiItems, outputData.NextOrderFiles),
                 Status = (byte)outputData.Status
             };
             switch (outputData.Status)

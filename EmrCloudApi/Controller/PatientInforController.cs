@@ -340,7 +340,7 @@ namespace EmrCloudApi.Controller
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
                 request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
                 request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
-                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew);
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew, request.HokenInfIsNoHoken, request.SelectedHokenInfHokenChecksCount);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateMainInsurancePresenter();
@@ -648,6 +648,7 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+        
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
         {
@@ -684,12 +685,16 @@ namespace EmrCloudApi.Controller
                                             request.SelectedHokenInfTokureiYm2,
                                             request.SelectedHokenInfisShahoOrKokuho,
                                             request.SelectedHokenInfisExpirated, 
-                                            request.SelectedHokenInfconfirmDate, 
                                             request.SelectedHokenInfHokenNo, 
                                             request.SelectedHokenInfHokenEdraNo,
                                             request.IsSelectedHokenMst, 
                                             request.SelectedHokenInfHonkeKbn,
-                                            request.PtBirthday);
+                                            request.PtBirthday,
+                                            request.SelectedHokenInfIsAddHokenCheck,
+                                            request.SelectedHokenInfHokenChecksCount,
+                                            request.HokenInfIsNoHoken,
+                                            request.HokenInfConfirmDate);
+
             var output = _bus.Handle(input);
 
             var presenter = new ValidHokenInfAllTypePresenter();
