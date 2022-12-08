@@ -70,8 +70,6 @@ namespace EmrCloudApi.Requests.Insurance
 
         public bool SelectedHokenInfisExpirated { get;  set; }
 
-        public int SelectedHokenInfconfirmDate { get;  set; }
-
         public int SelectedHokenInfHokenNo { get;  set; }
 
         public int SelectedHokenInfHokenEdraNo { get;  set; }

@@ -5,7 +5,7 @@ namespace UseCase.Insurance.ValidHokenInfAllType
 {
     public class ValidHokenInfAllTypeInputData : IInputData<ValidHokenInfAllTypeOutputData>
     {
-        public ValidHokenInfAllTypeInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate, bool selectedHokenInfHokenMasterModelIsNull, bool selectedHokenInf, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, string selectedHokenInfHoubetu, bool selectedHokenInfIsJihi, string hokenSyaNo, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfconfirmDate, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool isSelectedHokenMst, int selectedHokenInfHonkeKbn, int ptBirthday,bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount,bool hokenInfIsNoHoken,int hokenInfConfirmDate)
+        public ValidHokenInfAllTypeInputData(int hpId, int hokenKbn, int sinDate, bool isSelectedHokenInf, string selectedHokenInfRodoBango, List<RousaiTenkiModel> listRousaiTenki, int selectedHokenInfRousaiSaigaiKbn, int selectedHokenInfRousaiSyobyoDate, string selectedHokenInfRousaiSyobyoCd, int selectedHokenInfRyoyoStartDate, int selectedHokenInfRyoyoEndDate, int selectedHokenInfStartDate, int selectedHokenInfEndDate, bool selectedHokenInfIsAddNew, string selectedHokenInfNenkinBango, string selectedHokenInfKenkoKanriBango, int selectedHokenInfConfirmDate, bool selectedHokenInfHokenMasterModelIsNull, bool selectedHokenInf, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, string selectedHokenInfHoubetu, bool selectedHokenInfIsJihi, string hokenSyaNo, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfisShahoOrKokuho, bool selectedHokenInfisExpirated, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool isSelectedHokenMst, int selectedHokenInfHonkeKbn, int ptBirthday,bool selectedHokenInfIsAddHokenCheck,int selectedHokenInfHokenChecksCount,bool hokenInfIsNoHoken,int hokenInfConfirmDate)
         {
             HpId = hpId;
             HokenKbn = hokenKbn;
@@ -40,7 +40,6 @@ namespace UseCase.Insurance.ValidHokenInfAllType
             SelectedHokenInfTokureiYm2 = selectedHokenInfTokureiYm2;
             SelectedHokenInfisShahoOrKokuho = selectedHokenInfisShahoOrKokuho;
             SelectedHokenInfisExpirated = selectedHokenInfisExpirated;
-            SelectedHokenInfconfirmDate = selectedHokenInfconfirmDate;
             SelectedHokenInfHokenNo = selectedHokenInfHokenNo;
             SelectedHokenInfHokenEdraNo = selectedHokenInfHokenEdraNo;
             IsSelectedHokenMst = isSelectedHokenMst;
@@ -117,8 +116,6 @@ namespace UseCase.Insurance.ValidHokenInfAllType
         public bool SelectedHokenInfisShahoOrKokuho { get; private set; }
 
         public bool SelectedHokenInfisExpirated { get; private set; }
-
-        public int SelectedHokenInfconfirmDate { get; private set; }
 
         public int SelectedHokenInfHokenNo { get; private set; }
 

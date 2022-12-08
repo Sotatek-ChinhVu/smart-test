@@ -126,6 +126,7 @@
         public const string AddTemplateToCategory = "AddTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
         public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
