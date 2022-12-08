@@ -5,8 +5,7 @@ using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Linq;
-using System.Xml.Linq;
+using static Helper.Constants.UserConst;
 
 namespace Infrastructure.Repositories
 {
@@ -233,9 +232,165 @@ namespace Infrastructure.Repositories
                 _tenantTrackingDataContext.Database.Migrate();
                 return true;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return false;
+            }
+        }
+
+        public bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId)
+        {
+            // Check lockMedicalExamination
+            var raiinInfo = _tenantNoTrackingDataContext.RaiinInfs.FirstOrDefault(p => p.HpId == hpId && p.PtId == ptId && p.SinDate == sinDate && p.RaiinNo == raiinNo && p.IsDeleted == DeleteTypes.None);
+            long oyaRaiinNo = raiinInfo != null ? raiinInfo.OyaRaiinNo : 0;
+            var result = CheckLockInfo(hpId, ptId, FunctionCode.MedicalExaminationCode, raiinNo, oyaRaiinNo, sinDate, token, userId);
+            return GetPermissionByScreenCode(hpId, userId, FunctionCode.MedicalExaminationCode) == PermissionType.Unlimited && !(result != null && result.Item2?.LockLevel == 0);
+        }
+
+        private Tuple<LockInf, LockMst, UserMst, FunctionMst>? CheckLockInfo(int hpID, long ptID_B, string functionCD_B, long raiinNo_B, long oyaRaiinNo_B, int sinDate_B, string token, int currentUserID)
+        {
+            var listCheckedResult =
+                (
+                    from lockInf in _tenantNoTrackingDataContext.LockInfs.Where(i => i.HpId == hpID && i.PtId == ptID_B && i.Machine != token)
+                    join raiinInf in _tenantNoTrackingDataContext.RaiinInfs.Where(r => r.HpId == hpID)
+                    on lockInf.RaiinNo equals raiinInf.RaiinNo into rfg
+                    from lockedRaiinInf in rfg.DefaultIfEmpty()
+                    join lockMst in _tenantNoTrackingDataContext.LockMsts.Where(m => m.FunctionCdB == functionCD_B && m.IsInvalid == 0)
+                    on lockInf.FunctionCd equals lockMst.FunctionCdA
+                    join userMst in _tenantNoTrackingDataContext.UserMsts.Where(u => u.HpId == hpID && u.IsDeleted != 1 && u.StartDate <= sinDate_B && sinDate_B <= u.EndDate)
+                    on lockInf.UserId equals userMst.UserId into gj
+                    from lockedUserInf in gj.DefaultIfEmpty()
+                    join functionMst in _tenantNoTrackingDataContext.FunctionMsts
+                    on lockInf.FunctionCd equals functionMst.FunctionCd
+                    where (lockMst.FunctionCdA != lockMst.FunctionCdB) || (lockMst.FunctionCdA == lockMst.FunctionCdB && (lockInf.Machine != token || lockInf.UserId != currentUserID))
+                    orderby lockMst.LockLevel, lockMst.LockRange
+                    select new
+                    {
+                        lockInf,
+                        lockMst,
+                        lockedUserInf,
+                        functionMst,
+                        lockedRaiinInf
+                    }
+                ).ToList();
+
+            if (listCheckedResult == null) return null;
+
+            for (int i = 0; i < listCheckedResult.Count; i++)
+            {
+                var checkedResult = listCheckedResult[i];
+                if (checkedResult.lockMst.LockRange == 1 && checkedResult.lockInf.RaiinNo != raiinNo_B)
+                {
+                    continue;
+                }
+                else if (checkedResult.lockMst.LockRange == 2 && checkedResult.lockedRaiinInf != null && checkedResult.lockedRaiinInf.OyaRaiinNo != oyaRaiinNo_B)
+                {
+                    continue;
+                }
+                else if (checkedResult.lockMst.LockRange == 3 && checkedResult.lockInf.SinDate != sinDate_B)
+                {
+                    continue;
+                }
+                return new Tuple<LockInf, LockMst, UserMst, FunctionMst>(checkedResult.lockInf, checkedResult.lockMst, checkedResult.lockedUserInf, checkedResult.functionMst);
+            }
+
+            return null;
+        }
+
+
+        private PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
+        {
+            var listUserPermission = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
+            var listUserPermissionOfUserDefault = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();
+            var isDoctor = _tenantNoTrackingDataContext.UserMsts.FirstOrDefault(u => u.UserId == userId && u.HpId == hpId && u.IsDeleted == DeleteTypes.None)?.JobCd == 1;
+            if (string.IsNullOrEmpty(permisionCode))
+            {
+                return PermissionType.NotAvailable;
+            }
+            UserPermission? userPermission = null;
+            if (listUserPermission != null)
+            {
+                userPermission = listUserPermission.FirstOrDefault(u => u.FunctionCd == permisionCode);
+            }
+            if (userPermission == null && listUserPermissionOfUserDefault != null)
+            {
+                // get permission of userID = 0
+                userPermission = listUserPermissionOfUserDefault.FirstOrDefault(u => u.FunctionCd == permisionCode);
+            }
+            if (userPermission != null)
+            {
+                return GetPermissionTypeByCode(userPermission.Permission);
+            }
+            return GetDefaultPermission(permisionCode, isDoctor);
+        }
+
+        private PermissionType GetPermissionTypeByCode(int code)
+        {
+            switch (code)
+            {
+                case 0:
+                    return PermissionType.Unlimited;
+                case 1:
+                    return PermissionType.ReadOnly;
+                case 99:
+                    return PermissionType.NotAvailable;
+                default:
+                    return PermissionType.NotAvailable;
+            }
+        }
+
+        private PermissionType GetDefaultPermission(string permissionCode, bool isDoctor)
+        {
+            switch (permissionCode)
+            {
+                case FunctionCode.MedicalExaminationCode:
+                    return PermissionType.Unlimited;
+                case FunctionCode.SuperSetCode:
+                    return PermissionType.Unlimited;
+                case FunctionCode.ApprovalInfo:
+                    if (isDoctor)
+                    {
+                        return PermissionType.Unlimited;
+                    }
+                    return PermissionType.NotAvailable;
+                case FunctionCode.PatientInfo:
+                    return PermissionType.Unlimited;
+                case FunctionCode.CheckDrugInfo:
+                case FunctionCode.CheckSpecificHealth:
+                    return PermissionType.Unlimited;
+                case FunctionCode.Accounting:
+                    return PermissionType.Unlimited;
+                case FunctionCode.EditSummary:
+                case FunctionCode.MasterMaintenanceCode:
+                case FunctionCode.HolidaySettingCode:
+                    return PermissionType.Unlimited;
+                case FunctionCode.Sta1001:
+                case FunctionCode.Sta1002:
+                case FunctionCode.Sta1010:
+                case FunctionCode.Sta2001:
+                case FunctionCode.Sta2002:
+                case FunctionCode.Sta2003:
+                case FunctionCode.Sta2010:
+                case FunctionCode.Sta2011:
+                case FunctionCode.Sta2020:
+                case FunctionCode.Sta2021:
+                case FunctionCode.Sta3001:
+                case FunctionCode.Sta3010:
+                case FunctionCode.Sta3020:
+                case FunctionCode.Sta3030:
+                case FunctionCode.Sta3040:
+                case FunctionCode.Sta3041:
+                case FunctionCode.Sta3050:
+                case FunctionCode.Sta3060:
+                case FunctionCode.Sta3061:
+                case FunctionCode.Sta3070:
+                case FunctionCode.Sta3071:
+                case FunctionCode.Sta3080:
+                case FunctionCode.PatientManagement:
+                case FunctionCode.LockInf:
+                    return PermissionType.Unlimited;
+                default:
+                    throw new NotSupportedException("Not supported for code : " + permissionCode);
             }
         }
     }

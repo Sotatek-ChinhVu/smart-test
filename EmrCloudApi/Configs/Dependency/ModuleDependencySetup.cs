@@ -225,6 +225,7 @@ using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
 using UseCase.Schema.SaveImageSuperSetDetail;
+using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
 using UseCase.SetMst.CopyPasteSetMst;
@@ -246,6 +247,7 @@ using UseCase.UketukeSbtMst.GetBySinDate;
 using UseCase.UketukeSbtMst.GetList;
 using UseCase.UketukeSbtMst.GetNext;
 using UseCase.UsageTreeSet.GetTree;
+using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetUserConfList;
@@ -255,7 +257,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using UseCase.Schema.SaveListFileTodayOrder;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -376,6 +377,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertUserListInputData, UpsertUserListInteractor>();
             busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
+            busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();

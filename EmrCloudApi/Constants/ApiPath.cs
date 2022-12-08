@@ -131,5 +131,8 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //User
+        public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
     }
 }

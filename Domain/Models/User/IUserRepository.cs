@@ -43,5 +43,7 @@
         bool CheckLoginInfo(string userName, string password);
 
         bool MigrateDatabase();
+
+        bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId);
     }
 }

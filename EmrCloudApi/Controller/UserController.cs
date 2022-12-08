@@ -7,6 +7,7 @@ using EmrCloudApi.Responses.User;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
+using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
 using UseCase.User.GetList;
 using UseCase.User.UpsertList;
@@ -57,6 +58,17 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpsertUserResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.CheckLockMedicalExamination)]
+    public ActionResult<Response<CheckedLockMedicalExaminationResponse>> CheckLockMedicalExamination([FromQuery] CheckedLockMedicalExaminationRequest request)
+    {
+        var input = new CheckedLockMedicalExaminationInputData(HpId, request.PtId, request.RaiinNo, request.SinDate, Token, UserId);
+        var output = _bus.Handle(input);
+        var presenter = new CheckedLockMedicalExaminationPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
     }
 
     private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int HpId)
