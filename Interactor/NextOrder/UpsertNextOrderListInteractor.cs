@@ -4,6 +4,10 @@ using Domain.Models.MstItem;
 using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using UseCase.NextOrder.Upsert;
 using static Helper.Constants.KarteConst;
 using static Helper.Constants.NextOrderConst;
@@ -20,9 +24,13 @@ namespace Interactor.NextOrder
         private readonly IUserRepository _userRepository;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IMstItemRepository _mstItemRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
 
-        public UpsertNextOrderListInteractor(INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
+        public UpsertNextOrderListInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, INextOrderRepository nextOrderRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInfRepository, IUserRepository userRepository, IInsuranceRepository insuranceRepository, IMstItemRepository mstItemRepository)
         {
+            _amazonS3Service = amazonS3Service;
+            _options = optionsAccessor.Value;
             _nextOrderRepository = nextOrderRepository;
             _hpInfRepository = hpInfRepository;
             _patientInfRepository = patientInfRepository;
@@ -133,12 +141,45 @@ namespace Interactor.NextOrder
                 {
                     return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, validationNextOrders, validationOrdInfs, validationKarteInfs, validationRsvkrtByomeis);
                 }
-                _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
+                var rsvkrtNo = _nextOrderRepository.Upsert(inputData.UserId, inputData.HpId, inputData.PtId, nextOrderModels);
+                if (rsvkrtNo > 0)
+                {
+                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, true);
+                }
+                else
+                {
+                    SaveFileNextOrder(inputData.HpId, inputData.PtId, rsvkrtNo, inputData.ListFileItems, false);
+                }
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Successed, new(), new(), new(), new());
             }
             catch
             {
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
+            }
+        }
+
+        private void SaveFileNextOrder(int hpId, long ptId, long rsvkrtNo, List<string> listFileItems, bool saveSuccess)
+        {
+            var ptInf = _patientInfRepository.GetById(hpId, ptId, 0, 0);
+            List<string> listFolders = new();
+            string path = string.Empty;
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            listFolders.Add(CommonConstants.NextPic);
+            path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+            string host = _options.BaseAccessUrl + "/" + path;
+            var listUpdates = listFileItems.Select(item => item.Replace(host, string.Empty)).ToList();
+            if (saveSuccess)
+            {
+                _nextOrderRepository.SaveListFileNextOrder(hpId, ptId, rsvkrtNo, listUpdates, false);
+            }
+            else
+            {
+                _nextOrderRepository.ClearTempData(hpId, ptId, listUpdates.ToList());
+                foreach (var item in listUpdates)
+                {
+                    _amazonS3Service.DeleteObjectAsync(path + item);
+                }
             }
         }
     }

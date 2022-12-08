@@ -110,17 +110,6 @@ namespace Infrastructure.Repositories
                 return _tenantNoTrackingDataContext.KarteInfs.OrderBy(k => k.SinDate).FirstOrDefault(k => k.HpId == hpId && k.PtId == ptId && (k.Text != null && k.Text.Contains(searchText)) && k.SinDate >= sinDate && !listRaiiNoSameSinDate.Contains(k.SinDate) && k.KarteKbn == 1)?.SinDate ?? -1;
         }
 
-        public bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes)
-        {
-            var fileExists = _tenantNoTrackingDataContext.KarteImgInfs.Count(item =>
-                                                                                item.HpId == hpId
-                                                                                && item.PtId == ptId
-                                                                                && item.SeqNo == seqNo
-                                                                                && item.RaiinNo == rainNo
-                                                                                && listFileDeletes.Distinct().Contains(item.Id));
-            return fileExists == listFileDeletes?.Count();
-        }
-
         public long GetLastSeqNo(int hpId, long ptId, long rainNo)
         {
             var lastItem = _tenantNoTrackingDataContext.KarteImgInfs.Where(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == rainNo).ToList()?.MaxBy(item => item.SeqNo);

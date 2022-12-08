@@ -12,12 +12,15 @@ namespace UseCase.NextOrder.Upsert
 
         public List<NextOrderItem> NextOrderItems { get; private set; }
 
-        public UpsertNextOrderListInputData(long ptId, int hpId, int userId, List<NextOrderItem> nextOrderItems)
+        public List<string> ListFileItems { get; private set; }
+
+        public UpsertNextOrderListInputData(long ptId, int hpId, int userId, List<NextOrderItem> nextOrderItems, List<string> listFileItems)
         {
             PtId = ptId;
             HpId = hpId;
             UserId = userId;
             NextOrderItems = nextOrderItems;
+            ListFileItems = listFileItems;
         }
     }
 }

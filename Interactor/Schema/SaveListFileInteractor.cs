@@ -1,4 +1,5 @@
 ﻿using Domain.Models.KarteInfs;
+using Domain.Models.NextOrder;
 using Domain.Models.PatientInfor;
 using Domain.Models.SuperSetDetail;
 using Helper.Constants;
@@ -15,15 +16,17 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
     private readonly IPatientInforRepository _patientInforRepository;
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IKarteInfRepository _karteInfRepository;
+    private readonly INextOrderRepository _nextOrderRepository;
     private readonly AmazonS3Options _options;
 
-    public SaveListFileInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository, IKarteInfRepository karteInfRepository)
+    public SaveListFileInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository, ISuperSetDetailRepository superSetDetailRepository, IKarteInfRepository karteInfRepository, INextOrderRepository nextOrderRepository)
     {
         _options = optionsAccessor.Value;
         _amazonS3Service = amazonS3Service;
         _patientInforRepository = patientInforRepository;
         _superSetDetailRepository = superSetDetailRepository;
         _karteInfRepository = karteInfRepository;
+        _nextOrderRepository = nextOrderRepository;
 
     }
 
@@ -84,11 +87,10 @@ public class SaveListFileInteractor : ISaveListFileTodayOrderInputPort
                 case TypeUploadConstant.UploadSupperSetDetailFile:
                     return _superSetDetailRepository.SaveListSetKarteFileTemp(input.HpId, 0, listFileNames, true);
                 case TypeUploadConstant.UploadNextOrderFile:
-                    break;
+                    return _nextOrderRepository.SaveListFileNextOrder(input.HpId, input.PtId, 0, listFileNames, true);
                 default:
                     return false;
             }
-            return true;
         }
         return false;
     }

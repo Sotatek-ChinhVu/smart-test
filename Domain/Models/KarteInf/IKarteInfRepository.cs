@@ -10,8 +10,6 @@
 
         bool SaveListFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveTempFile);
 
-        bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes);
-
         long GetLastSeqNo(int hpId, long ptId, long rainNo);
 
         List<string> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile);
