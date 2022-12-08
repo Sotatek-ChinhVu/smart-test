@@ -4,7 +4,7 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
 {
     public class SuperSetDetailItem
     {
-        public SuperSetDetailItem(List<SetByomeiItem> setByomeiList, SetKarteInfModel setKarteInf, List<SetGroupOrderInfItem> setGroupOrderInfList, List<SetKarteFileItem> setKarteFileItemList)
+        public SuperSetDetailItem(List<SetByomeiItem> setByomeiList, SetKarteInfModel setKarteInf, List<SetGroupOrderInfItem> setGroupOrderInfList, List<string> setKarteFileItemList)
         {
             SetByomeiList = setByomeiList;
             SetKarteInf = setKarteInf;
@@ -18,6 +18,6 @@ namespace UseCase.SuperSetDetail.GetSuperSetDetail
 
         public List<SetGroupOrderInfItem> SetGroupOrderInfList { get; private set; }
 
-        public List<SetKarteFileItem> SetKarteFileItemList { get; private set; }
+        public List<string> SetKarteFileItemList { get; private set; }
     }
 }

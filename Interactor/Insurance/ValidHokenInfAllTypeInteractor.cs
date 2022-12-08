@@ -73,7 +73,7 @@ namespace Interactor.Insurance
                                 inputData.SelectedHokenInfTokureiYm2,
                                 inputData.SelectedHokenInfisShahoOrKokuho,
                                 inputData.SelectedHokenInfisExpirated,
-                                inputData.SelectedHokenInfconfirmDate,
+                                inputData.SelectedHokenInfConfirmDate,
                                 hokenMst.StartDate,
                                 hokenMst.EndDate,
                                 hokenMst.DisplayTextMaster,
@@ -529,7 +529,7 @@ namespace Interactor.Insurance
                                                             selectedHokenInfHokenChecksCount);
             if (!string.IsNullOrEmpty(checkMessageIsValidConfirmDateHoken))
             {
-                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InValidConfirmDateHoken, checkMessageIsValidConfirmDateAgeCheck, TypeMessage.TypeMessageConfirmation));
             }
 
             // check valid hokenmst date

@@ -591,7 +591,6 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             );
     }
 
-
     private bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
     {
         if (tenMst == null) return false;
@@ -972,52 +971,6 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     }
     #endregion
 
-    public bool SaveListSetKarteImgTemp(List<SetKarteImgInfModel> listModel)
-    {
-        bool status = false;
-        try
-        {
-            var hpId = listModel.FirstOrDefault()?.HpId;
-            var setCd = listModel.FirstOrDefault()?.SetCd;
-            var listPosition = listModel.Select(item => item.Position).ToList();
-            var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName)).ToList();
-
-            foreach (var model in listModel)
-            {
-                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName.Equals(model.OldFileName));
-                if (karteImgInf == null)
-                {
-                    karteImgInf = new SetKarteImgInf();
-                    karteImgInf.HpId = model.HpId;
-                    karteImgInf.SetCd = model.SetCd;
-                    karteImgInf.FileName = model.FileName;
-                    karteImgInf.Position = model.Position;
-                    _tenantDataContext.SetKarteImgInf.Add(karteImgInf);
-                }
-                else
-                {
-                    if (model.FileName != String.Empty)
-                    {
-                        karteImgInf.Position = model.Position;
-                        karteImgInf.FileName = model.FileName;
-                    }
-                    else
-                    {
-                        _tenantDataContext.SetKarteImgInf.Remove(karteImgInf);
-                    }
-                }
-            }
-            _tenantDataContext.SaveChanges();
-            status = true;
-            return status;
-        }
-        catch (Exception)
-        {
-            return status;
-        }
-    }
-
     public List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd)
     {
         var listOrder = _tenantNoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
@@ -1182,5 +1135,100 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     {
         var lastItem = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList()?.MaxBy(item => item.SeqNo);
         return lastItem != null ? lastItem.SeqNo : 0;
+    }
+
+    public bool SaveListSetKarteFileTemp(int hpId, int setCd, List<string> listFileName, bool saveTempFile)
+    {
+        try
+        {
+            if (saveTempFile)
+            {
+                var listInsert = ConvertListAddNewFiles(hpId, listFileName);
+                if (listInsert.Any())
+                {
+                    _tenantDataContext.SetKarteImgInf.AddRange(listInsert);
+                }
+            }
+            else
+            {
+                UpdateSeqNoSetFile(hpId, setCd, listFileName);
+            }
+            return _tenantDataContext.SaveChanges() > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private void UpdateSeqNoSetFile(int hpId, int setCd, List<string> listFileName)
+    {
+        int position = 1;
+        var lastSeqNo = GetLastSeqNo(hpId, setCd);
+        var listOldFile = _tenantDataContext.SetKarteImgInf.Where(item =>
+                                                                item.HpId == hpId
+                                                                && item.SeqNo == lastSeqNo
+                                                                && item.SetCd == setCd
+                                                                && item.FileName != null
+                                                                && listFileName.Contains(item.FileName)
+                                                            ).ToList();
+
+        var listUpdateFiles = _tenantDataContext.SetKarteImgInf.Where(item =>
+                                                                item.HpId == hpId
+                                                                && item.SeqNo == 0
+                                                                && item.SetCd == 0
+                                                                && item.FileName != null
+                                                                && listFileName.Contains(item.FileName)
+                                                            ).ToList();
+
+        foreach (var item in listOldFile)
+        {
+            SetKarteImgInf newFile = item;
+            newFile.Id = 0;
+            newFile.SeqNo = lastSeqNo + 1;
+            newFile.Position = position;
+            _tenantDataContext.SetKarteImgInf.Add(newFile);
+            position++;
+        }
+
+        foreach (var item in listUpdateFiles)
+        {
+            item.SeqNo = lastSeqNo + 1;
+            item.SetCd = setCd;
+            item.Position = position;
+            position++;
+        }
+    }
+
+    private List<SetKarteImgInf> ConvertListAddNewFiles(int hpId, List<string> listFileName)
+    {
+        List<SetKarteImgInf> result = new();
+        int position = 1;
+        foreach (var item in listFileName)
+        {
+            result.Add(new SetKarteImgInf()
+            {
+                Id = 0,
+                HpId = hpId,
+                SeqNo = 0,
+                SetCd = 0,
+                Position = position,
+                FileName = item
+            });
+            position += 1;
+        }
+        return result;
+    }
+
+    public bool ClearTempData(int hpId, List<string> listFileNames)
+    {
+        var listDeletes = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
+                                                                && item.SeqNo == 0
+                                                                && item.SetCd == 0
+                                                                && item.FileName != null
+                                                                && listFileNames.Contains(item.FileName)
+                                                            ).ToList();
+        _tenantDataContext.SetKarteImgInf.RemoveRange(listDeletes);
+        return _tenantDataContext.SaveChanges() > 0;
     }
 }

@@ -129,6 +129,7 @@ using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
 using UseCase.Document.AddTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocInf;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveDocInf;
@@ -144,6 +145,7 @@ using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidHokenInfAllType;
@@ -171,6 +173,7 @@ using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
 using UseCase.MstItem.DiseaseSearch;
 using UseCase.MstItem.FindTenMst;
+using UseCase.MstItem.GetAdoptedItemList;
 using UseCase.MstItem.GetDosageDrugList;
 using UseCase.MstItem.GetFoodAlrgy;
 using UseCase.MstItem.GetSelectiveComment;
@@ -180,8 +183,11 @@ using UseCase.MstItem.SearchSupplement;
 using UseCase.MstItem.SearchTenItem;
 using UseCase.MstItem.UpdateAdopted;
 using UseCase.MstItem.UpdateAdoptedByomei;
+using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Upsert;
+using UseCase.NextOrder.Validation;
 using UseCase.OrdInfs.CheckedSpecialItem;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
@@ -224,7 +230,6 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
@@ -416,6 +421,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
             busBuilder.RegisterUseCase<ValidHokenInfAllTypeInputData, ValidHokenInfAllTypeInteractor>();
+            busBuilder.RegisterUseCase<HokenPatternUsedInputData, HokenPatternUsedInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
@@ -530,6 +536,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetFoodAlrgyInputData, GetFoodAlrgyInteractor>();
             busBuilder.RegisterUseCase<SearchPostCodeInputData, SearchPostCodeInteractor>();
             busBuilder.RegisterUseCase<FindTenMstInputData, FindTenMstInteractor>();
+            busBuilder.RegisterUseCase<GetAdoptedItemListInputData, GetAdoptedItemListInteractor>();
+            busBuilder.RegisterUseCase<UpdateAdoptedItemListInputData, UpdateAdoptedItemListInteractor>();
 
             // Disease
             busBuilder.RegisterUseCase<UpsertPtDiseaseListInputData, UpsertPtDiseaseListInteractor>();
@@ -553,7 +561,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
             busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
             busBuilder.RegisterUseCase<GetSuperSetDetailToDoTodayOrderInputData, GetSuperSetDetailToDoTodayOrderInteractor>();
-            busBuilder.RegisterUseCase<SaveImageSuperSetDetailInputData, SaveImageSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationTodayOrdInputData, ValidationTodayOrdInteractor>();
@@ -606,6 +613,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
             busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
+            busBuilder.RegisterUseCase<UpsertNextOrderListInputData, UpsertNextOrderListInteractor>();
+            busBuilder.RegisterUseCase<ValidationNextOrderListInputData, ValidationNextOrderListInteractor>();
 
             //YohoSetMst
             busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
@@ -618,6 +627,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
             busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
             busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
+            busBuilder.RegisterUseCase<DeleteDocInfInputData, DeleteDocInfInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

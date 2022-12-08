@@ -627,6 +627,7 @@ namespace Infrastructure.Repositories
             }
             return (listTenMstModels, totalCount);
         }
+
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
@@ -645,6 +646,77 @@ namespace Infrastructure.Repositories
 
             return true;
         }
+
+        public bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate && t.IsDeleted == DeleteTypes.None).ToList();
+
+            if (tenMsts.Count == 0) return false;
+
+            for (int i = 0; i < tenMsts.Count; i++)
+            {
+                var tenMst = tenMsts[i];
+                if (tenMst.IsAdopted == valueAdopted) return false;
+
+                tenMst.IsAdopted = valueAdopted;
+
+                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateId = userId;
+            }
+
+            return _tenantDataContextTracking.SaveChanges() > 0;
+        }
+
+        public List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMstModels = new List<TenItemModel>();
+            if (tenMsts != null && tenMsts.Any())
+            {
+                tenMstModels = tenMsts.Select(item => new TenItemModel(
+                                                           item.HpId,
+                                                           item.ItemCd ?? string.Empty,
+                                                           item.RousaiKbn,
+                                                           item.KanaName1 ?? string.Empty,
+                                                           item.Name ?? string.Empty,
+                                                           item.KohatuKbn,
+                                                           item.MadokuKbn,
+                                                           item.KouseisinKbn,
+                                                           item.OdrUnitName ?? string.Empty,
+                                                           item.EndDate,
+                                                           item.DrugKbn,
+                                                           item.MasterSbt ?? string.Empty,
+                                                           item.BuiKbn,
+                                                           item.IsAdopted,
+                                                           0,
+                                                           item.TenId,
+                                                           string.Empty,
+                                                           string.Empty,
+                                                           item.CmtCol1,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.SinKouiKbn,
+                                                           item.YjCd ?? string.Empty,
+                                                           item.CnvUnitName ?? string.Empty,
+                                                           item.StartDate,
+                                                           item.YohoKbn,
+                                                           item.CmtColKeta1,
+                                                           item.CmtColKeta2,
+                                                           item.CmtColKeta3,
+                                                           item.CmtColKeta4,
+                                                           item.CmtCol2,
+                                                           item.CmtCol3,
+                                                           item.CmtCol4,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.MinAge ?? string.Empty,
+                                                           item.MaxAge ?? string.Empty,
+                                                           item.SanteiItemCd ?? string.Empty)).ToList();
+            }
+
+            return tenMstModels;
+        }
+
         public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
@@ -734,9 +806,19 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool CheckItemCd(string ItemCd)
+        public bool CheckItemCd(string itemCd)
         {
-            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+        }
+
+        public List<string> GetCheckItemCds(List<string> itemCds)
+        {
+            return _tenantDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+        }
+
+        public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
+        {
+            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)

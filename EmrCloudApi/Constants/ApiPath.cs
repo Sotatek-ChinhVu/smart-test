@@ -33,6 +33,8 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
@@ -109,6 +111,7 @@
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+        public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -124,6 +127,7 @@
         public const string AddTemplateToCategory = "AddTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
         public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";

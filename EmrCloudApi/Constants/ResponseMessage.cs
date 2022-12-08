@@ -820,6 +820,10 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+        public static readonly string InvalidRsvDate = "Invalid RsvDate";
+        public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
+        public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
+        
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
@@ -828,6 +832,7 @@
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
+        public static readonly string DocInfNotFound = "DocInf Not Found!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

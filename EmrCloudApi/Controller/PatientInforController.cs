@@ -66,9 +66,8 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Services;
-using Domain.Constant;
 using UseCase.Insurance.ValidHokenInfAllType;
-using System.Collections.Generic;
+using UseCase.Insurance.HokenPatternUsed;
 
 namespace EmrCloudApi.Controller
 {
@@ -340,7 +339,7 @@ namespace EmrCloudApi.Controller
                 request.SelectedHokenInfHonkeKbn, request.SelectedHokenInfTokureiYm1, request.SelectedHokenInfTokureiYm2, request.SelectedHokenInfIsShahoOrKokuho, request.SelectedHokenInfIsExpirated,
                 request.SelectedHokenInfIsIsNoHoken, request.SelectedHokenInfConfirmDate, request.SelectedHokenInfIsAddHokenCheck, request.SelectedHokenInfTokki1, request.SelectedHokenInfTokki2,
                 request.SelectedHokenInfTokki3, request.SelectedHokenInfTokki4, request.SelectedHokenInfTokki5, request.SelectedHokenPatternIsEmptyKohi1, request.SelectedHokenPatternIsEmptyKohi2, request.SelectedHokenPatternIsEmptyKohi3,
-                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew);
+                request.SelectedHokenPatternIsEmptyKohi4, request.SelectedHokenPatternIsExpirated, request.SelectedHokenPatternIsEmptyHoken, request.SelectedHokenPatternIsAddNew, request.HokenInfIsNoHoken, request.SelectedHokenInfHokenChecksCount);
             var output = _bus.Handle(input);
 
             var presenter = new ValidateMainInsurancePresenter();
@@ -648,6 +647,7 @@ namespace EmrCloudApi.Controller
                 );
         }
 
+        
         [HttpPost(ApiPath.ValidHokenInfAllType)]
         public ActionResult<Response<ValidHokenInfAllTypeResponse>> ValidHokenInfAllType([FromBody] ValidHokenInfAllTypeRequest request)
         {
@@ -684,7 +684,6 @@ namespace EmrCloudApi.Controller
                                             request.SelectedHokenInfTokureiYm2,
                                             request.SelectedHokenInfisShahoOrKokuho,
                                             request.SelectedHokenInfisExpirated, 
-                                            request.SelectedHokenInfconfirmDate, 
                                             request.SelectedHokenInfHokenNo, 
                                             request.SelectedHokenInfHokenEdraNo,
                                             request.IsSelectedHokenMst, 
@@ -701,6 +700,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<ValidHokenInfAllTypeResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.CheckHokenPatternUsed)]
+        public ActionResult<Response<CheckHokenPatternUsedResponse>> CheckHokenPatternUsed([FromBody] CheckHokenPatternUsedRequest request)
+        {
+            var input = new HokenPatternUsedInputData(HpId,
+               request.PtId,
+               request.HokenPid);
+            var output = _bus.Handle(input);
+            var presenter = new CheckHokenPatternUsedPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<CheckHokenPatternUsedResponse>>(presenter.Result);
         }
     }
 }
