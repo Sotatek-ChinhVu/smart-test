@@ -229,6 +229,8 @@ namespace Domain.Models.OrdInfDetails
 
         public bool HasCmtName => Is830Cmt || Is831Cmt || Is840Cmt || Is842Cmt || Is850Cmt || Is851Cmt || Is852Cmt || Is853Cmt || Is880Cmt;
 
+        public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
+
         public OrdInfValidationStatus Validation(int flag)
         {
             #region Validate common
@@ -267,7 +269,5 @@ namespace Domain.Models.OrdInfDetails
 
             return OrdInfValidationStatus.Valid;
         }
-
-        public bool IsNormalComment => !string.IsNullOrEmpty(ItemName) && string.IsNullOrEmpty(ItemCd);
     }
 }

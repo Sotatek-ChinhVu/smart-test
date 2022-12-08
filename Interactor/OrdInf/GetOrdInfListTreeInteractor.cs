@@ -100,7 +100,8 @@ namespace Interactor.OrdInfs
                             od.MasterSbt,
                             od.YohoSets,
                             od.Kasan1,
-                            od.Kasan2
+                            od.Kasan2,
+                            od.HasCmtName
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)

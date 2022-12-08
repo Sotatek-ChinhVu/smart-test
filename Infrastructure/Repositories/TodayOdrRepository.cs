@@ -983,8 +983,6 @@ namespace Infrastructure.Repositories
             return ptByomeiModels;
         }
 
-
-
         public Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList)
         {
             Dictionary<string, string> nameChanged = new Dictionary<string, string>();

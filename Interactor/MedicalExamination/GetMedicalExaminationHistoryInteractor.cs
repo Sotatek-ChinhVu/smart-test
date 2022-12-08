@@ -485,7 +485,8 @@ namespace Interactor.MedicalExamination
                                                                         od.MasterSbt,
                                                                         od.YohoSets,
                                                                         od.Kasan1,
-                                                                        od.Kasan2
+                                                                        od.Kasan2,
+                                                                        od.HasCmtName
                                                                 )
                                                                 ).ToList(),
                                                                 rpOdrInf.CreateDate,
