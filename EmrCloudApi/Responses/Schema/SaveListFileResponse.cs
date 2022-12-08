@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Responses.Schema;
 
-public class SaveListFileTodayOrderResponse
+public class SaveListFileResponse
 {
-    public SaveListFileTodayOrderResponse(List<string> listKarteFile)
+    public SaveListFileResponse(List<string> listKarteFile)
     {
         ListKarteFile = listKarteFile;
     }
