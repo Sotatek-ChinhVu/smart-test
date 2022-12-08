@@ -20,7 +20,7 @@ public class DeleteDocInfPresenter : IDeleteDocInfOutputPort
     {
         DeleteDocInfStatus.Successed => ResponseMessage.Success,
         DeleteDocInfStatus.Failed => ResponseMessage.Failed,
-        DeleteDocInfStatus.DocInfNotFount => ResponseMessage.DocInfNotFount,
+        DeleteDocInfStatus.DocInfNotFound => ResponseMessage.DocInfNotFound,
         _ => string.Empty
     };
 }

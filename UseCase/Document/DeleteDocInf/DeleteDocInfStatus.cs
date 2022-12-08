@@ -4,5 +4,5 @@ public enum DeleteDocInfStatus : byte
 {
     Successed = 1,
     Failed = 2,
-    DocInfNotFount = 3,
+    DocInfNotFound = 3,
 }
