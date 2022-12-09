@@ -30,7 +30,7 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
                                                    CommonConstants.Files,
                                                    inputData.OldCategoryCd.ToString()
                                                 };
-            string oldFilePath = _amazonS3Service.GetFolderUploadOther(listOldFolderPath);
+            string oldFile = _amazonS3Service.GetFolderUploadOther(listOldFolderPath) + inputData.FileName;
 
             // new file path
             var listNewFolderPath = new List<string>(){
@@ -38,16 +38,14 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
                                                    CommonConstants.Files,
                                                    inputData.NewCategoryCd.ToString()
                                                 };
-            string newFilePath = _amazonS3Service.GetFolderUploadOther(listNewFolderPath);
+            string newFile = _amazonS3Service.GetFolderUploadOther(listNewFolderPath) + inputData.FileName;
 
-            var validateReuslt = ValidateInput(inputData, oldFilePath, newFilePath);
+            var validateReuslt = ValidateInput(inputData, oldFile, newFile);
             if (validateReuslt != MoveTemplateToOtherCategoryStatus.VaidateSuccess)
             {
                 return new MoveTemplateToOtherCategoryOutputData(validateReuslt);
             }
-
-            var response = _amazonS3Service.CopyObjectAsync(oldFilePath, inputData.FileName, newFilePath, inputData.FileName);
-            response.Wait();
+            var response = _amazonS3Service.MoveObjectAsync(oldFile, newFile);
             if (response.Result)
             {
                 return new MoveTemplateToOtherCategoryOutputData(MoveTemplateToOtherCategoryStatus.Successed);
@@ -60,7 +58,7 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
         }
     }
 
-    private MoveTemplateToOtherCategoryStatus ValidateInput(MoveTemplateToOtherCategoryInputData inputData, string oldFilePath, string newFilePath)
+    private MoveTemplateToOtherCategoryStatus ValidateInput(MoveTemplateToOtherCategoryInputData inputData, string oldFile, string newFile)
     {
         if (!_documentRepository.CheckExistDocCategory(inputData.HpId, inputData.OldCategoryCd))
         {
@@ -76,16 +74,14 @@ public class MoveTemplateToOtherCategoryInteractor : IMoveTemplateToOtherCategor
         }
 
         // check exist file in source folder
-        var checkExistOldFile = _amazonS3Service.ObjectExistsAsync(oldFilePath + inputData.FileName);
-        checkExistOldFile.Wait();
+        var checkExistOldFile = _amazonS3Service.ObjectExistsAsync(oldFile);
         if (!checkExistOldFile.Result)
         {
             return MoveTemplateToOtherCategoryStatus.FileTemplateNotFould;
         }
 
         // check exist file in new folder
-        var checkExistNewFile = _amazonS3Service.ObjectExistsAsync(newFilePath + inputData.FileName);
-        checkExistNewFile.Wait();
+        var checkExistNewFile = _amazonS3Service.ObjectExistsAsync(newFile);
         if (checkExistNewFile.Result)
         {
             return MoveTemplateToOtherCategoryStatus.FileTemplateIsExistInNewFolder;
