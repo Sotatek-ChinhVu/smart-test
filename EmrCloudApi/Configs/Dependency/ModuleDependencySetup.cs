@@ -261,6 +261,7 @@ using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Insurance.HokenPatternUsed;
+using UseCase.Insurance.GetKohiPriorityList;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -629,6 +630,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //Hoki PriorityList
+            busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

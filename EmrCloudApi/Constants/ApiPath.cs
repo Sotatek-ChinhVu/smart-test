@@ -135,5 +135,8 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
     }
 }

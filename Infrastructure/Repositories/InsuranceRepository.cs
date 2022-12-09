@@ -4,7 +4,6 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -1358,6 +1357,11 @@ namespace Infrastructure.Repositories
                                  x.PtId == ptId &&
                                  x.HokenPid == hokenPid &&
                                  x.IsDeleted == DeleteStatus.None);
+        }
+
+        public List<KohiPriorityModel> GetKohiPriorityList()
+        {
+            return _tenantDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
         }
     }
 }
