@@ -33,22 +33,22 @@ namespace EmrCalculateApi.Futan.ViewModels
         private readonly ClearCommandHandler _clearCommandHandler;
         private FutancalcListModel _futancalcAggregate;
 
-        public RaiinTensuModel RaiinTensu { get; private set; } = new RaiinTensuModel();
-        public PtInfModel PtInf { get; private set; }
+        public RaiinTensuModel RaiinTensu { get; set; } = new RaiinTensuModel();
+        public PtInfModel PtInf { get; set; }
         public List<KaikeiInfModel> KaikeiInfs { get; private set; } = new List<KaikeiInfModel>();
-        public KaikeiDetailModel KaikeiDetail { get; private set; } = new KaikeiDetailModel(new KaikeiDetail());
+        public KaikeiDetailModel KaikeiDetail { get; set; } = new KaikeiDetailModel(new KaikeiDetail());
         public List<KaikeiDetailModel> AdjustDetails { get; private set; } = new List<KaikeiDetailModel>();
         public List<LimitListInfModel> LimitListInfs { get; private set; } = new List<LimitListInfModel>();
         public List<LimitCntListInfModel> LimitCntListInfs { get; private set; } = new List<LimitCntListInfModel>();
-        public List<KaikeiDetailModel> KaikeiDetails { get; private set; } = new List<KaikeiDetailModel>();
-        public List<KaikeiDetailModel> KaikeiAdjustDetails { get; private set; } = new List<KaikeiDetailModel>();
+        public List<KaikeiDetailModel> KaikeiDetails { get; set; } = new List<KaikeiDetailModel>();
+        public List<KaikeiDetailModel> KaikeiAdjustDetails { get; set; } = new List<KaikeiDetailModel>();
         public List<KaikeiDetailModel> KaikeiTotalDetails { get; private set; } = new List<KaikeiDetailModel>();
-        public List<LimitListInfModel> LimitListOthers { get; private set; } = new List<LimitListInfModel>();
-        public List<LimitCntListInfModel> LimitCntListOthers { get; private set; } = new List<LimitCntListInfModel>();
+        public List<LimitListInfModel> LimitListOthers { get; set; } = new List<LimitListInfModel>();
+        public List<LimitCntListInfModel> LimitCntListOthers { get; set; } = new List<LimitCntListInfModel>();
         public List<PtSanteiConfModel> PtSanteiConfs { get; private set; } = new List<PtSanteiConfModel>();
         public List<OdrInfModel> OdrInfs { get; private set; } = new List<OdrInfModel>();
-        public PtHokenPatternModel HokenPattern { get; private set; }
-        public PtHokenInfModel PtHoken { get; private set; }
+        public PtHokenPatternModel HokenPattern { get; set; }
+        public PtHokenInfModel PtHoken { get; set; }
         public List<PtKohiModel> PtKohis { get; private set; } = new List<PtKohiModel>();
         public List<CalcLogModel> CalcLogs { get; private set; } = new List<CalcLogModel>();
 

@@ -7,12 +7,13 @@ using PostgreDataContext;
 namespace EmrCalculateApi.Futan.DB.Finder
 {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8602
 #pragma warning disable CS8603 // Possible null reference return.
 #pragma warning disable IDE0075 // Simplify conditional expression
 #pragma warning disable S1125
     public class FutancalcFinder
     {
-        private List<KogakuLimitModel> _kogakuLimitModels = new List<KogakuLimitModel>();
+        private List<KogakuLimitModel>? _kogakuLimitModels;
         private readonly TenantDataContext _tenantDataContext;
         public FutancalcFinder(TenantDataContext tenantDataContext)
         {

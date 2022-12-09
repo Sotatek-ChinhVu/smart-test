@@ -27,8 +27,4 @@
     <ProjectReference Include="..\Interactor\Interactor.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="TestCalculate\" />
-  </ItemGroup>
-
 </Project>

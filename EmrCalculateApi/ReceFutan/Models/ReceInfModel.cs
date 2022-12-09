@@ -1,6 +1,7 @@
 ﻿using EmrCalculateApi.Constants;
 using Entity.Tenant;
 using Helper.Common;
+using Helper.Extension;
 
 namespace EmrCalculateApi.ReceFutan.Models
 {
@@ -2755,8 +2756,12 @@ namespace EmrCalculateApi.ReceFutan.Models
                     break;
             }
 
-            Tokki = (Tokki1?.Substring(0, 2) ?? "") + (Tokki2?.Substring(0, 2) ?? "") +
-                (Tokki3?.Substring(0, 2) ?? "") + (Tokki4?.Substring(0, 2) ?? "") + (Tokki5?.Substring(0, 2) ?? "");
+            Tokki = string.Empty;
+            if (Tokki1 != null && Tokki1.Length >= 2) Tokki += Tokki1.Substring(0, 2);
+            if (Tokki2 != null && Tokki2.Length >= 2) Tokki += Tokki2.Substring(0, 2);
+            if (Tokki3 != null && Tokki3.Length >= 2) Tokki += Tokki3.Substring(0, 2);
+            if (Tokki4 != null && Tokki4.Length >= 2) Tokki += Tokki4.Substring(0, 2);
+            if (Tokki5 != null && Tokki5.Length >= 2) Tokki += Tokki5.Substring(0, 2);
         }
 
         /// <summary>
