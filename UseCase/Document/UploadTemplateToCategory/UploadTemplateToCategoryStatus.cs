@@ -1,6 +1,6 @@
-﻿namespace UseCase.Document.AddTemplateToCategory;
+﻿namespace UseCase.Document.UploadTemplateToCategory;
 
-public enum AddTemplateToCategoryStatus : byte
+public enum UploadTemplateToCategoryStatus : byte
 {
     Successed = 1,
     Failed = 2,
