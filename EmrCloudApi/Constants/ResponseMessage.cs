@@ -831,6 +831,8 @@
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
+        public static readonly string TemplateNotFound = "Template Not Found!";
+        public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
         public static readonly string DocInfNotFound = "DocInf Not Found!";
 
         //Check Special Item InvalidCheckAge
