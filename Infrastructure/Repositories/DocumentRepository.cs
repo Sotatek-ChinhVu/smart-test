@@ -86,8 +86,7 @@ public class DocumentRepository : IDocumentRepository
                 entity.SortNo = modelUpdate.SortNo;
             }
         }
-        _tenantDataContext.SaveChanges();
-        return true;
+        return _tenantDataContext.SaveChanges() > 0;
     }
 
     public List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd)
@@ -175,8 +174,7 @@ public class DocumentRepository : IDocumentRepository
             docInfDB.UpdateId = userId;
         }
 
-        _tenantDataContext.SaveChanges();
-        return true;
+        return _tenantDataContext.SaveChanges() > 0;
     }
 
     public bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo)
@@ -254,8 +252,8 @@ public class DocumentRepository : IDocumentRepository
                 entity.SeqNo,
                 entity.CategoryCd,
                 listDocCategory.FirstOrDefault(item => item.CategoryCd == entity.CategoryCd)?.CategoryName ?? string.Empty,
-                entity.FileName,
-                entity.DspFileName,
+                entity.FileName ?? string.Empty,
+                entity.DspFileName ?? string.Empty,
                 entity.UpdateDate
             );
     }

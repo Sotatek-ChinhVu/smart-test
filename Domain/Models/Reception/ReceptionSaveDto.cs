@@ -29,10 +29,11 @@ public class ReceptionSaveDto
 
 public class InsuranceDto
 {
-    public InsuranceDto(int hokenId, List<ConfirmDateDto> confirmDateList)
+    public InsuranceDto(int hokenId, List<ConfirmDateDto> confirmDateList, bool isHokenGroupKohi)
     {
         HokenId = hokenId;
         ConfirmDateList = confirmDateList;
+        IsHokenGroupKohi = isHokenGroupKohi;
     }
 
     public int HokenId { get; private set; }
@@ -41,6 +42,8 @@ public class InsuranceDto
     /// ConfirmDate template: yyyyMMdd
     /// </summary>
     public List<ConfirmDateDto> ConfirmDateList { get; private set; }
+
+    public bool IsHokenGroupKohi { get; private set; }
 
     public bool IsValidData()
     {

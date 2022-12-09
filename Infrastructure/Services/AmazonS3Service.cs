@@ -138,7 +138,12 @@ public sealed class AmazonS3Service : IAmazonS3Service, IDisposable
     public string GetFolderUploadToPtNum(List<string> folders, long ptNum)
     {
         var tenantId = _tenantProvider.GetClinicID();
-        string last4Characters = ptNum.ToString().PadLeft(4, '0');
+        var ptNumString = ptNum.ToString();
+        if (ptNum.ToString().Length < 4)
+        {
+            ptNumString = ptNumString.PadLeft(4, '0');
+        }
+        string last4Characters = ptNumString.Substring(ptNumString.Length - 4);
         StringBuilder result = new();
         result.Append(tenantId);
         result.Append("/");

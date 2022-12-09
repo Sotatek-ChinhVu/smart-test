@@ -330,7 +330,7 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
-        public static readonly string InvalidSetCd = "Invalid SetCd, SetCd >= 0";
+        public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
         public static readonly string InvalidGenarationId = "Invalid GenarationId, GenarationId >= 0";
@@ -387,6 +387,7 @@
         public static readonly string InvalidOldImage = "Invalid old image.";
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
+        public static readonly string InvalidTypeUpload = "Invalid type upload.";
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";
@@ -818,6 +819,10 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+        public static readonly string InvalidRsvDate = "Invalid RsvDate";
+        public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
+        public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
+        
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
@@ -826,13 +831,13 @@
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
-        public static readonly string DocInfNotFount = "DocInf Not Fount!";
-        public static readonly string TemplateNotFount = "Template Not Fount!";
+        public static readonly string TemplateNotFound = "Template Not Found!";
         public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
         public static readonly string InvalidNewCategoryCd = "Invalid NewCategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidOldCategoryCd = "Invalid OldCategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string FileTemplateNotFould = "File template not fould!";
         public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
+        public static readonly string DocInfNotFound = "DocInf Not Found!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
