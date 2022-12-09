@@ -419,7 +419,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageWarning));
             }
         }
 
