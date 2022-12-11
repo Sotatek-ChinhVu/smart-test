@@ -14,6 +14,18 @@ public class KarteFilterMstModel
         KarteFilterDetailModel = karteFilterDetailModel;
     }
 
+    public KarteFilterMstModel(int hpId, int userId)
+    {
+        HpId = hpId;
+        UserId = userId;
+        FilterId = 0;
+        FilterName = string.Empty;
+        SortNo = 0;
+        AutoApply = 0;
+        IsDeleted = 0;
+        KarteFilterDetailModel = new KarteFilterDetailModel(hpId, UserId);
+    }
+
     public int HpId { get; private set; }
 
     public int UserId { get; private set; }
@@ -51,7 +63,7 @@ public class KarteFilterMstModel
     {
         get
         {
-            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId.Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return false;
+            if (FilterId <= 0 || (KarteFilterDetailModel.HpId <= 0 && KarteFilterDetailModel.ListKaId.Count <= 0 && KarteFilterDetailModel.FilterId <= 0)) return true;
 
             return KarteFilterDetailModel.ListKaId.Contains(0);
         }
