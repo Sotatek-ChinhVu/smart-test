@@ -1,4 +1,9 @@
 ﻿using Domain.Models.SuperSetDetail;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.SuperSetDetail.GetSuperSetDetail;
 using UseCase.SuperSetDetail.SuperSetDetail;
 
@@ -7,10 +12,14 @@ namespace Interactor.SuperSetDetail;
 public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
 {
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
+    private readonly IAmazonS3Service _amazonS3Service;
+    private readonly AmazonS3Options _options;
 
-    public GetSuperSetDetailInteractor(ISuperSetDetailRepository superSetDetailRepository)
+    public GetSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, ISuperSetDetailRepository superSetDetailRepository, IAmazonS3Service amazonS3Service)
     {
         _superSetDetailRepository = superSetDetailRepository;
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
     }
 
     public GetSuperSetDetailOutputData Handle(GetSuperSetDetailInputData inputData)
@@ -30,7 +39,7 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
                 return new GetSuperSetDetailOutputData(GetSuperSetDetailListStatus.InvalidSindate);
             }
             var result = _superSetDetailRepository.GetSuperSetDetail(inputData.HpId, inputData.SetCd, inputData.Sindate);
-            return new GetSuperSetDetailOutputData(ConvertSuperSetDetailToItem(result), GetSuperSetDetailListStatus.Successed);
+            return new GetSuperSetDetailOutputData(ConvertSuperSetDetailToItem(inputData.SetCd, result), GetSuperSetDetailListStatus.Successed);
         }
         catch
         {
@@ -178,8 +187,37 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
          )).ToList();
     }
 
-    private SuperSetDetailItem ConvertSuperSetDetailToItem(SuperSetDetailModel superSetDetailModel)
+    private List<string> ConvertToListSetKarteFileItem(int setCd, List<SetKarteFileModel> listModel)
     {
-        return new SuperSetDetailItem(ConvertSetByomeiToItem(superSetDetailModel.SetByomeiList), superSetDetailModel.SetKarteInf, ConvertSetGroupOrderInfToItem(superSetDetailModel.SetGroupOrderInfList));
+        List<string> result = new();
+        if (listModel.Any())
+        {
+            List<string> listFolders = new();
+            listFolders.Add(CommonConstants.Store);
+            listFolders.Add(CommonConstants.Karte);
+            listFolders.Add(CommonConstants.SetPic);
+            listFolders.Add(setCd.ToString());
+
+            string path = _amazonS3Service.GetFolderUploadOther(listFolders);
+            foreach (var model in listModel)
+            {
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(model.FileName);
+                result.Add(fileName.ToString());
+            }
+        }
+        return result;
+    }
+
+    private SuperSetDetailItem ConvertSuperSetDetailToItem(int setCd, SuperSetDetailModel superSetDetailModel)
+    {
+        return new SuperSetDetailItem(
+                                        ConvertSetByomeiToItem(superSetDetailModel.SetByomeiList),
+                                        superSetDetailModel.SetKarteInf,
+                                        ConvertSetGroupOrderInfToItem(superSetDetailModel.SetGroupOrderInfList),
+                                        ConvertToListSetKarteFileItem(setCd, superSetDetailModel.SetKarteFileModelList));
     }
 }

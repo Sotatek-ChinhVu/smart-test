@@ -1,4 +1,5 @@
-﻿using Domain.Models.Insurance;
+﻿using Domain.Models.HistoryOrder;
+using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.Ka;
 using Domain.Models.KarteFilterMst;
@@ -24,7 +25,8 @@ namespace Interactor.MedicalExamination
         private readonly IKaRepository _kaRepository;
         private readonly IKarteFilterMstRepository _karteFilterMstRepository;
         private readonly IRaiinListTagRepository _rainListTagRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository)
+        private readonly IHistoryOrderRepository _historyOrderRepository;
+        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository, IHistoryOrderRepository historyOrderRepository)
         {
             _ordInfRepository = ordInfRepository;
             _karteInfRepository = karteInfRepository;
@@ -35,10 +37,14 @@ namespace Interactor.MedicalExamination
             _kaRepository = kaRepository;
             _karteFilterMstRepository = karteFilterMstRepository;
             _rainListTagRepository = rainListTagRepository;
+            _historyOrderRepository = historyOrderRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
         {
+            var test = _historyOrderRepository.GetList(inputData.HpId, inputData.UserId, inputData.PtId, 0, 50, 0, 2);
+
+            return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.Failed, 0);
             try
             {
                 var validate = Validate(inputData);
@@ -485,7 +491,9 @@ namespace Interactor.MedicalExamination
                                                                         od.MasterSbt,
                                                                         od.YohoSets,
                                                                         od.Kasan1,
-                                                                        od.Kasan2
+                                                                        od.Kasan2,
+                                                                        od.CnvUnitName,
+                                                                        od.OdrUnitName
                                                                 )
                                                                 ).ToList(),
                                                                 rpOdrInf.CreateDate,

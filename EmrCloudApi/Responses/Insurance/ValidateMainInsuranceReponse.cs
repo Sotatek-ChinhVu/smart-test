@@ -1,16 +1,18 @@
-﻿namespace EmrCloudApi.Responses.Insurance
+﻿using Domain.Models.Insurance;
+using UseCase.Insurance.ValidMainInsurance;
+
+namespace EmrCloudApi.Responses.Insurance
 {
     public class ValidateMainInsuranceReponse
     {
-        public ValidateMainInsuranceReponse(bool resultCheck, string message, int typeMessage)
+        public ValidateMainInsuranceReponse(bool resultCheck, List<ResultValidateInsurance<ValidMainInsuranceStatus>> details)
         {
             ResultCheck = resultCheck;
-            Message = message;
-            TypeMessage = typeMessage;
+            Details = details;
         }
 
         public bool ResultCheck { get; private set; }
-        public string Message { get; private set; }
-        public int TypeMessage { get; private set; }
+
+        public List<ResultValidateInsurance<ValidMainInsuranceStatus>> Details { get; private set; }
     }
 }

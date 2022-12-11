@@ -106,7 +106,9 @@ namespace Interactor.OrdInfs
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
                 if (item != null)
                 {
@@ -173,7 +175,9 @@ namespace Interactor.OrdInfs
                                     "",
                                     new List<YohoSetMstModel>(),
                                     0,
-                                    0
+                                    0,
+                                    string.Empty,
+                                    string.Empty
                                 );
                         ordInf.OrdInfDetails.Add(ordInfDetail);
                     }

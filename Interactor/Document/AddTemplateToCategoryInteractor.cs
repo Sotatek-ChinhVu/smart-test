@@ -47,10 +47,21 @@ public class AddTemplateToCategoryInteractor : IAddTemplateToCategoryInputPort
                                                    inputData.CategoryCd.ToString()
                                                 };
             string filePath = _amazonS3Service.GetFolderUploadOther(listFolderPath);
+
+            var checkExist = _amazonS3Service.ObjectExistsAsync(filePath + inputData.FileName);
+            checkExist.Wait();
+            if (checkExist.Result)
+            {
+                return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.ExistFileTemplateName);
+            }
+
             var response = _amazonS3Service.UploadObjectAsync(filePath, inputData.FileName, memoryStream);
             response.Wait();
-            var resultSuccess = response.Result;
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Successed);
+            if (response.Result.Length > 0)
+            {
+                return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Successed);
+            }
+            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Failed);
         }
         catch
         {

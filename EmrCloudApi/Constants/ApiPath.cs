@@ -33,11 +33,14 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
         public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
+        public const string UploadListFileKarte = "UploadListFileKarte";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -79,11 +82,15 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        //validate ValidHokenInf AllType
+        public const string ValidHokenInfAllType = "ValidHokenInfAllType";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
+        public const string GetSelectiveComment = "GetSelectiveComment";
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
@@ -104,6 +111,7 @@
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+        public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -118,6 +126,9 @@
         public const string SortDocCategory = "SortDocCategory";
         public const string AddTemplateToCategory = "AddTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
+        public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
+        public const string DeleteDocTemplate = "DeleteDocTemplate";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
