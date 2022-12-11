@@ -8,6 +8,7 @@ using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
+using System.Linq.Dynamic.Core;
 
 namespace Infrastructure.Repositories
 {
@@ -1295,7 +1296,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.ReceFutanRound,
                                         hokenMst.ReceZeroKisai,
                                         hokenMst.ReceSpKbn,
-                                        prefactureName);
+                                        prefactureName,
+                                        hokenMst.PrefNo);
                 return itemHokenMst;
             }
             return new HokenMstModel();
@@ -1347,6 +1349,15 @@ namespace Infrastructure.Repositories
             model.UpdateId = userId;
 
             return _tenantDataContext.SaveChanges() > 0;
+        }
+
+        public bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid)
+        {
+            return _tenantDataContext.OdrInfs.Any(
+                                 x => x.HpId == hpId &&
+                                 x.PtId == ptId &&
+                                 x.HokenPid == hokenPid &&
+                                 x.IsDeleted == DeleteStatus.None);
         }
     }
 }

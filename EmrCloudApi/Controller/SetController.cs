@@ -7,7 +7,6 @@ using EmrCloudApi.Responses.SetMst;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.SetMst.CopyPasteSetMst;
 using UseCase.SetMst.GetList;
 using UseCase.SetMst.GetToolTip;
@@ -112,7 +111,8 @@ public class SetController : AuthorizeControllerBase
                         HpId,
                         ConvertToSetByomeiModelInputs(request.SaveSetByomeiRequestItems),
                         new SaveSetKarteInputItem(HpId, request.SetCd, request.SaveSetKarteRequestItem.RichText),
-                        ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems)
+                        ConvertToSetOrderModelInputs(request.SaveSetOrderMstRequestItems),
+                        request.ListFileItems
                     );
         var output = _bus.Handle(input);
 
@@ -120,19 +120,6 @@ public class SetController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<SaveSuperSetDetailResponse>>(presenter.Result);
-    }
-
-
-    [HttpPost(ApiPath.SaveImageSuperSetDetail)]
-    public ActionResult<Response<SaveImageResponse>> SaveImageTodayOrder([FromQuery] SaveImageSuperSetDetailRequest request)
-    {
-        var input = new SaveImageSuperSetDetailInputData(HpId, request.SetCd, request.Position, request.OldImage, Request.Body);
-        var output = _bus.Handle(input);
-
-        var presenter = new SaveImageSuperSetDetailPresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<SaveImageResponse>>(presenter.Result);
     }
 
     [HttpGet(ApiPath.GetSuperSetDetailForTodayOrder)]

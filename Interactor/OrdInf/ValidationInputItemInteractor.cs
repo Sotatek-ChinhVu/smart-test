@@ -175,7 +175,9 @@ namespace Interactor.OrdInfs
                                     "",
                                     new List<YohoSetMstModel>(),
                                     0,
-                                    0
+                                    0,
+                                    string.Empty,
+                                    string.Empty
                                 );
                         ordInf.OrdInfDetails.Add(ordInfDetail);
                     }

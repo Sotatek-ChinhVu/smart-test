@@ -70,8 +70,6 @@ namespace EmrCloudApi.Requests.Insurance
 
         public bool SelectedHokenInfisExpirated { get;  set; }
 
-        public int SelectedHokenInfconfirmDate { get;  set; }
-
         public int SelectedHokenInfHokenNo { get;  set; }
 
         public int SelectedHokenInfHokenEdraNo { get;  set; }
@@ -81,5 +79,13 @@ namespace EmrCloudApi.Requests.Insurance
         public int SelectedHokenInfHonkeKbn { get;  set; }
 
         public int PtBirthday { get;  set; }
+
+        public bool SelectedHokenInfIsAddHokenCheck { get; set; }
+
+        public int SelectedHokenInfHokenChecksCount { get; set; }
+
+        public bool HokenInfIsNoHoken { get; set; }
+
+        public int HokenInfConfirmDate { get; set; }
     }
 }

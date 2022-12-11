@@ -97,7 +97,8 @@ namespace Infrastructure.Repositories
                                         item.ReceFutanRound,
                                         item.ReceZeroKisai,
                                         item.ReceSpKbn,
-                                        prefName == null ? string.Empty : prefName
+                                        prefName == null ? string.Empty : prefName,
+                                        item.PrefNo
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -291,7 +292,8 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanRound,
                                             h.ReceZeroKisai,
                                             h.ReceSpKbn,
-                                            prefName == null ? string.Empty : prefName));
+                                            prefName == null ? string.Empty : prefName,
+                                            h.PrefNo));
                 });
 
             return list;
@@ -419,7 +421,8 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanRound,
                                             h.ReceZeroKisai,
                                             h.ReceSpKbn,
-                                            string.Empty));
+                                            string.Empty,
+                                            h.PrefNo));
             });
 
             // Get KohiMst

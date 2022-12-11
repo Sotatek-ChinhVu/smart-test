@@ -103,7 +103,9 @@ namespace Infrastructure.Converter
                                           yjCd,
                                           new List<YohoSetMstModel>(),
                                           0,
-                                          0);
+                                          0,
+                                          string.Empty,
+                                          string.Empty);
                 odrInfDetailModelList.Add(odrInfDetailModel);
             }
 

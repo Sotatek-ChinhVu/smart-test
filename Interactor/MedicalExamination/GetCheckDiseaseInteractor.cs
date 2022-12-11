@@ -101,7 +101,9 @@ namespace Interactor.MedicalExamination
                                     string.Empty,
                                     new List<YohoSetMstModel>(),
                                     0,
-                                    0
+                                    0,
+                                    "",
+                                    ""
                                    )
                              ).ToList(),
                              DateTime.MinValue,
