@@ -262,6 +262,7 @@ using UseCase.Document.SaveDocInf;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using UseCase.Insurance.ValidHokenInfAllType;
+using Domain.Models.HistoryOrder;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -302,6 +303,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IUserService, UserService>();
+
+            //Cache data
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             // Export
             services.AddTransient<IReporting, Reporting>();
@@ -377,6 +382,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IReporting, Reporting>();
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
+            services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
