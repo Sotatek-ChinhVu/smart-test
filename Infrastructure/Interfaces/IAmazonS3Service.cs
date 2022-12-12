@@ -10,6 +10,8 @@ public interface IAmazonS3Service
 
     Task<bool> DeleteObjectAsync(string key);
 
+    Task<bool> MoveObjectAsync(string sourceFile, string destinationFile);
+
     Task<List<string>> GetListObjectAsync(string prefix);
 
     string GetFolderUploadToPtNum(List<string> folders, long ptNum);

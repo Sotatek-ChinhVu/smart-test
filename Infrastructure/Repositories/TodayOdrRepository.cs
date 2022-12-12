@@ -11,7 +11,6 @@ using Helper.Extension;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Infrastructure.Repositories
@@ -757,7 +756,7 @@ namespace Infrastructure.Repositories
                     }
                 }
 
-                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName) && k.RaiinNo == 0);
+                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName ?? string.Empty) && k.RaiinNo == 0);
                 foreach (var img in karteImgs)
                 {
                     img.RaiinNo = karte.RaiinNo;
