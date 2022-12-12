@@ -184,6 +184,8 @@ using UseCase.MstItem.UpdateAdoptedByomei;
 using UseCase.MstItem.UpdateAdoptedItemList;
 using UseCase.NextOrder.Get;
 using UseCase.NextOrder.GetList;
+using UseCase.NextOrder.Upsert;
+using UseCase.NextOrder.Validation;
 using UseCase.OrdInfs.CheckedSpecialItem;
 using UseCase.OrdInfs.GetHeaderInf;
 using UseCase.OrdInfs.GetListTrees;
@@ -226,7 +228,6 @@ using UseCase.ReceptionInsurance.Get;
 using UseCase.ReceptionSameVisit.Get;
 using UseCase.ReceptionVisiting.Get;
 using UseCase.Schema.GetListImageTemplates;
-using UseCase.Schema.SaveImageSuperSetDetail;
 using UseCase.Schema.SaveListFileTodayOrder;
 using UseCase.SearchHokensyaMst.Get;
 using UseCase.SetKbnMst.GetList;
@@ -258,7 +259,10 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using Domain.Models.HistoryOrder;
 using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
+using UseCase.Insurance.HokenPatternUsed;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -296,6 +300,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IUserService, UserService>();
+
+            //Cache data
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
@@ -367,6 +375,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
+            services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -417,6 +426,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<ValidInsuranceOtherInputData, ValidInsuranceOtherInteractor>();
             busBuilder.RegisterUseCase<GetInsuranceComboListInputData, GetInsuranceComboListInteractor>();
             busBuilder.RegisterUseCase<ValidHokenInfAllTypeInputData, ValidHokenInfAllTypeInteractor>();
+            busBuilder.RegisterUseCase<HokenPatternUsedInputData, HokenPatternUsedInteractor>();
 
             //Karte
             busBuilder.RegisterUseCase<GetListKarteInfInputData, GetListKarteInfInteractor>();
@@ -556,7 +566,6 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetSuperSetDetailInputData, GetSuperSetDetailInteractor>();
             busBuilder.RegisterUseCase<SaveSuperSetDetailInputData, SaveSuperSetDetailInteractor>();
             busBuilder.RegisterUseCase<GetSuperSetDetailToDoTodayOrderInputData, GetSuperSetDetailToDoTodayOrderInteractor>();
-            busBuilder.RegisterUseCase<SaveImageSuperSetDetailInputData, SaveImageSuperSetDetailInteractor>();
 
             //Validation TodayOrder
             busBuilder.RegisterUseCase<ValidationTodayOrdInputData, ValidationTodayOrdInteractor>();
@@ -609,6 +618,8 @@ namespace EmrCloudApi.Configs.Dependency
             //Next Order
             busBuilder.RegisterUseCase<GetNextOrderListInputData, GetNextOrderListInteractor>();
             busBuilder.RegisterUseCase<GetNextOrderInputData, GetNextOrderInteractor>();
+            busBuilder.RegisterUseCase<UpsertNextOrderListInputData, UpsertNextOrderListInteractor>();
+            busBuilder.RegisterUseCase<ValidationNextOrderListInputData, ValidationNextOrderListInteractor>();
 
             //YohoSetMst
             busBuilder.RegisterUseCase<GetYohoMstByItemCdInputData, GetYohoMstByItemCdInteractor>();
@@ -622,6 +633,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
             busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
             busBuilder.RegisterUseCase<DeleteDocInfInputData, DeleteDocInfInteractor>();
+            busBuilder.RegisterUseCase<DeleteDocTemplateInputData, DeleteDocTemplateInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

@@ -9,6 +9,7 @@ using UseCase.Core.Sync;
 using UseCase.Document.AddTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
 using UseCase.Document.SaveDocInf;
@@ -121,6 +122,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<DeleteDocInfResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.DeleteDocTemplate)]
+    public ActionResult<Response<DeleteDocTemplateResponse>> DeleteDocTemplate([FromBody] DeleteDocTemplateRequest request)
+    {
+        var input = new DeleteDocTemplateInputData(request.CategoryCd, request.FileTemplateName);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocTemplateResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)

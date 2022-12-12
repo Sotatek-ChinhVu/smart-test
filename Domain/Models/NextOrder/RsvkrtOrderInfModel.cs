@@ -1,8 +1,10 @@
-﻿using Domain.Types;
+﻿using Domain.Common;
+using Domain.Types;
+using static Helper.Constants.OrderInfConst;
 
 namespace Domain.Models.NextOrder
 {
-    public class RsvkrtOrderInfModel
+    public class RsvkrtOrderInfModel : IOdrInfModel<RsvKrtOrderInfDetailModel>
     {
         public RsvkrtOrderInfModel(int hpId, long ptId, int rsvDate, long rsvkrtNo, long rpNo, long rpEdaNo, long id, int hokenPid, int odrKouiKbn, string rpName, int inoutKbn, int sikyuKbn, int syohoSbt, int santeiKbn, int tosekiKbn, int daysCnt, int isDeleted, int sortNo, DateTime createDate, int createId, string createName, List<RsvKrtOrderInfDetailModel> orderInfDetailModels)
         {
@@ -28,9 +30,50 @@ namespace Domain.Models.NextOrder
             CreateDate = createDate;
             CreateId = createId;
             CreateName = createName;
-            OrderInfDetailModels = orderInfDetailModels;
+            OrdInfDetails = orderInfDetailModels;
         }
+        public KeyValuePair<string, OrdInfValidationStatus> Validation(int flag)
+        {
 
+            #region Validate common
+
+            if (flag == 0)
+            {
+                if (RsvkrtNo < 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidRaiinNo);
+                }
+                if (PtId <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidPtId);
+                }
+                if (RsvDate <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidSinDate);
+                }
+                if (HokenPid <= 0)
+                {
+                    return new("-1", OrdInfValidationStatus.InvalidHokenPId);
+                }
+            }
+
+            var count = 0;
+            foreach (var item in OrdInfDetails)
+            {
+                var validate = item.Validation(flag);
+                if (validate != OrdInfValidationStatus.Valid)
+                {
+                    return new(count.ToString(), validate);
+                }
+                count++;
+            }
+            #endregion
+
+            #region Validate business
+            var refillSetting = OrdInfDetails?.FirstOrDefault()?.RefillSetting ?? 999;
+            return ValidationIOdrInfModel<RsvkrtOrderInfModel, RsvKrtOrderInfDetailModel>.Validation(this, flag, RsvDate, refillSetting);
+            #endregion
+        }
         public int HpId { get; private set; }
 
         public long PtId { get; private set; }
@@ -75,6 +118,24 @@ namespace Domain.Models.NextOrder
 
         public string CreateName { get; private set; }
 
-        public List<RsvKrtOrderInfDetailModel> OrderInfDetailModels { get; private set; }
+        public List<RsvKrtOrderInfDetailModel> OrdInfDetails { get; private set; }
+
+        // 処方 - Drug
+        public bool IsDrug
+        {
+            get
+            {
+                return OdrKouiKbn >= 21 && OdrKouiKbn <= 23;
+            }
+        }
+
+        // 注射 - Injection
+        public bool IsInjection
+        {
+            get
+            {
+                return OdrKouiKbn >= 30 && OdrKouiKbn <= 34;
+            }
+        }
     }
 }

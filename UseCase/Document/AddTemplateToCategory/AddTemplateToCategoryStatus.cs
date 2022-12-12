@@ -7,4 +7,5 @@ public enum AddTemplateToCategoryStatus : byte
     InvalidHpId = 3,
     InvalidCategoryCd = 4,
     InvalidFileInput = 5,
+    ExistFileTemplateName = 6,
 }

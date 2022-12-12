@@ -14,4 +14,5 @@ public class SaveSuperSetDetailRequest
 
     public List<SaveSetOrderMstRequestItem> SaveSetOrderMstRequestItems { get; set; } = new();
 
+    public List<string> ListFileItems { get; set; } = new();
 }
