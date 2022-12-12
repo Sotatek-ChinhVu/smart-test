@@ -86,6 +86,7 @@ public class DocumentRepository : IDocumentRepository
                 entity.SortNo = modelUpdate.SortNo;
             }
         }
+        SortDocCategory();
         return _tenantDataContext.SaveChanges() > 0;
     }
 
@@ -173,7 +174,6 @@ public class DocumentRepository : IDocumentRepository
             docInfDB.UpdateDate = DateTime.UtcNow;
             docInfDB.UpdateId = userId;
         }
-
         return _tenantDataContext.SaveChanges() > 0;
     }
 
@@ -196,6 +196,61 @@ public class DocumentRepository : IDocumentRepository
         docInfDB.UpdateId = userId;
         _tenantDataContext.SaveChanges();
         return true;
+    }
+
+    public bool DeleteDocInfs(int hpId, int userId, long ptId, int categoryCd)
+    {
+        var docInfsDB = _tenantDataContext.DocInfs.Where(entity =>
+                                                                entity.HpId == hpId
+                                                                && entity.PtId == ptId
+                                                                && entity.CategoryCd == categoryCd
+                                                                && entity.IsDeleted == 0
+                                                            );
+        if (docInfsDB.Any())
+        {
+            foreach (var item in docInfsDB)
+            {
+                item.IsDeleted = 1;
+                item.UpdateDate = DateTime.UtcNow;
+                item.UpdateId = userId;
+            }
+            return _tenantDataContext.SaveChanges() > 0;
+        }
+        return false;
+    }
+
+    public bool DeleteDocCategory(int hpId, int userId, int categoryCd)
+    {
+        var docCategoryDB = _tenantDataContext.DocCategoryMsts.FirstOrDefault(entity =>
+                                                                entity.HpId == hpId
+                                                                && entity.CategoryCd == categoryCd
+                                                                && entity.IsDeleted == 0
+                                                            );
+        if (docCategoryDB == null)
+        {
+            return false;
+        }
+        docCategoryDB.IsDeleted = 1;
+        docCategoryDB.UpdateDate = DateTime.UtcNow;
+        docCategoryDB.UpdateId = userId;
+        SortDocCategory();
+        return _tenantDataContext.SaveChanges() > 0;
+    }
+
+    public bool MoveDocInf(int hpId, int userId, int categoryCd, int moveCategoryCd)
+    {
+        var listDocInfs = _tenantDataContext.DocInfs.Where(item =>
+                                                                item.HpId == hpId
+                                                                && item.CategoryCd == categoryCd
+                                                                && item.IsDeleted == 0)
+                                                            .ToList();
+        foreach (var item in listDocInfs)
+        {
+            item.CategoryCd = moveCategoryCd;
+            item.UpdateDate = DateTime.UtcNow;
+            item.UpdateId = userId;
+        }
+        return _tenantDataContext.SaveChanges() > 0;
     }
 
     #region private function
@@ -269,5 +324,18 @@ public class DocumentRepository : IDocumentRepository
         return listDocInf.Any() ? listDocInf.Max(item => item.SeqNo) : 0;
     }
 
+    private void SortDocCategory()
+    {
+        var listDocCategory = _tenantDataContext.DocCategoryMsts
+                                                    .Where(item => item.IsDeleted == 0)
+                                                    .OrderBy(item => item.SortNo)
+                                                    .ToList();
+        int sortNo = 1;
+        foreach (var item in listDocCategory)
+        {
+            item.SortNo = sortNo;
+            sortNo++;
+        }
+    }
     #endregion
 }

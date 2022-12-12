@@ -6,8 +6,9 @@ using EmrCloudApi.Responses.Document;
 using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
-using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocCategory;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
@@ -77,16 +78,16 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<SortDocCategoryResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.AddTemplateToCategory)]
-    public ActionResult<Response<AddTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] AddTemplateToCategoryRequest request)
+    [HttpPost(ApiPath.UploadTemplateToCategory)]
+    public ActionResult<Response<UploadTemplateToCategoryResponse>> AddTemplateToCategory([FromQuery] UploadTemplateToCategoryRequest request)
     {
-        var input = new AddTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, Request.Body);
+        var input = new UploadTemplateToCategoryInputData(HpId, request.FileName, request.CategoryCd, request.OverWrite, Request.Body);
         var output = _bus.Handle(input);
 
-        var presenter = new AddTemplateToCategoryPresenter();
+        var presenter = new UploadTemplateToCategoryPresenter();
         presenter.Complete(output);
 
-        return new ActionResult<Response<AddTemplateToCategoryResponse>>(presenter.Result);
+        return new ActionResult<Response<UploadTemplateToCategoryResponse>>(presenter.Result);
     }
 
     [HttpPost(ApiPath.CheckExistFileName)]
@@ -135,6 +136,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<DeleteDocTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.DeleteDocCategory)]
+    public ActionResult<Response<DeleteDocCategoryResponse>> DeleteDocCategory([FromBody] DeleteDocCategoryRequest request)
+    {
+        var input = new DeleteDocCategoryInputData(HpId, UserId, request.CategoryCd, request.PtId, request.MoveToCategoryCd);
+        var output = _bus.Handle(input);
+
+        var presenter = new DeleteDocCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<DeleteDocCategoryResponse>>(presenter.Result);
     }
 
     [HttpPut(ApiPath.MoveTemplateToOtherCategory)]

@@ -5,18 +5,18 @@ using Infrastructure.Common;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.UploadTemplateToCategory;
 
 namespace Interactor.Document;
 
-public class AddTemplateToCategoryInteractor : IAddTemplateToCategoryInputPort
+public class UploadTemplateToCategoryInteractor : IUploadTemplateToCategoryInputPort
 {
     private readonly IDocumentRepository _documentRepository;
     private readonly IAmazonS3Service _amazonS3Service;
     private readonly IHpInfRepository _hpInfRepository;
     private readonly AmazonS3Options _options;
 
-    public AddTemplateToCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
+    public UploadTemplateToCategoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IDocumentRepository documentRepository, IAmazonS3Service amazonS3Service, IHpInfRepository hpInfRepository)
     {
         _options = optionsAccessor.Value;
         _documentRepository = documentRepository;
@@ -24,20 +24,20 @@ public class AddTemplateToCategoryInteractor : IAddTemplateToCategoryInputPort
         _hpInfRepository = hpInfRepository;
     }
 
-    public AddTemplateToCategoryOutputData Handle(AddTemplateToCategoryInputData inputData)
+    public UploadTemplateToCategoryOutputData Handle(UploadTemplateToCategoryInputData inputData)
     {
         if (!_hpInfRepository.CheckHpId(inputData.HpId))
         {
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.InvalidHpId);
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.InvalidHpId);
         }
         else if (!_documentRepository.CheckExistDocCategory(inputData.HpId, inputData.CategoryCd))
         {
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.InvalidCategoryCd);
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.InvalidCategoryCd);
         }
         var memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
         if (memoryStream.Length == 0)
         {
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.InvalidFileInput);
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.InvalidFileInput);
         }
         try
         {
@@ -48,24 +48,22 @@ public class AddTemplateToCategoryInteractor : IAddTemplateToCategoryInputPort
                                                 };
             string filePath = _amazonS3Service.GetFolderUploadOther(listFolderPath);
 
-            var checkExist = _amazonS3Service.ObjectExistsAsync(filePath + inputData.FileName);
-            checkExist.Wait();
-            if (checkExist.Result)
+            if (!inputData.OverWrite && _amazonS3Service.ObjectExistsAsync(filePath + inputData.FileName).Result)
             {
-                return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.ExistFileTemplateName);
+                return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.ExistFileTemplateName);
             }
 
             var response = _amazonS3Service.UploadObjectAsync(filePath, inputData.FileName, memoryStream);
             response.Wait();
             if (response.Result.Length > 0)
             {
-                return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Successed);
+                return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.Successed);
             }
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Failed);
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.Failed);
         }
         catch
         {
-            return new AddTemplateToCategoryOutputData(AddTemplateToCategoryStatus.Failed);
+            return new UploadTemplateToCategoryOutputData(UploadTemplateToCategoryStatus.Failed);
         }
     }
 }
