@@ -172,7 +172,9 @@ namespace Infrastructure.Repositories
                 tenMst?.IpnNameCd ?? string.Empty,
                 tenMst?.MinAge ?? string.Empty,
                 tenMst?.MaxAge ?? string.Empty,
-                tenMst?.SanteiItemCd ?? string.Empty
+                tenMst?.SanteiItemCd ?? string.Empty,
+                tenMst?.OdrTermVal ?? 0,
+                tenMst?.CnvTermVal ?? 0
             );
         }
 
@@ -216,7 +218,9 @@ namespace Infrastructure.Repositories
                 tenMst.IpnNameCd ?? string.Empty,
                 tenMst.MinAge ?? string.Empty,
                 tenMst.MaxAge ?? string.Empty,
-                tenMst.SanteiItemCd ?? string.Empty
+                tenMst.SanteiItemCd ?? string.Empty,
+                tenMst.OdrTermVal,
+                tenMst.CnvTermVal
             )).ToList();
         }
 
@@ -622,7 +626,9 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
                                                            item.TenMst?.MinAge ?? string.Empty,
                                                            item.TenMst?.MaxAge ?? string.Empty,
-                                                           item.TenMst?.SanteiItemCd ?? string.Empty
+                                                           item.TenMst?.SanteiItemCd ?? string.Empty,
+                                                           item.TenMst?.OdrTermVal ?? 0,
+                                                           item.TenMst?.CnvTermVal ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
@@ -711,7 +717,9 @@ namespace Infrastructure.Repositories
                                                            item.IpnNameCd ?? string.Empty,
                                                            item.MinAge ?? string.Empty,
                                                            item.MaxAge ?? string.Empty,
-                                                           item.SanteiItemCd ?? string.Empty)).ToList();
+                                                           item.SanteiItemCd ?? string.Empty,
+                                                           item.OdrTermVal,
+                                                           item.CnvTermVal)).ToList();
             }
 
             return tenMstModels;
@@ -865,7 +873,9 @@ namespace Infrastructure.Repositories
                     entity?.IpnNameCd ?? string.Empty,
                     entity?.MinAge ?? string.Empty,
                     entity?.MaxAge ?? string.Empty,
-                    entity?.SanteiItemCd ?? string.Empty
+                    entity?.SanteiItemCd ?? string.Empty,
+                    entity?.OdrTermVal ?? 0,
+                    entity?.CnvTermVal ?? 0
                );
         }
 
@@ -913,7 +923,9 @@ namespace Infrastructure.Repositories
                     entity.IpnNameCd ?? string.Empty,
                     entity.MinAge ?? string.Empty,
                     entity.MaxAge ?? string.Empty,
-                    entity.SanteiItemCd ?? string.Empty
+                    entity.SanteiItemCd ?? string.Empty,
+                    entity.OdrTermVal,
+                    entity.CnvTermVal
                )).ToList();
         }
 
