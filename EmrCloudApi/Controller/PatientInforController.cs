@@ -68,6 +68,7 @@ using Domain.Models.InsuranceMst;
 using EmrCloudApi.Services;
 using UseCase.Insurance.ValidHokenInfAllType;
 using UseCase.Insurance.HokenPatternUsed;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -712,6 +713,17 @@ namespace EmrCloudApi.Controller
             var presenter = new CheckHokenPatternUsedPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<CheckHokenPatternUsedResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetHokenSyaMst)]
+        public ActionResult<Response<GetHokenSyaMstResponse>> GetHokenSyaMst([FromQuery] GetHokenSyaMstRequest request)
+        {
+            var input = new GetHokenSyaMstInputData(HpId, request.HokensyaNo, request.HokenKbn);
+            var output = _bus.Handle(input);
+            var presenter = new GetHokenSyaMstPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetHokenSyaMstResponse>>(presenter.Result);
         }
     }
 }

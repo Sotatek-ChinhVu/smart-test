@@ -136,5 +136,8 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
     }
 }

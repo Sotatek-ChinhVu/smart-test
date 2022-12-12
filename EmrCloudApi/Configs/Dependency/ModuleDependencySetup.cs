@@ -263,6 +263,7 @@ using Domain.Models.HistoryOrder;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Insurance.HokenPatternUsed;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -495,6 +496,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
+            busBuilder.RegisterUseCase<GetHokenSyaMstInputData, GetHokenSyaMstInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
