@@ -56,7 +56,7 @@ public class KaRepository : IKaRepository
                                             .Select(ka => new KaCodeMstModel(
                                                         ka.ReceKaCd,
                                                         ka.SortNo,
-                                                        ka.KaName
+                                                        ka.KaName ?? string.Empty
                                              )).ToList();
     }
 

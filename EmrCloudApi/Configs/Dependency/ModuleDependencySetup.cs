@@ -127,7 +127,7 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
-using UseCase.Document.AddTemplateToCategory;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
@@ -262,7 +262,9 @@ using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.HistoryOrder;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Insurance.HokenPatternUsed;
+using UseCase.Document.DeleteDocCategory;
 using UseCase.InsuranceMst.GetHokenSyaMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -632,10 +634,12 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveListDocCategoryInputData, SaveListDocCategoryInteractor>();
             busBuilder.RegisterUseCase<SortDocCategoryInputData, SortDocCategoryInteractor>();
             busBuilder.RegisterUseCase<CheckExistFileNameInputData, CheckExistFileNameInteractor>();
-            busBuilder.RegisterUseCase<AddTemplateToCategoryInputData, AddTemplateToCategoryInteractor>();
+            busBuilder.RegisterUseCase<UploadTemplateToCategoryInputData, UploadTemplateToCategoryInteractor>();
             busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
             busBuilder.RegisterUseCase<DeleteDocInfInputData, DeleteDocInfInteractor>();
             busBuilder.RegisterUseCase<DeleteDocTemplateInputData, DeleteDocTemplateInteractor>();
+            busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
+            busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

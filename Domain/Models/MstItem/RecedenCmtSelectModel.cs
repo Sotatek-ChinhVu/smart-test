@@ -4,7 +4,7 @@
     {
         private List<int> cmtSbts = new List<int> { 20, 21, 22 };
 
-        public RecedenCmtSelectModel(int cmtSbt, string itemCd, string cmtCd, string commentName, int itemNo, int edaNo, string content, int sortNo, int condKbn)
+        public RecedenCmtSelectModel(int cmtSbt, string itemCd, string cmtCd, string commentName, int itemNo, int edaNo, string content, int sortNo, int condKbn, TenItemModel tenMst)
         {
             CmtSbt = cmtSbt;
             ItemCd = itemCd;
@@ -15,6 +15,7 @@
             Content = content;
             SortNo = sortNo;
             CondKbn = condKbn;
+            TenMst = tenMst;
         }
 
         public bool IsSatsueiBui
@@ -42,5 +43,7 @@
         public int SortNo { get; private set; }
 
         public int CondKbn { get; private set; }
+
+        public TenItemModel TenMst { get; private set; }
     }
 }

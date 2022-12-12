@@ -1,14 +1,15 @@
 ﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.Document.AddTemplateToCategory;
+namespace UseCase.Document.UploadTemplateToCategory;
 
-public class AddTemplateToCategoryInputData : IInputData<AddTemplateToCategoryOutputData>
+public class UploadTemplateToCategoryInputData : IInputData<UploadTemplateToCategoryOutputData>
 {
-    public AddTemplateToCategoryInputData(int hpId, string fileName, int categoryCd, Stream streamImage)
+    public UploadTemplateToCategoryInputData(int hpId, string fileName, int categoryCd, bool overWrite, Stream streamImage)
     {
         HpId = hpId;
         FileName = fileName;
         CategoryCd = categoryCd;
+        OverWrite = overWrite;
         StreamImage = streamImage;
     }
 
@@ -17,6 +18,8 @@ public class AddTemplateToCategoryInputData : IInputData<AddTemplateToCategoryOu
     public string FileName { get; private set; }
 
     public int CategoryCd { get; private set; }
+
+    public bool OverWrite { get; private set; }
 
     public Stream StreamImage { get; private set; }
 }

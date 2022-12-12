@@ -1,7 +1,6 @@
 ﻿using Domain.Models.MaxMoney;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -24,16 +23,16 @@ namespace Infrastructure.Repositories
                                                                    && u.IsDeleted == 0)
                                                                    .OrderBy(u => u.SortKey)
                                                                    .ToList();
-            return maxMoneys.Select(u => new LimitListModel(u.Id,u.KohiId,u.SinDate,u.HokenPid,u.SortKey,u.RaiinNo,u.FutanGaku,u.TotalGaku,u.Biko ?? string.Empty,u.IsDeleted,u.SeqNo)).ToList();
+            return maxMoneys.Select(u => new LimitListModel(u.Id, u.KohiId, u.SinDate, u.HokenPid, u.SortKey ?? string.Empty, u.RaiinNo, u.FutanGaku, u.TotalGaku, u.Biko ?? string.Empty, u.IsDeleted, u.SeqNo)).ToList();
         }
 
-        public MaxMoneyInfoHokenModel GetInfoHokenMoney(int hpId,long ptId,int kohiId,int sinYm)
+        public MaxMoneyInfoHokenModel GetInfoHokenMoney(int hpId, long ptId, int kohiId, int sinYm)
         {
             var kohi = _tenantDataContext.PtKohis.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.PtId == ptId
                                                                 && x.HokenId == kohiId);
 
-            if (kohi is null) return new MaxMoneyInfoHokenModel(0,0,0,0,0,0,string.Empty, string.Empty,0,0,0,0);
+            if (kohi is null) return new MaxMoneyInfoHokenModel(0, 0, 0, 0, 0, 0, string.Empty, string.Empty, 0, 0, 0, 0);
 
             var hokenMst = _tenantDataContext.HokenMsts.FirstOrDefault(x => x.HpId == hpId
                                                                 && x.HokenNo == kohi.HokenNo
@@ -49,21 +48,21 @@ namespace Infrastructure.Repositories
             else if (hokenMst.MonthLimitFutan > 0)
                 limitFutan = hokenMst.MonthLimitFutan;
 
-            return new MaxMoneyInfoHokenModel(kohi.HokenId, 
-                                                kohi.Rate, 
-                                                sinYm, 
-                                                hokenMst.FutanKbn, 
-                                                hokenMst.MonthLimitFutan, 
-                                                kohi.GendoGaku, 
-                                                hokenMst.Houbetu, 
-                                                hokenMst.HokenName, 
+            return new MaxMoneyInfoHokenModel(kohi.HokenId,
+                                                kohi.Rate,
+                                                sinYm,
+                                                hokenMst.FutanKbn,
+                                                hokenMst.MonthLimitFutan,
+                                                kohi.GendoGaku,
+                                                hokenMst.Houbetu ?? string.Empty,
+                                                hokenMst.HokenName ?? string.Empty,
                                                 hokenMst.IsLimitListSum,
                                                 hokenMst.IsLimitList,
-                                                hokenMst.FutanRate, 
+                                                hokenMst.FutanRate,
                                                 limitFutan);
         }
 
-        public bool SaveMaxMoney(List<LimitListModel> dataInputs,int hpId,long ptId,int kohiId,int sinYm, int userId)
+        public bool SaveMaxMoney(List<LimitListModel> dataInputs, int hpId, long ptId, int kohiId, int sinYm, int userId)
         {
             List<LimitListInf> maxMoneyDatabases = _tenantDataContext.LimitListInfs.Where(x => x.HpId == hpId
                                                                    && x.PtId == ptId
@@ -72,12 +71,12 @@ namespace Infrastructure.Repositories
                                                                    .OrderBy(u => u.SortKey)
                                                                    .ToList();
 
-            foreach(var item in maxMoneyDatabases)
+            foreach (var item in maxMoneyDatabases)
             {
                 var exist = dataInputs.FirstOrDefault(x => x.SeqNo == item.SeqNo && x.Id == item.Id);
-                if(exist == null)
+                if (exist == null)
                 {
-                    if(CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
+                    if (CIUtil.Copy(item.SinDate.AsString(), 1, 6).AsInteger() == sinYm)
                     {
                         item.IsDeleted = 1;
                         item.UpdateDate = DateTime.UtcNow;
@@ -86,9 +85,9 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            foreach(var item in dataInputs)
+            foreach (var item in dataInputs)
             {
-                if(item.SeqNo == 0 && item.Id == 0)
+                if (item.SeqNo == 0 && item.Id == 0)
                 {
                     LimitListInf create = new LimitListInf()
                     {
@@ -113,7 +112,7 @@ namespace Infrastructure.Repositories
                 else
                 {
                     LimitListInf? update = maxMoneyDatabases.FirstOrDefault(x => x.Id == item.Id && x.SeqNo == item.SeqNo);
-                    if(update != null)
+                    if (update != null)
                     {
                         update.SortKey = item.SortKey;
                         update.FutanGaku = item.FutanGaku;
