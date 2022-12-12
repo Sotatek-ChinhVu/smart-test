@@ -1266,7 +1266,9 @@ namespace Infrastructure.Repositories
                         tenMst?.IpnNameCd ?? string.Empty,
                         tenMst?.MinAge ?? string.Empty,
                         tenMst?.MaxAge ?? string.Empty,
-                        tenMst?.SanteiItemCd ?? string.Empty);
+                        tenMst?.SanteiItemCd ?? string.Empty,
+                        0,
+                        0);
         }
     }
 }
