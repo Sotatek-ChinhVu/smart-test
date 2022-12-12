@@ -305,6 +305,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Cache data
             services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
