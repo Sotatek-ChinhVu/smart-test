@@ -249,7 +249,7 @@ namespace EmrCloudApi.Presenters.NextOrder
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtOpt));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidCmtOpt:
-                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrCmtName));
+                                dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, string.Format(ResponseMessage.MFree00030, ResponseMessage.MMaxLengthOfCmt), ResponseMessage.TodayOdrCmtName));
                                 break;
                             case OrderInfConst.OrdInfValidationStatus.InvalidFontColor:
                                 dictionaryOneNextOrder.Add(new ValidationTodayOrdItemResponse(validationOrder.Value.Value, validationOrder.Key, validationOrder.Value.Key, ResponseMessage.MCommonError, ResponseMessage.TodayOdrFontColor));
