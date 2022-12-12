@@ -33,7 +33,7 @@ public class UketukeSbtMstRepository : IUketukeSbtMstRepository
     {
         return new UketukeSbtMstModel(
             u.KbnId,
-            u.KbnName,
+            u.KbnName ?? string.Empty,
             u.SortNo,
             u.IsDeleted);
     }
