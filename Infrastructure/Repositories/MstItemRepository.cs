@@ -1015,8 +1015,8 @@ namespace Infrastructure.Repositories
                                                                               sinDate <= item.EndDate)
                                                  .AsEnumerable()
                                                  .Select(item => new ItemCommentSuggestionModel(
-                                                     "【" + item.Name + "】",
                                                      item.ItemCd,
+                                                     "【" + item.Name + "】",
                                                      item?.SanteiItemCd ?? string.Empty,
                                                      new List<RecedenCmtSelectModel>()
                                                  ))
@@ -1090,7 +1090,8 @@ namespace Infrastructure.Repositories
                                    recedenCmtSelect.EdaNo,
                                    tenMst.Name ?? string.Empty,
                                    recedenCmtSelect.SortNo,
-                                   recedenCmtSelect.CondKbn
+                                   recedenCmtSelect.CondKbn,
+                                   ConvertTenMstToModel(tenMst)
                                )).ToList();
             foreach (var inputCodeItem in result)
             {
@@ -1214,6 +1215,45 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-
+        private TenItemModel ConvertTenMstToModel(TenMst tenMst)
+        {
+            return new TenItemModel(
+                        tenMst?.HpId ?? 0,
+                        tenMst?.ItemCd ?? string.Empty,
+                        tenMst?.RousaiKbn ?? 0,
+                        tenMst?.KanaName1 ?? string.Empty,
+                        tenMst?.Name ?? string.Empty,
+                        tenMst?.KohatuKbn ?? 0,
+                        tenMst?.MadokuKbn ?? 0,
+                        tenMst?.KouseisinKbn ?? 0,
+                        tenMst?.OdrUnitName ?? string.Empty,
+                        tenMst?.EndDate ?? 0,
+                        tenMst?.DrugKbn ?? 0,
+                        tenMst?.MasterSbt ?? string.Empty,
+                        tenMst?.BuiKbn ?? 0,
+                        tenMst?.IsAdopted ?? 0,
+                        tenMst?.Ten ?? 0,
+                        tenMst?.TenId ?? 0,
+                        "",
+                        "",
+                        tenMst?.CmtCol1 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.SinKouiKbn ?? 0,
+                        tenMst?.YjCd ?? string.Empty,
+                        tenMst?.CnvUnitName ?? string.Empty,
+                        tenMst?.StartDate ?? 0,
+                        tenMst?.YohoKbn ?? 0,
+                        tenMst?.CmtColKeta1 ?? 0,
+                        tenMst?.CmtColKeta2 ?? 0,
+                        tenMst?.CmtColKeta3 ?? 0,
+                        tenMst?.CmtColKeta4 ?? 0,
+                        tenMst?.CmtCol2 ?? 0,
+                        tenMst?.CmtCol3 ?? 0,
+                        tenMst?.CmtCol4 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.MinAge ?? string.Empty,
+                        tenMst?.MaxAge ?? string.Empty,
+                        tenMst?.SanteiItemCd ?? string.Empty);
+        }
     }
 }
