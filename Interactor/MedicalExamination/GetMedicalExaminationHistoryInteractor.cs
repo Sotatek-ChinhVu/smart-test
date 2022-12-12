@@ -310,6 +310,7 @@ namespace Interactor.MedicalExamination
                     }
                     hokenGrp.GroupOdrItems.Add(group);
                 }
+                historyKarteOdrRaiin.HokenGroups.Add(hokenGrp);
             }
             historyKarteOdrRaiins.Add(historyKarteOdrRaiin);
         }
