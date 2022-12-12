@@ -1,11 +1,7 @@
 ﻿using Domain.Models.ApprovalInfo;
-using Domain.Models.User;
-using Entity.Tenant;
-using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Infrastructure.Repositories
 {
@@ -91,7 +87,7 @@ namespace Infrastructure.Repositories
                             1,
                             x.PtInf.PtNum,
                             x.KaName,
-                            x.PtInf.Name,
+                            x.PtInf.Name ?? string.Empty,
                             x.KaId,
                             x.RaiinInf.UketukeNo
                       ))
