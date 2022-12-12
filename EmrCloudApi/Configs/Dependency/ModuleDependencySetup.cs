@@ -262,6 +262,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.HistoryOrder;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Insurance.HokenPatternUsed;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -634,6 +635,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<SaveDocInfInputData, SaveDocInfInteractor>();
             busBuilder.RegisterUseCase<DeleteDocInfInputData, DeleteDocInfInteractor>();
             busBuilder.RegisterUseCase<DeleteDocTemplateInputData, DeleteDocTemplateInteractor>();
+            busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

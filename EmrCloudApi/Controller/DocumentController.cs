@@ -12,6 +12,7 @@ using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
@@ -134,6 +135,18 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<DeleteDocTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.MoveTemplateToOtherCategory)]
+    public ActionResult<Response<MoveTemplateToOtherCategoryResponse>> MoveTemplateToOtherCategory([FromBody] MoveTemplateToOtherCategoryRequest request)
+    {
+        var input = new MoveTemplateToOtherCategoryInputData(HpId, request.OldCategoryCd, request.NewCategoryCd, request.FileName);
+        var output = _bus.Handle(input);
+
+        var presenter = new MoveTemplateToOtherCategoryPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
