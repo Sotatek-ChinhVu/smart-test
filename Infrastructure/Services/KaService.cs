@@ -3,13 +3,13 @@ using Infrastructure.Interfaces;
 
 namespace Infrastructure.Services
 {
-    public class UserInfoService : IUserInfoService
+    public class KaService : IKaService
     {
-        private List<UserMst> _userInfoList;
+        private List<KaMst> _kaInfoList;
         //private readonly string _cacheKey;
         private readonly ITenantProvider _tenantProvider;
         //private readonly IMemoryCache _memoryCache;
-        public UserInfoService(ITenantProvider tenantProvider)
+        public KaService(ITenantProvider tenantProvider)
         {
             _tenantProvider = tenantProvider;
             //_memoryCache = memoryCache;
@@ -22,17 +22,17 @@ namespace Infrastructure.Services
 
         public string GetNameById(int id)
         {
-            var userInfo = _userInfoList.FirstOrDefault(u => u.UserId == id);
-            if (userInfo == null)
+            var kaInfo = _kaInfoList.FirstOrDefault(u => u.KaId == id);
+            if (kaInfo == null)
             {
                 return string.Empty;
             }
-            return userInfo.Sname ?? string.Empty;
+            return kaInfo.KaName ?? string.Empty;
         }
 
         public void Reload()
         {
-            _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.ToList();
+            _kaInfoList = _tenantProvider.GetNoTrackingDataContext().KaMsts.ToList();
             //_memoryCache.Set(_cacheKey, _userInfoList);
         }
     }
