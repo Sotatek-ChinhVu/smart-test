@@ -26,12 +26,12 @@ namespace Infrastructure.Repositories
                     r => new DosageDrugModel(
                             r.YjCd,
                             r.DoeiCd,
-                            r.DgurKbn,
-                            r.KikakiUnit,
-                            r.YakkaiUnit,
+                            r.DgurKbn ?? string.Empty,
+                            r.KikakiUnit ?? string.Empty,
+                            r.YakkaiUnit ?? string.Empty,
                             r.RikikaRate,
-                            r.RikikaUnit,
-                            r.YoukaiekiCd,
+                            r.RikikaUnit ?? string.Empty,
+                            r.YoukaiekiCd ?? string.Empty,
                             listDosageDosages.FirstOrDefault(item => item.DoeiCd == r.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
                    )).ToList();
         }
@@ -53,26 +53,26 @@ namespace Infrastructure.Repositories
                         from form in formLeft.DefaultIfEmpty()
                         join usagecode in UsageCodes on main.YohoCd equals usagecode.YohoCd into usageLeft
                         from usage in usageLeft.DefaultIfEmpty()
-                        where (main.TradeKana.Contains(searchValue)
-                                || main.TradeName.Contains(searchValue)
-                                || maker.MakerKana.Contains(searchValue)
-                                || maker.MakerName.Contains(searchValue))
+                        where ((main.TradeKana ?? string.Empty).Contains(searchValue)
+                                || (main.TradeName ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerKana ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerName ?? string.Empty).Contains(searchValue))
                         select new OtcItemModel(
                             main.SerialNum,
-                            main.OtcCd,
-                            main.TradeName,
-                            main.TradeKana,
-                            main.ClassCd,
-                            main.CompanyCd,
-                            main.TradeCd,
-                            main.DrugFormCd,
-                            main.YohoCd,
-                            form.Form,
-                            maker.MakerName,
-                            maker.MakerKana,
-                            usage.Yoho,
-                            clas.ClassName,
-                            clas.MajorDivCd
+                            main.OtcCd ?? string.Empty,
+                            main.TradeName ?? string.Empty,
+                            main.TradeKana ?? string.Empty,
+                            main.ClassCd ?? string.Empty,
+                            main.CompanyCd ?? string.Empty,
+                            main.TradeCd ?? string.Empty,
+                            main.DrugFormCd ?? string.Empty,
+                            main.YohoCd ?? string.Empty,
+                            form.Form ?? string.Empty,
+                            maker.MakerName ?? string.Empty,
+                            maker.MakerKana ?? string.Empty,
+                            usage.Yoho ?? string.Empty,
+                            clas.ClassName ?? string.Empty,
+                            clas.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -85,7 +85,7 @@ namespace Infrastructure.Repositories
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(
                  x.FoodKbn,
-                 x.FoodName
+                 x.FoodName ?? string.Empty
             )).ToList();
             return aleFoodKbns;
         }
@@ -105,12 +105,12 @@ namespace Infrastructure.Repositories
                              from supplement in supplementList.DefaultIfEmpty()
                              join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
                              from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where indexDef.IndexWord.Contains(searchValue)
+                             where (indexDef.IndexWord ?? string.Empty).Contains(searchValue)
                              select new SearchSupplementModel(
                                  ingreItem.SeibunCd,
-                                 ingreItem.Seibun,
-                                 indexDef.IndexWord,
-                                 indexDef.TokuhoFlg,
+                                 ingreItem.Seibun ?? string.Empty,
+                                 indexDef.IndexWord ?? string.Empty,
+                                 indexDef.TokuhoFlg ?? string.Empty,
                                  supplement.IndexCd
                              )).AsQueryable();
 
@@ -222,16 +222,17 @@ namespace Infrastructure.Repositories
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
         {
+            string kanaKeyword = "";
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
-                string inputKeyword = keyword;
-                keyword = WanaKana.RomajiToKana(keyword);
-                if (WanaKana.IsRomaji(keyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
-                    keyword = inputKeyword;
+                var inputKeyword = keyword;
+                kanaKeyword = WanaKana.RomajiToKana(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
             }
 
             var listTenMstModels = new List<TenItemModel>();
-            string sBigKeyword = keyword.ToUpper()
+            string sBigKeyword = kanaKeyword.ToUpper()
                                         .Replace("ｧ", "ｱ")
                                         .Replace("ｨ", "ｲ")
                                         .Replace("ｩ", "ｳ")
@@ -818,7 +819,7 @@ namespace Infrastructure.Repositories
 
         public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
         {
-            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName)).ToList();
+            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName ?? string.Empty)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
@@ -922,19 +923,19 @@ namespace Infrastructure.Repositories
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
 
             else if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
 
             if (!string.IsNullOrEmpty(address))
             {
                 entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
                                                 || (e.PrefName + e.CityName).Contains(address)
-                                                || e.PrefName.Contains(address));
+                                                || (e.PrefName != null && e.PrefName.Contains(address)));
             }
 
             var totalCount = entities.Count();
@@ -1015,8 +1016,8 @@ namespace Infrastructure.Repositories
                                                                               sinDate <= item.EndDate)
                                                  .AsEnumerable()
                                                  .Select(item => new ItemCommentSuggestionModel(
-                                                     "【" + item.Name + "】",
                                                      item.ItemCd,
+                                                     "【" + item.Name + "】",
                                                      item?.SanteiItemCd ?? string.Empty,
                                                      new List<RecedenCmtSelectModel>()
                                                  ))
@@ -1090,7 +1091,8 @@ namespace Infrastructure.Repositories
                                    recedenCmtSelect.EdaNo,
                                    tenMst.Name ?? string.Empty,
                                    recedenCmtSelect.SortNo,
-                                   recedenCmtSelect.CondKbn
+                                   recedenCmtSelect.CondKbn,
+                                   ConvertTenMstToModel(tenMst)
                                )).ToList();
             foreach (var inputCodeItem in result)
             {
@@ -1214,6 +1216,45 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-
+        private TenItemModel ConvertTenMstToModel(TenMst tenMst)
+        {
+            return new TenItemModel(
+                        tenMst?.HpId ?? 0,
+                        tenMst?.ItemCd ?? string.Empty,
+                        tenMst?.RousaiKbn ?? 0,
+                        tenMst?.KanaName1 ?? string.Empty,
+                        tenMst?.Name ?? string.Empty,
+                        tenMst?.KohatuKbn ?? 0,
+                        tenMst?.MadokuKbn ?? 0,
+                        tenMst?.KouseisinKbn ?? 0,
+                        tenMst?.OdrUnitName ?? string.Empty,
+                        tenMst?.EndDate ?? 0,
+                        tenMst?.DrugKbn ?? 0,
+                        tenMst?.MasterSbt ?? string.Empty,
+                        tenMst?.BuiKbn ?? 0,
+                        tenMst?.IsAdopted ?? 0,
+                        tenMst?.Ten ?? 0,
+                        tenMst?.TenId ?? 0,
+                        "",
+                        "",
+                        tenMst?.CmtCol1 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.SinKouiKbn ?? 0,
+                        tenMst?.YjCd ?? string.Empty,
+                        tenMst?.CnvUnitName ?? string.Empty,
+                        tenMst?.StartDate ?? 0,
+                        tenMst?.YohoKbn ?? 0,
+                        tenMst?.CmtColKeta1 ?? 0,
+                        tenMst?.CmtColKeta2 ?? 0,
+                        tenMst?.CmtColKeta3 ?? 0,
+                        tenMst?.CmtColKeta4 ?? 0,
+                        tenMst?.CmtCol2 ?? 0,
+                        tenMst?.CmtCol3 ?? 0,
+                        tenMst?.CmtCol4 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.MinAge ?? string.Empty,
+                        tenMst?.MaxAge ?? string.Empty,
+                        tenMst?.SanteiItemCd ?? string.Empty);
+        }
     }
 }

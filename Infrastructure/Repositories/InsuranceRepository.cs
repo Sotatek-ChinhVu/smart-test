@@ -4,7 +4,6 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.InsuranceMst;
 using Entity.Tenant;
 using Helper.Common;
-using Helper.Constants;
 using Helper.Mapping;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
@@ -170,7 +169,7 @@ namespace Infrastructure.Repositories
                     var prefName = string.Empty;
                     if (item.hokenMst != null)
                     {
-                        houbetu = item.hokenMst.Houbetu;
+                        houbetu = item.hokenMst.Houbetu ?? string.Empty;
                         isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
                         prefName = RoudouMsts.FirstOrDefault(x => x.RoudouCd == item.hokenMst.PrefNo.ToString())?.RoudouName;
                     }
@@ -724,7 +723,7 @@ namespace Infrastructure.Repositories
                     bool isReceKisaiOrNoHoken = false;
                     if (item.hokenMst != null)
                     {
-                        houbetu = item.hokenMst.Houbetu;
+                        houbetu = item.hokenMst.Houbetu ?? string.Empty;
                         isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
                     }
                     var ptRousaiTenkis = _tenantDataContext.PtRousaiTenkis.Where(x => x.HpId == hpId && x.PtId == ptId && x.HokenId == item.HokenId).OrderBy(x => x.EndDate)
@@ -1142,7 +1141,7 @@ namespace Infrastructure.Repositories
                         bool isReceKisaiOrNoHoken = false;
                         if (item.hokenMst != null)
                         {
-                            houbetu = item.hokenMst.Houbetu;
+                            houbetu = item.hokenMst.Houbetu ?? string.Empty;
                             isReceKisaiOrNoHoken = IsReceKisai(item.hokenMst) || IsNoHoken(item.hokenMst, item.HokenKbn, houbetu ?? string.Empty);
                         }
 
@@ -1259,8 +1258,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.EndDate,
                                         hokenMst.HokenNo,
                                         hokenMst.HokenEdaNo,
-                                        hokenMst.HokenSname,
-                                        hokenMst.Houbetu,
+                                        hokenMst.HokenSname ?? string.Empty,
+                                        hokenMst.Houbetu ?? string.Empty,
                                         hokenMst.HokenSbtKbn,
                                         hokenMst.CheckDigit,
                                         hokenMst.AgeStart,
@@ -1269,8 +1268,8 @@ namespace Infrastructure.Repositories
                                         hokenMst.IsJyukyusyaNoCheck,
                                         hokenMst.JyukyuCheckDigit,
                                         hokenMst.IsTokusyuNoCheck,
-                                        hokenMst.HokenName,
-                                        hokenMst.HokenNameCd,
+                                        hokenMst.HokenName ?? string.Empty,
+                                        hokenMst.HokenNameCd ?? string.Empty,
                                         hokenMst.HokenKohiKbn,
                                         hokenMst.IsOtherPrefValid,
                                         hokenMst.ReceKisai,
@@ -1310,7 +1309,7 @@ namespace Infrastructure.Repositories
                                                                        && x.HokenGrp == insuranceScan.HokenGrp
                                                                        && x.HokenId == insuranceScan.HokenId
                                                                        && x.IsDeleted == DeleteStatus.None);
-            if(model is null)
+            if (model is null)
             {
                 _tenantDataContext.Add(new PtHokenScan()
                 {

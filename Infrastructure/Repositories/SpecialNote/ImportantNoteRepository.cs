@@ -1,6 +1,5 @@
 ﻿using Domain.Models.SpecialNote.ImportantNote;
 using Entity.Tenant;
-using Helper.Constants;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
@@ -96,7 +95,7 @@ namespace Infrastructure.Repositories.SpecialNote
                               ale.EndDate,
                               ale.Cmt ?? String.Empty,
                               ale.IsDeleted,
-                              mst.FoodName
+                              mst.FoodName ?? String.Empty
                         );
 
             return query.ToList();

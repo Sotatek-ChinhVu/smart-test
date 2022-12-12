@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
                     groupMst.GrpId,
                     groupMst.SortNo,
                     groupMst.GrpName ?? string.Empty,
-                    groupDetailList.Select(g => new PatientGroupDetailModel(g.GrpId, g.GrpCode, g.SeqNo, g.SortNo, g.GrpCodeName)).ToList()
+                    groupDetailList.Select(g => new PatientGroupDetailModel(g.GrpId, g.GrpCode, g.SeqNo, g.SortNo, g.GrpCodeName ?? string.Empty)).ToList()
                 );
         }
 
