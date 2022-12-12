@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -302,7 +302,9 @@ namespace Infrastructure.Repositories
                         ordInf.CreateDate,
                         ordInf.CreateId,
                         createName,
-                        ordInf.UpdateDate
+                        ordInf.UpdateDate,
+                        ordInf.UpdateId,
+                        updateName
                    );
         }
 

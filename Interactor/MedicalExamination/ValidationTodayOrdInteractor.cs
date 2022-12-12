@@ -164,7 +164,9 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
 
                 var objDetail = new object();

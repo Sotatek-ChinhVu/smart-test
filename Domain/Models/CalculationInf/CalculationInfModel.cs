@@ -17,6 +17,7 @@ namespace Domain.Models.CalculationInf
             KbnVal = kbnVal;
             StartDate = startDate;
             EndDate = endDate;
+            SeqNo = seqNo;
         }
 
         public int HpId { get; private set; }
