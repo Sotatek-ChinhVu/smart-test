@@ -259,6 +259,7 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using Domain.Models.HistoryOrder;
 using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
@@ -301,6 +302,10 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IWebSocketService, WebSocketService>();
             services.AddTransient<IAmazonS3Service, AmazonS3Service>();
             services.AddTransient<IUserService, UserService>();
+
+            //Cache data
+            services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
         }
@@ -372,6 +377,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<INextOrderRepository, NextOrderRepository>();
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
+            services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)

@@ -13,6 +13,17 @@ public class KarteFilterDetailModel
         ListUserId = listUserId;
     }
 
+    public KarteFilterDetailModel(int hpId, int userId)
+    {
+        HpId = hpId;
+        UserId = userId;
+        FilterId = 0;
+        BookMarkChecked = false;
+        ListHokenId = new List<int>();
+        ListKaId = new List<int>();
+        ListUserId = new List<int>();
+    }
+
     public int HpId { get; private set; }
 
     public int UserId { get; private set; }
