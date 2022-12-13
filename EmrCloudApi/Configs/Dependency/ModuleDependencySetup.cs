@@ -164,6 +164,7 @@ using UseCase.KarteInf.GetList;
 using UseCase.KohiHokenMst.Get;
 using UseCase.MaxMoney.GetMaxMoney;
 using UseCase.MaxMoney.SaveMaxMoney;
+using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.MedicalExamination.UpsertTodayOrd;
@@ -306,6 +307,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Cache data
             services.AddScoped<IUserInfoService, UserInfoService>();
+            services.AddScoped<IKaService, KaService>();
             services.AddScoped<ISystemConfigService, SystemConfigService>();
 
             services.AddTransient<IEventProcessorService, EventProcessorService>();
@@ -474,6 +476,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<UpsertTodayOrdInputData, UpsertTodayOrdInteractor>();
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
+            busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
