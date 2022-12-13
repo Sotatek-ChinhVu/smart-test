@@ -980,5 +980,185 @@ namespace Infrastructure.Repositories
             }
             return ptByomeiModels;
         }
+
+        public List<OrdInfModel> AutoAddOrder(int sinDate, List<OrdInfModel> addingOdrList, List<OrdInfModel> currentOdrList)
+        {
+            List<OrdInfModel> autoAddOdr = new();
+            var itemCds = new List<string>();
+            foreach (var itemDetails in addingOdrList.Select(o => o.OrdInfDetails))
+            {
+                itemCds.AddRange(itemDetails.Select(i => i.ItemCd));
+            }
+
+            var allSanteiGrpDetail = _tenantNoTrackingDataContext.SanteiGrpDetails
+                                    .Where(s => itemCds.Contains(s.ItemCd)).ToList();
+
+            foreach (var odr in addingOdrList)
+            {
+                foreach (var detail in odr.OrdInfDetails)
+                {
+                    if (string.IsNullOrEmpty(detail.ItemCd))
+                    {
+                        continue;
+                    }
+
+                    var santeiGrpDetails = allSanteiGrpDetail.Where(s => s.ItemCd == detail.ItemCd).ToList();
+                    var santeiGrpCds = santeiGrpDetails.Select(s => s.SanteiGrpCd);
+
+                    if (santeiGrpDetails.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    var santeiAutoOrders = _tenantNoTrackingDataContext.SanteiAutoOrders.Where(e =>
+                                             e.HpId == odr.HpId &&
+                                             santeiGrpCds.Contains(e.SanteiGrpCd) &&
+                                             e.StartDate <= sinDate &&
+                                             e.EndDate >= sinDate);
+
+                    foreach (var santeiGrpDetail in santeiGrpDetails)
+                    {
+                        var santeiAutoOrder = santeiAutoOrders.FirstOrDefault(s => s.SanteiGrpCd == santeiGrpDetail.SanteiGrpCd && s.HpId == santeiGrpDetail.HpId);
+                        if (santeiAutoOrder == null)
+                        {
+                            continue;
+                        }
+
+                        if (santeiAutoOrder.TermCnt == 1 && santeiAutoOrder.TermSbt == 4 && (santeiAutoOrder.CntType == 2 || santeiAutoOrder.CntType == 3))
+                        {
+                            var santeiAutoOdrDetailList = masterFinder.FindSanteiAutoOrderDetailList(santeiAutoOrder.SanteiGrpCd, santeiAutoOrder.SeqNo);
+                            List<string> autoOdrDetailItemCdList = santeiAutoOdrDetailList.Select(s => s.ItemCd).Distinct().ToList();
+
+                            if (santeiAutoOdrDetailList.Count == 0)
+                            {
+                                continue;
+                            }
+
+                            double santeiCntInMonth = 0;
+                            foreach (var itemCd in autoOdrDetailItemCdList)
+                            {
+                                santeiCntInMonth += masterFinder.GetOdrCountInMonth(PtId, Sinday, itemCd);
+                            }
+
+                            double countInCurrentOdr = 0;
+
+                            if (santeiAutoOrder.CntType == 2)
+                            {
+                                foreach (var item in currentOdrList)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (autoOdrDetailItemCdList.Contains(itemDetail.ItemCd))
+                                        {
+                                            countInCurrentOdr += (itemDetail.Suryo <= 0 || ItemCdConst.ZaitakuTokushu.Contains(itemDetail.ItemCd)) ? 1 : itemDetail.Suryo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var item in currentOdrList)
+                                {
+                                    foreach (var itemDetail in item.OrdInfDetails)
+                                    {
+                                        if (autoOdrDetailItemCdList.Contains(itemDetail.ItemCd))
+                                        {
+                                            countInCurrentOdr++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            double totalSanteiCount = santeiCntInMonth + countInCurrentOdr;
+
+                            if (totalSanteiCount >= santeiAutoOrder.MaxCnt)
+                            {
+                                continue;
+                            }
+
+                            double countInAutoAdd = autoAddOdr.Count();
+                            if (totalSanteiCount + countInAutoAdd >= santeiAutoOrder.MaxCnt)
+                            {
+                                continue;
+                            }
+
+                            //var callbackMsg = new ShowAutoAddOrderMessage(Sinday, santeiAutoOdrDetailList.Select(s => s.ItemCd)).SendAsync(PrivateMessenger);
+                            //if (callbackMsg.Result.Success)
+                            //{
+                            //    string callbackItemCd = callbackMsg.Result.Result;
+
+                            //    var targetItem = masterFinder.FindTenMst(callbackItemCd, Sinday);
+                            //    OdrInf odrInf = new OdrInf();
+                            //    odrInf.OdrKouiKbn = targetItem.SinKouiKbn;
+                            //    odrInf.SinDate = sinDate;
+                            //    odrInf.RpName = odr.RpName;
+                            //    odrInf.InoutKbn = odr.InoutKbn;
+                            //    odrInf.DaysCnt = 1;
+
+                            //    var santeiAutoOdrDetail = santeiAutoOdrDetailList.FirstOrDefault(s => s.ItemCd == callbackItemCd);
+                            //    OdrInfDetail odrDetail = new OdrInfDetail();
+                            //    odrDetail.SinKouiKbn = targetItem.SinKouiKbn;
+                            //    odrDetail.SinDate = sinDate;
+                            //    odrDetail.Suryo = santeiAutoOdrDetail.Suryo;
+                            //    odrDetail.ItemCd = callbackItemCd;
+                            //    odrDetail.ItemName = targetItem.Name;
+
+                            //    if (!string.IsNullOrEmpty(targetItem.OdrUnitName))
+                            //    {
+                            //        odrDetail.UnitSBT = 1;
+                            //        odrDetail.UnitName = targetItem.OdrUnitName;
+                            //        odrDetail.TermVal = targetItem.OdrTermVal;
+                            //    }
+                            //    else if (!string.IsNullOrEmpty(targetItem.CnvUnitName))
+                            //    {
+                            //        odrDetail.UnitSBT = 2;
+                            //        odrDetail.UnitName = targetItem.CnvUnitName;
+                            //        odrDetail.TermVal = targetItem.CnvTermVal;
+                            //    }
+                            //    else
+                            //    {
+                            //        odrDetail.UnitSBT = 0;
+                            //        odrDetail.UnitName = string.Empty;
+                            //        odrDetail.TermVal = 0;
+                            //    }
+
+                            //    odrDetail.KohatuKbn = targetItem.KohatuKbn;
+                            //    odrDetail.YohoKbn = targetItem.YohoKbn;
+                            //    odrDetail.DrugKbn = targetItem.DrugKbn;
+
+                            //    List<OrdInfDetailModel> odrInfDetail = new List<OrdInfDetailModel>();
+                            //    var odrInfDetailModel = new TodayOdrInfDetailModel(odrDetail);
+                            //    odrInfDetail.Add(odrInfDetailModel);
+
+                            //    TodayOdrInfModel newOdr = new TodayOdrInfModel(odrInf, odrInfDetail);
+                            //    CorrectCommonOdrData(ref newOdr);
+                            //    autoAddOdr.Add(newOdr);
+                            //}
+
+                        }
+                    }
+                }
+            }
+            return autoAddOdr;
+        }
+
+
+        private (string, List<Tuple<string, string>>) AutoAddItem(int hpId, int sinDate, List<string> autoItemCds)
+        {
+            List<Tuple<string, string>> autoItemList = new();
+            var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   autoItemCds.Contains(p.ItemCd)).ToList();
+
+            foreach (var itemCd in autoItemCds)
+            {
+                var tenItem = tenMsts.FirstOrDefault(t => t.ItemCd == itemCd);
+                autoItemList.Add(new Tuple<string, string>(itemCd, tenItem?.Name ?? string.Empty));
+            }
+
+            return (autoItemList.FirstOrDefault()?.Item1 ?? string.Empty, autoItemList);
+        }
     }
 }
