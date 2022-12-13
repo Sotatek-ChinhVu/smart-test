@@ -2,7 +2,7 @@
 
 public class CheckExistFileNameRequest
 {
-    public string FileName { get; set; }
+    public string FileName { get; set; } = string.Empty;
 
     public int CategoryCd { get; set; }
 

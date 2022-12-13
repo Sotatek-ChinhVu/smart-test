@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
         {
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || p.KanaName.Contains(keyword) || p.Name.Contains(keyword))
+                where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 select new
                 {
                     ptInf = p,
@@ -195,8 +195,8 @@ namespace Infrastructure.Repositories
                     itemData.ReferenceNo,
                     itemData.SeqNo,
                     itemData.PtNum,
-                    itemData.KanaName,
-                    itemData.Name,
+                    itemData.KanaName ?? string.Empty,
+                    itemData.Name ?? string.Empty,
                     itemData.Sex,
                     itemData.Birthday,
                     itemData.LimitConsFlg,
@@ -245,7 +245,7 @@ namespace Infrastructure.Repositories
             long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword)))
+                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
                 select new
                 {
                     ptInf = p,
@@ -279,10 +279,10 @@ namespace Infrastructure.Repositories
             if (!string.IsNullOrEmpty(input.Name))
             {
                 ptInfQuery = ptInfQuery.Where(p =>
-                    p.Name.Contains(input.Name)
-                    || p.KanaName.Contains(input.Name)
-                    || p.Name.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name)
-                    || p.KanaName.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name));
+                    (p.Name != null && p.Name.Contains(input.Name))
+                    || (p.KanaName != null && p.KanaName.Contains(input.Name))
+                    || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name))
+                    || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name)));
             }
             // Sex
             if (input.Sex > 0)
@@ -690,7 +690,7 @@ namespace Infrastructure.Repositories
                     .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
                     .OrderBy(entity => entity.HpId)
                     .ThenBy(entity => entity.TokkiCd)
-                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName))
+                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName ?? string.Empty))
                     .ToList();
         }
 
@@ -702,8 +702,8 @@ namespace Infrastructure.Repositories
                 p.ReferenceNo,
                 p.SeqNo,
                 p.PtNum,
-                p.KanaName,
-                p.Name,
+                p.KanaName ?? string.Empty,
+                p.Name ?? string.Empty,
                 p.Sex,
                 p.Birthday,
                 p.LimitConsFlg,

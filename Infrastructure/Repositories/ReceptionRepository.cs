@@ -336,7 +336,7 @@ namespace Infrastructure.Repositories
                 foreach (var insuranceItem in insurances)
                 {
                     var hokenGrp = insuranceItem.IsHokenGroupKohi ? HokenGroupConstant.HokenGroupKohi : HokenGroupConstant.HokenGroupHokenPattern;
-                    var listCheckTime = oldHokenCheckDB.Where(item => 
+                    var listCheckTime = oldHokenCheckDB.Where(item =>
                                                                     item.HokenId == insuranceItem.HokenId
                                                                     && item.HokenGrp == hokenGrp)
                                                         .OrderByDescending(item => item.CheckDate)
@@ -719,8 +719,8 @@ namespace Infrastructure.Repositories
                 r.relatedLockInf is not null,
                 r.raiinInf.Status,
                 r.ptInf.PtNum,
-                r.ptInf.KanaName,
-                r.ptInf.Name,
+                r.ptInf.KanaName ?? string.Empty,
+                r.ptInf.Name ?? string.Empty,
                 r.ptInf.Sex,
                 r.ptInf.Birthday,
                 r.raiinInf.YoyakuTime ?? string.Empty,
@@ -741,7 +741,7 @@ namespace Infrastructure.Repositories
                 r.raiinInf.ConfirmationState,
                 r.raiinInf.ConfirmationResult ?? string.Empty,
                 grpIds,
-                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName, d.ColorCd ?? string.Empty)).ToList(),
+                dynamicCells: r.raiinKbnDetails.Select(d => new DynamicCell(d.GrpCd, d.KbnCd, d.KbnName ?? string.Empty, d.ColorCd ?? string.Empty)).ToList(),
                 sinDate,
                 // Fields needed to create Hoken name
                 r.relatedPtHokenPattern?.HokenPid ?? CommonConstants.InvalidId,
@@ -825,7 +825,7 @@ namespace Infrastructure.Repositories
                 receptionComment.HpId,
                 receptionComment.PtId,
                 receptionComment.RaiinNo,
-                receptionComment.Text
+                receptionComment.Text ?? string.Empty
                 );
         }
 
