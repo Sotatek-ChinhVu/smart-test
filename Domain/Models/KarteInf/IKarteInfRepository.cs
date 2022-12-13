@@ -8,12 +8,12 @@
 
         int GetSinDate(long ptId, int hpId, int searchType, int sinDate, List<long> listRaiiNoSameSinDate, string searchText);
 
-        long SaveListFileKarte(int hpId, long ptId, long raiinNo, long lastSeqNo, List<KarteImgInfModel> listModel, List<long> listFileDeletes);
-
-        bool CheckExistListFile(int hpId, long ptId, long seqNo, long rainNo, List<long> listFileDeletes);
+        bool SaveListFileKarte(int hpId, long ptId, long raiinNo, List<string> listFileName, bool saveTempFile);
 
         long GetLastSeqNo(int hpId, long ptId, long rainNo);
 
-        List<KarteImgInfModel> GetListKarteFile(int hpId, long ptId, long rainNo);
+        List<string> GetListKarteFile(int hpId, long ptId, long raiinNo, bool searchTempFile);
+
+        bool ClearTempData(int hpId, long ptId, List<string> listFileNames);
     }
 }

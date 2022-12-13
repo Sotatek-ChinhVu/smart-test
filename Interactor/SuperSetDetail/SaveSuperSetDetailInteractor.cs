@@ -1,6 +1,10 @@
 ﻿using Domain.Models.MstItem;
 using Domain.Models.SetMst;
 using Domain.Models.SuperSetDetail;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using UseCase.SuperSetDetail.SaveSuperSetDetail;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetByomeiInput;
 using UseCase.SuperSetDetail.SaveSuperSetDetail.SaveSetKarteInput;
@@ -13,11 +17,15 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
     private readonly ISuperSetDetailRepository _superSetDetailRepository;
     private readonly IMstItemRepository _mstItemRepository;
     private readonly ISetMstRepository _setMstRepository;
+    private readonly IAmazonS3Service _amazonS3Service;
+    private readonly AmazonS3Options _options;
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
 
-    public SaveSuperSetDetailInteractor(ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository)
+    public SaveSuperSetDetailInteractor(IOptions<AmazonS3Options> optionsAccessor, IAmazonS3Service amazonS3Service, ISuperSetDetailRepository superSetDetailRepository, IMstItemRepository mstItemRepository, ISetMstRepository setMstRepository)
     {
+        _amazonS3Service = amazonS3Service;
+        _options = optionsAccessor.Value;
         _superSetDetailRepository = superSetDetailRepository;
         _mstItemRepository = mstItemRepository;
         _setMstRepository = setMstRepository;
@@ -49,13 +57,46 @@ public class SaveSuperSetDetailInteractor : ISaveSuperSetDetailInputPort
                     return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetKarteInfFailed);
                 case 3:
                     return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.SaveSetOrderInfFailed);
-                default:
-                    return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+            }
+            if (result == 0)
+            {
+                SaveSetFile(inputData.HpId, inputData.SetCd, inputData.ListFileItems, true);
+                return new SaveSuperSetDetailOutputData(result, SaveSuperSetDetailStatus.Successed);
+            }
+            else
+            {
+                SaveSetFile(inputData.HpId, inputData.SetCd, inputData.ListFileItems, false);
+                return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
             }
         }
         catch
         {
             return new SaveSuperSetDetailOutputData(SaveSuperSetDetailStatus.Failed);
+        }
+    }
+
+    private void SaveSetFile(int hpId, int setCd, List<string> listFileName, bool saveSuccess)
+    {
+        List<string> listFolders = new();
+        string path = string.Empty;
+        listFolders.Add(CommonConstants.Store);
+        listFolders.Add(CommonConstants.Karte);
+        listFolders.Add(CommonConstants.SetPic);
+        listFolders.Add(setCd.ToString());
+        path = _amazonS3Service.GetFolderUploadOther(listFolders);
+        string host = _options.BaseAccessUrl + "/" + path;
+        var listUpdates = listFileName.Select(item => item.Replace(host, string.Empty)).ToList();
+        if (saveSuccess)
+        {
+            _superSetDetailRepository.SaveListSetKarteFileTemp(hpId, setCd, listUpdates, false);
+        }
+        else
+        {
+            _superSetDetailRepository.ClearTempData(hpId, listUpdates.ToList());
+            foreach (var item in listUpdates)
+            {
+                _amazonS3Service.DeleteObjectAsync(path + item);
+            }
         }
     }
 

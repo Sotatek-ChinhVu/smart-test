@@ -187,9 +187,9 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
          )).ToList();
     }
 
-    private List<SetKarteFileItem> ConvertToListSetKarteFileItem(int setCd, List<SetKarteFileModel> listModel)
+    private List<string> ConvertToListSetKarteFileItem(int setCd, List<SetKarteFileModel> listModel)
     {
-        List<SetKarteFileItem> result = new();
+        List<string> result = new();
         if (listModel.Any())
         {
             List<string> listFolders = new();
@@ -199,14 +199,14 @@ public class GetSuperSetDetailInteractor : IGetSuperSetDetailInputPort
             listFolders.Add(setCd.ToString());
 
             string path = _amazonS3Service.GetFolderUploadOther(listFolders);
-            var fileName = new StringBuilder();
-            fileName.Append(_options.BaseAccessUrl);
-            fileName.Append("/");
-            fileName.Append(path);
             foreach (var model in listModel)
             {
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
                 fileName.Append(model.FileName);
-                result.Add(new SetKarteFileItem(model.Id, fileName.ToString()));
+                result.Add(fileName.ToString());
             }
         }
         return result;

@@ -97,7 +97,8 @@ namespace EmrCloudApi.Controller
                     request.KarteItem.Text,
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText),
-                UserId
+                UserId,
+                request.KarteFileItems
             );
             var output = _bus.Handle(input);
 

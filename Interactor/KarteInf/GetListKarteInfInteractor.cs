@@ -44,8 +44,8 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
             return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
         }
 
-        List<KarteFileOutputItem> listFile = new();
-        var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo);
+        List<string> listFile = new();
+        var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
         if (listKarteFile.Any())
         {
             var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
@@ -53,17 +53,14 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
             listFolders.Add(CommonConstants.Store);
             listFolders.Add(CommonConstants.Karte);
             string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
-            var fileName = new StringBuilder();
-            fileName.Append(_options.BaseAccessUrl);
-            fileName.Append("/");
-            fileName.Append(path);
             foreach (var file in listKarteFile)
             {
-                fileName.Append(file.FileName);
-                listFile.Add(new KarteFileOutputItem(
-                        file.Id,
-                        fileName.ToString()
-                    ));
+                var fileName = new StringBuilder();
+                fileName.Append(_options.BaseAccessUrl);
+                fileName.Append("/");
+                fileName.Append(path);
+                fileName.Append(file);
+                listFile.Add(fileName.ToString());
             }
         }
 

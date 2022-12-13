@@ -23,6 +23,7 @@ public class AddTemplateToCategoryPresenter
         AddTemplateToCategoryStatus.InvalidHpId => ResponseMessage.InvalidHpId,
         AddTemplateToCategoryStatus.InvalidCategoryCd => ResponseMessage.InvalidDocumentCategoryCd,
         AddTemplateToCategoryStatus.InvalidFileInput => ResponseMessage.InvalidFileInput,
+        AddTemplateToCategoryStatus.ExistFileTemplateName => ResponseMessage.ExistFileTemplateName,
         _ => string.Empty
     };
 }
