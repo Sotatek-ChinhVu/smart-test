@@ -32,7 +32,7 @@ namespace Infrastructure.Services
 
         public void Reload()
         {
-            _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.Where(u => u.IsDeleted == 0).ToList();
+            _userInfoList = _tenantProvider.GetNoTrackingDataContext().UserMsts.ToList();
             //_memoryCache.Set(_cacheKey, _userInfoList);
         }
     }

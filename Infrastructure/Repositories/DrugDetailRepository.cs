@@ -3,7 +3,6 @@ using Entity.Tenant;
 using Helper.Common;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Diagnostics;
 
 namespace Infrastructure.Repositories
 {
@@ -97,7 +96,7 @@ namespace Infrastructure.Repositories
             drugMenuItems.Add(tekyoByomeiMenu);
             return drugMenuItems;
         }
-        
+
         public DrugDetailModel GetDataDrugSeletedTree(int selectedIndexOfMenuLevel, int level, string drugName, string itemCd, string yjCode)
         {
             var piInfDetailCollection = _tenantDataContext.PiInfDetails.AsQueryable();
@@ -108,7 +107,7 @@ namespace Infrastructure.Repositories
             return GetDetail(selectedIndexOfMenuLevel, level, drugName, itemCd, yjCode, piProductInfCollections, kikakuCollection, tenpuCollection, piInfDetailCollection);
         }
 
-        private DrugDetailModel GetDetail(int selectedIndex,int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
+        private DrugDetailModel GetDetail(int selectedIndex, int level, string drugName, string itemCd, string yjCode, IQueryable<PiProductInf> piProductInfCollections, List<DrugMenuItemModel> kikakuCollection, List<DrugMenuItemModel> tenpuCollection, IQueryable<PiInfDetail> piInfDetailCollection)
         {
             if (level == 0)
             {
@@ -125,10 +124,10 @@ namespace Infrastructure.Repositories
                                         PiInfo = piInf
                                     };
                     var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
-                                                                     j.ProductInfo.ProductName,
+                                                                     j.ProductInfo.ProductName ?? string.Empty,
                                                                      j.PiInfo.PreparationName ?? string.Empty,
                                                                      j.ProductInfo.Unit ?? string.Empty,
-                                                                     j.ProductInfo.Maker,
+                                                                     j.ProductInfo.Maker ?? string.Empty,
                                                                      j.ProductInfo.Vender ?? string.Empty)).FirstOrDefault();
                     var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
                     return new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
@@ -165,7 +164,7 @@ namespace Infrastructure.Repositories
                 }
 
             }
-            else if(level > 0 && selectedIndex >= 0)
+            else if (level > 0 && selectedIndex >= 0)
             {
                 // Show Product Infor
                 var piInfCollection = _tenantDataContext.PiInfs.AsQueryable();
@@ -178,10 +177,10 @@ namespace Infrastructure.Repositories
                                     PiInfo = piInf
                                 };
                 var syohinData = joinQuery.AsEnumerable().Select(j => new SyohinModel(
-                                                                 j.ProductInfo.ProductName,
+                                                                 j.ProductInfo.ProductName ?? string.Empty,
                                                                  j.PiInfo.PreparationName ?? string.Empty,
                                                                  j.ProductInfo.Unit ?? string.Empty,
-                                                                 j.ProductInfo.Maker,
+                                                                 j.ProductInfo.Maker ?? string.Empty,
                                                                  j.ProductInfo.Vender ?? string.Empty)).FirstOrDefault();
                 var maxLevel = GetMaxLevel(piInfDetailCollection, piProductInfCollections);
                 return new DrugDetailModel(1, maxLevel, drugName, syohinData ?? new SyohinModel(), kikakuCollection, tenpuCollection, 0, new YakuModel(), new List<FukuModel>(), new SyokiModel(), new List<SougoModel>(), new List<ChuiModel>(), 0, new List<TenMstByomeiModel>());
@@ -424,7 +423,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch != "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", 0, diCode))
+                                    .Select(mn => new DrugMenuItemModel(mn.Text ?? string.Empty, "", 0, mn.SeqNo, mn.Level, "", 0, diCode))
                                     .OrderBy(mn => mn.SeqNo).ToList();
                 return listMenuItem;
 
@@ -446,7 +445,7 @@ namespace Infrastructure.Repositories
                                                  select piInfDetail;
 
                 var listMenuItem = joinInfDetailAndProductInf.Where(mn => mn.Branch == "999").AsEnumerable()
-                                    .Select(mn => new DrugMenuItemModel(mn.Text, "", 0, mn.SeqNo, mn.Level, "", 0, diCode))
+                                    .Select(mn => new DrugMenuItemModel(mn.Text ?? string.Empty, "", 0, mn.SeqNo, mn.Level, "", 0, diCode))
                                     .OrderBy(mn => mn.SeqNo).ToList();
                 return listMenuItem;
             }
@@ -487,7 +486,7 @@ namespace Infrastructure.Repositories
             {
                 title = "\u3000" + title;
             }
-            if(level == 2)
+            if (level == 2)
             {
                 // children-level2
                 var menuItemChildren = new DrugMenuItemModel(title, menuItem.DrugMenuName, 2, 0, level - 1, (rootItem.Children.Count + 1).ToString(), rootItem.Children.Count, yjcode);

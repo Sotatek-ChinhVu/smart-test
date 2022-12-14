@@ -102,7 +102,8 @@ namespace Interactor.OrdInfs
                             od.Kasan1,
                             od.Kasan2,
                             od.CnvUnitName,
-                            od.OdrUnitName
+                            od.OdrUnitName,
+                            od.HasCmtName
                         )).OrderBy(odrDetail => odrDetail.RpNo)
                         .ThenBy(odrDetail => odrDetail.RpEdaNo)
                         .ThenBy(odrDetail => odrDetail.RowNo)

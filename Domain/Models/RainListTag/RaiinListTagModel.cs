@@ -13,6 +13,11 @@
             IsDeleted = isDeleted;
         }
 
+        public RaiinListTagModel()
+        {
+
+        }
+
         public int HpId { get; private set; }
         public long PtId { get; private set; }
         public int SinDate { get; private set; }

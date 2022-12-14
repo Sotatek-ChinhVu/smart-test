@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Responses.Document;
 
-public class AddTemplateToCategoryResponse
+public class MoveTemplateToOtherCategoryResponse
 {
-    public AddTemplateToCategoryResponse(bool success)
+    public MoveTemplateToOtherCategoryResponse(bool success)
     {
         Success = success;
     }

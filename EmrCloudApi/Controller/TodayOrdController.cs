@@ -13,6 +13,7 @@ using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.MedicalExamination.AddAutoItem;
 using UseCase.MedicalExamination.GetAddedAutoItem;
+using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -247,6 +248,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<AddAutoItemResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.GetInfCheckedItemName)]
+        public ActionResult<Response<CheckedItemNameResponse>> GetInfCheckedItemName([FromBody] CheckedItemNameRequest request)
+        {
+            var input = new CheckedItemNameInputData(request.OdrInfs);
+            var output = _bus.Handle(input);
+            var presenter = new CheckedItemNamePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedItemNameResponse>>(presenter.Result);
         }
     }
 }
