@@ -7,16 +7,16 @@ public class GetListParamTemplateOutputData : IOutputData
     public GetListParamTemplateOutputData(GetListParamTemplateStatus status)
     {
         Status = status;
-        ListParams = new();
+        ListGroups = new();
     }
 
-    public GetListParamTemplateOutputData(List<ItemDisplayParamModel> listParams, GetListParamTemplateStatus status)
+    public GetListParamTemplateOutputData(List<ItemGroupParamModel> listGroups, GetListParamTemplateStatus status)
     {
-        ListParams = listParams;
+        ListGroups = listGroups;
         Status = status;
     }
 
-    public List<ItemDisplayParamModel> ListParams { get; private set; }
+    public List<ItemGroupParamModel> ListGroups { get; private set; }
 
     public GetListParamTemplateStatus Status { get; private set; }
 }

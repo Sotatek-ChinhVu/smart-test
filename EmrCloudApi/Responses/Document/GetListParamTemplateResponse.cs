@@ -1,11 +1,13 @@
-﻿namespace EmrCloudApi.Responses.Document;
+﻿using UseCase.Document;
+
+namespace EmrCloudApi.Responses.Document;
 
 public class GetListParamTemplateResponse
 {
-    public GetListParamTemplateResponse(List<ItemParamDto> data)
+    public GetListParamTemplateResponse(List<ItemGroupParamModel> data)
     {
-        Data = data;
+        Data = data.Select(item => new ItemGroupParamDto(item)).ToList();
     }
 
-    public List<ItemParamDto> Data { get; private set; }
+    public List<ItemGroupParamDto> Data { get; private set; }
 }

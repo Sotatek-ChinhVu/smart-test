@@ -11,7 +11,7 @@ public class GetListParamTemplatePresenter : IGetListParamTemplateOutputPort
 
     public void Complete(GetListParamTemplateOutputData output)
     {
-        Result.Data = new GetListParamTemplateResponse(output.ListParams.Select(item => new ItemParamDto(item)).ToList());
+        Result.Data = new GetListParamTemplateResponse(output.ListGroups);
         Result.Message = GetMessage(output.Status);
         Result.Status = (int)output.Status;
     }

@@ -22,6 +22,9 @@ public class CommonGetListParam : ICommonGetListParam
     private readonly ISummaryInfRepository _summaryInfRepository;
     private readonly IPatientInfoRepository _patientInfoRepository;
     private readonly IInsuranceMstRepository _insuranceMstRepository;
+    private const string groupHpInf = "基本情報";
+    private const string groupPtInf = "患者情報";
+    private const string groupHokenInf = "保険情報";
 
     public CommonGetListParam(IInsuranceRepository insuranceRepository, IHpInfRepository hpInfRepository, IPatientInforRepository patientInforRepository, IUserRepository userRepository, IRaiinFilterMstRepository raiinFilterMstRepository, ISummaryInfRepository summaryInfRepository, IPatientInfoRepository patientInfoRepository, IInsuranceMstRepository insuranceMstRepository)
     {
@@ -35,7 +38,7 @@ public class CommonGetListParam : ICommonGetListParam
         _insuranceMstRepository = insuranceMstRepository;
     }
 
-    public List<ItemDisplayParamModel> GetListParam(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId)
+    public List<ItemGroupParamModel> GetListParam(int hpId, int userId, long ptId, int sinDate, long raiinNo, int hokenPId)
     {
         // HpInf and PtInf
         UserMstModel docInf = new();
@@ -59,18 +62,35 @@ public class CommonGetListParam : ICommonGetListParam
         var listKensaInf = _patientInfoRepository.GetListKensaInfModel(hpId, ptId, sinDate);
 
         // hoken
-        var hokenPattern = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate, hokenPId);
+        var hokenPattern = _insuranceRepository.GetInsuranceListById(hpId, ptId, sinDate);
         var insuranceMstModel = _insuranceMstRepository.GetDataInsuranceMst(hpId, ptId, sinDate);
-        var hokenModelToReplace = GetListParamHokenInf(age, hokenPattern, insuranceMstModel);
+        var hokenModelToReplace = GetListParamHokenInf(age, hokenPId, hokenPattern, insuranceMstModel);
 
         // Get list param
-        List<ItemDisplayParamModel> result = new();
-        result.AddRange(GetListParamHpAndPtInf(sinDate, age, lastTimeDate, sumaryContent, hpInf, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf));
-        result.AddRange(ReplaceParamHokenAction(hokenModelToReplace));
+        List<ItemGroupParamModel> result = new();
+        result.Add(new ItemGroupParamModel(groupHpInf, GetListParamHpInf(hpInf)));
+        result.Add(new ItemGroupParamModel(groupPtInf, GetListParamPtInf(sinDate, age, lastTimeDate, sumaryContent, ptInf != null ? ptInf : new(), docInf, tantoInf, userLogin, listKensaInf)));
+        result.Add(new ItemGroupParamModel(groupHokenInf, ReplaceParamHokenAction(hokenModelToReplace)));
         return result;
     }
 
-    private List<ItemDisplayParamModel> GetListParamHpAndPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, HpInfModel hpInf, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf)
+    private List<ItemDisplayParamModel> GetListParamHpInf(HpInfModel hpInf)
+    {
+        List<ItemDisplayParamModel> listParam = new();
+
+        // HpInf
+        listParam.Add(new ItemDisplayParamModel("作成日(西暦K)", CIUtil.SDateToShowSWDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")), 0, 0, 1)));
+        listParam.Add(new ItemDisplayParamModel("作成日(西暦/)", CIUtil.SDateToShowSDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
+        listParam.Add(new ItemDisplayParamModel("作成日(和暦K)", CIUtil.SDateToShowWDate2(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
+        listParam.Add(new ItemDisplayParamModel("医療機関名称", hpInf.HpName));
+        listParam.Add(new ItemDisplayParamModel("医療機関住所１", hpInf.Address1));
+        listParam.Add(new ItemDisplayParamModel("医療機関住所２", hpInf.Address2));
+        listParam.Add(new ItemDisplayParamModel("医療機関電話番号", hpInf.Tel));
+
+        return listParam;
+    }
+
+    private List<ItemDisplayParamModel> GetListParamPtInf(int sindate, int age, int lastTimeDate, string sumaryContent, PatientInforModel ptInf, UserMstModel docInf, UserMstModel tantoInf, UserMstModel userLogin, List<KensaInfDetailModel> listKensaInf)
     {
         List<ItemDisplayParamModel> listParam = new();
 
@@ -89,66 +109,57 @@ public class CommonGetListParam : ICommonGetListParam
             kensaBMIValue = kensaBMI != null ? kensaBMI.ResultVal + "(" + CIUtil.SDateToShowSDate(CIUtil.DateTimeToInt(kensaBMI.UpdateDate)) + ")" : string.Empty;
         }
 
-        // HpInf
-        listParam.Add(new ItemDisplayParamModel("基本情報", "作成日(西暦K)", CIUtil.SDateToShowSWDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")), 0, 0, 1)));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "作成日(西暦/)", CIUtil.SDateToShowSDate(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "作成日(和暦K)", CIUtil.SDateToShowWDate2(int.Parse(DateTime.UtcNow.ToString("yyyMMdd")))));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "医療機関名称", hpInf.HpName));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "医療機関住所１", hpInf.Address1));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "医療機関住所２", hpInf.Address2));
-        listParam.Add(new ItemDisplayParamModel("基本情報", "医療機関電話番号", hpInf.Tel));
-
         // PtInf
-        listParam.Add(new ItemDisplayParamModel("患者情報", "患者番号", ptInf.PtNum.ToString()));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "氏名", ptInf.Name));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "カナ氏名", ptInf.KanaName));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "氏名(旧姓)"));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "カナ氏名(旧姓)"));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "郵便番号", ptInf.HomePost));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "住所１", ptInf.HomeAddress1));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "住所２", ptInf.HomeAddress2));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "電話番号１", ptInf.Tel1));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "電話番号２", ptInf.Tel2));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "生年月日(西暦/)", CIUtil.SDateToShowSDate(ptInf.Birthday)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "生年月日(西暦K)", CIUtil.SDateToShowSWDate(ptInf.Birthday, 0, 0, 1)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "生年月日(和暦/)", CIUtil.SDateToShowWDate(ptInf.Birthday)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "生年月日(和暦K)", CIUtil.SDateToShowWDate2(ptInf.Birthday)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "年齢", age.ToString()));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "性別", ptInf.Sex == 1 ? "男" : "女"));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "世帯主氏名", ptInf.Setanusi));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "死亡日(西暦/)", CIUtil.SDateToShowSDate(ptInf.DeathDate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "死亡日(西暦K)", CIUtil.SDateToShowSWDate(ptInf.DeathDate, 0, 0, 1)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "死亡日(和暦/)", CIUtil.SDateToShowWDate(ptInf.DeathDate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "死亡日(和暦K)", CIUtil.SDateToShowWDate2(ptInf.DeathDate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "勤務先", ptInf.OfficeName));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "勤務先住所", ptInf.OfficeAddress1 + ptInf.OfficeAddress2));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "職業", ptInf.Job));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "メールアドレス", ptInf.Mail));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "メモ", !string.IsNullOrEmpty(ptInf.Memo) ? ptInf.Memo.Replace("\r\n", string.Empty).Replace("\n", string.Empty) : string.Empty));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "主治医氏名", docInf.Name));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "サマリ", sumaryContent.Replace("\r\n", string.Empty).Replace("\n", string.Empty)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "担当医", tantoInf.Name));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "保険医師名", userLogin.DrName));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "最終来院日(西暦/)", lastTimeDate > 0 ? CIUtil.SDateToShowSDate(lastTimeDate) : string.Empty));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "最終来院日(西暦K)", lastTimeDate > 0 ? CIUtil.SDateToShowSWDate(lastTimeDate, 0, 0, 1) : string.Empty));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "最終来院日(和暦/)", lastTimeDate > 0 ? CIUtil.SDateToShowWDate(lastTimeDate) : string.Empty));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "最終来院日(和暦K)", lastTimeDate > 0 ? CIUtil.SDateToShowWDate2(lastTimeDate) : string.Empty));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "身長", kensaHeightValue));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "体重", kensaWeightValue));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "BMI", kensaBMIValue));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "診療日(西暦K)", CIUtil.SDateToShowSWDate(sindate, 0, 0, 1)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "診療日(和暦K)", CIUtil.SDateToShowWDate2(sindate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "診療日(元号)", CIUtil.GetEraFromDate(sindate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "診療日(元号略)", CIUtil.GetEraRekiFromDate(sindate)));
-        listParam.Add(new ItemDisplayParamModel("患者情報", "診療日(元号略K)", CIUtil.GetEraRekiFromDate(sindate, 1)));
+        listParam.Add(new ItemDisplayParamModel("患者番号", ptInf.PtNum.ToString()));
+        listParam.Add(new ItemDisplayParamModel("氏名", ptInf.Name));
+        listParam.Add(new ItemDisplayParamModel("カナ氏名", ptInf.KanaName));
+        listParam.Add(new ItemDisplayParamModel("氏名(旧姓)"));
+        listParam.Add(new ItemDisplayParamModel("カナ氏名(旧姓)"));
+        listParam.Add(new ItemDisplayParamModel("郵便番号", ptInf.HomePost));
+        listParam.Add(new ItemDisplayParamModel("住所１", ptInf.HomeAddress1));
+        listParam.Add(new ItemDisplayParamModel("住所２", ptInf.HomeAddress2));
+        listParam.Add(new ItemDisplayParamModel("電話番号１", ptInf.Tel1));
+        listParam.Add(new ItemDisplayParamModel("電話番号２", ptInf.Tel2));
+        listParam.Add(new ItemDisplayParamModel("生年月日(西暦/)", CIUtil.SDateToShowSDate(ptInf.Birthday)));
+        listParam.Add(new ItemDisplayParamModel("生年月日(西暦K)", CIUtil.SDateToShowSWDate(ptInf.Birthday, 0, 0, 1)));
+        listParam.Add(new ItemDisplayParamModel("生年月日(和暦/)", CIUtil.SDateToShowWDate(ptInf.Birthday)));
+        listParam.Add(new ItemDisplayParamModel("生年月日(和暦K)", CIUtil.SDateToShowWDate2(ptInf.Birthday)));
+        listParam.Add(new ItemDisplayParamModel("年齢", age.ToString()));
+        listParam.Add(new ItemDisplayParamModel("性別", ptInf.Sex == 1 ? "男" : "女"));
+        listParam.Add(new ItemDisplayParamModel("世帯主氏名", ptInf.Setanusi));
+        listParam.Add(new ItemDisplayParamModel("死亡日(西暦/)", CIUtil.SDateToShowSDate(ptInf.DeathDate)));
+        listParam.Add(new ItemDisplayParamModel("死亡日(西暦K)", CIUtil.SDateToShowSWDate(ptInf.DeathDate, 0, 0, 1)));
+        listParam.Add(new ItemDisplayParamModel("死亡日(和暦/)", CIUtil.SDateToShowWDate(ptInf.DeathDate)));
+        listParam.Add(new ItemDisplayParamModel("死亡日(和暦K)", CIUtil.SDateToShowWDate2(ptInf.DeathDate)));
+        listParam.Add(new ItemDisplayParamModel("勤務先", ptInf.OfficeName));
+        listParam.Add(new ItemDisplayParamModel("勤務先住所", ptInf.OfficeAddress1 + ptInf.OfficeAddress2));
+        listParam.Add(new ItemDisplayParamModel("職業", ptInf.Job));
+        listParam.Add(new ItemDisplayParamModel("メールアドレス", ptInf.Mail));
+        listParam.Add(new ItemDisplayParamModel("メモ", !string.IsNullOrEmpty(ptInf.Memo) ? ptInf.Memo.Replace("\r\n", string.Empty).Replace("\n", string.Empty) : string.Empty));
+        listParam.Add(new ItemDisplayParamModel("主治医氏名", docInf.Name));
+        listParam.Add(new ItemDisplayParamModel("サマリ", sumaryContent.Replace("\r\n", string.Empty).Replace("\n", string.Empty)));
+        listParam.Add(new ItemDisplayParamModel("担当医", tantoInf.Name));
+        listParam.Add(new ItemDisplayParamModel("保険医師名", userLogin.DrName));
+        listParam.Add(new ItemDisplayParamModel("最終来院日(西暦/)", lastTimeDate > 0 ? CIUtil.SDateToShowSDate(lastTimeDate) : string.Empty));
+        listParam.Add(new ItemDisplayParamModel("最終来院日(西暦K)", lastTimeDate > 0 ? CIUtil.SDateToShowSWDate(lastTimeDate, 0, 0, 1) : string.Empty));
+        listParam.Add(new ItemDisplayParamModel("最終来院日(和暦/)", lastTimeDate > 0 ? CIUtil.SDateToShowWDate(lastTimeDate) : string.Empty));
+        listParam.Add(new ItemDisplayParamModel("最終来院日(和暦K)", lastTimeDate > 0 ? CIUtil.SDateToShowWDate2(lastTimeDate) : string.Empty));
+        listParam.Add(new ItemDisplayParamModel("身長", kensaHeightValue));
+        listParam.Add(new ItemDisplayParamModel("体重", kensaWeightValue));
+        listParam.Add(new ItemDisplayParamModel("BMI", kensaBMIValue));
+        listParam.Add(new ItemDisplayParamModel("診療日(西暦K)", CIUtil.SDateToShowSWDate(sindate, 0, 0, 1)));
+        listParam.Add(new ItemDisplayParamModel("診療日(和暦K)", CIUtil.SDateToShowWDate2(sindate)));
+        listParam.Add(new ItemDisplayParamModel("診療日(元号)", CIUtil.GetEraFromDate(sindate)));
+        listParam.Add(new ItemDisplayParamModel("診療日(元号略)", CIUtil.GetEraRekiFromDate(sindate)));
+        listParam.Add(new ItemDisplayParamModel("診療日(元号略K)", CIUtil.GetEraRekiFromDate(sindate, 1)));
 
         return listParam;
     }
 
-    private HokenParamReplaceModel GetListParamHokenInf(int age, InsuranceDataModel hokenPattern, InsuranceMstModel insuranceMstModel)
+    private HokenParamReplaceModel GetListParamHokenInf(int age, int hokenPid, InsuranceDataModel hokenPattern, InsuranceMstModel insuranceMstModel)
     {
-        var hokenInf = hokenPattern.ListHokenInf.FirstOrDefault();
-        var insuranceModel = hokenPattern.ListInsurance.FirstOrDefault();
+        var hokenInf = hokenPattern.ListHokenInf.FirstOrDefault(item => item.HokenId == hokenPid);
+        var insuranceModel = hokenPattern.ListInsurance.FirstOrDefault(item => item.HokenPid == hokenPid);
         var roudouMsts = insuranceMstModel.RoudouMst;
         var kantokuMsts = insuranceMstModel.KantokuMstData;
         var byomeiMstAftercares = insuranceMstModel.ByomeiMstAftercareData;
@@ -475,141 +486,141 @@ public class CommonGetListParam : ICommonGetListParam
         List<ItemDisplayParamModel> listParam = new();
 
         // Hoken Inf
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/保険者番号", model.HokenNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/被保険者証記号", model.HokenKigo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/被保険者証番号", model.HokenBango));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/被保険者証枝番", model.EdaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/本人家族", model.HokenHonki));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/高額区分", model.HokenKogakuKbn));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限S(西暦/)", model.HokenPeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限S(西暦K)", model.HokenPeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限S(和暦/)", model.HokenPeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限S(和暦K)", model.HokenPeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限E(西暦/)", model.HokenPeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限E(西暦K)", model.HokenPeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限E(和暦/)", model.HokenPeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/有効期限E(和暦K)", model.HokenPeriodJapanKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/国保減免", model.HokenKokuhoGenmen));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/職務上区分", model.HokenSenin));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/特記事項１", model.HokenSpecialNote1));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/特記事項２", model.HokenSpecialNote2));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/特記事項３", model.HokenSpecialNote3));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/特記事項４", model.HokenSpecialNote4));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "保険/特記事項５", model.HokenSpecialNote5));
+        listParam.Add(new ItemDisplayParamModel("保険/保険者番号", model.HokenNo));
+        listParam.Add(new ItemDisplayParamModel("保険/被保険者証記号", model.HokenKigo));
+        listParam.Add(new ItemDisplayParamModel("保険/被保険者証番号", model.HokenBango));
+        listParam.Add(new ItemDisplayParamModel("保険/被保険者証枝番", model.EdaNo));
+        listParam.Add(new ItemDisplayParamModel("保険/本人家族", model.HokenHonki));
+        listParam.Add(new ItemDisplayParamModel("保険/高額区分", model.HokenKogakuKbn));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限S(西暦/)", model.HokenPeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限S(西暦K)", model.HokenPeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限S(和暦/)", model.HokenPeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限S(和暦K)", model.HokenPeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限E(西暦/)", model.HokenPeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限E(西暦K)", model.HokenPeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限E(和暦/)", model.HokenPeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("保険/有効期限E(和暦K)", model.HokenPeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("保険/国保減免", model.HokenKokuhoGenmen));
+        listParam.Add(new ItemDisplayParamModel("保険/職務上区分", model.HokenSenin));
+        listParam.Add(new ItemDisplayParamModel("保険/特記事項１", model.HokenSpecialNote1));
+        listParam.Add(new ItemDisplayParamModel("保険/特記事項２", model.HokenSpecialNote2));
+        listParam.Add(new ItemDisplayParamModel("保険/特記事項３", model.HokenSpecialNote3));
+        listParam.Add(new ItemDisplayParamModel("保険/特記事項４", model.HokenSpecialNote4));
+        listParam.Add(new ItemDisplayParamModel("保険/特記事項５", model.HokenSpecialNote5));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/負担者番号", model.Kohi1FutanshaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/受給者番号", model.Kohi1JukyuushaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/交付番号", model.Kohi1KoufuNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限S(西暦/)", model.Kohi1PeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限S(西暦K)", model.Kohi1PeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限S(和暦/)", model.Kohi1PeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限S(和暦K)", model.Kohi1PeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限E(西暦/)", model.Kohi1PeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限E(西暦K)", model.Kohi1PeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限E(和暦/)", model.Kohi1PeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/有効期限E(和暦K)", model.Kohi1PeriodJapanKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/取得日(西暦/)", model.Kohi1ShutokuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/取得日(西暦K)", model.Kohi1ShutokuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/取得日(和暦/)", model.Kohi1ShutokuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/取得日(和暦K)", model.Kohi1ShutokuJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/交付日(西暦/)", model.Kohi1KoufuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/交付日(西暦K)", model.Kohi1KoufuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/交付日(和暦/)", model.Kohi1KoufuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公１/交付日(和暦K)", model.Kohi1KoufuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公１/負担者番号", model.Kohi1FutanshaNo));
+        listParam.Add(new ItemDisplayParamModel("公１/受給者番号", model.Kohi1JukyuushaNo));
+        listParam.Add(new ItemDisplayParamModel("公１/交付番号", model.Kohi1KoufuNo));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限S(西暦/)", model.Kohi1PeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限S(西暦K)", model.Kohi1PeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限S(和暦/)", model.Kohi1PeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限S(和暦K)", model.Kohi1PeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限E(西暦/)", model.Kohi1PeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限E(西暦K)", model.Kohi1PeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限E(和暦/)", model.Kohi1PeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("公１/有効期限E(和暦K)", model.Kohi1PeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("公１/取得日(西暦/)", model.Kohi1ShutokuWest));
+        listParam.Add(new ItemDisplayParamModel("公１/取得日(西暦K)", model.Kohi1ShutokuWestK));
+        listParam.Add(new ItemDisplayParamModel("公１/取得日(和暦/)", model.Kohi1ShutokuJapan));
+        listParam.Add(new ItemDisplayParamModel("公１/取得日(和暦K)", model.Kohi1ShutokuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公１/交付日(西暦/)", model.Kohi1KoufuWest));
+        listParam.Add(new ItemDisplayParamModel("公１/交付日(西暦K)", model.Kohi1KoufuWestK));
+        listParam.Add(new ItemDisplayParamModel("公１/交付日(和暦/)", model.Kohi1KoufuJapan));
+        listParam.Add(new ItemDisplayParamModel("公１/交付日(和暦K)", model.Kohi1KoufuJapanK));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/負担者番号", model.Kohi2FutanshaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/受給者番号", model.Kohi2JukyuushaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/交付番号", model.Kohi2KoufuNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限S(西暦/)", model.Kohi2PeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限S(西暦K)", model.Kohi2PeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限S(和暦/)", model.Kohi2PeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限S(和暦K)", model.Kohi2PeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限E(西暦/)", model.Kohi2PeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限E(西暦K)", model.Kohi2PeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限E(和暦/)", model.Kohi2PeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/有効期限E(和暦K)", model.Kohi2PeriodJapanKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/取得日(西暦/)", model.Kohi2ShutokuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/取得日(西暦K)", model.Kohi2ShutokuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/取得日(和暦/)", model.Kohi2ShutokuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/取得日(和暦K)", model.Kohi2ShutokuJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/交付日(西暦/)", model.Kohi2KoufuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/交付日(西暦K)", model.Kohi2KoufuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/交付日(和暦/)", model.Kohi2KoufuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公２/交付日(和暦K)", model.Kohi2KoufuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公２/負担者番号", model.Kohi2FutanshaNo));
+        listParam.Add(new ItemDisplayParamModel("公２/受給者番号", model.Kohi2JukyuushaNo));
+        listParam.Add(new ItemDisplayParamModel("公２/交付番号", model.Kohi2KoufuNo));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限S(西暦/)", model.Kohi2PeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限S(西暦K)", model.Kohi2PeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限S(和暦/)", model.Kohi2PeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限S(和暦K)", model.Kohi2PeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限E(西暦/)", model.Kohi2PeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限E(西暦K)", model.Kohi2PeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限E(和暦/)", model.Kohi2PeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("公２/有効期限E(和暦K)", model.Kohi2PeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("公２/取得日(西暦/)", model.Kohi2ShutokuWest));
+        listParam.Add(new ItemDisplayParamModel("公２/取得日(西暦K)", model.Kohi2ShutokuWestK));
+        listParam.Add(new ItemDisplayParamModel("公２/取得日(和暦/)", model.Kohi2ShutokuJapan));
+        listParam.Add(new ItemDisplayParamModel("公２/取得日(和暦K)", model.Kohi2ShutokuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公２/交付日(西暦/)", model.Kohi2KoufuWest));
+        listParam.Add(new ItemDisplayParamModel("公２/交付日(西暦K)", model.Kohi2KoufuWestK));
+        listParam.Add(new ItemDisplayParamModel("公２/交付日(和暦/)", model.Kohi2KoufuJapan));
+        listParam.Add(new ItemDisplayParamModel("公２/交付日(和暦K)", model.Kohi2KoufuJapanK));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/負担者番号", model.Kohi3FutanshaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/受給者番号", model.Kohi3JukyuushaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/交付番号", model.Kohi3KoufuNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限S(西暦/)", model.Kohi3PeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限S(西暦K)", model.Kohi3PeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限S(和暦/)", model.Kohi3PeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限S(和暦K)", model.Kohi3PeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限E(西暦/)", model.Kohi3PeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限E(西暦K)", model.Kohi3PeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限E(和暦/)", model.Kohi3PeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/有効期限E(和暦K)", model.Kohi3PeriodJapanKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/取得日(西暦/)", model.Kohi3ShutokuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/取得日(西暦K)", model.Kohi3ShutokuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/取得日(和暦/)", model.Kohi3ShutokuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/取得日(和暦K)", model.Kohi3ShutokuJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/交付日(西暦/)", model.Kohi3KoufuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/交付日(西暦K)", model.Kohi3KoufuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/交付日(和暦/)", model.Kohi3KoufuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公３/交付日(和暦K)", model.Kohi3KoufuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公３/負担者番号", model.Kohi3FutanshaNo));
+        listParam.Add(new ItemDisplayParamModel("公３/受給者番号", model.Kohi3JukyuushaNo));
+        listParam.Add(new ItemDisplayParamModel("公３/交付番号", model.Kohi3KoufuNo));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限S(西暦/)", model.Kohi3PeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限S(西暦K)", model.Kohi3PeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限S(和暦/)", model.Kohi3PeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限S(和暦K)", model.Kohi3PeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限E(西暦/)", model.Kohi3PeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限E(西暦K)", model.Kohi3PeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限E(和暦/)", model.Kohi3PeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("公３/有効期限E(和暦K)", model.Kohi3PeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("公３/取得日(西暦/)", model.Kohi3ShutokuWest));
+        listParam.Add(new ItemDisplayParamModel("公３/取得日(西暦K)", model.Kohi3ShutokuWestK));
+        listParam.Add(new ItemDisplayParamModel("公３/取得日(和暦/)", model.Kohi3ShutokuJapan));
+        listParam.Add(new ItemDisplayParamModel("公３/取得日(和暦K)", model.Kohi3ShutokuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公３/交付日(西暦/)", model.Kohi3KoufuWest));
+        listParam.Add(new ItemDisplayParamModel("公３/交付日(西暦K)", model.Kohi3KoufuWestK));
+        listParam.Add(new ItemDisplayParamModel("公３/交付日(和暦/)", model.Kohi3KoufuJapan));
+        listParam.Add(new ItemDisplayParamModel("公３/交付日(和暦K)", model.Kohi3KoufuJapanK));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/負担者番号", model.Kohi4FutanshaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/受給者番号", model.Kohi4JukyuushaNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/交付番号", model.Kohi4KoufuNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限S(西暦/)", model.Kohi4PeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限S(西暦K)", model.Kohi4PeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限S(和暦/)", model.Kohi4PeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限S(和暦K)", model.Kohi4PeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限E(西暦/)", model.Kohi4PeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限E(西暦K)", model.Kohi4PeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限E(和暦/)", model.Kohi4PeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/有効期限E(和暦K)", model.Kohi4PeriodJapanKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/取得日(西暦/)", model.Kohi4ShutokuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/取得日(西暦K)", model.Kohi4ShutokuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/取得日(和暦/)", model.Kohi4ShutokuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/取得日(和暦K)", model.Kohi4ShutokuJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/交付日(西暦/)", model.Kohi4KoufuWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/交付日(西暦K)", model.Kohi4KoufuWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/交付日(和暦/)", model.Kohi4KoufuJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "公４/交付日(和暦K)", model.Kohi4KoufuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公４/負担者番号", model.Kohi4FutanshaNo));
+        listParam.Add(new ItemDisplayParamModel("公４/受給者番号", model.Kohi4JukyuushaNo));
+        listParam.Add(new ItemDisplayParamModel("公４/交付番号", model.Kohi4KoufuNo));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限S(西暦/)", model.Kohi4PeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限S(西暦K)", model.Kohi4PeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限S(和暦/)", model.Kohi4PeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限S(和暦K)", model.Kohi4PeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限E(西暦/)", model.Kohi4PeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限E(西暦K)", model.Kohi4PeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限E(和暦/)", model.Kohi4PeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("公４/有効期限E(和暦K)", model.Kohi4PeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("公４/取得日(西暦/)", model.Kohi4ShutokuWest));
+        listParam.Add(new ItemDisplayParamModel("公４/取得日(西暦K)", model.Kohi4ShutokuWestK));
+        listParam.Add(new ItemDisplayParamModel("公４/取得日(和暦/)", model.Kohi4ShutokuJapan));
+        listParam.Add(new ItemDisplayParamModel("公４/取得日(和暦K)", model.Kohi4ShutokuJapanK));
+        listParam.Add(new ItemDisplayParamModel("公４/交付日(西暦/)", model.Kohi4KoufuWest));
+        listParam.Add(new ItemDisplayParamModel("公４/交付日(西暦K)", model.Kohi4KoufuWestK));
+        listParam.Add(new ItemDisplayParamModel("公４/交付日(和暦/)", model.Kohi4KoufuJapan));
+        listParam.Add(new ItemDisplayParamModel("公４/交付日(和暦K)", model.Kohi4KoufuJapanK));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/災害区分", model.RousaiSaigaiKbn));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/労働保険番号", model.RousaiRoudouHokenNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/年金証書番号", model.RousaiNenkinNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/健康管理手帳番号", model.RousaiRoudouKyoku));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/労働局", model.RousaiKantoku));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/健康管理手帳番号", model.RousaiKenkoKanriNo));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/傷病コード", model.RousaiShyobyoCode));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/事業名称", model.RousaiJigyouName));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/事業所住所", model.RousaiJigyuoAddress));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/傷病年月日(西暦/)", model.RousaiShyobyoDateWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/傷病年月日(西暦K)", model.RousaiShyobyoDateWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/傷病年月日(和暦/)", model.RousaiShyobyoDateJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/傷病年月日(和暦K)", model.RousaiShyobyoDateJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間S(西暦/)", model.RousaiRyouyouPeriodWestS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間S(西暦K)", model.RousaiRyouyouPeriodWestKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間S(和暦/)", model.RousaiRyouyouPeriodJapanS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間S(和暦K)", model.RousaiRyouyouPeriodJapanKS));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間E(西暦/)", model.RousaiRyouyouPeriodWestE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間E(西暦K)", model.RousaiRyouyouPeriodWestKE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間E(和暦/)", model.RousaiRyouyouPeriodJapanE));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "労災/療養期間E(和暦K)", model.RousaiRyouyouPeriodJapanKE));
+        listParam.Add(new ItemDisplayParamModel("労災/災害区分", model.RousaiSaigaiKbn));
+        listParam.Add(new ItemDisplayParamModel("労災/労働保険番号", model.RousaiRoudouHokenNo));
+        listParam.Add(new ItemDisplayParamModel("労災/年金証書番号", model.RousaiNenkinNo));
+        listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiRoudouKyoku));
+        listParam.Add(new ItemDisplayParamModel("労災/労働局", model.RousaiKantoku));
+        listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiKenkoKanriNo));
+        listParam.Add(new ItemDisplayParamModel("労災/傷病コード", model.RousaiShyobyoCode));
+        listParam.Add(new ItemDisplayParamModel("労災/事業名称", model.RousaiJigyouName));
+        listParam.Add(new ItemDisplayParamModel("労災/事業所住所", model.RousaiJigyuoAddress));
+        listParam.Add(new ItemDisplayParamModel("労災/傷病年月日(西暦/)", model.RousaiShyobyoDateWest));
+        listParam.Add(new ItemDisplayParamModel("労災/傷病年月日(西暦K)", model.RousaiShyobyoDateWestK));
+        listParam.Add(new ItemDisplayParamModel("労災/傷病年月日(和暦/)", model.RousaiShyobyoDateJapan));
+        listParam.Add(new ItemDisplayParamModel("労災/傷病年月日(和暦K)", model.RousaiShyobyoDateJapanK));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間S(西暦/)", model.RousaiRyouyouPeriodWestS));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間S(西暦K)", model.RousaiRyouyouPeriodWestKS));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間S(和暦/)", model.RousaiRyouyouPeriodJapanS));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間S(和暦K)", model.RousaiRyouyouPeriodJapanKS));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間E(西暦/)", model.RousaiRyouyouPeriodWestE));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間E(西暦K)", model.RousaiRyouyouPeriodWestKE));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間E(和暦/)", model.RousaiRyouyouPeriodJapanE));
+        listParam.Add(new ItemDisplayParamModel("労災/療養期間E(和暦K)", model.RousaiRyouyouPeriodJapanKE));
 
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/保険会社名", model.JibaiHokenCompanyName));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/保険担当者", model.JibaiHokenTanto));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/保険連絡先", model.JibaiHokenContact));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/受傷日(西暦/)", model.JibaiJushouDateWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/受傷日(西暦K)", model.JibaiJushouDateWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/受傷日(和暦/)", model.JibaiJushouDateJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/受傷日(和暦K)", model.JibaiJushouDateJapanK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/初診日(西暦/)", model.JibaiSinDateWest));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/初診日(西暦K)", model.JibaiSinDateWestK));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/初診日(和暦/)", model.JibaiSinDateJapan));
-        listParam.Add(new ItemDisplayParamModel("保険情報", "自賠/初診日(和暦K)", model.JibaiSinDateJapanK));
+        listParam.Add(new ItemDisplayParamModel("自賠/保険会社名", model.JibaiHokenCompanyName));
+        listParam.Add(new ItemDisplayParamModel("自賠/保険担当者", model.JibaiHokenTanto));
+        listParam.Add(new ItemDisplayParamModel("自賠/保険連絡先", model.JibaiHokenContact));
+        listParam.Add(new ItemDisplayParamModel("自賠/受傷日(西暦/)", model.JibaiJushouDateWest));
+        listParam.Add(new ItemDisplayParamModel("自賠/受傷日(西暦K)", model.JibaiJushouDateWestK));
+        listParam.Add(new ItemDisplayParamModel("自賠/受傷日(和暦/)", model.JibaiJushouDateJapan));
+        listParam.Add(new ItemDisplayParamModel("自賠/受傷日(和暦K)", model.JibaiJushouDateJapanK));
+        listParam.Add(new ItemDisplayParamModel("自賠/初診日(西暦/)", model.JibaiSinDateWest));
+        listParam.Add(new ItemDisplayParamModel("自賠/初診日(西暦K)", model.JibaiSinDateWestK));
+        listParam.Add(new ItemDisplayParamModel("自賠/初診日(和暦/)", model.JibaiSinDateJapan));
+        listParam.Add(new ItemDisplayParamModel("自賠/初診日(和暦K)", model.JibaiSinDateJapanK));
 
         return listParam;
     }
