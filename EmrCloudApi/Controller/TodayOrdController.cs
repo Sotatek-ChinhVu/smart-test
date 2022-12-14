@@ -242,7 +242,7 @@ namespace EmrCloudApi.Controller
         [HttpPost(ApiPath.AddAutoItem)]
         public ActionResult<Response<AddAutoItemResponse>> AddAutoItem([FromBody] AddAutoItemRequest request)
         {
-            var input = new AddAutoItemInputData(HpId, request.UserId, request.SinDate, request.AddedOrderInfs, request.OrderInfItems);
+            var input = new AddAutoItemInputData(HpId, UserId, request.SinDate, request.AddedOrderInfs, request.OrderInfItems);
             var output = _bus.Handle(input);
             var presenter = new AddAutoItemPresenter();
             presenter.Complete(output);

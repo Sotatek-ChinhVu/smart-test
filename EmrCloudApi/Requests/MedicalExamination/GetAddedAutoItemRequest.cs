@@ -4,7 +4,6 @@ namespace EmrCloudApi.Requests.MedicalExamination
 {
     public class GetAddedAutoItemRequest
     {
-        public int HpId { get; set; }
         public long PtId { get; set; }
         public int SinDate { get; set; }
         public List<OrderInfItem> OrderInfItems { get; set; } = new();
