@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Helper.Constants;
 using Infrastructure.Common;
 using Infrastructure.Interfaces;

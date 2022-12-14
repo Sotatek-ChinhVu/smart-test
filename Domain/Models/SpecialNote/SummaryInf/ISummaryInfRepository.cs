@@ -2,6 +2,6 @@
 {
     public interface ISummaryInfRepository
     {
-        SummaryInfModel GetList(int hpId, long ptId);
+        SummaryInfModel Get(int hpId, long ptId);
     }
 }

@@ -9,5 +9,5 @@ public class ReplaceParamTemplateOutputData : IOutputData
         Status = status;
     }
 
-    public ReplaceParamTemplateStatus Status { get; set; }
+    public ReplaceParamTemplateStatus Status { get; private set; }
 }

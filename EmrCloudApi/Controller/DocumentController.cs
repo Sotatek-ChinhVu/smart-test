@@ -17,6 +17,8 @@ using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
+using UseCase.Document.ReplaceParamTemplate;
+using UseCase.Document.GetListParamTemplate;
 
 namespace EmrCloudApi.Controller;
 
@@ -160,6 +162,30 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListParamTemplate)]
+    public ActionResult<Response<GetListParamTemplateResponse>> GetListParamTemplate([FromQuery] GetListParamTemplateRequest request)
+    {
+        var input = new GetListParamTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListParamTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpPost(ApiPath.ReplaceParamTemplate)]
+    public ActionResult<Response<ReplaceParamTemplateResponse>> ReplaceParamTemplate([FromBody] ReplaceParamTemplateRequest request)
+    {
+        var input = new ReplaceParamTemplateInputData();
+        var output = _bus.Handle(input);
+
+        var presenter = new ReplaceParamTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<ReplaceParamTemplateResponse>>(presenter.Result);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
