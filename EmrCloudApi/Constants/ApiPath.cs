@@ -50,6 +50,8 @@
         public const string GetHeaderInf = "GetHeaderInf";
         public const string GetDefaultSelectPattern = "GetDefaultSelectPattern";
         public const string GetInsuranceComboList = "GetInsuranceComboList";
+        public const string GetAddedAutoItem = "GetAddedAutoItem";
+        public const string AddAutoItem = "AddAutoItem";
 
         // KaCode
         public const string GetListKaCode = "GetListKaCode";

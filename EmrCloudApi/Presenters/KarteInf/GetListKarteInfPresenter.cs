@@ -2,7 +2,6 @@
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.KarteInf;
 using UseCase.KarteInf.GetList;
-using UseCase.KarteInf.GetList;
 
 namespace EmrCloudApi.Presenters.KarteInfs;
 

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.MedicalExamination.AddAutoItem;
+using UseCase.MedicalExamination.GetAddedAutoItem;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -223,6 +225,28 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.GetAddedAutoItem)]
+        public ActionResult<Response<GetAddedAutoItemResponse>> GetAddedAutoItem([FromBody] GetAddedAutoItemRequest request)
+        {
+            var input = new GetAddedAutoItemInputData(HpId, request.PtId, request.SinDate, request.OrderInfItems, request.CurrentOrderInfs);
+            var output = _bus.Handle(input);
+            var presenter = new GetAddedAutoItemPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<GetAddedAutoItemResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.AddAutoItem)]
+        public ActionResult<Response<AddAutoItemResponse>> AddAutoItem([FromBody] AddAutoItemRequest request)
+        {
+            var input = new AddAutoItemInputData(HpId, request.UserId, request.SinDate, request.AddedOrderInfs, request.OrderInfItems);
+            var output = _bus.Handle(input);
+            var presenter = new AddAutoItemPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<AddAutoItemResponse>>(presenter.Result);
         }
     }
 }
