@@ -41,6 +41,21 @@ namespace Infrastructure.Repositories
                     x.IsDeleted
                 ));
         }
+        
+        public List<RaiinListTagModel> GetList(int hpId, long ptId, List<long> raiinNoList)
+        {
+            var result = _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && raiinNoList.Contains(r.RaiinNo));
+
+            return result.Select(x => new RaiinListTagModel(
+                    x.HpId,
+                    x.PtId,
+                    x.SinDate,
+                    x.RaiinNo,
+                    x.SeqNo,
+                    x.TagNo,
+                    x.IsDeleted
+                )).ToList();
+        }
 
         public RaiinListTagModel Get(int hpId, long ptId, long raiinNo, int sinDate)
         {

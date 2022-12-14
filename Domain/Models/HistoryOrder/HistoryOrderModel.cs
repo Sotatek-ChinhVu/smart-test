@@ -1,4 +1,5 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.InsuranceInfor;
+using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
 using Helper.Constants;
@@ -37,6 +38,10 @@ namespace Domain.Models.HistoryOrder
 
         public string SinryoTitle { get; private set; }
 
+        public List<OrdInfModel> OrderInfList { get; private set; }
+
+        public KarteInfModel KarteInfModel { get; private set; }
+
         public string SanteiKbnDisplay { get => _jihiSanteiDict.FirstOrDefault(x => x.Key == SanteiKbn).Value; }
 
         public string SyosaisinDisplay { get => SyosaiConst.ReceptionShinDict.FirstOrDefault(x => x.Key == SyosaisinKbn).Value; }
@@ -49,23 +54,22 @@ namespace Domain.Models.HistoryOrder
             {2,"自費" }
         };
 
-        public List<OrdInfModel> OrderInfList { get; private set; }
-
-        public KarteInfModel KarteInfModel { get; private set; }
-
-
-        public HistoryOrderModel(ReceptionModel receptionModel, List<OrdInfModel> orderList, KarteInfModel karteInfModel)
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, KarteInfModel karteInfModel, string kaName, string tantoName, int tagNo, string sinryoTitle)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
-            HokenPid = receptionModel.HokenPid;
-            //HokenTitle = receptionModel
-            //HokenRate = receptionModel.Hoken
-            //HokenType = receptionModel.HO
             SyosaisinKbn = receptionModel.SyosaisinKbn;
-            JikanKbn = receptionModel.KaId;
+            KaId = receptionModel.KaId;
             TantoId = receptionModel.TantoId;
-
+            JikanKbn = receptionModel.JikanKbn;
+            HokenPid = receptionModel.HokenPid;
+            HokenTitle = insuranceModel.HokenName;
+            HokenRate = insuranceModel.DisplayRateOnly;
+            HokenType = insuranceModel.GetHokenPatternType();
+            KaName = kaName;
+            TantoName = tantoName;
+            TagNo = tagNo;
+            SinryoTitle = sinryoTitle;
             OrderInfList = orderList;
             KarteInfModel = karteInfModel;
         }

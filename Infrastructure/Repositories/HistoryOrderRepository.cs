@@ -1,4 +1,7 @@
-﻿using Domain.Models.HistoryOrder;
+﻿using Domain.Models.ApprovalInfo;
+using Domain.Models.HistoryOrder;
+using Domain.Models.Insurance;
+using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
@@ -9,10 +12,7 @@ using Helper.Constants;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Text;
 
 namespace Infrastructure.Repositories
 {
@@ -21,13 +21,20 @@ namespace Infrastructure.Repositories
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
         private readonly TenantDataContext _tenantDataContext;
         private readonly IUserInfoService _userInfoService;
-        private Stopwatch? _stopwatch;
+        private readonly IKaService _kaService;
+        private readonly IInsuranceRepository _insuranceRepository;
+        private readonly IRaiinListTagRepository _raiinListTagRepository;
+        private readonly IOrdInfRepository _ordInfRepository;
 
-        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService)
+        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IOrdInfRepository ordInfRepository)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
             _userInfoService = userInfoService;
+            _insuranceRepository = insuranceRepository;
+            _raiinListTagRepository = raiinListTagRepository;
+            _kaService = kaService;
+            _ordInfRepository = ordInfRepository;
         }
 
         public KarteFilterMstModel GetFilter(int hpId, int userId, int filterId)
@@ -62,81 +69,74 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public List<HistoryOrderModel> GetList(int hpId, int userId, long ptId, int pageIndex, int pageSize, int filterId, int isDeleted)
+        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int pageIndex, int pageSize, int filterId, int isDeleted)
         {
-            try
+            KarteFilterMstModel karteFilter = GetFilter(hpId, userId, filterId);
+            List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
+
+            //Filter RaiinInf by condition.
+            IQueryable<RaiinInf> raiinInfListQueryable = _tenantNoTrackingDataContext.RaiinInfs
+                .Where(r => r.HpId == hpId &&
+                            r.PtId == ptId &&
+                            r.Status >= 3 &&
+                            (r.IsDeleted == DeleteTypes.None || isDeleted == 1 || (r.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)) &&
+                            hokenPidListByCondition.Contains(r.HokenPid) &&
+                            (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
+                            (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
+
+            IEnumerable<RaiinInf> raiinInfEnumerable;
+            if (karteFilter.OnlyBookmark)
             {
-                Console.WriteLine("Begin HistoryOrderRepository_GetList");
-                _stopwatch = Stopwatch.StartNew();
-
-                KarteFilterMstModel karteFilter = GetFilter(hpId, userId, filterId);
-                List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
-
-                //Filter RaiinInf by condition.
-                IQueryable<RaiinInf> raiinInfListQueryable = _tenantNoTrackingDataContext.RaiinInfs
-                    .Where(r => r.HpId == hpId &&
-                                r.PtId == ptId &&
-                                r.Status >= 3 &&
-                                (r.IsDeleted == DeleteTypes.None || isDeleted == 1 || (r.IsDeleted != DeleteTypes.Confirm && isDeleted == 2)) &&
-                                hokenPidListByCondition.Contains(r.HokenPid) &&
-                                (karteFilter.IsAllDepartment || karteFilter.ListDepartmentCode.Contains(r.KaId)) &&
-                                (karteFilter.IsAllDoctor || karteFilter.ListDoctorCode.Contains(r.TantoId)));
-
-                IEnumerable<RaiinInf> raiinInfEnumerable;
-                if (karteFilter.OnlyBookmark)
-                {
-                    raiinInfEnumerable = from raiinInf in raiinInfListQueryable
-                                         join raiinTag in _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
-                                          on raiinInf.RaiinNo equals raiinTag.RaiinNo
-                                         select raiinInf;
-                }
-                else
-                {
-                    raiinInfEnumerable = raiinInfListQueryable.Select(r => r);
-                }
-
-                int skipCount = pageIndex * pageSize;
-                List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).Skip(skipCount).Take(pageSize).ToList();
-
-                Console.WriteLine("Get RaiinInf list time: " + _stopwatch!.ElapsedMilliseconds);
-
-                if (!raiinInfList.Any())
-                {
-                    return new List<HistoryOrderModel>();
-                }
-
-                List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
-
-                List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
-                Console.WriteLine("Get Karte list time: " + _stopwatch!.ElapsedMilliseconds);
-
-                Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
-                Console.WriteLine("Get Order list time: " + _stopwatch!.ElapsedMilliseconds);
-
-                List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
-                foreach (long raiinNo in raiinNoList)
-                {
-                    RaiinInf? raiinInf = raiinInfList.FirstOrDefault(r => r.RaiinNo == raiinNo);
-                    if (raiinInf == null)
-                    {
-                        continue;
-                    }
-
-                    ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
-                    KarteInfModel karteInfModel = allKarteInfList.FirstOrDefault(r => r.RaiinNo == raiinNo) ?? new KarteInfModel(hpId, raiinNo);
-                    List<OrdInfModel> orderInfList = allOrderInfList[raiinNo];
-
-
-                    historyOrderModelList.Add(new HistoryOrderModel(receptionModel, orderInfList, karteInfModel));
-                }
-
-                return historyOrderModelList;
+                raiinInfEnumerable = from raiinInf in raiinInfListQueryable
+                                     join raiinTag in _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.TagNo != 0)
+                                      on raiinInf.RaiinNo equals raiinTag.RaiinNo
+                                     select raiinInf;
             }
-            finally
+            else
             {
-                Console.WriteLine("End HistoryOrderRepository_GetList time: " + _stopwatch!.ElapsedMilliseconds);
-                _stopwatch!.Stop();
+                raiinInfEnumerable = raiinInfListQueryable.Select(r => r);
             }
+
+            int skipCount = pageIndex * pageSize;
+
+            int totalCount = raiinInfEnumerable.Count();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).Skip(skipCount).Take(pageSize).ToList();
+
+            if (!raiinInfList.Any())
+            {
+                return (0, new List<HistoryOrderModel>());
+            }
+
+            List<long> raiinNoList = raiinInfList.Select(r => r.RaiinNo).ToList();
+
+            List<KarteInfModel> allKarteInfList = GetKarteInfList(hpId, ptId, isDeleted, raiinNoList);
+            Dictionary<long, List<OrdInfModel>> allOrderInfList = GetOrderInfList(hpId, ptId, isDeleted, raiinNoList);
+            List<InsuranceModel> insuranceModelList = _insuranceRepository.GetInsuranceList(hpId, ptId, sinDate, true);
+            List<RaiinListTagModel> tagModelList = _raiinListTagRepository.GetList(hpId, ptId, raiinNoList);
+            //List<ApproveInfModel> approveInfModelList = _ordInfRepository.GetApproveInf(hpId, ptId, true, raiinNoList).ToList();
+
+            List<HistoryOrderModel> historyOrderModelList = new List<HistoryOrderModel>();
+            foreach (long raiinNo in raiinNoList)
+            {
+                RaiinInf? raiinInf = raiinInfList.FirstOrDefault(r => r.RaiinNo == raiinNo);
+                if (raiinInf == null)
+                {
+                    continue;
+                }
+
+                ReceptionModel receptionModel = Reception.FromRaiinInf(raiinInf);
+                KarteInfModel karteInfModel = allKarteInfList.FirstOrDefault(r => r.RaiinNo == raiinNo) ?? new KarteInfModel(hpId, raiinNo);
+                List<OrdInfModel> orderInfList = allOrderInfList[raiinNo];
+                InsuranceModel insuranceModel = insuranceModelList.FirstOrDefault(i => i.HokenPid == raiinInf.HokenPid) ?? new InsuranceModel();
+                RaiinListTagModel tagModel = tagModelList.FirstOrDefault(t => t.RaiinNo == raiinNo) ?? new RaiinListTagModel();
+                //ApproveInfModel approveInfModel = approveInfModelList.FirstOrDefault(a => a.RaiinNo == raiinNo) ?? new ApproveInfModel();
+                string tantoName = _userInfoService.GetNameById(raiinInf.TantoId);
+                string kaName = _kaService.GetNameById(raiinInf.KaId);
+
+                historyOrderModelList.Add(new HistoryOrderModel(receptionModel, insuranceModel, orderInfList, karteInfModel, kaName, tantoName, tagModel.TagNo, string.Empty));
+            }
+
+            return (totalCount, historyOrderModelList);
         }
 
         public bool CheckExistedFilter(int hpId, int userId, int filterId)
@@ -181,17 +181,15 @@ namespace Infrastructure.Repositories
             List<OdrInf> allOdrInfList = _tenantNoTrackingDataContext.OdrInfs
                 .Where(o => o.HpId == hpId &&
                             o.PtId == ptId &&
-                            o.OdrKouiKbn != 10 && 
+                            o.OdrKouiKbn != 10 &&
                             raiinNoList.Contains(o.RaiinNo) &&
                             (
-                                (o.IsDeleted == DeleteTypes.None) || 
-                                (o.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) || 
+                                (o.IsDeleted == DeleteTypes.None) ||
+                                (o.IsDeleted == DeleteTypes.Deleted && (isDeleted == 1 || isDeleted == 2)) ||
                                 (o.IsDeleted == DeleteTypes.Confirm && isDeleted == 2)
                             )
                       )
                 .ToList();
-
-            Console.WriteLine("Query order data time: " + _stopwatch!.ElapsedMilliseconds);
 
             List<long> raiinNoListByOrder = allOdrInfList.Select(o => o.RaiinNo).Distinct().ToList();
             List<long> rpNoListByOrder = allOdrInfList.Select(o => o.RpNo).Distinct().ToList();
@@ -200,19 +198,16 @@ namespace Infrastructure.Repositories
             List<OdrInfDetail> allOdrDetailInfList = _tenantNoTrackingDataContext.OdrInfDetails
                 .Where(o => o.HpId == hpId && o.PtId == ptId && raiinNoListByOrder.Contains(o.RaiinNo) && rpNoListByOrder.Contains(o.RpNo) && rpEdaNoListByOrder.Contains(o.RpEdaNo))
                 .ToList();
-            Console.WriteLine("Query orderDetail data time: " + _stopwatch!.ElapsedMilliseconds);
-
 
             int minSinDate = allOdrDetailInfList.Min(o => o.SinDate);
             int maxSinDate = allOdrDetailInfList.Max(o => o.SinDate);
-             
+
             //Read config
             var itemCds = allOdrDetailInfList.Select(od => od.ItemCd).Distinct().ToList();
             var ipnCds = allOdrDetailInfList.Select(od => od.IpnCd).Distinct().ToList();
             var tenMsts = _tenantNoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= minSinDate && t.EndDate >= maxSinDate && itemCds.Contains(t.ItemCd)).ToList();
             var kensaMsts = _tenantNoTrackingDataContext.KensaMsts.Where(t => t.HpId == hpId).ToList();
-            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) &&  ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
-            Console.WriteLine("Query master data time: " + _stopwatch!.ElapsedMilliseconds);
+            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => ipn.HpId == hpId && ipnCds.Contains(ipn.IpnNameCd) && ipn.StartDate <= minSinDate && ipn.EndDate >= maxSinDate).ToList();
 
             Dictionary<long, List<OrdInfModel>> result = new Dictionary<long, List<OrdInfModel>>();
             foreach (long raiinNo in raiinNoList)
@@ -247,8 +242,8 @@ namespace Infrastructure.Repositories
             bool isJibai = karteFilter.IsJibai;
 
             return _tenantDataContext.PtHokenPatterns
-                .Where(p => p.HpId == hpId && 
-                            p.PtId == ptId && 
+                .Where(p => p.HpId == hpId &&
+                            p.PtId == ptId &&
                             (p.IsDeleted == 0 || isDeleted > 0) &&
                             (
                                isAllHoken ||
