@@ -266,6 +266,7 @@ using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Document.DeleteDocCategory;
+using UseCase.User.UpdateUserConf;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -613,6 +614,7 @@ namespace EmrCloudApi.Configs.Dependency
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiConfigInputData, UpdateAdoptedByomeiConfigInteractor>();
+            busBuilder.RegisterUseCase<UpdateUserConfInputData, UpdateUserConfInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
