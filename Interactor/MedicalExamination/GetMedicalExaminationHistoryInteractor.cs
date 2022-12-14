@@ -260,7 +260,8 @@ namespace Interactor.MedicalExamination
                                                                     od.Kasan1,
                                                                     od.Kasan2,
                                                                     od.CnvUnitName,
-                                                                    od.OdrUnitName
+                                                                    od.OdrUnitName,
+                                                                    od.HasCmtName
                                                             )
                                                             ).ToList(),
                                                             rpOdrInf.CreateDate,
