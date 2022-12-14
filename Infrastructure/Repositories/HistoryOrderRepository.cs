@@ -1,5 +1,4 @@
-﻿using Domain.Models.ApprovalInfo;
-using Domain.Models.HistoryOrder;
+﻿using Domain.Models.HistoryOrder;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteFilterMst;
@@ -12,7 +11,6 @@ using Helper.Constants;
 using Infrastructure.Converter;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Diagnostics;
 
 namespace Infrastructure.Repositories
 {
@@ -24,9 +22,8 @@ namespace Infrastructure.Repositories
         private readonly IKaService _kaService;
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IRaiinListTagRepository _raiinListTagRepository;
-        private readonly IOrdInfRepository _ordInfRepository;
 
-        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository, IOrdInfRepository ordInfRepository)
+        public HistoryOrderRepository(ITenantProvider tenantProvider, IUserInfoService userInfoService, IKaService kaService, IInsuranceRepository insuranceRepository, IRaiinListTagRepository raiinListTagRepository)
         {
             _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
@@ -34,7 +31,6 @@ namespace Infrastructure.Repositories
             _insuranceRepository = insuranceRepository;
             _raiinListTagRepository = raiinListTagRepository;
             _kaService = kaService;
-            _ordInfRepository = ordInfRepository;
         }
 
         public KarteFilterMstModel GetFilter(int hpId, int userId, int filterId)
@@ -69,7 +65,7 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int pageIndex, int pageSize, int filterId, int isDeleted)
+        public (int, List<HistoryOrderModel>) GetList(int hpId, int userId, long ptId, int sinDate, int offset, int limit, int filterId, int isDeleted)
         {
             KarteFilterMstModel karteFilter = GetFilter(hpId, userId, filterId);
             List<int> hokenPidListByCondition = GetHokenPidListByCondition(hpId, ptId, isDeleted, karteFilter);
@@ -97,10 +93,8 @@ namespace Infrastructure.Repositories
                 raiinInfEnumerable = raiinInfListQueryable.Select(r => r);
             }
 
-            int skipCount = pageIndex * pageSize;
-
             int totalCount = raiinInfEnumerable.Count();
-            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).Skip(skipCount).Take(pageSize).ToList();
+            List<RaiinInf> raiinInfList = raiinInfEnumerable.OrderByDescending(r => r.SinDate).Skip(offset).Take(limit).ToList();
 
             if (!raiinInfList.Any())
             {
