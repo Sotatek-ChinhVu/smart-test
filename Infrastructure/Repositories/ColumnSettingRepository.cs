@@ -16,9 +16,10 @@ public class ColumnSettingRepository : IColumnSettingRepository
 
     public List<ColumnSettingModel> GetList(int userId, string tableName)
     {
-        return _tenantDataContext.ColumnSettings
-            .Where(c => c.UserId == userId && c.TableName == tableName)
-            .AsEnumerable().Select(c => ToModel(c)).ToList();
+        return null;
+        //return _tenantDataContext.ColumnSettings
+        //    .Where(c => c.UserId == userId && c.TableName == tableName)
+        //    .AsEnumerable().Select(c => ToModel(c)).ToList();
     }
 
     public bool SaveList(List<ColumnSettingModel> settingModels)
@@ -37,12 +38,12 @@ public class ColumnSettingRepository : IColumnSettingRepository
             return false;
         }
 
-        var existingSettings = _tenantDataContext.ColumnSettings
-            .Where(c => c.UserId == userId && c.TableName == tableName).ToList();
-        _tenantDataContext.ColumnSettings.RemoveRange(existingSettings);
+        //var existingSettings = _tenantDataContext.ColumnSettings
+        //    .Where(c => c.UserId == userId && c.TableName == tableName).ToList();
+        //_tenantDataContext.ColumnSettings.RemoveRange(existingSettings);
 
-        var newSettings = settingModels.Select(m => ToEntity(m));
-        _tenantDataContext.ColumnSettings.AddRange(newSettings);
+        //var newSettings = settingModels.Select(m => ToEntity(m));
+        //_tenantDataContext.ColumnSettings.AddRange(newSettings);
 
         _tenantDataContext.SaveChanges();
         return true;
