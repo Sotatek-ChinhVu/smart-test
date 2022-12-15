@@ -95,6 +95,8 @@
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+        public const string ShowProductInf = "ShowProductInf";
+
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";

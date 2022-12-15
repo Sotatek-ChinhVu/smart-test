@@ -1,26 +1,27 @@
-﻿using EmrCloudApi.Presenters.DrugDetail;
+﻿using EmrCloudApi.Constants;
+using EmrCloudApi.Presenters.DrugDetail;
+using EmrCloudApi.Presenters.DrugDetailData;
 using EmrCloudApi.Presenters.DrugInfor;
+using EmrCloudApi.Presenters.UsageTreeSet;
+using EmrCloudApi.Presenters.YohoSetMst;
 using EmrCloudApi.Requests.DrugDetail;
 using EmrCloudApi.Requests.DrugInfor;
-using EmrCloudApi.Presenters.UsageTreeSet;
 using EmrCloudApi.Requests.UsageTreeSet;
+using EmrCloudApi.Requests.YohoSetMst;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
 using EmrCloudApi.Responses.DrugInfor;
 using EmrCloudApi.Responses.UsageTreeSetResponse;
+using EmrCloudApi.Responses.YohoSetMst;
+using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
+using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.UsageTreeSet.GetTree;
-using EmrCloudApi.Constants;
-using UseCase.DrugDetailData;
-using EmrCloudApi.Presenters.DrugDetailData;
-using EmrCloudApi.Services;
-using EmrCloudApi.Requests.YohoSetMst;
-using EmrCloudApi.Responses.YohoSetMst;
 using UseCase.YohoSetMst.GetByItemCd;
-using EmrCloudApi.Presenters.YohoSetMst;
 
 namespace EmrCloudApi.Controller
 {
@@ -89,5 +90,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
             return new ActionResult<Response<GetYohoSetMstByItemCdResponse>>(presenter.Result);
         }
+
+        [HttpGet(ApiPath.ShowProductInf)]
+        public ActionResult<Response<ShowProductInfResponse>> ShowProductInf([FromQuery] ShowProductInfRequest request)
+        {
+            var input = new ShowProductInfInputData(HpId, request.SinDate, request.ItemCd, request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowProductInfPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowProductInfResponse>>(presenter.Result);
+        }
+
     }
 }

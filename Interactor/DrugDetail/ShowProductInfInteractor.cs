@@ -1,262 +1,367 @@
 ﻿using Domain.Models.DrugDetail;
-using Domain.Models.DrugInfor;
 using Helper.Common;
 using Helper.Extension;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using UseCase.DrugDetailData;
+using System.Text.RegularExpressions;
+using UseCase.DrugDetailData.ShowProductInf;
 
 namespace Interactor.DrugDetailData
 {
-    public class ShowProductInfInteractor : IGetDrugDetailDataInputPort
+    public class ShowProductInfInteractor : IShowProductInfInputPort
     {
         private readonly IDrugDetailRepository _drugInforRepository;
+        const string CON_KAKO1 = ").";
+        const string CON_KAKO2 = "].";
+        const string CON_KAKO3 = ".";
+
         public ShowProductInfInteractor(IDrugDetailRepository drugInforRepository)
         {
             _drugInforRepository = drugInforRepository;
         }
 
-        public GetDrugDetailDataOutputData Handle(GetDrugDetailDataInputData inputData)
+        public ShowProductInfOutputData Handle(ShowProductInfInputData inputData)
         {
-            if(string.IsNullOrEmpty(inputData.ItemCd))
+            try
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidItemCd);
-            }    
+                if (inputData.HpId <= 0)
+                {
+                    return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidHpId);
+                }
 
-            if(string.IsNullOrEmpty(inputData.YJCode))
+                if (inputData.SinDate <= 0)
+                {
+                    return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidSinDate);
+                }
+                if (inputData.Level < 0)
+                {
+                    return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidLevel);
+                }
+                if (inputData.SelectedIndexOfMenuLevel < 0)
+                {
+                    return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidSelectedIndexOfMenuLevel);
+                }
+
+                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+                var drugMenu = _drugInforRepository.GetDrugMenu(inputData.HpId, inputData.SinDate, inputData.ItemCd).ToList();
+                string result = ShowProductInf(drugDetailModel, drugMenu);
+                return new ShowProductInfOutputData(result, ShowProductInfStatus.Successed);
+            }
+            catch
             {
-                return new GetDrugDetailDataOutputData(new DrugDetailModel(), GetDrugDetailDataStatus.InvalidYJCode);
-            }    
-
-            var data = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
-
-            return new GetDrugDetailDataOutputData(data, GetDrugDetailDataStatus.Successed);
+                return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.Failed);
+            }
         }
 
-        private void ShowProductInf(int menuIndex, DrugDetailModel data)
+        private string ShowProductInf(DrugDetailModel drugDetailModel, List<DrugMenuItemModel> drugMenus)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            //var menuList = DrugMenuItemCollection[0].Childrens.ToList();
-            using (var tw = new StreamWriter(new FileStream(strFIPATH, FileMode.Create), Encoding.UTF8))
+            //First row of file to check this item is created
+            stringBuilder.AppendLine("<!--" + drugDetailModel.DrugInfName + "-->");
+            stringBuilder.AppendLine("<!DOCTYPE HTML PUBLIC ' -//W3C//DTD HTML 4.0 Transitional//EN'>");
+
+            stringBuilder.AppendLine("<html>");
+            stringBuilder.AppendLine("<head>");
+            stringBuilder.AppendLine("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
+            stringBuilder.AppendLine("<style type='text/css'><!--");
+            //
+            for (int i = 0; i <= drugDetailModel.MaxLevel; i++)
             {
-                //First row of file to check this item is created
-                stringBuilder.AppendLine("<!--" + data.DrugInfName + "-->");
-                stringBuilder.AppendLine("<!DOCTYPE HTML PUBLIC ' -//W3C//DTD HTML 4.0 Transitional//EN'>");
+                stringBuilder.AppendLine("td.level-" + i.AsString() + " {width: " + (20 * i).AsString() + "px;clear:both}");
+            }
 
-                stringBuilder.AppendLine("<html>");
-                stringBuilder.AppendLine("<head>");
-                stringBuilder.AppendLine("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
-                stringBuilder.AppendLine("<style type='text/css'><!--");
-                //
-                for (int i = 0; i <= data.MaxLevel; i++)
+            stringBuilder.AppendLine("table {font-family: メイリオ; font-size: 10pt}");
+            stringBuilder.AppendLine("--></style></head><body>");
+
+            stringBuilder.AppendLine("<div id='header' style='display:none'>");
+
+            stringBuilder.AppendLine("</div>");
+
+            //SyohinModel
+            if (drugDetailModel.SyohinInf != null)
+            {
+                stringBuilder.AppendLine("<table><tr><td class = level-0></td><td><p style='font-weight: bold; font-size:12pt;'>【商品情報】</p></td></tr></table>");
+                stringBuilder.AppendLine("<table><tr><td class = level-1></td><td>商品名：</td><td>　" + drugDetailModel.SyohinInf.ProductName + "</td></tr>");
+                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>製剤名：</td><td>　" + drugDetailModel.SyohinInf.PreparationName + "</td></tr>");
+                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>規格単位：</td><td>　" + drugDetailModel.SyohinInf.Unit + "</td></tr>");
+                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>製造_輸入会社名：</td><td>　" + drugDetailModel.SyohinInf.Maker + "</td></tr>");
+                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>販売会社名：</td><td>　" + drugDetailModel.SyohinInf.Vender + "</td></tr></table>");
+            }
+
+            //Kikaku Items
+            foreach (var kikakuItem in drugDetailModel.KikakuCollection)
+            {
+                int level = kikakuItem.DbLevel;
+                string kikakuText = kikakuItem.DrugMenuName;
+                if (level <= 0)
                 {
-                    stringBuilder.AppendLine("td." + i.AsString() + " {width: " + (20 * i).AsString() + "px;clear:both}");
-                }
+                    int countMenuItem = drugMenus.Count;
 
-                stringBuilder.AppendLine("table {font-family: メイリオ; font-size: 10pt}");
-                stringBuilder.AppendLine("--></style></head><body>");
-
-                stringBuilder.AppendLine("<div id='header' style='display:none'>");
-
-                stringBuilder.AppendLine("</div>");
-
-                //SyohinModel
-                if (data.SyohinInf != null)
-                {
-                    tw.WriteLine("<table><tr><td class = 0></td><td><p style='font-weight: bold; font-size:12pt;'>【商品情報】</p></td></tr></table>");
-                    tw.WriteLine("<table><tr><td class = 1></td><td>商品名：</td><td>　" + data.SyohinInf.ProductName + "</td></tr>");
-                    tw.WriteLine("       <tr><td class = 1></td><td>製剤名：</td><td>　" + data.SyohinInf.PreparationName + "</td></tr>");
-                    tw.WriteLine("       <tr><td class = 1></td><td>規格単位：</td><td>　" + data.SyohinInf.Unit + "</td></tr>");
-                    tw.WriteLine("       <tr><td class = 1></td><td>製造_輸入会社名：</td><td>　" + data.SyohinInf.Maker + "</td></tr>");
-                    tw.WriteLine("       <tr><td class = 1></td><td>販売会社名：</td><td>　" + data.SyohinInf.Vender + "</td></tr></table>");
-                }
-
-                //Kikaku Items
-                foreach (var kikakuItem in data.KikakuCollection)
-                {
-                    int level = kikakuItem.DbLevel;
-                    string kikakuText = kikakuItem.DrugMenuName;
-                    if (level <= 0)
+                    for (int i = 0; i < countMenuItem; i++)
                     {
-                        int countMenuItem = menuList.Count;
-
-                        for (int i = 0; i < countMenuItem; i++)
+                        string menuName = drugMenus[i].MenuName;
+                        if (level == drugMenus[i].DbLevel && kikakuText == drugMenus[i].RawDrugMenuName)
                         {
-                            string menuName = menuList[i].MenuName;
-                            if (level == menuList[i].DbLevel && kikakuText == menuList[i].RawDrugMenuName)
-                            {
-                                kikakuText = "<a name='" + menuName + "'><p style='font-weight: bold; font-size:12pt; margin:10px 0 0 0'>" + kikakuText + "</p></a>";
-                                break;
-                            }
+                            kikakuText = "<a name='" + menuName + "'><p style='font-weight: bold; font-size:12pt; margin:10px 0 0 0'>" + kikakuText + "</p></a>";
+                            break;
                         }
                     }
+                }
 
-                    if (CheckHyo(kikakuText))
+                if (CheckHyo(kikakuText))
+                {
+                    string sTmp = MakeTable(kikakuText);
+                    if (kikakuItem.SeqNo == 1)
                     {
-                        string sTmp = MakeTable(kikakuText);
-                        if (kikakuItem.SeqNo == 1)
-                        {
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + sTmp);
-                        }
-                        else
-                        {
-                            tw.WriteLine("</td></tr></table>");
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + sTmp);
-                        }
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                     else
                     {
-                        if (kikakuItem.SeqNo == 1)
-                        {
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + kikakuText);
-                        }
-                        else
-                        {
-                            tw.WriteLine("</td></tr></table>");
-                            if (SetKouban(ref kikakuText))
-                            {
-                                tw.Write("<table><tr><td class = " + (level) + "></td>" + kikakuText);
-                            }
-                            else
-                            {
-                                tw.Write("<table><tr><td class = " + (level) + "></td><td>" + kikakuText);
-                            }
-                        }
+                        stringBuilder.AppendLine("</td></tr></table>");
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                 }
-
-                tw.WriteLine("</td></tr></table>");
-                //tw.WriteLine("<br>");
-
-                bool bSiyoFlg = false;
-
-                //Tenpu Items
-                DrugMenuItem currentTenpuItem = null;
-                foreach (var tenpuItem in TenpuCollection)
+                else
                 {
-                    int level = tenpuItem.DbLevel;
-                    string tenpuText = tenpuItem.DrugMenuName;
-
-                    if (level == 0)
+                    if (kikakuItem.SeqNo == 1)
                     {
-                        if (bSiyoFlg)
-                        {
-                            bSiyoFlg = false;
-                        }
-                        else
-                        {
-                            bSiyoFlg = (tenpuItem.DrugMenuName == "【使用上の注意】" || tenpuItem.DrugMenuName == "【使用上注意】");
-
-                        }
-                    }
-
-                    if (level == 0 || (bSiyoFlg && level == 1))
-                    {
-                        int countMenuItem = menuList.Count;
-
-                        for (int i = 0; i < countMenuItem; i++)
-                        {
-
-                            if (level == menuList[i].DbLevel && tenpuText == menuList[i].RawDrugMenuName)
-                            {
-                                string menuName = menuList[i].MenuName;
-                                if (level == 0)
-                                {
-                                    tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;margin:20px 0 0 0'>" + tenpuText + "</p></a>";
-                                }
-                                else if (level == 1)
-                                {
-                                    tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;margin:10px 0 0 0'>" + tenpuText + "</p></a>";
-                                }
-                                else
-                                {
-                                    tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;'>" + tenpuText + "</p></a>";
-                                }
-                            }
-                        }
-                    }
-
-                    if (CheckHyo(tenpuText))
-                    {
-                        string sTmp = MakeTable(tenpuText);
-                        if (tenpuItem.SeqNo == 1)
-                        {
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + sTmp);
-                        }
-                        else
-                        {
-                            tw.WriteLine("</td></tr></table>");
-
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + sTmp);
-                        }
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + kikakuText);
                     }
                     else
                     {
-                        if (tenpuItem.SeqNo == 1)
+                        stringBuilder.AppendLine("</td></tr></table>");
+                        if (SetKouban(ref kikakuText))
                         {
-                            tw.Write("<table><tr><td class = " + level + "></td><td>" + tenpuText);
+                            stringBuilder.AppendLine("<table><tr><td class = level-" + (level) + "></td>" + kikakuText);
                         }
                         else
                         {
-                            tw.WriteLine("</td></tr></table>");
+                            stringBuilder.AppendLine("<table><tr><td class = level-" + (level) + "></td><td>" + kikakuText);
+                        }
+                    }
+                }
+            }
 
-                            if (SetKouban(ref tenpuText))
+            stringBuilder.AppendLine("</td></tr></table>");
+            //stringBuilder.AppendLine("<br>");
+
+            bool bSiyoFlg = false;
+
+            //Tenpu Items
+            DrugMenuItemModel? currentTenpuItem = null;
+            foreach (var tenpuItem in drugDetailModel.TenpuCollection)
+            {
+                int level = tenpuItem.DbLevel;
+                string tenpuText = tenpuItem.DrugMenuName;
+
+                if (level == 0)
+                {
+                    if (bSiyoFlg)
+                    {
+                        bSiyoFlg = false;
+                    }
+                    else
+                    {
+                        bSiyoFlg = (tenpuItem.DrugMenuName == "【使用上の注意】" || tenpuItem.DrugMenuName == "【使用上注意】");
+
+                    }
+                }
+
+                if (level == 0 || (bSiyoFlg && level == 1))
+                {
+                    int countMenuItem = drugMenus.Count;
+
+                    for (int i = 0; i < countMenuItem; i++)
+                    {
+
+                        if (level == drugMenus[i].DbLevel && tenpuText == drugMenus[i].RawDrugMenuName)
+                        {
+                            string menuName = drugMenus[i].MenuName;
+                            if (level == 0)
                             {
-                                tw.Write("<table><tr><td class = " + level + "></td>" + tenpuText);
+                                tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;margin:20px 0 0 0'>" + tenpuText + "</p></a>";
+                            }
+                            else if (level == 1)
+                            {
+                                tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;margin:10px 0 0 0'>" + tenpuText + "</p></a>";
                             }
                             else
                             {
-                                if (currentTenpuItem == null || currentTenpuItem.DrugMenuName != tenpuItem.DrugMenuName)
-                                {
-                                    tw.Write("<table><tr><td class = " + level + "></td><td>" + tenpuText);
-                                }
-                                else
-                                {
-                                    tw.Write("<table><tr><td class = " + level + "></td><td>");
-                                }
-
+                                tenpuText = "<a name='" + menuName + "'><p style='font-weight: bold;font-size:12pt;'>" + tenpuText + "</p></a>";
                             }
                         }
                     }
-                    if (level == 0 || (bSiyoFlg && level == 1))
+                }
+
+                if (CheckHyo(tenpuText))
+                {
+                    string sTmp = MakeTable(tenpuText);
+                    if (tenpuItem.SeqNo == 1)
                     {
-                        currentTenpuItem = tenpuItem;
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
+                    }
+                    else
+                    {
+                        stringBuilder.AppendLine("</td></tr></table>");
+
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                 }
-
-                tw.WriteLine("</td></tr></table>");
-                tw.WriteLine("<div id='footer'>");
-                tw.WriteLine("<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
-                          "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
-                          "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>");
-                tw.WriteLine("</div>");
-                //End of html file
-                tw.WriteLine("</body>");
-                tw.WriteLine("</html>");
-                var temp = tw.ToString();
-            }
-
-            if (menuIndex > 0)
-            {
-                DrugInformationSource = path + @"\" + strFIPATH + "#" + (menuList[menuIndex - 1].MenuName.AsInteger()).AsString();
-            }
-            else
-            {
-                DrugInformationSource = path + @"\" + strFIPATH;
-                string[] lines = System.IO.File.ReadAllLines(DrugInformationSource);
-
-                // Display the file contents by using a foreach loop.
-                string str = "";
-                foreach (string line in lines)
+                else
                 {
-                    // Use a tab to indent each line of the file.
-                    str += line + Environment.NewLine;
+                    if (tenpuItem.SeqNo == 1)
+                    {
+                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
+                    }
+                    else
+                    {
+                        stringBuilder.AppendLine("</td></tr></table>");
+
+                        if (SetKouban(ref tenpuText))
+                        {
+                            stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td>" + tenpuText);
+                        }
+                        else
+                        {
+                            if (currentTenpuItem == null || currentTenpuItem.DrugMenuName != tenpuItem.DrugMenuName)
+                            {
+                                stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
+                            }
+                            else
+                            {
+                                stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>");
+                            }
+
+                        }
+                    }
+                }
+                if (level == 0 || (bSiyoFlg && level == 1))
+                {
+                    currentTenpuItem = tenpuItem;
                 }
             }
+
+            stringBuilder.AppendLine("</td></tr></table>");
+            stringBuilder.AppendLine("<div id='footer'>");
+            stringBuilder.AppendLine("<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
+                      "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
+                      "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>");
+            stringBuilder.AppendLine("</div>");
+            //End of html file
+            stringBuilder.AppendLine("</body>");
+            stringBuilder.AppendLine("</html>");
+
+            return stringBuilder.ToString();
+        }
+
+        private bool CheckHyo(string stmp)
+        {
+            string CON_KAISI = "（表開始）";
+            string CON_DAI = "［表題］";
+            string CON_SYU = "（表終了）";
+            string CON_CHU = "［表脚注］!";
+            string CON_KAI = "▼";
+            string CON_PAI = "Π";
+            string CON_MAE = "［前文］!";
+            int val = -1;
+            if (stmp.IndexOf("!") >= 0)
+                val = stmp.IndexOf("!");
+            if (stmp.IndexOf(CON_KAISI) >= 0)
+                val = stmp.IndexOf(CON_KAISI);
+            if (stmp.IndexOf(CON_DAI) >= 0)
+                val = stmp.IndexOf(CON_DAI);
+            if (stmp.IndexOf(CON_SYU) >= 0)
+                val = stmp.IndexOf(CON_SYU);
+            if (stmp.IndexOf(CON_CHU) >= 0)
+                val = stmp.IndexOf(CON_CHU);
+            if (stmp.IndexOf(CON_KAI) >= 0)
+                val = stmp.IndexOf(CON_KAI);
+            if (stmp.IndexOf(CON_PAI) >= 0)
+                val = stmp.IndexOf(CON_PAI);
+            if (stmp.IndexOf(CON_MAE) >= 0)
+                val = stmp.IndexOf(CON_MAE);
+            return (val >= 0);
+        }
+
+        private string MakeTable(string sstr)
+        {
+            string CON_KAISI = "（表開始）";
+            string CON_DAI = "［表題］";
+            string CON_SYU = "（表終了）";
+            string CON_CHU = "［表脚注］!";
+            string CON_KAI = "▼";
+            string CON_PAI = "Π";
+            string CON_MAE = "［前文］!";
+            string CON_ATO = "［後文］!";
+
+            string rs = sstr;
+            int num = sstr.IndexOf(CON_MAE);
+            int num2 = sstr.IndexOf(CON_ATO);
+            if (num >= 0)
+            {
+                rs = rs.Replace(CON_MAE, "");
+            }
+            else if (num2 >= 0)
+            {
+                rs = rs.Replace(CON_ATO, "");
+
+            }
+            else if (rs.IndexOf(CON_KAISI) >= 0)
+            {
+                if (sstr.IndexOf(CON_DAI) >= 0)
+                {
+                    rs = rs.Replace(CON_DAI + "!", "<table border='1' cellspacing='0' cellpadding='5'><caption>");
+                    rs = rs.Replace(CON_KAISI, "</caption>");
+                }
+                else
+                {
+                    rs = rs.Replace(CON_KAISI, "<table border='1' cellspacing='0' cellpadding='5'><caption>");
+                }
+            }
+            rs = rs.Replace(CON_CHU, "");
+            //replace 1st occurrence
+            var regex = new Regex(Regex.Escape("!"));
+            rs = regex.Replace(rs, "<tr><td>", 1);
+            //rs = rs.Replace("!", "<tr><td>");
+            rs = rs.Replace(":", "</td><td>");
+            rs = rs.Replace("!", "</td></tr><tr><td>");
+            rs = rs.Replace(CON_KAI, "<br>");
+            rs = rs.Replace(CON_PAI, "<br>");
+            rs = rs.Replace(CON_SYU, "</td></tr></table>");
+            rs = rs.Replace("<td></td>", "<td>&nbsp;</td>");
+            //TODO
+            return rs;
+        }
+
+        private bool SetKouban(ref string sstr)
+        {
+            bool res = false;
+            int ipos1;
+            int ipos2;
+            int ipos3;
+            string tmpstr;
+            string cStr = CIUtil.CDCopy(sstr, 1, 5);
+            ipos1 = cStr.IndexOf(CON_KAKO1) + 1;
+            ipos2 = cStr.IndexOf(CON_KAKO2) + 1;
+            ipos3 = cStr.IndexOf(CON_KAKO3) + 1;
+            if (CIUtil.StrToIntDef(CIUtil.CiCopyStrWidth(sstr, ipos3 + 1, 1), -1) != -1)
+            {
+                ipos3 = 0;
+            }
+
+            //   項目番号と内容を分ける
+
+            if (
+                (new[] { 2, 3, 4, }.Contains(ipos1) && (ipos2 == 0) && (ipos3 >= 3))////「).」の場合
+                || ((ipos1 == 0) && (new[] { 3, 4 }.Contains(ipos2)) && (ipos3 >= 4))//　「].」の場合
+                || ((ipos1 == 0) && (ipos2 == 0) && (new[] { 2, 3 }.Contains(ipos3)))
+                )
+            {
+                int MecsStringWidth = CIUtil.MecsStringWidth(sstr); //TODO - MecsStringWidth(sstr)
+                tmpstr = "<td valign='top'>" + CIUtil.CiCopyStrWidth(sstr, 1, ipos3) + "</td><td>" + CIUtil.CiCopyStrWidth(sstr, ipos3 + 1, MecsStringWidth - ipos3);
+                res = true;
+                sstr = tmpstr;
+            }
+            return res;
         }
     }
 }

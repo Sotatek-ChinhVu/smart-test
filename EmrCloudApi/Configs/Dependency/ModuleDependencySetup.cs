@@ -8,6 +8,7 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.HistoryOrder;
 using Domain.Models.HokenMst;
 using Domain.Models.HpMst;
 using Domain.Models.Insurance;
@@ -127,15 +128,20 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
-using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocCategory;
+using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.DrugDetail;
-using UseCase.DrugDetailData;
+using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -144,6 +150,7 @@ using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidHokenInfAllType;
@@ -260,12 +267,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using Domain.Models.HistoryOrder;
-using UseCase.Document.DeleteDocInf;
-using UseCase.Document.DeleteDocTemplate;
-using UseCase.Document.MoveTemplateToOtherCategory;
-using UseCase.Insurance.HokenPatternUsed;
-using UseCase.Document.DeleteDocCategory;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -555,7 +556,8 @@ namespace EmrCloudApi.Configs.Dependency
 
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
-            busBuilder.RegisterUseCase<GetDrugDetailDataInputData, ShowProductInfInteractor>();
+            busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
+            busBuilder.RegisterUseCase<ShowProductInfInputData, ShowProductInfInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();

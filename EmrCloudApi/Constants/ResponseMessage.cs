@@ -822,7 +822,7 @@
         public static readonly string InvalidRsvDate = "Invalid RsvDate";
         public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
-        
+
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
@@ -855,5 +855,8 @@
         public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
+
+        //Drug Menu
+        public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
     }
 }
