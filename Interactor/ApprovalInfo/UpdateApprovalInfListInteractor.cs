@@ -2,7 +2,6 @@
 using Helper.Constants;
 using UseCase.ApprovalInfo.UpdateApprovalInfList;
 using static Helper.Constants.ApprovalInfConstant;
-
 namespace Interactor.ApprovalInfo;
 
 public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
@@ -20,19 +19,19 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
         {
             if (input.ToList() == null || input.ToList().Count == 0)
             {
-                return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfoListInputNoData);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfoListInputNoData);
             }
 
             var checkInputId = input.ToList().Where(u => u.Id > 0).Select(u => u.Id);
             if (checkInputId.Count() != checkInputId.Distinct().Count())
             {
-                return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidExistedId);
             }
 
             var checkInputRaiinNo = input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo);
             if (checkInputRaiinNo.Count() != checkInputRaiinNo.Distinct().Count())
             {
-                return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidExistedRaiinNo);
             }
 
             foreach (var data in input.ToList())
@@ -40,53 +39,27 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
                 var status = data.Validation();
                 if (status != ValidationStatus.Valid)
                 {
-                    return new UpdateApprovalInfListOutputData(ConvertStatusApprovalInf(status));
+                    return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.Failed);
                 }
             }
 
             if (!_approvalInfRepository.CheckExistedId(input.ToList().Where(u => u.Id > 0).Select(u => u.Id).ToList()))
             {
-                return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoExistedId);
             }
 
             if (!_approvalInfRepository.CheckExistedRaiinNo(input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo).ToList()))
             {
-                return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedRaiinNo);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoExistedRaiinNo);
             }
 
-            _approvalInfRepository.UpdateApprovalInfs(input.ToList());
+            _approvalInfRepository.UpdateApprovalInfs(input.ToList(), input.UserId);
 
-            return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.Success);
+            return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.Success);
         }
         catch
         {
-            return new UpdateApprovalInfListOutputData(UpdateApprovalInfListStatus.Failed);
+            return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.Failed);
         }
-    }
-
-    private static UpdateApprovalInfListStatus ConvertStatusApprovalInf(ValidationStatus status)
-    {
-        if (status == ValidationStatus.InvalidHpId)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidHpId;
-        if (status == ValidationStatus.InvalidId)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidId;
-        if (status == ValidationStatus.InvalidPtId)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidPtId;
-        if (status == ValidationStatus.InvalidSinDate)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidSinDate;
-        if (status == ValidationStatus.InvalidRaiinNo)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidRaiinNo;
-        if (status == ValidationStatus.InvalidSeqNo)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidSeqNo;
-        if (status == ValidationStatus.InvalidIsDeleted)
-            return UpdateApprovalInfListStatus.ApprovalInfoInvalidIsDeleted;
-        if (status == ValidationStatus.ApprovalInfListExistedInputData)
-            return UpdateApprovalInfListStatus.ApprovalInfListExistedInputData;
-        if (status == ValidationStatus.ApprovalInfListInvalidNoExistedId)
-            return UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId;
-        if (status == ValidationStatus.ApprovalInfListInvalidNoExistedRaiinNo)
-            return UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedRaiinNo;
-
-        return UpdateApprovalInfListStatus.Success;
     }
 }

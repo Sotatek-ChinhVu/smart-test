@@ -44,9 +44,8 @@ namespace EmrCloudApi.Tenant.Controllers
                                                             x.PtId,
                                                             x.SinDate,
                                                             x.RaiinNo,
-                                                            x.SeqNo,
                                                             x.IsDeleted,
-                                                            x.DateTime
+                                                            0
                                                             )).ToList(),
                                                             UserId
                                                             );

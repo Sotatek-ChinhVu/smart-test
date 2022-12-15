@@ -20,7 +20,7 @@ namespace Domain.Models.ApprovalInfo
             UketokeNo = uketukeNo;
             KaId = kaId;
         }
-        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int isDeleted, DateTime date)
+        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int isDeleted)
         {
             Id = id;
             HpId = hpId;
@@ -29,7 +29,6 @@ namespace Domain.Models.ApprovalInfo
             SeqNo = seqNo;
             PtId = ptId;
             SinDate = sinDate;
-            Time = date;
         }
         public int HpId { get; private set; }
 
@@ -54,8 +53,6 @@ namespace Domain.Models.ApprovalInfo
         public int UketokeNo { get; private set; }
 
         public int KaId { get; private set; }
-
-        public DateTime Time { get; private set; }
 
         public ValidationStatus Validation()
         {

@@ -12,26 +12,26 @@ namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
         {
             Result = new Response<UpdateApprovalInfListResponse>()
             {
-                Data = new UpdateApprovalInfListResponse(outputData.Status == UpdateApprovalInfListStatus.Success),
+                Data = new UpdateApprovalInfListResponse(outputData.Status == ApprovalInfConstant.Success),
                 Message = GetMessage(outputData.Status),
                 Status = (int)outputData.Status
             };
         }
-        private static string GetMessage(UpdateApprovalInfListStatus status) => status switch
+        private static string GetMessage(ApprovalInfConstant status) => status switch
         {
-            UpdateApprovalInfListStatus.Success => ResponseMessage.Success,
-            UpdateApprovalInfListStatus.ApprovalInfoListInputNoData => ResponseMessage.ApprovalInfoListInputNoData,
-            UpdateApprovalInfListStatus.Failed => ResponseMessage.Failed,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidHpId => ResponseMessage.InvalidHpId,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidId => ResponseMessage.InvalidHpId,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidSeqNo => ResponseMessage.InvalidSeqNo,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidPtId => ResponseMessage.InvalidPtId,
-            UpdateApprovalInfListStatus.ApprovalInfoInvalidSinDate => ResponseMessage.InvalidSinDate,
-            UpdateApprovalInfListStatus.ApprovalInfListExistedInputData => ResponseMessage.ApprovalInfListExistedInputData,
-            UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedId => ResponseMessage.ApprovalInfListInvalidNoExistedId,
-            UpdateApprovalInfListStatus.ApprovalInfListInvalidNoExistedRaiinNo => ResponseMessage.ApprovalInfListInvalidNoExistedRaiinNo,
+            ApprovalInfConstant.Success => ResponseMessage.Success,
+            ApprovalInfConstant.ApprovalInfoListInputNoData => ResponseMessage.ApprovalInfoListInputNoData,
+            ApprovalInfConstant.Failed => ResponseMessage.Failed,
+            ApprovalInfConstant.ApprovalInfoInvalidHpId => ResponseMessage.InvalidHpId,
+            ApprovalInfConstant.ApprovalInfoInvalidId => ResponseMessage.InvalidHpId,
+            ApprovalInfConstant.ApprovalInfoInvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
+            ApprovalInfConstant.ApprovalInfoInvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
+            ApprovalInfConstant.ApprovalInfoInvalidSeqNo => ResponseMessage.InvalidSeqNo,
+            ApprovalInfConstant.ApprovalInfoInvalidPtId => ResponseMessage.InvalidPtId,
+            ApprovalInfConstant.ApprovalInfoInvalidSinDate => ResponseMessage.InvalidSinDate,
+            ApprovalInfConstant.ApprovalInfListExistedInputData => ResponseMessage.ApprovalInfListExistedInputData,
+            ApprovalInfConstant.ApprovalInfListInvalidNoExistedId => ResponseMessage.ApprovalInfListInvalidNoExistedId,
+            ApprovalInfConstant.ApprovalInfListInvalidNoExistedRaiinNo => ResponseMessage.ApprovalInfListInvalidNoExistedRaiinNo,
             _ => string.Empty
         };
     }

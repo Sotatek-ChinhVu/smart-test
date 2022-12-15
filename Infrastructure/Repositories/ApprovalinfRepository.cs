@@ -101,19 +101,17 @@ namespace Infrastructure.Repositories
             return result;
         }
 
-        public void UpdateApprovalInfs(List<ApprovalInfModel> approvalInfs)
+        public void UpdateApprovalInfs(List<ApprovalInfModel> approvalInfs, int userId)
         {
             foreach (var inputData in approvalInfs)
             {
                 var approvalInfo = _tenantDataContext.ApprovalInfs.FirstOrDefault(x => x.HpId == 1 && x.IsDeleted == 0);
                 if (inputData.Id == approvalInfo?.Id && inputData.IsDeleted == approvalInfo.IsDeleted && inputData.RaiinNo == approvalInfo.RaiinNo && inputData.PtId == approvalInfo.PtId && inputData.SinDate == approvalInfo.SinDate)
                 {
-                    approvalInfo.CreateId = 1;
-                    approvalInfo.CreateDate = DateTime.Now;
-                    approvalInfo.CreateMachine = string.Empty;
-                    approvalInfo.UpdateId = 1;
-                    approvalInfo.UpdateDate = DateTime.Now;
-                    approvalInfo.UpdateMachine = string.Empty;
+                    approvalInfo.CreateId = userId;
+                    approvalInfo.CreateDate = DateTime.UtcNow;
+                    approvalInfo.UpdateId = userId;
+                    approvalInfo.UpdateDate = DateTime.UtcNow;
                     approvalInfo.SeqNo = approvalInfo.SeqNo + 1;
                 }
 
@@ -141,8 +139,7 @@ namespace Infrastructure.Repositories
                 SinDate = u.SinDate,
                 RaiinNo = u.RaiinNo,
                 SeqNo = 1,
-                IsDeleted = u.IsDeleted,
-
+                IsDeleted = u.IsDeleted
             };
         }
     }
