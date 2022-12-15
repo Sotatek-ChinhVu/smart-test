@@ -822,7 +822,7 @@
         public static readonly string InvalidRsvDate = "Invalid RsvDate";
         public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
-        
+
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
@@ -839,6 +839,7 @@
         public static readonly string FileTemplateNotFould = "File template not fould!";
         public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
         public static readonly string DocInfNotFound = "DocInf Not Found!";
+        public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

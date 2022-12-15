@@ -95,6 +95,11 @@ namespace Domain.Models.Insurance
             HokenMst = new HokenMstModel();
             HokensyaMst = new HokensyaMstModel();
         }
+        public HokenInfModel()
+        {
+            HokenMst = new HokenMstModel();
+            HokensyaMst = new HokensyaMstModel();
+        }
 
         public List<ConfirmDateModel> ConfirmDateList { get; private set; } = new List<ConfirmDateModel>();
 
@@ -322,5 +327,9 @@ namespace Domain.Models.Insurance
         public bool IsNotKenkoKanri => HokenKbn != 13;
 
         public bool IsNotRodo => HokenKbn != 11;
+
+        public bool IsRousai => HokenKbn == 11 || HokenKbn == 12 || HokenKbn == 13;
+
+        public bool IsJibai => HokenKbn == 14;
     }
 }
