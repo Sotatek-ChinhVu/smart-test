@@ -176,18 +176,6 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.ReplaceParamTemplate)]
-    public ActionResult<Response<ReplaceParamTemplateResponse>> ReplaceParamTemplate([FromBody] ReplaceParamTemplateRequest request)
-    {
-        var input = new ReplaceParamTemplateInputData();
-        var output = _bus.Handle(input);
-
-        var presenter = new ReplaceParamTemplatePresenter();
-        presenter.Complete(output);
-
-        return new ActionResult<Response<ReplaceParamTemplateResponse>>(presenter.Result);
-    }
-
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(

@@ -3,7 +3,6 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using EmrCloudApi.Constants;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Net.Mime;
 
 namespace EmrCloudApi.Controller;
 
@@ -27,7 +26,7 @@ public class CheckController : ControllerBase
     [HttpGet(ApiPath.ReplaceParamTemplate)]
     public IActionResult ExportEmployee()
     {
-        var link = @"https://develop-smartkarte-images-bucket.s3.ap-southeast-1.amazonaws.com/ClinicID/reference/files/11/file_01.docx";
+        var link = @"https://develop-smartkarte-images-bucket.s3.ap-southeast-1.amazonaws.com/ClinicID/reference/files/11/templateCheck.docx";
         using (var client = new WebClient())
         {
             var content = client.DownloadData(link);
@@ -35,14 +34,17 @@ public class CheckController : ControllerBase
             {
                 using (var word = WordprocessingDocument.Open(stream, true))
                 {
-                    if (word.MainDocumentPart != null && word.MainDocumentPart.RootElement != null)
-                    {
-                        var name = word.MainDocumentPart.RootElement.Descendants<Text>().FirstOrDefault(c => c.Text.Contains("<<name>>"));
-                        if (name != null)
-                        {
-                            name.Text = "vuquynhanh";
-                        }
-                    }
+                    var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
+                                                .FirstOrDefault(sdt => sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<氏名>>");
+
+                    element.Descendants<Text>().First().Text = "hello_vuquynh_anh患者番号";
+                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
+
+                    element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
+                                                .FirstOrDefault(sdt => sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<保険/特記事項１>>");
+
+                    element.Descendants<Text>().First().Text = "___check+_hello_vuquynh_anh患者番号";
+                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
                 }
                 return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
             }
