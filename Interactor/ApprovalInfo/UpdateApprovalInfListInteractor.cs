@@ -25,13 +25,7 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
             var checkInputId = input.ToList().Where(u => u.Id > 0).Select(u => u.Id);
             if (checkInputId.Count() != checkInputId.Distinct().Count())
             {
-                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidExistedId);
-            }
-
-            var checkInputRaiinNo = input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo);
-            if (checkInputRaiinNo.Count() != checkInputRaiinNo.Distinct().Count())
-            {
-                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidExistedRaiinNo);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfoInvalidId);
             }
 
             foreach (var data in input.ToList())
@@ -45,12 +39,12 @@ public class UpdateApprovalInfListInteractor : IUpdateApprovalInfListInputPort
 
             if (!_approvalInfRepository.CheckExistedId(input.ToList().Where(u => u.Id > 0).Select(u => u.Id).ToList()))
             {
-                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoExistedId);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoId);
             }
 
             if (!_approvalInfRepository.CheckExistedRaiinNo(input.ToList().Where(u => u.RaiinNo > 0).Select(u => u.RaiinNo).ToList()))
             {
-                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoExistedRaiinNo);
+                return new UpdateApprovalInfListOutputData(UseCase.ApprovalInfo.UpdateApprovalInfList.ApprovalInfConstant.ApprovalInfListInvalidNoRaiinNo);
             }
 
             _approvalInfRepository.UpdateApprovalInfs(input.ToList(), input.UserId);

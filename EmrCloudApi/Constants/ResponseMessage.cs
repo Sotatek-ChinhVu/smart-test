@@ -106,6 +106,7 @@
         //ApprovalInfo
         public static readonly string InvalidStarDate = "InvalidStarDate";
         public static readonly string InvalidEndDate = "InvalidEndDate";
+        public static readonly string InvalidId = "InvalidId";
         public static readonly string ApprovalInfoListInputNoData = "ApprovalInfoListInputNoData";
         public static readonly string ApprovalInfListExistedInputData = "ApprovalInfListExistedInputData";
         public static readonly string ApprovalInfListInvalidNoExistedId = "ApprovalInfListInvalidNoExistedId";

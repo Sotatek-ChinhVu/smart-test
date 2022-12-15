@@ -23,14 +23,14 @@ namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
             ApprovalInfConstant.ApprovalInfoListInputNoData => ResponseMessage.ApprovalInfoListInputNoData,
             ApprovalInfConstant.Failed => ResponseMessage.Failed,
             ApprovalInfConstant.ApprovalInfoInvalidHpId => ResponseMessage.InvalidHpId,
-            ApprovalInfConstant.ApprovalInfoInvalidId => ResponseMessage.InvalidHpId,
+            ApprovalInfConstant.ApprovalInfoInvalidId => ResponseMessage.InvalidId,
             ApprovalInfConstant.ApprovalInfoInvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
             ApprovalInfConstant.ApprovalInfoInvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
             ApprovalInfConstant.ApprovalInfoInvalidPtId => ResponseMessage.InvalidPtId,
             ApprovalInfConstant.ApprovalInfoInvalidSinDate => ResponseMessage.InvalidSinDate,
             ApprovalInfConstant.ApprovalInfListExistedInputData => ResponseMessage.ApprovalInfListExistedInputData,
-            ApprovalInfConstant.ApprovalInfListInvalidNoExistedId => ResponseMessage.ApprovalInfListInvalidNoExistedId,
-            ApprovalInfConstant.ApprovalInfListInvalidNoExistedRaiinNo => ResponseMessage.ApprovalInfListInvalidNoExistedRaiinNo,
+            ApprovalInfConstant.ApprovalInfListInvalidNoId => ResponseMessage.ApprovalInfListInvalidNoExistedId,
+            ApprovalInfConstant.ApprovalInfListInvalidNoRaiinNo => ResponseMessage.ApprovalInfListInvalidNoExistedRaiinNo,
             _ => string.Empty
         };
     }
