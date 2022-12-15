@@ -13,6 +13,39 @@ namespace Infrastructure.Repositories.SpecialNote
             _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
+        public List<KensaInfDetailModel> GetListKensaInfModel(int hpId, long ptId, int sinDate)
+        {
+            var listKensaInfDetail = _tenantDataContext.KensaInfDetails.Where(u => u.HpId == hpId
+                                                                                && u.PtId == ptId
+                                                                                && u.IsDeleted == 0
+                                                                                && (u.KensaItemCd == "V0001"
+                                                                                || u.KensaItemCd == "V0002"
+                                                                                || u.KensaItemCd == "V0003"))
+                                                                        .OrderByDescending(u => u.IraiDate);
+            if (listKensaInfDetail.Any())
+            {
+                int maxIraiDate = listKensaInfDetail.Max(item => item.IraiDate);
+                return listKensaInfDetail.Where(item => item.IraiDate == maxIraiDate)
+                                         .Select(item => new KensaInfDetailModel(
+                                            item.HpId,
+                                            item.PtId,
+                                            item.IraiCd,
+                                            item.SeqNo,
+                                            item.IraiDate,
+                                            item.RaiinNo,
+                                            item.KensaItemCd ?? string.Empty,
+                                            item.ResultVal ?? string.Empty,
+                                            item.ResultType ?? string.Empty,
+                                            item.AbnormalKbn ?? string.Empty,
+                                            item.IsDeleted,
+                                            item.CmtCd1 ?? string.Empty,
+                                            item.CmtCd2 ?? string.Empty,
+                                            item.UpdateDate
+                                        )).ToList();
+            }
+            return new();
+        }
+
         public List<PhysicalInfoModel> GetPhysicalList(int hpId, long ptId)
         {
             var physicals = new List<PhysicalInfoModel>();

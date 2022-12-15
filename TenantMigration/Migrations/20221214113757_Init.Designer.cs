@@ -9,17 +9,18 @@ using PostgreDataContext;
 
 #nullable disable
 
-namespace PostgreDataContext.Migrations
+namespace TenantMigration.Migrations
 {
     [DbContext(typeof(TenantDataContext))]
-    [Migration("20221202072213_Init")]
+    [Migration("20221214113757_Init")]
     partial class Init
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.6")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -62,7 +63,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("FORM");
 
                     b.Property<string>("FormName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("FORM_NAME");
@@ -180,7 +180,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_ID");
 
                     b.Property<string>("UpdateMachine")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
@@ -452,7 +451,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_ID");
 
                     b.Property<string>("UpdateMachine")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
@@ -484,7 +482,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_ID");
 
                     b.Property<string>("UpdateMachine")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
@@ -559,7 +556,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_ID");
 
                     b.Property<string>("UpdateMachine")
-                        .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
@@ -1010,7 +1006,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("TERM_SBT");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
                         .HasColumnName("TEXT");
@@ -1243,41 +1238,6 @@ namespace PostgreDataContext.Migrations
                     b.HasIndex(new[] { "HpId", "ItemCd", "StartDate" }, "CMT_KBN_MST_IDX01");
 
                     b.ToTable("CMT_KBN_MST");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.ColumnSetting", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
-
-                    b.Property<string>("TableName")
-                        .HasColumnType("text")
-                        .HasColumnName("TABLE_NAME");
-
-                    b.Property<string>("ColumnName")
-                        .HasColumnType("text")
-                        .HasColumnName("COLUMN_NAME");
-
-                    b.Property<int>("DisplayOrder")
-                        .HasColumnType("integer")
-                        .HasColumnName("DISPLAY_ORDER");
-
-                    b.Property<bool>("IsHidden")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IS_HIDDEN");
-
-                    b.Property<bool>("IsPinned")
-                        .HasColumnType("boolean")
-                        .HasColumnName("IS_PINNED");
-
-                    b.Property<int>("Width")
-                        .HasColumnType("integer")
-                        .HasColumnName("WIDTH");
-
-                    b.HasKey("UserId", "TableName", "ColumnName");
-
-                    b.ToTable("COLUMN_SETTING");
                 });
 
             modelBuilder.Entity("Entity.Tenant.ContainerMst", b =>
@@ -1741,7 +1701,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("IS_INVALID");
 
                     b.Property<string>("ItemCd2")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("ITEM_CD2");
@@ -3833,13 +3792,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HOKEN_KOHI_KBN");
 
                     b.Property<string>("HokenName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("HOKEN_NAME");
 
                     b.Property<string>("HokenNameCd")
-                        .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("character varying(5)")
                         .HasColumnName("HOKEN_NAME_CD");
@@ -3849,13 +3806,11 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HOKEN_SBT_KBN");
 
                     b.Property<string>("HokenSname")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("HOKEN_SNAME");
 
                     b.Property<string>("Houbetu")
-                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("HOUBETU");
@@ -4193,12 +4148,14 @@ namespace PostgreDataContext.Migrations
             modelBuilder.Entity("Entity.Tenant.HpInf", b =>
                 {
                     b.Property<int>("HpId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HpId"));
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Address1")
                         .HasMaxLength(100)
@@ -4267,11 +4224,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(7)")
                         .HasColumnName("ROUSAI_HP_CD");
 
-                    b.Property<int>("StartDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_DATE")
-                        .HasColumnOrder(2);
-
                     b.Property<string>("Tel")
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)")
@@ -4290,7 +4242,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "StartDate");
 
                     b.ToTable("HP_INF");
                 });
@@ -4413,6 +4365,22 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(3);
+
+                    b.Property<string>("IpnNameCd")
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("IPN_NAME_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SeqNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(4);
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -4430,13 +4398,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("END_DATE");
 
-                    b.Property<string>("IpnNameCd")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("character varying(12)")
-                        .HasColumnName("IPN_NAME_CD")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("IsDeleted")
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
@@ -4448,16 +4409,6 @@ namespace PostgreDataContext.Migrations
                     b.Property<int>("Kasan2")
                         .HasColumnType("integer")
                         .HasColumnName("KASAN2");
-
-                    b.Property<int>("SeqNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SEQ_NO")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("StartDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_DATE")
-                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -4472,7 +4423,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "StartDate", "IpnNameCd", "SeqNo");
 
                     b.ToTable("IPN_KASAN_MST");
                 });
@@ -4801,24 +4752,79 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("JOB_MST");
                 });
 
-            modelBuilder.Entity("Entity.Tenant.JsonSetting", b =>
+            modelBuilder.Entity("Entity.Tenant.KaMst", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("HpId")
                         .HasColumnType("integer")
-                        .HasColumnName("USER_ID");
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(2);
 
-                    b.Property<string>("Key")
-                        .HasColumnType("text")
-                        .HasColumnName("KEY");
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("VALUE");
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
 
-                    b.HasKey("UserId", "Key");
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
 
-                    b.ToTable("JSON_SETTING");
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<int>("KaId")
+                        .HasColumnType("integer")
+                        .HasColumnName("KA_ID");
+
+                    b.Property<string>("KaName")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("KA_NAME");
+
+                    b.Property<string>("KaSname")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("KA_SNAME");
+
+                    b.Property<string>("ReceKaCd")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("RECE_KA_CD");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("Id", "HpId");
+
+                    b.HasIndex(new[] { "KaId" }, "PT_KA_MST_IDX01");
+
+                    b.ToTable("KA_MST");
                 });
 
             modelBuilder.Entity("Entity.Tenant.KacodeMst", b =>
@@ -5511,81 +5517,6 @@ namespace PostgreDataContext.Migrations
                     b.HasKey("HpId", "PtId", "SinDate", "RaiinNo", "HokenId");
 
                     b.ToTable("KAIKEI_INF");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.KaMst", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<int>("KaId")
-                        .HasColumnType("integer")
-                        .HasColumnName("KA_ID");
-
-                    b.Property<string>("KaName")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("KA_NAME");
-
-                    b.Property<string>("KaSname")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("KA_SNAME");
-
-                    b.Property<string>("ReceKaCd")
-                        .HasMaxLength(2)
-                        .HasColumnType("character varying(2)")
-                        .HasColumnName("RECE_KA_CD");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SORT_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("Id", "HpId");
-
-                    b.HasIndex(new[] { "KaId" }, "PT_KA_MST_IDX01");
-
-                    b.ToTable("KA_MST");
                 });
 
             modelBuilder.Entity("Entity.Tenant.KantokuMst", b =>
@@ -6498,7 +6429,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnOrder(4);
 
                     b.Property<string>("BCd")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
                         .HasColumnName("B_CD");
@@ -6950,7 +6880,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SIN_DATE");
 
                     b.Property<string>("SortKey")
-                        .IsRequired()
                         .HasMaxLength(61)
                         .HasColumnType("character varying(61)")
                         .HasColumnName("SORT_KEY");
@@ -8120,7 +8049,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("COMPANY_CD");
 
                     b.Property<string>("DrugFormCd")
-                        .IsRequired()
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
                         .HasColumnName("DRUG_FORM_CD");
@@ -8146,7 +8074,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("TRADE_NAME");
 
                     b.Property<string>("YohoCd")
-                        .IsRequired()
                         .HasMaxLength(6)
                         .HasColumnType("character varying(6)")
                         .HasColumnName("YOHO_CD");
@@ -8366,7 +8293,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KIJYO_CD");
 
                     b.Property<string>("KioCd")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("KIO_CD");
@@ -8880,7 +8806,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SIN_DATE");
 
                     b.Property<string>("Text")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("TEXT");
 
@@ -10842,13 +10767,12 @@ namespace PostgreDataContext.Migrations
 
             modelBuilder.Entity("Entity.Tenant.PtFamily", b =>
                 {
-                    b.Property<long>("FamilyId")
+                    b.Property<long>("PtId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("FAMILY_ID")
-                        .HasColumnOrder(1);
+                        .HasColumnName("PT_ID");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FamilyId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("PtId"));
 
                     b.Property<string>("Biko")
                         .HasMaxLength(120)
@@ -10871,6 +10795,14 @@ namespace PostgreDataContext.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("character varying(60)")
                         .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<long>("FamilyId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("FAMILY_ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("FamilyId"));
 
                     b.Property<long>("FamilyPtId")
                         .HasColumnType("bigint")
@@ -10906,10 +10838,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("PARENT_ID");
 
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID");
-
                     b.Property<long>("SeqNo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
@@ -10944,7 +10872,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(10)")
                         .HasColumnName("ZOKUGARA_CD");
 
-                    b.HasKey("FamilyId");
+                    b.HasKey("PtId");
 
                     b.HasIndex(new[] { "FamilyId", "PtId", "FamilyPtId" }, "PT_FAMILY_IDX01");
 
@@ -13151,7 +13079,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("ALPHABLEND_VAL");
 
                     b.Property<string>("BackgroundColor")
-                        .IsRequired()
                         .HasMaxLength(8)
                         .HasColumnType("character varying(8)")
                         .HasColumnName("BACKGROUND_COLOR");
@@ -13206,7 +13133,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("LEFT");
 
                     b.Property<string>("Memo")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("MEMO");
 
@@ -14068,7 +13994,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("CREATE_MACHINE");
 
                     b.Property<string>("GrpName")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("GRP_NAME");
@@ -15075,262 +15000,6 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("RECE_CMT");
                 });
 
-            modelBuilder.Entity("Entity.Tenant.RecedenCmtSelect", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("ItemNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("ITEM_NO")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("EdaNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("EDA_NO")
-                        .HasColumnOrder(3);
-
-                    b.Property<string>("ItemCd")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("ITEM_CD")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("StartDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_DATE")
-                        .HasColumnOrder(5);
-
-                    b.Property<string>("CommentCd")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("COMMENT_CD")
-                        .HasColumnOrder(6);
-
-                    b.Property<int>("CondKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("COND_KBN");
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("EndDate")
-                        .HasColumnType("integer")
-                        .HasColumnName("END_DATE");
-
-                    b.Property<int>("IsInvalid")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_INVALID");
-
-                    b.Property<string>("KbnNo")
-                        .HasMaxLength(64)
-                        .HasColumnType("character varying(64)")
-                        .HasColumnName("KBN_NO");
-
-                    b.Property<int>("NotSanteiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("NOT_SANTEI_KBN");
-
-                    b.Property<int>("NyugaiKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("NYUGAI_KBN");
-
-                    b.Property<int>("PtStatus")
-                        .HasColumnType("integer")
-                        .HasColumnName("PT_STATUS");
-
-                    b.Property<int>("SanteiCnt")
-                        .HasColumnType("integer")
-                        .HasColumnName("SANTEI_CNT");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SORT_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "ItemNo", "EdaNo", "ItemCd", "StartDate", "CommentCd");
-
-                    b.HasIndex(new[] { "HpId", "ItemCd", "StartDate", "CommentCd", "IsInvalid" }, "RECEDEN_CMT_SELECT_IDX01");
-
-                    b.ToTable("RECEDEN_CMT_SELECT");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.RecedenHenJiyuu", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("HokenId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HOKEN_ID")
-                        .HasColumnOrder(3);
-
-                    b.Property<int>("SinYm")
-                        .HasColumnType("integer")
-                        .HasColumnName("SIN_YM")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("SeqNo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("SEQ_NO")
-                        .HasColumnOrder(5);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<string>("HenreiJiyuu")
-                        .HasColumnType("text")
-                        .HasColumnName("HENREI_JIYUU");
-
-                    b.Property<string>("HenreiJiyuuCd")
-                        .HasMaxLength(9)
-                        .HasColumnType("character varying(9)")
-                        .HasColumnName("HENREI_JIYUU_CD");
-
-                    b.Property<string>("Hosoku")
-                        .HasColumnType("text")
-                        .HasColumnName("HOSOKU");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "PtId", "HokenId", "SinYm", "SeqNo");
-
-                    b.ToTable("RECEDEN_HEN_JIYUU");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.RecedenRirekiInf", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("HokenId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HOKEN_ID")
-                        .HasColumnOrder(3);
-
-                    b.Property<int>("SinYm")
-                        .HasColumnType("integer")
-                        .HasColumnName("SIN_YM")
-                        .HasColumnOrder(4);
-
-                    b.Property<int>("SeqNo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("SEQ_NO")
-                        .HasColumnOrder(5);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<string>("Rireki")
-                        .HasColumnType("text")
-                        .HasColumnName("RIREKI");
-
-                    b.Property<string>("SearchNo")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("SEARCH_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "PtId", "HokenId", "SinYm", "SeqNo");
-
-                    b.ToTable("RECEDEN_RIREKI_INF");
-                });
-
             modelBuilder.Entity("Entity.Tenant.ReceFutanKbn", b =>
                 {
                     b.Property<int>("HpId")
@@ -15377,7 +15046,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("CREATE_MACHINE");
 
                     b.Property<string>("FutanKbnCd")
-                        .IsRequired()
                         .HasMaxLength(1)
                         .HasColumnType("character varying(1)")
                         .HasColumnName("FUTAN_KBN_CD");
@@ -16102,7 +15770,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("KOHI2_RECE_TENSU");
 
                     b.Property<string>("Kohi3Houbetu")
-                        .IsRequired()
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
                         .HasColumnName("KOHI3_HOUBETU");
@@ -16716,6 +16383,262 @@ namespace PostgreDataContext.Migrations
                     b.HasKey("HpId", "PtId", "SeikyuYm", "HokenId", "SinYm");
 
                     b.ToTable("RECE_STATUS");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.RecedenCmtSelect", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("ItemNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("ITEM_NO")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("EdaNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("EDA_NO")
+                        .HasColumnOrder(3);
+
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("StartDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_DATE")
+                        .HasColumnOrder(5);
+
+                    b.Property<string>("CommentCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("COMMENT_CD")
+                        .HasColumnOrder(6);
+
+                    b.Property<int>("CondKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("COND_KBN");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("EndDate")
+                        .HasColumnType("integer")
+                        .HasColumnName("END_DATE");
+
+                    b.Property<int>("IsInvalid")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_INVALID");
+
+                    b.Property<string>("KbnNo")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("KBN_NO");
+
+                    b.Property<int>("NotSanteiKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("NOT_SANTEI_KBN");
+
+                    b.Property<int>("NyugaiKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("NYUGAI_KBN");
+
+                    b.Property<int>("PtStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("PT_STATUS");
+
+                    b.Property<int>("SanteiCnt")
+                        .HasColumnType("integer")
+                        .HasColumnName("SANTEI_CNT");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "ItemNo", "EdaNo", "ItemCd", "StartDate", "CommentCd");
+
+                    b.HasIndex(new[] { "HpId", "ItemCd", "StartDate", "CommentCd", "IsInvalid" }, "RECEDEN_CMT_SELECT_IDX01");
+
+                    b.ToTable("RECEDEN_CMT_SELECT");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.RecedenHenJiyuu", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("HokenId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HOKEN_ID")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_YM")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(5);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("HenreiJiyuu")
+                        .HasColumnType("text")
+                        .HasColumnName("HENREI_JIYUU");
+
+                    b.Property<string>("HenreiJiyuuCd")
+                        .HasMaxLength(9)
+                        .HasColumnType("character varying(9)")
+                        .HasColumnName("HENREI_JIYUU_CD");
+
+                    b.Property<string>("Hosoku")
+                        .HasColumnType("text")
+                        .HasColumnName("HOSOKU");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "PtId", "HokenId", "SinYm", "SeqNo");
+
+                    b.ToTable("RECEDEN_HEN_JIYUU");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.RecedenRirekiInf", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("HokenId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HOKEN_ID")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("SinYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("SIN_YM")
+                        .HasColumnOrder(4);
+
+                    b.Property<int>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(5);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<string>("Rireki")
+                        .HasColumnType("text")
+                        .HasColumnName("RIREKI");
+
+                    b.Property<string>("SearchNo")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("SEARCH_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "PtId", "HokenId", "SinYm", "SeqNo");
+
+                    b.ToTable("RECEDEN_RIREKI_INF");
                 });
 
             modelBuilder.Entity("Entity.Tenant.ReleasenoteRead", b =>
@@ -17893,6 +17816,129 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("RSV_INF");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.RsvRenkeiInf", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<long>("OtherPtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_PT_ID");
+
+                    b.Property<long>("OtherSeqNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_SEQ_NO");
+
+                    b.Property<long>("OtherSeqNo2")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_SEQ_NO2");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "RaiinNo");
+
+                    b.ToTable("RSV_RENKEI_INF");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.RsvRenkeiInfTk", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("RaiinNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RAIIN_NO")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("SystemKbn")
+                        .HasColumnType("integer")
+                        .HasColumnName("SYSTEM_KBN")
+                        .HasColumnOrder(3);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<long>("OtherPtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_PT_ID");
+
+                    b.Property<long>("OtherSeqNo")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_SEQ_NO");
+
+                    b.Property<long>("OtherSeqNo2")
+                        .HasColumnType("bigint")
+                        .HasColumnName("OTHER_SEQ_NO2");
+
+                    b.Property<long>("PtId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PT_ID");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "RaiinNo", "SystemKbn");
+
+                    b.ToTable("RSV_RENKEI_INF_TK");
+                });
+
             modelBuilder.Entity("Entity.Tenant.RsvkrtByomei", b =>
                 {
                     b.Property<int>("HpId")
@@ -18612,129 +18658,6 @@ namespace PostgreDataContext.Migrations
                     b.HasKey("HpId", "PtId", "RsvkrtNo", "RpNo", "RpEdaNo", "RowNo");
 
                     b.ToTable("RSVKRT_ODR_INF_DETAIL");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.RsvRenkeiInf", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO")
-                        .HasColumnOrder(2);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<long>("OtherPtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_PT_ID");
-
-                    b.Property<long>("OtherSeqNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_SEQ_NO");
-
-                    b.Property<long>("OtherSeqNo2")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_SEQ_NO2");
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "RaiinNo");
-
-                    b.ToTable("RSV_RENKEI_INF");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.RsvRenkeiInfTk", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("RaiinNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("RAIIN_NO")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("SystemKbn")
-                        .HasColumnType("integer")
-                        .HasColumnName("SYSTEM_KBN")
-                        .HasColumnOrder(3);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<long>("OtherPtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_PT_ID");
-
-                    b.Property<long>("OtherSeqNo")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_SEQ_NO");
-
-                    b.Property<long>("OtherSeqNo2")
-                        .HasColumnType("bigint")
-                        .HasColumnName("OTHER_SEQ_NO2");
-
-                    b.Property<long>("PtId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("PT_ID");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "RaiinNo", "SystemKbn");
-
-                    b.ToTable("RSV_RENKEI_INF_TK");
                 });
 
             modelBuilder.Entity("Entity.Tenant.SanteiAutoOrder", b =>
@@ -20279,57 +20202,6 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("SET_ODR_INF_DETAIL");
                 });
 
-            modelBuilder.Entity("Entity.Tenant.SingleDoseMst", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<string>("UnitName")
-                        .HasMaxLength(40)
-                        .HasColumnType("character varying(40)")
-                        .HasColumnName("UNIT_NAME");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "Id");
-
-                    b.ToTable("SINGLE_DOSE_MST");
-                });
-
             modelBuilder.Entity("Entity.Tenant.SinKoui", b =>
                 {
                     b.Property<int>("HpId")
@@ -20828,126 +20700,6 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("SIN_KOUI_DETAIL");
                 });
 
-            modelBuilder.Entity("Entity.Tenant.SinrekiFilterMst", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(1);
-
-                    b.Property<int>("GrpCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_CD")
-                        .HasColumnOrder(2);
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("NAME");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SORT_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "GrpCd");
-
-                    b.ToTable("SINREKI_FILTER_MST");
-                });
-
-            modelBuilder.Entity("Entity.Tenant.SinrekiFilterMstDetail", b =>
-                {
-                    b.Property<int>("HpId")
-                        .HasColumnType("integer")
-                        .HasColumnName("HP_ID")
-                        .HasColumnOrder(2);
-
-                    b.Property<int>("GrpCd")
-                        .HasColumnType("integer")
-                        .HasColumnName("GRP_CD")
-                        .HasColumnOrder(3);
-
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("ID")
-                        .HasColumnOrder(1);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("CREATE_DATE");
-
-                    b.Property<int>("CreateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("CREATE_ID");
-
-                    b.Property<string>("CreateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("CREATE_MACHINE");
-
-                    b.Property<int>("IsDeleted")
-                        .HasColumnType("integer")
-                        .HasColumnName("IS_DELETED");
-
-                    b.Property<string>("ItemCd")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("ITEM_CD");
-
-                    b.Property<int>("SortNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("SORT_NO");
-
-                    b.Property<DateTime>("UpdateDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("UPDATE_DATE");
-
-                    b.Property<int>("UpdateId")
-                        .HasColumnType("integer")
-                        .HasColumnName("UPDATE_ID");
-
-                    b.Property<string>("UpdateMachine")
-                        .HasMaxLength(60)
-                        .HasColumnType("character varying(60)")
-                        .HasColumnName("UPDATE_MACHINE");
-
-                    b.HasKey("HpId", "GrpCd", "Id");
-
-                    b.ToTable("SINREKI_FILTER_MST_DETAIL");
-                });
-
             modelBuilder.Entity("Entity.Tenant.SinRpInf", b =>
                 {
                     b.Property<int>("HpId")
@@ -21100,12 +20852,203 @@ namespace PostgreDataContext.Migrations
                     b.ToTable("SIN_RP_NO_INF");
                 });
 
+            modelBuilder.Entity("Entity.Tenant.SingleDoseMst", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<string>("UnitName")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasColumnName("UNIT_NAME");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "Id");
+
+                    b.ToTable("SINGLE_DOSE_MST");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.SinrekiFilterMst", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(1);
+
+                    b.Property<int>("GrpCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_CD")
+                        .HasColumnOrder(2);
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("NAME");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "GrpCd");
+
+                    b.ToTable("SINREKI_FILTER_MST");
+                });
+
+            modelBuilder.Entity("Entity.Tenant.SinrekiFilterMstDetail", b =>
+                {
+                    b.Property<int>("HpId")
+                        .HasColumnType("integer")
+                        .HasColumnName("HP_ID")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("GrpCd")
+                        .HasColumnType("integer")
+                        .HasColumnName("GRP_CD")
+                        .HasColumnOrder(3);
+
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("ID")
+                        .HasColumnOrder(1);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("CREATE_DATE");
+
+                    b.Property<int>("CreateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("CREATE_ID");
+
+                    b.Property<string>("CreateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("CREATE_MACHINE");
+
+                    b.Property<int>("IsDeleted")
+                        .HasColumnType("integer")
+                        .HasColumnName("IS_DELETED");
+
+                    b.Property<string>("ItemCd")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("ITEM_CD");
+
+                    b.Property<int>("SortNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("SORT_NO");
+
+                    b.Property<DateTime>("UpdateDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("UPDATE_DATE");
+
+                    b.Property<int>("UpdateId")
+                        .HasColumnType("integer")
+                        .HasColumnName("UPDATE_ID");
+
+                    b.Property<string>("UpdateMachine")
+                        .HasMaxLength(60)
+                        .HasColumnType("character varying(60)")
+                        .HasColumnName("UPDATE_MACHINE");
+
+                    b.HasKey("HpId", "GrpCd", "Id");
+
+                    b.ToTable("SINREKI_FILTER_MST_DETAIL");
+                });
+
             modelBuilder.Entity("Entity.Tenant.SokatuMst", b =>
                 {
                     b.Property<int>("HpId")
                         .HasColumnType("integer")
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
+
+                    b.Property<int>("PrefNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("PREF_NO")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("StartYm")
+                        .HasColumnType("integer")
+                        .HasColumnName("START_YM")
+                        .HasColumnOrder(3);
+
+                    b.Property<int>("ReportEdaNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("REPORT_EDA_NO")
+                        .HasColumnOrder(5);
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("integer")
+                        .HasColumnName("REPORT_ID")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
@@ -21153,11 +21096,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_SORT");
 
-                    b.Property<int>("PrefNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("PREF_NO")
-                        .HasColumnOrder(2);
-
                     b.Property<int>("PrintNoType")
                         .HasColumnType("integer")
                         .HasColumnName("PRINT_NO_TYPE");
@@ -21165,16 +21103,6 @@ namespace PostgreDataContext.Migrations
                     b.Property<int>("PrintType")
                         .HasColumnType("integer")
                         .HasColumnName("PRINT_TYPE");
-
-                    b.Property<int>("ReportEdaNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("REPORT_EDA_NO")
-                        .HasColumnOrder(5);
-
-                    b.Property<int>("ReportId")
-                        .HasColumnType("integer")
-                        .HasColumnName("REPORT_ID")
-                        .HasColumnOrder(4);
 
                     b.Property<string>("ReportName")
                         .HasMaxLength(30)
@@ -21184,11 +21112,6 @@ namespace PostgreDataContext.Migrations
                     b.Property<int>("SortNo")
                         .HasColumnType("integer")
                         .HasColumnName("SORT_NO");
-
-                    b.Property<int>("StartYm")
-                        .HasColumnType("integer")
-                        .HasColumnName("START_YM")
-                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("UpdateDate")
                         .HasColumnType("timestamp with time zone")
@@ -21203,7 +21126,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "PrefNo", "StartYm", "ReportEdaNo", "ReportId");
 
                     b.ToTable("SOKATU_MST");
                 });
@@ -22373,7 +22296,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("SORT_NO");
 
                     b.Property<string>("TagGrpName")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("TAG_GRP_NAME");
@@ -22858,6 +22780,22 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("HP_ID")
                         .HasColumnOrder(1);
 
+                    b.Property<int>("TemplateCd")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("TEMPLATE_CD")
+                        .HasColumnOrder(2);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TemplateCd"));
+
+                    b.Property<int>("SeqNo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("SEQ_NO")
+                        .HasColumnOrder(3);
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("CREATE_DATE");
@@ -22879,25 +22817,9 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("IS_DELETED");
 
-                    b.Property<int>("SeqNo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("SEQ_NO")
-                        .HasColumnOrder(3);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeqNo"));
-
                     b.Property<int>("SortNo")
                         .HasColumnType("integer")
                         .HasColumnName("SORT_NO");
-
-                    b.Property<int>("TemplateCd")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("TEMPLATE_CD")
-                        .HasColumnOrder(2);
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TemplateCd"));
 
                     b.Property<string>("Title")
                         .HasMaxLength(40)
@@ -22917,7 +22839,7 @@ namespace PostgreDataContext.Migrations
                         .HasColumnType("character varying(60)")
                         .HasColumnName("UPDATE_MACHINE");
 
-                    b.HasKey("HpId");
+                    b.HasKey("HpId", "TemplateCd", "SeqNo");
 
                     b.ToTable("TEMPLATE_MST");
                 });
@@ -25041,7 +24963,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("START_DATE");
 
                     b.Property<string>("UnitName")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("character varying(40)")
                         .HasColumnName("UNIT_NAME");
@@ -25951,7 +25872,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("UPDATE_MACHINE");
 
                     b.Property<string>("YohoSuffix")
-                        .IsRequired()
                         .HasMaxLength(240)
                         .HasColumnType("character varying(240)")
                         .HasColumnName("YOHO_SUFFIX");
@@ -26187,7 +26107,6 @@ namespace PostgreDataContext.Migrations
                         .HasColumnName("IPN_CD");
 
                     b.Property<string>("IpnName")
-                        .IsRequired()
                         .HasMaxLength(120)
                         .HasColumnType("character varying(120)")
                         .HasColumnName("IPN_NAME");
