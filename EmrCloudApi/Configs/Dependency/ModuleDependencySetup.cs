@@ -9,7 +9,7 @@ using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
 using Domain.Models.HokenMst;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -266,6 +266,8 @@ using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Document.DeleteDocCategory;
+using Interactor.Document.CommonGetListParam;
+using UseCase.Document.GetListParamTemplate;
 using Domain.Models.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using Interactor.PtGroupMst;
@@ -383,6 +385,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
+            services.AddTransient<ICommonGetListParam, CommonGetListParam>();
             services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
         }
 
@@ -645,6 +648,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteDocTemplateInputData, DeleteDocTemplateInteractor>();
             busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
+            busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

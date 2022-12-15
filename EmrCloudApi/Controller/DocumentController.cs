@@ -17,6 +17,11 @@ using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
+using UseCase.Document.GetListParamTemplate;
+using System.Net;
+using DocumentFormat.OpenXml.Packaging;
+using Interactor.Document.CommonGetListParam;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace EmrCloudApi.Controller;
 
@@ -25,9 +30,11 @@ namespace EmrCloudApi.Controller;
 public class DocumentController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public DocumentController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly ICommonGetListParam _commonGetListParam;
+    public DocumentController(UseCaseBus bus, IUserService userService, ICommonGetListParam commonGetListParam) : base(userService)
     {
         _bus = bus;
+        _commonGetListParam = commonGetListParam;
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
@@ -160,6 +167,51 @@ public class DocumentController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<MoveTemplateToOtherCategoryResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.GetListParamTemplate)]
+    public ActionResult<Response<GetListParamTemplateResponse>> GetListParamTemplate([FromQuery] GetListParamTemplateRequest request)
+    {
+        var input = new GetListParamTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        var output = _bus.Handle(input);
+
+        var presenter = new GetListParamTemplatePresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
+    }
+
+    [HttpGet(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportEmployee([FromQuery] ReplaceParamTemplateRequest inputData)
+    {
+        using (var client = new WebClient())
+        {
+            var content = client.DownloadData(inputData.LinkFile);
+            using (var stream = new MemoryStream(content))
+            {
+                using (var word = WordprocessingDocument.Open(stream, true))
+                {
+                    if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
+                    {
+                        var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
+                        foreach (var group in listGroups)
+                        {
+                            foreach (var param in group.ListParamModel)
+                            {
+                                var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
+                                                 .FirstOrDefault(sdt => sdt.SdtProperties != null && sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<" + param.Parameter + ">>");
+                                if (element != null)
+                                {
+                                    element.Descendants<Text>().First().Text = param.Value;
+                                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
+                                }
+                            }
+                        }
+                    }
+                }
+                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
+            }
+        }
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
