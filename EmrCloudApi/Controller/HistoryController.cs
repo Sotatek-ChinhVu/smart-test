@@ -24,7 +24,7 @@ namespace EmrCloudApi.Controller
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             watch.Start();
-            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.StartPage, request.PageSize, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, UserId, request.IsShowApproval, request.SearchType, request.SearchCategory, request.SearchText);
+            var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, UserId, request.IsShowApproval);
             var output = _bus.Handle(input);
 
             var presenter = new GetMedicalExaminationHistoryPresenter();
