@@ -20,13 +20,12 @@ namespace Domain.Models.ApprovalInfo
             UketokeNo = uketukeNo;
             KaId = kaId;
         }
-        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, int seqNo, int isDeleted)
+        public ApprovalInfModel(int id, int hpId, long ptId, int sinDate, long raiinNo, int isDeleted)
         {
             Id = id;
             HpId = hpId;
             IsDeleted = isDeleted;
             RaiinNo = raiinNo;
-            SeqNo = seqNo;
             PtId = ptId;
             SinDate = sinDate;
         }
@@ -68,10 +67,6 @@ namespace Domain.Models.ApprovalInfo
             {
                 return ValidationStatus.InvalidRaiinNo;
             }
-            if(SeqNo < 0)
-            {
-                return ValidationStatus.InvalidSeqNo;
-            }    
             if(PtId < 0)
             {
                 return ValidationStatus.InvalidPtId;

@@ -26,7 +26,6 @@ namespace EmrCloudApi.Tenant.Presenters.ApprovalInfo
             ApprovalInfConstant.ApprovalInfoInvalidId => ResponseMessage.InvalidHpId,
             ApprovalInfConstant.ApprovalInfoInvalidIsDeleted => ResponseMessage.InvalidIsDeleted,
             ApprovalInfConstant.ApprovalInfoInvalidRaiinNo => ResponseMessage.InvalidRaiinNo,
-            ApprovalInfConstant.ApprovalInfoInvalidSeqNo => ResponseMessage.InvalidSeqNo,
             ApprovalInfConstant.ApprovalInfoInvalidPtId => ResponseMessage.InvalidPtId,
             ApprovalInfConstant.ApprovalInfoInvalidSinDate => ResponseMessage.InvalidSinDate,
             ApprovalInfConstant.ApprovalInfListExistedInputData => ResponseMessage.ApprovalInfListExistedInputData,
