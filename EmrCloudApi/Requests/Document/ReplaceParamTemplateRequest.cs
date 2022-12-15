@@ -2,10 +2,6 @@
 
 public class ReplaceParamTemplateRequest
 {
-    public int HpId { get; set; }
-
-    public int UserId { get; set; }
-
     public long PtId { get; set; }
 
     public int SinDate { get; set; }

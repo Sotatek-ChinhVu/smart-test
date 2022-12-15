@@ -131,7 +131,7 @@
         public const string DeleteDocTemplate = "DeleteDocTemplate";
         public const string MoveTemplateToOtherCategory = "MoveTemplateToOtherCategory";
         public const string DeleteDocCategory = "DeleteDocCategory";
-        public const string ReplaceParamTemplate = "ReplaceParamTemplate";
+        public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
         public const string GetListParamTemplate = "GetListParamTemplate";
 
         //Medical Examination
