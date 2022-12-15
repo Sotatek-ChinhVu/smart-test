@@ -56,35 +56,35 @@ namespace Interactor.DrugDetailData
         {
             StringBuilder stringBuilder = new StringBuilder();
             //First row of file to check this item is created
-            stringBuilder.AppendLine("<!--" + drugDetailModel.DrugInfName + "-->");
-            stringBuilder.AppendLine("<!DOCTYPE HTML PUBLIC ' -//W3C//DTD HTML 4.0 Transitional//EN'>");
+            stringBuilder.Append("<!--" + drugDetailModel.DrugInfName + "-->");
+            stringBuilder.Append("<!DOCTYPE HTML PUBLIC ' -//W3C//DTD HTML 4.0 Transitional//EN'>");
 
-            stringBuilder.AppendLine("<html>");
-            stringBuilder.AppendLine("<head>");
-            stringBuilder.AppendLine("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
-            stringBuilder.AppendLine("<style type='text/css'><!--");
+            stringBuilder.Append("<html>");
+            stringBuilder.Append("<head>");
+            stringBuilder.Append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
+            stringBuilder.Append("<style type='text/css'><!--");
             //
             for (int i = 0; i <= drugDetailModel.MaxLevel; i++)
             {
-                stringBuilder.AppendLine("td.level-" + i.AsString() + " {width: " + (20 * i).AsString() + "px;clear:both}");
+                stringBuilder.Append("td.level-" + i.AsString() + " {width: " + (20 * i).AsString() + "px;clear:both}");
             }
 
-            stringBuilder.AppendLine("table {font-family: メイリオ; font-size: 10pt}");
-            stringBuilder.AppendLine("--></style></head><body>");
+            stringBuilder.Append("table {font-family: メイリオ; font-size: 10pt}");
+            stringBuilder.Append("--></style></head><body>");
 
-            stringBuilder.AppendLine("<div id='header' style='display:none'>");
+            stringBuilder.Append("<div id='header' style='display:none'>");
 
-            stringBuilder.AppendLine("</div>");
+            stringBuilder.Append("</div>");
 
             //SyohinModel
             if (drugDetailModel.SyohinInf != null)
             {
-                stringBuilder.AppendLine("<table><tr><td class = level-0></td><td><p style='font-weight: bold; font-size:12pt;'>【商品情報】</p></td></tr></table>");
-                stringBuilder.AppendLine("<table><tr><td class = level-1></td><td>商品名：</td><td>　" + drugDetailModel.SyohinInf.ProductName + "</td></tr>");
-                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>製剤名：</td><td>　" + drugDetailModel.SyohinInf.PreparationName + "</td></tr>");
-                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>規格単位：</td><td>　" + drugDetailModel.SyohinInf.Unit + "</td></tr>");
-                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>製造_輸入会社名：</td><td>　" + drugDetailModel.SyohinInf.Maker + "</td></tr>");
-                stringBuilder.AppendLine("       <tr><td class = level-1></td><td>販売会社名：</td><td>　" + drugDetailModel.SyohinInf.Vender + "</td></tr></table>");
+                stringBuilder.Append("<table><tr><td class = level-0></td><td><p style='font-weight: bold; font-size:12pt;'>【商品情報】</p></td></tr></table>");
+                stringBuilder.Append("<table><tr><td class = level-1></td><td>商品名：</td><td>　" + drugDetailModel.SyohinInf.ProductName + "</td></tr>");
+                stringBuilder.Append("       <tr><td class = level-1></td><td>製剤名：</td><td>　" + drugDetailModel.SyohinInf.PreparationName + "</td></tr>");
+                stringBuilder.Append("       <tr><td class = level-1></td><td>規格単位：</td><td>　" + drugDetailModel.SyohinInf.Unit + "</td></tr>");
+                stringBuilder.Append("       <tr><td class = level-1></td><td>製造_輸入会社名：</td><td>　" + drugDetailModel.SyohinInf.Maker + "</td></tr>");
+                stringBuilder.Append("       <tr><td class = level-1></td><td>販売会社名：</td><td>　" + drugDetailModel.SyohinInf.Vender + "</td></tr></table>");
             }
 
             //Kikaku Items
@@ -112,37 +112,37 @@ namespace Interactor.DrugDetailData
                     string sTmp = MakeTable(kikakuText);
                     if (kikakuItem.SeqNo == 1)
                     {
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                     else
                     {
-                        stringBuilder.AppendLine("</td></tr></table>");
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
+                        stringBuilder.Append("</td></tr></table>");
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                 }
                 else
                 {
                     if (kikakuItem.SeqNo == 1)
                     {
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + kikakuText);
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + kikakuText);
                     }
                     else
                     {
-                        stringBuilder.AppendLine("</td></tr></table>");
+                        stringBuilder.Append("</td></tr></table>");
                         if (SetKouban(ref kikakuText))
                         {
-                            stringBuilder.AppendLine("<table><tr><td class = level-" + (level) + "></td>" + kikakuText);
+                            stringBuilder.Append("<table><tr><td class = level-" + (level) + "></td>" + kikakuText);
                         }
                         else
                         {
-                            stringBuilder.AppendLine("<table><tr><td class = level-" + (level) + "></td><td>" + kikakuText);
+                            stringBuilder.Append("<table><tr><td class = level-" + (level) + "></td><td>" + kikakuText);
                         }
                     }
                 }
             }
 
-            stringBuilder.AppendLine("</td></tr></table>");
-            //stringBuilder.AppendLine("<br>");
+            stringBuilder.Append("</td></tr></table>");
+            //stringBuilder.Append("<br>");
 
             bool bSiyoFlg = false;
 
@@ -197,38 +197,38 @@ namespace Interactor.DrugDetailData
                     string sTmp = MakeTable(tenpuText);
                     if (tenpuItem.SeqNo == 1)
                     {
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                     else
                     {
-                        stringBuilder.AppendLine("</td></tr></table>");
+                        stringBuilder.Append("</td></tr></table>");
 
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + sTmp);
                     }
                 }
                 else
                 {
                     if (tenpuItem.SeqNo == 1)
                     {
-                        stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
+                        stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
                     }
                     else
                     {
-                        stringBuilder.AppendLine("</td></tr></table>");
+                        stringBuilder.Append("</td></tr></table>");
 
                         if (SetKouban(ref tenpuText))
                         {
-                            stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td>" + tenpuText);
+                            stringBuilder.Append("<table><tr><td class = level-" + level + "></td>" + tenpuText);
                         }
                         else
                         {
                             if (currentTenpuItem == null || currentTenpuItem.DrugMenuName != tenpuItem.DrugMenuName)
                             {
-                                stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
+                                stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>" + tenpuText);
                             }
                             else
                             {
-                                stringBuilder.AppendLine("<table><tr><td class = level-" + level + "></td><td>");
+                                stringBuilder.Append("<table><tr><td class = level-" + level + "></td><td>");
                             }
 
                         }
@@ -240,15 +240,15 @@ namespace Interactor.DrugDetailData
                 }
             }
 
-            stringBuilder.AppendLine("</td></tr></table>");
-            stringBuilder.AppendLine("<div id='footer'>");
-            stringBuilder.AppendLine("<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
+            stringBuilder.Append("</td></tr></table>");
+            stringBuilder.Append("<div id='footer'>");
+            stringBuilder.Append("<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
                       "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>" +
                       "<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>");
-            stringBuilder.AppendLine("</div>");
+            stringBuilder.Append("</div>");
             //End of html file
-            stringBuilder.AppendLine("</body>");
-            stringBuilder.AppendLine("</html>");
+            stringBuilder.Append("</body>");
+            stringBuilder.Append("</html>");
 
             return stringBuilder.ToString();
         }
