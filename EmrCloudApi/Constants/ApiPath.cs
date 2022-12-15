@@ -139,5 +139,8 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
     }
 }

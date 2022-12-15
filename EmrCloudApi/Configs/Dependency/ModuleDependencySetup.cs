@@ -266,6 +266,9 @@ using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Document.DeleteDocCategory;
+using Domain.Models.PtGroupMst;
+using UseCase.PtGroupMst.SaveGroupNameMst;
+using Interactor.PtGroupMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -380,6 +383,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
+            services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -644,6 +648,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //PtGroupMaster
+            busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

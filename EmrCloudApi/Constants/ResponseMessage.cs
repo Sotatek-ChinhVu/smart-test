@@ -855,5 +855,8 @@
         public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
+
+        //PtGrpMaster
+        public static readonly string InvalidSortNoGrpIdGroupMst = "SortNo or GrpId is invalid";
     }
 }
