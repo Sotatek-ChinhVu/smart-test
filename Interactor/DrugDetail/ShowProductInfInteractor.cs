@@ -54,6 +54,7 @@ namespace Interactor.DrugDetailData
 
         private string ShowProductInf(DrugDetailModel drugDetailModel, List<DrugMenuItemModel> drugMenus)
         {
+            drugMenus = drugMenus[0].Children;
             StringBuilder stringBuilder = new StringBuilder();
             //First row of file to check this item is created
             stringBuilder.Append("<!--" + drugDetailModel.DrugInfName + "-->");
