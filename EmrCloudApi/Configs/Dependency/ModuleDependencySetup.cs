@@ -10,7 +10,7 @@ using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
 using Domain.Models.HistoryOrder;
 using Domain.Models.HokenMst;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using Domain.Models.JsonSetting;
@@ -73,6 +73,7 @@ using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.Document;
+using Interactor.Document.CommonGetListParam;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
@@ -134,6 +135,7 @@ using UseCase.Document.DeleteDocInf;
 using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
@@ -263,6 +265,7 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
+using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
@@ -382,6 +385,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IYohoSetMstRepository, YohoSetMstRepository>();
             services.AddTransient<IDocumentRepository, DocumentRepository>();
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
+            services.AddTransient<ICommonGetListParam, CommonGetListParam>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -617,6 +621,7 @@ namespace EmrCloudApi.Configs.Dependency
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiConfigInputData, UpdateAdoptedByomeiConfigInteractor>();
+            busBuilder.RegisterUseCase<UpdateUserConfInputData, UpdateUserConfInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
@@ -645,6 +650,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<DeleteDocTemplateInputData, DeleteDocTemplateInteractor>();
             busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
+            busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

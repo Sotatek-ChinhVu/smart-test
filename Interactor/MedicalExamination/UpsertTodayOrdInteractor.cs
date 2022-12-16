@@ -1,4 +1,4 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInfs;

@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.User.GetUserConfList;
+using UseCase.User.UpdateUserConf;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 
 namespace EmrCloudApi.Controller;
@@ -43,5 +44,17 @@ public class UserConfController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<UpdateAdoptedByomeiConfigResponse>>(presenter.Result);
+    }
+
+    [HttpPut(ApiPath.Update)]
+    public ActionResult<Response<UpdateUserConfResponse>> Update([FromBody] UpdateUserConfRequest request)
+    {
+        var input = new UpdateUserConfInputData(HpId, UserId, request.GrpCd, request.Value);
+        var output = _bus.Handle(input);
+
+        var presenter = new UpdateUserConfPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<UpdateUserConfResponse>>(presenter.Result);
     }
 }

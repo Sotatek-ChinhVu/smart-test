@@ -16,6 +16,19 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
         _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
     }
 
+    public int GetLastTimeDate(int hpId, long ptId, int sinDate)
+    {
+        var result = _tenantDataContext.RaiinInfs.Where(x => x.HpId == hpId
+                                                        && x.PtId == ptId
+                                                        && x.SinDate < sinDate
+                                                        && x.Status >= RaiinState.TempSave
+                                                        && x.IsDeleted == DeleteTypes.None
+                                                    )
+                                                    .OrderByDescending(x => x.SinDate)
+                                                    .FirstOrDefault();
+        return result != null ? result.SinDate : 0;
+    }
+
     public List<RaiinFilterMstModel> GetList()
     {
         var query =
@@ -46,6 +59,15 @@ public class RaiinFilterMstRepository : IRaiinFilterMstRepository
                 s.SortKbn
             )).ToList()
         )).ToList();
+    }
+
+    public int GetTantoId(long ptId, int sinDate, long raiinNo)
+    {
+        var raiinInf = _tenantDataContext.RaiinInfs.FirstOrDefault(p => p.PtId == ptId
+                                                                && p.IsDeleted == DeleteTypes.None
+                                                                && p.SinDate == sinDate
+                                                                && p.RaiinNo == raiinNo);
+        return raiinInf != null ? raiinInf.TantoId : 0;
     }
 
     public void SaveList(List<RaiinFilterMstModel> mstModels, int hpId, int userId)
