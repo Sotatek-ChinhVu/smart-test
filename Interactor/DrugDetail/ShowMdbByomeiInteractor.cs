@@ -22,12 +22,8 @@ namespace Interactor.DrugDetailData
                 {
                     return new ShowMdbByomeiOutputData(string.Empty, ShowMdbByomeiStatus.InvalidLevel);
                 }
-                if (inputData.SelectedIndexOfMenuLevel < 0)
-                {
-                    return new ShowMdbByomeiOutputData(string.Empty, ShowMdbByomeiStatus.InvalidSelectedIndexOfMenuLevel);
-                }
 
-                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(2, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
                 string result = ShowMdbByomei(drugDetailModel);
                 return new ShowMdbByomeiOutputData(result, ShowMdbByomeiStatus.Successed);
             }

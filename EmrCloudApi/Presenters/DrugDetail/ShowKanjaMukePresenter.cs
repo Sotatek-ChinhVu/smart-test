@@ -25,9 +25,6 @@ namespace EmrCloudApi.Presenters.DrugDetailData
                 case ShowKanjaMukeStatus.InvalidLevel:
                     Result.Message = ResponseMessage.InvalidLevel;
                     break;
-                case ShowKanjaMukeStatus.InvalidSelectedIndexOfMenuLevel:
-                    Result.Message = ResponseMessage.DrugMenuInvalidIndexMenu;
-                    break;
                 case ShowKanjaMukeStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;

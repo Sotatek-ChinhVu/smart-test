@@ -31,9 +31,6 @@ namespace EmrCloudApi.Presenters.DrugDetailData
                 case ShowProductInfStatus.InvalidLevel:
                     Result.Message = ResponseMessage.InvalidLevel;
                     break;
-                case ShowProductInfStatus.InvalidSelectedIndexOfMenuLevel:
-                    Result.Message = ResponseMessage.DrugMenuInvalidIndexMenu;
-                    break;
                 case ShowProductInfStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;

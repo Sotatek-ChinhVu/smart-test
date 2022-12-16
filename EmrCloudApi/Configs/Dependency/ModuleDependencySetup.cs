@@ -153,6 +153,7 @@ using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.Insurance.GetKohiPriorityList;
 using UseCase.Insurance.GetList;
 using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.ValidateInsurance;
@@ -163,6 +164,7 @@ using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
@@ -507,6 +509,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
+            busBuilder.RegisterUseCase<GetHokenSyaMstInputData, GetHokenSyaMstInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
@@ -656,6 +659,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //Hoki PriorityList
+            busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

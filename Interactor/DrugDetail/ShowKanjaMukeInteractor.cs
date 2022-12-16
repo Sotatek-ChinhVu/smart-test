@@ -21,12 +21,8 @@ namespace Interactor.DrugDetailData
                 {
                     return new ShowKanjaMukeOutputData(string.Empty, ShowKanjaMukeStatus.InvalidLevel);
                 }
-                if (inputData.SelectedIndexOfMenuLevel < 0)
-                {
-                    return new ShowKanjaMukeOutputData(string.Empty, ShowKanjaMukeStatus.InvalidSelectedIndexOfMenuLevel);
-                }
 
-                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(1, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
                 string result = ShowKanjaMuke(drugDetailModel);
                 return new ShowKanjaMukeOutputData(result, ShowKanjaMukeStatus.Successed);
             }

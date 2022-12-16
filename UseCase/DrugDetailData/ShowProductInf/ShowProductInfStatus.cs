@@ -5,8 +5,7 @@
         Successed = 1,
         InvalidHpId = 2,
         InvalidSinDate = 3,
-        InvalidSelectedIndexOfMenuLevel = 4,
-        InvalidLevel = 5,
-        Failed = 6
+        InvalidLevel = 4,
+        Failed = 5
     }
 }

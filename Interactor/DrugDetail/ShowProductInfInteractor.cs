@@ -36,12 +36,8 @@ namespace Interactor.DrugDetailData
                 {
                     return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidLevel);
                 }
-                if (inputData.SelectedIndexOfMenuLevel < 0)
-                {
-                    return new ShowProductInfOutputData(string.Empty, ShowProductInfStatus.InvalidSelectedIndexOfMenuLevel);
-                }
 
-                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(inputData.SelectedIndexOfMenuLevel, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
+                var drugDetailModel = _drugInforRepository.GetDataDrugSeletedTree(0, inputData.Level, inputData.DrugName, inputData.ItemCd, inputData.YJCode);
                 var drugMenu = _drugInforRepository.GetDrugMenu(inputData.HpId, inputData.SinDate, inputData.ItemCd).ToList();
                 string result = ShowProductInf(drugDetailModel, drugMenu);
                 return new ShowProductInfOutputData(result, ShowProductInfStatus.Successed);

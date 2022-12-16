@@ -1381,5 +1381,10 @@ namespace Infrastructure.Repositories
                                  x.HokenPid == hokenPid &&
                                  x.IsDeleted == DeleteStatus.None);
         }
+
+        public List<KohiPriorityModel> GetKohiPriorityList()
+        {
+            return _tenantDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
+        }
     }
 }
