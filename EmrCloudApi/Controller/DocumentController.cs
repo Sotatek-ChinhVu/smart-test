@@ -181,8 +181,8 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
     }
 
-    [HttpGet(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportEmployee([FromQuery] ReplaceParamTemplateRequest inputData)
+    [HttpPost(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportEmployee([FromBody] ReplaceParamTemplateRequest inputData)
     {
         using (var client = new WebClient())
         {
@@ -193,6 +193,12 @@ public class DocumentController : AuthorizeControllerBase
                 {
                     if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
                     {
+                        string docText = null;
+                        using (StreamReader sr = new StreamReader(word.MainDocumentPart.GetStream()))
+                        {
+                            docText = sr.ReadToEnd();
+                        }
+
                         var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
                         foreach (var group in listGroups)
                         {
