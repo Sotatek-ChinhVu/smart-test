@@ -25,6 +25,7 @@ namespace EmrCloudApi.Responses.Insurance
             KaiLimitFutan = hokenMstModel.KaiLimitFutan;
             DayLimitFutan = hokenMstModel.DayLimitFutan;
             MonthLimitFutan = hokenMstModel.MonthLimitFutan;
+            HokenKohiKbn = hokenMstModel.HokenKohiKbn;
         }
 
         public int FutanKbn { get; private set; }
@@ -64,6 +65,8 @@ namespace EmrCloudApi.Responses.Insurance
         public int DayLimitFutan { get; private set; }
 
         public int MonthLimitFutan { get; private set; }
+
+        public int HokenKohiKbn { get; private set; }
 
         public string SelectedValueMaster
         {

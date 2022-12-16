@@ -142,6 +142,12 @@
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
 
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
+
         //User
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
     }
