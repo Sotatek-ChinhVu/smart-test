@@ -59,8 +59,9 @@ namespace UseCase.MedicalExamination.GetHistory
 
         public List<HokenGroupHistoryItem> HokenGroups { get; private set; }
         public List<GrpKarteHistoryItem> KarteHistories { get; private set; }
+        public List<FileInfOutputItem> ListKarteFiles { get; private set; }
 
-        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories)
+        public HistoryKarteOdrRaiinItem(long raiinNo, int sinDate, int hokenPid, string hokenTitle, string hokenRate, int syosaisinKbn, int jikanKbn, int kaId, string kaName, int tantoId, string tantoName, int santeiKbn, int tagNo, string sinryoTitle, int hokenType, List<HokenGroupHistoryItem> hokenGroups, List<GrpKarteHistoryItem> karteHistories, List<FileInfOutputItem> listKarteFiles)
         {
             RaiinNo = raiinNo;
             SinDate = sinDate;
@@ -81,6 +82,7 @@ namespace UseCase.MedicalExamination.GetHistory
             TagNo = tagNo;
             SinryoTitle = sinryoTitle;
             HokenType = hokenType;
+            ListKarteFiles = listKarteFiles;
         }
     }
 }

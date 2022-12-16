@@ -1268,6 +1268,7 @@ namespace Infrastructure.Repositories
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
                 dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
                 return dest;
             });
             _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiConfListAdd);

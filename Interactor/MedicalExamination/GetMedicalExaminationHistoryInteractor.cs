@@ -1,14 +1,14 @@
 ﻿using Domain.Models.HistoryOrder;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
-using Domain.Models.Ka;
-using Domain.Models.KarteFilterMst;
 using Domain.Models.KarteInfs;
-using Domain.Models.KarteKbnMst;
 using Domain.Models.OrdInfs;
-using Domain.Models.RainListTag;
-using Domain.Models.Reception;
-using Domain.Models.User;
+using Domain.Models.PatientInfor;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -16,28 +16,19 @@ namespace Interactor.MedicalExamination
 {
     public class GetMedicalExaminationHistoryInteractor : IGetMedicalExaminationHistoryInputPort
     {
-        private readonly IOrdInfRepository _ordInfRepository;
-        private readonly IKarteInfRepository _karteInfRepository;
-        private readonly IKarteKbnMstRepository _karteKbnRepository;
-        private readonly IReceptionRepository _receptionRepository;
         private readonly IInsuranceRepository _insuranceRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IKaRepository _kaRepository;
-        private readonly IKarteFilterMstRepository _karteFilterMstRepository;
-        private readonly IRaiinListTagRepository _rainListTagRepository;
         private readonly IHistoryOrderRepository _historyOrderRepository;
-        public GetMedicalExaminationHistoryInteractor(IOrdInfRepository ordInfRepository, IKarteInfRepository karteInfRepository, IKarteKbnMstRepository karteKbnRepository, IReceptionRepository receptionRepository, IInsuranceRepository insuranceRepository, IUserRepository userRepository, IKaRepository kaRepository, IKarteFilterMstRepository karteFilterMstRepository, IRaiinListTagRepository rainListTagRepository, IHistoryOrderRepository historyOrderRepository)
+        private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
+
+        public GetMedicalExaminationHistoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IInsuranceRepository insuranceRepository, IHistoryOrderRepository historyOrderRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository)
         {
-            _ordInfRepository = ordInfRepository;
-            _karteInfRepository = karteInfRepository;
-            _karteKbnRepository = karteKbnRepository;
-            _receptionRepository = receptionRepository;
             _insuranceRepository = insuranceRepository;
-            _userRepository = userRepository;
-            _kaRepository = kaRepository;
-            _karteFilterMstRepository = karteFilterMstRepository;
-            _rainListTagRepository = rainListTagRepository;
             _historyOrderRepository = historyOrderRepository;
+            _amazonS3Service = amazonS3Service;
+            _options = optionsAccessor.Value;
+            _patientInforRepository = patientInforRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -52,17 +43,27 @@ namespace Interactor.MedicalExamination
                 var historyKarteOdrRaiins = new List<HistoryKarteOdrRaiinItem>();
 
                 (int, List<HistoryOrderModel>) historyList = _historyOrderRepository.GetList(
-                    inputData.HpId, 
-                    inputData.UserId, 
-                    inputData.PtId, 
-                    inputData.SinDate, 
-                    inputData.StartPage, 
-                    inputData.PageSize,
-                    (int)inputData.FilterId, 
+                    inputData.HpId,
+                    inputData.UserId,
+                    inputData.PtId,
+                    inputData.SinDate,
+                    inputData.Offset,
+                    inputData.Limit,
+                    (int)inputData.FilterId,
                     inputData.DeleteConditon);
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
 
+                var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+                List<string> listFolders = new();
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+
+                var host = new StringBuilder();
+                host.Append(_options.BaseAccessUrl);
+                host.Append("/");
+                host.Append(path);
                 foreach (HistoryOrderModel history in historyList.Item2)
                 {
                     KarteInfModel karteInf = history.KarteInfModel;
@@ -74,7 +75,7 @@ namespace Interactor.MedicalExamination
                         string.Empty,
                         1,
                         0,
-                        new List<KarteInfHistoryItem> { karteInfHistoryItem }) 
+                        new List<KarteInfHistoryItem> { karteInfHistoryItem })
                     };
 
                     var historyKarteOdrRaiin = new HistoryKarteOdrRaiinItem
@@ -93,9 +94,13 @@ namespace Interactor.MedicalExamination
                             history.SanteiKbn,
                             history.TagNo,
                             history.SinryoTitle,
-                            history.HokenType, 
+                            history.HokenType,
                             new List<HokenGroupHistoryItem>(),
-                            karteHistoryList
+                            karteHistoryList,
+                            history.ListKarteFile.Select(item =>
+                                                                new FileInfOutputItem(item, host.ToString()))
+                                                    .OrderBy(item => item.SeqNo)
+                                                    .ToList()
                         );
 
                     //Excute order
@@ -125,7 +130,7 @@ namespace Interactor.MedicalExamination
             {
                 return GetMedicalExaminationHistoryStatus.InvalidHpId;
             }
-            if (inputData.StartPage < 0)
+            if (inputData.Offset < 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidStartPage;
             }
@@ -137,7 +142,7 @@ namespace Interactor.MedicalExamination
             {
                 return GetMedicalExaminationHistoryStatus.InvalidSinDate;
             }
-            if (inputData.PageSize <= 0)
+            if (inputData.Limit <= 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidPageSize;
             }
@@ -155,20 +160,6 @@ namespace Interactor.MedicalExamination
             if (inputData.FilterId < 0)
             {
                 return GetMedicalExaminationHistoryStatus.InvalidFilterId;
-            }
-
-            if (!(inputData.SearchType >= 0 && inputData.SearchType <= 2))
-            {
-                return GetMedicalExaminationHistoryStatus.InvalidSearchType;
-            }
-
-            if ((inputData.SearchType != 0 && !(inputData.SearchCategory >= 1 && inputData.SearchType <= 3)) || (inputData.SearchType == 0 && inputData.SearchCategory != 0))
-            {
-                return GetMedicalExaminationHistoryStatus.InvalidSearchCategory;
-            }
-            if (string.IsNullOrEmpty(inputData.SearchText.Trim()) && inputData.SearchType != 0)
-            {
-                return GetMedicalExaminationHistoryStatus.InvalidSearchText;
             }
 
             return GetMedicalExaminationHistoryStatus.Successed;
