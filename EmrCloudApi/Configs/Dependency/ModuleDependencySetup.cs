@@ -270,6 +270,7 @@ using Interactor.Document.CommonGetListParam;
 using UseCase.Document.GetListParamTemplate;
 using UseCase.User.UpdateUserConf;
 using UseCase.Insurance.GetKohiPriorityList;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -505,6 +506,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
+            busBuilder.RegisterUseCase<GetHokenSyaMstInputData, GetHokenSyaMstInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();

@@ -144,5 +144,8 @@
 
         //Get KohiPriority
         public const string GetKohiPriorityList = "GetKohiPriorityList";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
     }
 }
