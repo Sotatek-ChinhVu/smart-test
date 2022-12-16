@@ -1,4 +1,5 @@
 ﻿using Domain.Models.InsuranceInfor;
+using Domain.Models.KarteInf;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
 using Domain.Models.Reception;
@@ -54,7 +55,9 @@ namespace Domain.Models.HistoryOrder
             {2,"自費" }
         };
 
-        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, KarteInfModel karteInfModel, string kaName, string tantoName, int tagNo, string sinryoTitle)
+        public List<FileInfModel> ListKarteFile { get; private set; }
+
+        public HistoryOrderModel(ReceptionModel receptionModel, InsuranceModel insuranceModel, List<OrdInfModel> orderList, KarteInfModel karteInfModel, string kaName, string tantoName, int tagNo, string sinryoTitle, List<FileInfModel> listKarteFile)
         {
             RaiinNo = receptionModel.RaiinNo;
             SinDate = receptionModel.SinDate;
@@ -72,6 +75,7 @@ namespace Domain.Models.HistoryOrder
             SinryoTitle = sinryoTitle;
             OrderInfList = orderList;
             KarteInfModel = karteInfModel;
+            ListKarteFile = listKarteFile;
         }
     }
 }

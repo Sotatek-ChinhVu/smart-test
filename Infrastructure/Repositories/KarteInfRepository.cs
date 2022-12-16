@@ -1,4 +1,5 @@
-﻿using Domain.Models.KarteInfs;
+﻿using Domain.Models.KarteInf;
+using Domain.Models.KarteInfs;
 using Entity.Tenant;
 using Helper.Constants;
 using Infrastructure.Interfaces;
@@ -193,6 +194,49 @@ namespace Infrastructure.Repositories
                                                                             item.FileName ?? string.Empty
                                                                     ).ToList();
             return result;
+        }
+
+        public List<FileInfModel> GetListKarteFile(int hpId, long ptId, List<long> listRaiinNo, bool isGetAll)
+        {
+
+            var listFileKarte = _tenantNoTrackingDataContext.KarteImgInfs.Where(item =>
+                                                                                item.HpId == hpId
+                                                                                && item.PtId == ptId
+                                                                                && listRaiinNo.Contains(item.RaiinNo)
+                                                                                )
+                                                                    .OrderBy(item => item.Position)
+                                                                    .ToList();
+            if (listFileKarte.Any())
+            {
+                List<FileInfModel> result = new();
+                foreach (var karte in listFileKarte)
+                {
+                    var lastSeqNo = listFileKarte.Max(item => item.SeqNo);
+                    if (!isGetAll)
+                    {
+                        if (karte.SeqNo == lastSeqNo)
+                        {
+                            result.Add(new FileInfModel(
+                                        karte.RaiinNo,
+                                        karte.SeqNo,
+                                        karte.FileName ?? string.Empty,
+                                        karte.SeqNo != lastSeqNo
+                                    ));
+                        }
+                    }
+                    else
+                    {
+                        result.Add(new FileInfModel(
+                                        karte.RaiinNo,
+                                        karte.SeqNo,
+                                        karte.FileName ?? string.Empty,
+                                        karte.SeqNo != lastSeqNo
+                                    ));
+                    }
+                }
+                return result;
+            }
+            return new();
         }
 
         public bool ClearTempData(int hpId, long ptId, List<string> listFileNames)
