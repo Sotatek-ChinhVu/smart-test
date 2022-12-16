@@ -269,6 +269,7 @@ using UseCase.Document.DeleteDocCategory;
 using Interactor.Document.CommonGetListParam;
 using UseCase.Document.GetListParamTemplate;
 using UseCase.User.UpdateUserConf;
+using UseCase.Insurance.GetKohiPriorityList;
 using Domain.Models.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using Interactor.PtGroupMst;
@@ -654,6 +655,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //Hoki PriorityList
+            busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
 
             //PtGroupMaster
             busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();

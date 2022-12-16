@@ -142,6 +142,9 @@
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
 
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
+
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
     }

@@ -25,5 +25,7 @@ namespace Domain.Models.Insurance
         bool DeleteInsuranceScan(InsuranceScanModel insuranceScan, int userId);
 
         bool CheckHokenPatternUsed(int hpId, long ptId, int hokenPid);
+
+        List<KohiPriorityModel> GetKohiPriorityList();
     }
 }
