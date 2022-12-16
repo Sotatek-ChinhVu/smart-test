@@ -264,6 +264,7 @@ using UseCase.UsageTreeSet.GetTree;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
+using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
 using UseCase.User.UpdateUserConf;
@@ -400,6 +401,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetUserByLoginIdInputData, GetUserByLoginIdInteractor>();
             busBuilder.RegisterUseCase<MigrateDatabaseInputData, MigrateDatabaseInterator>();
             busBuilder.RegisterUseCase<CheckedLockMedicalExaminationInputData, CheckedLockMedicalExaminationInteractor>();
+            busBuilder.RegisterUseCase<GetPermissionByScreenInputData, GetPermissionByScreenInteractor>();
 
             //ApprovalInfo
             busBuilder.RegisterUseCase<GetApprovalInfListInputData, GetApprovalInfListInteractor>();

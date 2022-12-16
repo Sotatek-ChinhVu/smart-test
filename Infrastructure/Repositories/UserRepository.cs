@@ -307,7 +307,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        private PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
+        public PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode)
         {
             var listUserPermission = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == userId).ToList();
             var listUserPermissionOfUserDefault = _tenantNoTrackingDataContext.UserPermissions.Where(u => u.HpId == hpId && u.UserId == 0).ToList();

@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.User
+﻿using static Helper.Constants.UserConst;
+
+namespace Domain.Models.User
 {
     public interface IUserRepository
     {
@@ -47,5 +49,7 @@
         bool MigrateDatabase();
 
         bool CheckLockMedicalExamination(int hpId, long ptId, long raiinNo, int sinDate, string token, int userId);
+
+        PermissionType GetPermissionByScreenCode(int hpId, int userId, string permisionCode);
     }
 }

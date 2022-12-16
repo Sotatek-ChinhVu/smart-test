@@ -150,5 +150,6 @@
 
         //User
         public const string CheckLockMedicalExamination = "CheckLockMedicalExamination";
+        public const string GetPermissionByScreen = "GetPermissionByScreen";
     }
 }

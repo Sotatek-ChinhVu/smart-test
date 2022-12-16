@@ -10,6 +10,7 @@ using UseCase.Core.Sync;
 using UseCase.User.CheckedLockMedicalExamination;
 using UseCase.User.Create;
 using UseCase.User.GetList;
+using UseCase.User.GetPermissionByScreenCode;
 using UseCase.User.UpsertList;
 
 namespace EmrCloudApi.Controller;
@@ -69,6 +70,18 @@ public class UserController : AuthorizeControllerBase
         presenter.Complete(output);
 
         return new ActionResult<Response<CheckedLockMedicalExaminationResponse>>(presenter.Result);
+    }
+
+
+    [HttpGet(ApiPath.GetPermissionByScreen)]
+    public ActionResult<Response<GetPermissionByScreenResponse>> GetPermissionByScreen([FromQuery] GetPermissionByScreenRequest request)
+    {
+        var input = new GetPermissionByScreenInputData(HpId, UserId, request.PermissionCode);
+        var output = _bus.Handle(input);
+        var presenter = new GetPermissionByScreenPresenter();
+        presenter.Complete(output);
+
+        return new ActionResult<Response<GetPermissionByScreenResponse>>(presenter.Result);
     }
 
     private static UserMstModel UserInfoRequestToModel(UserInfoRequest userInfoRequest, int HpId)
