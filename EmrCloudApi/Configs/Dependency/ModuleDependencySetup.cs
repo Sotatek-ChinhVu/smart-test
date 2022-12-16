@@ -271,6 +271,17 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using Domain.Models.HistoryOrder;
+using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
+using UseCase.Document.MoveTemplateToOtherCategory;
+using UseCase.Insurance.HokenPatternUsed;
+using UseCase.Document.DeleteDocCategory;
+using Interactor.Document.CommonGetListParam;
+using UseCase.Document.GetListParamTemplate;
+using UseCase.User.UpdateUserConf;
+using UseCase.Insurance.GetKohiPriorityList;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -508,6 +519,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
+            busBuilder.RegisterUseCase<GetHokenSyaMstInputData, GetHokenSyaMstInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
@@ -654,6 +666,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //Hoki PriorityList
+            busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
