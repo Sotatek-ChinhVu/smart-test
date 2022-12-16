@@ -1828,6 +1828,135 @@ namespace Helper.Common
             }
             return result;
         }
+
+        /// <summary>
+        /// Get Era from date
+        ///    "明治","大正","昭和","平成","令和"
+        /// </summary>
+        /// <param name="Ymd"> Date</param>
+        /// <returns></returns>
+        public static string GetEraFromDate(int Ymd)
+        {
+            if (Ymd < 18680908 || Ymd == 99999999)
+            {
+                return string.Empty;
+            }
+
+            //明治
+            if (Ymd < 19120730)
+            {
+                return "明治";
+            }
+
+            //大正
+            if (Ymd < 19261225)
+            {
+                return "大正";
+            }
+
+            //昭和
+            if (Ymd < 19890108)
+            {
+                return "昭和";
+            }
+
+            //平成
+            if (Ymd < 20190501)
+            {
+                return "平成";
+            }
+
+            //令和
+            return "令和";
+        }
+
+        /// <summary>
+        /// Get Era Reki from data
+        /// </summary>
+        /// <param name="Ymd">Date</param>
+        /// <param name="fmtReki"> Reki 1: 略K #1:略 </param>
+        /// <returns></returns>
+        public static string GetEraRekiFromDate(int Ymd, int fmtReki = 0)
+        {
+            string Result = "";
+
+            if (Ymd < 18680908 || Ymd == 99999999)
+            {
+                return Result;
+            }
+
+
+            //明治
+            if (Ymd < 19120730)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "明";
+                }
+                else
+                {
+                    Result = "M";
+                }
+
+                return Result;
+            }
+
+            //大正
+            if (Ymd < 19261225)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "大";
+                }
+                else
+                {
+                    Result = "T";
+                }
+                return Result;
+            }
+
+            //昭和
+            if (Ymd < 19890108)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "昭";
+                }
+                else
+                {
+                    Result = "S";
+                }
+
+                return Result;
+            }
+
+            //平成
+            if (Ymd < 20190501)
+            {
+                if (fmtReki == 1)
+                {
+                    Result = "平";
+                }
+                else
+                {
+                    Result = "H";
+                }
+
+                return Result;
+            }
+
+            //令和
+            if (fmtReki == 1)
+            {
+                Result = "令";
+            }
+            else
+            {
+                Result = "R";
+            }
+
+            return Result;
+        }
     }
     public struct WarekiYmd
     {

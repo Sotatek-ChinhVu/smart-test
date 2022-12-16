@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories.SpecialNote
             _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
-        public SummaryInfModel GetList(int hpId, long ptId)
+        public SummaryInfModel Get(int hpId, long ptId)
         {
             var summaryInfs = _tenantDataContext.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).OrderByDescending(u => u.UpdateDate).Select(x => new SummaryInfModel(
                    x.Id,
