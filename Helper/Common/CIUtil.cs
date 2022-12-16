@@ -1650,6 +1650,185 @@ namespace Helper.Common
             return result;
         }
 
+
+        //==================================================
+        //  Copy関数のスペースを0に変換			処理
+        //--------------------------------------------------
+        //【In】	S			：変換文字
+        //　　　　Index	：開始文字列番号
+        //　　　　Count	：文字数
+        //==================================================
+        public static String CDCopy(string S, int Index, int Count)
+        {
+            int i;
+            int WLen;
+
+            string Result = Copy(S, Index, Count);
+
+            WLen = Result.Length;
+            //長さが長くなった分
+            if (WLen < Count)
+            {
+                for (i = WLen; i < Count; i++)
+                {
+                    Result += "0";
+                }
+            }
+
+            //スペースの分
+            for (i = 0; i < Result.Length; i++)
+            {
+                if (Result[i].ToString() == " ")
+                {
+                    Result = Result.Substring(0, i) + "0" + Result.Substring(i + 1);
+                }
+            }
+            return Result;
+        }
+
+        //------------------------------------------------------------------------------
+        //  処理名  ：CiCopyStrWidth
+        //  引数    ：Src の Index 文字目から Count 個の文字の入った部分文字列を返します。
+        //
+        //  ※文字数（半角文字が1文字、全角文字が2文字）で計算
+        //------------------------------------------------------------------------------
+        public static string CiCopyStrWidth(string Src, int Index, int Count, int FmtFg = 0)
+        {
+            string Result = "";
+            string sSrcStr = Src;
+
+            if (Index == 1 && MecsStringWidth(sSrcStr) < Count)
+            {
+                //長さが指定文字数以下ならそのまま返す
+                Result = sSrcStr;
+                if (FmtFg == 1)
+                {
+                    Result = Result + StringOfChar(" ", Count - MecsStringWidth(Result));
+                }
+            }
+            else
+            {
+                if (Index > MecsStringWidth(sSrcStr))
+                {
+                    Result = "";
+                    return Result;
+                }
+                //開始位置を調べる
+                int iIndex = 0;
+                int iWidth = 0;
+                if (Index > 1)
+                {
+                    //for (int i = 1; i < sSrcStr.Length; i++)
+                    for (int i = 0; i < sSrcStr.Length; i++)
+                    {
+                        //１文字ずつ取得
+                        iIndex++;
+
+                        if (MecsIsFullWidth(sSrcStr[i]))
+                        {
+                            //全角文字
+                            iWidth += 2;
+                            if (iWidth == Index)
+                            {
+                                iIndex++;
+                                Count--;
+                            }
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            //半角文字
+                            iWidth++;
+                            if (iWidth >= Index)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    iIndex++;
+                }
+
+                int iWord = 0;
+
+                //開始位置から文字列終了までループ
+                for (int i = iIndex; i <= sSrcStr.Length; i++)
+                {
+                    //１文字ずつ取得
+                    string sBuf = MecsCopy(sSrcStr, i, 1);
+                    iWord = iWord + MecsStringWidth(sBuf);
+
+                    if (iWord > Count)
+                    {
+                        //指定エレメント数を超えた場合
+                        break;
+                    }
+
+                    //切り取った文字列
+                    Result = Result + sBuf;
+                }
+            }
+            return Result;
+        }
+
+        public static int MecsStringWidth(string text)
+        {
+            int width = 0;
+            if (string.IsNullOrEmpty(text) == false)
+            {
+                foreach (char c in text)
+                {
+                    if (MecsIsFullWidth(c))
+                    {
+                        width += 2;
+                    }
+                    else
+                    {
+                        width++;
+                    }
+                }
+            }
+            return width;
+        }
+
+        public static string StringOfChar(string character, int count)
+        {
+            string result = String.Empty;
+            for (int i = 0; i < count; i++)
+            {
+                result = result + character;
+            }
+            return result;
+        }
+
+        public static bool MecsIsFullWidth(char cValue)
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            var sjis = System.Text.Encoding.GetEncoding("shift_jis");
+            int byteCount = sjis.GetByteCount(cValue.ToString());
+            return byteCount == 2;
+        }
+
+        public static string MecsCopy(string value, int index, int count)
+        {
+            string result = string.Empty;
+            try
+            {
+                result = Copy(value, index, count);
+            }
+            catch
+            {
+                result = string.Empty;
+
+            }
+            return result;
+        }
+
         /// <summary>
         /// Get Era from date
         ///    "明治","大正","昭和","平成","令和"

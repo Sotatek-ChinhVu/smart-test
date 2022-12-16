@@ -1,14 +1,8 @@
-﻿using Domain.Models.DrugDetail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UseCase.Core.Sync.Core;
+﻿using UseCase.Core.Sync.Core;
 
-namespace UseCase.DrugDetailData
+namespace UseCase.DrugDetailData.Get
 {
-    public class GetDrugDetailDataInputData: IInputData<GetDrugDetailDataOutputData>
+    public class GetDrugDetailDataInputData : IInputData<GetDrugDetailDataOutputData>
     {
         public GetDrugDetailDataInputData(int selectedIndexOfMenuLelel, int level, string drugName, string itemCd, string yJCode)
         {
