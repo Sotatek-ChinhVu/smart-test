@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.DrugDetail;
 using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowKanjaMuke;
+using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.UsageTreeSet.GetTree;
@@ -92,7 +94,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpGet(ApiPath.ShowProductInf)]
-        public ActionResult<Response<ShowProductInfResponse>> ShowProductInf([FromQuery] ShowProductInfRequest request)
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowProductInf([FromQuery] ShowProductInfRequest request)
         {
             var input = new ShowProductInfInputData(HpId, request.SinDate, request.ItemCd, request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.YJCode);
             var output = _bus.Handle(input);
@@ -100,8 +102,31 @@ namespace EmrCloudApi.Controller
             var presenter = new ShowProductInfPresenter();
             presenter.Complete(output);
 
-            return new ActionResult<Response<ShowProductInfResponse>>(presenter.Result);
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
         }
 
+        [HttpGet(ApiPath.ShowKanjaMuke)]
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowKanjaMuke([FromQuery] ShowKanjaMukeRequest request)
+        {
+            var input = new ShowKanjaMukeInputData(request.ItemCd, request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowKanjaMukePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.ShowMdbByomei)]
+        public ActionResult<Response<ShowDrugDetailHtmlResponse>> ShowMdbByomei([FromQuery] ShowMdbByomeiRequest request)
+        {
+            var input = new ShowMdbByomeiInputData(request.ItemCd, request.SelectedIndexOfMenuLevel, request.Level, request.DrugName, request.YJCode);
+            var output = _bus.Handle(input);
+
+            var presenter = new ShowMdbByomeiPresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<ShowDrugDetailHtmlResponse>>(presenter.Result);
+        }
     }
 }

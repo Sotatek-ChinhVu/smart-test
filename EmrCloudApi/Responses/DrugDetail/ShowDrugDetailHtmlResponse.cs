@@ -1,8 +1,8 @@
 ﻿namespace EmrCloudApi.Responses.DrugDetail
 {
-    public class ShowProductInfResponse
+    public class ShowDrugDetailHtmlResponse
     {
-        public ShowProductInfResponse(string htmlData)
+        public ShowDrugDetailHtmlResponse(string htmlData)
         {
             HtmlData = htmlData;
         }

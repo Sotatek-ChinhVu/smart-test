@@ -141,6 +141,8 @@ using UseCase.Document.SortDocCategory;
 using UseCase.Document.UploadTemplateToCategory;
 using UseCase.DrugDetail;
 using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowKanjaMuke;
+using UseCase.DrugDetailData.ShowMdbByomei;
 using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
@@ -558,6 +560,8 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
             busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
             busBuilder.RegisterUseCase<ShowProductInfInputData, ShowProductInfInteractor>();
+            busBuilder.RegisterUseCase<ShowKanjaMukeInputData, ShowKanjaMukeInteractor>();
+            busBuilder.RegisterUseCase<ShowMdbByomeiInputData, ShowMdbByomeiInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();

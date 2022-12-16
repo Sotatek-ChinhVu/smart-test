@@ -1,15 +1,15 @@
 ﻿using EmrCloudApi.Constants;
 using EmrCloudApi.Responses;
 using EmrCloudApi.Responses.DrugDetail;
-using UseCase.DrugDetailData.ShowProductInf;
+using UseCase.DrugDetailData.ShowMdbByomei;
 
 namespace EmrCloudApi.Presenters.DrugDetailData
 {
-    public class ShowProductInfPresenter : IShowProductInfOutputPort
+    public class ShowMdbByomeiPresenter : IShowMdbByomeiOutputPort
     {
         public Response<ShowDrugDetailHtmlResponse> Result { get; private set; } = new Response<ShowDrugDetailHtmlResponse>();
 
-        public void Complete(ShowProductInfOutputData outputData)
+        public void Complete(ShowMdbByomeiOutputData outputData)
         {
             Result = new Response<ShowDrugDetailHtmlResponse>()
             {
@@ -19,22 +19,16 @@ namespace EmrCloudApi.Presenters.DrugDetailData
 
             switch (outputData.Status)
             {
-                case ShowProductInfStatus.Successed:
+                case ShowMdbByomeiStatus.Successed:
                     Result.Message = ResponseMessage.Success;
                     break;
-                case ShowProductInfStatus.InvalidHpId:
-                    Result.Message = ResponseMessage.InvalidHpId;
-                    break;
-                case ShowProductInfStatus.InvalidSinDate:
-                    Result.Message = ResponseMessage.InvalidSinDate;
-                    break;
-                case ShowProductInfStatus.InvalidLevel:
+                case ShowMdbByomeiStatus.InvalidLevel:
                     Result.Message = ResponseMessage.InvalidLevel;
                     break;
-                case ShowProductInfStatus.InvalidSelectedIndexOfMenuLevel:
+                case ShowMdbByomeiStatus.InvalidSelectedIndexOfMenuLevel:
                     Result.Message = ResponseMessage.DrugMenuInvalidIndexMenu;
                     break;
-                case ShowProductInfStatus.Failed:
+                case ShowMdbByomeiStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;
             }
