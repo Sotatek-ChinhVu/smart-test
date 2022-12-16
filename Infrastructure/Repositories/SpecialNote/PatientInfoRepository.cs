@@ -1,4 +1,5 @@
-﻿using Domain.Models.SpecialNote.PatientInfo;
+﻿using Domain.Models.PatientInfor;
+using Domain.Models.SpecialNote.PatientInfo;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 

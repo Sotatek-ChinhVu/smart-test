@@ -28,6 +28,8 @@ namespace Domain.Models.PatientInfor
 
         PatientInforModel PatientCommentModels(int hpId, long ptId);
 
+        List<PatientInforModel> SearchPatient(int hpId, long ptId);
+
         List<PatientInforModel> SearchEmptyId(int hpId, long ptNum, int pageIndex, int pageSize);
 
         bool CheckExistListId(List<long> ptIds);

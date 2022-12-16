@@ -1,4 +1,6 @@
-﻿namespace Domain.Models.SpecialNote.PatientInfo
+﻿using Domain.Models.PatientInfor;
+
+namespace Domain.Models.SpecialNote.PatientInfo
 {
     public interface IPatientInfoRepository
     {

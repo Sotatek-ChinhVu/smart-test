@@ -186,6 +186,16 @@
             Comment = string.Empty;
         }
 
+        public PatientInforModel(long ptId, long ptNum, string kanaName, string name, int birthday, int sinDate)
+        {
+            PtId = ptId;
+            PtNum = ptNum;
+            KanaName = kanaName;
+            Name = name;
+            Birthday = birthday;
+            SinDate = sinDate;
+        }
+
         public int LastVisitDate { get; private set; }
 
         public int HpId { get; private set; }
@@ -269,5 +279,7 @@
         public string RainCount { get; private set; }
 
         public string Comment { get; private set; }
+
+        public int SinDate { get; private set; }
     }
 }

@@ -66,6 +66,7 @@ using Domain.Models.InsuranceInfor;
 using Domain.Models.Insurance;
 using Domain.Models.InsuranceMst;
 using EmrCloudApi.Tenant.Services;
+using UseCase.PatientInfor.GetListPatient;
 
 namespace EmrCloudApi.Tenant.Controllers
 {
@@ -598,6 +599,17 @@ namespace EmrCloudApi.Tenant.Controllers
             var presenter = new SaveSwapHokenPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveSwapHokenResponse>>(presenter.Result);
+        }
+
+        [HttpGet(ApiPath.GetListPatient)]
+        public ActionResult<Response<GetListPatientInfoResponse>> GetList([FromQuery] GetListPatientInfoRequest req)
+        {
+            var input = new GetPatientInfoInputData(HpId, req.PtId);
+            var output = _bus.Handle(input);
+
+            var presenter = new GetListPatientInfoPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<GetListPatientInfoResponse>>(presenter.Result);
         }
     }
 }

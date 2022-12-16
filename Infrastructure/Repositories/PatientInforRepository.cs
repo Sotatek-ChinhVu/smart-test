@@ -1794,5 +1794,30 @@ namespace Infrastructure.Repositories
             var hokensyaMst = _tenantDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
             return hokensyaMst ?? new HokensyaMstModel();
         }
+        public List<PatientInforModel> SearchPatient(int hpId, long ptId)
+        {
+            var result = new List<PatientInforModel>();
+            var ptInfs = _tenantDataContext.PtInfs.Where((x) =>
+            x.HpId == hpId &&
+            x.PtId == ptId
+            );
+            var raiinInfs = _tenantDataContext.RaiinInfs.Where((x) =>
+            x.HpId == hpId &&
+            x.PtId == ptId
+            );
+
+            var query = from ptInf in ptInfs.AsEnumerable()
+                        join raiinInf in raiinInfs on
+                            new { ptInf.PtId } equals
+                            new { raiinInf.PtId } into patientInfList
+                        select new
+                        {
+                            PatientInf = patientInfList,
+                            PtInf = ptInf
+                        };
+
+            //result = query.Where(x => );
+            return result;
+        }
     }
 }
