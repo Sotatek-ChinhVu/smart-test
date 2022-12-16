@@ -1,5 +1,5 @@
 ﻿using Domain.Models.Document;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Domain.Models.Reception;
 using Domain.Models.User;

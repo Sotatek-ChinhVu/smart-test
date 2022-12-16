@@ -107,6 +107,15 @@ namespace Infrastructure.Repositories
             return entity is null ? null : ToModel(entity);
         }
 
+        public UserMstModel GetByUserId(int userId, int sinDate)
+        {
+            var entity = _tenantNoTrackingDataContext.UserMsts
+                .FirstOrDefault(u => u.UserId == userId
+                                    && u.IsDeleted == DeleteTypes.None
+                                    && (sinDate <= 0 || u.StartDate <= sinDate && u.EndDate >= sinDate));
+            return entity is null ? new UserMstModel() : ToModel(entity);
+        }
+
         public UserMstModel? GetByLoginId(string loginId)
         {
             var entity = _tenantNoTrackingDataContext.UserMsts

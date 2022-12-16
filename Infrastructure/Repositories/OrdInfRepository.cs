@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -302,7 +302,9 @@ namespace Infrastructure.Repositories
                         ordInf.CreateDate,
                         ordInf.CreateId,
                         createName,
-                        ordInf.UpdateDate
+                        ordInf.UpdateDate,
+                        ordInf.UpdateId,
+                        updateName
                    );
         }
 
@@ -437,7 +439,7 @@ namespace Infrastructure.Repositories
         private static List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
             var query = from yoho in listYohoSetMst
-                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                        join ten in listTenMst on yoho.ItemCd?.Trim() equals ten.ItemCd.Trim()
                         select new
                         {
                             Yoho = yoho,
@@ -494,7 +496,7 @@ namespace Infrastructure.Repositories
 
         public List<Tuple<string, string>> GetIpnMst(int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds)
         {
-            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName)).ToList();
+            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
 
             return ipnNameMsts;
         }

@@ -121,6 +121,8 @@ namespace Infrastructure.Repositories
             return checkedDiseases;
         }
 
+      
+
         private void SaveRaiinInf(int hpId, long ptId, long raiinNo, int sinDate, int syosaiKbn, int jikanKbn, int hokenPid, int santeiKbn, int tantoId, int kaId, string uketukeTime, string sinStartTime, string sinEndTime, int userId)
         {
             var raiinInf = _tenantTrackingDataContext.RaiinInfs.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.RaiinNo == raiinNo && r.SinDate == sinDate);
@@ -756,7 +758,7 @@ namespace Infrastructure.Repositories
                     }
                 }
 
-                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName) && k.RaiinNo == 0);
+                var karteImgs = _tenantTrackingDataContext.KarteImgInfs.Where(k => k.HpId == karte.HpId && k.PtId == karte.PtId && karte.RichText.Contains(k.FileName ?? string.Empty) && k.RaiinNo == 0);
                 foreach (var img in karteImgs)
                 {
                     img.RaiinNo = karte.RaiinNo;
@@ -978,6 +980,87 @@ namespace Infrastructure.Repositories
                 }
             }
             return ptByomeiModels;
+        }
+
+        public Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList)
+        {
+            Dictionary<string, string> nameChanged = new Dictionary<string, string>();
+            foreach (var odrInfModel in odrInfModelList)
+            {
+                CheckNameChanged(odrInfModel, ref nameChanged);
+            }
+
+            return nameChanged;
+        }
+
+        private void CheckNameChanged(OrdInfModel odrInfModel, ref Dictionary<string, string> nameChanged)
+        {
+            foreach (var detail in odrInfModel.OrdInfDetails)
+            {
+                if (string.IsNullOrEmpty(detail.ItemCd) || detail.IsDrugUsage || detail.IsNormalComment)
+                {
+                    continue;
+                }
+                string newName = CheckNameChanged(odrInfModel.HpId, odrInfModel.SinDate, detail);
+                if (!string.IsNullOrEmpty(newName))
+                {
+                    string oldName;
+                    if (detail.HasCmtName)
+                    {
+                        oldName = detail.CmtName;
+                    }
+                    else
+                    {
+                        oldName = detail.ItemName;
+                    }
+                    if (string.IsNullOrEmpty(oldName))
+                    {
+                        continue;
+                    }
+                    if (!nameChanged.ContainsKey(oldName))
+                    {
+                        nameChanged.Add(oldName, newName);
+                    }
+                }
+            }
+        }
+
+        private string CheckNameChanged(int hpId, int sinDate, OrdInfDetailModel detail)
+        {
+            string result = string.Empty;
+            if (string.IsNullOrEmpty(detail.ItemCd) || detail.IsDrugUsage || detail.IsNormalComment)
+            {
+                return result;
+            }
+
+            var itemMst = _tenantNoTrackingDataContext.TenMsts.FirstOrDefault(p =>
+                   p.HpId == hpId &&
+                   p.StartDate <= sinDate &&
+                   p.EndDate >= sinDate &&
+                   p.ItemCd == detail.ItemCd);
+            if (itemMst != null)
+            {
+                string oldName;
+
+                if (detail.HasCmtName)
+                {
+                    oldName = detail.CmtName?.Trim() ?? string.Empty;
+                }
+                else
+                {
+                    oldName = detail.ItemName?.Trim() ?? string.Empty;
+                }
+                if (string.IsNullOrEmpty(oldName))
+                {
+                    return result;
+                }
+                if (oldName != itemMst.Name?.Trim())
+                {
+                    return itemMst.Name ?? string.Empty;
+                }
+            }
+
+            return result;
         }
     }
 }

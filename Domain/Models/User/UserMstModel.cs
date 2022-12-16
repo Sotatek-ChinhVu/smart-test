@@ -31,6 +31,27 @@ namespace Domain.Models.User
             Id = id;
             HpId = hpId;
         }
+        public UserMstModel()
+        {
+            UserId = 0;
+            JobCd = 0;
+            ManagerKbn = 0;
+            KaId = 0;
+            KanaName = string.Empty;
+            Name = string.Empty;
+            Sname = string.Empty;
+            LoginId = string.Empty;
+            LoginPass = string.Empty;
+            MayakuLicenseNo = string.Empty;
+            StartDate = 0;
+            EndDate = 0;
+            SortNo = 0;
+            IsDeleted = 1;
+            RenkeiCd1 = string.Empty;
+            DrName = string.Empty;
+            Id = 0;
+            HpId = 0;
+        }
 
         public long Id { get; private set; }
 

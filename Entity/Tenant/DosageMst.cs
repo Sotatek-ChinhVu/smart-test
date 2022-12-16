@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -7,7 +6,7 @@ namespace Entity.Tenant
     [Table(name: "DOSAGE_MST")]
     public class DosageMst : EmrCloneable<DosageMst>
     {
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("ID", Order = 1)]
         public int Id { get; set; }
@@ -16,7 +15,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 2)]
         public int HpId { get; set; }
@@ -25,16 +24,16 @@ namespace Entity.Tenant
         /// 項目コード
         /// 
         /// </summary>
-        
+
         [Column("ITEM_CD", Order = 3)]
         [MaxLength(10)]
-        public string ItemCd { get; set; }
+        public string ItemCd { get; set; } = string.Empty;
 
         /// <summary>
         /// 連番
         /// 
         /// </summary>
-        
+
         [Column("SEQ_NO", Order = 4)]
         public int SeqNo { get; set; }
 

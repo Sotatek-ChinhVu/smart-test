@@ -246,7 +246,7 @@ namespace Infrastructure.Repositories
                 }
             }
 
-            var karteImgs = _tenantDataContextTracking.RsvkrtKarteImgInfs.Where(k => k.HpId == karteInf.HpId && k.PtId == karteInf.PtId && karteInf.RichText.Contains(k.FileName) && k.RsvkrtNo == 0);
+            var karteImgs = _tenantDataContextTracking.RsvkrtKarteImgInfs.Where(k => k.HpId == karteInf.HpId && k.PtId == karteInf.PtId && karteInf.RichText.Contains(k.FileName ?? string.Empty) && k.RsvkrtNo == 0);
             foreach (var img in karteImgs)
             {
                 img.RsvkrtNo = karteInf.RsvkrtNo;
@@ -505,7 +505,7 @@ namespace Infrastructure.Repositories
         private static List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
             var query = from yoho in listYohoSetMst
-                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                        join ten in listTenMst on yoho.ItemCd?.Trim() equals ten.ItemCd.Trim()
                         select new
                         {
                             Yoho = yoho,

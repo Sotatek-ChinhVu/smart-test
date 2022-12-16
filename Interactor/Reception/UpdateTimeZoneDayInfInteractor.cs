@@ -1,4 +1,4 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.TimeZone;
 using Domain.Models.User;
 using UseCase.Reception.UpdateTimeZoneDayInf;

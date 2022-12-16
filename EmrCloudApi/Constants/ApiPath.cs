@@ -124,14 +124,20 @@
         public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
         public const string SaveListDocumentCategory = "SaveListDocumentCategory";
         public const string SortDocCategory = "SortDocCategory";
-        public const string AddTemplateToCategory = "AddTemplateToCategory";
+        public const string UploadTemplateToCategory = "UploadTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
         public const string SaveDocInf = "SaveDocInf";
         public const string DeleteDocInf = "DeleteDocInf";
+        public const string DeleteDocTemplate = "DeleteDocTemplate";
+        public const string MoveTemplateToOtherCategory = "MoveTemplateToOtherCategory";
+        public const string DeleteDocCategory = "DeleteDocCategory";
+        public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
+        public const string GetListParamTemplate = "GetListParamTemplate";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
+        public const string GetInfCheckedItemName = "GetInfCheckedItemName";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
