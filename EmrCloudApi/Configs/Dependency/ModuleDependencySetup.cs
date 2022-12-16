@@ -268,6 +268,7 @@ using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Document.DeleteDocCategory;
 using Interactor.Document.CommonGetListParam;
 using UseCase.Document.GetListParamTemplate;
+using UseCase.User.UpdateUserConf;
 using Domain.Models.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using Interactor.PtGroupMst;
@@ -620,6 +621,7 @@ namespace EmrCloudApi.Configs.Dependency
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiConfigInputData, UpdateAdoptedByomeiConfigInteractor>();
+            busBuilder.RegisterUseCase<UpdateUserConfInputData, UpdateUserConfInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
