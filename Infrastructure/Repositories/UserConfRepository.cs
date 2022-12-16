@@ -17,6 +17,7 @@ public class UserConfRepository : IUserConfRepository
     {
         _tenantTrackingDataContext = tenantProvider.GetTrackingTenantDataContext();
         _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
+        InitConfigDefaultValue();
     }
 
     public List<UserConfModel> GetList(int userId, int fromGrpCd, int toGrpCd)
@@ -45,6 +46,8 @@ public class UserConfRepository : IUserConfRepository
         var adoptedConfirmCD = _tenantNoTrackingDataContext.UserConfs
    .FirstOrDefault(u => u.UserId == userId && u.GrpCd == ADOPTED_CONFIRM_CD)?.Val ?? GetDefaultValue(ADOPTED_CONFIRM_CD);
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
+        var confirmEditByomei = _tenantNoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
+        result.Add("ConfirmEditByomei", confirmEditByomei);
 
         string paramSaveMedical = _tenantNoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
@@ -81,6 +84,27 @@ public class UserConfRepository : IUserConfRepository
         userConfig.UpdateDate = DateTime.UtcNow;
         userConfig.Val = adoptedValue;
 
+        _tenantTrackingDataContext.SaveChanges();
+    }
+
+    public void UpdateUserConf(int hpId, int userId, int grpCd, int value)
+    {
+        var userConfig = _tenantTrackingDataContext.UserConfs.FirstOrDefault(p => p.HpId == hpId && p.UserId == userId && p.GrpCd == grpCd);
+        if (userConfig == null)
+        {
+            userConfig = new UserConf()
+            {
+                HpId = hpId,
+                GrpCd = grpCd,
+                UserId = userId,
+                CreateId = userId,
+                CreateDate = DateTime.UtcNow
+            };
+            _tenantNoTrackingDataContext.UserConfs.Add(userConfig);
+        }
+        userConfig.UpdateId = userId;
+        userConfig.UpdateDate = DateTime.UtcNow;
+        userConfig.Val = value;
         _tenantTrackingDataContext.SaveChanges();
     }
 

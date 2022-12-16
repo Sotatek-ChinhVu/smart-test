@@ -22,6 +22,8 @@
 
         UserMstModel? GetByUserId(int userId);
 
+        UserMstModel GetByUserId(int userId, int sinDate);
+
         UserMstModel? GetByLoginId(string loginId);
 
         bool CheckExistedId(List<long> ids);

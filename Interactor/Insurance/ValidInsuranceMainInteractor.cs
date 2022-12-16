@@ -47,13 +47,25 @@ namespace Interactor.Insurance
                         break;
                     // 社保
                     case 1:
-                        IsValidShaho(ref validateDetails, inputData.IsSelectedHokenPattern, inputData.SelectedHokenPatternIsAddNew, inputData.SelectedHokenPatternIsEmptyHoken,
+                        if(inputData.SelectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
+                        {
+                            var checkMessageIsValidHokenNashiOnly = IsValidHokenNashiOnly(inputData.IsSelectedHokenPattern, inputData.IsSelectedHokenInf, inputData.HokenKbn, inputData.SelectedHokenInfHoubetu, inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4);
+                            if (!String.IsNullOrEmpty(checkMessageIsValidHokenNashiOnly))
+                            {
+                                validateDetails.Add(new ResultValidateInsurance<ValidMainInsuranceStatus>(ValidMainInsuranceStatus.InvalidHokenNashiOnly, checkMessageIsValidHokenNashiOnly, TypeMessage.TypeMessageError));
+                            }
+                        }
+                        else
+                        {
+                            IsValidShaho(ref validateDetails, inputData.IsSelectedHokenPattern, inputData.SelectedHokenPatternIsAddNew, inputData.SelectedHokenPatternIsEmptyHoken,
                                                 inputData.SelectedHokenPatternIsEmptyKohi1, inputData.SelectedHokenPatternIsEmptyKohi2, inputData.SelectedHokenPatternIsEmptyKohi3, inputData.SelectedHokenPatternIsEmptyKohi4, inputData.IsSelectedHokenInf, inputData.HokenKbn,
                                                 inputData.SelectedHokenInfHoubetu, inputData.IsSelectedHokenInf, inputData.SelectedHokenInfIsAddNew, inputData.HpId, inputData.SinDate,
                                                 inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5,
                                                 inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate, inputData.SelectedHokenInfIsJihi, inputData.HokenSyaNo ?? string.Empty, inputData.SelectedHokenInfHokenNo, inputData.IsSelectedHokenMst, hokenMst.Houbetu, hokenMst.HokenNo, hokenMst.CheckDigit, inputData.PtBirthday,
                                                 hokenMst.AgeStart, hokenMst.AgeEnd, inputData.SelectedHokenInfKigo, inputData.SelectedHokenInfBango, hokenSyaMst.IsKigoNa, inputData.SelectedHokenInfHonkeKbn, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate,
                                                 inputData.SelectedHokenInfTokureiYm1, inputData.SelectedHokenInfTokureiYm2, inputData.SelectedHokenInfIsShahoOrKokuho, inputData.SelectedHokenInfIsExpirated, inputData.SelectedHokenInfConfirmDate, hokenMst.StartDate, hokenMst.EndDate, hokenMst.DisplayTextMaster, inputData.HokenInfIsNoHoken, inputData.SelectedHokenInfIsAddHokenCheck, inputData.SelectedHokenInfHokenChecksCount);
+
+                        }
                         break;
                     // 国保
                     case 2:

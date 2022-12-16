@@ -822,16 +822,24 @@
         public static readonly string InvalidRsvDate = "Invalid RsvDate";
         public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
         public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
-        
+
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
+        public static readonly string TemplateNotFound = "Template Not Found!";
+        public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
+        public static readonly string InvalidNewCategoryCd = "Invalid NewCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidOldCategoryCd = "Invalid OldCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string FileTemplateNotFould = "File template not fould!";
+        public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
         public static readonly string DocInfNotFound = "DocInf Not Found!";
+        public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";

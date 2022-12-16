@@ -144,7 +144,7 @@ namespace EmrCloudApi.Controller
         }
 
         [HttpPost(ApiPath.GetAdoptedItemList)]
-        public ActionResult<Response<FindtenMstResponse>> GetAdoptedItemList([FromBody] GetAdoptedItemListRequest request)
+        public ActionResult<Response<GetAdoptedItemListResponse>> GetAdoptedItemList([FromBody] GetAdoptedItemListRequest request)
         {
             var input = new GetAdoptedItemListInputData(request.ItemCds, request.SinDate, HpId);
             var output = _bus.Handle(input);

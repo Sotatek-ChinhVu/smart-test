@@ -38,7 +38,13 @@ namespace Interactor.Insurance
                         break;
                     case 1:
                     case 2:
-                        IsValidHokenInf(ref validateDetails,
+                        if(inputData.HokenKbn == 1 && inputData.SelectedHokenInfHoubetu == HokenConstant.HOUBETU_NASHI)
+                        {
+                            IsValidHokenNashi(ref validateDetails, inputData.HpId, inputData.SinDate, inputData.SelectedHokenInfTokki1, inputData.SelectedHokenInfTokki2, inputData.SelectedHokenInfTokki3, inputData.SelectedHokenInfTokki4, inputData.SelectedHokenInfTokki5, inputData.SelectedHokenInfStartDate, inputData.SelectedHokenInfEndDate);
+                        }
+                        else
+                        {
+                            IsValidHokenInf(ref validateDetails,
                                 inputData.SelectedHokenInf,
                                 inputData.SelectedHokenInfIsAddNew,
                                 inputData.HokenKbn,
@@ -81,6 +87,7 @@ namespace Interactor.Insurance
                                 inputData.HokenInfConfirmDate,
                                 inputData.SelectedHokenInfIsAddHokenCheck,
                                 inputData.SelectedHokenInfHokenChecksCount);
+                        }
                         break;
                     // 労災(短期給付)	
                     case 11:
@@ -419,7 +426,7 @@ namespace Interactor.Insurance
             {
                 var paramsMessage = new string[] { "労災保険", "無視する", "戻る" };
                 message = String.Format(ErrorMessage.MessageType_mInp00041, paramsMessage);
-                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageError));
+                validateDetails.Add(new ResultValidateInsurance<ValidHokenInfAllTypeStatus>(ValidHokenInfAllTypeStatus.InvalidCheckDateExpirated, message, TypeMessage.TypeMessageWarning));
             }
         }
 
