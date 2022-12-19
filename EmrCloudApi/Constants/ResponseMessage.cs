@@ -33,6 +33,7 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
 
         //Common
         public static readonly string NotFound = "Not found";
