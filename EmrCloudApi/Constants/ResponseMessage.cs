@@ -857,6 +857,9 @@
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
 
+        //Drug Menu
+        public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
+
         //PtGrpMaster
         public static readonly string InvalidSortNoGrpIdGroupMst = "SortNo or GrpId is invalid";
     }
