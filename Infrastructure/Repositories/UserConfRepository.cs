@@ -48,6 +48,8 @@ public class UserConfRepository : IUserConfRepository
         result.Add("AdoptedConfirmCD", adoptedConfirmCD);
         var confirmEditByomei = _tenantNoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100006 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100006);
         result.Add("ConfirmEditByomei", confirmEditByomei);
+        var displayByomeiDateType = _tenantNoTrackingDataContext.UserConfs.FirstOrDefault(u => u.UserId == userId && u.GrpCd == 100001 && u.GrpItemCd == 0 && u.GrpItemEdaNo == 0)?.Val ?? GetDefaultValue(100001);
+        result.Add("DisplayByomeiDateType", displayByomeiDateType);
 
         string paramSaveMedical = _tenantNoTrackingDataContext.UserConfs
             .FirstOrDefault(u => u.UserId == userId && u.GrpCd == 921 && u.GrpItemCd == 5)?.Param ?? "11111";
