@@ -94,6 +94,8 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0,
                                 "",
+                                "",
+                                "",
                                 ""
                         )).ToList(),
                         DateTime.MinValue,
