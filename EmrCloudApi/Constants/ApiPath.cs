@@ -151,5 +151,8 @@
 
         //hoken sya
         public const string GetHokenSyaMst = "GetHokenSyaMst";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
     }
 }

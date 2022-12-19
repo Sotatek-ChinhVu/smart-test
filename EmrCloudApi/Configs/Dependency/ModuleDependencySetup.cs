@@ -274,6 +274,9 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
+using Domain.Models.PtGroupMst;
+using UseCase.PtGroupMst.SaveGroupNameMst;
+using Interactor.PtGroupMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -389,6 +392,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDocumentRepository, DocumentRepository>();
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
+            services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -662,6 +666,9 @@ namespace EmrCloudApi.Configs.Dependency
 
             //Hoki PriorityList
             busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
+
+            //PtGroupMaster
+            busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
