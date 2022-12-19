@@ -22,7 +22,7 @@ namespace EmrCloudApi.Presenters.PtGroupMst
             SaveGroupNameMstStatus.Failed => ResponseMessage.Failed,
             SaveGroupNameMstStatus.Exception => ResponseMessage.ExceptionError,
             SaveGroupNameMstStatus.InvalidHpId => ResponseMessage.InvalidHpId,
-            SaveGroupNameMstStatus.InvalidSortNoGrpIdGroupMst => ResponseMessage.InvalidSortNoGrpIdGroupMst,
+            SaveGroupNameMstStatus.InvalidInputGroupMst => ResponseMessage.InvalidInputGroupMst,
             _ => string.Empty 
         };
     }

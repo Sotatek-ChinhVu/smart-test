@@ -861,6 +861,6 @@
         public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
 
         //PtGrpMaster
-        public static readonly string InvalidSortNoGrpIdGroupMst = "SortNo or GrpId is invalid";
+        public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
     }
 }

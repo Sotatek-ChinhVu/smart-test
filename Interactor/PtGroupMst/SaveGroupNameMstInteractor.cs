@@ -21,7 +21,7 @@ namespace Interactor.PtGroupMst
 
                 if(inputData.GroupNameMst.Any(x=>x.GrpId <=0 || x.SortNo <= 0 || string.IsNullOrEmpty(x.GrpName)
                             || x.GroupItems.Any(u => string.IsNullOrEmpty(u.GrpCode) || string.IsNullOrEmpty(u.GrpCodeName))))
-                    return new SaveGroupNameMstOutputData(SaveGroupNameMstStatus.InvalidSortNoGrpIdGroupMst, string.Empty);
+                    return new SaveGroupNameMstOutputData(SaveGroupNameMstStatus.InvalidInputGroupMst, string.Empty);
 
                 bool result = _groupNameMstRepository.SaveGroupNameMst(inputData.GroupNameMst, inputData.HpId, inputData.UserId);
                 if (result)

@@ -6,6 +6,6 @@
         Exception,
         Failed,
         InvalidHpId,
-        InvalidSortNoGrpIdGroupMst
+        InvalidInputGroupMst
     }
 }
