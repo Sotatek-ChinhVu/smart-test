@@ -15,6 +15,12 @@ namespace CommonCheckers.OrderRealtimeChecker.Models
 
         public RealtimeCheckerType CheckerType { get; private set; }
 
+        public bool IsError => ErrorOrderList != null && ErrorOrderList.Count > 0;
+
+        public List<TOdrInf>? ErrorOrderList { get; set; }
+
+        public object? ErrorInfo { get; set; }
+
         public TOdrInf CheckingData { get; private set; }
 
         public List<string> AdditionData { get; set; } = new List<string>();

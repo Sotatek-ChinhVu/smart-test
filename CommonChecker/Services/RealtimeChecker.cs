@@ -279,7 +279,7 @@ namespace CommonCheckers.OrderRealtimeChecker.Services
             return result ?? new List<DayLimitResultModel>();
         }
 
-        private List<UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>> GetErrorFromListOrder(List<TOdrInf> checkingOrderList)
+        public List<UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>> GetErrorFromListOrder(List<TOdrInf> checkingOrderList)
         {
             List<UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>> listError = new List<UnitCheckerForOrderListResult<TOdrInf, TOdrDetail>>();
 
