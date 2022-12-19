@@ -45,6 +45,9 @@ namespace EmrCloudApi.Presenters.MedicalExamination
                 case SearchHistoryStatus.Failed:
                     Result.Message = ResponseMessage.Failed;
                     break;
+                case SearchHistoryStatus.Successed:
+                    Result.Message = ResponseMessage.Success;
+                    break;
             }
         }
     }

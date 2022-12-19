@@ -39,7 +39,7 @@ namespace Interactor.MedicalExamination
                 }
                 if (inputData.FilterId < 0)
                 {
-                    return new SearchHistoryOutputData(new(), defaultIndex, SearchHistoryStatus.InvalidCurrentIndex);
+                    return new SearchHistoryOutputData(new(), defaultIndex, SearchHistoryStatus.InvalidFilterId);
                 }
                 if (!(inputData.IsDeleted >= 0 && inputData.IsDeleted <= 2))
                 {
