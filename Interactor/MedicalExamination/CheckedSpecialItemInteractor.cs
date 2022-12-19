@@ -229,7 +229,7 @@ namespace Interactor.MedicalExamination
         /// </summary>
         /// <param name="allOdrInfDetail"></param>
         /// <returns></returns>
-        private List<CheckedSpecialItem> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
+        public List<CheckedSpecialItem> AgeLimitCheck(int sinDate, int iBirthDay, int checkAge, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var checkSpecialItemList = new List<CheckedSpecialItem>();
             int iYear = 0;
