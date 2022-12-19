@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -12,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関ID
         /// 
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 1)]
         public int HpId { get; set; }
@@ -21,7 +20,7 @@ namespace Entity.Tenant
         /// 選択肢区分
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("MENU_KBN", Order = 2)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 2)]
@@ -31,7 +30,7 @@ namespace Entity.Tenant
         /// 連番
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("SEQ_NO", Order = 3)]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         //[Index("TEMPLATE_MENU_MST_PKEY", 3)]
@@ -43,7 +42,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column("KBN_NAME")]
         [MaxLength(30)]
-        public string KbnName { get; set; } = string.Empty;
+        public string? KbnName { get; set; } = string.Empty;
 
         /// <summary>
         /// 並び順
@@ -96,7 +95,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
-
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

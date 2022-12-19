@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -26,12 +27,12 @@ namespace Infrastructure.Repositories
                     r => new DosageDrugModel(
                             r.YjCd,
                             r.DoeiCd,
-                            r.DgurKbn,
-                            r.KikakiUnit,
-                            r.YakkaiUnit,
+                            r.DgurKbn ?? string.Empty,
+                            r.KikakiUnit ?? string.Empty,
+                            r.YakkaiUnit ?? string.Empty,
                             r.RikikaRate,
-                            r.RikikaUnit,
-                            r.YoukaiekiCd,
+                            r.RikikaUnit ?? string.Empty,
+                            r.YoukaiekiCd ?? string.Empty,
                             listDosageDosages.FirstOrDefault(item => item.DoeiCd == r.DoeiCd)?.UsageDosage?.Replace("；", Environment.NewLine) ?? string.Empty
                    )).ToList();
         }
@@ -53,26 +54,26 @@ namespace Infrastructure.Repositories
                         from form in formLeft.DefaultIfEmpty()
                         join usagecode in UsageCodes on main.YohoCd equals usagecode.YohoCd into usageLeft
                         from usage in usageLeft.DefaultIfEmpty()
-                        where (main.TradeKana.Contains(searchValue)
-                                || main.TradeName.Contains(searchValue)
-                                || maker.MakerKana.Contains(searchValue)
-                                || maker.MakerName.Contains(searchValue))
+                        where ((main.TradeKana ?? string.Empty).Contains(searchValue)
+                                || (main.TradeName ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerKana ?? string.Empty).Contains(searchValue)
+                                || (maker.MakerName ?? string.Empty).Contains(searchValue))
                         select new OtcItemModel(
                             main.SerialNum,
-                            main.OtcCd,
-                            main.TradeName,
-                            main.TradeKana,
-                            main.ClassCd,
-                            main.CompanyCd,
-                            main.TradeCd,
-                            main.DrugFormCd,
-                            main.YohoCd,
-                            form.Form,
-                            maker.MakerName,
-                            maker.MakerKana,
-                            usage.Yoho,
-                            clas.ClassName,
-                            clas.MajorDivCd
+                            main.OtcCd ?? string.Empty,
+                            main.TradeName ?? string.Empty,
+                            main.TradeKana ?? string.Empty,
+                            main.ClassCd ?? string.Empty,
+                            main.CompanyCd ?? string.Empty,
+                            main.TradeCd ?? string.Empty,
+                            main.DrugFormCd ?? string.Empty,
+                            main.YohoCd ?? string.Empty,
+                            form.Form ?? string.Empty,
+                            maker.MakerName ?? string.Empty,
+                            maker.MakerKana ?? string.Empty,
+                            usage.Yoho ?? string.Empty,
+                            clas.ClassName ?? string.Empty,
+                            clas.MajorDivCd ?? string.Empty
                         );
             var total = query.Count();
             var models = query.OrderBy(u => u.TradeKana).Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
@@ -85,7 +86,7 @@ namespace Infrastructure.Repositories
                 .OrderBy(x => x.FoodKbn)
                 .Select(x => new FoodAlrgyKbnModel(
                  x.FoodKbn,
-                 x.FoodName
+                 x.FoodName ?? string.Empty
             )).ToList();
             return aleFoodKbns;
         }
@@ -105,12 +106,12 @@ namespace Infrastructure.Repositories
                              from supplement in supplementList.DefaultIfEmpty()
                              join ingre in listSuppleIngre on supplement.SeibunCd equals ingre.SeibunCd into suppleIngreList
                              from ingreItem in suppleIngreList.DefaultIfEmpty()
-                             where indexDef.IndexWord.Contains(searchValue)
+                             where (indexDef.IndexWord ?? string.Empty).Contains(searchValue)
                              select new SearchSupplementModel(
                                  ingreItem.SeibunCd,
-                                 ingreItem.Seibun,
-                                 indexDef.IndexWord,
-                                 indexDef.TokuhoFlg,
+                                 ingreItem.Seibun ?? string.Empty,
+                                 indexDef.IndexWord ?? string.Empty,
+                                 indexDef.TokuhoFlg ?? string.Empty,
                                  supplement.IndexCd
                              )).AsQueryable();
 
@@ -172,7 +173,9 @@ namespace Infrastructure.Repositories
                 tenMst?.IpnNameCd ?? string.Empty,
                 tenMst?.MinAge ?? string.Empty,
                 tenMst?.MaxAge ?? string.Empty,
-                tenMst?.SanteiItemCd ?? string.Empty
+                tenMst?.SanteiItemCd ?? string.Empty,
+                tenMst?.OdrTermVal ?? 0,
+                tenMst?.CnvTermVal ?? 0
             );
         }
 
@@ -216,22 +219,25 @@ namespace Infrastructure.Repositories
                 tenMst.IpnNameCd ?? string.Empty,
                 tenMst.MinAge ?? string.Empty,
                 tenMst.MaxAge ?? string.Empty,
-                tenMst.SanteiItemCd ?? string.Empty
+                tenMst.SanteiItemCd ?? string.Empty,
+                tenMst.OdrTermVal,
+                tenMst.CnvTermVal
             )).ToList();
         }
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
         {
+            string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
-                string inputKeyword = keyword;
-                keyword = WanaKana.RomajiToKana(keyword);
-                if (WanaKana.IsRomaji(keyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
-                    keyword = inputKeyword;
+                var inputKeyword = keyword;
+                kanaKeyword = WanaKana.RomajiToKana(keyword);
+                if (WanaKana.IsRomaji(kanaKeyword)) //If after convert to kana. type still is IsRomaji, back to base input keyword
+                    kanaKeyword = inputKeyword;
             }
 
             var listTenMstModels = new List<TenItemModel>();
-            string sBigKeyword = keyword.ToUpper()
+            string sBigKeyword = kanaKeyword.ToUpper()
                                         .Replace("ｧ", "ｱ")
                                         .Replace("ｨ", "ｲ")
                                         .Replace("ｩ", "ｳ")
@@ -622,11 +628,14 @@ namespace Infrastructure.Repositories
                                                            item.TenMst?.IpnNameCd ?? string.Empty,
                                                            item.TenMst?.MinAge ?? string.Empty,
                                                            item.TenMst?.MaxAge ?? string.Empty,
-                                                           item.TenMst?.SanteiItemCd ?? string.Empty
+                                                           item.TenMst?.SanteiItemCd ?? string.Empty,
+                                                           item.TenMst?.OdrTermVal ?? 0,
+                                                           item.TenMst?.CnvTermVal ?? 0
                                                             )).ToList();
             }
             return (listTenMstModels, totalCount);
         }
+
         public bool UpdateAdoptedItemAndItemConfig(int valueAdopted, string itemCdInputItem, int startDateInputItem, int hpId, int userId)
         {
             // Update IsAdopted Item TenMst
@@ -645,6 +654,79 @@ namespace Infrastructure.Repositories
 
             return true;
         }
+
+        public bool UpdateAdoptedItems(int valueAdopted, List<string> itemCds, int sinDate, int hpId, int userId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate && t.IsDeleted == DeleteTypes.None).ToList();
+
+            if (tenMsts.Count == 0) return false;
+
+            for (int i = 0; i < tenMsts.Count; i++)
+            {
+                var tenMst = tenMsts[i];
+                if (tenMst.IsAdopted == valueAdopted) return false;
+
+                tenMst.IsAdopted = valueAdopted;
+
+                tenMst.UpdateDate = DateTime.UtcNow;
+                tenMst.UpdateId = userId;
+            }
+
+            return _tenantDataContextTracking.SaveChanges() > 0;
+        }
+
+        public List<TenItemModel> GetAdoptedItems(List<string> itemCds, int sinDate, int hpId)
+        {
+            // Update IsAdopted Item TenMst
+            var tenMsts = _tenantDataContextTracking.TenMsts.Where(t => t.HpId == hpId && itemCds.Contains(t.ItemCd) && t.StartDate <= sinDate && t.EndDate >= sinDate);
+            var tenMstModels = new List<TenItemModel>();
+            if (tenMsts != null && tenMsts.Any())
+            {
+                tenMstModels = tenMsts.Select(item => new TenItemModel(
+                                                           item.HpId,
+                                                           item.ItemCd ?? string.Empty,
+                                                           item.RousaiKbn,
+                                                           item.KanaName1 ?? string.Empty,
+                                                           item.Name ?? string.Empty,
+                                                           item.KohatuKbn,
+                                                           item.MadokuKbn,
+                                                           item.KouseisinKbn,
+                                                           item.OdrUnitName ?? string.Empty,
+                                                           item.EndDate,
+                                                           item.DrugKbn,
+                                                           item.MasterSbt ?? string.Empty,
+                                                           item.BuiKbn,
+                                                           item.IsAdopted,
+                                                           0,
+                                                           item.TenId,
+                                                           string.Empty,
+                                                           string.Empty,
+                                                           item.CmtCol1,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.SinKouiKbn,
+                                                           item.YjCd ?? string.Empty,
+                                                           item.CnvUnitName ?? string.Empty,
+                                                           item.StartDate,
+                                                           item.YohoKbn,
+                                                           item.CmtColKeta1,
+                                                           item.CmtColKeta2,
+                                                           item.CmtColKeta3,
+                                                           item.CmtColKeta4,
+                                                           item.CmtCol2,
+                                                           item.CmtCol3,
+                                                           item.CmtCol4,
+                                                           item.IpnNameCd ?? string.Empty,
+                                                           item.MinAge ?? string.Empty,
+                                                           item.MaxAge ?? string.Empty,
+                                                           item.SanteiItemCd ?? string.Empty,
+                                                           item.OdrTermVal,
+                                                           item.CnvTermVal)).ToList();
+            }
+
+            return tenMstModels;
+        }
+
         public List<ByomeiMstModel> DiseaseSearch(bool isPrefix, bool isByomei, bool isSuffix, bool isMisaiyou, string keyword, int sindate, int pageIndex, int pageSize)
         {
             var keywordHalfSize = keyword != String.Empty ? CIUtil.ToHalfsize(keyword) : "";
@@ -734,9 +816,19 @@ namespace Infrastructure.Repositories
             return true;
         }
 
-        public bool CheckItemCd(string ItemCd)
+        public bool CheckItemCd(string itemCd)
         {
-            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == ItemCd.Trim());
+            return _tenantDataContext.TenMsts.Any(t => t.ItemCd == itemCd.Trim());
+        }
+
+        public List<string> GetCheckItemCds(List<string> itemCds)
+        {
+            return _tenantDataContext.TenMsts.Where(t => itemCds.Contains(t.ItemCd.Trim())).Select(t => t.ItemCd).ToList();
+        }
+
+        public List<Tuple<string, string>> GetCheckIpnCds(List<string> ipnCds)
+        {
+            return _tenantDataContext.IpnNameMsts.Where(t => ipnCds.Contains(t.IpnNameCd.Trim())).Select(t => new Tuple<string, string>(t.IpnNameCd, t.IpnName ?? string.Empty)).ToList();
         }
 
         public TenItemModel FindTenMst(int hpId, string itemCd, int sinDate)
@@ -783,7 +875,9 @@ namespace Infrastructure.Repositories
                     entity?.IpnNameCd ?? string.Empty,
                     entity?.MinAge ?? string.Empty,
                     entity?.MaxAge ?? string.Empty,
-                    entity?.SanteiItemCd ?? string.Empty
+                    entity?.SanteiItemCd ?? string.Empty,
+                    entity?.OdrTermVal ?? 0,
+                    entity?.CnvTermVal ?? 0
                );
         }
 
@@ -831,7 +925,9 @@ namespace Infrastructure.Repositories
                     entity.IpnNameCd ?? string.Empty,
                     entity.MinAge ?? string.Empty,
                     entity.MaxAge ?? string.Empty,
-                    entity.SanteiItemCd ?? string.Empty
+                    entity.SanteiItemCd ?? string.Empty,
+                    entity.OdrTermVal,
+                    entity.CnvTermVal
                )).ToList();
         }
 
@@ -840,19 +936,19 @@ namespace Infrastructure.Repositories
             var entities = _tenantDataContext.PostCodeMsts.Where(x => x.HpId == hpId && x.IsDeleted == 0);
 
             if (!string.IsNullOrEmpty(postCode1) && !string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.Contains(postCode1 + postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.Contains(postCode1 + postCode2));
 
             else if (!string.IsNullOrEmpty(postCode1))
-                entities = entities.Where(e => e.PostCd.StartsWith(postCode1));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.StartsWith(postCode1));
 
             else if (!string.IsNullOrEmpty(postCode2))
-                entities = entities.Where(e => e.PostCd.EndsWith(postCode2));
+                entities = entities.Where(e => e.PostCd != null && e.PostCd.EndsWith(postCode2));
 
             if (!string.IsNullOrEmpty(address))
             {
                 entities = entities.Where(e => (e.PrefName + e.CityName + e.Banti).Contains(address)
                                                 || (e.PrefName + e.CityName).Contains(address)
-                                                || e.PrefName.Contains(address));
+                                                || (e.PrefName != null && e.PrefName.Contains(address)));
             }
 
             var totalCount = entities.Count();
@@ -923,6 +1019,103 @@ namespace Infrastructure.Repositories
             {
                 result.Add(new ItemGrpMstModel(entity.HpId, entity.GrpSbt, entity.ItemGrpCd, entity.StartDate, entity.EndDate, entity.ItemCd ?? string.Empty, entity.SeqNo));
             }
+            return result;
+        }
+
+        public List<ItemCommentSuggestionModel> GetSelectiveComment(int hpId, List<string> listItemCd, int sinDate, List<int> isInvalidList, bool isRecalculation = false)
+        {
+            List<ItemCommentSuggestionModel> result = _tenantDataContext.TenMsts.Where(item => listItemCd.Contains(item.ItemCd) &&
+                                                                              item.StartDate <= sinDate &&
+                                                                              sinDate <= item.EndDate)
+                                                 .AsEnumerable()
+                                                 .Select(item => new ItemCommentSuggestionModel(
+                                                     item.ItemCd,
+                                                     "【" + item.Name + "】",
+                                                     item?.SanteiItemCd ?? string.Empty,
+                                                     new List<RecedenCmtSelectModel>()
+                                                 ))
+                                                 .ToList();
+
+            if (result.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemCdCmtSelect = result.Select(item => item.SanteiItemCd).ToList();
+            listItemCdCmtSelect.AddRange(listItemCd);
+            listItemCdCmtSelect = listItemCdCmtSelect.Distinct().ToList();
+
+            var listRecedenCmtSelectAll = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                               listItemCdCmtSelect.Contains(item.ItemCd ?? string.Empty) &&
+                                               item.StartDate <= sinDate &&
+                                               sinDate <= item.EndDate &&
+                                               isInvalidList.Contains(item.IsInvalid))
+                .ToList();
+
+            if (listRecedenCmtSelectAll.Count <= 0)
+                return new List<ItemCommentSuggestionModel>();
+
+            var listItemNo = listRecedenCmtSelectAll.GroupBy(item => new { item.ItemCd, item.CommentCd })
+                .Select(grp => grp.OrderBy(r => r.ItemNo).First())
+                .Select(item => item.ItemNo)
+                .Distinct()
+                .ToList();
+
+            List<RecedenCmtSelect> listRecedenCmtMinEda = new List<RecedenCmtSelect>();
+
+            var listRecedenCmtSelect = _tenantDataContext.RecedenCmtSelects
+               .Where(item => item.HpId == hpId &&
+                                              listItemCdCmtSelect.Contains(item.ItemCd) &&
+                                              listItemNo.Contains(item.ItemNo) &&
+                                              item.StartDate <= sinDate &&
+                                              sinDate <= item.EndDate &&
+                                              isInvalidList.Contains(item.IsInvalid))
+               .ToList();
+            listRecedenCmtMinEda.AddRange(listRecedenCmtSelect);
+
+            if (!isRecalculation)
+            {
+                var listRecedenCmtSelectShinryo = _tenantDataContext.RecedenCmtSelects
+                .Where(item => item.HpId == hpId &&
+                                      item.ItemCd == "199999999" &&
+                                      listItemNo.Contains(item.ItemNo) &&
+                                      item.StartDate <= sinDate &&
+                                      sinDate <= item.EndDate &&
+                                      isInvalidList.Contains(item.IsInvalid));
+                listRecedenCmtMinEda.AddRange(listRecedenCmtSelectShinryo);
+            }
+
+            var listCommentCd = listRecedenCmtMinEda.Select(item => item.CommentCd).Distinct();
+
+            var listTenMst = _tenantDataContext.TenMsts
+                .Where(item => item.HpId == hpId &&
+                                         listCommentCd.Contains(item.ItemCd) &&
+                                         item.StartDate <= sinDate &&
+                                         sinDate <= item.EndDate);
+
+            var listComment = (from recedenCmtSelect in listRecedenCmtMinEda
+                               join tenMst in listTenMst on
+                                   recedenCmtSelect.CommentCd equals tenMst.ItemCd
+                               select new RecedenCmtSelectModel(
+                                   tenMst.CmtSbt,
+                                   recedenCmtSelect.ItemCd,
+                                   recedenCmtSelect.CommentCd ?? string.Empty,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.ItemNo,
+                                   recedenCmtSelect.EdaNo,
+                                   tenMst.Name ?? string.Empty,
+                                   recedenCmtSelect.SortNo,
+                                   recedenCmtSelect.CondKbn,
+                                   ConvertTenMstToModel(tenMst)
+                               )).ToList();
+            foreach (var inputCodeItem in result)
+            {
+                var listCommentWithCode = listComment.Where(item =>
+                    item.ItemCd == inputCodeItem.ItemCd || item.ItemCd == inputCodeItem.SanteiItemCd)
+                    .OrderBy(item => item.ItemNo)
+                    .ToList();
+                inputCodeItem.SetData(listCommentWithCode);
+            }
+
             return result;
         }
 
@@ -1036,6 +1229,47 @@ namespace Infrastructure.Repositories
         }
         #endregion
 
-
+        private TenItemModel ConvertTenMstToModel(TenMst tenMst)
+        {
+            return new TenItemModel(
+                        tenMst?.HpId ?? 0,
+                        tenMst?.ItemCd ?? string.Empty,
+                        tenMst?.RousaiKbn ?? 0,
+                        tenMst?.KanaName1 ?? string.Empty,
+                        tenMst?.Name ?? string.Empty,
+                        tenMst?.KohatuKbn ?? 0,
+                        tenMst?.MadokuKbn ?? 0,
+                        tenMst?.KouseisinKbn ?? 0,
+                        tenMst?.OdrUnitName ?? string.Empty,
+                        tenMst?.EndDate ?? 0,
+                        tenMst?.DrugKbn ?? 0,
+                        tenMst?.MasterSbt ?? string.Empty,
+                        tenMst?.BuiKbn ?? 0,
+                        tenMst?.IsAdopted ?? 0,
+                        tenMst?.Ten ?? 0,
+                        tenMst?.TenId ?? 0,
+                        "",
+                        "",
+                        tenMst?.CmtCol1 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.SinKouiKbn ?? 0,
+                        tenMst?.YjCd ?? string.Empty,
+                        tenMst?.CnvUnitName ?? string.Empty,
+                        tenMst?.StartDate ?? 0,
+                        tenMst?.YohoKbn ?? 0,
+                        tenMst?.CmtColKeta1 ?? 0,
+                        tenMst?.CmtColKeta2 ?? 0,
+                        tenMst?.CmtColKeta3 ?? 0,
+                        tenMst?.CmtColKeta4 ?? 0,
+                        tenMst?.CmtCol2 ?? 0,
+                        tenMst?.CmtCol3 ?? 0,
+                        tenMst?.CmtCol4 ?? 0,
+                        tenMst?.IpnNameCd ?? string.Empty,
+                        tenMst?.MinAge ?? string.Empty,
+                        tenMst?.MaxAge ?? string.Empty,
+                        tenMst?.SanteiItemCd ?? string.Empty,
+                        0,
+                        0);
+        }
     }
 }

@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
                             r.GrpCd,
                             r.KbnCd,
                             r.SortNo,
-                            r.KbnName,
+                            r.KbnName ?? string.Empty,
                             r.ColorCd ?? string.Empty,
                             r.IsConfirmed == 1,
                             r.IsAuto == 1,
@@ -63,7 +63,7 @@ namespace Infrastructure.Repositories
                         1,
                         groupId,
                         raiinKubunMst.SortNo,
-                        raiinKubunMst.GrpName,
+                        raiinKubunMst.GrpName ?? string.Empty,
                         raiinKubunMst.IsDeleted == 1,
                         detailList
                     ));
@@ -75,7 +75,7 @@ namespace Infrastructure.Repositories
         {
             List<RsvGrpMstModel> rsvGrpMstList = _tenantDataContextNoTracking.RsvGrpMsts
                 .Where(r => r.HpId == hpId && r.IsDeleted == 0)
-                .Select(x => new RsvGrpMstModel(x.RsvGrpId, x.SortKey, x.RsvGrpName, x.IsDeleted))
+                .Select(x => new RsvGrpMstModel(x.RsvGrpId, x.SortKey, x.RsvGrpName ?? string.Empty, x.IsDeleted))
                 .ToList();
 
             List<RsvFrameMstModel> rsvFrameMstList = _tenantDataContextNoTracking.RsvFrameMsts
@@ -98,10 +98,10 @@ namespace Infrastructure.Repositories
                          on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { kou.KbnCd, GrpCd = kou.GrpId } into kouis
                          from kbnKoui in kouis.DefaultIfEmpty()
                          join item in _tenantDataContextNoTracking.RaiinKbItems.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
-                         on new { kbnDetail.KbnCd ,kbnDetail.GrpCd }  equals new { item.KbnCd,item.GrpCd } into items
+                         on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { item.KbnCd, item.GrpCd } into items
                          from kbnItem in items.DefaultIfEmpty()
                          join yoyaku in _tenantDataContextNoTracking.RaiinKbnYayokus.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
-                         on new { kbnDetail.KbnCd,kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
+                         on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
                          from kbnYoyaku in yoyakus.DefaultIfEmpty()
                          select new
                          {
@@ -122,7 +122,7 @@ namespace Infrastructure.Repositories
                 x.kbnItem.GrpCd,
                 x.kbnItem.KbnCd,
                 x.kbnItem.SeqNo,
-                x.kbnItem.ItemCd,
+                x.kbnItem.ItemCd ?? string.Empty,
                 x.kbnItem.IsExclude,
                 x.kbnItem.IsDeleted,
                 x.kbnItem.SortNo
@@ -140,7 +140,7 @@ namespace Infrastructure.Repositories
                 x.HpId,
                 x.GrpCd,
                 x.SortNo,
-                x.GrpName,
+                x.GrpName ?? string.Empty,
                 x.IsDeleted == 1,
                 raiinKubunDetailList.Where(y => y.GrpCd == x.GrpCd)
                                     .Select(z => new RaiinKubunDetailModel(
@@ -148,7 +148,7 @@ namespace Infrastructure.Repositories
                                         z.GrpCd,
                                         z.KbnCd,
                                         z.SortNo,
-                                        z.KbnName,
+                                        z.KbnName ?? string.Empty,
                                         z.ColorCd ?? String.Empty,
                                         z.IsConfirmed == 1,
                                         z.IsAuto == 1,
@@ -301,7 +301,7 @@ namespace Infrastructure.Repositories
             var listRaiinKbnMst = _tenantDataContextNoTracking.RaiinKbnMsts
               .Where(item => item.HpId == hpId && item.IsDeleted == 0)
               .OrderBy(item => item.SortNo)
-              .ToDictionary(item => item.GrpName, item => item.GrpCd);
+              .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
 
             var listColumnName = new List<(string, string)>()
             {

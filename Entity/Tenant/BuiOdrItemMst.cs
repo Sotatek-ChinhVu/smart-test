@@ -10,15 +10,15 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        [Key]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 診療行為コード
         /// </summary>
-        [Key]
+        
         [Column("ITEM_CD", Order = 2)]
         [MaxLength(10)]
         public string ItemCd { get; set; } = string.Empty;
@@ -41,6 +41,6 @@ namespace Entity.Tenant
         /// </summary>
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
     }
 }

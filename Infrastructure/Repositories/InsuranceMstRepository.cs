@@ -5,8 +5,6 @@ using Helper.Constants;
 using Helper.Extension;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
-using System.Xml.Linq;
-using System;
 
 namespace Infrastructure.Repositories
 {
@@ -28,7 +26,7 @@ namespace Infrastructure.Repositories
                     .ThenBy(entity => entity.TokkiCd)
                     .Select(x => new TokkiMstModel(
                                     x.TokkiCd,
-                                    x.TokkiName
+                                    x.TokkiName ?? string.Empty
                         ))
                     .ToList();
 
@@ -60,8 +58,8 @@ namespace Infrastructure.Repositories
                                         item.EndDate,
                                         item.HokenNo,
                                         item.HokenEdaNo,
-                                        item.HokenSname,
-                                        item.Houbetu,
+                                        item.HokenSname ?? string.Empty,
+                                        item.Houbetu ?? string.Empty,
                                         item.HokenSbtKbn,
                                         item.CheckDigit,
                                         item.AgeStart,
@@ -70,8 +68,8 @@ namespace Infrastructure.Repositories
                                         item.IsJyukyusyaNoCheck,
                                         item.JyukyuCheckDigit,
                                         item.IsTokusyuNoCheck,
-                                        item.HokenName,
-                                        item.HokenNameCd,
+                                        item.HokenName ?? string.Empty,
+                                        item.HokenNameCd ?? string.Empty,
                                         item.HokenKohiKbn,
                                         item.IsOtherPrefValid,
                                         item.ReceKisai,
@@ -97,7 +95,8 @@ namespace Infrastructure.Repositories
                                         item.ReceFutanRound,
                                         item.ReceZeroKisai,
                                         item.ReceSpKbn,
-                                        prefName == null ? string.Empty : prefName
+                                        prefName == null ? string.Empty : prefName,
+                                        item.PrefNo
                         );
                     allHokenMst.Add(itemModelNew);
                 }
@@ -108,7 +107,7 @@ namespace Infrastructure.Repositories
                                 .Select(x => new KantokuMstModel(
                                      x.RoudouCd,
                                      x.KantokuCd,
-                                     x.KantokuName
+                                     x.KantokuName ?? string.Empty
                                     )).ToList();
 
             // data combobox ByomeiMstAftercares
@@ -191,7 +190,7 @@ namespace Infrastructure.Repositories
 
             var dataRoudouMst = RoudouMsts.Select(x => new RoudouMstModel(
                                             x.RoudouCd,
-                                            x.RoudouName
+                                            x.RoudouName ?? string.Empty
                                             )).ToList();
 
             return new InsuranceMstModel(TokkiMsts, hokenKogakuKbnDict, GetHokenMstList(sinDate, true), dataComboboxKantokuMst, byomeiMstAftercares, GetHokenMstList(sinDate, false), dataRoudouMst, allHokenMst);
@@ -245,17 +244,17 @@ namespace Infrastructure.Repositories
                 string prefName = string.Empty;
                 if (roudouMsts.Any(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo))
                 {
-                    prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName;
+                    prefName = roudouMsts.First(roudou => roudou.RoudouCd.AsInteger() == h.PrefNo)!.RoudouName ?? string.Empty;
                 }
 
-                list.Add(new HokenMstModel( h.FutanKbn,
+                list.Add(new HokenMstModel(h.FutanKbn,
                                             h.FutanRate,
                                             h.StartDate,
                                             h.EndDate,
                                             h.HokenNo,
                                             h.HokenEdaNo,
-                                            h.HokenSname,
-                                            h.Houbetu,
+                                            h.HokenSname ?? string.Empty,
+                                            h.Houbetu ?? string.Empty,
                                             h.HokenSbtKbn,
                                             h.CheckDigit,
                                             h.AgeStart,
@@ -264,8 +263,8 @@ namespace Infrastructure.Repositories
                                             h.IsJyukyusyaNoCheck,
                                             h.JyukyuCheckDigit,
                                             h.IsTokusyuNoCheck,
-                                            h.HokenName,
-                                            h.HokenNameCd,
+                                            h.HokenName ?? string.Empty,
+                                            h.HokenNameCd ?? string.Empty,
                                             h.HokenKohiKbn,
                                             h.IsOtherPrefValid,
                                             h.ReceKisai,
@@ -291,8 +290,9 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanRound,
                                             h.ReceZeroKisai,
                                             h.ReceSpKbn,
-                                            prefName == null ? string.Empty : prefName));
-                });
+                                            prefName == null ? string.Empty : prefName,
+                                            h.PrefNo));
+            });
 
             return list;
         }
@@ -321,7 +321,7 @@ namespace Infrastructure.Repositories
                                                                 item.Houbetu ?? string.Empty,
                                                                 item.HokenKbn,
                                                                 item.PrefNo,
-                                                                item.HokensyaNo,
+                                                                item.HokensyaNo ?? string.Empty,
                                                                 item.Kigo ?? string.Empty,
                                                                 item.Bango ?? string.Empty,
                                                                 item.RateHonnin,
@@ -350,7 +350,7 @@ namespace Infrastructure.Repositories
             }
 
             string kohiHobetu = string.Empty;
-            if(futansyaNo.Length == 8)
+            if (futansyaNo.Length == 8)
             {
                 kohiHobetu = futansyaNo.Substring(0, 2);
             }
@@ -376,14 +376,14 @@ namespace Infrastructure.Repositories
 
             entities?.ForEach(h =>
             {
-                list.Add(new HokenMstModel( h.FutanKbn,
+                list.Add(new HokenMstModel(h.FutanKbn,
                                             h.FutanRate,
                                             h.StartDate,
                                             h.EndDate,
                                             h.HokenNo,
                                             h.HokenEdaNo,
-                                            h.HokenSname,
-                                            h.Houbetu,
+                                            h.HokenSname ?? string.Empty,
+                                            h.Houbetu ?? string.Empty,
                                             h.HokenSbtKbn,
                                             h.CheckDigit,
                                             h.AgeStart,
@@ -392,8 +392,8 @@ namespace Infrastructure.Repositories
                                             h.IsJyukyusyaNoCheck,
                                             h.JyukyuCheckDigit,
                                             h.IsTokusyuNoCheck,
-                                            h.HokenName,
-                                            h.HokenNameCd,
+                                            h.HokenName ?? string.Empty,
+                                            h.HokenNameCd ?? string.Empty,
                                             h.HokenKohiKbn,
                                             h.IsOtherPrefValid,
                                             h.ReceKisai,
@@ -419,7 +419,8 @@ namespace Infrastructure.Repositories
                                             h.ReceFutanRound,
                                             h.ReceZeroKisai,
                                             h.ReceSpKbn,
-                                            string.Empty));
+                                            string.Empty,
+                                            h.PrefNo));
             });
 
             // Get KohiMst
@@ -468,7 +469,7 @@ namespace Infrastructure.Repositories
 
         public bool SaveHokenSyaMst(HokensyaMstModel model, int userId)
         {
-            var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && x.HokensyaNo.Equals(model.HokensyaNo));
+            var hoken = _tenantDataContextTracking.HokensyaMsts.FirstOrDefault(x => x.HpId == model.HpId && (x.HokensyaNo != null && x.HokensyaNo.Equals(model.HokensyaNo)));
             if (hoken is null)
             {
                 HokensyaMst create = new HokensyaMst()
@@ -517,5 +518,43 @@ namespace Infrastructure.Repositories
             }
             return _tenantDataContextTracking.SaveChanges() > 0;
         }
+
+        public HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch)
+        {
+            var entity = _tenantDataContext.HokensyaMsts.FirstOrDefault(hokensya => hokensya.HpId == hpId
+                                                        && hokensya.Houbetu == houbetuNo
+                                                        && hokensya.HokensyaNo == hokensyaNoSearch);
+
+            if(entity is null)
+            {
+                entity = new HokensyaMst()
+                {
+                    Houbetu = houbetuNo,
+                    HokensyaNo = hokensyaNo,
+                    HokenKbn = hokenKbn,
+                    IsKigoNa = 0,
+                };
+            }
+
+            return new HokensyaMstModel(entity.HpId
+                                        ,entity.Name ?? string.Empty
+                                        ,entity.KanaName ?? string.Empty
+                                        ,entity.HoubetuKbn ?? string.Empty
+                                        ,entity.Houbetu ?? string.Empty
+                                        ,entity.HokenKbn
+                                        ,entity.PrefNo
+                                        ,entity.HokensyaNo ?? string.Empty
+                                        ,entity.Kigo ?? string.Empty
+                                        ,entity.Bango ?? string.Empty
+                                        ,entity.RateHonnin
+                                        ,entity.RateKazoku
+                                        ,entity.PostCode ?? string.Empty
+                                        ,entity.Address1 ?? string.Empty
+                                        ,entity.Address2 ?? string.Empty
+                                        ,entity.Tel1 ?? string.Empty
+                                        ,entity.IsKigoNa); ;
+        }
     }
 }
+
+

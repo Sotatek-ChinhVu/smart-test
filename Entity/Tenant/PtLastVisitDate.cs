@@ -11,7 +11,7 @@ namespace Entity.Tenant
         /// 医療機関識別ID
         /// 
         /// </summary>
-        [Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
@@ -20,7 +20,7 @@ namespace Entity.Tenant
         /// 患者ID
         /// 
         /// </summary>
-        //[Key]
+        
         [Column("PT_ID", Order = 2)]
         public long PtId { get; set; }
 
@@ -76,6 +76,5 @@ namespace Entity.Tenant
         [Column("UPDATE_MACHINE")]
         [MaxLength(60)]
         public string? UpdateMachine { get; set; }  = string.Empty;
-
     }
 }

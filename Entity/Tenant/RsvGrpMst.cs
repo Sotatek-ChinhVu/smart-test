@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entity.Tenant
@@ -13,14 +12,14 @@ namespace Entity.Tenant
         /// <summary>
         /// 医療機関識別ID
         /// </summary>
-        [Key]
+        
         [Column("HP_ID", Order = 1)]
         public int HpId { get; set; }
 
         /// <summary>
         /// 予約分類ID
         /// </summary>
-        //[Key]
+        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("RSV_GRP_ID", Order = 2)]
         public int RsvGrpId { get; set; }
@@ -37,7 +36,7 @@ namespace Entity.Tenant
         [Required]
         [Column("RSV_GRP_NAME")]
         [MaxLength(60)]
-        public string RsvGrpName { get; set; } = string.Empty;
+        public string? RsvGrpName { get; set; } = string.Empty;
 
         /// <summary>
         /// 削除区分
@@ -86,7 +85,7 @@ namespace Entity.Tenant
         /// </summary>
         [Column(name: "UPDATE_MACHINE")]
         [MaxLength(60)]
-        public string? UpdateMachine { get; set; }  = string.Empty;
+        public string? UpdateMachine { get; set; } = string.Empty;
 
     }
 }

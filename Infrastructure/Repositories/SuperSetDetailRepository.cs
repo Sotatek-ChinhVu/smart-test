@@ -31,7 +31,8 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         return new SuperSetDetailModel(
                 GetSetByomeiList(hpId, setCd),
                 GetSetKarteInfModel(hpId, setCd),
-                GetSetGroupOrdInfModel(hpId, setCd, sindate)
+                GetSetGroupOrdInfModel(hpId, setCd, sindate),
+                GetListSetKarteFileModel(hpId, setCd)
             );
     }
 
@@ -42,11 +43,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         if (rootSuperSet == null) return (new(), new(), new());
 
         if (rootSuperSet.Level2 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
         else if (rootSuperSet.Level3 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
         else
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None).Select(s => s.SetCd).ToList();
+            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
 
         var allSetByomeis = _tenantNoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         List<string> codeLists = new();
@@ -245,6 +246,21 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 setKarteInf.SetCd,
                 setKarteInf.RichText == null ? string.Empty : Encoding.UTF8.GetString(setKarteInf.RichText)
             );
+    }
+
+    private List<SetKarteFileModel> GetListSetKarteFileModel(int hpId, int setCd)
+    {
+        long lastSeqNo = GetLastSeqNo(hpId, setCd);
+        var result = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item =>
+                                                                    item.HpId == hpId
+                                                                    && item.SetCd == setCd
+                                                                    && item.SeqNo == lastSeqNo)
+                                                                .OrderBy(item => item.Position)
+                                                                .Select(item => new SetKarteFileModel(
+                                                                   item.Id,
+                                                                   item.FileName ?? string.Empty
+                                                                 )).ToList();
+        return result;
     }
 
     #endregion
@@ -528,7 +544,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     private SetOrderInfDetailModel ConvertToDetailModel(SetOdrInfDetail ordInfDetail, Dictionary<string, int> settingValues, double yakka, TenMst tenMst, IpnNameMst ipnNameMst, bool isGetPriceInYakka, int kensaGaichu, int bunkatuKoui, int inOutKbn, int odrInfOdrKouiKbn)
     {
-        var syohoKbn = CalculateSyoho(ordInfDetail, settingValues, tenMst, odrInfOdrKouiKbn, ipnNameMst.IpnName);
+        var syohoKbn = CalculateSyoho(ordInfDetail, settingValues, tenMst, odrInfOdrKouiKbn, ipnNameMst.IpnName ?? string.Empty);
         var termVal = CorrectTermVal(ordInfDetail.UnitSbt, tenMst, ordInfDetail.OdrTermVal);
 
         string displayItemName = ordInfDetail.ItemCd == ItemCdConst.Con_TouyakuOrSiBunkatu ? ordInfDetail.ItemName + TenUtils.GetBunkatu(ordInfDetail.SinKouiKbn, ordInfDetail.Bunkatu ?? string.Empty) : ordInfDetail.ItemName ?? string.Empty;
@@ -555,7 +571,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                         tenMst.Kokuji2 ?? string.Empty,
                         ordInfDetail.IsNodspRece,
                         tenMst.IpnNameCd ?? string.Empty,
-                        ipnNameMst.IpnName,
+                        ipnNameMst.IpnName ?? string.Empty,
                         ordInfDetail.Bunkatu ?? string.Empty,
                         ordInfDetail.CmtName ?? string.Empty,
                         ordInfDetail.CmtOpt ?? string.Empty,
@@ -574,7 +590,6 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                         tenMst.YjCd ?? string.Empty
             );
     }
-
 
     private bool IsGetPriceInYakka(TenMst? tenMst, List<IpnKasanExclude> ipnKasanExcludes, List<IpnKasanExcludeItem> ipnKasanExcludeItems)
     {
@@ -810,7 +825,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
             // if set karte have image, update setKarteImage
             var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
-            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName))).ToList())
+            foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName ?? string.Empty))).ToList())
             {
                 item.Position = 10;
             }
@@ -965,11 +980,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var setCd = listModel.FirstOrDefault()?.SetCd;
             var listPosition = listModel.Select(item => item.Position).ToList();
             var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName)).ToList();
+            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName ?? string.Empty)).ToList();
 
             foreach (var model in listModel)
             {
-                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName.Equals(model.OldFileName));
+                var karteImgInf = listKarteImgInfs.FirstOrDefault(item => item.SetCd == model.SetCd && item.FileName?.Equals(model.OldFileName) == true);
                 if (karteImgInf == null)
                 {
                     karteImgInf = new SetKarteImgInf();
@@ -1155,5 +1170,111 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             termVal = tenMst.CnvTermVal;
         }
         return termVal;
+    }
+
+    public bool CheckExistSupperSetDetail(int hpId, int setCd)
+    {
+        return _tenantNoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd && item.IsDeleted == 0);
+    }
+
+    public long GetLastSeqNo(int hpId, int setCd)
+    {
+        var lastItem = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList()?.MaxBy(item => item.SeqNo);
+        return lastItem != null ? lastItem.SeqNo : 0;
+    }
+
+    public bool SaveListSetKarteFileTemp(int hpId, int setCd, List<string> listFileName, bool saveTempFile)
+    {
+        try
+        {
+            if (saveTempFile)
+            {
+                var listInsert = ConvertListAddNewFiles(hpId, listFileName);
+                if (listInsert.Any())
+                {
+                    _tenantDataContext.SetKarteImgInf.AddRange(listInsert);
+                }
+            }
+            else
+            {
+                UpdateSeqNoSetFile(hpId, setCd, listFileName);
+            }
+            return _tenantDataContext.SaveChanges() > 0;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private void UpdateSeqNoSetFile(int hpId, int setCd, List<string> listFileName)
+    {
+        int position = 1;
+        var lastSeqNo = GetLastSeqNo(hpId, setCd);
+        var listOldFile = _tenantDataContext.SetKarteImgInf.Where(item =>
+                                                                item.HpId == hpId
+                                                                && item.SeqNo == lastSeqNo
+                                                                && item.SetCd == setCd
+                                                                && item.FileName != null
+                                                                && listFileName.Contains(item.FileName)
+                                                            ).ToList();
+
+        var listUpdateFiles = _tenantDataContext.SetKarteImgInf.Where(item =>
+                                                                item.HpId == hpId
+                                                                && item.SeqNo == 0
+                                                                && item.SetCd == 0
+                                                                && item.FileName != null
+                                                                && listFileName.Contains(item.FileName)
+                                                            ).ToList();
+
+        foreach (var item in listOldFile)
+        {
+            SetKarteImgInf newFile = item;
+            newFile.Id = 0;
+            newFile.SeqNo = lastSeqNo + 1;
+            newFile.Position = position;
+            _tenantDataContext.SetKarteImgInf.Add(newFile);
+            position++;
+        }
+
+        foreach (var item in listUpdateFiles)
+        {
+            item.SeqNo = lastSeqNo + 1;
+            item.SetCd = setCd;
+            item.Position = position;
+            position++;
+        }
+    }
+
+    private List<SetKarteImgInf> ConvertListAddNewFiles(int hpId, List<string> listFileName)
+    {
+        List<SetKarteImgInf> result = new();
+        int position = 1;
+        foreach (var item in listFileName)
+        {
+            result.Add(new SetKarteImgInf()
+            {
+                Id = 0,
+                HpId = hpId,
+                SeqNo = 0,
+                SetCd = 0,
+                Position = position,
+                FileName = item
+            });
+            position += 1;
+        }
+        return result;
+    }
+
+    public bool ClearTempData(int hpId, List<string> listFileNames)
+    {
+        var listDeletes = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
+                                                                && item.SeqNo == 0
+                                                                && item.SetCd == 0
+                                                                && item.FileName != null
+                                                                && listFileNames.Contains(item.FileName)
+                                                            ).ToList();
+        _tenantDataContext.SetKarteImgInf.RemoveRange(listDeletes);
+        return _tenantDataContext.SaveChanges() > 0;
     }
 }

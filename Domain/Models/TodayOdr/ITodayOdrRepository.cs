@@ -15,5 +15,7 @@ namespace Domain.Models.TodayOdr
         List<DensiSanteiKaisuModel> FindDensiSanteiKaisuList(int hpId, List<string> itemCds, int minSinDate, int maxSinDate);
 
         List<(string, string, List<CheckedDiseaseModel>)> GetCheckDiseases(int hpId, int sinDate, List<PtDiseaseModel> todayByomeis, List<OrdInfModel> todayOdrs);
+
+        Dictionary<string, string> CheckNameChanged(List<OrdInfModel> odrInfModelList);
     }
 }

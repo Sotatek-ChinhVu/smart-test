@@ -61,7 +61,7 @@ namespace Interactor.SpecialNote
         #region Get data for tab
         private SummaryInfModel GetSummaryTab(int hpId, long ptId)
         {
-            return _summaryInfRepository.GetList(hpId, ptId);
+            return _summaryInfRepository.Get(hpId, ptId);
         }
 
         private ImportantNoteModel GetImportantNoteTab(long ptId)

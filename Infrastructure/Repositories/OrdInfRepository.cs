@@ -260,7 +260,7 @@ namespace Infrastructure.Repositories
                         var isGetPriceInYakka = IsGetPriceInYakka(tenMst, ipnKasanExcludes, ipnKasanExcludeItems);
 
                         int kensaGaichu = GetKensaGaichu(odrInfDetail, tenMst, rpOdrInf.InoutKbn, rpOdrInf.OdrKouiKbn, kensaMst, (int)kensaIraiCondition, (int)kensaIrai);
-                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0);
+                        var odrInfDetailModel = ConvertToDetailModel(odrInfDetail, yakka, ten, isGetPriceInYakka, kensaGaichu, bunkatuKoui, rpOdrInf.InoutKbn, alternationIndex, tenMst?.OdrTermVal ?? 0, tenMst?.CnvTermVal ?? 0, tenMst?.YjCd ?? string.Empty, tenMst?.MasterSbt ?? string.Empty, isHistory ? new List<YohoSetMstModel>() : GetListYohoSetMstModelByUserID(listYohoSets ?? new List<YohoSetMst>(), tenMstYohos?.Where(t => t.SinKouiKbn == odrInfDetail.SinKouiKbn)?.ToList() ?? new List<TenMst>()), kasan?.Kasan1 ?? 0, kasan?.Kasan2 ?? 0, tenMst?.CnvUnitName ?? string.Empty, tenMst?.OdrUnitName ?? string.Empty);
                         lock (objDetail)
                         {
                             odrDetailModels.Add(odrInfDetailModel);
@@ -278,7 +278,7 @@ namespace Infrastructure.Repositories
         }
 
 
-        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "")
+        private static OrdInfModel ConvertToModel(OdrInf ordInf, string createName = "", string updateName = "")
         {
             return new OrdInfModel(ordInf.HpId,
                         ordInf.RaiinNo,
@@ -302,11 +302,13 @@ namespace Infrastructure.Repositories
                         ordInf.CreateDate,
                         ordInf.CreateId,
                         createName,
-                        ordInf.UpdateDate
+                        ordInf.UpdateDate,
+                        ordInf.UpdateId,
+                        updateName
                    );
         }
 
-        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0)
+        private OrdInfDetailModel ConvertToDetailModel(OdrInfDetail ordInfDetail, double yakka = 0, double ten = 0, bool isGetPriceInYakka = false, int kensaGaichu = 0, int bunkatuKoui = 0, int inOutKbn = 0, int alternationIndex = 0, double odrTermVal = 0, double cnvTermVal = 0, string yjCd = "", string masterSbt = "", List<YohoSetMstModel>? yohoSets = null, int kasan1 = 0, int kasan2 = 0, string cnvUnitName = "", string odrUnitName = "")
         {
             return new OrdInfDetailModel(
                             ordInfDetail.HpId,
@@ -358,7 +360,9 @@ namespace Infrastructure.Repositories
                             yjCd,
                             yohoSets ?? new List<YohoSetMstModel>(),
                             kasan1,
-                            kasan2
+                            kasan2,
+                            cnvUnitName,
+                            odrUnitName
                 );
         }
 
@@ -435,7 +439,7 @@ namespace Infrastructure.Repositories
         private static List<YohoSetMstModel> GetListYohoSetMstModelByUserID(List<YohoSetMst> listYohoSetMst, List<TenMst> listTenMst)
         {
             var query = from yoho in listYohoSetMst
-                        join ten in listTenMst on yoho.ItemCd.Trim() equals ten.ItemCd.Trim()
+                        join ten in listTenMst on yoho.ItemCd?.Trim() equals ten.ItemCd.Trim()
                         select new
                         {
                             Yoho = yoho,
@@ -492,7 +496,7 @@ namespace Infrastructure.Repositories
 
         public List<Tuple<string, string>> GetIpnMst(int hpId, int sinDateMin, int sinDateMax, List<string> ipnCds)
         {
-            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName)).ToList();
+            var ipnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(ipn => (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd)) && ipn.HpId == hpId && ipn.StartDate <= sinDateMin && ipn.EndDate >= sinDateMax).Select(i => new Tuple<string, string>(i.IpnNameCd, i.IpnName ?? string.Empty)).ToList();
 
             return ipnNameMsts;
         }

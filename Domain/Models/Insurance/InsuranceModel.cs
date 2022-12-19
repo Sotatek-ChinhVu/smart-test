@@ -230,6 +230,24 @@ namespace Domain.Models.InsuranceInfor
         #endregion
 
         #region Function
+        public int GetHokenPatternType()
+        {
+            switch (HokenKbn)
+            {
+                case 0:
+                    return 3;
+                case 1:
+                case 2:
+                    return 1;
+                case 11:
+                case 12:
+                case 13:
+                case 14:
+                    return 2;
+                default:
+                    return 0;
+            }
+        }
 
         public string GetHokenName()
         {

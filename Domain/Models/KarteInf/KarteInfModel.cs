@@ -20,6 +20,15 @@ namespace Domain.Models.KarteInfs
             CreateName = createName;
         }
 
+        public KarteInfModel(int hpId, long raiinNo)
+        {
+            HpId = hpId;
+            RaiinNo = raiinNo;
+            Text = string.Empty;
+            RichText = string.Empty;
+            CreateName = String.Empty;
+        }
+
         public int HpId { get; private set; }
         public long RaiinNo { get; private set; }
         public int KarteKbn { get; private set; }

@@ -1,4 +1,4 @@
-﻿using Domain.Models.HpMst;
+﻿using Domain.Models.HpInf;
 using Domain.Models.Insurance;
 using Domain.Models.Ka;
 using Domain.Models.KarteInfs;
@@ -164,7 +164,9 @@ namespace Interactor.MedicalExamination
                         DateTime.MinValue,
                         0,
                         "",
-                        DateTime.MinValue
+                        DateTime.MinValue,
+                        0,
+                        ""
                     );
 
                 var objDetail = new object();
@@ -230,7 +232,9 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                ""
                             );
                     lock (objDetail)
                     {

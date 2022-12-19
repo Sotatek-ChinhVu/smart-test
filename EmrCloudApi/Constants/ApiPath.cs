@@ -33,10 +33,14 @@
         public const string UpdateAdoptedInputItem = "UpdateAdoptedInputItem";
         public const string UpdateAdoptedByomei = "UpdateAdoptedByomei";
         public const string FindTenMst = "FindTenMst";
+        public const string GetAdoptedItemList = "GetAdoptedItemList";
+        public const string UpdateAdoptedItemList = "UpdateAdoptedItemList";
 
         //Schema
         public const string SaveImageTodayOrder = "SaveImageTodayOrder";
         public const string SaveImageSuperSetDetail = "SaveImageSuperSetDetail";
+        public const string SaveInsuranceScanImage = "SaveInsuranceScanImage";
+        public const string UploadListFileKarte = "UploadListFileKarte";
 
         //Special Note
         public const string AddAlrgyDrugList = "AddAlrgyDrugList";
@@ -78,15 +82,23 @@
         //Validate Kohi
         public const string ValidateKohi = "ValidateKohi";
 
+        //validate ValidHokenInf AllType
+        public const string ValidHokenInfAllType = "ValidHokenInfAllType";
+
         // Validate Insurance Other
         public const string ValidateInsuranceOther = "ValidateInsuranceOther";
 
         //Validate InputItem
         public const string ValidateInputItem = "ValidateInputItem";
+        public const string GetSelectiveComment = "GetSelectiveComment";
 
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+        public const string ShowProductInf = "ShowProductInf";
+        public const string ShowKanjaMuke = "ShowKanjaMuke";
+        public const string ShowMdbByomei = "ShowMdbByomei";
+
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
@@ -103,6 +115,7 @@
 
         //Swaphoken
         public const string SwapHoken = "SwapHoken";
+        public const string CheckHokenPatternUsed = "CheckHokenPatternUsed";
 
         //RaiinKubun
         public const string GetColumnName = "GetColumnName";
@@ -115,14 +128,32 @@
         public const string GetDetailDocumentCategory = "GetDetailDocumentCategory";
         public const string SaveListDocumentCategory = "SaveListDocumentCategory";
         public const string SortDocCategory = "SortDocCategory";
-        public const string AddTemplateToCategory = "AddTemplateToCategory";
+        public const string UploadTemplateToCategory = "UploadTemplateToCategory";
         public const string CheckExistFileName = "CheckExistFileName";
+        public const string SaveDocInf = "SaveDocInf";
+        public const string DeleteDocInf = "DeleteDocInf";
+        public const string DeleteDocTemplate = "DeleteDocTemplate";
+        public const string MoveTemplateToOtherCategory = "MoveTemplateToOtherCategory";
+        public const string DeleteDocCategory = "DeleteDocCategory";
+        public const string DowloadDocumentTemplate = "DowloadDocumentTemplate";
+        public const string GetListParamTemplate = "GetListParamTemplate";
 
         //Medical Examination
         public const string GetCheckDiseases = "GetCheckDiseases";
         public const string GetInfCheckedSpecialItem = "GetInfCheckedSpecialItem";
+        public const string GetInfCheckedItemName = "GetInfCheckedItemName";
+        public const string Search = "Search";
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
     }
 }

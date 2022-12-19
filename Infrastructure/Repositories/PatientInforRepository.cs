@@ -59,7 +59,7 @@ namespace Infrastructure.Repositories
         {
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || p.KanaName.Contains(keyword) || p.Name.Contains(keyword))
+                where p.IsDelete == 0 && (p.PtNum == ptNum || (p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword)))
                 select new
                 {
                     ptInf = p,
@@ -195,8 +195,8 @@ namespace Infrastructure.Repositories
                     itemData.ReferenceNo,
                     itemData.SeqNo,
                     itemData.PtNum,
-                    itemData.KanaName,
-                    itemData.Name,
+                    itemData.KanaName ?? string.Empty,
+                    itemData.Name ?? string.Empty,
                     itemData.Sex,
                     itemData.Birthday,
                     itemData.LimitConsFlg,
@@ -245,7 +245,7 @@ namespace Infrastructure.Repositories
             long ptNum = keyword.AsLong();
             var ptInfWithLastVisitDate =
                 from p in _tenantDataContext.PtInfs
-                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && (p.KanaName.Contains(keyword) || p.Name.Contains(keyword)))
+                where p.IsDelete == 0 && (p.PtNum == ptNum || isContainMode && ((p.KanaName != null && p.KanaName.Contains(keyword)) || (p.Name != null && p.Name.Contains(keyword))))
                 select new
                 {
                     ptInf = p,
@@ -279,10 +279,10 @@ namespace Infrastructure.Repositories
             if (!string.IsNullOrEmpty(input.Name))
             {
                 ptInfQuery = ptInfQuery.Where(p =>
-                    p.Name.Contains(input.Name)
-                    || p.KanaName.Contains(input.Name)
-                    || p.Name.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name)
-                    || p.KanaName.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name));
+                    (p.Name != null && p.Name.Contains(input.Name))
+                    || (p.KanaName != null && p.KanaName.Contains(input.Name))
+                    || (p.Name != null && p.Name.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name))
+                    || (p.KanaName != null && p.KanaName.Replace(" ", string.Empty).Replace("\u3000", string.Empty).Contains(input.Name)));
             }
             // Sex
             if (input.Sex > 0)
@@ -690,7 +690,7 @@ namespace Infrastructure.Repositories
                     .Where(entity => entity.HpId == hpId && entity.StartDate <= sinDate && entity.EndDate >= sinDate)
                     .OrderBy(entity => entity.HpId)
                     .ThenBy(entity => entity.TokkiCd)
-                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName))
+                    .Select(x => new TokkiMstModel(x.TokkiCd, x.TokkiName ?? string.Empty))
                     .ToList();
         }
 
@@ -702,8 +702,8 @@ namespace Infrastructure.Repositories
                 p.ReferenceNo,
                 p.SeqNo,
                 p.PtNum,
-                p.KanaName,
-                p.Name,
+                p.KanaName ?? string.Empty,
+                p.Name ?? string.Empty,
                 p.Sex,
                 p.Birthday,
                 p.LimitConsFlg,
@@ -1268,6 +1268,7 @@ namespace Infrastructure.Repositories
                 dest.HpId = hpId;
                 dest.PtId = patientInfo.PtId;
                 dest.UpdateDate = DateTime.UtcNow;
+                dest.UpdateId = userId;
                 return dest;
             });
             _tenantTrackingDataContext.PtSanteiConfs.AddRange(ptSanteiConfListAdd);
@@ -1466,8 +1467,8 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
                     destCf.HpId = hpId;
+                    destCf.HokenGrp = 1;
                     return destCf;
                 }));
                 #endregion
@@ -1491,7 +1492,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateHokenInf.HokenId, userId, false);
 
                     //RousaiTenki
                     var listAddTenki = Mapper.Map<RousaiTenkiModel, PtRousaiTenki>(item.ListRousaiTenki.Where(x => x.SeqNo == 0), (src, dest) =>
@@ -1554,7 +1555,7 @@ namespace Infrastructure.Repositories
                     destCf.HokenId = dest.HokenId;
                     destCf.CheckId = userId;
                     destCf.PtID = patientInfo.PtId;
-                    destCf.HokenGrp = 1;
+                    destCf.HokenGrp = 2;
                     destCf.HpId = hpId;
                     return destCf;
                 }));
@@ -1579,7 +1580,7 @@ namespace Infrastructure.Repositories
                     });
 
                     //ConfirmDate
-                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId).Wait();
+                    UpdateHokenCheck(databaseHokenChecks, item.ConfirmDateList, patientInfo.HpId, patientInfo.PtId, updateKohi.HokenId, userId, true);
                 }
             }
             #endregion HokenKohi
@@ -1637,7 +1638,7 @@ namespace Infrastructure.Repositories
             return minPtNum + 1;
         }
 
-        private Task UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
+        private void UpdateHokenCheck(List<PtHokenCheck> databaseList, List<ConfirmDateModel> savingList, int hpId, long ptId, int hokenId, int actUserId, bool hokenKohi = false)
         {
             int hokenGrp = 1;
             if (hokenKohi)
@@ -1681,7 +1682,6 @@ namespace Infrastructure.Repositories
                     modelUpdate.UpdateDate = DateTime.UtcNow;
                 }
             }
-            return Task.CompletedTask;
         }
 
         public bool DeletePatientInfo(long ptId, int hpId, int userId)
@@ -1788,6 +1788,9 @@ namespace Infrastructure.Repositories
         public HokenMstModel GetHokenMstByInfor(int hokenNo, int hokenEdaNo)
         {
             var hokenMst = _tenantTrackingDataContext.HokenMsts.FirstOrDefault(x => x.HokenNo == hokenNo && x.HokenEdaNo == hokenEdaNo);
+            if (hokenMst is null)
+                return new HokenMstModel();
+
             return Mapper.Map(hokenMst, new HokenMstModel(), (src, dest) =>
             {
                 return dest;
