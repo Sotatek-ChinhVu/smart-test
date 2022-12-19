@@ -518,5 +518,43 @@ namespace Infrastructure.Repositories
             }
             return _tenantDataContextTracking.SaveChanges() > 0;
         }
+
+        public HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch)
+        {
+            var entity = _tenantDataContext.HokensyaMsts.FirstOrDefault(hokensya => hokensya.HpId == hpId
+                                                        && hokensya.Houbetu == houbetuNo
+                                                        && hokensya.HokensyaNo == hokensyaNoSearch);
+
+            if(entity is null)
+            {
+                entity = new HokensyaMst()
+                {
+                    Houbetu = houbetuNo,
+                    HokensyaNo = hokensyaNo,
+                    HokenKbn = hokenKbn,
+                    IsKigoNa = 0,
+                };
+            }
+
+            return new HokensyaMstModel(entity.HpId
+                                        ,entity.Name ?? string.Empty
+                                        ,entity.KanaName ?? string.Empty
+                                        ,entity.HoubetuKbn ?? string.Empty
+                                        ,entity.Houbetu ?? string.Empty
+                                        ,entity.HokenKbn
+                                        ,entity.PrefNo
+                                        ,entity.HokensyaNo ?? string.Empty
+                                        ,entity.Kigo ?? string.Empty
+                                        ,entity.Bango ?? string.Empty
+                                        ,entity.RateHonnin
+                                        ,entity.RateKazoku
+                                        ,entity.PostCode ?? string.Empty
+                                        ,entity.Address1 ?? string.Empty
+                                        ,entity.Address2 ?? string.Empty
+                                        ,entity.Tel1 ?? string.Empty
+                                        ,entity.IsKigoNa); ;
+        }
     }
 }
+
+

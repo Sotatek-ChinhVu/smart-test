@@ -8,6 +8,7 @@ using Domain.Models.DrugDetail;
 using Domain.Models.DrugInfor;
 using Domain.Models.FlowSheet;
 using Domain.Models.GroupInf;
+using Domain.Models.HistoryOrder;
 using Domain.Models.HokenMst;
 using Domain.Models.HpInf;
 using Domain.Models.Insurance;
@@ -26,6 +27,7 @@ using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
+using Domain.Models.PtGroupMst;
 using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
@@ -72,6 +74,7 @@ using Interactor.CalculationInf;
 using Interactor.ColumnSetting;
 using Interactor.Diseases;
 using Interactor.Document;
+using Interactor.Document.CommonGetListParam;
 using Interactor.DrugDetail;
 using Interactor.DrugDetailData;
 using Interactor.DrugInfor;
@@ -95,6 +98,7 @@ using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientRaiinKubun;
+using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
@@ -127,15 +131,23 @@ using UseCase.ColumnSetting.SaveList;
 using UseCase.Core.Builder;
 using UseCase.Diseases.GetDiseaseList;
 using UseCase.Diseases.Upsert;
-using UseCase.Document.UploadTemplateToCategory;
 using UseCase.Document.CheckExistFileName;
+using UseCase.Document.DeleteDocCategory;
+using UseCase.Document.DeleteDocInf;
+using UseCase.Document.DeleteDocTemplate;
 using UseCase.Document.GetDocCategoryDetail;
 using UseCase.Document.GetListDocCategory;
+using UseCase.Document.GetListParamTemplate;
+using UseCase.Document.MoveTemplateToOtherCategory;
 using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
+using UseCase.Document.UploadTemplateToCategory;
 using UseCase.DrugDetail;
-using UseCase.DrugDetailData;
+using UseCase.DrugDetailData.Get;
+using UseCase.DrugDetailData.ShowKanjaMuke;
+using UseCase.DrugDetailData.ShowMdbByomei;
+using UseCase.DrugDetailData.ShowProductInf;
 using UseCase.DrugInfor.Get;
 using UseCase.FlowSheet.GetList;
 using UseCase.FlowSheet.Upsert;
@@ -143,7 +155,9 @@ using UseCase.GroupInf.GetList;
 using UseCase.HokenMst.GetDetail;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.Insurance.GetKohiPriorityList;
 using UseCase.Insurance.GetList;
+using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Insurance.ValidateInsurance;
 using UseCase.Insurance.ValidateRousaiJibai;
 using UseCase.Insurance.ValidHokenInfAllType;
@@ -152,6 +166,7 @@ using UseCase.Insurance.ValidMainInsurance;
 using UseCase.Insurance.ValidPatternExpirated;
 using UseCase.Insurance.ValidPatternOther;
 using UseCase.InsuranceMst.Get;
+using UseCase.InsuranceMst.GetHokenSyaMst;
 using UseCase.InsuranceMst.SaveHokenSyaMst;
 using UseCase.JsonSetting.Get;
 using UseCase.JsonSetting.Upsert;
@@ -167,6 +182,7 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -206,6 +222,7 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
+using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
@@ -255,19 +272,12 @@ using UseCase.User.GetByLoginId;
 using UseCase.User.GetList;
 using UseCase.User.GetUserConfList;
 using UseCase.User.MigrateDatabase;
+using UseCase.User.UpdateUserConf;
 using UseCase.User.UpsertList;
 using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using Domain.Models.HistoryOrder;
-using UseCase.Document.DeleteDocInf;
-using UseCase.Document.DeleteDocTemplate;
-using UseCase.Document.MoveTemplateToOtherCategory;
-using UseCase.Insurance.HokenPatternUsed;
-using UseCase.Document.DeleteDocCategory;
-using Interactor.Document.CommonGetListParam;
-using UseCase.Document.GetListParamTemplate;
 using UseCase.Document.DowloadDocumentTemplate;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -384,6 +394,7 @@ namespace EmrCloudApi.Configs.Dependency
             services.AddTransient<IDocumentRepository, DocumentRepository>();
             services.AddTransient<IHistoryOrderRepository, HistoryOrderRepository>();
             services.AddTransient<ICommonGetListParam, CommonGetListParam>();
+            services.AddTransient<IGroupNameMstRepository, GroupNameMstRepository>();
         }
 
         private void SetupUseCase(IServiceCollection services)
@@ -480,6 +491,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
             busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
+            busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();
@@ -504,6 +516,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             // HokensyaMst
             busBuilder.RegisterUseCase<SearchHokensyaMstInputData, SearchHokensyaMstInteractor>();
+            busBuilder.RegisterUseCase<GetHokenSyaMstInputData, GetHokenSyaMstInteractor>();
 
             // Flowsheet
             busBuilder.RegisterUseCase<GetListFlowSheetInputData, GetListFlowSheetInteractor>();
@@ -560,6 +573,9 @@ namespace EmrCloudApi.Configs.Dependency
             // Drug Infor - Data Menu and Detail 
             busBuilder.RegisterUseCase<GetDrugDetailInputData, GetDrugDetailInteractor>();
             busBuilder.RegisterUseCase<GetDrugDetailDataInputData, GetDrugDetailDataInteractor>();
+            busBuilder.RegisterUseCase<ShowProductInfInputData, ShowProductInfInteractor>();
+            busBuilder.RegisterUseCase<ShowKanjaMukeInputData, ShowKanjaMukeInteractor>();
+            busBuilder.RegisterUseCase<ShowMdbByomeiInputData, ShowMdbByomeiInteractor>();
 
             //DrugInfor
             busBuilder.RegisterUseCase<GetDrugInforInputData, GetDrugInforInteractor>();
@@ -617,6 +633,7 @@ namespace EmrCloudApi.Configs.Dependency
             //UserConf
             busBuilder.RegisterUseCase<GetUserConfListInputData, GetUserConfListInteractor>();
             busBuilder.RegisterUseCase<UpdateAdoptedByomeiConfigInputData, UpdateAdoptedByomeiConfigInteractor>();
+            busBuilder.RegisterUseCase<UpdateUserConfInputData, UpdateUserConfInteractor>();
 
             //SwapHoken
             busBuilder.RegisterUseCase<SaveSwapHokenInputData, SaveSwapHokenInteractor>();
@@ -650,6 +667,12 @@ namespace EmrCloudApi.Configs.Dependency
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();
+
+            //Hoki PriorityList
+            busBuilder.RegisterUseCase<GetKohiPriorityListInputData, GetKohiPriorityListInteractor>();
+
+            //PtGroupMaster
+            busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);

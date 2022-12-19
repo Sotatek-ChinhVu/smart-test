@@ -273,6 +273,8 @@ namespace Interactor.MedicalExamination
                                 0,
                                 0,
                                 "",
+                                "",
+                                "",
                                 ""
                             );
                     lock (objDetail)

@@ -3,6 +3,7 @@ using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
 using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
@@ -226,7 +227,7 @@ namespace Infrastructure.Repositories
 
         public (List<TenItemModel>, int) SearchTenMst(string keyword, int kouiKbn, int sinDate, int pageIndex, int pageCount, int genericOrSameItem, string yjCd, int hpId, double pointFrom, double pointTo, bool isRosai, bool isMirai, bool isExpired, string itemCodeStartWith, bool isMasterSearch, bool isSearch831SuffixOnly, bool isSearchSanteiItem)
         {
-            string kanaKeyword = "";
+            string kanaKeyword = keyword;
             if (!WanaKana.IsKana(keyword) && WanaKana.IsRomaji(keyword))
             {
                 var inputKeyword = keyword;

@@ -7,6 +7,7 @@ using EmrCloudApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.SearchHistory;
 
 namespace EmrCloudApi.Controller
 {
@@ -22,8 +23,6 @@ namespace EmrCloudApi.Controller
         [HttpGet(ApiPath.GetList)]
         public ActionResult<Response<GetMedicalExaminationHistoryResponse>> GetList([FromQuery] GetMedicalExaminationHistoryRequest request)
         {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            watch.Start();
             var input = new GetMedicalExaminationHistoryInputData(request.PtId, HpId, request.SinDate, request.Offset, request.Limit, request.DeleteCondition, request.KarteDeleteHistory, request.FilterId, UserId, request.IsShowApproval);
             var output = _bus.Handle(input);
 
@@ -31,8 +30,19 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             var result = Ok(presenter.Result);
-            watch.Stop();
-            Console.WriteLine("TimeLog_History-" + request.PtId + "-" + watch.ElapsedMilliseconds);
+            return result;
+        }
+
+        [HttpGet(ApiPath.Search)]
+        public ActionResult<Response<SearchHistoryResponse>> Search([FromQuery] SearchHistoryRequest request)
+        {
+            var input = new SearchHistoryInputData(HpId, UserId, request.PtId, request.SinDate, request.CurrentIndex, request.FilterId, request.IsDeleted, request.KeyWord, request.SearchType, request.IsNext);
+            var output = _bus.Handle(input);
+
+            var presenter = new SearchHistoryPresenter();
+            presenter.Complete(output);
+
+            var result = Ok(presenter.Result);
             return result;
         }
     }

@@ -15,5 +15,7 @@ namespace Domain.Models.InsuranceMst
         HokenMstModel GetHokenMstByFutansyaNo(int hpId, int sinDate, string futansyaNo);
 
         bool SaveHokenSyaMst(HokensyaMstModel model, int userId);
+
+        HokensyaMstModel FindHokenSyaMstInf(int hpId, string hokensyaNo, int hokenKbn, string houbetuNo, string hokensyaNoSearch);
     }
 }

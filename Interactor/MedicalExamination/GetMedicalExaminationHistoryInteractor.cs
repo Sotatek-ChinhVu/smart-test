@@ -3,6 +3,12 @@ using Domain.Models.Insurance;
 using Domain.Models.InsuranceInfor;
 using Domain.Models.KarteInfs;
 using Domain.Models.OrdInfs;
+using Domain.Models.PatientInfor;
+using Helper.Constants;
+using Infrastructure.Interfaces;
+using Infrastructure.Options;
+using Microsoft.Extensions.Options;
+using System.Text;
 using UseCase.MedicalExamination.GetHistory;
 using UseCase.OrdInfs.GetListTrees;
 
@@ -12,10 +18,17 @@ namespace Interactor.MedicalExamination
     {
         private readonly IInsuranceRepository _insuranceRepository;
         private readonly IHistoryOrderRepository _historyOrderRepository;
-        public GetMedicalExaminationHistoryInteractor(IInsuranceRepository insuranceRepository, IHistoryOrderRepository historyOrderRepository)
+        private readonly IPatientInforRepository _patientInforRepository;
+        private readonly IAmazonS3Service _amazonS3Service;
+        private readonly AmazonS3Options _options;
+
+        public GetMedicalExaminationHistoryInteractor(IOptions<AmazonS3Options> optionsAccessor, IInsuranceRepository insuranceRepository, IHistoryOrderRepository historyOrderRepository, IAmazonS3Service amazonS3Service, IPatientInforRepository patientInforRepository)
         {
             _insuranceRepository = insuranceRepository;
             _historyOrderRepository = historyOrderRepository;
+            _amazonS3Service = amazonS3Service;
+            _options = optionsAccessor.Value;
+            _patientInforRepository = patientInforRepository;
         }
 
         public GetMedicalExaminationHistoryOutputData Handle(GetMedicalExaminationHistoryInputData inputData)
@@ -41,6 +54,16 @@ namespace Interactor.MedicalExamination
 
                 var insuranceModelList = _insuranceRepository.GetInsuranceList(inputData.HpId, inputData.PtId, inputData.SinDate, true);
 
+                var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+                List<string> listFolders = new();
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+
+                var host = new StringBuilder();
+                host.Append(_options.BaseAccessUrl);
+                host.Append("/");
+                host.Append(path);
                 foreach (HistoryOrderModel history in historyList.Item2)
                 {
                     KarteInfModel karteInf = history.KarteInfModel;
@@ -73,7 +96,11 @@ namespace Interactor.MedicalExamination
                             history.SinryoTitle,
                             history.HokenType,
                             new List<HokenGroupHistoryItem>(),
-                            karteHistoryList
+                            karteHistoryList,
+                            history.ListKarteFile.Select(item =>
+                                                                new FileInfOutputItem(item, host.ToString()))
+                                                    .OrderBy(item => item.SeqNo)
+                                                    .ToList()
                         );
 
                     //Excute order
@@ -261,7 +288,9 @@ namespace Interactor.MedicalExamination
                                                                     od.Kasan2,
                                                                     od.CnvUnitName,
                                                                     od.OdrUnitName,
-                                                                    od.HasCmtName
+                                                                    od.HasCmtName,
+                                                                    od.CenterItemCd1,
+                                                                    od.CenterItemCd2
                                                             )
                                                             ).ToList(),
                                                             rpOdrInf.CreateDate,

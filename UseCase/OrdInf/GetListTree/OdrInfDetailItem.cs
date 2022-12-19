@@ -4,7 +4,7 @@ namespace UseCase.OrdInfs.GetListTrees
 {
     public class OdrInfDetailItem
     {
-        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName)
+        public OdrInfDetailItem(int hpId, long raiinNo, long rpNo, long rpEdaNo, int rowNo, long ptId, int sinDate, int sinKouiKbn, string itemCd, string itemName, double suryo, string unitName, int unitSbt, double termVal, int kohatuKbn, int syohoKbn, int syohoLimitKbn, int drugKbn, int yohoKbn, string kokuji1, string kokuji2, int isNodspRece, string ipnCd, string ipnName, int jissiKbn, DateTime jissiDate, int jissiId, string jissiMachine, string reqCd, string bunkatu, string cmtName, string cmtOpt, string fontColor, int commentNewline, double yakka, bool isGetPriceInYakka, double ten, int bunkatuKoui, int alternationIndex, int kensaGaichu, double odrTermVal, double cnvTermVal, string yjCd, string masterSbt, List<YohoSetMstModel> yohoSets, int kasan1, int kasan2, string cnvUnitName, string odrUnitName, bool hasCmtName, string centerItemCd1, string centerItemCd2)
         {
             HpId = hpId;
             RaiinNo = raiinNo;
@@ -56,6 +56,8 @@ namespace UseCase.OrdInfs.GetListTrees
             CnvUnitName = cnvUnitName;
             OdrUnitName = odrUnitName;
             HasCmtName = hasCmtName;
+            CenterItemCd1 = centerItemCd1;
+            CenterItemCd2 = centerItemCd2;
         }
 
         public int HpId { get; private set; }
@@ -157,5 +159,9 @@ namespace UseCase.OrdInfs.GetListTrees
         public string OdrUnitName { get; private set; }
 
         public bool HasCmtName { get; private set; }
+
+        public string CenterItemCd1 { get; private set; }
+
+        public string CenterItemCd2 { get; private set; }
     }
 }

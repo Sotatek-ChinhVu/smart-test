@@ -1,12 +1,7 @@
 ﻿using Domain.Models.DrugDetail;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Core.Sync.Core;
 
-namespace UseCase.DrugDetailData
+namespace UseCase.DrugDetailData.Get
 {
     public class GetDrugDetailDataOutputData : IOutputData
     {
