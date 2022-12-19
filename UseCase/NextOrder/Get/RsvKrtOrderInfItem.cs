@@ -28,7 +28,7 @@ namespace UseCase.NextOrder.Get
             CreateDate = rsvkrtOrderInfModel.CreateDate;
             CreateId = rsvkrtOrderInfModel.CreateId;
             CreateName = rsvkrtOrderInfModel.CreateName;
-            RsvKrtOrderInfDetailItems = rsvkrtOrderInfModel.OrderInfDetailModels.Select(od => new RsvKrtOrderInfDetailItem(od)).ToList();
+            RsvKrtOrderInfDetailItems = rsvkrtOrderInfModel.OrdInfDetails.Select(od => new RsvKrtOrderInfDetailItem(od)).ToList();
         }
 
         public int HpId { get; private set; }

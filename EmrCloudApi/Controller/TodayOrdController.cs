@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using UseCase.Core.Sync;
 using UseCase.Insurance.GetComboList;
 using UseCase.Insurance.GetDefaultSelectPattern;
+using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.OrdInfs.ValidationTodayOrd;
 
@@ -96,7 +97,8 @@ namespace EmrCloudApi.Controller
                     request.KarteItem.Text,
                     request.KarteItem.IsDeleted,
                     request.KarteItem.RichText),
-                UserId
+                UserId,
+                request.KarteFileItems
             );
             var output = _bus.Handle(input);
 
@@ -222,6 +224,18 @@ namespace EmrCloudApi.Controller
             presenter.Complete(output);
 
             return new ActionResult<Response<GetInsuranceComboListResponse>>(presenter.Result);
+        }
+
+
+        [HttpPost(ApiPath.GetInfCheckedItemName)]
+        public ActionResult<Response<CheckedItemNameResponse>> GetInfCheckedItemName([FromBody] CheckedItemNameRequest request)
+        {
+            var input = new CheckedItemNameInputData(request.OdrInfs);
+            var output = _bus.Handle(input);
+            var presenter = new CheckedItemNamePresenter();
+            presenter.Complete(output);
+
+            return new ActionResult<Response<CheckedItemNameResponse>>(presenter.Result);
         }
     }
 }

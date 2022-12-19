@@ -9,7 +9,7 @@ namespace UseCase.Insurance.ValidMainInsurance
 {
     public class ValidMainInsuranceInputData : IInputData<ValidMainInsuranceOutputData>
     {
-        public ValidMainInsuranceInputData(int hpId, int sinDate, int ptBirthday, int hokenKbn, string hokenSyaNo, bool isSelectedHokenPattern, bool isSelectedHokenInf, bool isSelectedHokenMst, string selectedHokenInfHoubetu, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool selectedHokenInfIsAddNew, bool selectedHokenInfIsJihi, int selectedHokenInfStartDate, int selectedHokenInfEndDate, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfHonkeKbn, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfIsShahoOrKokuho, bool selectedHokenInfIsExpirated, bool selectedHokenInfIsIsNoHoken, int selectedHokenInfConfirmDate, bool selectedHokenInfIsAddHokenCheck, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, bool selectedHokenPatternIsEmptyKohi1, bool selectedHokenPatternIsEmptyKohi2, bool selectedHokenPatternIsEmptyKohi3, bool selectedHokenPatternIsEmptyKohi4, bool selectedHokenPatternIsExpirated, bool selectedHokenPatternIsEmptyHoken,bool selectedHokenPatternIsAddNew)
+        public ValidMainInsuranceInputData(int hpId, int sinDate, int ptBirthday, int hokenKbn, string hokenSyaNo, bool isSelectedHokenPattern, bool isSelectedHokenInf, bool isSelectedHokenMst, string selectedHokenInfHoubetu, int selectedHokenInfHokenNo, int selectedHokenInfHokenEdraNo, bool selectedHokenInfIsAddNew, bool selectedHokenInfIsJihi, int selectedHokenInfStartDate, int selectedHokenInfEndDate, string selectedHokenInfKigo, string selectedHokenInfBango, int selectedHokenInfHonkeKbn, int selectedHokenInfTokureiYm1, int selectedHokenInfTokureiYm2, bool selectedHokenInfIsShahoOrKokuho, bool selectedHokenInfIsExpirated, bool selectedHokenInfIsIsNoHoken, int selectedHokenInfConfirmDate, bool selectedHokenInfIsAddHokenCheck, string selectedHokenInfTokki1, string selectedHokenInfTokki2, string selectedHokenInfTokki3, string selectedHokenInfTokki4, string selectedHokenInfTokki5, bool selectedHokenPatternIsEmptyKohi1, bool selectedHokenPatternIsEmptyKohi2, bool selectedHokenPatternIsEmptyKohi3, bool selectedHokenPatternIsEmptyKohi4, bool selectedHokenPatternIsExpirated, bool selectedHokenPatternIsEmptyHoken,bool selectedHokenPatternIsAddNew, bool hokenInfIsNoHoken, int selectedHokenInfHokenChecksCount)
         {
             HpId = hpId;
             SinDate = sinDate;
@@ -48,6 +48,8 @@ namespace UseCase.Insurance.ValidMainInsurance
             SelectedHokenPatternIsExpirated = selectedHokenPatternIsExpirated;
             SelectedHokenPatternIsEmptyHoken = selectedHokenPatternIsEmptyHoken;
             SelectedHokenPatternIsAddNew = selectedHokenPatternIsAddNew;
+            HokenInfIsNoHoken = hokenInfIsNoHoken;
+            SelectedHokenInfHokenChecksCount = selectedHokenInfHokenChecksCount;
         }
 
         public int HpId { get; private set; }
@@ -123,6 +125,10 @@ namespace UseCase.Insurance.ValidMainInsurance
         public bool SelectedHokenPatternIsEmptyHoken { get; private set; }
 
         public bool SelectedHokenPatternIsAddNew { get; private  set; }
+
+        public bool HokenInfIsNoHoken { get; private set; }
+
+        public int SelectedHokenInfHokenChecksCount { get; private set; }
 
     }
 }

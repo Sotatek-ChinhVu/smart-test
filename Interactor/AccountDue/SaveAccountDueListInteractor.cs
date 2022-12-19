@@ -1,5 +1,5 @@
 ﻿using Domain.Models.AccountDue;
-using Domain.Models.HpMst;
+using Domain.Models.HpInf;
 using Domain.Models.PatientInfor;
 using Domain.Models.User;
 using EventProcessor.Interfaces;

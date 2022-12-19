@@ -140,7 +140,11 @@ namespace Interactor.MedicalExamination
                                 "",
                                 new List<YohoSetMstModel>(),
                                 0,
-                                0
+                                0,
+                                "",
+                                "",
+                                "",
+                                ""
                             )).ToList() ?? new List<OrdInfDetailModel>();
 
                 var hokenPids = new List<(long rpno, long edano, int hokenPid)>();

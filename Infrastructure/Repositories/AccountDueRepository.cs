@@ -118,7 +118,7 @@ public class AccountDueRepository : IAccountDueRepository
         var uketukeList = _tenantNoTrackingDataContext.UketukeSbtMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(p => p.SortNo).ToList();
         foreach (var uketuke in uketukeList)
         {
-            result.Add(uketuke.KbnId, uketuke.KbnName);
+            result.Add(uketuke.KbnId, uketuke.KbnName ?? string.Empty);
         }
         return result;
     }

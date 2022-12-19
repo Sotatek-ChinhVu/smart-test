@@ -6,6 +6,8 @@
 
         IEnumerable<RaiinListTagModel> GetList(int hpId, long ptId, bool isNoWithWhiteStar);
 
+        List<RaiinListTagModel> GetList(int hpId, long ptId, List<long> raiinNoList);
+
         RaiinListTagModel Get(int hpId, long ptId, long raiinNo, int sinDate);
     }
 }

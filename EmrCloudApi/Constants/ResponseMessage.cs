@@ -33,6 +33,7 @@
         public static readonly string InvalidHokenEdraNo = "Invalid HokenEdraNo";
         public static readonly string InvalidTantoId = "Invalid TantoId";
         public static readonly string InvalidAdoptedValue = "Invalid Adopted Value";
+        public static readonly string InvalidCurrentIndex = "Invalid CurrentIndex";
 
         //Common
         public static readonly string NotFound = "Not found";
@@ -330,7 +331,7 @@
         public static readonly string InvalidPasteSetCd = "Invalid PasteSetCd, PasteSetCd > 0";
         public static readonly string InvalidDragSetCd = "Invalid DragSetCd, DragSetCd >= 0";
         public static readonly string InvalidDropSetCd = "Invalid DropSetCd, DropSetCd > 0";
-        public static readonly string InvalidSetCd = "Invalid SetCd, SetCd >= 0";
+        public static readonly string InvalidSetCd = "Invalid SetCd, this SetCd is not exist.";
         public static readonly string InvalidSetKbn = "Invalid SetKbn, SetKbn >= 1 and SetKbn <= 10";
         public static readonly string InvalidSetKbnEdaNo = "Invalid SetKbnEdaNo, SetKbnEdaNo >= 1 and SetKbnEdaNo <= 6";
         public static readonly string InvalidGenarationId = "Invalid GenarationId, GenarationId >= 0";
@@ -387,6 +388,7 @@
         public static readonly string InvalidOldImage = "Invalid old image.";
         public static readonly string DeleteSuccessed = "Delete image successed.";
         public static readonly string InvalidFileImage = "File image is not null.";
+        public static readonly string InvalidTypeUpload = "Invalid type upload.";
 
         // Today Validate Order
         public static readonly string TodayOrdInvalidSpecialItem = "Special item doesn't contain drug, injection and other";
@@ -731,7 +733,7 @@
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
         public static readonly string MProcedure = "・手技が入力されているか確認してください。";
-        public static readonly string MDisease = "薬剤";
+        public static readonly string MDisease = "病名";
         public static readonly string MTenkiContinue = "転帰区分";
         public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
         public static readonly string MTenkiDate = "転帰日";
@@ -818,14 +820,27 @@
         //Next Order
         public static readonly string InvalidRsvkrtNo = "Invalid RsvkrtNo";
         public static readonly string InvalidRsvkrtKbn = "Invalid RsvkrtKbn";
+        public static readonly string InvalidRsvDate = "Invalid RsvDate";
+        public static readonly string InvalidRsvkrtName = "Invalid RsvkrtName";
+        public static readonly string InvalidRsvkrtIsDeleted = "Invalid RsvkrtName";
+
 
         // Document
         public static readonly string InvalidDocumentCategoryCd = "Invalid Document CategoryCd!";
+        public static readonly string MoveDocCategoryNotFound = "Invalid Document MoveCategoryCd!";
         public static readonly string InvalidDocumentCategoryName = "Invalid Document CategoryName, CategoryName is required and not duplicate!";
         public static readonly string InvalidMoveInDocCategoryCd = "Invalid Document move in CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidMoveOutDocCategoryCd = "Invalid Document move out CategoryCd, CategoryCd is required and exist in DB!";
         public static readonly string InvalidDocInfFileName = "Invalid DocInf FileName, FileName is required!";
         public static readonly string InvalidFileInput = "Invalid File Input!";
+        public static readonly string TemplateNotFound = "Template Not Found!";
+        public static readonly string ExistFileTemplateName = "Exist FileTemplateName!";
+        public static readonly string InvalidNewCategoryCd = "Invalid NewCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string InvalidOldCategoryCd = "Invalid OldCategoryCd, CategoryCd is required and exist in DB!";
+        public static readonly string FileTemplateNotFould = "File template not fould!";
+        public static readonly string FileTemplateIsExistInNewFolder = "File template is exist in new folder!";
+        public static readonly string DocInfNotFound = "DocInf Not Found!";
+        public static readonly string TemplateLinkIsNotExists = "TemplateLink is not exists!";
 
         //Check Special Item InvalidCheckAge
         public static readonly string InvalidCheckAge = "Invalid Check Age";
@@ -842,5 +857,11 @@
         public static readonly string OldScanImageIsNotFound = "Old scan image is not found";
         public static readonly string RemoveOldScanImageFailed = "Remove old scan image is failed";
         public static readonly string RemoveOldScanImageSuccessful = "Remove old scan image is succesful";
+
+        //Drug Menu
+        public static readonly string DrugMenuInvalidIndexMenu = "Invalid Menu Index";
+
+        //PtGrpMaster
+        public static readonly string InvalidInputGroupMst = "SortNo,GrpId,GrpName,GrpCode or GrpCodeCodeName is invalid";
     }
 }

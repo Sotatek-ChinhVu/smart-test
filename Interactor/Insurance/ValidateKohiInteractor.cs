@@ -243,18 +243,10 @@ namespace Interactor.Insurance
                 || sinDate != confirmKohi1YM)
             {
                 // 公１・保険証確認日ﾁｪｯｸ(有効保険・新規保険の場合のみ)
-                if (!isAddNew)
+                if (!isAddNew && !selectedHokenPatternIsExpirated)
                 {
-                    var paramsMessage = new string[] { "公費" + numberMessage, "受給者証等" };
+                    var paramsMessage = new string[] { "公費１", "受給者証等" };
                     message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
-                }
-                else
-                {
-                    if(!selectedHokenPatternIsExpirated)
-                    {
-                        var paramsMessage = new string[] { "公費１", "受給者証等" };
-                        message = String.Format(ErrorMessage.MessageType_mChk00030, paramsMessage);
-                    }
                 }
             }
             if (!String.IsNullOrEmpty(message))
@@ -349,7 +341,7 @@ namespace Interactor.Insurance
                 numberMessage = "４";
             }
 
-            if (!isKohiModel)
+            if (isKohiModel)
             {
                 if (numberKohi == 1)
                 {

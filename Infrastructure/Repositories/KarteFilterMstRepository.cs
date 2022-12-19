@@ -44,7 +44,7 @@ public class KarteFilterMstRepository : IKarteFilterMstRepository
                 karteMst.HpId,
                 karteMst.UserId,
                 karteMst.FilterId,
-                karteMst.FilterName,
+                karteMst.FilterName ?? string.Empty,
                 karteMst.SortNo,
                 karteMst.AutoApply,
                 karteMst.IsDeleted,
