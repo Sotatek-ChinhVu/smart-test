@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 namespace FindAndReplace
 {
@@ -107,11 +103,6 @@ namespace FindAndReplace
         /// <param name="comparisonType">Rule for string comparison.</param>
         public void FindAndReplace(string find, string replace, StringComparison comparisonType)
         {
-            if (string.IsNullOrEmpty(find))
-                throw new ArgumentNullException("find");
-            if (string.IsNullOrEmpty(replace))
-                throw new ArgumentNullException("replace");
-
             this.ranges.ForEach(range => range.FindAndReplace(find, replace, comparisonType));
         }
 
@@ -119,5 +110,7 @@ namespace FindAndReplace
         /// Saves and closes the Word document.
         /// </summary>
         public void Dispose() { this.documents.Dispose(); }
+
+        public void Close() { this.documents.Close(); }
     }
 }

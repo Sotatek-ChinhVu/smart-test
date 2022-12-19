@@ -22,6 +22,8 @@ using System.Net;
 using DocumentFormat.OpenXml.Packaging;
 using Interactor.Document.CommonGetListParam;
 using DocumentFormat.OpenXml.Wordprocessing;
+using FindAndReplace;
+using UseCase.Document.DowloadDocumentTemplate;
 
 namespace EmrCloudApi.Controller;
 
@@ -181,43 +183,14 @@ public class DocumentController : AuthorizeControllerBase
         return new ActionResult<Response<GetListParamTemplateResponse>>(presenter.Result);
     }
 
-    [HttpPost(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportEmployee([FromBody] ReplaceParamTemplateRequest inputData)
-    {
-        using (var client = new WebClient())
-        {
-            var content = client.DownloadData(inputData.LinkFile);
-            using (var stream = new MemoryStream(content))
-            {
-                using (var word = WordprocessingDocument.Open(stream, true))
-                {
-                    if (word.MainDocumentPart != null && word.MainDocumentPart.Document.Body != null)
-                    {
-                        string docText = null;
-                        using (StreamReader sr = new StreamReader(word.MainDocumentPart.GetStream()))
-                        {
-                            docText = sr.ReadToEnd();
-                        }
 
-                        var listGroups = _commonGetListParam.GetListParam(HpId, UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);
-                        foreach (var group in listGroups)
-                        {
-                            foreach (var param in group.ListParamModel)
-                            {
-                                var element = word.MainDocumentPart.Document.Body.Descendants<SdtElement>()
-                                                 .FirstOrDefault(sdt => sdt.SdtProperties != null && sdt.SdtProperties.GetFirstChild<Tag>()?.Val == "<<" + param.Parameter + ">>");
-                                if (element != null)
-                                {
-                                    element.Descendants<Text>().First().Text = param.Value;
-                                    element.Descendants<Text>().Skip(1).ToList().ForEach(t => t.Remove());
-                                }
-                            }
-                        }
-                    }
-                }
-                return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "file_01.docx");
-            }
-        }
+    [HttpPost(ApiPath.DowloadDocumentTemplate)]
+    public IActionResult ExportEmployee([FromBody] DowloadDocumentTemplateRequest request)
+    {
+        var fileName = Path.GetFileName(request.LinkFile);
+        var input = new DowloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
+        var output = _bus.Handle(input);
+        return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
     }
 
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)

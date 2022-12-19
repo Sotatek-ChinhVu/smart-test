@@ -268,6 +268,7 @@ using UseCase.Insurance.HokenPatternUsed;
 using UseCase.Document.DeleteDocCategory;
 using Interactor.Document.CommonGetListParam;
 using UseCase.Document.GetListParamTemplate;
+using UseCase.Document.DowloadDocumentTemplate;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -645,6 +646,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<MoveTemplateToOtherCategoryInputData, MoveTemplateToOtherCategoryInteractor>();
             busBuilder.RegisterUseCase<DeleteDocCategoryInputData, DeleteDocCategoryInteractor>();
             busBuilder.RegisterUseCase<GetListParamTemplateInputData, GetListParamTemplateInteractor>();
+            busBuilder.RegisterUseCase<DowloadDocumentTemplateInputData, DowloadDocumentTemplateInteractor>();
 
             //InsuranceScan
             busBuilder.RegisterUseCase<SaveInsuranceScanInputData, SaveInsuranceScanInteractor>();

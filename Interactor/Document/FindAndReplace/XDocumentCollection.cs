@@ -46,6 +46,13 @@ namespace FindAndReplace
             this.package.Close();
         }
 
+        public void Close()
+        {
+            this.SaveDocuments();
+            this.package.Flush();
+            this.package.Close();
+        }
+
         public static XDocumentCollection Open(Stream stream)
         {
             var documents = new XDocumentCollection(Package.Open(stream, FileMode.Open, FileAccess.ReadWrite));

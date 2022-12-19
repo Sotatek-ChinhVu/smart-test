@@ -1,6 +1,6 @@
 ﻿namespace EmrCloudApi.Requests.Document;
 
-public class ReplaceParamTemplateRequest
+public class DowloadDocumentTemplateRequest
 {
     public long PtId { get; set; }
 
