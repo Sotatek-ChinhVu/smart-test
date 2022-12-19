@@ -7,4 +7,6 @@ public interface IUserConfRepository
     Dictionary<string, int> GetList(int userId);
 
     void UpdateAdoptedByomeiConfig(int hpId, int userId, int adoptedValue);
+
+    void UpdateUserConf(int hpId, int userId, int grpCd, int value);
 }

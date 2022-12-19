@@ -95,6 +95,10 @@
         //Drug Infor
         public const string GetDrugMenuTree = "GetDrugMenuTree";
         public const string DrugDataSelectedTree = "DrugDataSelectedTree";
+        public const string ShowProductInf = "ShowProductInf";
+        public const string ShowKanjaMuke = "ShowKanjaMuke";
+        public const string ShowMdbByomei = "ShowMdbByomei";
+
 
         //PtKyuseiInf
         public const string GetPtKyuseiInf = "GetPtKyuseiInf";
@@ -141,5 +145,14 @@
 
         //User Config
         public const string UpdateAdoptedByomeiConfig = "UpdateAdoptedByomeiConfig";
+
+        //Get KohiPriority
+        public const string GetKohiPriorityList = "GetKohiPriorityList";
+
+        //hoken sya
+        public const string GetHokenSyaMst = "GetHokenSyaMst";
+
+        //PtGroupMst 
+        public const string SaveGroupNameMst = "SaveGroupNameMst";
     }
 }
