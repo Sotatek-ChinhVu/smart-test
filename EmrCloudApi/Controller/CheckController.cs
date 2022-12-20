@@ -68,24 +68,26 @@ public class CheckController : ControllerBase
 
     private static void DoReplace(IEnumerable<Text> textElements, string replacementText)
     {
+        //for (int i = 0; i < textElements.Count(); i++)
+        //{
+        //    var text = textElements[i]
+        //    if (.Text.con)
+        //    {
+
+        //    }
+        //}
         foreach (var text in textElements)
         {
             if (text.Text.Contains("<<check>>"))
+            {
                 text.Text = text.Text.Replace("<<check>>", replacementText);
+            }
             if (text.Text.Contains("<<作成日(西暦K)>>"))
-                text.Text = text.Text.Replace("<<作成日(西暦K)>>", replacementText);
+            {
+                text.Text = text.Text.Replace("<<", string.Empty);
+                text.Text = text.Text.Replace("作成日(西暦K)", "Мобильный телефон");
+                text.Text = text.Text.Replace(">>", string.Empty);
+            }
         }
     }
-
-    private static void DoReplace(IEnumerable<CellValue> textElements, string replacementText)
-    {
-        foreach (var text in textElements)
-        {
-            if (text.Text.Contains("<<check>>"))
-                text.Text = text.Text.Replace("<<check>>", replacementText);
-            if (text.Text.Contains("<<作成日(西暦K)>>"))
-                text.Text = text.Text.Replace("<<作成日(西暦K)>>", replacementText);
-        }
-    }
-
 }
