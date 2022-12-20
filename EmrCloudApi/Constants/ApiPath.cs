@@ -154,5 +154,6 @@
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
+        public const string GetGroupNameMst = "GetGroupNameMst";
     }
 }

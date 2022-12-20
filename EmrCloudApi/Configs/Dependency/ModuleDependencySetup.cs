@@ -277,6 +277,7 @@ using UseCase.YohoSetMst.GetByItemCd;
 using Domain.Models.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using Interactor.PtGroupMst;
+using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Configs.Dependency
 {
@@ -669,6 +670,7 @@ namespace EmrCloudApi.Configs.Dependency
 
             //PtGroupMaster
             busBuilder.RegisterUseCase<SaveGroupNameMstInputData, SaveGroupNameMstInteractor>();
+            busBuilder.RegisterUseCase<GetGroupNameMstInputData, GetGroupNameMstInteractor>();
 
             var bus = busBuilder.Build();
             services.AddSingleton(bus);
