@@ -1,20 +1,19 @@
 ﻿using Domain.Models.HpInf;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class HpInfRepository : IHpInfRepository
+    public class HpInfRepository : RepositoryBase, IHpInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public HpInfRepository(ITenantProvider tenantProvider)
+        public HpInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public bool CheckHpId(int hpId)
         {
-            var check = _tenantDataContext.HpInfs.Any(hp => hp.HpId == hpId);
+            var check = NoTrackingDataContext.HpInfs.Any(hp => hp.HpId == hpId);
 
             return check;
 
@@ -22,7 +21,7 @@ namespace Infrastructure.Repositories
 
         public HpInfModel GetHpInf(int hpId)
         {
-            var hpInf = _tenantDataContext.HpInfs.FirstOrDefault(item => item.HpId == hpId);
+            var hpInf = NoTrackingDataContext.HpInfs.FirstOrDefault(item => item.HpId == hpId);
             return hpInf != null ? new HpInfModel(hpId,
                                                     hpInf.StartDate,
                                                     hpInf.HpCd ?? string.Empty,

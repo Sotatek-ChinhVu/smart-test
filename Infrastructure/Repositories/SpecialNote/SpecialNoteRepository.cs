@@ -4,6 +4,7 @@ using Domain.Models.SpecialNote.PatientInfo;
 using Domain.Models.SpecialNote.SummaryInf;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -12,27 +13,23 @@ using System.Text;
 
 namespace Infrastructure.Repositories.SpecialNote
 {
-    public class SpecialNoteRepository : ISpecialNoteRepository
+    public class SpecialNoteRepository : RepositoryBase, ISpecialNoteRepository
     {
-        private readonly TenantDataContext _tenantDataContextTracking;
-        private readonly TenantDataContext _tenantDataContextNoTracking;
-
-        public SpecialNoteRepository(ITenantProvider tenantProvider)
+        public SpecialNoteRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
-            _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
         }
+
         public bool SaveSpecialNote(int hpId, long ptId, SummaryInfModel summaryInfModel, ImportantNoteModel importantNoteModel, PatientInfoModel patientInfoModel, int userId)
         {
             if (!IsInvalidInputId(hpId, ptId)) return false;
 
-            var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
             var result = executionStrategy.Execute(
                 () =>
                 {
                     // execute your logic here
-                    using (var transaction = _tenantDataContextTracking.Database.BeginTransaction())
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
                         try
                         {
@@ -48,7 +45,7 @@ namespace Infrastructure.Repositories.SpecialNote
                             {
                                 SavePatientInfo(hpId, ptId, patientInfoModel, userId);
                             }
-                            _tenantDataContextTracking.SaveChanges();
+                            TrackingDataContext.SaveChanges();
                             transaction.Commit();
                             return true;
                         }
@@ -63,17 +60,17 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private bool IsInvalidInputId(int hpId, long ptId)
         {
-            if (!_tenantDataContextNoTracking.HpInfs.Any(x => x.HpId == hpId)) return false;
-            if (!_tenantDataContextNoTracking.PtInfs.Any(x => x.PtId == ptId)) return false;
+            if (!NoTrackingDataContext.HpInfs.Any(x => x.HpId == hpId)) return false;
+            if (!NoTrackingDataContext.PtInfs.Any(x => x.PtId == ptId)) return false;
             return true;
         }
         #region SaveSummaryInf
         private void SaveSummaryInf(int hpId, long ptId, SummaryInfModel summaryInfModel, int userId)
         {
-            var summaryInf = _tenantDataContextNoTracking.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).FirstOrDefault();
+            var summaryInf = TrackingDataContext.SummaryInfs.Where(x => x.PtId == ptId && x.HpId == hpId).FirstOrDefault();
             if (summaryInf != null)
             {
-                _tenantDataContextTracking.SummaryInfs.Update(new SummaryInf()
+                TrackingDataContext.SummaryInfs.Update(new SummaryInf()
                 {
                     Id = summaryInfModel.Id,
                     HpId = summaryInfModel.HpId,
@@ -90,7 +87,7 @@ namespace Infrastructure.Repositories.SpecialNote
             }
             else
             {
-                _tenantDataContextTracking.SummaryInfs.Add(new SummaryInf()
+                TrackingDataContext.SummaryInfs.Add(new SummaryInf()
                 {
                     HpId = summaryInfModel.HpId,
                     PtId = summaryInfModel.PtId,
@@ -144,7 +141,7 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SaveAlrgyFoodItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var alrgyFoodItems = _tenantDataContextNoTracking.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var alrgyFoodItems = NoTrackingDataContext.PtAlrgyFoods.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
             var listAlrgyFood = importantNoteModel.AlrgyFoodItems.Where(x => x.HpId == hpId && x.PtId == ptId)
@@ -165,16 +162,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateAlrgyFoodList != null && updateAlrgyFoodList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyFoods.UpdateRange(updateAlrgyFoodList);
+                TrackingDataContext.PtAlrgyFoods.UpdateRange(updateAlrgyFoodList);
             }
             if (addAlrgyFoodList != null && addAlrgyFoodList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyFoods.AddRange(addAlrgyFoodList);
+                TrackingDataContext.PtAlrgyFoods.AddRange(addAlrgyFoodList);
             }
         }
         private void SaveElseItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var alrgyElseItems = _tenantDataContextNoTracking.PtAlrgyElses
+            var alrgyElseItems = NoTrackingDataContext.PtAlrgyElses
                 .Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
@@ -196,16 +193,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateAlrgyElseList != null && updateAlrgyElseList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyElses.UpdateRange(updateAlrgyElseList);
+                TrackingDataContext.PtAlrgyElses.UpdateRange(updateAlrgyElseList);
             }
             if (addAlrgyElseList != null && addAlrgyElseList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyElses.AddRange(addAlrgyElseList);
+                TrackingDataContext.PtAlrgyElses.AddRange(addAlrgyElseList);
             }
         }
         private void SaveDrugItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var alrgyDrugItems = _tenantDataContextNoTracking.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var alrgyDrugItems = NoTrackingDataContext.PtAlrgyDrugs.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo })
                 .ToList();
             var listAlrgyDrug = importantNoteModel.AlrgyDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
@@ -226,16 +223,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateAlrgyDrugList != null && updateAlrgyDrugList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyDrugs.UpdateRange(updateAlrgyDrugList);
+                TrackingDataContext.PtAlrgyDrugs.UpdateRange(updateAlrgyDrugList);
             }
             if (addAlrgyDrugList != null && addAlrgyDrugList.Any())
             {
-                _tenantDataContextTracking.PtAlrgyDrugs.AddRange(addAlrgyDrugList);
+                TrackingDataContext.PtAlrgyDrugs.AddRange(addAlrgyDrugList);
             }
         }
         private void SaveKioRekiItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var kioRekiItems = _tenantDataContextNoTracking.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var kioRekiItems = NoTrackingDataContext.PtKioRekis.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
             var listkioReki = importantNoteModel.KioRekiItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtKioReki()
@@ -256,16 +253,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updatekioRekiList != null && updatekioRekiList.Any())
             {
-                _tenantDataContextTracking.PtKioRekis.UpdateRange(updatekioRekiList);
+                TrackingDataContext.PtKioRekis.UpdateRange(updatekioRekiList);
             }
             if (addkioRekiList != null && addkioRekiList.Any())
             {
-                _tenantDataContextTracking.PtKioRekis.AddRange(addkioRekiList);
+                TrackingDataContext.PtKioRekis.AddRange(addkioRekiList);
             }
         }
         private void SaveInfectionsItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var infectionItems = _tenantDataContextNoTracking.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var infectionItems = NoTrackingDataContext.PtInfection.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
             var listInfection = importantNoteModel.InfectionsItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtInfection()
@@ -286,16 +283,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateInfectionList != null && updateInfectionList.Any())
             {
-                _tenantDataContextTracking.PtInfection.UpdateRange(updateInfectionList);
+                TrackingDataContext.PtInfection.UpdateRange(updateInfectionList);
             }
             if (addInfectionList != null && addInfectionList.Any())
             {
-                _tenantDataContextTracking.PtInfection.AddRange(addInfectionList);
+                TrackingDataContext.PtInfection.AddRange(addInfectionList);
             }
         }
         private void SaveOtherDrugItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var otherDrugItems = _tenantDataContextNoTracking.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var otherDrugItems = NoTrackingDataContext.PtOtherDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
             var listOtherDrug = importantNoteModel.OtherDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtOtherDrug()
@@ -316,16 +313,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateOtherDrugList != null && updateOtherDrugList.Any())
             {
-                _tenantDataContextTracking.PtOtherDrug.UpdateRange(updateOtherDrugList);
+                TrackingDataContext.PtOtherDrug.UpdateRange(updateOtherDrugList);
             }
             if (addOtherDrugList != null && addOtherDrugList.Any())
             {
-                _tenantDataContextTracking.PtOtherDrug.AddRange(addOtherDrugList);
+                TrackingDataContext.PtOtherDrug.AddRange(addOtherDrugList);
             }
         }
         private void SaveOtcDrugItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var otcDrugItems = _tenantDataContextNoTracking.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var otcDrugItems = NoTrackingDataContext.PtOtcDrug.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
             var listOtcDrug = importantNoteModel.OtcDrugItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtOtcDrug()
@@ -346,16 +343,16 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updateOtcDrugList != null && updateOtcDrugList.Any())
             {
-                _tenantDataContextTracking.PtOtcDrug.UpdateRange(updateOtcDrugList);
+                TrackingDataContext.PtOtcDrug.UpdateRange(updateOtcDrugList);
             }
             if (addOtcDrugList != null && addOtcDrugList.Any())
             {
-                _tenantDataContextTracking.PtOtcDrug.AddRange(addOtcDrugList);
+                TrackingDataContext.PtOtcDrug.AddRange(addOtcDrugList);
             }
         }
         private void SaveSuppleItems(long hpId, long ptId, ImportantNoteModel importantNoteModel)
         {
-            var suppleItems = _tenantDataContextNoTracking.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0)
+            var suppleItems = NoTrackingDataContext.PtSupples.Where(x => x.PtId == ptId && x.IsDeleted == 0)
                 .Select(x => new { x.HpId, x.PtId, x.SeqNo }).ToList();
             var listSupple = importantNoteModel.SuppleItems.Where(x => x.HpId == hpId && x.PtId == ptId)
                                     .Select(x => new PtSupple()
@@ -376,11 +373,11 @@ namespace Infrastructure.Repositories.SpecialNote
 
             if (updatesuppleList != null && updatesuppleList.Any())
             {
-                _tenantDataContextTracking.PtSupples.UpdateRange(updatesuppleList);
+                TrackingDataContext.PtSupples.UpdateRange(updatesuppleList);
             }
             if (addSuppleList != null && addSuppleList.Any())
             {
-                _tenantDataContextTracking.PtSupples.AddRange(addSuppleList);
+                TrackingDataContext.PtSupples.AddRange(addSuppleList);
             }
         }
         #endregion
@@ -407,7 +404,7 @@ namespace Infrastructure.Repositories.SpecialNote
         }
         private void SavePregnancyItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            var pregnancyItems = _tenantDataContextNoTracking.PtPregnancies.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
+            var pregnancyItems = NoTrackingDataContext.PtPregnancies.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
             if (pregnancyItems != null)
             {
                 var pregnancyObj = new PtPregnancy()
@@ -429,7 +426,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId
                 };
-                _tenantDataContextTracking.PtPregnancies.Update(pregnancyObj);
+                TrackingDataContext.PtPregnancies.Update(pregnancyObj);
             }
             else
             {
@@ -450,12 +447,12 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateId = userId,
                     CreateId = userId
                 };
-                _tenantDataContextTracking.PtPregnancies.Add(pregnancyObj);
+                TrackingDataContext.PtPregnancies.Add(pregnancyObj);
             }
         }
         private void SavePtCmtInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            var ptCmtInfItems = _tenantDataContextNoTracking.PtCmtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
+            var ptCmtInfItems = NoTrackingDataContext.PtCmtInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == 0).FirstOrDefault();
             if (ptCmtInfItems != null)
             {
                 var PtCmtInfObj = new PtCmtInf()
@@ -472,7 +469,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId
                 };
-                _tenantDataContextTracking.PtCmtInfs.Update(PtCmtInfObj);
+                TrackingDataContext.PtCmtInfs.Update(PtCmtInfObj);
             }
             else
             {
@@ -488,12 +485,12 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateId = userId,
                     CreateId = userId
                 };
-                _tenantDataContextTracking.PtCmtInfs.Add(PtCmtInfObj);
+                TrackingDataContext.PtCmtInfs.Add(PtCmtInfObj);
             }
         }
         private void SaveSeikatureInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel, int userId)
         {
-            var SeikatureInfItems = _tenantDataContextNoTracking.SeikaturekiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
+            var SeikatureInfItems = NoTrackingDataContext.SeikaturekiInfs.Where(x => x.HpId == hpId && x.PtId == ptId).FirstOrDefault();
             if (SeikatureInfItems != null)
             {
                 var SeikatureInfObj = new SeikaturekiInf()
@@ -509,7 +506,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId
                 };
-                _tenantDataContextTracking.SeikaturekiInfs.Update(SeikatureInfObj);
+                TrackingDataContext.SeikaturekiInfs.Update(SeikatureInfObj);
             }
             else
             {
@@ -524,7 +521,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     UpdateId = userId,
                     CreateId = userId
                 };
-                _tenantDataContextTracking.SeikaturekiInfs.Add(SeikatureInfObj);
+                TrackingDataContext.SeikaturekiInfs.Add(SeikatureInfObj);
             }
         }
         private void SavePhysicalInfItems(int hpId, long ptId, PatientInfoModel patientInfoModel)
@@ -537,7 +534,7 @@ namespace Infrastructure.Repositories.SpecialNote
                     kensaInfDetailModels.AddRange(physicalInfo.KensaInfDetailModels);
                 }
             }
-            var kensaInfDetails = _tenantDataContextNoTracking.KensaInfDetails
+            var kensaInfDetails = NoTrackingDataContext.KensaInfDetails
                 .Where(x => x.HpId == hpId && x.PtId == ptId)
                 .Select(x => new { x.HpId, x.PtId, x.IraiCd, x.SeqNo })
                 .ToList();
@@ -562,11 +559,11 @@ namespace Infrastructure.Repositories.SpecialNote
             var addKensaInfDetailList = kensaInfDetailListInputs.Where(x => !kensaInfDetails.Contains(new { x.HpId, x.PtId, x.IraiCd, x.SeqNo }));
             if (updateKensaInfDetailList != null && updateKensaInfDetailList.Any())
             {
-                _tenantDataContextTracking.KensaInfDetails.UpdateRange(updateKensaInfDetailList);
+                TrackingDataContext.KensaInfDetails.UpdateRange(updateKensaInfDetailList);
             }
             if (addKensaInfDetailList != null && addKensaInfDetailList.Any())
             {
-                _tenantDataContextTracking.KensaInfDetails.AddRange(addKensaInfDetailList);
+                TrackingDataContext.KensaInfDetails.AddRange(addKensaInfDetailList);
             }
         }
 
