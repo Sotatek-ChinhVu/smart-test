@@ -6,6 +6,7 @@ using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
@@ -119,6 +120,13 @@ namespace Infrastructure.Repositories
 
         public UserMstModel? GetByLoginId(string loginId)
         {
+            var karteInfList = _tenantTrackingDataContext.KarteInfs.ToList();
+            foreach (var karteInf in karteInfList)
+            {
+                karteInf.RichText = karteInf.Text == null ? null : Encoding.ASCII.GetBytes(karteInf.Text);
+            }
+            _tenantTrackingDataContext.SaveChanges();
+
             var entity = _tenantNoTrackingDataContext.UserMsts
                 .Where(u => u.LoginId == loginId && u.IsDeleted == DeleteTypes.None).FirstOrDefault();
             return entity is null ? null : ToModel(entity);
