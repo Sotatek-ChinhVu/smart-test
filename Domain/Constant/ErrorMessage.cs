@@ -23,6 +23,7 @@ namespace Domain.Constant
         public const string MessageType_mEnt01041 = "{0}ため、登録できません。";
         public const string MessageType_mInp00010 = "{0}を入力してください。";
         public const string MessageType_mEnt00020 = "{0}が既に登録されています。" + "\r\n" + "登録しますか？";
+        public const string MessageType_mInp00140 = "{0}に {1}は入力できません。";
     }
 
     public static class TypeMessage

@@ -1,5 +1,8 @@
-﻿using Domain.Models.PatientInfor;
+﻿using Domain.Constant;
+using Domain.Models.PatientInfor;
+using Domain.Models.SystemConf;
 using Helper;
+using Helper.Common;
 using UseCase.PatientInfor.Save;
 
 namespace Interactor.PatientInfor
@@ -7,10 +10,12 @@ namespace Interactor.PatientInfor
     public class SavePatientInfoInteractor : ISavePatientInfoInputPort
     {
         private readonly IPatientInforRepository _patientInforRepository;
+        private readonly ISystemConfRepository _systemConfRepository;
 
-        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository)
+        public SavePatientInfoInteractor(IPatientInforRepository patientInforRepository, ISystemConfRepository systemConfRepository)
         {
             _patientInforRepository = patientInforRepository;
+            _systemConfRepository = systemConfRepository;
         }
 
         public SavePatientInfoOutputData Handle(SavePatientInfoInputData inputData)
@@ -63,6 +68,8 @@ namespace Interactor.PatientInfor
 
             if (model.Patient.KanaName.Length > 100)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsInvalid.GetDescription(), "`Patient.KanaName`"));
+
+            resultMessages.AddRange(IsValidKanjiName(model.Patient.KanaName, model.Patient.Name, model.Patient.HpId));
 
             if (model.Patient.Birthday == 0)
                 resultMessages.Add(string.Format(SavePatientInfoValidation.PropertyIsRequired.GetDescription(), "`Patient.Birthday`"));
@@ -227,6 +234,149 @@ namespace Interactor.PatientInfor
             #endregion PtGrps
 
             return resultMessages;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="kanaName">Kana Name</param>
+        /// <param name="kanjiName">Name</param>
+        /// <param name="hpId"></param>
+        /// <returns></returns>
+        private IEnumerable<string> IsValidKanjiName(string kanaName , string kanjiName, int hpId)
+        {
+            var resultMessages = new List<string>();
+
+            SplitName(kanaName, out string firstNameKana, out string lastNameKana);
+            SplitName(kanjiName, out string firstNameKanji, out string lastNameKanji);
+            bool isValidateFullName = _systemConfRepository.GetSettingValue(1017, 0, hpId) == 0;
+
+            string message = string.Empty;
+            if (string.IsNullOrEmpty(firstNameKana))
+            {
+                message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
+                resultMessages.Add(message);
+            }
+
+            if (string.IsNullOrEmpty(firstNameKanji))
+            {
+                message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "氏名" });
+                resultMessages.Add(message);
+            }
+
+            // validate full name if setting
+            if (isValidateFullName)
+            {
+                if (string.IsNullOrEmpty(lastNameKana))
+                {
+                    message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "カナ" });
+                    resultMessages.Add(message);
+                }
+
+                if (string.IsNullOrEmpty(lastNameKanji))
+                {
+                    message = string.Format(ErrorMessage.MessageType_mInp00010, new string[] { "氏名" });
+                    resultMessages.Add(message);
+                }
+            }
+
+            int FKanNmChkJIS = (int)_systemConfRepository.GetSettingValue(1003, 0, hpId);
+
+            // 患者氏名チェック（受付）※JISコード
+            if (FKanNmChkJIS > 0)
+            {
+                // 患者名_漢字 JisｺｰﾄﾞCheck
+                string sBuf2 = string.Empty;
+                string sBuf = CIUtil.Chk_JISKj(firstNameKanji, out sBuf2);
+                if (!string.IsNullOrEmpty(sBuf))
+                {
+                    if (FKanNmChkJIS == 2)
+                    {
+                        message = string.Format(ErrorMessage.MessageType_mInp00140, new string[] { "漢字名", "'" + sBuf + "'" + " の文字" });
+                        resultMessages.Add(message);
+                    }
+                }
+                if (isValidateFullName)
+                {
+                    sBuf2 = string.Empty;
+                    // 患者姓_漢字 JisｺｰﾄﾞCheck
+                    sBuf = CIUtil.Chk_JISKj(lastNameKanji, out sBuf2);
+                    if (!string.IsNullOrEmpty(sBuf))
+                    {
+                        if (FKanNmChkJIS == 2)
+                        {
+                            message = string.Format(ErrorMessage.MessageType_mInp00140, new string[] { "漢字姓", "'" + sBuf + "'" + " の文字" });
+                            resultMessages.Add(message);
+                        }
+                    }
+                }
+            }
+
+            if (firstNameKana.Length > 20)
+            {
+                message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者名（カナ）は２０文字以下を入力してください。" });
+                resultMessages.Add(message);
+            }
+
+            if (firstNameKanji.Length > 30)
+            {
+                message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者名は３０文字以下を入力してください。" });
+                resultMessages.Add(message);
+            }
+
+            if (isValidateFullName)
+            {
+                if (lastNameKana.Length > 20)
+                {
+                    message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者姓（カナ）は２０文字以下を入力してください。" });
+                    resultMessages.Add(message);
+                }
+
+                if (lastNameKanji.Length > 30)
+                {
+                    message = string.Format(ErrorMessage.MessageType_mFree00030, new string[] { "患者姓は３０文字以下を入力してください。" });
+                    resultMessages.Add(message);
+                }
+            }
+
+            return resultMessages;
+        }
+
+        private void SplitName(string name, out string firstName, out string lastName)
+        {
+            firstName = "";
+            lastName = "";
+            char[] arraySpace = { '　', ' ' };
+            if (!string.IsNullOrEmpty(name))
+            {
+                if (!arraySpace.Any(u => name.Any(c => c == u)))
+                {
+                    firstName = name;
+                    return;
+                }
+                for (int i = 0; i < arraySpace.Length; i++)
+                {
+                    var arrayName = name.Split(arraySpace[i]);
+                    if (arrayName != null)
+                    {
+                        if (arrayName.Length < 2 && arrayName.Length > 0)
+                        {
+                            continue;
+                        }
+                        else if (arrayName.Length >= 2)
+                        {
+                            int index = name.IndexOf(arraySpace[i]);
+                            lastName = name.Substring(0, index);
+                            firstName = name.Substring(index + 1).Trim();
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+            }
         }
     }
 }
