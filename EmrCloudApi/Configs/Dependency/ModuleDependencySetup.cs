@@ -27,6 +27,7 @@ using Domain.Models.PatientGroupMst;
 using Domain.Models.PatientInfor;
 using Domain.Models.PatientRaiinKubun;
 using Domain.Models.PtCmtInf;
+using Domain.Models.PtGroupMst;
 using Domain.Models.PtTag;
 using Domain.Models.RaiinCmtInf;
 using Domain.Models.RaiinFilterMst;
@@ -97,6 +98,7 @@ using Interactor.PatientGroupMst;
 using Interactor.PatientInfor;
 using Interactor.PatientInfor.PtKyuseiInf;
 using Interactor.PatientRaiinKubun;
+using Interactor.PtGroupMst;
 using Interactor.RaiinFilterMst;
 using Interactor.RaiinKubunMst;
 using Interactor.Reception;
@@ -180,6 +182,7 @@ using UseCase.MaxMoney.SaveMaxMoney;
 using UseCase.MedicalExamination.CheckedItemName;
 using UseCase.MedicalExamination.GetCheckDisease;
 using UseCase.MedicalExamination.GetHistory;
+using UseCase.MedicalExamination.SearchHistory;
 using UseCase.MedicalExamination.UpsertTodayOrd;
 using UseCase.MonshinInfor.GetList;
 using UseCase.MonshinInfor.Save;
@@ -219,6 +222,7 @@ using UseCase.PatientInfor.SearchEmptyId;
 using UseCase.PatientInfor.SearchSimple;
 using UseCase.PatientInformation.GetById;
 using UseCase.PatientRaiinKubun.Get;
+using UseCase.PtGroupMst.SaveGroupNameMst;
 using UseCase.RaiinFilterMst.GetList;
 using UseCase.RaiinFilterMst.SaveList;
 using UseCase.RaiinKubunMst.GetList;
@@ -274,9 +278,6 @@ using UseCase.UserConf.UpdateAdoptedByomeiConfig;
 using UseCase.VisitingList.ReceptionLock;
 using UseCase.VisitingList.SaveSettings;
 using UseCase.YohoSetMst.GetByItemCd;
-using Domain.Models.PtGroupMst;
-using UseCase.PtGroupMst.SaveGroupNameMst;
-using Interactor.PtGroupMst;
 using UseCase.PtGroupMst.GetGroupNameMst;
 
 namespace EmrCloudApi.Configs.Dependency
@@ -490,6 +491,7 @@ namespace EmrCloudApi.Configs.Dependency
             busBuilder.RegisterUseCase<GetCheckDiseaseInputData, GetCheckDiseaseInteractor>();
             busBuilder.RegisterUseCase<CheckedSpecialItemInputData, CheckedSpecialItemInteractor>();
             busBuilder.RegisterUseCase<CheckedItemNameInputData, CheckedItemNameInteractor>();
+            busBuilder.RegisterUseCase<SearchHistoryInputData, SearchHistoryInteractor>();
 
             //SetKbn
             busBuilder.RegisterUseCase<GetSetKbnMstListInputData, GetSetKbnMstListInteractor>();

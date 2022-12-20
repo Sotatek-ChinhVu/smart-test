@@ -177,6 +177,8 @@ namespace Interactor.OrdInfs
                                     0,
                                     0,
                                     string.Empty,
+                                    string.Empty,
+                                    string.Empty,
                                     string.Empty
                                 );
                         ordInf.OrdInfDetails.Add(ordInfDetail);
