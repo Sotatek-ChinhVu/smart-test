@@ -1,23 +1,21 @@
 ﻿using Domain.Models.RaiinCmtInf;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class RaiinCmtInfRepository : IRaiinCmtInfRepository
+public class RaiinCmtInfRepository : RepositoryBase, IRaiinCmtInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public RaiinCmtInfRepository(ITenantProvider tenantProvider)
+    public RaiinCmtInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int cmtKbn, string text, int userId)
     {
-        var raiinCmt = _tenantDataContext.RaiinCmtInfs.FirstOrDefault(r =>
+        var raiinCmt = TrackingDataContext.RaiinCmtInfs.FirstOrDefault(r =>
             r.HpId == hpId
             && r.RaiinNo == raiinNo
             && r.CmtKbn == cmtKbn
@@ -25,7 +23,7 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
         if (raiinCmt is null)
         {
             // Insert
-            _tenantDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
+            TrackingDataContext.RaiinCmtInfs.Add(new RaiinCmtInf
             {
                 HpId = hpId,
                 PtId = ptId,
@@ -47,6 +45,6 @@ public class RaiinCmtInfRepository : IRaiinCmtInfRepository
             raiinCmt.UpdateId = userId;
         }
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 }

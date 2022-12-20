@@ -1,20 +1,19 @@
 ﻿using Domain.Models.RainListTag;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class RaiinListTagRepository : IRaiinListTagRepository
+    public class RaiinListTagRepository : RepositoryBase, IRaiinListTagRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public RaiinListTagRepository(ITenantProvider tenantProvider)
+        public RaiinListTagRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<RaiinListTagModel> GetList(int hpId, long ptId, bool isNoWithWhiteStar, List<int> sinDates, List<long> raiinNos)
         {
-            var result = _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && (!isNoWithWhiteStar && r.TagNo != 0) && sinDates.Contains(r.SinDate) && raiinNos.Contains(r.RaiinNo));
+            var result = NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && (!isNoWithWhiteStar && r.TagNo != 0) && sinDates.Contains(r.SinDate) && raiinNos.Contains(r.RaiinNo));
 
             return result.Select(x => new RaiinListTagModel(
                     x.HpId,
@@ -29,7 +28,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<RaiinListTagModel> GetList(int hpId, long ptId, bool isNoWithWhiteStar)
         {
-            var result = _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && (!isNoWithWhiteStar && r.TagNo != 0));
+            var result = NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && (!isNoWithWhiteStar && r.TagNo != 0));
 
             return result.Select(x => new RaiinListTagModel(
                     x.HpId,
@@ -44,7 +43,7 @@ namespace Infrastructure.Repositories
         
         public List<RaiinListTagModel> GetList(int hpId, long ptId, List<long> raiinNoList)
         {
-            var result = _tenantDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && raiinNoList.Contains(r.RaiinNo));
+            var result = NoTrackingDataContext.RaiinListTags.Where(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && raiinNoList.Contains(r.RaiinNo));
 
             return result.Select(x => new RaiinListTagModel(
                     x.HpId,
@@ -59,7 +58,7 @@ namespace Infrastructure.Repositories
 
         public RaiinListTagModel Get(int hpId, long ptId, long raiinNo, int sinDate)
         {
-            var result = _tenantDataContext.RaiinListTags.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.SinDate == sinDate && r.RaiinNo == raiinNo);
+            var result = NoTrackingDataContext.RaiinListTags.FirstOrDefault(r => r.HpId == hpId && r.PtId == ptId && r.IsDeleted == 0 && r.SinDate == sinDate && r.RaiinNo == raiinNo);
 
             return new RaiinListTagModel(
                     result?.HpId ?? 0,

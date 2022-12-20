@@ -1,17 +1,15 @@
 ﻿using Domain.Models.SystemGenerationConf;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class SystemGenerationConfRepository : ISystemGenerationConfRepository
+    public class SystemGenerationConfRepository : RepositoryBase, ISystemGenerationConfRepository
     {
-        private readonly TenantDataContext _tenantDataContext;
-
-        public SystemGenerationConfRepository(ITenantProvider tenantProvider)
+        public SystemGenerationConfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public (int, string) GetSettingValue(int hpId, int groupCd, int grpEdaNo = 0, int presentDate = 0, int defaultValue = 0, string defaultParam = "", bool fromLastestDb = false)
@@ -19,7 +17,7 @@ namespace Infrastructure.Repositories
             SystemGenerationConf? systemConf;
             if (!fromLastestDb)
             {
-                systemConf = _tenantDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
+                systemConf = NoTrackingDataContext.SystemGenerationConfs.FirstOrDefault(p => p.HpId == hpId
                 && p.GrpCd == groupCd
                 && p.GrpEdaNo == grpEdaNo
                 && p.StartDate <= presentDate
@@ -27,7 +25,7 @@ namespace Infrastructure.Repositories
             }
             else
             {
-                systemConf = _tenantDataContext.SystemGenerationConfs.Where(p => p.HpId == hpId
+                systemConf = NoTrackingDataContext.SystemGenerationConfs.Where(p => p.HpId == hpId
                 && p.GrpCd == groupCd
                 && p.GrpEdaNo == grpEdaNo
                 && p.StartDate <= presentDate

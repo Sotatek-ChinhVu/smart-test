@@ -1,5 +1,4 @@
 ﻿using Domain.Models.KarteFilterMst;
-using Helper.Constants;
 using UseCase.KarteFilter.SaveListKarteFilter;
 
 namespace Interactor.KarteFilter;
@@ -22,16 +21,16 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
                 foreach (var item in inputData.SaveKarteFilterMstModelInputs)
                 {
                     var karteFilterMstModel = new KarteFilterMstModel(
-                            item.HpId,
-                            item.UserId,
+                            inputData.HpId,
+                            inputData.UserId,
                             item.FilterId,
                             item.FilterName,
                             item.SortNo,
                             item.AutoApply,
                             item.IsDeleted,
                             new KarteFilterDetailModel(
-                                item.HpId,
-                                item.UserId,
+                                inputData.HpId,
+                                inputData.UserId,
                                 item.FilterId,
                                 item.KarteFilterDetailModel.BookMarkChecked,
                                 item.KarteFilterDetailModel.ListHokenId,
