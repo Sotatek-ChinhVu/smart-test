@@ -1,24 +1,22 @@
 ﻿using Domain.Models.RaiinKbnInf;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class RaiinKbnInfRepository : IRaiinKbnInfRepository
+public class RaiinKbnInfRepository : RepositoryBase, IRaiinKbnInfRepository
 {
-    private readonly TenantDataContext _tenantDataContext;
-
-    public RaiinKbnInfRepository(ITenantProvider tenantProvider)
+    public RaiinKbnInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public void Upsert(int hpId, long ptId, int sinDate, long raiinNo, int grpId, int kbnCd, int userId)
     {
         // Use Index (HpId, PtId, SinDate, RaiinNo, GrpId, IsDelete) to find the record faster
-        var raiinKbnInf = _tenantDataContext.RaiinKbnInfs.FirstOrDefault(r =>
+        var raiinKbnInf = TrackingDataContext.RaiinKbnInfs.FirstOrDefault(r =>
             r.HpId == hpId
             && r.PtId == ptId
             && r.SinDate == sinDate
@@ -28,7 +26,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
         if (raiinKbnInf is null)
         {
             // Insert
-            _tenantDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
+            TrackingDataContext.RaiinKbnInfs.Add(new RaiinKbnInf
             {
                 HpId = hpId,
                 PtId = ptId,
@@ -50,12 +48,12 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
             raiinKbnInf.UpdateId = userId;
         }
 
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
     }
 
     public bool SoftDelete(int hpId, long ptId, int sinDate, long raiinNo, int grpId)
     {
-        var raiinKbnInf = _tenantDataContext.RaiinKbnInfs.FirstOrDefault(r =>
+        var raiinKbnInf = TrackingDataContext.RaiinKbnInfs.FirstOrDefault(r =>
             r.HpId == hpId
             && r.PtId == ptId
             && r.SinDate == sinDate
@@ -68,7 +66,7 @@ public class RaiinKbnInfRepository : IRaiinKbnInfRepository
         }
 
         raiinKbnInf.IsDelete = DeleteTypes.Deleted;
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
         return true;
     }
 }

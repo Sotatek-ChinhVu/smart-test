@@ -1,39 +1,35 @@
 ﻿using Domain.Models.ApprovalInfo;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class ApprovalinfRepository : IApprovalInfRepository
+    public class ApprovalinfRepository : RepositoryBase, IApprovalInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-        private readonly TenantDataContext _tenantDataContext;
-
-        public ApprovalinfRepository(ITenantProvider tenantProvider)
+        public ApprovalinfRepository(ITenantProvider tenantProvider) : base(tenantProvider) 
         {
-            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-            _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
         }
+
         public bool CheckExistedId(List<int> ids)
         {
-            var anyId = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => ids.Contains(u.Id));
+            var anyId = NoTrackingDataContext.ApprovalInfs.Any(u => ids.Contains(u.Id));
             return anyId;
         }
         public bool CheckExistedRaiinNo(List<long> raiinNo)
         {
-            var anyRaiinNo = _tenantNoTrackingDataContext.ApprovalInfs.Any(u => raiinNo.Contains(u.RaiinNo));
+            var anyRaiinNo = NoTrackingDataContext.ApprovalInfs.Any(u => raiinNo.Contains(u.RaiinNo));
             return anyRaiinNo;
         }
         public List<ApprovalInfModel> GetList(int hpId, int startDate, int endDate, int kaId, int tantoId)
         {
-            var result = new List<ApprovalInfModel>();
-            var approvalInfs = _tenantNoTrackingDataContext.ApprovalInfs.Where((x) =>
+            var approvalInfs = NoTrackingDataContext.ApprovalInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.SinDate >= startDate &&
                     x.SinDate <= endDate
             );
-            var raiinInfs = _tenantNoTrackingDataContext.RaiinInfs.Where((x) =>
+            var raiinInfs = NoTrackingDataContext.RaiinInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == DeleteTypes.None &&
                     x.Status >= RaiinState.TempSave &&
@@ -42,15 +38,15 @@ namespace Infrastructure.Repositories
                     (tantoId == 0 || x.TantoId == tantoId) &&
                     (kaId == 0 || x.KaId == kaId)
             );
-            var ptInfs = _tenantNoTrackingDataContext.PtInfs.Where((x) =>
+            var ptInfs = NoTrackingDataContext.PtInfs.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDelete == 0
             );
-            var kaMsts = _tenantNoTrackingDataContext.KaMsts.Where((x) =>
+            var kaMsts = NoTrackingDataContext.KaMsts.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == 0
             );
-            var userInfs = _tenantNoTrackingDataContext.UserMsts.Where((x) =>
+            var userInfs = NoTrackingDataContext.UserMsts.Where((x) =>
                     x.HpId == hpId &&
                     x.IsDeleted == 0
             );
@@ -75,7 +71,7 @@ namespace Infrastructure.Repositories
                             kaMst.KaId
                         };
 
-            result = query.Where(x => x.ApprovalInf.FirstOrDefault() == null
+            return query.Where(x => x.ApprovalInf.FirstOrDefault() == null
                          || x.ApprovalInf?.OrderByDescending(m => m.SeqNo).FirstOrDefault()?.IsDeleted == 1)
                 .Select((x) => new ApprovalInfModel(
                             x.RaiinInf.HpId,
@@ -93,8 +89,6 @@ namespace Infrastructure.Repositories
                       ))
             .OrderBy(x => x.SinDate)
             .ToList();
-
-            return result;
         }
     }
 }

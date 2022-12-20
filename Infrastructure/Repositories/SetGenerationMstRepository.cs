@@ -1,20 +1,19 @@
 ﻿using Domain.Models.SetGenerationMst;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class SetGenerationMstRepository : ISetGenerationMstRepository
+    public class SetGenerationMstRepository : RepositoryBase, ISetGenerationMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public SetGenerationMstRepository(ITenantProvider tenantProvider)
+        public SetGenerationMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<SetGenerationMstModel> GetList(int hpId, int sinDate)
         {
-            var setEntities = _tenantDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0 && s.StartDate <= sinDate).OrderByDescending(x => x.StartDate);
+            var setEntities = NoTrackingDataContext.SetGenerationMsts.Where(s => s.HpId == hpId && s.IsDeleted == 0 && s.StartDate <= sinDate).OrderByDescending(x => x.StartDate);
 
             if (setEntities == null)
             {
@@ -36,7 +35,7 @@ namespace Infrastructure.Repositories
             int generationId = 0;
             try
             {
-                var generation = _tenantDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0).OrderByDescending(x => x.StartDate).FirstOrDefault();
+                var generation = NoTrackingDataContext.SetGenerationMsts.Where(x => x.HpId == hpId && x.StartDate <= sinDate && x.IsDeleted == 0).OrderByDescending(x => x.StartDate).FirstOrDefault();
                 if (generation != null)
                 {
                     generationId = generation.GenerationId;

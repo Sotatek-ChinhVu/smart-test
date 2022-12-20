@@ -1,29 +1,25 @@
 ﻿using Domain.Models.Document;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class DocumentRepository : IDocumentRepository
+public class DocumentRepository : RepositoryBase, IDocumentRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
-
-    public DocumentRepository(ITenantProvider tenantProvider)
+    public DocumentRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public bool CheckExistDocCategory(int hpId, int categoryCd)
     {
-        return _tenantDataContext.DocCategoryMsts.Any(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == categoryCd);
+        return NoTrackingDataContext.DocCategoryMsts.Any(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == categoryCd);
     }
 
     public bool CheckDuplicateCategoryName(int hpId, int categoryCd, string categoryName)
     {
-        return _tenantDataContext.DocCategoryMsts.Any(
+        return NoTrackingDataContext.DocCategoryMsts.Any(
                                                         item => item.HpId == hpId
                                                         && item.CategoryCd != categoryCd
                                                         && item.CategoryName != null
@@ -33,14 +29,14 @@ public class DocumentRepository : IDocumentRepository
 
     public List<DocCategoryModel> GetAllDocCategory(int hpId)
     {
-        var listCategoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(item => item.SortNo).ToList();
+        var listCategoryDB = NoTrackingDataContext.DocCategoryMsts.Where(item => item.HpId == hpId && item.IsDeleted == 0).OrderBy(item => item.SortNo).ToList();
         return listCategoryDB.Select(item => ConvertToDocCategoryModel(item)).ToList();
     }
 
     public List<DocInfModel> GetAllDocInf(int hpId, long ptId)
     {
         var listDocCategory = GetAllDocCategory(hpId);
-        var listDocDB = _tenantNoTrackingDataContext.DocInfs
+        var listDocDB = NoTrackingDataContext.DocInfs
                                                                 .Where(item => item.HpId == hpId
                                                                             && item.IsDeleted == 0
                                                                             && item.PtId == ptId)
@@ -52,7 +48,7 @@ public class DocumentRepository : IDocumentRepository
 
     public DocCategoryModel GetDocCategoryDetail(int hpId, int categoryCd)
     {
-        var categoryDB = _tenantNoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == categoryCd && item.IsDeleted == 0);
+        var categoryDB = NoTrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.CategoryCd == categoryCd && item.IsDeleted == 0);
         if (categoryDB != null)
         {
             return ConvertToDocCategoryModel(categoryDB);
@@ -67,14 +63,14 @@ public class DocumentRepository : IDocumentRepository
                                 .Where(item => item.CategoryCd == 0)
                                 .Select(model => ConvertToNewDocCategoryMst(hpId, userId, model))
                                 .ToList();
-        _tenantDataContext.DocCategoryMsts.AddRange(listAddNews);
+        TrackingDataContext.DocCategoryMsts.AddRange(listAddNews);
 
         // update item
         var listUpdateModels = listModels
                                 .Where(item => item.CategoryCd > 0)
                                 .ToList();
         var listUpdateCd = listUpdateModels.Select(item => item.CategoryCd).ToList();
-        var listDocUpdateDB = _tenantDataContext.DocCategoryMsts.Where(entity => listUpdateCd.Contains(entity.CategoryCd)).ToList();
+        var listDocUpdateDB = TrackingDataContext.DocCategoryMsts.Where(entity => listUpdateCd.Contains(entity.CategoryCd)).ToList();
         foreach (var entity in listDocUpdateDB)
         {
             var modelUpdate = listUpdateModels.FirstOrDefault(model => model.CategoryCd == entity.CategoryCd);
@@ -87,13 +83,13 @@ public class DocumentRepository : IDocumentRepository
             }
         }
         SortDocCategory();
-        return _tenantDataContext.SaveChanges() > 0;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public List<DocInfModel> GetDocInfByCategoryCd(int hpId, long ptId, int categoryCd)
     {
         var docCategory = GetDocCategoryDetail(hpId, categoryCd);
-        var listDocDB = _tenantNoTrackingDataContext.DocInfs
+        var listDocDB = TrackingDataContext.DocInfs
                                                             .Where(item => item.HpId == hpId
                                                                         && item.IsDeleted == 0
                                                                         && item.CategoryCd == categoryCd
@@ -107,8 +103,8 @@ public class DocumentRepository : IDocumentRepository
     public bool SortDocCategory(int hpId, int userId, int moveInCd, int moveOutCd)
     {
         // get in DB
-        var moveInItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveInCd);
-        var moveOutItem = _tenantDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveOutCd);
+        var moveInItem = TrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveInCd);
+        var moveOutItem = TrackingDataContext.DocCategoryMsts.FirstOrDefault(item => item.HpId == hpId && item.IsDeleted == 0 && item.CategoryCd == moveOutCd);
 
         // change sortNo
         if (moveInItem != null && moveOutItem != null)
@@ -125,7 +121,7 @@ public class DocumentRepository : IDocumentRepository
             moveOutItem.SortNo = moveInSortNo;
             moveOutItem.UpdateDate = DateTime.UtcNow;
             moveOutItem.UpdateId = userId;
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return true;
         }
         return false;
@@ -133,7 +129,7 @@ public class DocumentRepository : IDocumentRepository
 
     public DocInfModel GetDocInfDetail(int hpId, long ptId, int sinDate, long raiinNo, int seqNo)
     {
-        var docInfDB = _tenantNoTrackingDataContext.DocInfs.FirstOrDefault(entity =>
+        var docInfDB = NoTrackingDataContext.DocInfs.FirstOrDefault(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.PtId == ptId
                                                                 && entity.SinDate == sinDate
@@ -153,11 +149,11 @@ public class DocumentRepository : IDocumentRepository
     {
         if (model.SeqNo <= 0)
         {
-            _tenantDataContext.DocInfs.Add(ConvertToNewDocInf(userId, model));
+            TrackingDataContext.DocInfs.Add(ConvertToNewDocInf(userId, model));
         }
         else
         {
-            var docInfDB = _tenantDataContext.DocInfs.FirstOrDefault(entity =>
+            var docInfDB = TrackingDataContext.DocInfs.FirstOrDefault(entity =>
                                                                 entity.HpId == model.HpId
                                                                 && entity.PtId == model.PtId
                                                                 && entity.SinDate == model.SinDate
@@ -174,12 +170,12 @@ public class DocumentRepository : IDocumentRepository
             docInfDB.UpdateDate = DateTime.UtcNow;
             docInfDB.UpdateId = userId;
         }
-        return _tenantDataContext.SaveChanges() > 0;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public bool DeleteDocInf(int hpId, int userId, long ptId, int sinDate, long raiinNo, int seqNo)
     {
-        var docInfDB = _tenantDataContext.DocInfs.FirstOrDefault(entity =>
+        var docInfDB = TrackingDataContext.DocInfs.FirstOrDefault(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.PtId == ptId
                                                                 && entity.SinDate == sinDate
@@ -194,13 +190,13 @@ public class DocumentRepository : IDocumentRepository
         docInfDB.IsDeleted = 1;
         docInfDB.UpdateDate = DateTime.UtcNow;
         docInfDB.UpdateId = userId;
-        _tenantDataContext.SaveChanges();
+        TrackingDataContext.SaveChanges();
         return true;
     }
 
     public bool DeleteDocInfs(int hpId, int userId, long ptId, int categoryCd)
     {
-        var docInfsDB = _tenantDataContext.DocInfs.Where(entity =>
+        var docInfsDB = TrackingDataContext.DocInfs.Where(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.PtId == ptId
                                                                 && entity.CategoryCd == categoryCd
@@ -214,14 +210,14 @@ public class DocumentRepository : IDocumentRepository
                 item.UpdateDate = DateTime.UtcNow;
                 item.UpdateId = userId;
             }
-            return _tenantDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
         return false;
     }
 
     public bool DeleteDocCategory(int hpId, int userId, int categoryCd)
     {
-        var docCategoryDB = _tenantDataContext.DocCategoryMsts.FirstOrDefault(entity =>
+        var docCategoryDB = TrackingDataContext.DocCategoryMsts.FirstOrDefault(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.CategoryCd == categoryCd
                                                                 && entity.IsDeleted == 0
@@ -234,12 +230,12 @@ public class DocumentRepository : IDocumentRepository
         docCategoryDB.UpdateDate = DateTime.UtcNow;
         docCategoryDB.UpdateId = userId;
         SortDocCategory();
-        return _tenantDataContext.SaveChanges() > 0;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     public bool MoveDocInf(int hpId, int userId, int categoryCd, int moveCategoryCd)
     {
-        var listDocInfs = _tenantDataContext.DocInfs.Where(item =>
+        var listDocInfs = TrackingDataContext.DocInfs.Where(item =>
                                                                 item.HpId == hpId
                                                                 && item.CategoryCd == categoryCd
                                                                 && item.IsDeleted == 0)
@@ -250,7 +246,7 @@ public class DocumentRepository : IDocumentRepository
             item.UpdateDate = DateTime.UtcNow;
             item.UpdateId = userId;
         }
-        return _tenantDataContext.SaveChanges() > 0;
+        return TrackingDataContext.SaveChanges() > 0;
     }
 
     #region private function
@@ -315,7 +311,7 @@ public class DocumentRepository : IDocumentRepository
 
     private int GetLastDocInfSeqNo(int hpId, long ptId, int sinDate, long raiinNo)
     {
-        var listDocInf = _tenantNoTrackingDataContext.DocInfs.Where(entity =>
+        var listDocInf = NoTrackingDataContext.DocInfs.Where(entity =>
                                                                 entity.HpId == hpId
                                                                 && entity.PtId == ptId
                                                                 && entity.SinDate == sinDate
@@ -326,7 +322,7 @@ public class DocumentRepository : IDocumentRepository
 
     private void SortDocCategory()
     {
-        var listDocCategory = _tenantDataContext.DocCategoryMsts
+        var listDocCategory = TrackingDataContext.DocCategoryMsts
                                                     .Where(item => item.IsDeleted == 0)
                                                     .OrderBy(item => item.SortNo)
                                                     .ToList();
