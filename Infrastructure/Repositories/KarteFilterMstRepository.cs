@@ -112,7 +112,7 @@ public class KarteFilterMstRepository : RepositoryBase, IKarteFilterMstRepositor
                             {
                                 KarteFilterMst karteFilterMst = new KarteFilterMst()
                                 {
-                                    HpId = mst.HpId,
+                                    HpId = hpId,
                                     UserId = mst.UserId,
                                     FilterId = mst.FilterId,
                                     FilterName = mst.FilterName,
