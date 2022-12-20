@@ -85,7 +85,7 @@ namespace Interactor.OrdInfs
                             od.ReqCd,
                             od.Bunkatu,
                             od.CmtName,
-                            od.CmtName,
+                            od.CmtOpt,
                             od.FontColor,
                             od.CommentNewline,
                             od.Yakka,
