@@ -1127,6 +1127,7 @@ namespace Infrastructure.Repositories
                     ConvertByomeiCdDisplay(mst.ByomeiCd),
                     mst.Sbyomei ?? String.Empty,
                     mst.KanaName1 ?? String.Empty,
+                    mst.SikkanCd,
                     ConvertSikkanDisplay(mst.SikkanCd),
                     mst.NanbyoCd == NanbyoConst.Gairai ? "難病" : string.Empty,
                     ConvertIcd10Display(mst.Icd101 ?? String.Empty, mst.Icd102 ?? String.Empty),
