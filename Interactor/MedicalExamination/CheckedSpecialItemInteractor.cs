@@ -168,7 +168,7 @@ namespace Interactor.MedicalExamination
                     checkSpecialItemList.AddRange(AgeLimitCheck(inputData.SinDate, inputData.IBirthDay, inputData.CheckAge, tenMsts, allOdrInfDetailModel));
                     checkSpecialItemList.AddRange(ExpiredCheck(inputData.SinDate, tenMsts, allOdrInfDetailModel));
                     checkSpecialItemList.AddRange(CalculationCountCheck(inputData.HpId, inputData.SinDate, inputData.RaiinNo, inputData.PtId, santeiTenMsts, densiSanteiKaisuModels, tenMsts, allOdrInfDetailModel, itemGrpMsts, hokenPids));
-                    checkSpecialItemList.AddRange(DuplicateCheck(inputData.SinDate, tenMsts, allOdrInfDetailModel));
+                    checkSpecialItemList.AddRange(DuplicateCheck(tenMsts, allOdrInfDetailModel));
                 }
 
                 //enable or disable Comment Check
@@ -425,7 +425,7 @@ namespace Interactor.MedicalExamination
             }
         }
 
-        private List<CheckedSpecialItem> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
+        public List<CheckedSpecialItem> ExpiredCheck(int sinDate, List<TenItemModel> tenMstItemList, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var checkSpecialItemList = new List<CheckedSpecialItem>();
 
@@ -468,7 +468,7 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private List<CheckedSpecialItem> DuplicateCheck(int sinDate, List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
+        public List<CheckedSpecialItem> DuplicateCheck(List<TenItemModel> tenMstItems, List<OrdInfDetailModel> allOdrInfDetail)
         {
             var checkSpecialItemList = new List<CheckedSpecialItem>();
             var checkedItem = new List<string>();
@@ -515,7 +515,7 @@ namespace Interactor.MedicalExamination
             return checkSpecialItemList;
         }
 
-        private List<CheckedSpecialItem> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
+        public List<CheckedSpecialItem> ItemCommentCheck(Dictionary<string, string> items, List<ItemCmtModel> allCmtCheckMst, KarteInfModel karteInf)
         {
             var checkSpecialItemList = new List<CheckedSpecialItem>();
             foreach (var item in items)
