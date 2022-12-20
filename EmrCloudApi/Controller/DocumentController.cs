@@ -18,11 +18,7 @@ using UseCase.Document.SaveDocInf;
 using UseCase.Document.SaveListDocCategory;
 using UseCase.Document.SortDocCategory;
 using UseCase.Document.GetListParamTemplate;
-using System.Net;
-using DocumentFormat.OpenXml.Packaging;
 using Interactor.Document.CommonGetListParam;
-using DocumentFormat.OpenXml.Wordprocessing;
-using FindAndReplace;
 using UseCase.Document.DowloadDocumentTemplate;
 
 namespace EmrCloudApi.Controller;
@@ -32,11 +28,9 @@ namespace EmrCloudApi.Controller;
 public class DocumentController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    private readonly ICommonGetListParam _commonGetListParam;
-    public DocumentController(UseCaseBus bus, IUserService userService, ICommonGetListParam commonGetListParam) : base(userService)
+    public DocumentController(UseCaseBus bus, IUserService userService) : base(userService)
     {
         _bus = bus;
-        _commonGetListParam = commonGetListParam;
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
