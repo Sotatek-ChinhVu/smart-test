@@ -1,8 +1,10 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using EmrCalculateApi.Extensions;
 using EmrCalculateApi.Futan.Models;
 using EmrCalculateApi.Interface;
 using Helper.Common;
+using Helper.Constants;
 using PostgreDataContext;
 
 namespace EmrCalculateApi.Futan.DB.Finder

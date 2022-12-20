@@ -1,4 +1,5 @@
-﻿using EmrCalculateApi.Constants;
+﻿using Domain.Constant;
+using EmrCalculateApi.Constants;
 using Entity.Tenant;
 
 namespace EmrCalculateApi.Futan.Models
