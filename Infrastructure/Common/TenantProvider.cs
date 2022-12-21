@@ -34,7 +34,10 @@ namespace Infrastructure.CommonDB
         {
             if (_noTrackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString()).Options;
+                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
                 _noTrackingDataContext = factory.CreateDbContext();
             }
@@ -46,7 +49,10 @@ namespace Infrastructure.CommonDB
         {
             if (_trackingDataContext == null)
             {
-                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString()).Options;
+                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+                {
+                    buider.EnableRetryOnFailure(maxRetryCount: 3);
+                }).LogTo(Console.WriteLine, LogLevel.Information).Options;
                 var factory = new PooledDbContextFactory<TenantDataContext>(options);
                 _trackingDataContext = factory.CreateDbContext();
             }
@@ -62,7 +68,10 @@ namespace Infrastructure.CommonDB
         {
             _noTrackingDataContext?.Dispose();
 
-            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString()).Options;
+            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
             var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
             _noTrackingDataContext = factory.CreateDbContext();
         }
@@ -71,7 +80,10 @@ namespace Infrastructure.CommonDB
         {
             _trackingDataContext?.Dispose();
 
-            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString()).Options;
+            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString(), buider =>
+            {
+                buider.EnableRetryOnFailure(maxRetryCount: 3);
+            }).LogTo(Console.WriteLine, LogLevel.Information).Options;
             var factory = new PooledDbContextFactory<TenantDataContext>(options);
             _trackingDataContext = factory.CreateDbContext();
         }
