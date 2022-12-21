@@ -115,13 +115,16 @@ namespace Interactor.MedicalExamination
                 }
 
                 var check = _todayOdrRepository.Upsert(hpId, ptId, raiinNo, sinDate, inputDatas.SyosaiKbn, inputDatas.JikanKbn, inputDatas.HokenPid, inputDatas.SanteiKbn, inputDatas.TantoId, inputDatas.KaId, inputDatas.UketukeTime, inputDatas.SinStartTime, inputDatas.SinEndTime, allOdrInfs, karteModel, inputDatas.UserId);
-                if (check)
+                if (inputDatas.FileItem.IsUpdateFile)
                 {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, true);
-                }
-                else
-                {
-                    SaveFileKarte(hpId, ptId, raiinNo, inputDatas.ListFileItems, false);
+                    if (check)
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, true);
+                    }
+                    else
+                    {
+                        SaveFileKarte(hpId, ptId, raiinNo, inputDatas.FileItem.ListFileItems, false);
+                    }
                 }
                 return check ? new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Successed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid) : new UpsertTodayOrdOutputData(UpsertTodayOrdStatus.Failed, RaiinInfConst.RaiinInfTodayOdrValidationStatus.Valid, new Dictionary<string, KeyValuePair<string, OrdInfValidationStatus>>(), KarteValidationStatus.Valid);
             }
