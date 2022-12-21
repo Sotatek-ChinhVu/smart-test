@@ -3,11 +3,6 @@ using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using PostgreDataContext;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.CommonDB
 {
@@ -31,19 +26,47 @@ namespace Infrastructure.CommonDB
             return TempIdentity.ClinicID;
         }
 
+        private TenantNoTrackingDataContext? _noTrackingDataContext;
         public TenantNoTrackingDataContext GetNoTrackingDataContext()
         {
-            return new TenantNoTrackingDataContext(GetConnectionString());
+            if (_noTrackingDataContext == null)
+            {
+                _noTrackingDataContext = new TenantNoTrackingDataContext(GetConnectionString());
+            }
+            return _noTrackingDataContext;
         }
 
+        private TenantDataContext? _trackingDataContext;
         public TenantDataContext GetTrackingTenantDataContext()
         {
-            return new TenantDataContext(GetConnectionString());
+            if (_trackingDataContext == null)
+            {
+                _trackingDataContext = new TenantDataContext(GetConnectionString());
+            }
+            return _trackingDataContext;
         }
 
         public string GetTenantInfo()
         {
             return "Tenant1";
+        }
+
+        public void ReloadNoTrackingDataContext()
+        {
+            _noTrackingDataContext?.Dispose();
+            _noTrackingDataContext = new TenantNoTrackingDataContext(GetConnectionString());
+        }
+
+        public void ReloadTrackingDataContext()
+        {
+            _trackingDataContext?.Dispose();
+            _trackingDataContext = new TenantDataContext(GetConnectionString());
+        }
+
+        public void DisposeDataContext()
+        {
+            _trackingDataContext?.Dispose();
+            _noTrackingDataContext?.Dispose();
         }
     }
 }

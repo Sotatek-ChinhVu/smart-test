@@ -18,5 +18,11 @@ namespace Infrastructure.Interfaces
         TenantNoTrackingDataContext GetNoTrackingDataContext();
 
         TenantDataContext GetTrackingTenantDataContext();
+
+        void ReloadNoTrackingDataContext();
+
+        void ReloadTrackingDataContext();
+
+        void DisposeDataContext();
     }
 }
