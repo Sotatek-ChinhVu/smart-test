@@ -732,7 +732,7 @@
         public static readonly string MBunkatu = "分割調剤";
         public static readonly string MSumBunkatu = "分割調剤の合計";
         public static readonly string MCommonError = "無効なデータを受信しました。";
-        public static readonly string MProcedure = "・手技が入力されているか確認してください。";
+        public static readonly string MProcedure = @"行為が未確定のため、入力が確定できません。\r\n・手技が入力されているか確認してください。";
         public static readonly string MDisease = "病名";
         public static readonly string MTenkiContinue = "転帰区分";
         public static readonly string MInp00110 = "{0}は {1}以降を入力してください。";
@@ -740,7 +740,6 @@
         public static readonly string MTenkiStartDate = "開始日";
         public static readonly string MTenkiStartDate_2 = "開始日に無効な日付を指定しました。";
         public static readonly string MNoInputData = "数量を入力してください。";
-
 
         // Valid default settings 
         public static readonly string InvalidDefaultSettingDoctor = "Invalid DefaultSettingDoctor < 0";
