@@ -1,6 +1,7 @@
 ﻿using Domain.Models.RaiinKubunMst;
 using Entity.Tenant;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
@@ -8,27 +9,22 @@ using System.Collections.Immutable;
 
 namespace Infrastructure.Repositories
 {
-    public class RaiinKubunMstRepository : IRaiinKubunMstRepository
+    public class RaiinKubunMstRepository : RepositoryBase, IRaiinKubunMstRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContextNoTracking;
-        private readonly TenantDataContext _tenantDataContextTracking;
-
-        public RaiinKubunMstRepository(ITenantProvider tenantProvider)
+        public RaiinKubunMstRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
-            _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
         }
 
         public List<RaiinKubunMstModel> GetList(bool isDeleted)
         {
-            List<RaiinKbnMst> raiinKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts
+            List<RaiinKbnMst> raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
                 .Where(r => isDeleted || r.IsDeleted == 0)
                 .OrderBy(r => r.SortNo)
                 .ToList();
 
             List<int> groupIdList = raiinKubunMstList.Select(r => r.GrpCd).ToList();
 
-            List<RaiinKbnDetail> raiinKubunDetailList = _tenantDataContextNoTracking.RaiinKbnDetails
+            List<RaiinKbnDetail> raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
                 .Where(r => groupIdList.Contains(r.GrpCd) && (isDeleted || r.IsDeleted == 0))
                 .ToList();
 
@@ -73,34 +69,34 @@ namespace Infrastructure.Repositories
 
         public List<RaiinKubunMstModel> LoadDataKubunSetting(int hpId, int userId)
         {
-            List<RsvGrpMstModel> rsvGrpMstList = _tenantDataContextNoTracking.RsvGrpMsts
+            List<RsvGrpMstModel> rsvGrpMstList = NoTrackingDataContext.RsvGrpMsts
                 .Where(r => r.HpId == hpId && r.IsDeleted == 0)
                 .Select(x => new RsvGrpMstModel(x.RsvGrpId, x.SortKey, x.RsvGrpName ?? string.Empty, x.IsDeleted))
                 .ToList();
 
-            List<RsvFrameMstModel> rsvFrameMstList = _tenantDataContextNoTracking.RsvFrameMsts
+            List<RsvFrameMstModel> rsvFrameMstList = NoTrackingDataContext.RsvFrameMsts
                 .Where(r => r.HpId == hpId && r.IsDeleted == 0)
                 .Select(x => new RsvFrameMstModel(x.RsvGrpId, x.RsvFrameId, x.SortKey, x.RsvFrameName ?? String.Empty, x.TantoId, x.KaId, x.MakeRaiin, x.IsDeleted))
                 .ToList();
 
-            var raiinKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts
+            var raiinKubunMstList = NoTrackingDataContext.RaiinKbnMsts
                .Where(r => r.HpId == hpId && r.IsDeleted == 0).ToList();
 
             var groupIdlist = raiinKubunMstList.Select(r => r.GrpCd).ToList();
 
-            var raiinKubunDetailList = _tenantDataContextNoTracking.RaiinKbnDetails
+            var raiinKubunDetailList = NoTrackingDataContext.RaiinKbnDetails
                                         .Where(r => groupIdlist.Contains(r.GrpCd) && (r.HpId == hpId && r.IsDeleted == 0))
                                         .ToList();
             var kbnCdList = raiinKubunDetailList.Select(r => r.KbnCd).ToList();
 
-            var query = (from kbnDetail in _tenantDataContextNoTracking.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
-                         join kou in _tenantDataContextNoTracking.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+            var query = (from kbnDetail in NoTrackingDataContext.RaiinKbnDetails.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         join kou in NoTrackingDataContext.RaiinKbnKouis.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { kou.KbnCd, GrpCd = kou.GrpId } into kouis
                          from kbnKoui in kouis.DefaultIfEmpty()
-                         join item in _tenantDataContextNoTracking.RaiinKbItems.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         join item in NoTrackingDataContext.RaiinKbItems.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { item.KbnCd, item.GrpCd } into items
                          from kbnItem in items.DefaultIfEmpty()
-                         join yoyaku in _tenantDataContextNoTracking.RaiinKbnYayokus.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
+                         join yoyaku in NoTrackingDataContext.RaiinKbnYayokus.Where(r => r.HpId == hpId && r.IsDeleted == 0).AsQueryable()
                          on new { kbnDetail.KbnCd, kbnDetail.GrpCd } equals new { yoyaku.KbnCd, GrpCd = yoyaku.GrpId } into yoyakus
                          from kbnYoyaku in yoyakus.DefaultIfEmpty()
                          select new
@@ -167,11 +163,11 @@ namespace Infrastructure.Repositories
         public List<string> SaveDataKubunSetting(List<RaiinKubunMstModel> raiinKubunMstModels, int userId)
         {
             List<string> result = new List<string>();
-            var currentKubunMstList = _tenantDataContextNoTracking.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunDetailList = _tenantDataContextNoTracking.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunKouiList = _tenantDataContextNoTracking.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunItemList = _tenantDataContextNoTracking.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
-            var currentKubunYoyakuList = _tenantDataContextNoTracking.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunMstList = NoTrackingDataContext.RaiinKbnMsts.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunDetailList = NoTrackingDataContext.RaiinKbnDetails.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunKouiList = NoTrackingDataContext.RaiinKbnKouis.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunItemList = NoTrackingDataContext.RaiinKbItems.Where(x => x.IsDeleted == 0).ToList();
+            var currentKubunYoyakuList = NoTrackingDataContext.RaiinKbnYayokus.Where(x => x.IsDeleted == 0).ToList();
 
             int detailKbnCd = 0;
             if (currentKubunDetailList != null && currentKubunDetailList.Any())
@@ -201,13 +197,13 @@ namespace Infrastructure.Repositories
                 return result;
             }
 
-            var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
+            var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
             var resultExecute = executionStrategy.Execute(
                 () =>
                 {
                     // execute your logic here
-                    using (var transaction = _tenantDataContextTracking.Database.BeginTransaction())
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
                         try
                         {
@@ -231,7 +227,7 @@ namespace Infrastructure.Repositories
                                         yoyakuKbnCd = resultIds.Item4;
                                     });
 
-                                    _tenantDataContextTracking.RaiinKbnMsts.AddRange(raiinKubunMstAddList.Select(x => new RaiinKbnMst()
+                                    TrackingDataContext.RaiinKbnMsts.AddRange(raiinKubunMstAddList.Select(x => new RaiinKbnMst()
                                     {
                                         HpId = x.HpId,
                                         GrpCd = x.GroupId,
@@ -243,7 +239,7 @@ namespace Infrastructure.Repositories
                                         UpdateId = userId,
                                         CreateId = userId
                                     }).ToList());
-                                    _tenantDataContextTracking.SaveChanges();
+                                    TrackingDataContext.SaveChanges();
                                 }
 
                                 var raiinKubunMstUpdateList = raiinKubunMstModels.Where(x => x.GroupId != 0).ToList();
@@ -265,7 +261,7 @@ namespace Infrastructure.Repositories
                                             UpdateRaiinKubunDetail(x.GroupId, x.RaiinKubunDetailModels, currentKubunDetailList ?? new List<RaiinKbnDetail>(), currentKubunKouiList ?? new List<RaiinKbnKoui>(), currentKubunItemList ?? new List<RaiinKbItem>(), currentKubunYoyakuList ?? new List<RaiinKbnYayoku>(), kouiKbnCd, itemSeqNo, yoyakuKbnCd, userId);
                                         }
                                     });
-                                    _tenantDataContextTracking.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
+                                    TrackingDataContext.UpdateRange(raiinKubunMstUpdateList.Select(x => new RaiinKbnMst()
                                     {
                                         HpId = x.HpId,
                                         GrpCd = x.GroupId,
@@ -280,7 +276,7 @@ namespace Infrastructure.Repositories
                                     }));
                                 }
                             }
-                            _tenantDataContextTracking.SaveChanges();
+                            TrackingDataContext.SaveChanges();
                             transaction.Commit();
                             result.Add(KubunSettingConstant.Successed);
                             return true;
@@ -298,7 +294,7 @@ namespace Infrastructure.Repositories
 
         public List<(string, string)> GetListColumnName(int hpId)
         {
-            var listRaiinKbnMst = _tenantDataContextNoTracking.RaiinKbnMsts
+            var listRaiinKbnMst = NoTrackingDataContext.RaiinKbnMsts
               .Where(item => item.HpId == hpId && item.IsDeleted == 0)
               .OrderBy(item => item.SortNo)
               .ToDictionary(item => item.GrpName ?? string.Empty, item => item.GrpCd);
@@ -349,7 +345,7 @@ namespace Infrastructure.Repositories
                     yoyakuKbnCd = AddRaiinKbnYayoku(currentKbnCd, grpCd, x.RaiinKbnYayokuModels, yoyakuKbnCd, userId);
                 });
 
-                _tenantDataContextTracking.RaiinKbnDetails.AddRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
+                TrackingDataContext.RaiinKbnDetails.AddRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
                 {
                     HpId = x.HpId,
                     GrpCd = grpCd,
@@ -367,7 +363,7 @@ namespace Infrastructure.Repositories
                     CreateId = userId
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return (currentKbnCd, kouiKbnCd, itemSeqNo, yoyakuKbnCd);
         }
 
@@ -381,7 +377,7 @@ namespace Infrastructure.Repositories
                     x = new RaiinKbnKouiModel(x.HpId, x.GrpId, x.KbnCd, x.SeqNo, kouiKbnCd, x.IsDeleted);
                 });
 
-                _tenantDataContextTracking.RaiinKbnKouis.AddRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
+                TrackingDataContext.RaiinKbnKouis.AddRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
                 {
                     HpId = x.HpId,
                     GrpId = grpCd,
@@ -395,7 +391,7 @@ namespace Infrastructure.Repositories
                     CreateId = userId
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return kouiKbnCd;
         }
 
@@ -409,7 +405,7 @@ namespace Infrastructure.Repositories
                     x = new RaiinKbnItemModel(x.HpId, x.GrpCd, x.KbnCd, itemKbnCd, x.ItemCd, x.IsExclude, x.IsDeleted, x.SortNo);
                 });
 
-                _tenantDataContextTracking.RaiinKbItems.AddRange(raiinKbItemModels.Select(x => new RaiinKbItem()
+                TrackingDataContext.RaiinKbItems.AddRange(raiinKbItemModels.Select(x => new RaiinKbItem()
                 {
                     HpId = x.HpId,
                     GrpCd = grpCd,
@@ -425,7 +421,7 @@ namespace Infrastructure.Repositories
                     CreateId = userId,
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return itemKbnCd;
         }
 
@@ -438,7 +434,7 @@ namespace Infrastructure.Repositories
                     yoyakuCd++;
                     x = new RaiinKbnYayokuModel(x.HpId, x.KbnCd, x.SeqNo, yoyakuCd, x.IsDeleted);
                 });
-                _tenantDataContextTracking.RaiinKbnYayokus.AddRange(raiinKbnYayokuModels.Select(x => new RaiinKbnYayoku()
+                TrackingDataContext.RaiinKbnYayokus.AddRange(raiinKbnYayokuModels.Select(x => new RaiinKbnYayoku()
                 {
                     HpId = x.HpId,
                     GrpId = grpCd,
@@ -452,7 +448,7 @@ namespace Infrastructure.Repositories
                     CreateId = userId
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
             return yoyakuCd;
         }
         #endregion
@@ -500,7 +496,7 @@ namespace Infrastructure.Repositories
                         UpdateRaiinKbnYayoku(x.KubunCd, x.GroupId, yoyakuModelUpdate, raiinKbnYayokus, userId);
                     }
                 });
-                _tenantDataContextTracking.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
+                TrackingDataContext.RaiinKbnDetails.UpdateRange(raiinKubunDetailModels.Select(x => new RaiinKbnDetail()
                 {
                     HpId = x.HpId,
                     GrpCd = grpCd,
@@ -518,7 +514,7 @@ namespace Infrastructure.Repositories
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId,
                 }));
-                _tenantDataContextTracking.SaveChanges();
+                TrackingDataContext.SaveChanges();
             }
         }
 
@@ -526,7 +522,7 @@ namespace Infrastructure.Repositories
         {
             if (raiinKbnKouiModels != null && raiinKbnKouiModels.Any())
             {
-                _tenantDataContextTracking.RaiinKbnKouis.UpdateRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
+                TrackingDataContext.RaiinKbnKouis.UpdateRange(raiinKbnKouiModels.Select(x => new RaiinKbnKoui()
                 {
                     HpId = x.HpId,
                     GrpId = grpCd,
@@ -541,14 +537,14 @@ namespace Infrastructure.Repositories
                     UpdateId = userId
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpdateRaiinKbItem(int kbnCd, int grpCd, List<RaiinKbnItemModel> raiinKbItemModels, List<RaiinKbItem> raiinKbItems, int userId)
         {
             if (raiinKbItemModels != null && raiinKbItemModels.Any())
             {
-                _tenantDataContextTracking.RaiinKbItems.UpdateRange(raiinKbItemModels.Select(x => new RaiinKbItem()
+                TrackingDataContext.RaiinKbItems.UpdateRange(raiinKbItemModels.Select(x => new RaiinKbItem()
                 {
                     HpId = x.HpId,
                     GrpCd = grpCd,
@@ -565,7 +561,7 @@ namespace Infrastructure.Repositories
                     UpdateId = userId
                 }));
             }
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.SaveChanges();
         }
 
         private void UpdateRaiinKbnYayoku(int kbnCd, int grpCd, List<RaiinKbnYayokuModel> raiinKbnYayokuModels, List<RaiinKbnYayoku> raiinKbnYayokus, int userId)
@@ -586,8 +582,8 @@ namespace Infrastructure.Repositories
                     UpdateDate = DateTime.UtcNow,
                     UpdateId = userId
                 }).ToList();
-                _tenantDataContextTracking.RaiinKbnYayokus.UpdateRange(updateModel);
-                _tenantDataContextTracking.SaveChanges();
+                TrackingDataContext.RaiinKbnYayokus.UpdateRange(updateModel);
+                TrackingDataContext.SaveChanges();
             }
         }
         #endregion

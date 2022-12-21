@@ -1,21 +1,20 @@
 ﻿using Domain.Models.GroupInf;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories
 {
-    public class GroupInfRepository : IGroupInfRepository
+    public class GroupInfRepository : RepositoryBase, IGroupInfRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public GroupInfRepository(ITenantProvider tenantProvider)
+        public GroupInfRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<GroupInfModel> GetAllByPtIdList(List<long> ptIdList)
         {
-            var listGroupPatient = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
-            var listGroupDetailMst = _tenantDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
+            var listGroupPatient = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && ptIdList.Contains(x.PtId)).ToList();
+            var listGroupDetailMst = NoTrackingDataContext.PtGrpItems.Where(p => p.IsDeleted == 0).ToList();
             var result =
                 (from groupPatient in listGroupPatient
                  join groupDetailMst in listGroupDetailMst
@@ -44,7 +43,7 @@ namespace Infrastructure.Repositories
 
         public IEnumerable<GroupInfModel> GetDataGroup(int hpId, long ptId)
         {
-            var dataPtGrpInfs = _tenantDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
+            var dataPtGrpInfs = NoTrackingDataContext.PtGrpInfs.Where(x => x.IsDeleted == 0 && x.HpId == hpId && x.PtId == ptId)
                                 .Select(x => new GroupInfModel(
                                     hpId,
                                     ptId,

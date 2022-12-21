@@ -3,27 +3,23 @@ using Domain.Types;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Infrastructure.Options;
 using Microsoft.Extensions.Options;
-using PostgreDataContext;
 using System.Text;
 
 namespace Infrastructure.Repositories;
 
-public class SuperSetDetailRepository : ISuperSetDetailRepository
+public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
-    private readonly TenantDataContext _tenantDataContext;
     private readonly AmazonS3Options _options;
     private const string SUSPECTED = "の疑い";
     private const string SUSPECTED_CD = "8002";
     private const string FREE_WORD = "0000999";
-    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider)
+    public SuperSetDetailRepository(IOptions<AmazonS3Options> optionsAccessor, ITenantProvider tenantProvider) : base(tenantProvider)
     {
         _options = optionsAccessor.Value;
-        _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContext = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate)
@@ -38,39 +34,39 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     public (List<SetByomeiModel> byomeis, List<SetKarteInfModel> karteInfs, List<SetOrderInfModel>) GetSuperSetDetailForTodayOrder(int hpId, int setCd, int sinDate)
     {
-        var rootSuperSet = _tenantNoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
+        var rootSuperSet = NoTrackingDataContext.SetMsts.FirstOrDefault(s => s.SetCd == setCd && s.HpId == hpId && s.IsDeleted == DeleteTypes.None);
         List<int> setCds;
         if (rootSuperSet == null) return (new(), new(), new());
 
         if (rootSuperSet.Level2 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
         else if (rootSuperSet.Level3 == 0)
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
         else
-            setCds = _tenantNoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
+            setCds = NoTrackingDataContext.SetMsts.Where(s => s.HpId == hpId && s.Level1 == rootSuperSet.Level1 && s.Level2 == rootSuperSet.Level2 && rootSuperSet.Level3 == s.Level3 && s.SetKbn == rootSuperSet.SetKbn && s.IsDeleted == DeleteTypes.None && s.GenerationId == rootSuperSet.GenerationId).Select(s => s.SetCd).ToList();
 
-        var allSetByomeis = _tenantNoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
+        var allSetByomeis = NoTrackingDataContext.SetByomei.Where(b => b.HpId == hpId && setCds.Contains(b.SetCd) && b.IsDeleted == DeleteTypes.None).ToList();
         List<string> codeLists = new();
         foreach (var item in allSetByomeis)
         {
             codeLists.AddRange(GetCodeLists(item));
         }
-        var allByomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
-        var allKarteInfs = _tenantNoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.IsDeleted == DeleteTypes.None).ToList();
-        var allSetOrderInfs = _tenantNoTrackingDataContext.SetOdrInf.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd) && o.IsDeleted == DeleteTypes.None).ToList() ?? new();
-        var allSetOrderInfDetails = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd)).ToList() ?? new();
+        var allByomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => b.HpId == hpId && codeLists.Contains(b.ByomeiCd)).ToList();
+        var allKarteInfs = NoTrackingDataContext.SetKarteInf.Where(k => k.HpId == hpId && setCds.Contains(k.SetCd) && k.IsDeleted == DeleteTypes.None).ToList();
+        var allSetOrderInfs = NoTrackingDataContext.SetOdrInf.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd) && o.IsDeleted == DeleteTypes.None).ToList() ?? new();
+        var allSetOrderInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(o => o.HpId == hpId && setCds.Contains(o.SetCd)).ToList() ?? new();
         var itemCds = allSetOrderInfDetails?.Select(detail => detail.ItemCd);
         var ipnCds = allSetOrderInfDetails?.Select(detail => detail.IpnCd);
-        var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
-        var kensaMsts = _tenantDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
-        var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
-        var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
-        var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sinDate && t.EndDate >= sinDate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
+        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
+        var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sinDate && ipn.EndDate >= sinDate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sinDate && item.EndDate >= sinDate)).ToList();
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
-        var allIpnNameMsts = _tenantNoTrackingDataContext.IpnNameMsts.Where(p =>
+        var allIpnNameMsts = NoTrackingDataContext.IpnNameMsts.Where(p =>
                    p.HpId == hpId &&
                    p.StartDate <= sinDate &&
                    p.EndDate >= sinDate &&
@@ -154,7 +150,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     #region GetSetByomeiList
     private List<SetByomeiModel> GetSetByomeiList(int hpId, int setCd)
     {
-        var listByomeis = _tenantNoTrackingDataContext.SetByomei.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1).ToList();
+        var listByomeis = NoTrackingDataContext.SetByomei.Where(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1).ToList();
 
         // get list ByomeiMst
         List<string> codeLists = new();
@@ -162,7 +158,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         {
             codeLists.AddRange(GetCodeLists(item));
         }
-        var byomeiMstList = _tenantNoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
+        var byomeiMstList = NoTrackingDataContext.ByomeiMsts.Where(b => codeLists.Contains(b.ByomeiCd)).ToList();
 
         var listSetByomeiModels = listByomeis.Select(mst => ConvertSetByomeiModel(mst, byomeiMstList)).ToList();
         return listSetByomeiModels;
@@ -240,7 +236,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     #region GetSetKarteInfModelList
     private SetKarteInfModel GetSetKarteInfModel(int hpId, int setCd)
     {
-        var setKarteInf = _tenantNoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1) ?? new SetKarteInf();
+        var setKarteInf = NoTrackingDataContext.SetKarteInf.FirstOrDefault(odr => odr.HpId == hpId && odr.SetCd == setCd && odr.IsDeleted != 1) ?? new SetKarteInf();
         return new SetKarteInfModel(
                 setKarteInf.HpId,
                 setKarteInf.SetCd,
@@ -251,7 +247,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     private List<SetKarteFileModel> GetListSetKarteFileModel(int hpId, int setCd)
     {
         long lastSeqNo = GetLastSeqNo(hpId, setCd);
-        var result = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item =>
+        var result = NoTrackingDataContext.SetKarteImgInf.Where(item =>
                                                                     item.HpId == hpId
                                                                     && item.SetCd == setCd
                                                                     && item.SeqNo == lastSeqNo)
@@ -272,25 +268,25 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         List<SetOrderInfModel> listSetOrderInfModel = new();
 
         // Get list SetOrderInf and SetOrderInfDetail
-        var allSetOdrInfs = _tenantNoTrackingDataContext.SetOdrInf.Where(order => order.HpId == hpId && order.SetCd == setCd && order.IsDeleted != 1)
+        var allSetOdrInfs = NoTrackingDataContext.SetOdrInf.Where(order => order.HpId == hpId && order.SetCd == setCd && order.IsDeleted != 1)
                 .OrderBy(order => order.OdrKouiKbn)
                 .ThenBy(order => order.RpNo)
                 .ThenBy(order => order.RpEdaNo)
                 .ThenBy(order => order.SortNo)
                 .ToList();
-        var allSetOdrInfDetails = _tenantNoTrackingDataContext.SetOdrInfDetail.Where(detail => detail.HpId == hpId && detail.SetCd == setCd)?.ToList();
+        var allSetOdrInfDetails = NoTrackingDataContext.SetOdrInfDetail.Where(detail => detail.HpId == hpId && detail.SetCd == setCd)?.ToList();
 
         // Get list to map
         var itemCds = allSetOdrInfDetails?.Select(detail => detail.ItemCd);
         var ipnCds = allSetOdrInfDetails?.Select(detail => detail.IpnCd);
-        var tenMsts = _tenantDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
-        var kensaMsts = _tenantDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
-        var yakkas = _tenantDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
-        var ipnKasanExcludes = _tenantDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
-        var ipnKasanExcludeItems = _tenantDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
-        var checkKensaIrai = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
+        var tenMsts = NoTrackingDataContext.TenMsts.Where(t => t.HpId == hpId && t.StartDate <= sindate && t.EndDate >= sindate && (itemCds != null && itemCds.Contains(t.ItemCd))).ToList();
+        var kensaMsts = NoTrackingDataContext.KensaMsts.Where(kensa => kensa.HpId == hpId && kensa.IsDelete != 1).ToList();
+        var yakkas = NoTrackingDataContext.IpnMinYakkaMsts.Where(ipn => ipn.StartDate <= sindate && ipn.EndDate >= sindate && ipn.IsDeleted != 1 && (ipnCds != null && ipnCds.Contains(ipn.IpnNameCd))).OrderByDescending(e => e.StartDate).ToList();
+        var ipnKasanExcludes = NoTrackingDataContext.ipnKasanExcludes.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
+        var ipnKasanExcludeItems = NoTrackingDataContext.ipnKasanExcludeItems.Where(item => item.HpId == hpId && (item.StartDate <= sindate && item.EndDate >= sindate)).ToList();
+        var checkKensaIrai = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 0);
         var kensaIrai = checkKensaIrai?.Val ?? 0;
-        var checkKensaIraiCondition = _tenantDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
+        var checkKensaIraiCondition = NoTrackingDataContext.SystemConfs.FirstOrDefault(item => item.GrpCd == 2019 && item.GrpEdaNo == 1);
         var kensaIraiCondition = checkKensaIraiCondition?.Val ?? 0;
         var listUserId = allSetOdrInfs.Select(user => user.CreateId).ToList();
 
@@ -300,7 +296,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
 
         var listOrderInfModels = from odrInf in allSetOdrInfs
-                                 join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
+                                 join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
                                  select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
@@ -382,7 +378,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         }
 
         var listOrderInfModels = from odrInf in allSetOdrInfs
-                                 join user in _tenantDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
+                                 join user in NoTrackingDataContext.UserMsts.Where(u => u.HpId == hpId && listUserId.Contains(u.UserId))
                                  on odrInf.CreateId equals user.UserId into odrUsers
                                  from odrUser in odrUsers.DefaultIfEmpty()
                                  select ConvertToOrderInfModel(odrInf, odrUser?.Name ?? string.Empty);
@@ -687,13 +683,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         bool status = false;
         try
         {
-            var listOldSetByomeis = _tenantDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
+            var listOldSetByomeis = TrackingDataContext.SetByomei.Where(mst => mst.SetCd == setCd && mst.HpId == hpId && mst.IsDeleted != 1).ToList();
 
             // Add new SetByomei
             var listAddNewSetByomeis = setByomeiModels.Where(model => model.Id == 0).Select(model => ConvertToSetByomeiEntity(setCd, userId, hpId, new SetByomei(), model)).ToList();
             if (listAddNewSetByomeis != null && listAddNewSetByomeis.Count > 0)
             {
-                _tenantDataContext.SetByomei.AddRange(listAddNewSetByomeis);
+                TrackingDataContext.SetByomei.AddRange(listAddNewSetByomeis);
             }
 
             // Update SetByomei
@@ -714,7 +710,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 mst.UpdateDate = DateTime.UtcNow;
                 mst.UpdateId = userId;
             }
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             status = true;
             return status;
         }
@@ -802,7 +798,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         try
         {
             // update SetKarte
-            var entity = _tenantDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
+            var entity = TrackingDataContext.SetKarteInf.FirstOrDefault(mst => mst.SetCd == model.SetCd && mst.HpId == model.HpId && mst.IsDeleted != 1);
             if (entity == null)
             {
                 entity = new();
@@ -814,7 +810,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 entity.UpdateDate = DateTime.UtcNow;
                 entity.UpdateId = userId;
                 entity.CreateId = userId;
-                _tenantDataContext.SetKarteInf.Add(entity);
+                TrackingDataContext.SetKarteInf.Add(entity);
             }
             else
             {
@@ -824,13 +820,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             }
 
             // if set karte have image, update setKarteImage
-            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
+            var listKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == model.HpId && item.SetCd == model.SetCd && item.Position <= 0).ToList();
             foreach (var item in listKarteImgInfs.Where(item => model.RichText.Contains(ConvertToLinkImage(item.FileName ?? string.Empty))).ToList())
             {
                 item.Position = 10;
             }
 
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             status = true;
 
             return status;
@@ -886,15 +882,15 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                     }
                     listSetOdrInfAddNews.Add(entityMst);
                 }
-                _tenantDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
-                _tenantDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
+                TrackingDataContext.SetOdrInf.AddRange(listSetOdrInfAddNews);
+                TrackingDataContext.SetOdrInfDetail.AddRange(listSetOdrInfDetailAddNews);
             }
 
             // Delete SetOdrInf
             var listIdDeletes = setOrderInfModels.Where(model => model.IsDeleted != 0 || model.Id > 0).Select(item => item.Id).ToList();
             if (listIdDeletes != null && listIdDeletes.Count > 0)
             {
-                List<SetOdrInf> listSetOdrInfDeletes = _tenantDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
+                List<SetOdrInf> listSetOdrInfDeletes = TrackingDataContext.SetOdrInf.Where(item => item.SetCd == setCd && item.HpId == hpId && listIdDeletes.Contains(item.Id)).ToList();
                 foreach (var mst in listSetOdrInfDeletes)
                 {
                     mst.IsDeleted = DeleteTypes.Deleted;
@@ -903,7 +899,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 }
             }
 
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             status = true;
             return status;
         }
@@ -980,7 +976,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             var setCd = listModel.FirstOrDefault()?.SetCd;
             var listPosition = listModel.Select(item => item.Position).ToList();
             var listOldFileName = listModel.Select(item => item.OldFileName).ToList();
-            var listKarteImgInfs = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName ?? string.Empty)).ToList();
+            var listKarteImgInfs = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd && listPosition.Contains(item.Position) && listOldFileName.Contains(item.FileName ?? string.Empty)).ToList();
 
             foreach (var model in listModel)
             {
@@ -992,7 +988,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                     karteImgInf.SetCd = model.SetCd;
                     karteImgInf.FileName = model.FileName;
                     karteImgInf.Position = model.Position;
-                    _tenantDataContext.SetKarteImgInf.Add(karteImgInf);
+                    TrackingDataContext.SetKarteImgInf.Add(karteImgInf);
                 }
                 else
                 {
@@ -1003,11 +999,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                     }
                     else
                     {
-                        _tenantDataContext.SetKarteImgInf.Remove(karteImgInf);
+                        TrackingDataContext.SetKarteImgInf.Remove(karteImgInf);
                     }
                 }
             }
-            _tenantDataContext.SaveChanges();
+            TrackingDataContext.SaveChanges();
             status = true;
             return status;
         }
@@ -1019,7 +1015,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     public List<SetOrderInfModel> GetOnlyListOrderInfModel(int hpId, int setCd)
     {
-        var listOrder = _tenantNoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
+        var listOrder = NoTrackingDataContext.SetOdrInf.Where(mst => mst.HpId == hpId && mst.SetCd == setCd).ToList();
         return listOrder.Select(model => ConvertToOrderInfModel(model, string.Empty)).ToList();
     }
 
@@ -1030,7 +1026,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             return 0;
         }
 
-        var result = _tenantNoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd)
+        var result = NoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd)
                                                   .Max(item => item.RpNo);
         return result;
     }
@@ -1134,11 +1130,11 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
         var systemConf = new SystemConf();
         if (!fromLastestDb)
         {
-            systemConf = _tenantNoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
         }
         else
         {
-            systemConf = _tenantNoTrackingDataContext.SystemConfs.Where(p =>
+            systemConf = NoTrackingDataContext.SystemConfs.Where(p =>
                 p.HpId == hpId && p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo).FirstOrDefault();
         }
         return systemConf != null ? systemConf.Val : defaultValue;
@@ -1174,12 +1170,12 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     public bool CheckExistSupperSetDetail(int hpId, int setCd)
     {
-        return _tenantNoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd && item.IsDeleted == 0);
+        return NoTrackingDataContext.SetMsts.Any(item => item.HpId == hpId && item.SetCd == setCd && item.IsDeleted == 0);
     }
 
     public long GetLastSeqNo(int hpId, int setCd)
     {
-        var lastItem = _tenantNoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList()?.MaxBy(item => item.SeqNo);
+        var lastItem = NoTrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId && item.SetCd == setCd).ToList()?.MaxBy(item => item.SeqNo);
         return lastItem != null ? lastItem.SeqNo : 0;
     }
 
@@ -1192,14 +1188,14 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                 var listInsert = ConvertListAddNewFiles(hpId, listFileName);
                 if (listInsert.Any())
                 {
-                    _tenantDataContext.SetKarteImgInf.AddRange(listInsert);
+                    TrackingDataContext.SetKarteImgInf.AddRange(listInsert);
                 }
             }
             else
             {
                 UpdateSeqNoSetFile(hpId, setCd, listFileName);
             }
-            return _tenantDataContext.SaveChanges() > 0;
+            return TrackingDataContext.SaveChanges() > 0;
         }
         catch (Exception)
         {
@@ -1211,7 +1207,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
     {
         int position = 1;
         var lastSeqNo = GetLastSeqNo(hpId, setCd);
-        var listOldFile = _tenantDataContext.SetKarteImgInf.Where(item =>
+        var listOldFile = TrackingDataContext.SetKarteImgInf.Where(item =>
                                                                 item.HpId == hpId
                                                                 && item.SeqNo == lastSeqNo
                                                                 && item.SetCd == setCd
@@ -1219,7 +1215,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
                                                                 && listFileName.Contains(item.FileName)
                                                             ).ToList();
 
-        var listUpdateFiles = _tenantDataContext.SetKarteImgInf.Where(item =>
+        var listUpdateFiles = TrackingDataContext.SetKarteImgInf.Where(item =>
                                                                 item.HpId == hpId
                                                                 && item.SeqNo == 0
                                                                 && item.SetCd == 0
@@ -1233,7 +1229,7 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
             newFile.Id = 0;
             newFile.SeqNo = lastSeqNo + 1;
             newFile.Position = position;
-            _tenantDataContext.SetKarteImgInf.Add(newFile);
+            TrackingDataContext.SetKarteImgInf.Add(newFile);
             position++;
         }
 
@@ -1268,13 +1264,13 @@ public class SuperSetDetailRepository : ISuperSetDetailRepository
 
     public bool ClearTempData(int hpId, List<string> listFileNames)
     {
-        var listDeletes = _tenantDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
+        var listDeletes = TrackingDataContext.SetKarteImgInf.Where(item => item.HpId == hpId
                                                                 && item.SeqNo == 0
                                                                 && item.SetCd == 0
                                                                 && item.FileName != null
                                                                 && listFileNames.Contains(item.FileName)
                                                             ).ToList();
-        _tenantDataContext.SetKarteImgInf.RemoveRange(listDeletes);
-        return _tenantDataContext.SaveChanges() > 0;
+        TrackingDataContext.SetKarteImgInf.RemoveRange(listDeletes);
+        return TrackingDataContext.SaveChanges() > 0;
     }
 }

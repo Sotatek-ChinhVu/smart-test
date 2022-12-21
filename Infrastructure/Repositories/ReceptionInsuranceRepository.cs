@@ -5,6 +5,7 @@ using Domain.Models.ReceptionInsurance;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Constants;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using PostgreDataContext;
 using System;
@@ -15,22 +16,20 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class ReceptionInsuranceRepository : IReceptionInsuranceRepository
+    public class ReceptionInsuranceRepository : RepositoryBase, IReceptionInsuranceRepository
     {
-        private readonly TenantNoTrackingDataContext _tenantDataContext;
-        public ReceptionInsuranceRepository(ITenantProvider tenantProvider)
+        public ReceptionInsuranceRepository(ITenantProvider tenantProvider) : base(tenantProvider)
         {
-            _tenantDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public IEnumerable<ReceptionInsuranceModel> GetReceptionInsurance(int hpId, long ptId, int sinDate, bool isShowExpiredReception)
         {
             var listData = new List<ReceptionInsuranceModel>();
-            var listhokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None)
+            var listhokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId && x.IsDeleted == DeleteStatus.None)
                            .OrderBy(x => !(x.StartDate <= sinDate && x.EndDate >= sinDate))
                            .ThenByDescending(x => x.HokenId)
                            .ToList();
-            var listKohi = _tenantDataContext.PtKohis.Where(entity => entity.HpId == hpId && entity.PtId == ptId)
+            var listKohi = NoTrackingDataContext.PtKohis.Where(entity => entity.HpId == hpId && entity.PtId == ptId)
                           .OrderBy(x => !(x.StartDate <= sinDate && x.EndDate >= sinDate))
                           .ThenByDescending(x => x.HokenId).ToList();
 
@@ -38,7 +37,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listhokenInf)
                 {
-                    var HokenMasterModel = _tenantDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
+                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
                     var isReceKisaiOrNoHoken = false;
                     var isExpirated = IsExpirated(item.StartDate, item.EndDate, sinDate);
                     if (HokenMasterModel != null)
@@ -75,7 +74,7 @@ namespace Infrastructure.Repositories
             {
                 foreach (var item in listKohi)
                 {
-                    var HokenMasterModel = _tenantDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
+                    var HokenMasterModel = NoTrackingDataContext.HokenMsts.Where(hoken => hoken.HokenNo == item.HokenNo && hoken.HokenEdaNo == item.HokenEdaNo).FirstOrDefault();
                     var isExpirated = IsExpirated(item.StartDate, item.EndDate, sinDate);
                     if (isShowExpiredReception || isExpirated)
                     {
@@ -111,12 +110,12 @@ namespace Infrastructure.Repositories
             var result = "";
             if (sinDate >= 20080401)
             {
-                var listHokenPatterns = _tenantDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                var listHokenPatterns = NoTrackingDataContext.PtHokenPatterns.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
 
                 if (listHokenPatterns != null && listHokenPatterns.Count > 0)
                 {
                     var patternHokenOnly = listHokenPatterns.Where(pattern => pattern.IsDeleted == 0 && (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate));
-                    var listHokenInfs = _tenantDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
+                    var listHokenInfs = NoTrackingDataContext.PtHokenInfs.Where(x => x.HpId == hpId && x.PtId == ptId).ToList();
                     int age = CIUtil.SDateToAge(ptInfBirthday, sinDate);
 
                     // hoken exist in at least 1 pattern
@@ -151,12 +150,12 @@ namespace Infrastructure.Repositories
         {
             var checkResult = "";
             // pattern
-            var listPattern = _tenantDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
+            var listPattern = NoTrackingDataContext.PtHokenPatterns.Where(pattern => pattern.IsDeleted == DeleteTypes.None &&
                                                                 (pattern.StartDate <= sinDate && pattern.EndDate >= sinDate)
                                                                 && pattern.HpId == hpId && pattern.PtId == ptId
                                                                     );
 
-            var listHokenInf = _tenantDataContext.PtHokenInfs.Where(x => x.IsDeleted == DeleteTypes.None
+            var listHokenInf = NoTrackingDataContext.PtHokenInfs.Where(x => x.IsDeleted == DeleteTypes.None
                                                                 && x.HpId == hpId && x.PtId == ptId
                                                                 && ((x.HokenKbn == 1 && x.Houbetu != HokenConstant.HOUBETU_NASHI) || x.HokenKbn == 2)
                                                                 && !(!String.IsNullOrEmpty(x.HokensyaNo) && x.HokensyaNo.Length == 8
@@ -192,7 +191,7 @@ namespace Infrastructure.Repositories
 
                 foreach (var pattern in validPattern)
                 {
-                    var ptCheck = _tenantDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
+                    var ptCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.HokenId == pattern.ptHokenPattern.HokenId && x.HokenGrp == HokenGroupConstant.HokenGroupHokenPattern)
                                     .OrderByDescending(x => x.CheckDate).FirstOrDefault();
                     int confirmDate = GetConfirmDateHokenInf(ptCheck);
                     if (!IsValidAgeCheckConfirm(ageCheck, confirmDate, patientInfBirthDay, sinDate) && invalidAgeCheck <= ageCheck)
@@ -228,7 +227,7 @@ namespace Infrastructure.Repositories
 
         private string GetSettingParam(int groupCd, int grpEdaNo = 0, string defaultParam = "")
         {
-            var systemConf = _tenantDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
+            var systemConf = NoTrackingDataContext.SystemConfs.FirstOrDefault(p => p.GrpCd == groupCd && p.GrpEdaNo == grpEdaNo);
             //Fix comment 894 (duong.vu)
             //Return value in DB if and only if Param is not null or white space
             if (systemConf != null && !string.IsNullOrWhiteSpace(systemConf.Param))
@@ -266,7 +265,7 @@ namespace Infrastructure.Repositories
 
         private int GetConfirmDate(int hokenId, int typeHokenGroup)
         {
-            var validHokenCheck = _tenantDataContext.PtHokenChecks.Where(x => x.IsDeleted == 0 && x.HokenId == hokenId && x.HokenGrp == typeHokenGroup)
+            var validHokenCheck = NoTrackingDataContext.PtHokenChecks.Where(x => x.IsDeleted == 0 && x.HokenId == hokenId && x.HokenGrp == typeHokenGroup)
                 .OrderByDescending(x => x.CheckDate)
                 .ToList();
             if (!validHokenCheck.Any())
@@ -291,7 +290,7 @@ namespace Infrastructure.Repositories
                 }
 
                 // HokenChecks
-                var hokenChecks = _tenantDataContext.PtHokenChecks
+                var hokenChecks = NoTrackingDataContext.PtHokenChecks
                                     .Where(x => x.HpId == hpId && x.PtID == ptId && x.IsDeleted == 0
                                                 && x.HokenGrp == 1 && x.HokenId == hokenId && x.IsDeleted == 0)
                                     .OrderByDescending(x => x.CheckDate)

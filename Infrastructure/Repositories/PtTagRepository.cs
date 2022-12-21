@@ -1,26 +1,21 @@
 ﻿using Domain.Models.PtTag;
 using Entity.Tenant;
+using Infrastructure.Base;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PostgreDataContext;
 
 namespace Infrastructure.Repositories;
 
-public class PtTagRepository : IPtTagRepository
+public class PtTagRepository : RepositoryBase, IPtTagRepository
 {
-    private readonly TenantNoTrackingDataContext _tenantDataContextNoTracking;
-    private readonly TenantDataContext _tenantDataContextTracking;
-
-
-    public PtTagRepository(ITenantProvider tenantProvider)
+    public PtTagRepository(ITenantProvider tenantProvider) : base(tenantProvider)
     {
-        _tenantDataContextNoTracking = tenantProvider.GetNoTrackingDataContext();
-        _tenantDataContextTracking = tenantProvider.GetTrackingTenantDataContext();
     }
 
     public List<StickyNoteModel> SearchByPtId(int hpId, int ptId)
     {
-        return _tenantDataContextNoTracking.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == 0 || x.IsDeleted == 1))
+        return NoTrackingDataContext.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && (x.IsDeleted == 0 || x.IsDeleted == 1))
             .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo ?? string.Empty, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor ?? string.Empty, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
             .ToList();
     }
@@ -28,7 +23,7 @@ public class PtTagRepository : IPtTagRepository
     {
         try
         {
-            var ptTag = _tenantDataContextNoTracking.PtTag.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo);
+            var ptTag = NoTrackingDataContext.PtTag.FirstOrDefault(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo);
 
             if (ptTag == null) return false;
 
@@ -40,8 +35,8 @@ public class PtTagRepository : IPtTagRepository
             ptTag.UpdateId = userId;
             ptTag.CreateDate = DateTime.SpecifyKind(ptTag.CreateDate, DateTimeKind.Utc);
 
-            _tenantDataContextTracking.PtTag.Update(ptTag);
-            _tenantDataContextTracking.SaveChanges();
+            TrackingDataContext.PtTag.Update(ptTag);
+            TrackingDataContext.SaveChanges();
             return true;
         }
         catch (Exception)
@@ -51,13 +46,13 @@ public class PtTagRepository : IPtTagRepository
     }
     public bool SaveStickyNote(List<StickyNoteModel> stickyNoteModels, int userId)
     {
-        var executionStrategy = _tenantDataContextTracking.Database.CreateExecutionStrategy();
+        var executionStrategy = TrackingDataContext.Database.CreateExecutionStrategy();
 
         var result = executionStrategy.Execute(
                 () =>
                 {
                     // execute your logic here
-                    using (var transaction = _tenantDataContextTracking.Database.BeginTransaction())
+                    using (var transaction = TrackingDataContext.Database.BeginTransaction())
                     {
                         try
                         {
@@ -103,9 +98,9 @@ public class PtTagRepository : IPtTagRepository
                                 ptTag.UpdateId = userId;
                             });
 
-                            _tenantDataContextTracking.PtTag.UpdateRange(updateList);
-                            _tenantDataContextTracking.PtTag.AddRange(addList);
-                            _tenantDataContextTracking.SaveChanges();
+                            TrackingDataContext.PtTag.UpdateRange(updateList);
+                            TrackingDataContext.PtTag.AddRange(addList);
+                            TrackingDataContext.SaveChanges();
                             transaction.Commit();
                             return true;
                         }
@@ -121,7 +116,7 @@ public class PtTagRepository : IPtTagRepository
 
     public StickyNoteModel GetStickyNoteModel(int hpId, long ptId, long seqNo)
     {
-        var result = _tenantDataContextNoTracking.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo)
+        var result = NoTrackingDataContext.PtTag.Where(x => x.HpId == hpId && x.PtId == ptId && x.SeqNo == seqNo)
                                                 .Select(x => new StickyNoteModel(x.HpId, x.PtId, x.SeqNo, x.Memo ?? string.Empty, x.StartDate, x.EndDate, x.IsDspUketuke, x.IsDspKarte, x.IsDspKaikei, x.IsDspRece, x.BackgroundColor ?? string.Empty, x.TagGrpCd, x.AlphablendVal, x.FontSize, x.IsDeleted, x.Width, x.Height, x.Left, x.Top))
                                                 .FirstOrDefault();
         return result ?? new StickyNoteModel();

@@ -22,14 +22,14 @@ public class GetKarteFilterMstsInteractor : IGetKarteFilterInputPort
 
             if (allKarteFilterMsts == null || allKarteFilterMsts.Count <= 0)
             {
-                return new GetKarteFilterOutputData(new(), GetKarteFilterStatus.NoData);
+                return new GetKarteFilterOutputData(GetKarteFilterStatus.NoData);
             }
 
-            return new GetKarteFilterOutputData(allKarteFilterMsts, GetKarteFilterStatus.Successed);
+            return new GetKarteFilterOutputData(allKarteFilterMsts.Select(item => new KarteFilterMstOutputItem(item)).ToList(), GetKarteFilterStatus.Successed);
         }
         catch (Exception)
         {
-            return new GetKarteFilterOutputData(new(), GetKarteFilterStatus.Error);
+            return new GetKarteFilterOutputData(GetKarteFilterStatus.Error);
         }
     }
 }
