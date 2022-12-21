@@ -35,19 +35,9 @@ namespace Interactor.CommonChecker
 
         private List<string> _listPtAlrgyDrugCode;
 
-        public CommonCheckerInteractor(IRealtimeCheckerFinder finder, List<PtAlrgyDrugModel> listPtAlrgyDrug, List<PtAlrgyFoodModel> listPtAlrgyFood, List<PtOtherDrugModel> listPtOtherDrug, List<PtOtcDrugModel> listPtOtcDrug, List<PtSuppleModel> listPtSupple, List<PtKioRekiModel> listPtKioReki, List<string> listDiseaseCode, double currentHeight, double currentWeight, List<string> listPtAlrgyDrugCode)
+        public CommonCheckerInteractor(IRealtimeCheckerFinder finder)
         {
             _finder = finder;
-            _listPtAlrgyDrug = listPtAlrgyDrug;
-            _listPtAlrgyFood = listPtAlrgyFood;
-            _listPtOtherDrug = listPtOtherDrug;
-            _listPtOtcDrug = listPtOtcDrug;
-            _listPtSupple = listPtSupple;
-            _listPtKioReki = listPtKioReki;
-            _listDiseaseCode = listDiseaseCode;
-            _currentHeight = currentHeight;
-            _currentWeight = currentWeight;
-            _listPtAlrgyDrugCode = listPtAlrgyDrugCode;
         }
 
         public List<string> ListPtAlrgyDrugCode
@@ -82,11 +72,11 @@ namespace Interactor.CommonChecker
             var checkedResult = CheckListOrder(inputData.CurrentListOdr, new List<OrdInfoModel>() { inputData.ListCheckingOrder });
             if (checkedResult == null || checkedResult.Count == 0)
             {
-                return new GetOrderCheckerOutputData(new());
+                return new GetOrderCheckerOutputData(new(), GetOrderCheckerStatus.Successed);
             }
             else
             {
-                return new GetOrderCheckerOutputData(checkedResult.FirstOrDefault() ?? new());
+                return new GetOrderCheckerOutputData(checkedResult.FirstOrDefault() ?? new(), GetOrderCheckerStatus.Successed);
             }
         }
 

@@ -74,6 +74,7 @@ using EmrCloudApi.Responses.PtGroupMst;
 using EmrCloudApi.Requests.PtGroupMst;
 using UseCase.PtGroupMst.SaveGroupNameMst;
 using EmrCloudApi.Presenters.PtGroupMst;
+using UseCase.CommonChecker;
 
 namespace EmrCloudApi.Controller
 {
@@ -750,6 +751,16 @@ namespace EmrCloudApi.Controller
             var presenter = new SaveGroupNameMstPresenter();
             presenter.Complete(output);
             return new ActionResult<Response<SaveGroupNameMstResponse>>(presenter.Result);
+        }
+
+        [HttpPost(ApiPath.OrderRealtimeChecker)]
+        public ActionResult<Response<OrderRealtimeCheckerResponse>> OrderRealtimeChecker([FromBody] OrderRealtimeCheckerRequest request)
+        {
+            var input = new GetOrderCheckerInputData(request.CurrentListOdr, request.ListCheckingOrder);
+            var output = _bus.Handle(input);
+            var presenter = new OrderRealtimeCheckerPresenter();
+            presenter.Complete(output);
+            return new ActionResult<Response<OrderRealtimeCheckerResponse>>(presenter.Result);
         }
     }
 }

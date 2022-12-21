@@ -155,5 +155,8 @@
 
         //PtGroupMst 
         public const string SaveGroupNameMst = "SaveGroupNameMst";
+
+        //Order RealtimeChecker
+        public const string OrderRealtimeChecker = "OrderRealtimeChecker";
     }
 }

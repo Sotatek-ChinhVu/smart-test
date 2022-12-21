@@ -3,6 +3,7 @@ using CommonCheckers.OrderRealtimeChecker.Models;
 using Entity.Tenant;
 using Helper.Common;
 using Helper.Extension;
+using Infrastructure.Interfaces;
 using PostgreDataContext;
 
 namespace CommonCheckers.OrderRealtimeChecker.DB
@@ -11,9 +12,9 @@ namespace CommonCheckers.OrderRealtimeChecker.DB
     {
         private readonly TenantNoTrackingDataContext _tenantNoTrackingDataContext;
 
-        public RealtimeCheckerFinder(TenantNoTrackingDataContext tenantNoTrackingDataContext)
+        public RealtimeCheckerFinder(ITenantProvider tenantProvider)
         {
-            _tenantNoTrackingDataContext = tenantNoTrackingDataContext;
+            _tenantNoTrackingDataContext = tenantProvider.GetNoTrackingDataContext();
         }
 
         public Dictionary<string, string> GetYjCdListByItemCdList(int hpId, List<string> itemCdList, int sinDate)
