@@ -38,45 +38,53 @@ public class GetListKarteInfInteractor : IGetListKarteInfInputPort
             return new GetListKarteInfOutputData(GetListKarteInfStatus.InvalidSinDate);
         }
 
-        var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
-        if (karteInfModel == null || karteInfModel.Count == 0)
+        try
         {
-            return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
-        }
-
-        List<string> listFile = new();
-        var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
-        if (listKarteFile.Any())
-        {
-            var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
-            List<string> listFolders = new();
-            listFolders.Add(CommonConstants.Store);
-            listFolders.Add(CommonConstants.Karte);
-            string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
-            foreach (var file in listKarteFile)
+            var karteInfModel = _karteInfRepository.GetList(inputData.PtId, inputData.RaiinNo, inputData.SinDate, inputData.IsDeleted).OrderBy(o => o.KarteKbn).ToList();
+            if (karteInfModel == null || karteInfModel.Count == 0)
             {
-                var fileName = new StringBuilder();
-                fileName.Append(_options.BaseAccessUrl);
-                fileName.Append("/");
-                fileName.Append(path);
-                fileName.Append(file);
-                listFile.Add(fileName.ToString());
+                return new GetListKarteInfOutputData(GetListKarteInfStatus.NoData);
             }
-        }
 
-        return new GetListKarteInfOutputData(karteInfModel.Select(k =>
-                                                    new GetListKarteInfOuputItem(
-                                                        k.HpId,
-                                                        k.RaiinNo,
-                                                        k.KarteKbn,
-                                                        k.SeqNo,
-                                                        k.PtId,
-                                                        k.SinDate,
-                                                        k.Text,
-                                                        k.IsDeleted,
-                                                        k.RichText
-                                                    )).ToList(),
-                                                    listFile,
-                                                    GetListKarteInfStatus.Successed);
+            List<string> listFile = new();
+            var listKarteFile = _karteInfRepository.GetListKarteFile(inputData.HpId, inputData.PtId, inputData.RaiinNo, false);
+            if (listKarteFile.Any())
+            {
+                var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+                List<string> listFolders = new();
+                listFolders.Add(CommonConstants.Store);
+                listFolders.Add(CommonConstants.Karte);
+                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf != null ? ptInf.PtNum : 0);
+                foreach (var file in listKarteFile)
+                {
+                    var fileName = new StringBuilder();
+                    fileName.Append(_options.BaseAccessUrl);
+                    fileName.Append("/");
+                    fileName.Append(path);
+                    fileName.Append(file);
+                    listFile.Add(fileName.ToString());
+                }
+            }
+
+            return new GetListKarteInfOutputData(karteInfModel.Select(k =>
+                                                        new GetListKarteInfOuputItem(
+                                                            k.HpId,
+                                                            k.RaiinNo,
+                                                            k.KarteKbn,
+                                                            k.SeqNo,
+                                                            k.PtId,
+                                                            k.SinDate,
+                                                            k.Text,
+                                                            k.IsDeleted,
+                                                            k.RichText
+                                                        )).ToList(),
+                                                        listFile,
+                                                        GetListKarteInfStatus.Successed);
+        }
+        finally
+        {
+            _karteInfRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 }

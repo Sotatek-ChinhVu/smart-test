@@ -33,6 +33,10 @@ namespace Interactor.PatientInfor
             {
                 return new GetInsuranceMasterLinkageOutputData(new List<DefHokenNoModel>(), GetInsuranceMasterLinkageStatus.Failed);
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
         }
     }
 }

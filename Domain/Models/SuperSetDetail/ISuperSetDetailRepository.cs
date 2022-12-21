@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SuperSetDetail;
+﻿using Domain.Common;
 
-public interface ISuperSetDetailRepository
+namespace Domain.Models.SuperSetDetail;
+
+public interface ISuperSetDetailRepository : IRepositoryBase
 {
     SuperSetDetailModel GetSuperSetDetail(int hpId, int setCd, int sindate);
 

@@ -90,6 +90,12 @@ namespace Interactor.SpecialNote
             {
                 return new AddAlrgyDrugListOutputData(new List<KeyValuePair<int, AddAlrgyDrugListStatus>>() { new(-1, AddAlrgyDrugListStatus.Failed) });
             }
+            finally
+            {
+                _importantNoteRepository.ReleaseResource();
+                _mstItemRepository.ReleaseResource();
+                _patientInfoRepository.ReleaseResource();
+            }
         }
 
         private static AddAlrgyDrugListStatus CovertToAddAlrgyDrugListStatus(ValidationStatus validationStatus)

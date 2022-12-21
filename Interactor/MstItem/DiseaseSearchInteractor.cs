@@ -1,5 +1,6 @@
 ﻿using Domain.Models.MstItem;
 using Helper.Common;
+using Infrastructure.Repositories;
 using UseCase.MstItem.DiseaseSearch;
 
 namespace Interactor.Byomei;
@@ -32,6 +33,10 @@ public class DiseaseSearchInteractor : IDiseaseSearchInputPort
         catch (Exception)
         {
             return new DiseaseSearchOutputData(DiseaseSearchStatus.Failed);
+        }
+        finally
+        {
+            _inputItemRepository.ReleaseResource();
         }
     }
 }

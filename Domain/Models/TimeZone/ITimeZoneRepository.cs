@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.TimeZone;
+﻿using Domain.Common;
 
-public interface ITimeZoneRepository
+namespace Domain.Models.TimeZone;
+
+public interface ITimeZoneRepository : IRepositoryBase
 {
     public bool IsHoliday(int hpId, int sinDate);
 

@@ -333,5 +333,10 @@ public class DocumentRepository : RepositoryBase, IDocumentRepository
             sortNo++;
         }
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
     #endregion
 }

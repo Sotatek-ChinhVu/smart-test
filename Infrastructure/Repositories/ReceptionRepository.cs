@@ -1004,5 +1004,10 @@ namespace Infrastructure.Repositories
         {
             return NoTrackingDataContext.RaiinInfs.Any(item => item.HpId == hpId && item.PtId == ptId && item.RaiinNo == raiinNo);
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

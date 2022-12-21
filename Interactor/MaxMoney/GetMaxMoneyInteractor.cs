@@ -15,50 +15,57 @@ namespace Interactor.MaxMoney
 
         public GetMaxMoneyOutputData Handle(GetMaxMoneyInputData inputData)
         {
-            if (inputData.PtId < 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidPtId);
+            try
+            {
+                if (inputData.PtId < 0)
+                    return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidPtId);
 
-            if (inputData.HpId < 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidHpId);
+                if (inputData.HpId < 0)
+                    return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidHpId);
 
-            if (inputData.SinDate <= 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidSinDate);
+                if (inputData.SinDate <= 0)
+                    return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidSinDate);
 
-            if (inputData.HokenKohiId <= 0)
-                return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidKohiId);
+                if (inputData.HokenKohiId <= 0)
+                    return new GetMaxMoneyOutputData(default, GetMaxMoneyStatus.InvalidKohiId);
 
-            var listLimit = _maxmoneyReposiory.GetListLimitModel(inputData.PtId, inputData.HpId);
-            if (listLimit != null)
-                listLimit = listLimit.Where(x => x.KohiId == inputData.HokenKohiId
-                                    && x.SinDateM == inputData.SinDateM
-                                    && x.SinDateY == inputData.SinDateY).ToList();
-            else
-                listLimit = new List<LimitListModel>();
+                var listLimit = _maxmoneyReposiory.GetListLimitModel(inputData.PtId, inputData.HpId);
+                if (listLimit != null)
+                    listLimit = listLimit.Where(x => x.KohiId == inputData.HokenKohiId
+                                        && x.SinDateM == inputData.SinDateM
+                                        && x.SinDateY == inputData.SinDateY).ToList();
+                else
+                    listLimit = new List<LimitListModel>();
 
-            var infoHoken = _maxmoneyReposiory.GetInfoHokenMoney(inputData.HpId, inputData.PtId, inputData.HokenKohiId, inputData.SinYM);
+                var infoHoken = _maxmoneyReposiory.GetInfoHokenMoney(inputData.HpId, inputData.PtId, inputData.HokenKohiId, inputData.SinYM);
 
-            int kohiId = infoHoken.HokenKohiId;
-            int rate = infoHoken.Rate;
-            int sinDateYM = infoHoken.SinYM;
-            string displaySinDateYM = infoHoken.DisplaySinDateYM;
-            bool isLimitMaxMoney = infoHoken.IsLimitMaxMoney;
-            int gendoGaku = infoHoken.GendoGaku;
-            int remainGendoGaku = 0;
+                int kohiId = infoHoken.HokenKohiId;
+                int rate = infoHoken.Rate;
+                int sinDateYM = infoHoken.SinYM;
+                string displaySinDateYM = infoHoken.DisplaySinDateYM;
+                bool isLimitMaxMoney = infoHoken.IsLimitMaxMoney;
+                int gendoGaku = infoHoken.GendoGaku;
+                int remainGendoGaku = 0;
 
-            if (rate == 0)
-                rate = infoHoken.FutanRate;
+                if (rate == 0)
+                    rate = infoHoken.FutanRate;
 
-            if (gendoGaku == 0)
-                gendoGaku = infoHoken.LimitFutan;
+                if (gendoGaku == 0)
+                    gendoGaku = infoHoken.LimitFutan;
 
-            CalculateSort(listLimit);
-            CalculateTotalMoney(listLimit, isLimitMaxMoney, gendoGaku,ref remainGendoGaku);
+                CalculateSort(listLimit);
+                CalculateTotalMoney(listLimit, isLimitMaxMoney, gendoGaku, ref remainGendoGaku);
 
-            MaxMoneyModel result = new MaxMoneyModel(kohiId, gendoGaku, remainGendoGaku, rate, infoHoken.Houbetsu
-                , infoHoken.HokenName, sinDateYM, infoHoken.FutanKbn, infoHoken.MonthLimitFutan, infoHoken.IsLimitListSum,
-                displaySinDateYM, listLimit);
+                MaxMoneyModel result = new MaxMoneyModel(kohiId, gendoGaku, remainGendoGaku, rate, infoHoken.Houbetsu
+                    , infoHoken.HokenName, sinDateYM, infoHoken.FutanKbn, infoHoken.MonthLimitFutan, infoHoken.IsLimitListSum,
+                    displaySinDateYM, listLimit);
 
-            return new GetMaxMoneyOutputData(result, GetMaxMoneyStatus.Successed);
+                return new GetMaxMoneyOutputData(result, GetMaxMoneyStatus.Successed);
+            }
+            finally
+            {
+                _maxmoneyReposiory.ReleaseResource();
+            }
         }
 
         private void CalculateSort(List<LimitListModel> listLimits)

@@ -156,6 +156,15 @@ namespace Interactor.NextOrder
             {
                 return new UpsertNextOrderListOutputData(UpsertNextOrderListStatus.Failed, new(), new(), new(), new());
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _hpInfRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _nextOrderRepository.ReleaseResource();
+                _patientInfRepository.ReleaseResource();
+                _userRepository.ReleaseResource();
+            }
         }
 
         private void SaveFileNextOrder(int hpId, long ptId, long rsvkrtNo, List<string> listFileItems, bool saveSuccess)

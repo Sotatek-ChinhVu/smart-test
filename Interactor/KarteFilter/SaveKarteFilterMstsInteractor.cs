@@ -51,5 +51,9 @@ public class SaveKarteFilterMstsInteractor : ISaveKarteFilterInputPort
         {
             return new SaveKarteFilterOutputData(SaveKarteFilterStatus.Failed);
         }
+        finally
+        {
+            _karteFilterMstRepository.ReleaseResource();
+        }
     }
 }

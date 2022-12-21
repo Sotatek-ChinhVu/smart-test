@@ -48,5 +48,10 @@ public class DeleteDocInfInteractor : IDeleteDocInfInputPort
         {
             return new DeleteDocInfOutputData(DeleteDocInfStatus.Failed);
         }
+        finally
+        {
+            _documentRepository.ReleaseResource();
+            _patientInforRepository.ReleaseResource();
+        }
     }
 }

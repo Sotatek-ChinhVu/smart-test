@@ -37,5 +37,9 @@ public class UpdateAdoptedByomeiConfigInteractor : IUpdateAdoptedByomeiConfigInp
         {
             return new UpdateAdoptedByomeiConfigOutputData(UpdateAdoptedByomeiConfigStatus.Failed);
         }
+        finally
+        {
+            _userConfRepository.ReleaseResource();
+        }
     }
 }

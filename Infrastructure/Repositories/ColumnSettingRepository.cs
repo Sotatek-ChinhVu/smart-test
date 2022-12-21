@@ -65,4 +65,9 @@ public class ColumnSettingRepository : RepositoryBase, IColumnSettingRepository
             Width = model.Width
         };
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

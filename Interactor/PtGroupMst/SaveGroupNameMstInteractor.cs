@@ -33,6 +33,10 @@ namespace Interactor.PtGroupMst
             {
                 return new SaveGroupNameMstOutputData(SaveGroupNameMstStatus.Exception, ex.Message);
             }
+            finally
+            {
+                _groupNameMstRepository.ReleaseResource();
+            }
         }
     }
 }

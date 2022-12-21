@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.MstItem
+﻿using Domain.Common;
+
+namespace Domain.Models.MstItem
 {
-    public interface IMstItemRepository
+    public interface IMstItemRepository : IRepositoryBase
     {
         List<DosageDrugModel> GetDosages(List<string> yjCds);
 

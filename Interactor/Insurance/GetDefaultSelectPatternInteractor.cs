@@ -50,6 +50,10 @@ namespace Interactor.Insurance
             {
                 return new GetDefaultSelectPatternOutputData(new(), GetDefaultSelectPatternStatus.Failed);
             }
+            finally
+            {
+                _insuranceResponsitory.ReleaseResource();
+            }
         }
     }
 }

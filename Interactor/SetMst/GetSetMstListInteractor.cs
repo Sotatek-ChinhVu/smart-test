@@ -17,31 +17,37 @@ namespace Interactor.SetMst
 
         public GetSetMstListOutputData Handle(GetSetMstListInputData inputData)
         {
-
-            if (inputData.HpId < 0)
+            try
             {
-                return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidHpId);
-            }
-            if (inputData.SetKbn < 0)
-            {
-                return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSetKbn);
-            }
-            if (inputData.SetKbnEdaNo < 0)
-            {
-                return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSetKbnEdaNo);
-            }
-            if (inputData.SinDate < 0)
-            {
-                return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSinDate);
-            }
-            var generationId = _setGenerationRepository.GetGenerationId(inputData.HpId, inputData.SinDate);
-            var sets = _setRepository.GetList(inputData.HpId, inputData.SetKbn, inputData.SetKbnEdaNo, inputData.TextSearch);
-            var result = sets.Where(r => r.GenerationId == generationId);
+                if (inputData.HpId < 0)
+                {
+                    return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidHpId);
+                }
+                if (inputData.SetKbn < 0)
+                {
+                    return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSetKbn);
+                }
+                if (inputData.SetKbnEdaNo < 0)
+                {
+                    return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSetKbnEdaNo);
+                }
+                if (inputData.SinDate < 0)
+                {
+                    return new GetSetMstListOutputData(null, GetSetMstListStatus.InvalidSinDate);
+                }
+                var generationId = _setGenerationRepository.GetGenerationId(inputData.HpId, inputData.SinDate);
+                var sets = _setRepository.GetList(inputData.HpId, inputData.SetKbn, inputData.SetKbnEdaNo, inputData.TextSearch);
+                var result = sets.Where(r => r.GenerationId == generationId);
 
-            var output = BuildTreeSetKbn(result);
+                var output = BuildTreeSetKbn(result);
 
-            return (output?.Count > 0) ? new GetSetMstListOutputData(BuildTreeSetKbn(result), GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
-
+                return (output?.Count > 0) ? new GetSetMstListOutputData(BuildTreeSetKbn(result), GetSetMstListStatus.Successed) : new GetSetMstListOutputData(null, GetSetMstListStatus.NoData);
+            }
+            finally
+            {
+                _setGenerationRepository.ReleaseResource();
+                _setRepository.ReleaseResource();
+            }
         }
         private List<GetSetMstListOutputItem> BuildTreeSetKbn(IEnumerable<SetMstModel>? datas)
         {

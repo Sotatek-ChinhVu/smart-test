@@ -1060,5 +1060,10 @@ namespace Infrastructure.Repositories
 
             return result;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

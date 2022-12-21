@@ -30,5 +30,10 @@ namespace Infrastructure.Repositories
             return dataCalculation;
 
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

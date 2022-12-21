@@ -39,6 +39,10 @@ namespace Interactor.OrdInfs
             {
                 return new GetMaxRpNoOutputData(0, GetMaxRpNoStatus.Failed);
             }
+            finally
+            {
+                _ordInfRepository.ReleaseResource();
+            }
         }
     }
 }

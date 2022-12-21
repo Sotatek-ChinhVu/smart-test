@@ -22,8 +22,16 @@ public class GetReceptionSettingsInteractor : IGetReceptionSettingsInputPort
 
     public GetReceptionSettingsOutputData Handle(GetReceptionSettingsInputData input)
     {
-        var settings = GetSettings(input.UserId);
-        return new GetReceptionSettingsOutputData(GetReceptionSettingsStatus.Success, settings);
+        try
+        {
+            var settings = GetSettings(input.UserId);
+            return new GetReceptionSettingsOutputData(GetReceptionSettingsStatus.Success, settings);
+        }
+        finally
+        {
+            _systemConfRepository.ReleaseResource();
+            _userConfRepository.ReleaseResource();
+        }
     }
 
     private VisitingListSettingModel GetSettings(int userId)

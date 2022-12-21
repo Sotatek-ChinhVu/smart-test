@@ -1,9 +1,4 @@
 ﻿using Domain.Models.PatientInfor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.PatientInfor.PatientComment;
 
 namespace Interactor.PatientInfor
@@ -21,10 +16,10 @@ namespace Interactor.PatientInfor
         {
             try
             {
-                if (inputData.HpId <= 0 )
+                if (inputData.HpId <= 0)
                     return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidHpId);
-                
-                if(inputData.PtId <= 0)
+
+                if (inputData.PtId <= 0)
                     return new GetPatientCommentOutputData(GetPatientCommentStatus.InvalidPtId);
 
                 var data = _patientInforRepository.PatientCommentModels(inputData.HpId, inputData.PtId);
@@ -34,6 +29,10 @@ namespace Interactor.PatientInfor
             catch (Exception)
             {
                 return new GetPatientCommentOutputData(GetPatientCommentStatus.Failed);
+            }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
             }
         }
     }
