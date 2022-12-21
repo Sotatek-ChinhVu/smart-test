@@ -1798,5 +1798,10 @@ namespace Infrastructure.Repositories
             var hokensyaMst = TrackingDataContext.HokensyaMsts.Where(x => x.HpId == hpId && x.HokensyaNo == hokensya && x.Houbetu == houbetu).Select(x => new HokensyaMstModel(x.IsKigoNa)).FirstOrDefault();
             return hokensyaMst ?? new HokensyaMstModel();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

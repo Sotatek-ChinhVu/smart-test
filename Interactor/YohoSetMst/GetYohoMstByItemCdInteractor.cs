@@ -15,21 +15,28 @@ namespace Interactor.YohoSetMst
 
         public GetYohoMstByItemCdOutputData Handle(GetYohoMstByItemCdInputData inputData)
         {
-            if (inputData.HpId < 0)
-                return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidHpId);
+            try
+            {
+                if (inputData.HpId < 0)
+                    return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidHpId);
 
-            if (inputData.StartDate < 0)
-                return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidStartDate);
+                if (inputData.StartDate < 0)
+                    return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidStartDate);
 
-            if (string.IsNullOrEmpty(inputData.ItemCd))
-                return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidItemCd);
+                if (string.IsNullOrEmpty(inputData.ItemCd))
+                    return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.InvalidItemCd);
 
-            var datas = _yohoSetMstRepository.GetByItemCd(inputData.HpId, inputData.ItemCd, inputData.StartDate);
+                var datas = _yohoSetMstRepository.GetByItemCd(inputData.HpId, inputData.ItemCd, inputData.StartDate);
 
-            if (datas.Any())
-                return new GetYohoMstByItemCdOutputData(datas.ToList(), GetYohoMstByItemCdStatus.Successful);
-            else
-                return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.DataNotFound);
+                if (datas.Any())
+                    return new GetYohoMstByItemCdOutputData(datas.ToList(), GetYohoMstByItemCdStatus.Successful);
+                else
+                    return new GetYohoMstByItemCdOutputData(new List<YohoSetMstModel>(), GetYohoMstByItemCdStatus.DataNotFound);
+            }
+            finally
+            {
+                _yohoSetMstRepository.ReleaseResource();
+            }
         }
     }
 }

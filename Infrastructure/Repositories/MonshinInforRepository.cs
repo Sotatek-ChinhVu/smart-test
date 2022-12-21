@@ -31,6 +31,11 @@ namespace Infrastructure.Repositories
             return monshinList;
         }
 
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
+
         public bool SaveList(List<MonshinInforModel> monshinInforModels, int userId)
         {
             try

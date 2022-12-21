@@ -18,14 +18,22 @@ public class GetUketukeSbtMstBySinDateInteractor : IGetUketukeSbtMstBySinDateInp
 
     public GetUketukeSbtMstBySinDateOutputData Handle(GetUketukeSbtMstBySinDateInputData input)
     {
-        if (input.SinDate <= 0)
+        try
         {
-            return new GetUketukeSbtMstBySinDateOutputData(GetUketukeSbtMstBySinDateStatus.InvalidSinDate);
-        }
+            if (input.SinDate <= 0)
+            {
+                return new GetUketukeSbtMstBySinDateOutputData(GetUketukeSbtMstBySinDateStatus.InvalidSinDate);
+            }
 
-        var receptionType = GetReceptionTypeBySinDate(input.SinDate);
-        var status = receptionType is null ? GetUketukeSbtMstBySinDateStatus.NotFound : GetUketukeSbtMstBySinDateStatus.Success;
-        return new GetUketukeSbtMstBySinDateOutputData(status, receptionType);
+            var receptionType = GetReceptionTypeBySinDate(input.SinDate);
+            var status = receptionType is null ? GetUketukeSbtMstBySinDateStatus.NotFound : GetUketukeSbtMstBySinDateStatus.Success;
+            return new GetUketukeSbtMstBySinDateOutputData(status, receptionType);
+        }
+        finally
+        {
+            _uketukeSbtDayInfRepository.ReleaseResource();
+            _uketukeSbtMstRepository.ReleaseResource();
+        }
     }
 
     private UketukeSbtMstModel? GetReceptionTypeBySinDate(int sinDate)

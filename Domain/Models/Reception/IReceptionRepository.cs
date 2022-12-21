@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using Domain.Common;
+using System.Runtime.InteropServices;
 
 namespace Domain.Models.Reception
 {
-    public interface IReceptionRepository
+    public interface IReceptionRepository : IRepositoryBase
     {
         long Insert(ReceptionSaveDto dto, int hpId, int userId);
 

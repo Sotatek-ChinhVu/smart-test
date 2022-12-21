@@ -1,4 +1,5 @@
 ﻿using Domain.Models.MstItem;
+using Infrastructure.Repositories;
 using UseCase.MstItem.SearchOTC;
 
 namespace Interactor.MstItem
@@ -28,6 +29,10 @@ namespace Interactor.MstItem
             catch
             {
                 return new SearchOTCOutputData(new List<OtcItemModel>(), 0, SearchOTCStatus.Fail);
+            }
+            finally
+            {
+                _inputItemRepository.ReleaseResource();
             }
         }
     }

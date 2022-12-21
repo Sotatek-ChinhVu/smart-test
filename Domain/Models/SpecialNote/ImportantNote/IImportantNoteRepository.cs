@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.SpecialNote.ImportantNote
+﻿using Domain.Common;
+
+namespace Domain.Models.SpecialNote.ImportantNote
 {
-    public interface IImportantNoteRepository
+    public interface IImportantNoteRepository : IRepositoryBase
     {
         List<PtAlrgyDrugModel> GetAlrgyDrugList(long ptId);
 

@@ -83,8 +83,13 @@ namespace Infrastructure.Repositories
             {
                 query = query.Where(u => u.JobCd == JobCodes.Doctor);
             }
+            var listKaMsts = NoTrackingDataContext.KaMsts.Where(item =>
+                                                                    query.Select(item => item.KaId).ToList()
+                                                                    .Contains(item.KaId)
+                                                                    && item.IsDeleted == 0
+                                                              ).ToList();
 
-            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u)).ToList();
+            return query.OrderBy(u => u.SortNo).AsEnumerable().Select(u => ToModel(u, listKaMsts)).ToList();
         }
 
         public IEnumerable<UserMstModel> GetDoctorsList(int userId)
@@ -181,6 +186,30 @@ namespace Infrastructure.Repositories
             TrackingDataContext.SaveChanges();
         }
 
+        private static UserMstModel ToModel(UserMst u, List<KaMst> listKaMsts)
+        {
+            return new UserMstModel(
+                u.HpId,
+                u.Id,
+                u.UserId,
+                u.JobCd,
+                u.ManagerKbn,
+                u.KaId,
+                listKaMsts.FirstOrDefault(item => item.KaId == u.KaId)?.KaSname ?? string.Empty,
+                u.KanaName ?? string.Empty,
+                u.Name ?? string.Empty,
+                u.Sname ?? string.Empty,
+                u.DrName ?? string.Empty,
+                u.LoginId ?? string.Empty,
+                u.LoginPass ?? string.Empty,
+                u.MayakuLicenseNo ?? string.Empty,
+                u.StartDate,
+                u.EndDate,
+                u.SortNo,
+                u.RenkeiCd1 ?? string.Empty,
+                u.IsDeleted);
+        }
+        
         private static UserMstModel ToModel(UserMst u)
         {
             return new UserMstModel(
@@ -190,6 +219,7 @@ namespace Infrastructure.Repositories
                 u.JobCd,
                 u.ManagerKbn,
                 u.KaId,
+                string.Empty,
                 u.KanaName ?? string.Empty,
                 u.Name ?? string.Empty,
                 u.Sname ?? string.Empty,
@@ -244,6 +274,11 @@ namespace Infrastructure.Repositories
             {
                 return false;
             }
+        }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
         }
     }
 }

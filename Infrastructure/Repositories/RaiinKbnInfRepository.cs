@@ -69,4 +69,9 @@ public class RaiinKbnInfRepository : RepositoryBase, IRaiinKbnInfRepository
         TrackingDataContext.SaveChanges();
         return true;
     }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

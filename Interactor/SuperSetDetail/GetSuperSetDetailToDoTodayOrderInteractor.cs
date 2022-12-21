@@ -41,6 +41,10 @@ public class GetSuperSetDetailToDoTodayOrderInteractor : IGetSuperSetDetailToDoT
         {
             return new GetSuperSetDetailToDoTodayOrderOutputData(new(), new(), new(), GetSuperSetDetailToDoTodayOrderStatus.Failed);
         }
+        finally
+        {
+            _superSetDetailRepository.ReleaseResource();
+        }
     }
 
     private List<SetByomeiItem> ConvertSetByomeiToItem(List<SetByomeiModel> setByomeiModels)

@@ -32,79 +32,87 @@ namespace Interactor.Schema
         /// <exception cref="NotImplementedException"></exception>
         public SaveInsuranceScanOutputData Handle(SaveInsuranceScanInputData inputData)
         {
-            if (inputData.PtId <= 0)
-                return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidPtId);
-
-            if (inputData.HpId <= 0)
-                return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidHpId);
-
-            var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
-            if (ptInf == null)
+            try
             {
-                return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidPtId);
-            }
+                if (inputData.PtId <= 0)
+                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidPtId);
 
-            MemoryStream memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
+                if (inputData.HpId <= 0)
+                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidHpId);
 
-            // Delete old image
-            if (!string.IsNullOrEmpty(inputData.UrlOldImage))
-            {
-                string key = inputData.UrlOldImage.Replace(_options.BaseAccessUrl + "/", string.Empty);
-                if (_amazonS3Service.ObjectExistsAsync(key).Result)
+                var ptInf = _patientInforRepository.GetById(inputData.HpId, inputData.PtId, 0, 0);
+                if (ptInf == null)
                 {
-                    var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
-                    bool removeDb = _insuranceRepository.DeleteInsuranceScan(new InsuranceScanModel(inputData.HpId,
-                                                                                                    inputData.PtId,
-                                                                                                    inputData.HokenGrp,
-                                                                                                    inputData.HokenId,
-                                                                                                    string.Empty,
-                                                                                                    0), inputData.UserId);
-                    if (!isDelete || !removeDb)
-                        return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.RemoveOldImageFailed);
-
+                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidPtId);
                 }
-                else
-                    return new SaveInsuranceScanOutputData(string.Empty , SaveInsuranceScanStatus.OldImageNotFound);
-            }
 
-            if (memoryStream.Length <= 0 && string.IsNullOrEmpty(inputData.UrlOldImage))
-            {
-                if(!string.IsNullOrEmpty(inputData.UrlOldImage)) //OldImage is not null and has removed above. 
+                MemoryStream memoryStream = inputData.StreamImage.ToMemoryStreamAsync().Result;
+
+                // Delete old image
+                if (!string.IsNullOrEmpty(inputData.UrlOldImage))
                 {
-                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.RemoveOldImageSuccessful);
-                }    
+                    string key = inputData.UrlOldImage.Replace(_options.BaseAccessUrl + "/", string.Empty);
+                    if (_amazonS3Service.ObjectExistsAsync(key).Result)
+                    {
+                        var isDelete = _amazonS3Service.DeleteObjectAsync(key).Result;
+                        bool removeDb = _insuranceRepository.DeleteInsuranceScan(new InsuranceScanModel(inputData.HpId,
+                                                                                                        inputData.PtId,
+                                                                                                        inputData.HokenGrp,
+                                                                                                        inputData.HokenId,
+                                                                                                        string.Empty,
+                                                                                                        0), inputData.UserId);
+                        if (!isDelete || !removeDb)
+                            return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.RemoveOldImageFailed);
 
-                return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidImageScan);
-            }
-                
+                    }
+                    else
+                        return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.OldImageNotFound);
+                }
 
-            if (memoryStream.Length > 0)
-            {
-                var listFolders = new List<string>() {
+                if (memoryStream.Length <= 0 && string.IsNullOrEmpty(inputData.UrlOldImage))
+                {
+                    if (!string.IsNullOrEmpty(inputData.UrlOldImage)) //OldImage is not null and has removed above. 
+                    {
+                        return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.RemoveOldImageSuccessful);
+                    }
+
+                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.InvalidImageScan);
+                }
+
+
+                if (memoryStream.Length > 0)
+                {
+                    var listFolders = new List<string>() {
                                                         CommonConstants.Store,
                                                         CommonConstants.InsuranceScan,
                                                      };
-                string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf.PtNum);
+                    string path = _amazonS3Service.GetFolderUploadToPtNum(listFolders, ptInf.PtNum);
 
-                string fileName = $"{inputData.PtId.ToString().PadLeft(10, '0')}{inputData.HokenId}.png";
-                fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
+                    string fileName = $"{inputData.PtId.ToString().PadLeft(10, '0')}{inputData.HokenId}.png";
+                    fileName = _amazonS3Service.GetUniqueFileNameKey(fileName);
 
-                Task<string> responseUpload = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
-                string linkImage = responseUpload.Result;
+                    Task<string> responseUpload = _amazonS3Service.UploadObjectAsync(path, fileName, memoryStream);
+                    string linkImage = responseUpload.Result;
 
-                bool saveToDb = _insuranceRepository.SaveInsuraneScan(new InsuranceScanModel(inputData.HpId,
-                                                                            inputData.PtId,
-                                                                            inputData.HokenGrp,
-                                                                            inputData.HokenId,
-                                                                            linkImage,
-                                                                           0), inputData.UserId);
-                if(!saveToDb)
-                    return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.FailedSaveToDb);
+                    bool saveToDb = _insuranceRepository.SaveInsuraneScan(new InsuranceScanModel(inputData.HpId,
+                                                                                inputData.PtId,
+                                                                                inputData.HokenGrp,
+                                                                                inputData.HokenId,
+                                                                                linkImage,
+                                                                               0), inputData.UserId);
+                    if (!saveToDb)
+                        return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.FailedSaveToDb);
 
-                return new SaveInsuranceScanOutputData(linkImage, SaveInsuranceScanStatus.Successful);
+                    return new SaveInsuranceScanOutputData(linkImage, SaveInsuranceScanStatus.Successful);
+                }
+
+                return new SaveInsuranceScanOutputData(string.Empty, SaveInsuranceScanStatus.Failed);
             }
-
-            return new SaveInsuranceScanOutputData(string.Empty ,SaveInsuranceScanStatus.Failed);
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+            }
         }
     }
 }

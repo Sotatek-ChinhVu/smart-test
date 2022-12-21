@@ -70,5 +70,10 @@ namespace Infrastructure.Repositories
                     result?.IsDeleted ?? 0
                 );
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

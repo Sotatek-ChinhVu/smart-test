@@ -14,8 +14,15 @@ public class GetColumnSettingListInteractor : IGetColumnSettingListInputPort
 
     public GetColumnSettingListOutputData Handle(GetColumnSettingListInputData input)
     {
-        var settings = _columnSettingRepository.GetList(input.UserId, input.TableName);
-        var status = settings.Any() ? GetColumnSettingListStatus.Success : GetColumnSettingListStatus.NoData;
-        return new GetColumnSettingListOutputData(status, settings);
+        try
+        {
+            var settings = _columnSettingRepository.GetList(input.UserId, input.TableName);
+            var status = settings.Any() ? GetColumnSettingListStatus.Success : GetColumnSettingListStatus.NoData;
+            return new GetColumnSettingListOutputData(status, settings);
+        }
+        finally
+        {
+            _columnSettingRepository.ReleaseResource();
+        }
     }
 }

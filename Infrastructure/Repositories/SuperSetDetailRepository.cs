@@ -1026,9 +1026,12 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
             return 0;
         }
 
-        var result = NoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd)
-                                                  .Max(item => item.RpNo);
-        return result;
+        var result = NoTrackingDataContext.SetOdrInf.Where(k => k.HpId == hpId && k.SetCd == setCd).ToList();
+        if (result.Any())
+        {
+            return result.Max(item => item.RpNo);
+        }
+        return 0;
     }
 
     private (int, int) CalculateSyoho(SetOdrInfDetail odrDetail, Dictionary<string, int> settingValues, TenMst tenMst, int odrInfOdrKouiKbn, string ipnName)
@@ -1213,7 +1216,8 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                                 && item.SetCd == setCd
                                                                 && item.FileName != null
                                                                 && listFileName.Contains(item.FileName)
-                                                            ).ToList();
+                                                            ).OrderBy(item => item.Position)
+                                                            .ToList();
 
         var listUpdateFiles = TrackingDataContext.SetKarteImgInf.Where(item =>
                                                                 item.HpId == hpId
@@ -1272,5 +1276,10 @@ public class SuperSetDetailRepository : RepositoryBase, ISuperSetDetailRepositor
                                                             ).ToList();
         TrackingDataContext.SetKarteImgInf.RemoveRange(listDeletes);
         return TrackingDataContext.SaveChanges() > 0;
+    }
+
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
     }
 }

@@ -55,5 +55,10 @@ namespace Infrastructure.Repositories
 
             return dataPtGrpInfs;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

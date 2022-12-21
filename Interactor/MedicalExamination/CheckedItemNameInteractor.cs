@@ -112,6 +112,10 @@ namespace Interactor.MedicalExamination
             {
                 return new CheckedItemNameOutputData(CheckedItemNameStatus.Failed, new());
             }
+            finally
+            {
+                _todayOdrRepository.ReleaseResource();
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Domain.Models.RaiinFilterMst;
+﻿using Domain.Common;
 
-public interface IRaiinFilterMstRepository
+namespace Domain.Models.RaiinFilterMst;
+
+public interface IRaiinFilterMstRepository : IRepositoryBase
 {
     List<RaiinFilterMstModel> GetList();
 

@@ -40,5 +40,10 @@ namespace Infrastructure.Repositories
                                                          )).OrderBy(x => x.SortNo).ToList();
             return dataListItem;
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

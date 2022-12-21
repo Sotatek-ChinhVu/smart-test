@@ -1,9 +1,4 @@
 ﻿using Domain.Models.Reception;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UseCase.Reception.GetReceptionDefault;
 
 namespace Interactor.Reception
@@ -46,6 +41,10 @@ namespace Interactor.Reception
             catch
             {
                 return new GetReceptionDefaultOutputData(new ReceptionModel(), GetReceptionDefaultStatus.Failed);
+            }
+            finally
+            {
+                _receptionRepository.ReleaseResource();
             }
         }
     }

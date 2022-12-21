@@ -153,5 +153,10 @@ namespace Infrastructure.Repositories
                                                (int?)subpet.YohoKbn ?? 0,
                                                (int?)subpet.StartDate ?? 0)).ToList();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

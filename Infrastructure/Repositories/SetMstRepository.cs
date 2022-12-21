@@ -988,4 +988,8 @@ public class SetMstRepository : RepositoryBase, ISetMstRepository
         return NoTrackingDataContext.SetMsts.Any(item => item.SetCd == setCd);
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
 }

@@ -19,6 +19,11 @@ public class JsonSettingRepository : RepositoryBase, IJsonSettingRepository
         return entity is null ? null : ToModel(entity);
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Upsert(JsonSettingModel model)
     {
         var existingEntity = TrackingDataContext.JsonSettings.AsTracking()

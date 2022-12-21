@@ -31,6 +31,10 @@ namespace Interactor.MstItem
             {
                 return new UpdateAdoptedByomeiOutputData(false, UpdateAdoptedByomeiStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+            }
         }
     }
 }

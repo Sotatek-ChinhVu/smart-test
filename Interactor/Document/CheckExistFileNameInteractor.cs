@@ -63,6 +63,12 @@ public class CheckExistFileNameInteractor : ICheckExistFileNameInputPort
         {
             return new CheckExistFileNameOutputData(CheckExistFileNameStatus.Failed);
         }
+        finally
+        {
+            _patientInforRepository.ReleaseResource();
+            _hpInfRepository.ReleaseResource();
+            _documentRepository.ReleaseResource();
+        }
     }
 
     private CheckExistFileNameStatus ValidateInput(CheckExistFileNameInputData inputData)

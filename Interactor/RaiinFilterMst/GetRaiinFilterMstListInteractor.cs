@@ -14,8 +14,15 @@ public class GetRaiinFilterMstListInteractor : IGetRaiinFilterMstListInputPort
 
     public GetRaiinFilterMstListOutputData Handle(GetRaiinFilterMstListInputData inputData)
     {
-        var filterMsts = _raiinFilterMstRepository.GetList();
-        var status = filterMsts.Any() ? GetRaiinFilterMstListStatus.Success : GetRaiinFilterMstListStatus.NoData;
-        return new GetRaiinFilterMstListOutputData(status, filterMsts);
+        try
+        {
+            var filterMsts = _raiinFilterMstRepository.GetList();
+            var status = filterMsts.Any() ? GetRaiinFilterMstListStatus.Success : GetRaiinFilterMstListStatus.NoData;
+            return new GetRaiinFilterMstListOutputData(status, filterMsts);
+        }
+        finally
+        {
+            _raiinFilterMstRepository.ReleaseResource();
+        }
     }
 }

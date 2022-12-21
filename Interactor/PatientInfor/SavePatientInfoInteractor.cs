@@ -41,6 +41,10 @@ namespace Interactor.PatientInfor
             {
                 return new SavePatientInfoOutputData(string.Empty, SavePatientInfoStatus.Failed, 0);
             }
+            finally
+            {
+                _patientInforRepository.ReleaseResource();
+            }
         }
 
         private IEnumerable<string> Validation(SavePatientInfoInputData model)

@@ -14,12 +14,19 @@ public class GetUserListInteractor : IGetUserListInputPort
 
     public GetUserListOutputData Handle(GetUserListInputData input)
     {
-        if (input.SinDate <= 0)
+        try
         {
-            return new GetUserListOutputData(GetUserListStatus.InvalidSinDate);
-        }
+            if (input.SinDate <= 0)
+            {
+                return new GetUserListOutputData(GetUserListStatus.InvalidSinDate);
+            }
 
-        var users = _userRepository.GetAll(input.SinDate, input.IsDoctorOnly);
-        return new GetUserListOutputData(GetUserListStatus.Success, users);
+            var users = _userRepository.GetAll(input.SinDate, input.IsDoctorOnly);
+            return new GetUserListOutputData(GetUserListStatus.Success, users);
+        }
+        finally
+        {
+            _userRepository.ReleaseResource();
+        }
     }
 }

@@ -38,5 +38,10 @@ namespace Infrastructure.Repositories
                                                     hpInf.OtherContacts ?? string.Empty
                                                 ) : new HpInfModel();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

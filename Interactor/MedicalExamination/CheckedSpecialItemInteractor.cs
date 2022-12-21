@@ -224,6 +224,14 @@ namespace Interactor.MedicalExamination
             {
                 return new CheckedSpecialItemOutputData(new List<CheckedSpecialItem>(), CheckedSpecialItemStatus.Failed);
             }
+            finally
+            {
+                _mstItemRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _receptionRepository.ReleaseResource();
+                _systemConfRepository.ReleaseResource();
+                _todayOdrRepository.ReleaseResource();
+            }
         }
 
         /// <summary>

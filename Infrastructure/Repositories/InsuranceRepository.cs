@@ -1385,5 +1385,10 @@ namespace Infrastructure.Repositories
         {
             return NoTrackingDataContext.KohiPriorities.Select(x => new KohiPriorityModel(x.PriorityNo, x.PrefNo, x.Houbetu)).ToList();
         }
+
+        public void ReleaseResource()
+        {
+            DisposeDataContext();
+        }
     }
 }

@@ -14,6 +14,11 @@ public class VisitingListSettingRepository : RepositoryBase, IVisitingListSettin
 
     }
 
+    public void ReleaseResource()
+    {
+        DisposeDataContext();
+    }
+
     public void Save(List<SystemConfModel> systemConfModels, int hpId, int userId)
     {
         ModifySystemConfs(systemConfModels, hpId, userId);

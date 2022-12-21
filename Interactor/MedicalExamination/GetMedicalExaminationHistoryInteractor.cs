@@ -117,6 +117,12 @@ namespace Interactor.MedicalExamination
             {
                 return new GetMedicalExaminationHistoryOutputData(0, new List<HistoryKarteOdrRaiinItem>(), GetMedicalExaminationHistoryStatus.Failed, 0);
             }
+            finally
+            {
+                _historyOrderRepository.ReleaseResource();
+                _insuranceRepository.ReleaseResource();
+                _patientInforRepository.ReleaseResource();
+            }
         }
 
         /// <summary>
