@@ -1,7 +1,10 @@
 ﻿using Helper.Constants;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using PostgreDataContext;
 
 namespace Infrastructure.CommonDB
@@ -31,7 +34,9 @@ namespace Infrastructure.CommonDB
         {
             if (_noTrackingDataContext == null)
             {
-                _noTrackingDataContext = new TenantNoTrackingDataContext(GetConnectionString());
+                var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString()).Options;
+                var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+                _noTrackingDataContext = factory.CreateDbContext();
             }
             return _noTrackingDataContext;
         }
@@ -41,7 +46,9 @@ namespace Infrastructure.CommonDB
         {
             if (_trackingDataContext == null)
             {
-                _trackingDataContext = new TenantDataContext(GetConnectionString());
+                var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString()).Options;
+                var factory = new PooledDbContextFactory<TenantDataContext>(options);
+                _trackingDataContext = factory.CreateDbContext();
             }
             return _trackingDataContext;
         }
@@ -54,13 +61,19 @@ namespace Infrastructure.CommonDB
         public void ReloadNoTrackingDataContext()
         {
             _noTrackingDataContext?.Dispose();
-            _noTrackingDataContext = new TenantNoTrackingDataContext(GetConnectionString());
+
+            var options = new DbContextOptionsBuilder<TenantNoTrackingDataContext>().UseNpgsql(GetConnectionString()).Options;
+            var factory = new PooledDbContextFactory<TenantNoTrackingDataContext>(options);
+            _noTrackingDataContext = factory.CreateDbContext();
         }
 
         public void ReloadTrackingDataContext()
         {
             _trackingDataContext?.Dispose();
-            _trackingDataContext = new TenantDataContext(GetConnectionString());
+
+            var options = new DbContextOptionsBuilder<TenantDataContext>().UseNpgsql(GetConnectionString()).Options;
+            var factory = new PooledDbContextFactory<TenantDataContext>(options);
+            _trackingDataContext = factory.CreateDbContext();
         }
 
         public void DisposeDataContext()
