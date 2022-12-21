@@ -20,6 +20,10 @@ using UseCase.Document.SortDocCategory;
 using UseCase.Document.GetListParamTemplate;
 using Interactor.Document.CommonGetListParam;
 using UseCase.Document.DowloadDocumentTemplate;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Net;
+using UseCase.Document;
 
 namespace EmrCloudApi.Controller;
 
@@ -28,9 +32,11 @@ namespace EmrCloudApi.Controller;
 public class DocumentController : AuthorizeControllerBase
 {
     private readonly UseCaseBus _bus;
-    public DocumentController(UseCaseBus bus, IUserService userService) : base(userService)
+    private readonly ICommonGetListParam _commonGetListParam;
+    public DocumentController(UseCaseBus bus, IUserService userService, ICommonGetListParam commonGetListParam) : base(userService)
     {
         _bus = bus;
+        _commonGetListParam = commonGetListParam;
     }
 
     [HttpGet(ApiPath.GetListDocumentCategory)]
@@ -179,14 +185,24 @@ public class DocumentController : AuthorizeControllerBase
 
 
     [HttpPost(ApiPath.DowloadDocumentTemplate)]
-    public IActionResult ExportEmployee([FromBody] DowloadDocumentTemplateRequest request)
+    public IActionResult ExportTemplate([FromBody] DowloadDocumentTemplateRequest request)
     {
+        var extension = Path.GetExtension(request.LinkFile).ToLower();
         var fileName = Path.GetFileName(request.LinkFile);
-        var input = new DowloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
-        var output = _bus.Handle(input);
-        return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+        if (extension.Equals(".docx"))
+        {
+            var input = new DowloadDocumentTemplateInputData(HpId, UserId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId, request.LinkFile);
+            var output = _bus.Handle(input);
+            return File(output.OutputStream.ToArray(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+        }
+        else if (extension.Equals(".xlsx"))
+        {
+            return File(ExportTemplateXlsx(HpId, UserId, request).ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+        }
+        return File(new MemoryStream(), "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
     }
 
+    #region Private function
     private List<SaveListDocCategoryInputItem> ConvertToListDocCategoryItem(SaveListDocCategoryRequest request)
     {
         return request.ListDocCategory.Select(item => new SaveListDocCategoryInputItem(
@@ -196,4 +212,92 @@ public class DocumentController : AuthorizeControllerBase
                                                     false
                                               )).ToList();
     }
+
+    private MemoryStream ExportTemplateXlsx(int hpId, int userId, DowloadDocumentTemplateRequest request)
+    {
+        var listGroupParams = _commonGetListParam.GetListParam(hpId, userId, request.PtId, request.SinDate, request.RaiinNo, request.HokenPId);
+        using (var httpClient = new HttpClient())
+        {
+            var responseStream = httpClient.GetStreamAsync(request.LinkFile).Result;
+            var streamOutput = new MemoryStream();
+            responseStream.CopyTo(streamOutput);
+            using (var workbook = SpreadsheetDocument.Open(streamOutput, true, new OpenSettings { AutoSave = true }))
+            {
+                // Replace shared strings
+                if (workbook.WorkbookPart != null)
+                {
+                    var sharedStringsPart = workbook.WorkbookPart.SharedStringTablePart;
+                    if (sharedStringsPart != null)
+                    {
+                        var sharedStringTextElements = sharedStringsPart.SharedStringTable.Descendants<Text>();
+                        foreach (var group in listGroupParams)
+                        {
+                            foreach (var param in group.ListParamModel)
+                            {
+                                DoReplaceFileXlsx(sharedStringTextElements, param);
+                            }
+                        }
+                    }
+                }
+            }
+            return streamOutput;
+        }
+
+        //using (var client = new WebClient())
+        //{
+        //    var content = client.DownloadData(request.LinkFile);
+        //    var streamOutput = new MemoryStream(content);
+
+        //}
+    }
+
+    private static void DoReplaceFileXlsx(IEnumerable<Text> textElements, ItemDisplayParamModel param)
+    {
+        var listData = textElements.ToList();
+        for (int i = 0; i < listData.Count; i++)
+        {
+            if (i > 0 && i < (listData.Count - 1))
+            {
+                if (listData[i].Text.Contains("<<" + param.Parameter + ">>"))
+                {
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+                if (listData[i - 1].Text.Contains("<<")
+                && listData[i].Text.Contains(param.Parameter)
+                && listData[i + 1].Text.Contains(">>"))
+                {
+                    listData[i - 1].Text = listData[i - 1].Text.Replace("<<", string.Empty);
+                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+                if (listData[i].Text.Contains(param.Parameter + ">>")
+                    && listData[i - 1].Text.Contains("<<"))
+                {
+                    listData[i - 1].Text = listData[i - 1].Text.Replace("<<", string.Empty);
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+                if (listData[i].Text.Contains("<<" + param.Parameter)
+                    && listData[i + 1].Text.Contains(">>"))
+                {
+                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+            }
+            else
+            {
+                if (listData[i].Text.Contains("<<" + param.Parameter + ">>"))
+                {
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+                if (listData[i].Text.Contains("<<" + param.Parameter)
+                    && listData[i + 1].Text.Contains(">>"))
+                {
+                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
+                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
+                }
+            }
+            listData[i].Text = listData[i].Text.Replace(param.Parameter, param.Value);
+        }
+    }
+    #endregion
 }

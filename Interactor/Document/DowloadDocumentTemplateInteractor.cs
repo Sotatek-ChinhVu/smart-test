@@ -1,4 +1,6 @@
-﻿using FindAndReplace;
+﻿using DocumentFormat.OpenXml.Drawing;
+using DocumentFormat.OpenXml.Packaging;
+using FindAndReplace;
 using Interactor.Document.CommonGetListParam;
 using System.Net;
 using UseCase.Document;
@@ -19,7 +21,7 @@ public class DowloadDocumentTemplateInteractor : IDowloadDocumentTemplateInputPo
     {
         try
         {
-            var extension = Path.GetExtension(inputData.LinkFile).ToLower();
+            var extension = System.IO.Path.GetExtension(inputData.LinkFile).ToLower();
             using (var client = new WebClient())
             {
                 var content = client.DownloadData(inputData.LinkFile);
