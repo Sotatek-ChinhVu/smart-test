@@ -36,14 +36,9 @@ namespace Infrastructure.CommonDB
             return new TenantNoTrackingDataContext(GetConnectionString());
         }
 
-        private TenantDataContext? _trackingTenantDataContext;
         public TenantDataContext GetTrackingTenantDataContext()
         {
-            if (_trackingTenantDataContext == null)
-            {
-                _trackingTenantDataContext = new TenantDataContext(GetConnectionString());
-            }
-            return _trackingTenantDataContext;
+            return new TenantDataContext(GetConnectionString());
         }
 
         public string GetTenantInfo()
