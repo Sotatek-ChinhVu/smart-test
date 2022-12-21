@@ -90,8 +90,8 @@ namespace Infrastructure.CommonDB
 
         public void DisposeDataContext()
         {
-            _trackingDataContext?.Dispose();
-            _noTrackingDataContext?.Dispose();
+            //_trackingDataContext?.Dispose();
+            //_noTrackingDataContext?.Dispose();
         }
     }
 }
