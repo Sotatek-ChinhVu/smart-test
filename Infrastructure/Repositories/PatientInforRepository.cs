@@ -1799,6 +1799,7 @@ namespace Infrastructure.Repositories
             var result = new List<PatientInforModel>();
             var ptInfs = _tenantDataContext.PtInfs.Where((x) =>
             x.HpId == hpId &&
+            x.IsDelete == 0 &&
             x.PtId == ptId
             );
             var raiinInfs = _tenantDataContext.RaiinInfs.Where((x) =>
@@ -1806,18 +1807,30 @@ namespace Infrastructure.Repositories
             x.PtId == ptId
             );
 
-            var query = from ptInf in ptInfs.AsEnumerable()
-                        join raiinInf in raiinInfs on
-                            new { ptInf.PtId } equals
-                            new { raiinInf.PtId } into patientInfList
+            var query = from raiinInf in raiinInfs.AsEnumerable()
+                        join ptInf in ptInfs on
+                            new { raiinInf.PtId } equals
+                            new { ptInf.PtId }
                         select new
                         {
-                            PatientInf = patientInfList,
-                            PtInf = ptInf
+                            PtInf = ptInf,
+                            RaiinInf = raiinInf
                         };
-
-            //result = query.Where(x => );
+            result = (List<PatientInforModel>)query.Where(x => ptId.Equals(x.PtInf.PtId))
+           .Select((x) => new PatientInforModel(
+                           x.PtInf.PtId,
+                           x.PtInf.PtNum,
+                           x.PtInf.KanaName,
+                           x.PtInf.Name,
+                           x.PtInf.Birthday,
+                           x.RaiinInf.SinDate
+                           ));
             return result;
         }
     }
 }
+
+
+
+
+
