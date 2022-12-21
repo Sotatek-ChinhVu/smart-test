@@ -591,8 +591,8 @@ public class CommonGetListParam : ICommonGetListParam
         listParam.Add(new ItemDisplayParamModel("労災/災害区分", model.RousaiSaigaiKbn));
         listParam.Add(new ItemDisplayParamModel("労災/労働保険番号", model.RousaiRoudouHokenNo));
         listParam.Add(new ItemDisplayParamModel("労災/年金証書番号", model.RousaiNenkinNo));
-        listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiRoudouKyoku));
-        listParam.Add(new ItemDisplayParamModel("労災/労働局", model.RousaiKantoku));
+        listParam.Add(new ItemDisplayParamModel("労災/労働局", model.RousaiRoudouKyoku));
+        listParam.Add(new ItemDisplayParamModel("労災/監督署", model.RousaiKantoku));
         listParam.Add(new ItemDisplayParamModel("労災/健康管理手帳番号", model.RousaiKenkoKanriNo));
         listParam.Add(new ItemDisplayParamModel("労災/傷病コード", model.RousaiShyobyoCode));
         listParam.Add(new ItemDisplayParamModel("労災/事業名称", model.RousaiJigyouName));

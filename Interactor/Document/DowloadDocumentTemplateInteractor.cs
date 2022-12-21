@@ -22,11 +22,12 @@ public class DowloadDocumentTemplateInteractor : IDowloadDocumentTemplateInputPo
         try
         {
             var extension = System.IO.Path.GetExtension(inputData.LinkFile).ToLower();
-            using (var client = new WebClient())
+            using (var httpClient = new HttpClient())
             {
-                var content = client.DownloadData(inputData.LinkFile);
-                using (var stream = new MemoryStream(content))
+                var responseStream = httpClient.GetStreamAsync(inputData.LinkFile).Result;
+                using (var stream = new MemoryStream())
                 {
+                    responseStream.CopyTo(stream);
                     if (stream.Length > 0)
                     {
                         var listGroupParams = _commonGetListParam.GetListParam(inputData.HpId, inputData.UserId, inputData.PtId, inputData.SinDate, inputData.RaiinNo, inputData.HokenPId);

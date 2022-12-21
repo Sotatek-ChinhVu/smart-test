@@ -242,61 +242,19 @@ public class DocumentController : AuthorizeControllerBase
             }
             return streamOutput;
         }
-
-        //using (var client = new WebClient())
-        //{
-        //    var content = client.DownloadData(request.LinkFile);
-        //    var streamOutput = new MemoryStream(content);
-
-        //}
     }
 
     private static void DoReplaceFileXlsx(IEnumerable<Text> textElements, ItemDisplayParamModel param)
     {
+        string preCharParam = "《";
+        string subCharParam = "》";
         var listData = textElements.ToList();
         for (int i = 0; i < listData.Count; i++)
         {
-            if (i > 0 && i < (listData.Count - 1))
+            if (listData[i].Text.Trim().Contains(preCharParam + param.Parameter + subCharParam))
             {
-                if (listData[i].Text.Contains("<<" + param.Parameter + ">>"))
-                {
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
-                if (listData[i - 1].Text.Contains("<<")
-                && listData[i].Text.Contains(param.Parameter)
-                && listData[i + 1].Text.Contains(">>"))
-                {
-                    listData[i - 1].Text = listData[i - 1].Text.Replace("<<", string.Empty);
-                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
-                if (listData[i].Text.Contains(param.Parameter + ">>")
-                    && listData[i - 1].Text.Contains("<<"))
-                {
-                    listData[i - 1].Text = listData[i - 1].Text.Replace("<<", string.Empty);
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
-                if (listData[i].Text.Contains("<<" + param.Parameter)
-                    && listData[i + 1].Text.Contains(">>"))
-                {
-                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
+                listData[i].Text = listData[i].Text.Replace(preCharParam + param.Parameter + subCharParam, param.Value);
             }
-            else
-            {
-                if (listData[i].Text.Contains("<<" + param.Parameter + ">>"))
-                {
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
-                if (listData[i].Text.Contains("<<" + param.Parameter)
-                    && listData[i + 1].Text.Contains(">>"))
-                {
-                    listData[i + 1].Text = listData[i + 1].Text.Replace(">>", string.Empty);
-                    listData[i].Text = listData[i].Text.Replace("<<", string.Empty).Replace(">>", string.Empty);
-                }
-            }
-            listData[i].Text = listData[i].Text.Replace(param.Parameter, param.Value);
         }
     }
     #endregion
